@@ -16,13 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ListContext;
-import spoon.diff.context.ObjectContext;
-import spoon.diff.context.SetContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -44,6 +37,11 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.IS_DEFAULT;
+import static spoon.reflect.path.CtRole.IS_SHADOW;
+import static spoon.reflect.path.CtRole.MODIFIER;
+import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -84,9 +82,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (type != null) {
 			type.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "returnType"), type, this.returnType));
-		}
+		getFactory().Change().onObjectUpdate(this, TYPE, type, this.returnType);
 		this.returnType = type;
 		return (C) this;
 	}
@@ -98,9 +94,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "defaultMethod"), defaultMethod, this.defaultMethod));
-		}
+		getFactory().Change().onObjectUpdate(this, IS_DEFAULT, defaultMethod, this.defaultMethod);
 		this.defaultMethod = defaultMethod;
 		return (C) this;
 	}
@@ -112,9 +106,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(this, this.formalCtTypeParameters), new ArrayList<>(this.formalCtTypeParameters)));
-		}
+		getFactory().Change().onListDeleteAll(this, TYPE_PARAMETER, this.formalCtTypeParameters, new ArrayList<>(this.formalCtTypeParameters));
 		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
 			this.formalCtTypeParameters = CtElementImpl.emptyList();
 			return (C) this;
@@ -137,9 +129,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(this, this.formalCtTypeParameters), formalTypeParameter));
-		}
+		getFactory().Change().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalTypeParameter.setParent(this);
 		formalCtTypeParameters.add(formalTypeParameter);
 		return (C) this;
@@ -150,9 +140,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(this, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter)), formalTypeParameter));
-		}
+		getFactory().Change().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
 		return formalCtTypeParameters.remove(formalTypeParameter);
 	}
 
@@ -169,9 +157,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			if (getFactory().getEnvironment().buildStackChanges()) {
-				getFactory().getEnvironment().pushToStack(new DeleteAllAction(new SetContext(this, this.modifiers), new HashSet<>(this.modifiers)));
-			}
+			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -185,10 +171,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new SetContext(
-					this, this.modifiers), modifier));
-		}
+		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -198,10 +181,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new SetContext(
-					this, modifiers), modifier));
-		}
+		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -251,9 +231,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "isShadow"), isShadow, this.isShadow));
-		}
+		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

@@ -16,8 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtTypedElement;
@@ -25,6 +23,8 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTypeAccess<A> {
 
@@ -46,9 +46,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 		if (accessedType != null) {
 			accessedType.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), accessedType, this.type));
-		}
+		getFactory().Change().onObjectUpdate(this, TYPE, accessedType, this.type);
 		type = accessedType;
 		return (C) this;
 	}

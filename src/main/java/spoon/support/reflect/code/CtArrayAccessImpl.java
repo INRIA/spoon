@@ -16,12 +16,12 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.path.CtRole;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>> extends CtTargetedExpressionImpl<T, V> implements CtArrayAccess<T, V> {
 	private static final long serialVersionUID = 1L;
@@ -39,9 +39,7 @@ public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>> extends Ct
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), expression, this.expression));
-		}
+		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (C) this;
 	}

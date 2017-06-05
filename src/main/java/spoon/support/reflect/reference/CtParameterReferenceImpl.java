@@ -16,8 +16,6 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
@@ -27,6 +25,8 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.EXECUTABLE;
 
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -99,9 +99,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 		if (executable != null) {
 			executable.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "executable"), executable, this.executable));
-		}
+		getFactory().Change().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

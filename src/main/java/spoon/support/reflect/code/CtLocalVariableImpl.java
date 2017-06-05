@@ -16,12 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
-import spoon.diff.context.SetContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
@@ -41,6 +35,11 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
+import static spoon.reflect.path.CtRole.MODIFIER;
+import static spoon.reflect.path.CtRole.NAME;
+import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;
@@ -87,18 +86,14 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "defaultExpression"), defaultExpression, this.defaultExpression));
-		}
+		getFactory().Change().onObjectUpdate(this, DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "name"), simpleName, this.name));
-		}
+		getFactory().Change().onObjectUpdate(this, NAME, simpleName, this.name);
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -108,9 +103,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (type != null) {
 			type.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), type, this.type));
-		}
+		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -128,9 +121,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			if (getFactory().getEnvironment().buildStackChanges()) {
-				getFactory().getEnvironment().pushToStack(new DeleteAllAction(new SetContext(this, this.modifiers), new HashSet<>(this.modifiers)));
-			}
+			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -145,10 +136,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new SetContext(
-					this, this.modifiers), modifier));
-		}
+		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -158,10 +146,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new SetContext(
-					this, modifiers), modifier));
-		}
+		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -170,10 +155,10 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getModifiers().remove(ModifierKind.PUBLIC);
-		getModifiers().remove(ModifierKind.PROTECTED);
-		getModifiers().remove(ModifierKind.PRIVATE);
-		getModifiers().add(visibility);
+		removeModifier(ModifierKind.PUBLIC);
+		removeModifier(ModifierKind.PROTECTED);
+		removeModifier(ModifierKind.PRIVATE);
+		addModifier(visibility);
 		return (C) this;
 	}
 

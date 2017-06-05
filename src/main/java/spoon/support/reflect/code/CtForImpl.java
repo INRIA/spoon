@@ -16,12 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ListContext;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
@@ -35,6 +29,9 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.FOR_INIT;
+import static spoon.reflect.path.CtRole.FOR_UPDATE;
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
@@ -63,9 +60,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), expression, this.expression));
-		}
+		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}
@@ -84,10 +79,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			forInit = new ArrayList<>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
-					this, this.forInit), statement));
-		}
+		getFactory().Change().onListAdd(this, FOR_INIT, this.forInit, statement);
 		forInit.add(statement);
 		return (T) this;
 	}
@@ -98,10 +90,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			this.forInit = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
-					this, this.forInit), new ArrayList<>(this.forInit)));
-		}
+		getFactory().Change().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
@@ -114,10 +103,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (forInit == CtElementImpl.<CtStatement>emptyList()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
-					this, forInit, forInit.indexOf(statement)), statement));
-		}
+		getFactory().Change().onListDelete(this, FOR_INIT, forInit, forInit.indexOf(statement), statement);
 		return forInit.remove(statement);
 	}
 
@@ -135,10 +121,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			forUpdate = new ArrayList<>(FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
-					this, this.forUpdate), statement));
-		}
+		getFactory().Change().onListAdd(this, FOR_UPDATE, this.forUpdate, statement);
 		forUpdate.add(statement);
 		return (T) this;
 	}
@@ -149,10 +132,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			this.forUpdate = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
-					this, this.forUpdate), new ArrayList<>(this.forUpdate)));
-		}
+		getFactory().Change().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);
@@ -165,10 +145,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (forUpdate == CtElementImpl.<CtStatement>emptyList()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
-					this, forUpdate, forUpdate.indexOf(statement)), statement));
-		}
+		getFactory().Change().onListDelete(this, FOR_UPDATE, forUpdate, forUpdate.indexOf(statement), statement);
 		return forUpdate.remove(statement);
 	}
 

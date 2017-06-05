@@ -16,8 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -26,6 +24,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.CONDITION;
+import static spoon.reflect.path.CtRole.ELSE;
+import static spoon.reflect.path.CtRole.THEN;
 
 public class CtIfImpl extends CtStatementImpl implements CtIf {
 	private static final long serialVersionUID = 1L;
@@ -66,9 +68,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (condition != null) {
 			condition.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "condition"), condition, this.condition));
-		}
+		getFactory().Change().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
 		return (T) this;
 	}
@@ -78,9 +78,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (elseStatement != null) {
 			elseStatement.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "elseStatement"), elseStatement, this.elseStatement));
-		}
+		getFactory().Change().onObjectUpdate(this, ELSE, elseStatement, this.elseStatement);
 		this.elseStatement = elseStatement;
 		return (T) this;
 	}
@@ -91,9 +89,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (thenStatement != null) {
 			thenStatement.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "thenStatement"), thenStatement, this.thenStatement));
-		}
+		getFactory().Change().onObjectUpdate(this, THEN, thenStatement, this.thenStatement);
 		this.thenStatement = thenStatement;
 		return (T) this;
 	}

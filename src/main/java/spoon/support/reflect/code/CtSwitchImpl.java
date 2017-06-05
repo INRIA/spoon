@@ -16,12 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ListContext;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
@@ -34,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.CASE;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
@@ -65,10 +61,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 			this.cases = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
-					this, this.cases), new ArrayList<>(this.cases)));
-		}
+		getFactory().Change().onListDeleteAll(this, CASE, this.cases, new ArrayList<>(this.cases));
 		this.cases.clear();
 		for (CtCase<? super S> aCase : cases) {
 			addCase(aCase);
@@ -81,9 +74,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		if (selector != null) {
 			selector.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "expression"), selector, this.expression));
-		}
+		getFactory().Change().onObjectUpdate(this, EXPRESSION, selector, this.expression);
 		this.expression = selector;
 		return (T) this;
 	}
@@ -97,10 +88,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 			cases = new ArrayList<>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		c.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
-					this, this.cases), c));
-		}
+		getFactory().Change().onListAdd(this, CASE, this.cases, c);
 		cases.add(c);
 		return (T) this;
 	}
@@ -110,10 +98,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		if (cases == CtElementImpl.<CtCase<? super S>>emptyList()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
-					this, cases, cases.indexOf(c)), c));
-		}
+		getFactory().Change().onListDelete(this, CASE, cases, cases.indexOf(c), c);
 		return cases.remove(c);
 	}
 

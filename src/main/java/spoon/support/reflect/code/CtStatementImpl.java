@@ -17,8 +17,6 @@
 package spoon.support.reflect.code;
 
 import spoon.SpoonException;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
@@ -38,6 +36,8 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.LABEL;
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements CtStatement {
 	private static final long serialVersionUID = 1L;
@@ -274,9 +274,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 	@Override
 	public <T extends CtStatement> T setLabel(String label) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "label"), label, this.label));
-		}
+		getFactory().Change().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (T) this;
 	}

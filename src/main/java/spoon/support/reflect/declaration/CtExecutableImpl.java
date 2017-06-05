@@ -16,13 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ListContext;
-import spoon.diff.context.ObjectContext;
-import spoon.diff.context.SetContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
@@ -42,6 +35,10 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.THROWN;
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtExecutable}.
@@ -82,17 +79,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-			if (getFactory().getEnvironment().buildStackChanges()) {
-				getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "body"), body, this.body));
-			}
+			getFactory().Change().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
-			if (getFactory().getEnvironment().buildStackChanges()) {
-				getFactory().getEnvironment().pushToStack(new DeleteAction(new ObjectContext(this, "body"), this.body));
-			}
+			getFactory().Change().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 		return (T) this;
@@ -112,10 +105,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
-					this, this.parameters), new ArrayList<>(this.parameters)));
-		}
+		getFactory().Change().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
 		this.parameters.clear();
 		for (CtParameter<?> p : parameters) {
 			addParameter(p);
@@ -132,10 +122,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
-					this, this.parameters), parameter));
-		}
+		getFactory().Change().onListAdd(this, PARAMETER, this.parameters, parameter);
 		parameters.add(parameter);
 		return (T) this;
 	}
@@ -145,10 +132,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
-					this, parameters, parameters.indexOf(parameter)), parameter));
-		}
+		getFactory().Change().onListDelete(this, PARAMETER, parameters, parameters.indexOf(parameter), parameter);
 		return parameters.remove(parameter);
 	}
 
@@ -166,10 +150,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new SetContext(
-					this, this.thrownTypes), new HashSet<Object>(this.thrownTypes)));
-		}
+		getFactory().Change().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<Object>(this.thrownTypes));
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
 			addThrownType(thrownType);
@@ -186,10 +167,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new SetContext(
-					this, this.thrownTypes), throwType));
-		}
+		getFactory().Change().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
 		return (T) this;
 	}
@@ -199,10 +177,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new SetContext(
-					this, thrownTypes), throwType));
-		}
+		getFactory().Change().onSetDelete(this, THROWN, thrownTypes, throwType);
 		return thrownTypes.remove(throwType);
 	}
 

@@ -17,8 +17,6 @@
 package spoon.support.reflect.reference;
 
 import spoon.SpoonException;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -35,6 +33,9 @@ import spoon.support.UnsettableProperty;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
+import static spoon.reflect.path.CtRole.IS_UPPER;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -77,9 +78,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "upper"), upper, this.upper));
-		}
+		getFactory().Change().onObjectUpdate(this, IS_UPPER, upper, this.upper);
 		this.upper = upper;
 		return (T) this;
 	}
@@ -165,9 +164,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "superType"), superType, this.superType));
-		}
+		getFactory().Change().onObjectUpdate(this, SUPER_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;
 	}

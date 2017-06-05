@@ -16,13 +16,13 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 
 public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T, A> implements CtOperatorAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
@@ -42,9 +42,7 @@ public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T
 
 	@Override
 	public <C extends CtOperatorAssignment<T, A>> C setKind(BinaryOperatorKind kind) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "kind"), kind, this.kind));
-		}
+		getFactory().Change().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
 		return (C) this;
 	}

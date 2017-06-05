@@ -16,8 +16,6 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
@@ -27,6 +25,8 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
@@ -55,9 +55,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "simplename"), simplename, this.simplename));
-		}
+		getFactory().Change().onObjectUpdate(this, NAME, simplename, this.simplename);
 		this.simplename = simplename;
 		return (T) this;
 	}

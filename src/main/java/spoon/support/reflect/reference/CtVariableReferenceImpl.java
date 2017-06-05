@@ -16,8 +16,6 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
@@ -27,6 +25,8 @@ import spoon.reflect.visitor.CtVisitor;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collections;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.TYPE;
 
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl implements CtVariableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -52,9 +52,7 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 		if (type != null) {
 			type.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "type"), type, this.type));
-		}
+		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}

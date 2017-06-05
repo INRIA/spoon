@@ -18,12 +18,6 @@ package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder.InputType;
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ListContext;
-import spoon.diff.context.ObjectContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
@@ -54,6 +48,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.CONSTRUCTOR;
+import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -119,17 +117,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 			return (C) this;
 		}
 		e.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(this, typeMembers), e));
-		}
+		getFactory().Change().onListAdd(this, EXECUTABLE, typeMembers, e);
 		return addTypeMember(e);
 	}
 
 	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(this, typeMembers, typeMembers.indexOf(e)), e));
-		}
+		getFactory().Change().onListDelete(this, EXECUTABLE, typeMembers, typeMembers.indexOf(e), e);
 		return removeTypeMember(e);
 	}
 
@@ -140,9 +134,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(this, typeMembers), new ArrayList<>(getAnonymousExecutables())));
-		}
+		getFactory().Change().onListDelete(this, EXECUTABLE, typeMembers, new ArrayList<>(getAnonymousExecutables()));
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
 			this.typeMembers.removeAll(getAnonymousExecutables());
 			return (C) this;
@@ -157,11 +149,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
 		Set<CtConstructor<T>> oldConstructor = getConstructors();
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			for (CtConstructor<?> constructor : oldConstructor) {
-				getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(this, typeMembers), constructor));
-			}
-		}
+		getFactory().Change().onListDelete(this, CONSTRUCTOR, typeMembers, oldConstructor);
 		if (constructors == null || constructors.isEmpty()) {
 			this.typeMembers.removeAll(oldConstructor);
 			return (C) this;
@@ -175,9 +163,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(this, typeMembers), constructor));
-		}
+		getFactory().Change().onListAdd(this, CONSTRUCTOR, typeMembers, constructor);
 		return addTypeMember(constructor);
 	}
 
@@ -191,9 +177,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new UpdateAction(new ObjectContext(this, "superClass"), superClass, this.superClass));
-		}
+		getFactory().Change().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
 		return (C) this;
 	}

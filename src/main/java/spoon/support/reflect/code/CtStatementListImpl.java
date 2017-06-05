@@ -16,10 +16,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.context.ListContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -35,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.STATEMENT;
 
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtStatementList {
 	private static final long serialVersionUID = 1L;
@@ -58,10 +55,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(
-					this, this.statements), new ArrayList<>(this.statements)));
-		}
+		getFactory().Change().onListDeleteAll(this, STATEMENT, this.statements, new ArrayList<>(this.statements));
 		this.statements.clear();
 		for (CtStatement stmt : stmts) {
 			addStatement(stmt);
@@ -78,10 +72,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = new ArrayList<>(BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
-					this, this.statements), statement));
-		}
+		getFactory().Change().onListAdd(this, STATEMENT, this.statements, statement);
 		this.statements.add(statement);
 		return (T) this;
 	}
@@ -91,10 +82,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
 			return ;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
-					this, statements, statements.indexOf(statement)), statement));
-		}
+		getFactory().Change().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
 		statements.remove(statement);
 	}
 

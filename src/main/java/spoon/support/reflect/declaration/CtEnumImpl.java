@@ -16,10 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.context.ListContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -35,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.VALUE;
 
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
@@ -77,10 +75,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		}
 		if (!enumValues.contains(enumValue)) {
 			enumValue.setParent(this);
-			if (getFactory().getEnvironment().buildStackChanges()) {
-				getFactory().getEnvironment().pushToStack(new AddAction(new ListContext(
-						this, this.enumValues), enumValue));
-			}
+			getFactory().Change().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
 		}
 
@@ -93,10 +88,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new ListContext(
-					this, enumValues, enumValues.indexOf(enumValue)), enumValue));
-		}
+		getFactory().Change().onListDelete(this, VALUE, enumValues, enumValues.indexOf(enumValue), enumValue);
 		return enumValues.remove(enumValue);
 	}
 
@@ -117,9 +109,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAllAction(new ListContext(this, this.enumValues), new ArrayList<>(enumValues)));
-		}
+		getFactory().Change().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
 		if (enumValues == null || enumValues.isEmpty()) {
 			this.enumValues = emptyList();
 			return (C) this;

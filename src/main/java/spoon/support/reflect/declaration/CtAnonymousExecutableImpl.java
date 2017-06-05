@@ -16,10 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.context.SetContext;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtExecutable;
@@ -38,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.MODIFIER;
+
 public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
 
@@ -54,9 +52,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new AddAction(new SetContext(this, this.modifiers), modifier));
-		}
+		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (T) this;
 	}
@@ -66,10 +62,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			getFactory().getEnvironment().pushToStack(new DeleteAction(new SetContext(
-					this, modifiers), modifier));
-		}
+		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -100,9 +93,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	@Override
 	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			if (getFactory().getEnvironment().buildStackChanges()) {
-				getFactory().getEnvironment().pushToStack(new DeleteAllAction(new SetContext(this, this.modifiers), new HashSet<>(this.modifiers)));
-			}
+			getFactory().Change().onSetDelete(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
