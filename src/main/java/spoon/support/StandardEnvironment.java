@@ -24,6 +24,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.diff.AbstractModelChangeListener;
 import spoon.diff.Action;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
@@ -161,9 +162,21 @@ public class StandardEnvironment implements Serializable, Environment {
 		return buildStackChanges;
 	}
 
+	private AbstractModelChangeListener stackListener = new AbstractModelChangeListener() {
+		@Override
+		public void onAction(Action action) {
+			factory.getEnvironment().pushToStack(action);
+		}
+	};
+
 	@Override
 	public void setBuildStackChanges(boolean buildStackChanges) {
 		this.buildStackChanges = buildStackChanges;
+		if (buildStackChanges) {
+			getFactory().Change().addModelChangeListener(stackListener);
+		} else {
+			getFactory().Change().removeModelChangeListener(stackListener);
+		}
 	}
 
 	@Override

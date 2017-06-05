@@ -156,6 +156,8 @@ public interface Factory {
 
 	QueryFactory Query();
 
+	ChangeFactory Change();
+
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)
 	 */

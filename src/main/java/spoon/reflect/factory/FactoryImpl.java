@@ -352,6 +352,19 @@ public class FactoryImpl implements Factory, Serializable {
 		return query;
 	}
 
+	private transient ChangeFactory change;
+
+	/**
+	 * The change sub-factory.
+	 */
+	@Override
+	public ChangeFactory Change() {
+		if (change == null) {
+			change = new ChangeFactory(this);
+		}
+		return change;
+	}
+
 	/**
 	 * A constructor that takes the parent factory
 	 */
