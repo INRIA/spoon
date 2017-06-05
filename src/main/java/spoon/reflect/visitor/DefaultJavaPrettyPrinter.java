@@ -1820,6 +1820,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer = new PrinterHelper(env);
 		elementPrinterHelper.setPrinter(printer);
 		context = new PrintingContext();
+		if (env.isAutoImports()) {
+			this.importsContext = new ImportScannerImpl();
+		} else {
+			this.importsContext = new MinimalImportScanner();
+		}
 	}
 
 	@Override
