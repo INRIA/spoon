@@ -24,6 +24,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.methodreference.testclasses.AssertJ;
 import spoon.test.methodreference.testclasses.Cloud;
 import spoon.test.methodreference.testclasses.Foo;
 import spoon.testing.utils.ModelUtils;
@@ -297,5 +298,28 @@ public class MethodReferenceTest {
 				return (methodReference).equals(element.toString());
 			}
 		}).get(0);
+	}
+
+	@Test
+	public void testReferenceBuilderWithComplexGenerics() throws Exception {
+		CtType<?> classCloud = ModelUtils.buildClass(AssertJ.class);
+		List<CtMethod<?>> methods = classCloud.getMethodsByName("assertThat");
+		assertThat(methods.size(), is(1));
+
+		CtMethod method1 = methods.get(0);
+
+		CtExecutableReference<?> execRef = method1.getReference();
+		Method method = execRef.getActualMethod();
+		assertNotNull(method);
+		assertEquals("assertThat", method.getName());
+		List<CtParameter<?>> parameters = method1.getParameters();
+		assertThat(parameters.size(), is(1));
+
+		//check that we have found the method with correct parameters
+		CtTypeReference<?> paramTypeRef = parameters.get(0).getType();
+		Class<?> paramClass = paramTypeRef.getTypeErasure().getActualClass();
+		assertSame(paramClass, method.getParameterTypes()[0]);
+
+		assertSame(method1, execRef.getDeclaration());
 	}
 }
