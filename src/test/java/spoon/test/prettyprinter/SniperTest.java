@@ -6,6 +6,7 @@ import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -16,24 +17,36 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.ChangeFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.printer.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.AClass;
 
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SniperTest {
@@ -267,6 +280,111 @@ public class SniperTest {
 					}
 				}
 
+				for (CtClass aClass : changedClass) {
+					SniperJavaPrettyPrinter sniper = new SniperJavaPrettyPrinter(spoon.getEnvironment());
+					CompilationUnit compilationUnit = aClass.getPosition().getCompilationUnit();
+					sniper.calculate(compilationUnit, Arrays.asList(aClass));
+					try {
+						PrintWriter writer = new PrintWriter(compilationUnit.getFile(), "UTF-8");
+						writer.print(sniper.getResult());
+						writer.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+	}
+
+
+
+	@Test
+	public void addPropertyAnnotation() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("../spoon2/src/main/java/spoon/support/reflect");
+		spoon.setOutputFilter(new TypeFilter<CtType<?>>(CtType.class) {
+			@Override
+			public boolean matches(CtType<?> element) {
+				return !(element instanceof CtReference);
+			}
+		});
+		spoon.getEnvironment().useTabulations(true);
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+
+
+		spoon.getModel().processWith(new AbstractProcessor<CtField>() {
+			Set<CtClass> changedClass = new HashSet<>();
+			Map<Class, List<CtRole>> properties = new HashMap<>();
+
+			@Override
+			public boolean isToBeProcessed(CtField candidate) {
+				if ("serialVersionUID".equals(candidate.getSimpleName())) {
+					return false;
+				}
+				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC)) {
+					return false;
+				}
+				CtClass parent = candidate.getParent(CtClass.class);
+				return parent != null && !(parent.isSubtypeOf(getFactory().createCtTypeReference(CtReference.class))) && parent.isSubtypeOf(getFactory().createCtTypeReference(CtElement.class));
+			}
+
+			@Override
+			public void process(CtField element) {
+				CtClass parent = element.getParent(CtClass.class);
+				if (parent == null || parent instanceof CtEnum || !parent.isTopLevel()) {
+					return;
+				}
+				changedClass.add(parent);
+
+				String fieldName = element.getSimpleName();
+				CtRole role = CtRole.fromName(fieldName);
+				if (role == null) {
+					if (fieldName.endsWith("s")) {
+						fieldName = fieldName.substring(0, fieldName.length() - 1);
+					}
+					role = CtRole.fromName(fieldName);
+					if (role == null) {
+						System.out.println(element);
+						return;
+					}
+				}
+
+				spoon.getEnvironment().setBuildStackChanges(true);
+				getFactory().Annotation().annotate(element, MetamodelPropertyField.class);
+				CtAnnotation<Annotation> annotation = element.getAnnotation(getFactory().createCtTypeReference(MetamodelPropertyField.class));
+				annotation.addValue("role", role);
+				spoon.getEnvironment().setBuildStackChanges(false);
+			}
+
+			@Override
+			public void processingDone() {
+				for (Class aClass : properties.keySet()) {
+					CtQuery map = getFactory().Type().get(aClass)
+							.map(new SuperInheritanceHierarchyFunction()
+									.includingSelf(false)
+									.returnTypeReferences(true)
+									.failOnClassNotFound(false));
+					System.out.println(aClass);
+					List<String> propertyList = new ArrayList<>();
+					for (CtTypeReference o : new HashSet<>(map.list(CtTypeReference.class))) {
+						Class supClass = o.getActualClass();
+						if (properties.containsKey(supClass)) {
+							for (CtRole propertyName : properties.get(supClass)) {
+								//propertyList.add(propertyName.getTitleName());
+							}
+						}
+					}
+					for (CtRole propertyName : properties.get(aClass)) {
+						propertyList.add(propertyName.toString());
+					}
+					Collections.sort(propertyList);
+					for (String s : propertyList) {
+						System.out.println("\t" + s);
+					}
+				}
 				for (CtClass aClass : changedClass) {
 					SniperJavaPrettyPrinter sniper = new SniperJavaPrettyPrinter(spoon.getEnvironment());
 					CompilationUnit compilationUnit = aClass.getPosition().getCompilationUnit();

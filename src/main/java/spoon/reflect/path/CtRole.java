@@ -101,6 +101,18 @@ public enum CtRole {
 		if ("defaultmethod".equals(name)) {
 			return IS_DEFAULT;
 		}
+		if ("catchers".equals(name)) {
+			return CATCH;
+		}
+		if ("tags".equals(name)) {
+			return COMMENT_TAG;
+		}
+		if ("content".equals(name)) {
+			return COMMENT_CONTENT;
+		}
+		if ("upper".equals(name)) {
+			return IS_UPPER;
+		}
 		if ("block".equals(name)) {
 			return BODY;
 		}
@@ -119,16 +131,22 @@ public enum CtRole {
 		if ("typecasts".equals(name)) {
 			return CAST;
 		}
+		if ("kind".equals(name)) {
+			return OPERATOR_KIND;
+		}
+		if ("resources".equals(name)) {
+			return TRY_RESOURCE;
+		}
 		if ("cases".equals(name)) {
 			return CASE;
 		}
-		if ("enumvalues".equals(name) || "elementvalues".equals(name)) {
+		if ("enumvalues".equals(name) || "elementvalues".equals(name) || "valuesmethod".equals(name)) {
 			return VALUE;
 		}
 		if ("throwntypes".equals(name)) {
 			return THROWN;
 		}
-		if ("value".equals(name) || "returnedexpression".equals(name) || "expressions".equals(name)) {
+		if ("value".equals(name) || "returnedexpression".equals(name) || "expressions".equals(name) || "anonymousclass".equals(name) || "operand".equals(name)) {
 			return EXPRESSION;
 		}
 		if ("asserted".equals(name)) {
