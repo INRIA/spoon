@@ -837,7 +837,7 @@ public class ReferenceBuilder {
 			throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 		}
 		bindingCache.remove(binding);
-		this.exploringParameterizedBindings.clear();
+		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
 	}
 
