@@ -35,6 +35,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
@@ -305,11 +306,23 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
+	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+		final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
+		typeParameterReference.setSimpleName(parameter.getName());
+
+		enter(new TypeReferenceRuntimeBuilderContext(typeParameterReference));
+		super.visitTypeParameterReference(parameter);
+		exit();
+
+		contexts.peek().addTypeName(typeParameterReference);
+	}
+
+	@Override
 	public void visitType(Type type) {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
+		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		ctTypeReference.setSimpleName(getTypeName(type));
 
-		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		super.visitType(type);
 		exit();
 
@@ -372,8 +385,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				}
 				return sb.toString();
 			} catch (Throwable e) { /*FALLTHRU*/ }
+		} else {
+			visitPackage(clazz.getPackage());
 		}
-		return clazz.getName();
+
+		return clazz.getSimpleName();
 	}
 
 	@Override

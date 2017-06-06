@@ -19,6 +19,7 @@ package spoon.support.visitor.java.reflect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +31,10 @@ public class RtMethod {
 	private Class<?> clazz;
 	private String name;
 	private Class<?> returnType;
+	private Type genericReturnType;
 	private TypeVariable<Method>[] typeParameters;
 	private Class<?>[] parameterTypes;
+	private Type[] genericParameterTypes;
 	private Class<?>[] exceptionTypes;
 	private int modifiers;
 	private Annotation[] annotations;
@@ -39,13 +42,15 @@ public class RtMethod {
 	private boolean isVarArgs;
 	private boolean isDefault;
 
-	public RtMethod(Class<?> clazz, String name, Class<?> returnType, TypeVariable<Method>[] typeParameters, Class<?>[] parameterTypes, Class<?>[] exceptionTypes, int modifiers, Annotation[] annotations,
+	public RtMethod(Class<?> clazz, String name, Class<?> returnType, Type genericReturnType, TypeVariable<Method>[] typeParameters, Class<?>[] parameterTypes, Type[] genericParameterTypes, Class<?>[] exceptionTypes, int modifiers, Annotation[] annotations,
 			Annotation[][] parameterAnnotations, boolean isVarArgs, boolean isDefault) {
 		this.clazz = clazz;
 		this.name = name;
 		this.returnType = returnType;
+		this.genericReturnType = genericReturnType;
 		this.typeParameters = typeParameters;
 		this.parameterTypes = parameterTypes;
+		this.genericParameterTypes = genericParameterTypes;
 		this.exceptionTypes = exceptionTypes;
 		this.modifiers = modifiers;
 		this.annotations = annotations;
@@ -98,6 +103,14 @@ public class RtMethod {
 		return isDefault;
 	}
 
+	public Type getGenericReturnType() {
+		return genericReturnType;
+	}
+
+	public Type[] getGenericParameterTypes() {
+		return genericParameterTypes;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -127,8 +140,8 @@ public class RtMethod {
 	}
 
 	public static RtMethod create(Method method) {
-		return new RtMethod(method.getDeclaringClass(), method.getName(), method.getReturnType(),
-				method.getTypeParameters(), method.getParameterTypes(), method.getExceptionTypes(), method.getModifiers(),
+		return new RtMethod(method.getDeclaringClass(), method.getName(), method.getReturnType(), method.getGenericReturnType(),
+				method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(), method.getModifiers(),
 				method.getDeclaredAnnotations(), method.getParameterAnnotations(), method.isVarArgs(),
 				//spoon is compatible with Java 7, so compilation fails here
 				//method.isDefault());

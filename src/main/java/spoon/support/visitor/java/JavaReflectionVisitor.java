@@ -53,6 +53,8 @@ interface JavaReflectionVisitor {
 
 	<T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter);
 
+	<T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter);
+
 	void visitType(Type type);
 
 	void visitType(ParameterizedType type);
