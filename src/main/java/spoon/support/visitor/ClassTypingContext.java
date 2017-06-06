@@ -700,7 +700,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 					CtTypeReference actualTA = thatType.getActualTypeArguments().get(0);
 					if (actualTA instanceof CtWildcardReference) {
 						if (((CtWildcardReference) actualTA).getBoundingType() == null) {
-							thatType.setActualTypeArguments(Collections.emptyList());
+							thatType.setActualTypeArguments(Collections.EMPTY_LIST);
 						}
 					}
 				}
