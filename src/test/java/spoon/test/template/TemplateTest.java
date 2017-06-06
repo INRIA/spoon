@@ -11,19 +11,27 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
+import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
+import spoon.support.template.SubstitutionVisitor;
+import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
+import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
+import spoon.test.template.testclasses.SubstituteRootTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
 import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
@@ -38,17 +46,25 @@ import spoon.test.template.testclasses.inheritance.SuperClass;
 import spoon.test.template.testclasses.inheritance.SuperTemplate;
 import spoon.test.template.testclasses.logger.Logger;
 import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
+import spoon.test.template.testclasses.types.AClassModel;
+import spoon.test.template.testclasses.types.AnEnumModel;
+import spoon.test.template.testclasses.types.AnIfaceModel;
 
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.Remote;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -360,6 +376,36 @@ public class TemplateTest {
 	}
 
 	@Test
+	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/LoggerModel.java"));
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		final CtClass<?> aTemplateModelType = launcher.getFactory().Class().get(LoggerModel.class);
+		final CtMethod<?> aTemplateModel = aTemplateModelType.getMethod("block");
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		final CtMethod<?> toBeLoggedMethod = aTargetType.getMethodsByName("enter").get(0);
+
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("_classname_", aTargetType.getSimpleName()) ;
+		params.put("_methodName_", toBeLoggedMethod.getSimpleName());
+		params.put("_block_", toBeLoggedMethod.getBody());
+		final CtMethod<?> aMethod = new SubstitutionVisitor(factory, params).substitute(aTemplateModel.clone());
+		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatements().size() > 1);
+	}
+
+	@Test
 	public void testTemplateInterfaces() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
@@ -502,5 +548,73 @@ public class TemplateTest {
 		//check that both @Parameter usage was replaced by appropriate parameter value
 		CtMethod<?> m2 = resultKlass.getMethod("method2");
 		assertEquals("java.lang.System.out.println(\"second\")", m2.getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void testStatementTemplateRootSubstitution() throws Exception {
+		//contract: the template engine supports substitution of root element
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteRootTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> templateClass = factory.Class().get(SubstituteRootTemplate.class);
+		CtBlock<Void> param = (CtBlock) templateClass.getMethod("sampleBlock").getBody();
+		
+		CtClass<?> resultKlass = factory.Class().create("Result");
+		CtStatement result = new SubstituteRootTemplate(param).apply(resultKlass);
+		assertEquals("java.lang.String s = \"Spoon is cool!\"", ((CtBlock)result).getStatement(0).toString());
+	}
+
+	@Test
+	public void testInsertType() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addTemplateResource(new FileSystemFolder("./src/test/java/spoon/test/template/testclasses/types"));
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		
+		CtPackage targetPackage = factory.Package().create(factory.getModel().getRootPackage(), "generated");
+		factory.getModel().getRootPackage().addPackage(targetPackage);
+
+		
+		Map<String, Object> parameters = new HashMap<>();
+		//replace someMethod with genMethod
+		parameters.put("someMethod", "genMethod");
+		
+		//contract: we can generate interface
+		final CtType<?> aIfaceModel = launcher.getFactory().Interface().get(AnIfaceModel.class);
+		CtType<?> genIface = Substitution.insertType(targetPackage, "GenIface", aIfaceModel, parameters);
+		assertNotNull(genIface);
+		assertSame(genIface, factory.Type().get("generated.GenIface"));
+		CtMethod<?> generatedIfaceMethod = genIface.getMethod("genMethod");
+		assertNotNull(generatedIfaceMethod);
+		assertNull(genIface.getMethod("someMethod"));
+
+		//add new substitution request - replace AnIfaceModel by GenIface
+		parameters.put("AnIfaceModel", genIface.getReference());
+		//contract: we can generate class
+		final CtType<?> aClassModel = launcher.getFactory().Class().get(AClassModel.class);
+		CtType<?> genClass = Substitution.insertType(targetPackage, "GenClass", aClassModel, parameters);
+		assertNotNull(genClass);
+		assertSame(genClass, factory.Type().get("generated.GenClass"));
+		CtMethod<?> generatedClassMethod = genClass.getMethod("genMethod");
+		assertNotNull(generatedClassMethod);
+		assertNull(genClass.getMethod("someMethod"));
+		assertTrue(generatedIfaceMethod!=generatedClassMethod);
+		assertTrue(generatedClassMethod.isOverriding(generatedIfaceMethod));
+		
+		//contract: we can generate enum
+		parameters.put("case1", "GOOD");
+		parameters.put("case2", "BETTER");
+		final CtType<?> aEnumModel = launcher.getFactory().Type().get(AnEnumModel.class);
+		CtEnum<?> genEnum = (CtEnum<?>) Substitution.insertType(targetPackage, "GenEnum", aEnumModel, parameters);
+		assertNotNull(genEnum);
+		assertSame(genEnum, factory.Type().get("generated.GenEnum"));
+		assertEquals(2, genEnum.getEnumValues().size());
+		assertEquals("GOOD", genEnum.getEnumValues().get(0).getSimpleName());
+		assertEquals("BETTER", genEnum.getEnumValues().get(1).getSimpleName());
 	}
 }
