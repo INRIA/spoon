@@ -17,6 +17,7 @@
 package spoon.support.visitor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -691,6 +692,19 @@ public class ClassTypingContext extends AbstractTypingContext {
 					//the type cannot be adapted.
 					return false;
 				}
+
+				// we can be in a case where thisType is CtType and thatType is CtType<?>
+				// the types are not equals but it's overridden
+				// in that specific case we simply remove the list of actualTypeArguments from thatType
+				if (thisType.getActualTypeArguments().isEmpty() && thatType.getActualTypeArguments().size() == 1) {
+					CtTypeReference actualTA = thatType.getActualTypeArguments().get(0);
+					if (actualTA instanceof CtWildcardReference) {
+						if (((CtWildcardReference) actualTA).getBoundingType() == null) {
+							thatType.setActualTypeArguments(Collections.EMPTY_LIST);
+						}
+					}
+				}
+
 				if (thisType.equals(thatType) == false) {
 					return false;
 				}
