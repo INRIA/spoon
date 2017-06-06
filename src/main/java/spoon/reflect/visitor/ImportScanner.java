@@ -28,8 +28,6 @@ public interface ImportScanner {
 
 	/**
 	 * Computes import of a {@link spoon.reflect.declaration.CtElement}
-	 *
-	 * @return class imports computed by Spoon, it does not contain static imports
 	 */
 	void computeImports(CtElement element);
 
