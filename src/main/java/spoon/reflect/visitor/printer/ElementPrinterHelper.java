@@ -268,30 +268,38 @@ public class ElementPrinterHelper {
 			}
 			printer.writeln().writeln().writeTabs();
 			for (CtReference ref : imports) {
-				String importStr = "import";
-				String importTypeStr = "";
-
-				if (ref instanceof CtTypeReference) {
-					CtTypeReference typeRef = (CtTypeReference) ref;
-					importTypeStr = typeRef.getQualifiedName();
-				} else if (ref instanceof CtExecutableReference) {
-					importStr += " static";
-					CtExecutableReference execRef = (CtExecutableReference) ref;
-					if (execRef.getDeclaringType() != null) {
-						importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName();
-					}
-				} else if (ref instanceof CtFieldReference) {
-					importStr += " static";
-					CtFieldReference fieldRef = (CtFieldReference) ref;
-					importTypeStr = this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName();
-				}
-
-				if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
-					printer.write(importStr + " " + importTypeStr + ";").writeln().writeTabs();
+				String anImport = printImport(ref);
+				if (!"".equals(anImport)) {
+					printer.write(anImport + ";").writeln().writeTabs();
 				}
 			}
 			printer.writeln().writeTabs();
 		}
+	}
+
+	public String printImport(CtReference ref) {
+		String importStr = "import";
+		String importTypeStr = "";
+
+		if (ref instanceof CtTypeReference) {
+			CtTypeReference typeRef = (CtTypeReference) ref;
+			importTypeStr = typeRef.getQualifiedName();
+		} else if (ref instanceof CtExecutableReference) {
+			importStr += " static";
+			CtExecutableReference execRef = (CtExecutableReference) ref;
+			if (execRef.getDeclaringType() != null) {
+				importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName();
+			}
+		} else if (ref instanceof CtFieldReference) {
+			importStr += " static";
+			CtFieldReference fieldRef = (CtFieldReference) ref;
+			importTypeStr = this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName();
+		}
+
+		if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
+			return importStr + " " + importTypeStr;
+		}
+		return "";
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {
