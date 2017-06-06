@@ -24,6 +24,7 @@ import spoon.template.TemplateParameter;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
+import spoon.test.template.testclasses.SubstituteRootTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
 import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
@@ -502,5 +503,22 @@ public class TemplateTest {
 		//check that both @Parameter usage was replaced by appropriate parameter value
 		CtMethod<?> m2 = resultKlass.getMethod("method2");
 		assertEquals("java.lang.System.out.println(\"second\")", m2.getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void testStatementTemplateRootSubstitution() throws Exception {
+		//contract: the template engine supports substitution of root element
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteRootTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> templateClass = factory.Class().get(SubstituteRootTemplate.class);
+		CtBlock<Void> param = (CtBlock) templateClass.getMethod("sampleBlock").getBody();
+		
+		CtClass<?> resultKlass = factory.Class().create("Result");
+		CtStatement result = new SubstituteRootTemplate(param).apply(resultKlass);
+		assertEquals("java.lang.String s = \"Spoon is cool!\"", ((CtBlock)result).getStatement(0).toString());
 	}
 }

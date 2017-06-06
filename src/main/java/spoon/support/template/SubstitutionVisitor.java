@@ -188,7 +188,7 @@ public class SubstitutionVisitor extends CtScanner {
 						}
 						l.addStatement(b);
 					}
-					foreach.replace(l);
+					replace(foreach, l);
 					throw new DoNotFurtherTemplateThisElement(foreach);
 				}
 			}
@@ -212,7 +212,7 @@ public class SubstitutionVisitor extends CtScanner {
 					ref = ((CtFieldAccess<?>) fieldAccess.getTarget()).getVariable();
 					if (Parameters.isParameterSource(ref)) {
 						Object[] value = (Object[]) Parameters.getValue(template, ref.getSimpleName(), null);
-						fieldAccess.replace((CtExpression) fieldAccess.getFactory().Code().createLiteral(value
+						replace(fieldAccess, (CtExpression) fieldAccess.getFactory().Code().createLiteral(value
 								.length));
 						throw new DoNotFurtherTemplateThisElement(fieldAccess);
 					}
@@ -227,11 +227,11 @@ public class SubstitutionVisitor extends CtScanner {
 				}
 				if (!(value instanceof TemplateParameter)) {
 					if (value instanceof Class) {
-						toReplace.replace(factory.Code()
+						replace(toReplace, factory.Code()
 								.createClassAccess(factory.Type().createReference(((Class<?>) value).getName())));
 					} else if (value instanceof Enum) {
 						CtTypeReference<?> enumType = factory.Type().createReference(value.getClass());
-						toReplace.replace(factory.Code().createVariableRead(
+						replace(toReplace, factory.Code().createVariableRead(
 								factory.Field().createReference(enumType, enumType, ((Enum<?>) value).name()), true));
 					} else if (value instanceof List) {
 						// replace list of CtParameter for generic access to the
@@ -249,12 +249,12 @@ public class SubstitutionVisitor extends CtScanner {
 							i++;
 						}
 					} else if ((value != null) && value.getClass().isArray()) {
-						toReplace.replace(factory.Code().createLiteralArray((Object[]) value));
+						replace(toReplace, factory.Code().createLiteralArray((Object[]) value));
 					} else {
-						toReplace.replace(factory.Code().createLiteral(value));
+						replace(toReplace, factory.Code().createLiteral(value));
 					}
 				} else {
-					toReplace.clone();
+					replace(toReplace, toReplace.clone());
 				}
 				// do not visit if replaced
 				throw new DoNotFurtherTemplateThisElement(fieldAccess);
@@ -289,13 +289,13 @@ public class SubstitutionVisitor extends CtScanner {
 						// for recursive substitution)
 						r.accept(parent);
 					}
-					if ((invocation.getParent() instanceof CtReturn) && (r instanceof CtBlock)) {
+					if (invocation.isParentInitialized() && (invocation.getParent() instanceof CtReturn) && (r instanceof CtBlock)) {
 						// block template parameters in returns should
 						// replace
 						// the return
 						((CtReturn<?>) invocation.getParent()).replace((CtStatement) r);
 					} else {
-						invocation.replace(r);
+						replace(invocation, r);
 					}
 				}
 				// do not visit the invocation if replaced
@@ -434,6 +434,12 @@ public class SubstitutionVisitor extends CtScanner {
 	Collection<String> parameterNames;
 
 	/**
+	 * represents root element, which is target of the substitution.
+	 * It can be substituted too.
+	 */
+	CtElement result;
+
+	/**
 	 * Creates a new substitution visitor.
 	 *
 	 * @param f
@@ -480,6 +486,26 @@ public class SubstitutionVisitor extends CtScanner {
 			// and then scan the children for doing the templating as well in them
 			super.scan(element);
 		} catch (DoNotFurtherTemplateThisElement ignore) {
+		}
+	}
+
+	/**
+	 * Substitutes all template parameters of element and returns substituted element.
+	 *
+	 * @param element to be substituted model
+	 * @return substituted model
+	 */
+	public <E extends CtElement> E substitute(E element) {
+		result = element;
+		scan(element);
+		return (E) result;
+	}
+
+	private void replace(CtElement toBeReplaced, CtElement replacement) {
+		if (result == toBeReplaced) {
+			result = replacement;
+		} else {
+			toBeReplaced.replace(replacement);
 		}
 	}
 }
