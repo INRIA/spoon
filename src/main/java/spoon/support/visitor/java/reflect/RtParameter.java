@@ -16,8 +16,11 @@
  */
 package spoon.support.visitor.java.reflect;
 
+import spoon.SpoonException;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 
 /**
  * To be compatible with Java 6, RtParameter has been created from
@@ -26,13 +29,15 @@ import java.lang.reflect.Constructor;
 public class RtParameter {
 	private final String name;
 	private final Class<?> type;
+	private final Type genericType;
 	private final RtMethod method;
 	private final Constructor constructor;
 	private final int index;
 
-	public RtParameter(String name, Class<?> type, RtMethod method, Constructor constructor, int index) {
+	public RtParameter(String name, Class<?> type, Type genericType, RtMethod method, Constructor constructor, int index) {
 		this.name = name;
 		this.type = type;
+		this.genericType = genericType;
 		this.method = method;
 		this.constructor = constructor;
 		this.index = index;
@@ -63,6 +68,10 @@ public class RtParameter {
 	 */
 	public Class<?> getType() {
 		return type;
+	}
+
+	public Type getGenericType() {
+		return genericType;
 	}
 
 	/**
@@ -132,7 +141,7 @@ public class RtParameter {
 	public static RtParameter[] parametersOf(RtMethod method) {
 		RtParameter[] parameters = new RtParameter[method.getParameterTypes().length];
 		for (int index = 0; index < method.getParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, method.getParameterTypes()[index], method, null, index);
+			parameters[index] = new RtParameter(null, method.getParameterTypes()[index], method.getGenericParameterTypes()[index], method, null, index);
 		}
 		return parameters;
 	}
@@ -145,9 +154,30 @@ public class RtParameter {
 	 * @return Parameters of the executable.
 	 */
 	public static RtParameter[] parametersOf(Constructor constructor) {
-		RtParameter[] parameters = new RtParameter[constructor.getParameterTypes().length];
-		for (int index = 0; index < constructor.getParameterTypes().length; index++) {
-			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index], null, constructor, index);
+		RtParameter[] parameters;
+		// Apparently getGenericParameterTypes and getParameterTypes could have different length
+		// if the first parameter is implicit: a private non-static inner class will have an implicit parameter for its superclass
+		// but it won't be present in the result of getGenericParameterTypes (e.g. ArrayList$SubList)
+		// moreover if it's an enum, there will be 2 implicit parameters (String and int) we won't consider them in the model.
+		int lengthGenericParameterTypes = constructor.getGenericParameterTypes().length;
+		int lengthParameterTypes = constructor.getParameterTypes().length;
+
+		int offset;
+		if (lengthGenericParameterTypes == lengthParameterTypes) {
+			parameters = new RtParameter[lengthParameterTypes];
+			offset = 0;
+		} else if (lengthGenericParameterTypes == lengthParameterTypes - 1) {
+			parameters = new RtParameter[lengthGenericParameterTypes];
+			offset = 1;
+		} else if (constructor.getDeclaringClass().isEnum() && lengthGenericParameterTypes == lengthParameterTypes - 2) {
+			parameters = new RtParameter[lengthGenericParameterTypes];
+			offset = 2;
+		} else {
+			throw new SpoonException("Error while analyzing parameters of constructor: " + constructor + ". # of parameters: " + lengthParameterTypes + " - # of generic parameter types: " + lengthGenericParameterTypes);
+		}
+
+		for (int index = 0; index < constructor.getGenericParameterTypes().length; index++) {
+			parameters[index] = new RtParameter(null, constructor.getParameterTypes()[index + offset], constructor.getGenericParameterTypes()[index], null, constructor, index);
 		}
 		return parameters;
 	}

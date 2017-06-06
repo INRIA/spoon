@@ -43,6 +43,7 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Orange;
@@ -959,5 +960,52 @@ public class GenericsTest {
 		CtTypeReference<?> refList_T = classVitamins.getSuperclass();
 		//contract: generic types defined in enclocing classe (Banana<T>) are resolved from inner class hierarchy (Vitamins->List<T>) too.
 		assertSame(classBanana.getFormalCtTypeParameters().get(0), new ClassTypingContext(classVitamins).adaptType(refList_T.getActualTypeArguments().get(0)).getDeclaration());
+	}
+
+	private void checkFakeTpl(CtInterface<?> fakeTplItf) {
+		assertNotNull(fakeTplItf);
+
+		CtMethod<?> applyMethod = fakeTplItf.getMethodsByName("apply").get(0);
+
+		CtTypeReference<?> returnType = applyMethod.getType();
+		assertEquals("T", returnType.getSimpleName());
+		assertTrue(returnType instanceof CtTypeParameterReference);
+		assertEquals("CtElement", returnType.getSuperclass().getSimpleName());
+
+		CtParameter<?> targetType = applyMethod.getParameters().get(0);
+
+		List<CtTypeReference<?>> targetTypeArgument = targetType.getType().getActualTypeArguments();
+		assertEquals(1, targetTypeArgument.size());
+
+		assertTrue(targetTypeArgument.get(0) instanceof CtWildcardReference);
+
+		CtMethod<?> testMethod = fakeTplItf.getMethodsByName("test").get(0);
+		List<CtParameter<?>> parameters = testMethod.getParameters();
+		assertEquals(3, parameters.size());
+
+		CtParameter thirdParam = parameters.get(2);
+		assertTrue(thirdParam.getType() instanceof CtTypeParameterReference);
+	}
+
+	@Test
+	public void testWildCardonShadowClass() throws Exception {
+		// contract: generics should be treated the same way in shadow classes
+
+		// test that apply argument type contains a wildcard
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+
+		launcher.addInputResource("src/test/java/spoon/test/generics/testclasses/FakeTpl.java");
+		launcher.buildModel();
+
+		CtInterface<?> fakeTplItf = factory.Interface().get("spoon.test.generics.testclasses.FakeTpl");
+		checkFakeTpl(fakeTplItf);
+
+		// same test with a shadow class
+		launcher = new Launcher();
+		factory = launcher.getFactory();
+		CtInterface<?> fakeTplItf2 = factory.Interface().get(FakeTpl.class);
+		checkFakeTpl(fakeTplItf2);
+
 	}
 }

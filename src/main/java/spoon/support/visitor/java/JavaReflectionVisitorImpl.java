@@ -184,8 +184,12 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (method.getReturnType() != null) {
 			if (method.getReturnType().isArray() && method.getReturnType().getComponentType() != null) {
 				visitArrayReference(method.getReturnType().getComponentType());
-			} else {
+			} else if (method.getGenericReturnType() instanceof Class) {
 				visitClassReference(method.getReturnType());
+			} else if (method.getGenericReturnType() instanceof ParameterizedType) {
+				visitType((ParameterizedType) method.getGenericReturnType());
+			} else {
+				visitTypeParameterReference((TypeVariable) method.getGenericReturnType());
 			}
 		}
 	}
@@ -222,8 +226,12 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (parameter.getType() != null) {
 			if ((parameter.isVarArgs() || parameter.getType().isArray()) && parameter.getType().getComponentType() != null) {
 				visitArrayReference(parameter.getType().getComponentType());
-			} else {
+			} else if (parameter.getGenericType() instanceof Class) {
 				visitClassReference(parameter.getType());
+			} else if (parameter.getGenericType() instanceof ParameterizedType) {
+				visitType((ParameterizedType) parameter.getGenericType());
+			} else {
+				visitTypeParameterReference((TypeVariable) parameter.getGenericType());
 			}
 		}
 	}
@@ -237,6 +245,23 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				visitType((WildcardType) type);
 			} else {
 				visitType(type);
+			}
+		}
+	}
+
+	@Override
+	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+		for (Type type : parameter.getBounds()) {
+			if (type instanceof ParameterizedType) {
+				visitType((ParameterizedType) type);
+			} else if (type instanceof WildcardType) {
+				visitType((WildcardType) type);
+			} else {
+				// we bypass Object.class: if a generic type extends Object we don't put it in the model, it's implicit
+				// we do the same thing in ReferenceBuilder
+				if (!(type instanceof Class && type == Object.class)) {
+					visitType(type);
+				}
 			}
 		}
 	}

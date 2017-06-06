@@ -49,6 +49,11 @@ public class VariableRuntimeBuilderContext extends AbstractRuntimeBuilderContext
 	}
 
 	@Override
+	public void addTypeName(CtTypeReference<?> ctTypeReference) {
+		ctVariable.setType(ctTypeReference);
+	}
+
+	@Override
 	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
 		ctVariable.setType(arrayTypeReference);
 	}
