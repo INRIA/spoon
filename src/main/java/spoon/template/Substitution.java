@@ -484,8 +484,7 @@ public abstract class Substitution {
 			throw new RuntimeException("target is null in substitution");
 		}
 		E result = (E) code.clone();
-		new SubstitutionVisitor(targetType.getFactory(), targetType, template).scan(result);
-		return result;
+		return new SubstitutionVisitor(targetType.getFactory(), targetType, template).substitute(result);
 	}
 
 	/**
@@ -532,8 +531,7 @@ public abstract class Substitution {
 		T result = (T) templateType.clone();
 		result.setPositions(null);
 		// result.setParent(templateType.getParent());
-		new SubstitutionVisitor(templateType.getFactory(), result, template).scan(result);
-		return result;
+		return new SubstitutionVisitor(templateType.getFactory(), result, template).substitute(result);
 	}
 
 	/**

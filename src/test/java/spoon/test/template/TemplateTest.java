@@ -19,11 +19,14 @@ import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
+import spoon.support.template.SubstitutionVisitor;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
+import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
+import spoon.test.template.testclasses.SubstituteRootTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
 import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
@@ -44,7 +47,9 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -360,6 +365,36 @@ public class TemplateTest {
 	}
 
 	@Test
+	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/LoggerModel.java"));
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		final CtClass<?> aTemplateModelType = launcher.getFactory().Class().get(LoggerModel.class);
+		final CtMethod<?> aTemplateModel = aTemplateModelType.getMethod("block");
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		final CtMethod<?> toBeLoggedMethod = aTargetType.getMethodsByName("enter").get(0);
+
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("_classname_", aTargetType.getSimpleName()) ;
+		params.put("_methodName_", toBeLoggedMethod.getSimpleName());
+		params.put("_block_", toBeLoggedMethod.getBody());
+		final CtMethod<?> aMethod = new SubstitutionVisitor(factory, params).substitute(aTemplateModel.clone());
+		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatements().size() > 1);
+	}
+
+	@Test
 	public void testTemplateInterfaces() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
@@ -502,5 +537,22 @@ public class TemplateTest {
 		//check that both @Parameter usage was replaced by appropriate parameter value
 		CtMethod<?> m2 = resultKlass.getMethod("method2");
 		assertEquals("java.lang.System.out.println(\"second\")", m2.getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void testStatementTemplateRootSubstitution() throws Exception {
+		//contract: the template engine supports substitution of root element
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteRootTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> templateClass = factory.Class().get(SubstituteRootTemplate.class);
+		CtBlock<Void> param = (CtBlock) templateClass.getMethod("sampleBlock").getBody();
+		
+		CtClass<?> resultKlass = factory.Class().create("Result");
+		CtStatement result = new SubstituteRootTemplate(param).apply(resultKlass);
+		assertEquals("java.lang.String s = \"Spoon is cool!\"", ((CtBlock)result).getStatement(0).toString());
 	}
 }
