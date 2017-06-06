@@ -17,9 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Collection;
 
@@ -30,22 +28,8 @@ public interface ImportScanner {
 
 	/**
 	 * Computes import of a {@link spoon.reflect.declaration.CtElement}
-	 *
-	 * @return class imports computed by Spoon, it does not contain static imports
-	 * @deprecated This method signature will change to return void in order to improve encapsulation: Use getAllImports to get the imports after calling it.
 	 */
-	@Deprecated
-	Collection<CtTypeReference<?>> computeImports(CtElement element);
-
-	/**
-	 * Computes import of a {@link spoon.reflect.declaration.CtType}
-	 * (represent a class).
-	 *
-	 * @return imports computed by Spoon, it can be CtTypeReference (for classes), but also CtFieldReference (static field) or CtExecutableReference (static methods)
-	 * @deprecated This method signature will change to return void in order to improve encapsulation: Use getAllImports to get the imports after calling it.
-	 */
-	@Deprecated
-	Collection<CtReference> computeAllImports(CtType<?> simpleType);
+	void computeImports(CtElement element);
 
 	/**
 	 * Use computeImports or computeAllImports before getting the different imports.
