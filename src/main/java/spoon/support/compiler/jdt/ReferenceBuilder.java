@@ -838,6 +838,7 @@ public class ReferenceBuilder {
 		}
 		bindingCache.remove(binding);
 		this.exploringParameterizedBindings.remove(binding);
+		//this.exploringParameterizedBindings.clear();
 		return (CtTypeReference<T>) ref;
 	}
 
