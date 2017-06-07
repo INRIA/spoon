@@ -57,19 +57,24 @@ public class ImportScannerTest {
 			importContext.computeImports(ctType);
 
 			Collection<CtReference> computedRefImports = importContext.getAllImports();
-			Set<String> computedImports = new HashSet<>();
+			Set<String> computedTypeImports = new HashSet<>();
+			Set<String> computedStaticImports = new HashSet<>();
 
 			for (CtReference computedImport : computedRefImports) {
-				String computedImportStr = printerHelper.printImport(computedImport).replace("import ", "").replace("static ", "").trim();
-				if (!"".equals(computedImportStr)) {
-					computedImports.add(computedImportStr);
+				String computedImportStr = printerHelper.printImport(computedImport).replace("import ", "").trim();
+
+				if (computedImportStr.contains("static ")) {
+					computedStaticImports.add(computedImportStr.replace("static ", "").trim());
+				} else if (!"".equals(computedImportStr)) {
+					computedTypeImports.add(computedImportStr);
 				}
 			}
 
-			List<String> imports = getImportsFromSourceCode(ctType.getPosition().getCompilationUnit().getOriginalSourceCode());
+			List<String> typeImports = getTypeImportsFromSourceCode(ctType.getPosition().getCompilationUnit().getOriginalSourceCode());
+			List<String> staticImports = getStaticImportsFromSourceCode(ctType.getPosition().getCompilationUnit().getOriginalSourceCode());
 
-			for (String computedImport : computedImports) {
-				if (!imports.contains(computedImport)) {
+			for (String computedImport : computedTypeImports) {
+				if (!typeImports.contains(computedImport) && !isTypePresentInStaticImports(computedImport, staticImports)) {
 					if (!unusedImports.containsKey(ctType)) {
 						unusedImports.put(ctType, new ArrayList<>());
 					}
@@ -77,8 +82,28 @@ public class ImportScannerTest {
 				}
 			}
 
-			for (String anImport : imports) {
-				if (!computedImports.contains(anImport)) {
+			for (String computedImport : computedStaticImports) {
+				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf("."));
+				if (!staticImports.contains(computedImport) && !typeImports.contains(typeOfStatic)) {
+					if (!unusedImports.containsKey(ctType)) {
+						unusedImports.put(ctType, new ArrayList<>());
+					}
+					unusedImports.get(ctType).add(computedImport);
+				}
+			}
+
+			for (String anImport : typeImports) {
+				if (!computedTypeImports.contains(anImport)) {
+					if (!missingImports.containsKey(ctType)) {
+						missingImports.put(ctType, new ArrayList<>());
+					}
+					missingImports.get(ctType).add(anImport);
+				}
+			}
+
+			for (String anImport : staticImports) {
+				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf("."));
+				if (!computedStaticImports.contains(anImport) && !computedTypeImports.contains(typeOfStatic)) {
 					if (!missingImports.containsKey(ctType)) {
 						missingImports.put(ctType, new ArrayList<>());
 					}
@@ -122,16 +147,35 @@ public class ImportScannerTest {
 		}
 	}
 
-	private List<String> getImportsFromSourceCode(String sourceCode) {
+	private boolean isTypePresentInStaticImports(String type, Collection<String> staticImports) {
+		for (String s : staticImports) {
+			if (s.startsWith(type)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private List<String> getStaticImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i].trim();
-			if (line.startsWith("import ")) {
+			if (line.startsWith("import static ")) {
+				line = line.substring(13, line.length() - 1);
+				imports.add(line.trim());
+			}
+		}
+		return imports;
+	}
+
+	private List<String> getTypeImportsFromSourceCode(String sourceCode) {
+		List<String> imports = new ArrayList<>();
+		String[] lines = sourceCode.split("\n");
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i].trim();
+			if (line.startsWith("import ") && !line.contains(" static ")) {
 				line = line.substring(7, line.length() - 1);
-				if (line.startsWith("static")) {
-					line = line.substring(6);
-				}
 				imports.add(line.trim());
 			}
 		}
