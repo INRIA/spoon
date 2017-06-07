@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
+import spoon.Metamodel;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -30,18 +31,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+
 public class MetamodelTest {
-
 	@Test
-	public void testGetterSetterFroRole() {
-		// contract: all roles in spoon metamodel must at least have a setter and a getter
-
+	public void testGetAllMetamodelInterfacess() {
+		// contract: Spoon supports runtime introspection on the metamodel
 		SpoonAPI interfaces = new Launcher();
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
 		interfaces.buildModel();
+		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet())));
+	}
 
+
+
+	@Test
+	public void testGetterSetterFroRole() {
+		// contract: all roles in spoon metamodel must at least have a setter and a getter
+		SpoonAPI interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.buildModel();
 		Factory factory = interfaces.getFactory();
 		CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
 		CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
@@ -61,10 +75,8 @@ public class MetamodelTest {
 
 
 	@Test
-	/**
-	 * contract: all non-final fields must be annotated with {@link spoon.reflect.annotations.MetamodelPropertyField}
-	 */
 	public void testRoleOnField() {
+		//  contract: all non-final fields must be annotated with {@link spoon.reflect.annotations.MetamodelPropertyField}
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect");
 		implementations.buildModel();
