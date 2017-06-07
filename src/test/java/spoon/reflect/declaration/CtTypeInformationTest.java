@@ -1,8 +1,11 @@
 package spoon.reflect.declaration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -39,8 +42,8 @@ public class CtTypeInformationTest {
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		assertEquals(2, subClass.getMethods().size());
 
-		// the abstract method from Comparable which is overridden is also present in the model
-		assertEquals(61+3, subClass.getAllMethods().size());
+		// the abstract method from Comparable which is overridden should not be present in the model
+		assertEquals(61+2, subClass.getAllMethods().size());
 
 		CtTypeReference<?> superclass = subClass.getSuperclass();
 		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());
@@ -70,5 +73,22 @@ public class CtTypeInformationTest {
 		assertEquals(subClass.getMethodsByName("foo").get(0).getSignature(),
 				type2.getMethodsByName("foo").get(0).getSignature());
 
+	}
+
+	@Test
+	public void testGetAllMethodsWontReturnOverriddenMethod() {
+		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
+		Set<CtMethod<?>> listCtMethods = subClass.getAllMethods();
+
+		boolean detectedCompareTo = false;
+		for (CtMethod<?> ctMethod : listCtMethods) {
+			if (ctMethod.getSimpleName().equals("compareTo")) {
+				assertFalse(ctMethod.hasModifier(ModifierKind.ABSTRACT));
+				assertFalse(ctMethod.getType() instanceof CtTypeParameter);
+				detectedCompareTo = true;
+			}
+		}
+
+		assertTrue(detectedCompareTo);
 	}
 }
