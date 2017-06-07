@@ -18,6 +18,10 @@ package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtParameter;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.EXECUTABLE;
 
 /**
  * This interface defines a reference to a
@@ -28,11 +32,13 @@ public interface CtParameterReference<T> extends CtVariableReference<T> {
 	/**
 	 * Gets the declaring executable of the referenced parameter.
 	 */
+	@PropertyGetter(role = EXECUTABLE)
 	CtExecutableReference<?> getDeclaringExecutable();
 
 	/**
 	 * Sets the declaring executable of the referenced parameter.
 	 */
+	@PropertySetter(role = EXECUTABLE)
 	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
 
 	@Override

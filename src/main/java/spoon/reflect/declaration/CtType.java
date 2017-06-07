@@ -18,9 +18,16 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.INTERFACES;
+import static spoon.reflect.path.CtRole.MEMBERS;
+import static spoon.reflect.path.CtRole.NAME;
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
  * This abstract element defines a super-type for classes and interfaces, which
@@ -44,6 +51,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * the name starts with a numeric prefix (e.g. local class Foo has simple name 1Foo).
 	 */
 	@Override
+	@PropertyGetter(role = NAME)
 	String getSimpleName();
 
 	/**
@@ -60,6 +68,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * @return the runtime class, null if is not accessible or does not exist
 	 */
+	@DerivedProperty
 	Class<T> getActualClass();
 
 	/**
@@ -117,6 +126,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param field
 	 * @return <tt>true</tt> if the field is added.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<F, C extends CtType<T>> C addFieldAtTop(CtField<F> field);
 
 	/**
@@ -125,6 +135,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MEMBERS)
 	<F, C extends CtType<T>> C addField(CtField<F> field);
 
 	/**
@@ -133,11 +144,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MEMBERS)
 	<F, C extends CtType<T>> C addField(int index, CtField<F> field);
 
 	/**
 	 * Sets all fields in the type.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<C extends CtType<T>> C setFields(List<CtField<?>> fields);
 
 	/**
@@ -146,6 +159,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param field
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MEMBERS)
 	<F> boolean removeField(CtField<F> field);
 
 	/**
@@ -154,6 +168,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MEMBERS)
 	<N, C extends CtType<T>> C addNestedType(CtType<N> nestedType);
 
 	/**
@@ -162,11 +177,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @param nestedType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MEMBERS)
 	<N> boolean removeNestedType(CtType<N> nestedType);
 
 	/**
 	 * Sets all nested types.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes);
 
 	/**
@@ -196,6 +213,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * @return null if does not exit
 	 */
+	@PropertyGetter(role = MEMBERS)
 	<R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes);
 
 	/**
@@ -203,6 +221,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * @return null if does not exit
 	 */
+	@PropertyGetter(role = MEMBERS)
 	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
 
 	/**
@@ -219,12 +238,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Returns the methods that are directly declared by this class or
 	 * interface and annotated with one of the given annotations.
 	 */
+	@PropertyGetter(role = MEMBERS)
 	Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes);
 
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface and that have the given name.
 	 */
+	@PropertyGetter(role = MEMBERS)
 	List<CtMethod<?>> getMethodsByName(String name);
 
 	/**
@@ -239,64 +260,76 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Sets the methods of this type.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);
 
 	/**
 	 * Adds a method to this type.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<M, C extends CtType<T>> C addMethod(CtMethod<M> method);
 
 	/**
 	 * Removes a method from this type.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<M> boolean removeMethod(CtMethod<M> method);
 
 	/**
 	 * Sets the superclass type.
 	 */
+	@PropertySetter(role = SUPER_TYPE)
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
 
 	/**
 	 * Sets the super interfaces of this type.
 	 */
+	@PropertySetter(role = INTERFACES)
 	<C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**
 	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = INTERFACES)
 	<S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac);
 
 	/**
 	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = INTERFACES)
 	<S> boolean removeSuperInterface(CtTypeReference<S> interfac);
 
 	/**
 	 * Gets all type members of the type like fields, methods, anonymous block, etc.
 	 */
+	@PropertyGetter(role = MEMBERS)
 	List<CtTypeMember> getTypeMembers();
 
 	/**
 	 * Adds a type member at the end of all type member of the type.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<C extends CtType<T>> C addTypeMember(CtTypeMember member);
 
 	/**
 	 * Adds a type member at a given position. Think to use this method if the order is
 	 * important for you.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member);
 
 	/**
 	 * Removes the type member.
 	 */
+	@PropertySetter(role = MEMBERS)
 	boolean removeTypeMember(CtTypeMember member);
 
 	/**
 	 * Removes all types members with these new members.
 	 */
+	@PropertySetter(role = MEMBERS)
 	<C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members);
 
 	@Override

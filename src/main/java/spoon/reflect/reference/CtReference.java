@@ -19,9 +19,13 @@ package spoon.reflect.reference;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 /**
  * This is the root interface for named program element references. References
@@ -37,11 +41,13 @@ public interface CtReference extends CtElement {
 	/**
 	 * Gets the simple name of referenced element.
 	 */
+	@PropertyGetter(role = NAME)
 	String getSimpleName();
 
 	/**
 	 * Sets the name of referenced element.
 	 */
+	@PropertySetter(role = NAME)
 	<T extends CtReference> T setSimpleName(String simpleName);
 
 	/**

@@ -56,6 +56,7 @@ public enum CtRole {
 	ASSIGNED,
 	MODIFIERS,
 	COMMENTS,
+	ANNOTATION_TYPE,
 	TYPES,
 	INTERFACES,
 	ANNOTATIONS,
@@ -150,8 +151,7 @@ public enum CtRole {
 			return THROW;
 		}
 		if ("returntype".equals(name)
-				|| "componenttype".equals(name)
-				|| "annotationtype".equals(name)) {
+				|| "componenttype".equals(name)) {
 			return TYPE;
 		}
 		if ("caseexpression".equals(name)) {

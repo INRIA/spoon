@@ -16,6 +16,12 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.IS_DEFAULT;
+
+
 /**
  * This element defines a method declaration.
  */
@@ -33,11 +39,13 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalType
 	 * Checks if the method is a default method. Default method can be in interfaces from
 	 * Java 8: http://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html.
 	 */
+	@PropertyGetter(role = IS_DEFAULT)
 	boolean isDefaultMethod();
 
 	/**
 	 * Sets the default value state of a method.
 	 */
+	@PropertySetter(role = IS_DEFAULT)
 	<C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod);
 
 	/**

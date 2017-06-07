@@ -16,7 +16,12 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.RESOURCES;
 
 /**
  * This code element defines a <code>try</code> with resource statement.
@@ -35,22 +40,26 @@ public interface CtTryWithResource extends CtTry {
 	 * Gets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
 	 */
+	@PropertyGetter(role = RESOURCES)
 	List<CtLocalVariable<?>> getResources();
 
 	/**
 	 * Sets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
 	 */
+	@PropertySetter(role = RESOURCES)
 	<T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources);
 
 	/**
 	 * Adds a resource.
 	 */
+	@PropertySetter(role = RESOURCES)
 	<T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource);
 
 	/**
 	 * Removes a resource.
 	 */
+	@PropertySetter(role = RESOURCES)
 	boolean removeResource(CtLocalVariable<?> resource);
 
 	@Override

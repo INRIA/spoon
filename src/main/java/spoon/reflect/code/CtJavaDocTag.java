@@ -17,6 +17,12 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.CONTENT;
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This code element defines a javadoc tag
@@ -83,42 +89,49 @@ public interface CtJavaDocTag extends CtElement {
 	 * The type of the tag
 	 * @return the type of the tag
 	 */
+	@PropertyGetter(role = TYPE)
 	TagType getType();
 
 	/**
 	 * Define the type of the tag
 	 * @param type the type name
 	 */
+	@PropertySetter(role = TYPE)
 	<E extends CtJavaDocTag> E setType(String type);
 
 	/**
 	 * Define the type of the tag
 	 * @param type the new type
 	 */
+	@PropertySetter(role = TYPE)
 	<E extends CtJavaDocTag> E setType(TagType type);
 
 	/**
 	 * Get the content of the atg
 	 * @return the content of the tag
 	 */
+	@PropertyGetter(role = CONTENT)
 	String getContent();
 
 	/**
 	 * Define the content of the tag
 	 * @param content the new content of the tag
 	 */
+	@PropertySetter(role = CONTENT)
 	<E extends CtJavaDocTag> E setContent(String content);
 
 	/**
 	 * Get the parameter of the tag return null when none is specified (only for @param and @throws)
 	 * @return the parameter
 	 */
+	@PropertyGetter(role = PARAMETER)
 	String getParam();
 
 	/**
 	 * Define a parameter
 	 * @param param the parameter
 	 */
+	@PropertySetter(role = PARAMETER)
 	<E extends CtJavaDocTag> E setParam(String param);
 
 	@Override

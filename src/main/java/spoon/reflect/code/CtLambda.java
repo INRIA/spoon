@@ -20,9 +20,13 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 /**
  * This code element represents the creation of a lambda. A lambda
@@ -59,6 +63,7 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * Gets the expression in the body. Null if the body is a list
 	 * of statements.
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<T> getExpression();
 
 	/**
@@ -72,6 +77,7 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * Sets the expression in the body of the lambda. Nothing will change
 	 * if the lambda already has a value in the body attribute.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<C extends CtLambda<T>> C setExpression(CtExpression<T> expression);
 
 	@Override

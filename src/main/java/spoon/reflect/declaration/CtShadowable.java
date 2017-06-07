@@ -17,6 +17,10 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.IS_SHADOW;
 
 /** A shadow element is an element that is in the Spoon model, but does not exist in the actual source code.
  * The goal of shadow elements is to simplify transformations.
@@ -30,11 +34,13 @@ public interface CtShadowable {
 	 *
 	 * @return true if the element is a shadow element, otherwise false.
 	 */
+	@PropertyGetter(role = IS_SHADOW)
 	boolean isShadow();
 
 	/**
 	 * Marks an element as shadow. To know what is a shadow element, see the javadoc of
 	 * {@link #isShadow()}.
 	 */
+	@PropertySetter(role = IS_SHADOW)
 	<E extends CtShadowable> E setShadow(boolean isShadow);
 }

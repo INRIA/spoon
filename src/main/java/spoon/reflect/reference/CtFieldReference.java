@@ -18,8 +18,14 @@ package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtField;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 
 import java.lang.reflect.Member;
+
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
+import static spoon.reflect.path.CtRole.IS_FINAL;
+import static spoon.reflect.path.CtRole.IS_STATIC;
 
 /**
  * This interface defines a reference to a
@@ -50,6 +56,7 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Gets the type in which the field is declared.
 	 */
+	@PropertyGetter(role = DECLARING_TYPE)
 	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
@@ -61,26 +68,31 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Tells if the referenced field is final.
 	 */
+	@PropertyGetter(role = IS_FINAL)
 	boolean isFinal();
 
 	/**
 	 * Tells if the referenced field is static.
 	 */
+	@PropertyGetter(role = IS_STATIC)
 	boolean isStatic();
 
 	/**
 	 * Sets the type in which the field is declared.
 	 */
+	@PropertySetter(role = DECLARING_TYPE)
 	<C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Forces a reference to a final element.
 	 */
+	@PropertySetter(role = IS_FINAL)
 	<C extends CtFieldReference<T>> C setFinal(boolean b);
 
 	/**
 	 * Forces a reference to a static element.
 	 */
+	@PropertySetter(role = IS_STATIC)
 	<C extends CtFieldReference<T>> C setStatic(boolean b);
 
 	@Override

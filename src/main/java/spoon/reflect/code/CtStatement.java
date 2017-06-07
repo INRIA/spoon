@@ -17,6 +17,10 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.LABEL;
 
 /**
  * This abstract code element represents all the statements, which can be part
@@ -52,11 +56,13 @@ public interface CtStatement extends CtCodeElement {
 	 *
 	 * @return the label's name (null if undefined)
 	 */
+	@PropertyGetter(role = LABEL)
 	String getLabel();
 
 	/**
 	 * Sets the label of this statement.
 	 */
+	@PropertySetter(role = LABEL)
 	<T extends CtStatement> T setLabel(String label);
 
 	/**

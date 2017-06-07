@@ -16,6 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.CONDITION;
+import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
 /**
  * This code element defines an assert clause.
  * Example: <pre>assert 1+1==2</pre>
@@ -24,21 +31,25 @@ public interface CtAssert<T> extends CtStatement {
 	/**
 	 * Gets the assert expression.
 	 */
+	@PropertyGetter(role = CONDITION)
 	CtExpression<Boolean> getAssertExpression();
 
 	/**
 	 * Sets the assert expression.
 	 */
+	@PropertySetter(role = CONDITION)
 	<A extends CtAssert<T>> A setAssertExpression(CtExpression<Boolean> asserted);
 
 	/**
 	 * Gets the expression of the assertion if defined.
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<T> getExpression();
 
 	/**
 	 * Sets the expression of the assertion.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<A extends CtAssert<T>> A setExpression(CtExpression<T> expression);
 
 	@Override

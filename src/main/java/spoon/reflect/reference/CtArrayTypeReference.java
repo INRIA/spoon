@@ -17,6 +17,11 @@
 package spoon.reflect.reference;
 
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.NAME;
+import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This interface defines a reference to an array.
@@ -28,6 +33,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * e.g., if you have the array <code>int[][][]</code>,
 	 * this method returns a type reference for <code>int[][]</code>.
 	 */
+	@PropertyGetter(role = TYPE)
 	CtTypeReference<?> getComponentType();
 
 	/**
@@ -41,6 +47,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	/**
 	 * Sets the type of the elements contained in this array.
 	 */
+	@PropertySetter(role = TYPE)
 	<C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType);
 
 	/**
@@ -48,12 +55,14 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * the number of array types recursively embedded into the current one (see
 	 * {@link #getComponentType()}).
 	 */
+	@DerivedProperty
 	int getDimensionCount();
 
 	/**
 	 * Returns the simple name of the array type core component type (with no
 	 * []s). Use toString() to get the full array type including []s.
 	 */
+	@PropertyGetter(role = NAME)
 	String getSimpleName();
 
 	@Override

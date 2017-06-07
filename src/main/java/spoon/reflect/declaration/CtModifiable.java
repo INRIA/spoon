@@ -16,7 +16,12 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.MODIFIERS;
 
 /**
  * This interface defines an element that accepts modifiers.
@@ -30,6 +35,7 @@ public interface CtModifiable extends CtElement {
 	 * @return the modifiers of this declaration in undefined order; an empty
 	 * set if there are none
 	 */
+	@PropertyGetter(role = MODIFIERS)
 	Set<ModifierKind> getModifiers();
 
 	/**
@@ -44,6 +50,7 @@ public interface CtModifiable extends CtElement {
 	/**
 	 * Sets the modifiers.
 	 */
+	@PropertySetter(role = MODIFIERS)
 	<T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers);
 
 	/**
@@ -52,6 +59,7 @@ public interface CtModifiable extends CtElement {
 	 * @param modifier
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MODIFIERS)
 	<T extends CtModifiable> T addModifier(ModifierKind modifier);
 
 	/**
@@ -60,15 +68,18 @@ public interface CtModifiable extends CtElement {
 	 * @param modifier
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = MODIFIERS)
 	boolean removeModifier(ModifierKind modifier);
 
 	/**
 	 * Sets the visibility of this modifiable element (replaces old visibility).
 	 */
+	@PropertySetter(role = MODIFIERS)
 	<T extends CtModifiable> T setVisibility(ModifierKind visibility);
 
 	/**
 	 * Gets the visibility of this modifiable element.
 	 */
+	@PropertyGetter(role = MODIFIERS)
 	ModifierKind getVisibility();
 }

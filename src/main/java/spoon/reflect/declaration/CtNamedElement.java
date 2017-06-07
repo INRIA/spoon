@@ -18,6 +18,10 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtReference;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 /**
  * Declares an element that has a name (a class, a method, a variable, etc).
@@ -29,11 +33,13 @@ public interface CtNamedElement extends CtElement {
 	/**
 	 * Returns the simple (unqualified) name of this element.
 	 */
+	@PropertyGetter(role = NAME)
 	String getSimpleName();
 
 	/**
 	 * Sets the simple (unqualified) name of this element.
 	 */
+	@PropertySetter(role = NAME)
 	<T extends CtNamedElement> T setSimpleName(String simpleName);
 
 	/**

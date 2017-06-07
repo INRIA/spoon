@@ -16,6 +16,14 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.CONDITION;
+import static spoon.reflect.path.CtRole.ELSE;
+import static spoon.reflect.path.CtRole.THEN;
+
+
 /**
  * This code element defines conditional expressions using the ? (ternary expressions).
  *
@@ -31,31 +39,37 @@ public interface CtConditional<T> extends CtExpression<T> {
 	/**
 	 * Gets the "false" expression.
 	 */
+	@PropertyGetter(role = ELSE)
 	CtExpression<T> getElseExpression();
 
 	/**
 	 * Gets the "true" expression.
 	 */
+	@PropertyGetter(role = THEN)
 	CtExpression<T> getThenExpression();
 
 	/**
 	 * Gets the condition expression.
 	 */
+	@PropertyGetter(role = CONDITION)
 	CtExpression<Boolean> getCondition();
 
 	/**
 	 * Sets the "false" expression.
 	 */
+	@PropertySetter(role = ELSE)
 	<C extends CtConditional<T>> C setElseExpression(CtExpression<T> elseExpression);
 
 	/**
 	 * Sets the "true" expression.
 	 */
+	@PropertySetter(role = THEN)
 	<C extends CtConditional<T>> C setThenExpression(CtExpression<T> thenExpression);
 
 	/**
 	 * Sets the condition expression.
 	 */
+	@PropertySetter(role = CONDITION)
 	<C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition);
 
 	@Override

@@ -16,9 +16,15 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.template.TemplateParameter;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.CATCHERS;
+import static spoon.reflect.path.CtRole.FINALIZER;
 
 /**
  * This code element defines a <code>try</code> statement.
@@ -35,39 +41,46 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
 	 */
+	@PropertyGetter(role = CATCHERS)
 	List<CtCatch> getCatchers();
 
 	/**
 	 * Sets the <i>catchers</i> of this <code>try</code>.
 	 */
+	@PropertySetter(role = CATCHERS)
 	<T extends CtTry> T setCatchers(List<CtCatch> catchers);
 
 	/**
 	 * Adds a catch block.
 	 */
+	@PropertySetter(role = CATCHERS)
 	<T extends CtTry> T addCatcher(CtCatch catcher);
 
 	/**
 	 * Removes a catch block.
 	 */
+	@PropertySetter(role = CATCHERS)
 	boolean removeCatcher(CtCatch catcher);
 
 	/**
 	 * Gets the try body.
 	 */
 	@Override
+	@PropertyGetter(role = BODY)
 	CtBlock<?> getBody();
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (
 	 * <code>finally</code> part).
 	 */
+	@PropertyGetter(role = FINALIZER)
 	CtBlock<?> getFinalizer();
 
 	/**
 	 * Sets the <i>finalizer</i> block of this <code>try</code> (
 	 * <code>finally</code> part).
 	 */
+	@PropertySetter(role = FINALIZER)
 	<T extends CtTry> T setFinalizer(CtBlock<?> finalizer);
 
 	@Override

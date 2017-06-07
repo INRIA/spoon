@@ -17,6 +17,9 @@
 package spoon.reflect.code;
 
 import spoon.reflect.reference.CtFieldReference;
+import spoon.support.PropertyGetter;
+
+import static spoon.reflect.path.CtRole.VARIABLE;
 
 /**
  * This code element defines an access to a annotation parameter variable.
@@ -25,6 +28,7 @@ import spoon.reflect.reference.CtFieldReference;
  * 		Type of this field
  */
 public interface CtAnnotationFieldAccess<T> extends CtVariableRead<T>, CtTargetedExpression<T, CtExpression<?>> {
+	@PropertyGetter(role = VARIABLE)
 	CtFieldReference<T> getVariable();
 
 	@Override

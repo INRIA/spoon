@@ -19,8 +19,13 @@ package spoon.reflect.reference;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.MODIFIERS;
+import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This interface defines a reference to a
@@ -31,11 +36,13 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Gets the type of the variable.
 	 */
+	@PropertyGetter(role = TYPE)
 	CtTypeReference<T> getType();
 
 	/**
 	 * Sets the type of the variable.
 	 */
+	@PropertySetter(role = TYPE)
 	<C extends CtVariableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**
@@ -47,6 +54,7 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Gets modifiers of the reference.
 	 */
+	@PropertyGetter(role = MODIFIERS)
 	Set<ModifierKind> getModifiers();
 
 	/**

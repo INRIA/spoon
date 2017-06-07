@@ -17,9 +17,13 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.VALUES;
 
 /**
  * This element represents an enumeration declaration.
@@ -38,6 +42,7 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 * 		An enum value.
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = VALUES)
 	<C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue);
 
 	/**
@@ -47,6 +52,7 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 * 		An enum value.
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = VALUES)
 	boolean removeEnumValue(CtEnumValue<?> enumValue);
 
 	/**
@@ -56,6 +62,7 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 * 		Name of the enum value.
 	 * @return An enum value.
 	 */
+	@PropertyGetter(role = VALUES)
 	CtEnumValue<?> getEnumValue(String name);
 
 	/**
@@ -63,11 +70,13 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 *
 	 * @return All enum values.
 	 */
+	@PropertyGetter(role = VALUES)
 	List<CtEnumValue<?>> getEnumValues();
 
 	/**
 	 *Sets all enum values of the enum.
 	 */
+	@PropertySetter(role = VALUES)
 	<C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues);
 
 	@Override

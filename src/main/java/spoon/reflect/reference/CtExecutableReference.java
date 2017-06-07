@@ -18,10 +18,17 @@ package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtExecutable;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
+import static spoon.reflect.path.CtRole.IS_STATIC;
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This interface defines a reference to a
@@ -75,6 +82,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Gets the reference to the type that declares this executable.
 	 */
+	@PropertyGetter(role = DECLARING_TYPE)
 	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
@@ -82,16 +90,19 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 * For methods, gets the return type of the executable (may be null in noclasspath mode).
 	 * For constructors, gets the constructor class (which is also the return type of the contructor calls).
 	 */
+	@PropertyGetter(role = TYPE)
 	CtTypeReference<T> getType();
 
 	/**
 	 * Gets parameters of the executable.
 	 */
+	@PropertyGetter(role = PARAMETER)
 	List<CtTypeReference<?>> getParameters();
 
 	/**
 	 * Sets parameters of the executable.
 	 */
+	@PropertySetter(role = PARAMETER)
 	<C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters);
 
 	/**
@@ -123,21 +134,25 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Tells if the referenced executable is static.
 	 */
+	@PropertyGetter(role = IS_STATIC)
 	boolean isStatic();
 
 	/**
 	 * Sets the declaring type.
 	 */
+	@PropertySetter(role = DECLARING_TYPE)
 	<C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Sets this executable reference to be static or not.
 	 */
+	@PropertySetter(role = IS_STATIC)
 	<C extends CtExecutableReference<T>> C setStatic(boolean b);
 
 	/**
 	 * Sets the type of the variable.
 	 */
+	@PropertySetter(role = TYPE)
 	<C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**

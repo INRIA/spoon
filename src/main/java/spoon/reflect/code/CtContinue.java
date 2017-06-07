@@ -16,6 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.LABEL;
+import static spoon.reflect.path.CtRole.TARGET_LABEL;
+
+
 /**
  * This code element defines the continue statement.
  * Example:
@@ -32,24 +39,28 @@ public interface CtContinue extends CtCFlowBreak {
 	 * Gets the statement where the control flow continues (null if no label
 	 * defined).
 	 */
+	@PropertyGetter(role = LABEL)
 	CtStatement getLabelledStatement();
 
 	/**
 	 * Sets the statement where the control flow continues (null if no label
 	 * defined).
 	 */
+	@PropertySetter(role = LABEL)
 	<T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement);
 
 	/**
 	 * Gets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
+	@PropertyGetter(role = TARGET_LABEL)
 	String getTargetLabel();
 
 	/**
 	 * Sets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
+	@PropertySetter(role = TARGET_LABEL)
 	<T extends CtContinue> T setTargetLabel(String targetLabel);
 
 	@Override

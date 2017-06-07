@@ -16,6 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
 /**
  * This code element defines a <code>synchronized</code> statement.
  *
@@ -33,21 +40,25 @@ public interface CtSynchronized extends CtStatement {
 	 *
 	 * @return the monitored object if defined, null otherwise
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<?> getExpression();
 
 	/**
 	 * Sets the expression that defines the monitored.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<T extends CtSynchronized> T setExpression(CtExpression<?> expression);
 
 	/**
 	 * Gets the synchronized block.
 	 */
+	@PropertyGetter(role = BODY)
 	CtBlock<?> getBlock();
 
 	/**
 	 * Sets the synchronized block.
 	 */
+	@PropertyGetter(role = BODY)
 	<T extends CtSynchronized> T setBlock(CtBlock<?> block);
 
 	@Override

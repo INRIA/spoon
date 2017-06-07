@@ -16,6 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.KIND;
+import static spoon.reflect.path.CtRole.OPERAND;
+
+
 /**
  * This code element represents a unary operator.
  * For example :
@@ -32,21 +39,25 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 	/**
 	 * Gets the expression to which the operator is applied.
 	 */
+	@PropertyGetter(role = OPERAND)
 	CtExpression<T> getOperand();
 
 	/**
 	 * Sets the expression to which the operator is applied.
 	 */
+	@PropertySetter(role = OPERAND)
 	<C extends CtUnaryOperator> C setOperand(CtExpression<T> expression);
 
 	/**
 	 * Sets the kind of this operator.
 	 */
+	@PropertySetter(role = KIND)
 	<C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this operator.
 	 */
+	@PropertyGetter(role = KIND)
 	UnaryOperatorKind getKind();
 
 	@Override

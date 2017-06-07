@@ -16,6 +16,12 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.ASSIGNED;
+
+
 /**
  * This code element defines an assignment.
  *
@@ -34,11 +40,13 @@ public interface CtAssignment<T, A extends T> extends CtStatement, CtExpression<
 	 * Returns the assigned expression on the left-hand side (where the value is stored,
 	 * e.g. in a variable, in an array, in a field ...).
 	 */
+	@PropertyGetter(role = ASSIGNED)
 	CtExpression<T> getAssigned();
 
 	/**
 	 * Sets the assigned expression (left hand side - LHS).
 	 */
+	@PropertySetter(role = ASSIGNED)
 	<C extends CtAssignment<T, A>> C setAssigned(CtExpression<T> assigned);
 
 	@Override

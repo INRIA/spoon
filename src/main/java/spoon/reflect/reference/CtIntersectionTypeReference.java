@@ -16,9 +16,13 @@
  */
 package spoon.reflect.reference;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.BOUNDS;
 
 /**
  * This interface defines a reference to an intersection type in generics or in casts.
@@ -30,21 +34,25 @@ public interface CtIntersectionTypeReference<T> extends CtTypeReference<T> {
 	 *     T extends Interface1 &amp; Interface2 // CtTypeParameterReference#getBoundingType == Interface1 and getBounds().get(0) == Interface1
 	 * </pre>
 	 */
+	@PropertyGetter(role = BOUNDS)
 	List<CtTypeReference<?>> getBounds();
 
 	/**
 	 * Sets the bounds of the intersection type.
 	 */
+	@PropertySetter(role = BOUNDS)
 	<C extends CtIntersectionTypeReference> C setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Adds a bound.
 	 */
+	@PropertySetter(role = BOUNDS)
 	<C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
+	@PropertySetter(role = BOUNDS)
 	boolean removeBound(CtTypeReference<?> bound);
 
 	@Override

@@ -16,7 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.CASE;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 /**
  * This code element defines a switch statement.
@@ -41,6 +47,7 @@ public interface CtSwitch<S> extends CtStatement {
 	 * <code>Character</code>, <code>Byte</code>, <code>Short</code>,
 	 * <code>Integer</code>, or an <code>enum</code> type
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<S> getSelector();
 
 	/**
@@ -49,26 +56,31 @@ public interface CtSwitch<S> extends CtStatement {
 	 * <code>Character</code>, <code>Byte</code>, <code>Short</code>,
 	 * <code>Integer</code>, or an <code>enum</code> type
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<T extends CtSwitch<S>> T setSelector(CtExpression<S> selector);
 
 	/**
 	 * Gets the list of cases defined for this switch.
 	 */
+	@PropertyGetter(role = CASE)
 	List<CtCase<? super S>> getCases();
 
 	/**
 	 * Sets the list of cases defined for this switch.
 	 */
+	@PropertySetter(role = CASE)
 	<T extends CtSwitch<S>> T setCases(List<CtCase<? super S>> cases);
 
 	/**
 	 * Adds a case;
 	 */
+	@PropertySetter(role = CASE)
 	<T extends CtSwitch<S>> T addCase(CtCase<? super S> c);
 
 	/**
 	 * Removes a case;
 	 */
+	@PropertySetter(role = CASE)
 	boolean removeCase(CtCase<? super S> c);
 
 	@Override

@@ -14,38 +14,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.code;
+package spoon.support;
 
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.path.CtRole;
 
-import static spoon.reflect.path.CtRole.EXPRESSION;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This code element defines a <code>do</code> loop.
- *
- * Example:
- * <pre>
- *     int x = 0;
- *     do {
- *         x=x+1;
- *     } while (x&lt;10);
- * </pre>
+ * Defines the getters of the properties
  *
  */
-public interface CtDo extends CtLoop {
-	/**
-	 * Returns the looping test as a boolean expression.
-	 */
-	@PropertyGetter(role = EXPRESSION)
-	CtExpression<Boolean> getLoopingExpression();
-
-	/**
-	 * Sets the looping test as a boolean expression.
-	 */
-	@PropertySetter(role = EXPRESSION)
-	<T extends CtDo> T setLoopingExpression(CtExpression<Boolean> expression);
-
-	@Override
-	CtDo clone();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface PropertyGetter {
+	CtRole role();
 }

@@ -44,7 +44,10 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 
 	/**
 	 * Returns the constructor of the class that takes the given argument types.
+	 *
+	 * Derived from {@link #getTypeMembers()}
 	 */
+	@DerivedProperty
 	CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes);
 
 	/**

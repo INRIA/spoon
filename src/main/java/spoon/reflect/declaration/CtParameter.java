@@ -19,7 +19,11 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.IS_VARARGS;
 
 /**
  * This element defines an executable parameter declaration.
@@ -43,11 +47,13 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	 * arguments (must be the last parameter of
 	 * {@link CtExecutable#getParameters()}).
 	 */
+	@PropertyGetter(role = IS_VARARGS)
 	boolean isVarArgs();
 
 	/**
 	 * Sets this parameter to have varargs.
 	 */
+	@PropertySetter(role = IS_VARARGS)
 	<C extends CtParameter<T>> C setVarArgs(boolean varArgs);
 
 	/** overriding the return type */

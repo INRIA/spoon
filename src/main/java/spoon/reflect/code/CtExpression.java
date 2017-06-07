@@ -18,9 +18,13 @@ package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 import spoon.template.TemplateParameter;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.CASTS;
 
 /**
  * This abstract code element defines a typed expression.
@@ -33,16 +37,19 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>, Templ
 	/**
 	 * Returns the type casts if any.
 	 */
+	@PropertyGetter(role = CASTS)
 	List<CtTypeReference<?>> getTypeCasts();
 
 	/**
 	 * Sets the type casts.
 	 */
+	@PropertySetter(role = CASTS)
 	<C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> types);
 
 	/**
 	 * Adds a type cast.
 	 */
+	@PropertySetter(role = CASTS)
 	<C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type);
 
 	/**

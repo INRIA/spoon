@@ -16,7 +16,10 @@
  */
 package spoon.reflect.code;
 
+import spoon.support.PropertyGetter;
 import spoon.template.TemplateParameter;
+
+import static spoon.reflect.path.CtRole.BODY;
 
 /**
  * This abstract code element defines a loop.
@@ -27,6 +30,7 @@ public interface CtLoop extends CtStatement, TemplateParameter<Void>, CtBodyHold
 	 * Gets the body of this loop.
 	 */
 	@Override
+	@PropertyGetter(role = BODY)
 	CtStatement getBody();
 
 	@Override

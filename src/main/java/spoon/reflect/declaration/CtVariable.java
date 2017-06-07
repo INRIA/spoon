@@ -19,6 +19,10 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
+
+import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
 
 /**
  * This abstract element defines a variable declaration.
@@ -28,6 +32,7 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 * Gets the initialization expression assigned to the variable (also known
 	 * as the initializer), when declared.
 	 */
+	@PropertyGetter(role = DEFAULT_EXPRESSION)
 	CtExpression<T> getDefaultExpression();
 
 	/*
@@ -42,5 +47,6 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 * Sets the initialization expression assigned to the variable, when
 	 * declared.
 	 */
+	@PropertySetter(role = DEFAULT_EXPRESSION)
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 }
