@@ -20,7 +20,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.path.CtPathRole;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.Collection;
@@ -72,7 +72,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 		public <T> void visitCtField(CtField<T> e) {
 			super.visitCtField(e);
 
-			if (role == CtPathRole.DEFAULT_VALUE && e.getDefaultExpression() != null) {
+			if (role == CtRole.DEFAULT_EXPRESSION && e.getDefaultExpression() != null) {
 				matchs.add(e.getDefaultExpression());
 			}
 		}
@@ -94,13 +94,13 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 		}
 	}
 
-	private final CtPathRole role;
+	private final CtRole role;
 
-	public CtRolePathElement(CtPathRole role) {
+	public CtRolePathElement(CtRole role) {
 		this.role = role;
 	}
 
-	public CtPathRole getRole() {
+	public CtRole getRole() {
 		return role;
 	}
 

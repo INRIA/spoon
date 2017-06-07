@@ -13,7 +13,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathBuilder;
 import spoon.reflect.path.CtPathException;
-import spoon.reflect.path.CtPathRole;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.path.CtPathStringBuilder;
 
 import java.util.Arrays;
@@ -72,7 +72,8 @@ public class PathTest {
 	@Test
 	public void testBuilder() {
 		equals(
-				new CtPathBuilder().recursiveWildcard().name("toto").role(CtPathRole.DEFAULT_VALUE).build(),
+				new CtPathBuilder().recursiveWildcard().name("toto").role(
+						CtRole.DEFAULT_EXPRESSION).build(),
 
 				factory.Package().get("spoon.test.path").getType("Foo").getField("toto").getDefaultExpression()
 		);
@@ -96,7 +97,7 @@ public class PathTest {
 		CtLiteral<String> literal = factory.Core().createLiteral();
 		literal.setValue("salut");
 		literal.setType(literal.getFactory().Type().STRING);
-		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.toto#defaultValue"), literal);
+		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.toto#defaultExpression"), literal);
 	}
 
 	@Test
@@ -131,7 +132,7 @@ public class PathTest {
 		comparePath(".spoon.test.path.Foo/CtMethod");
 		comparePath(".spoon.test.path.Foo.foo#body[index=0]");
 		comparePath(".spoon.test.path.Foo.bar/CtParameter");
-		comparePath(".spoon.test.path.Foo.toto#defaultValue");
+		comparePath(".spoon.test.path.Foo.toto#defaultExpression");
 		comparePath(".spoon.test.path.Foo.*#body[index=0]");
 		comparePath(".**/CtIf#else");
 		comparePath(".**#else");
