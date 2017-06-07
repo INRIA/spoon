@@ -7,6 +7,8 @@ import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -16,6 +18,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -33,6 +36,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.printer.sniper.SniperJavaPrettyPrinter;
@@ -274,8 +278,8 @@ public class SniperTest {
 			@Override
 			public void processingDone() {
 				for (String field : fields) {
-					CtRole fieldName = CtRole.fromName(field);
-					if (fieldName == null) {
+					CtRole propertyName = CtRole.fromName(field);
+					if (propertyName == null) {
 						System.out.println(field);
 					}
 				}
@@ -324,7 +328,7 @@ public class SniperTest {
 				if ("serialVersionUID".equals(candidate.getSimpleName())) {
 					return false;
 				}
-				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC)) {
+				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC) || candidate.hasModifier(ModifierKind.TRANSIENT)) {
 					return false;
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
@@ -378,7 +382,7 @@ public class SniperTest {
 						}
 					}
 					for (CtRole propertyName : properties.get(aClass)) {
-						propertyList.add(propertyName.toString());
+						propertyList.add(propertyName.getTitleName());
 					}
 					Collections.sort(propertyList);
 					for (String s : propertyList) {
@@ -399,5 +403,93 @@ public class SniperTest {
 				}
 			}
 		});
+	}
+
+	@Test
+	public void addPropertyAnnotationToGetter() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("../spoon2/src/main/java/spoon/support/reflect");
+		spoon.addInputResource("../spoon2/src/main/java/spoon/reflect");
+		spoon.getEnvironment().useTabulations(true);
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.getEnvironment().setCommentEnabled(true);
+		spoon.buildModel();
+
+		Factory factory = spoon.getFactory();
+
+		Map<CtTypeReference, Set<CtFieldRead>> roleByInterface = new HashMap<>();
+
+		CtTypeReference annotationReference = factory.createCtTypeReference(MetamodelPropertyField.class);
+
+		List<CtField> elements = spoon.getModel().getElements(new AnnotationFilter<>(CtField.class, MetamodelPropertyField.class));
+		for (CtField<?> element : elements) {
+			CtAnnotation annotation = element.getAnnotation(annotationReference);
+			CtTypeReference roleInterface = ((CtTypeAccess) ((CtFieldRead)annotation.getValue("clazz")).getTarget()).getAccessedType();
+			CtFieldRead role = ((CtFieldRead)annotation.getValue("role"));
+
+			if (!roleByInterface.containsKey(roleInterface)) {
+				roleByInterface.put(roleInterface, new HashSet<>());
+			}
+			roleByInterface.get(roleInterface).add(role);
+		}
+
+		for (CtTypeReference roleInterface : roleByInterface.keySet()) {
+			CtType<?> declaration = roleInterface.getTypeDeclaration();
+
+			for (CtFieldRead role : roleByInterface.get(roleInterface)) {
+				String roleName = role.getVariable().getSimpleName();
+
+				CtRole propertyName = CtRole.fromName(roleName);
+				if (propertyName == null) {
+					System.err.println(roleName);
+					continue;
+				}
+				String titleName = propertyName.getCamelCaseName().toLowerCase();
+				boolean isFound = false;
+				for (CtMethod<?> method : declaration.getMethods()) {
+					String methodName = method.getSimpleName().toLowerCase();
+
+					CtAnnotation<Annotation> annotation;
+					if (methodName.startsWith("get" + titleName)
+							|| methodName.startsWith(titleName)) {
+
+						spoon.getEnvironment().setBuildStackChanges(true);
+						factory.Annotation().annotate(method, PropertyGetter.class);
+						spoon.getEnvironment().setBuildStackChanges(false);
+
+						annotation = method.getAnnotation(factory.createCtTypeReference(PropertyGetter.class));
+
+					} else if (methodName.startsWith("set" + titleName)
+							|| methodName.startsWith("add" + titleName)
+							|| methodName.startsWith("remove" + titleName)
+							|| methodName.startsWith("put" + titleName)) {
+						spoon.getEnvironment().setBuildStackChanges(true);
+						factory.Annotation().annotate(method, PropertySetter.class);
+						spoon.getEnvironment().setBuildStackChanges(false);
+
+						annotation = method.getAnnotation(factory.createCtTypeReference(PropertySetter.class));
+					} else {
+						continue;
+					}
+					annotation.addValue("role", role);
+					isFound = true;
+				}
+				if (!isFound) {
+					System.err.println(declaration.getQualifiedName() + "#" + roleName);
+				}
+			}
+
+			SniperJavaPrettyPrinter sniper = new SniperJavaPrettyPrinter(spoon.getEnvironment());
+			CompilationUnit compilationUnit = declaration.getPosition().getCompilationUnit();
+			sniper.calculate(compilationUnit, Arrays.asList(declaration));
+			try {
+				PrintWriter writer = new PrintWriter(compilationUnit.getFile(), "UTF-8");
+				writer.print(sniper.getResult());
+				writer.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

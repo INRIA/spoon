@@ -211,6 +211,11 @@ public enum CtRole {
 		return s;
 	}
 
+	public String getTitleName() {
+		String s = getCamelCaseName();
+		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
+
 	@Override
 	public String toString() {
 		return getCamelCaseName();
