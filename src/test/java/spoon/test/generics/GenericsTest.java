@@ -1006,6 +1006,34 @@ public class GenericsTest {
 		factory = launcher.getFactory();
 		CtInterface<?> fakeTplItf2 = factory.Interface().get(FakeTpl.class);
 		checkFakeTpl(fakeTplItf2);
+	}
 
+	@Test
+	public void testDiamondComplexGenericsRxJava() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/rxjava/");
+		launcher.setSourceOutputDirectory("./target/spooned-rxjava");
+		launcher.run();
+
+		Factory factory = launcher.getFactory();
+
+		List<CtConstructorCall> invocations = factory.getModel().getElements(new TypeFilter<>(CtConstructorCall.class));
+
+		boolean invocationDetected = false;
+		for (CtConstructorCall call : invocations) {
+			if (call.getType().getSimpleName().equals("ToNotificationSubscriber")) {
+				assertEquals(1, call.getType().getActualTypeArguments().size());
+
+				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
+				assertTrue(actualTA instanceof CtWildcardReference);
+				assertEquals("?", actualTA.getSimpleName());
+				assertTrue( ((CtWildcardReference)actualTA).getBoundingType() == null );
+				invocationDetected = true;
+			}
+		}
+
+		canBeBuilt("./target/spooned-rxjava",8);
+
+		assertTrue(invocationDetected);
 	}
 }

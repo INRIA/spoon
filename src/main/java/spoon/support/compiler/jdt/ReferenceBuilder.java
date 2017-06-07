@@ -86,10 +86,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,7 +100,7 @@ public class ReferenceBuilder {
 
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
-	private Set<TypeBinding> exploringParameterizedBindings = new HashSet<>();
+	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
 	private Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
 	private boolean bounds = false;
@@ -654,11 +652,16 @@ public class ReferenceBuilder {
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {
-						if (!this.exploringParameterizedBindings.contains(b)) {
-							this.exploringParameterizedBindings.add(b);
-							ref.addActualTypeArgument(getTypeReference(b));
+						if (!this.exploringParameterizedBindings.containsKey(b)) {
+							this.exploringParameterizedBindings.put(b, null);
+							CtTypeReference typeRefB = getTypeReference(b);
+							this.exploringParameterizedBindings.put(b, typeRefB);
+							ref.addActualTypeArgument(typeRefB);
 						} else {
-							this.exploringParameterizedBindings.remove(b);
+							CtTypeReference typeRefB = this.exploringParameterizedBindings.get(b);
+							if (typeRefB != null) {
+								ref.addActualTypeArgument(typeRefB.clone());
+							}
 						}
 					}
 				}
