@@ -50,6 +50,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
+import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -894,6 +895,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
 			public void accept(CtMethod<?> method) {
+				ClassTypingContext ctc = new ClassTypingContext(CtTypeImpl.this);
+
+				for (CtMethod<?> methods : l) {
+					if (ctc.isSameSignature(methods, method)) {
+						return;
+					}
+				}
+
 				if (distinctSignatures.add(method.getSignature())) {
 					l.add(method);
 				}
