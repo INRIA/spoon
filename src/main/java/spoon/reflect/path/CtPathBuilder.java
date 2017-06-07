@@ -92,9 +92,9 @@ public class CtPathBuilder {
 	/**
 	 * Match on elements by their role.
 	 *
-	 * @see spoon.reflect.path.CtPathRole
+	 * @see CtRole
 	 */
-	public CtPathBuilder role(CtPathRole role, String[]... args) {
+	public CtPathBuilder role(CtRole role, String[]... args) {
 		CtRolePathElement e = new CtRolePathElement(role);
 		if (args != null) {
 			for (String[] arg : args) {
