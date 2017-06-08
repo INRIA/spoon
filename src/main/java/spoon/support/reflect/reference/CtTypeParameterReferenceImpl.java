@@ -178,6 +178,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		CtElement e = this;
 		CtElement parent = getParent();
 		if (parent instanceof CtTypeReference) {
+			if (parent.isParentInitialized() == false) {
+				return null;
+			}
 			parent = parent.getParent();
 		}
 		if (parent instanceof CtExecutableReference) {
