@@ -22,8 +22,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.support.DerivedProperty;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
 import spoon.support.SpoonClassNotFoundException;
 
 import java.util.Set;
@@ -48,7 +46,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * the name starts with a numeric prefix (e.g. local class Foo has simple name 1Foo).
 	 */
 	@Override
-	@PropertyGetter(role = NAME)
 	String getSimpleName();
 
 	/**
@@ -100,7 +97,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
-	@PropertyGetter(role = SUB_PACKAGE)
 	CtPackageReference getPackage();
 
 	/**
@@ -124,7 +120,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Sets the reference to the declaring package.
 	 */
-	@PropertySetter(role = SUB_PACKAGE)
 	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
 
 	/**

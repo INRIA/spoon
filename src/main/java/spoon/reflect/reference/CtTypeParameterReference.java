@@ -18,8 +18,6 @@ package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.support.DerivedProperty;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import java.util.List;
@@ -36,7 +34,6 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
 	 * {@code false} means a <code>super</code> clause.
 	 */
-	@PropertyGetter(role = IS_UPPER)
 	boolean isUpper();
 
 	/**
@@ -44,25 +41,21 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *
 	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
-	@PropertySetter(role = BOUND)
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
-	@PropertySetter(role = IS_UPPER)
 	<T extends CtTypeParameterReference> T setUpper(boolean upper);
 
 	/**
 	 * Adds a bound.
 	 */
-	@PropertySetter(role = BOUND)
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
-	@PropertySetter(role = BOUND)
 	boolean removeBound(CtTypeReference<?> bound);
 
 	/**
@@ -75,13 +68,11 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *     T extends Interface1 &amp; Interface2
 	 * </pre>
 	 */
-	@PropertyGetter(role = BOUND)
 	CtTypeReference<?> getBoundingType();
 
 	/**
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
-	@PropertySetter(role = BOUND)
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
 	/**

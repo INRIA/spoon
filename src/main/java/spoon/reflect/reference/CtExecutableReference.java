@@ -18,8 +18,6 @@ package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtExecutable;
 import spoon.support.DerivedProperty;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -88,19 +86,16 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 * For methods, gets the return type of the executable (may be null in noclasspath mode).
 	 * For constructors, gets the constructor class (which is also the return type of the contructor calls).
 	 */
-	@PropertyGetter(role = TYPE)
 	CtTypeReference<T> getType();
 
 	/**
 	 * Gets parameters of the executable.
 	 */
-	@PropertyGetter(role = PARAMETER)
 	List<CtTypeReference<?>> getParameters();
 
 	/**
 	 * Sets parameters of the executable.
 	 */
-	@PropertySetter(role = PARAMETER)
 	<C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters);
 
 	/**
@@ -132,7 +127,6 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Tells if the referenced executable is static.
 	 */
-	@PropertyGetter(role = IS_STATIC)
 	boolean isStatic();
 
 	/**
@@ -143,13 +137,11 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Sets this executable reference to be static or not.
 	 */
-	@PropertySetter(role = IS_STATIC)
 	<C extends CtExecutableReference<T>> C setStatic(boolean b);
 
 	/**
 	 * Sets the type of the variable.
 	 */
-	@PropertySetter(role = TYPE)
 	<C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**

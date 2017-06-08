@@ -16,8 +16,6 @@
  */
 package spoon.reflect.reference;
 
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
 
 import java.util.List;
 
@@ -30,24 +28,20 @@ public interface CtActualTypeContainer {
 	/**
 	 * Gets the type arguments.
 	 */
-	@PropertyGetter(role = TYPE_PARAMETER)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
 	 * Sets the type arguments.
 	 */
-	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Adds a type argument.
 	 */
-	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Removes a type argument.
 	 */
-	@PropertySetter(role = TYPE_PARAMETER)
 	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 }
