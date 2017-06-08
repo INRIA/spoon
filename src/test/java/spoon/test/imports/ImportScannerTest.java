@@ -41,6 +41,7 @@ public class ImportScannerTest {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/main/java/spoon/");
 		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.buildModel();
 
 		PrinterHelper printer = new PrinterHelper(spoon.getEnvironment());
