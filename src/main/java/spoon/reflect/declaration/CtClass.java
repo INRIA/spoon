@@ -19,9 +19,13 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.support.PropertyGetter;
+import spoon.support.PropertySetter;
 
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 
 /**
  * This element represents a class declaration.
@@ -48,6 +52,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Derived from {@link #getTypeMembers()}
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = CONSTRUCTOR)
 	CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes);
 
 	/**
@@ -57,6 +62,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Derived from {@link #getTypeMembers()}
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = CONSTRUCTOR)
 	Set<CtConstructor<T>> getConstructors();
 
 	/**
@@ -83,16 +89,19 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Sets the constructors for this class.
 	 */
+	@PropertySetter(role = CONSTRUCTOR)
 	<C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors);
 
 	/**
 	 * Adds a constructor to this class.
 	 */
+	@PropertySetter(role = CONSTRUCTOR)
 	<C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor);
 
 	/**
 	 * Removes a constructor from this class.
 	 */
+	@PropertySetter(role = CONSTRUCTOR)
 	void removeConstructor(CtConstructor<T> constructor);
 
 	/**

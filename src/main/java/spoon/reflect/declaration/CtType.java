@@ -78,6 +78,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * @return null if does not exit
 	 */
+	@PropertyGetter(role = FIELD)
 	CtField<?> getField(String name);
 
 	/**
@@ -87,11 +88,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Derived from {@link #getTypeMembers()}
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = FIELD)
 	List<CtField<?>> getFields();
 
 	/**
 	 * Gets a nested type from its name.
 	 */
+	@PropertyGetter(role = NESTED_TYPE)
 	<N extends CtType<?>> N getNestedType(String name);
 
 	/**
@@ -99,6 +102,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * directly declared by this class or interface.
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = NESTED_TYPE)
 	Set<CtType<?>> getNestedTypes();
 
 	/**
