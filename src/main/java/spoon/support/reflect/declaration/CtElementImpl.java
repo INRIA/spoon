@@ -412,7 +412,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
-	// TODO return boolean
 	@Override
 	public <E extends CtElement> E removeComment(CtComment comment) {
 		if ((List<?>) comments != emptyList()) {
