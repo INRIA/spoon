@@ -10,8 +10,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.Arrays;
 import java.util.List;

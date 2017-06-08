@@ -17,7 +17,7 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.PropertyGetter;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.NAME;

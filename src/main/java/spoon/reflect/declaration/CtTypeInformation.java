@@ -20,7 +20,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.support.PropertyGetter;
+import spoon.reflect.annotations.PropertyGetter;
 
 import java.util.Collection;
 import java.util.Set;

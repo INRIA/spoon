@@ -16,7 +16,7 @@
  */
 package spoon.reflect.code;
 
-import spoon.support.PropertyGetter;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.template.TemplateParameter;
 
 import static spoon.reflect.path.CtRole.BODY;

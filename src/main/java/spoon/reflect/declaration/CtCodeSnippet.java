@@ -16,7 +16,7 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
 

@@ -17,8 +17,8 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.BODY;
 

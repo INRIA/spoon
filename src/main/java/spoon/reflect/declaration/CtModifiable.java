@@ -16,8 +16,8 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.Set;
 

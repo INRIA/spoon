@@ -16,8 +16,8 @@
  */
 package spoon.reflect.code;
 
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.COMMENT_TYPE;
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;

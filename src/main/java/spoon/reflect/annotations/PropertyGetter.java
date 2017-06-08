@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support;
+package spoon.reflect.annotations;
 
 import spoon.reflect.path.CtRole;
 
@@ -24,8 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the getters of the properties
- *
+ * Specifies that a method is an official metamodel getter in the Spoon metamodel.
+ * @see PropertySetter
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })

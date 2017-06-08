@@ -19,8 +19,8 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.support.DerivedProperty;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.IS_VARARGS;

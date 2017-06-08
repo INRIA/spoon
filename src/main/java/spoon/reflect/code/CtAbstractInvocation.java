@@ -18,8 +18,8 @@ package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.support.PropertyGetter;
-import spoon.support.PropertySetter;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
 
