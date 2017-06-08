@@ -43,7 +43,6 @@ public enum CtRole {
 	PARAMETER,
 	EXPRESSION,
 	TARGET,
-	OPERAND,
 	VARIABLE,
 	FINALIZER,
 	THROWN,
@@ -70,8 +69,8 @@ public enum CtRole {
 	BOUND,
 	CATCH,
 	TARGET_LABEL,
-	TYPE_PARAMETERS,
-	TAG,
+	TYPE_PARAMETER,
+	COMMENT_TAG,
 	COMMENT_CONTENT,
 	COMMENT_TYPE;
 
@@ -113,10 +112,10 @@ public enum CtRole {
 			return DIMENSION;
 		}
 		if ("actualtypearguments".equals(name)) {
-			return TYPE_PARAMETERS;
+			return TYPE_PARAMETER;
 		}
 		if ("formalcttypeparameters".equals(name)) {
-			return TYPE_PARAMETERS;
+			return TYPE_PARAMETER;
 		}
 		if ("typecasts".equals(name)) {
 			return CAST;

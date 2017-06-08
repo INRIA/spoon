@@ -19,8 +19,8 @@ package spoon.reflect.code;
 import spoon.support.PropertyGetter;
 import spoon.support.PropertySetter;
 
+import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.OPERATOR_KIND;
-import static spoon.reflect.path.CtRole.OPERAND;
 
 
 /**
@@ -39,13 +39,13 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 	/**
 	 * Gets the expression to which the operator is applied.
 	 */
-	@PropertyGetter(role = OPERAND)
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<T> getOperand();
 
 	/**
 	 * Sets the expression to which the operator is applied.
 	 */
-	@PropertySetter(role = OPERAND)
+	@PropertySetter(role = EXPRESSION)
 	<C extends CtUnaryOperator> C setOperand(CtExpression<T> expression);
 
 	/**

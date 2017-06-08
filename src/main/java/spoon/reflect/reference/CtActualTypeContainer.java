@@ -21,7 +21,7 @@ import spoon.support.PropertySetter;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.TYPE_PARAMETERS;
+import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
  * This interface defines the capability related to binding generics (aka type parameters).
@@ -30,24 +30,24 @@ public interface CtActualTypeContainer {
 	/**
 	 * Gets the type arguments.
 	 */
-	@PropertyGetter(role = TYPE_PARAMETERS)
+	@PropertyGetter(role = TYPE_PARAMETER)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
 	 * Sets the type arguments.
 	 */
-	@PropertySetter(role = TYPE_PARAMETERS)
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Adds a type argument.
 	 */
-	@PropertySetter(role = TYPE_PARAMETERS)
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Removes a type argument.
 	 */
-	@PropertySetter(role = TYPE_PARAMETERS)
+	@PropertySetter(role = TYPE_PARAMETER)
 	boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 }
