@@ -23,13 +23,14 @@ public enum CtRole {
 	NAME,
 	TYPE,
 	BODY,
-	IS_FINAL,
 	IS_SHADOW,
-	IS_STATIC,
+	//BOUND, // in reference only
+	//IS_FINAL, // in reference only
+	//IS_STATIC, // in reference only
+	//IS_UPPER, // in reference only
 	IS_IMPLICIT,
 	IS_DEFAULT,
 	IS_VARARGS,
-	IS_UPPER,
 	DEFAULT_EXPRESSION,
 	THEN,
 	ELSE,
@@ -66,7 +67,6 @@ public enum CtRole {
 	FOR_INIT,
 	TRY_RESOURCE,
 	DIMENSION,
-	BOUND,
 	CATCH,
 	TARGET_LABEL,
 	TYPE_PARAMETER,
