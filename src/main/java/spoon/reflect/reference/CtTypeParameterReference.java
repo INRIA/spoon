@@ -24,7 +24,7 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.BOUNDS;
+import static spoon.reflect.path.CtRole.BOUND;
 import static spoon.reflect.path.CtRole.IS_UPPER;
 
 /**
@@ -44,7 +44,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *
 	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
-	@PropertySetter(role = BOUNDS)
+	@PropertySetter(role = BOUND)
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
@@ -56,13 +56,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Adds a bound.
 	 */
-	@PropertySetter(role = BOUNDS)
+	@PropertySetter(role = BOUND)
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
-	@PropertySetter(role = BOUNDS)
+	@PropertySetter(role = BOUND)
 	boolean removeBound(CtTypeReference<?> bound);
 
 	/**
@@ -75,13 +75,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *     T extends Interface1 &amp; Interface2
 	 * </pre>
 	 */
-	@PropertyGetter(role = BOUNDS)
+	@PropertyGetter(role = BOUND)
 	CtTypeReference<?> getBoundingType();
 
 	/**
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
-	@PropertySetter(role = BOUNDS)
+	@PropertySetter(role = BOUND)
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
 	/**

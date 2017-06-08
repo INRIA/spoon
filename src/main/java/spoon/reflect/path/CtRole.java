@@ -20,9 +20,7 @@ package spoon.reflect.path;
  * Created by nicolas on 27/08/2015.
  */
 public enum CtRole {
-	PARENT,
 	NAME,
-	DECLARING_TYPE,
 	TYPE,
 	BODY,
 	IS_FINAL,
@@ -35,47 +33,47 @@ public enum CtRole {
 	DEFAULT_EXPRESSION,
 	THEN,
 	ELSE,
-	PACKAGE,
+	SUB_PACKAGE,
 	CONDITION,
-	SUPER_TYPE,
-	POSITION,
 	RIGHT_OPERAND,
 	LEFT_OPERAND,
 	LABEL,
 	CASE,
-	KIND,
+	OPERATOR_KIND,
 	PARAMETER,
 	EXPRESSION,
 	TARGET,
 	OPERAND,
 	VARIABLE,
 	FINALIZER,
-	THROW,
-	EXECUTABLE,
+	THROWN,
 	ASSIGNMENT,
 	ASSIGNED,
-	MODIFIERS,
-	COMMENTS,
+	MODIFIER,
+	COMMENT,
 	ANNOTATION_TYPE,
-	TYPES,
-	INTERFACES,
-	ANNOTATIONS,
-	STATEMENTS,
-	ARGUMENTS,
-	MEMBERS,
-	CASTS,
-	VALUES,
+	INTERFACE,
+	ANNOTATION,
+	STATEMENT,
+	ARGUMENT,
+	SUPER_TYPE,
+	NESTED_TYPE,
+	CONSTRUCTOR,
+	EXECUTABLE,
+	FIELD,
+	CAST,
+	VALUE,
 	FOR_UPDATE,
 	FOR_INIT,
-	RESOURCES,
-	DIMENSIONS,
-	BOUNDS,
-	CATCHERS,
-	ANONYMOUS_CLASS,
+	TRY_RESOURCE,
+	DIMENSION,
+	BOUND,
+	CATCH,
 	TARGET_LABEL,
 	TYPE_PARAMETERS,
-	CONTENT,
-	TAGS;
+	TAG,
+	COMMENT_CONTENT,
+	COMMENT_TYPE;
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -112,7 +110,7 @@ public enum CtRole {
 			return PARAMETER;
 		}
 		if ("dimensionexpressions".equals(name)) {
-			return DIMENSIONS;
+			return DIMENSION;
 		}
 		if ("actualtypearguments".equals(name)) {
 			return TYPE_PARAMETERS;
@@ -121,7 +119,7 @@ public enum CtRole {
 			return TYPE_PARAMETERS;
 		}
 		if ("typecasts".equals(name)) {
-			return CASTS;
+			return CAST;
 		}
 		if ("cases".equals(name)) {
 			return CASE;
@@ -130,10 +128,10 @@ public enum CtRole {
 			return LABEL;
 		}
 		if ("enumvalues".equals(name) || "elementvalues".equals(name)) {
-			return VALUES;
+			return VALUE;
 		}
 		if ("throwntypes".equals(name)) {
-			return THROW;
+			return THROWN;
 		}
 		if ("value".equals(name) || "returnedexpression".equals(name) || "expressions".equals(name)) {
 			return EXPRESSION;
@@ -145,10 +143,10 @@ public enum CtRole {
 			return PARAMETER;
 		}
 		if ("typemembers".equals(name)) {
-			return MEMBERS;
+			return FIELD;
 		}
 		if ("throwexpression".equals(name)) {
-			return THROW;
+			return THROWN;
 		}
 		if ("returntype".equals(name)
 				|| "componenttype".equals(name)) {
@@ -170,7 +168,7 @@ public enum CtRole {
 			return LEFT_OPERAND;
 		}
 		if ("pack".equals(name) || "packs".equals(name)) {
-			return PACKAGE;
+			return SUB_PACKAGE;
 		}
 		if ("superclass".equals(name)) {
 			return SUPER_TYPE;

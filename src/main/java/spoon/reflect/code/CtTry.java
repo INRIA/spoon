@@ -23,7 +23,7 @@ import spoon.template.TemplateParameter;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.BODY;
-import static spoon.reflect.path.CtRole.CATCHERS;
+import static spoon.reflect.path.CtRole.CATCH;
 import static spoon.reflect.path.CtRole.FINALIZER;
 
 /**
@@ -41,25 +41,25 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	/**
 	 * Gets the <i>catchers</i> of this <code>try</code>.
 	 */
-	@PropertyGetter(role = CATCHERS)
+	@PropertyGetter(role = CATCH)
 	List<CtCatch> getCatchers();
 
 	/**
 	 * Sets the <i>catchers</i> of this <code>try</code>.
 	 */
-	@PropertySetter(role = CATCHERS)
+	@PropertySetter(role = CATCH)
 	<T extends CtTry> T setCatchers(List<CtCatch> catchers);
 
 	/**
 	 * Adds a catch block.
 	 */
-	@PropertySetter(role = CATCHERS)
+	@PropertySetter(role = CATCH)
 	<T extends CtTry> T addCatcher(CtCatch catcher);
 
 	/**
 	 * Removes a catch block.
 	 */
-	@PropertySetter(role = CATCHERS)
+	@PropertySetter(role = CATCH)
 	boolean removeCatcher(CtCatch catcher);
 
 	/**

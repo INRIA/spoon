@@ -28,9 +28,8 @@ import spoon.support.SpoonClassNotFoundException;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.PACKAGE;
+import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 
 /**
  * This interface defines a reference to a
@@ -94,7 +93,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the declaring type if this references an inner class; null in
 	 * other cases
 	 */
-	@PropertyGetter(role = DECLARING_TYPE)
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -102,7 +100,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
-	@PropertyGetter(role = PACKAGE)
+	@PropertyGetter(role = SUB_PACKAGE)
 	CtPackageReference getPackage();
 
 	/**
@@ -121,13 +119,12 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * Sets the reference to the declaring type. Should be set to null if the
 	 * referenced type is not a inner type.
 	 */
-	@PropertySetter(role = DECLARING_TYPE)
 	<C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> type);
 
 	/**
 	 * Sets the reference to the declaring package.
 	 */
-	@PropertySetter(role = PACKAGE)
+	@PropertySetter(role = SUB_PACKAGE)
 	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
 
 	/**

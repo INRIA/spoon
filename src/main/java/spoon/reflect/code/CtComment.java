@@ -19,8 +19,8 @@ package spoon.reflect.code;
 import spoon.support.PropertyGetter;
 import spoon.support.PropertySetter;
 
-import static spoon.reflect.path.CtRole.CONTENT;
-import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.COMMENT_TYPE;
+import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
 
 /**
  * This code element defines a comment
@@ -55,20 +55,20 @@ public interface CtComment extends CtStatement {
 	 * Get the content of the comment
 	 * @return the content of the comment
 	 */
-	@PropertyGetter(role = CONTENT)
+	@PropertyGetter(role = COMMENT_CONTENT)
 	String getContent();
 
-	@PropertySetter(role = CONTENT)
+	@PropertySetter(role = COMMENT_CONTENT)
 	<E extends CtComment> E setContent(String content);
 
 	/**
 	 * Get the type of the comment
  	 * @return the comment type
 	 */
-	@PropertyGetter(role = TYPE)
+	@PropertyGetter(role = COMMENT_TYPE)
 	CommentType getCommentType();
 
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = COMMENT_TYPE)
 	<E extends CtComment> E setCommentType(CommentType commentType);
 
 	@Override

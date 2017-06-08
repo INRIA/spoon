@@ -23,7 +23,6 @@ import spoon.support.PropertySetter;
 
 import java.lang.reflect.Member;
 
-import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_FINAL;
 import static spoon.reflect.path.CtRole.IS_STATIC;
 
@@ -56,7 +55,6 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Gets the type in which the field is declared.
 	 */
-	@PropertyGetter(role = DECLARING_TYPE)
 	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
@@ -80,7 +78,6 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Sets the type in which the field is declared.
 	 */
-	@PropertySetter(role = DECLARING_TYPE)
 	<C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**

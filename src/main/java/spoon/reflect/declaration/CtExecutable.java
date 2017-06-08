@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.THROW;
+import static spoon.reflect.path.CtRole.THROWN;
 
 /**
  * This element represents an executable element such as a method, a
@@ -88,13 +88,13 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * Returns the exceptions and other throwables listed in this method or
 	 * constructor's <tt>throws</tt> clause.
 	 */
-	@PropertyGetter(role = THROW)
+	@PropertyGetter(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> getThrownTypes();
 
 	/**
 	 * Sets the thrown types.
 	 */
-	@PropertySetter(role = THROW)
+	@PropertySetter(role = THROWN)
 	<T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	/**
@@ -103,7 +103,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
-	@PropertySetter(role = THROW)
+	@PropertySetter(role = THROWN)
 	<T extends CtExecutable<R>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
 
 	/**

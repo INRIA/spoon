@@ -19,7 +19,7 @@ package spoon.reflect.code;
 import spoon.support.PropertyGetter;
 import spoon.support.PropertySetter;
 
-import static spoon.reflect.path.CtRole.KIND;
+import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 import static spoon.reflect.path.CtRole.OPERAND;
 
 
@@ -51,13 +51,13 @@ public interface CtUnaryOperator<T> extends CtExpression<T>, CtStatement {
 	/**
 	 * Sets the kind of this operator.
 	 */
-	@PropertySetter(role = KIND)
+	@PropertySetter(role = OPERATOR_KIND)
 	<C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this operator.
 	 */
-	@PropertyGetter(role = KIND)
+	@PropertyGetter(role = OPERATOR_KIND)
 	UnaryOperatorKind getKind();
 
 	@Override

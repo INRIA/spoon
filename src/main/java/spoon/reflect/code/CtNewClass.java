@@ -26,7 +26,6 @@ import spoon.support.PropertySetter;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.ANONYMOUS_CLASS;
 import static spoon.reflect.path.CtRole.TYPE_PARAMETERS;
 
 /**
@@ -77,13 +76,11 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	/**
 	 * Gets the created class.
 	 */
-	@PropertyGetter(role = ANONYMOUS_CLASS)
 	CtClass<?> getAnonymousClass();
 
 	/**
 	 * Sets the created class.
 	 */
-	@PropertySetter(role = ANONYMOUS_CLASS)
 	<N extends CtNewClass> N setAnonymousClass(CtClass<?> anonymousClass);
 
 	@Override

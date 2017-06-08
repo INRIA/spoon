@@ -32,11 +32,9 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.ANNOTATIONS;
-import static spoon.reflect.path.CtRole.COMMENTS;
+import static spoon.reflect.path.CtRole.ANNOTATION;
+import static spoon.reflect.path.CtRole.COMMENT;
 import static spoon.reflect.path.CtRole.IS_IMPLICIT;
-import static spoon.reflect.path.CtRole.PARENT;
-import static spoon.reflect.path.CtRole.POSITION;
 
 /**
  * This interface is the root interface for the metamodel elements (any program
@@ -61,7 +59,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * 		the annotation's class
 	 * @return if found, returns a proxy for this annotation
 	 */
-	@PropertyGetter(role = ANNOTATIONS)
+	@PropertyGetter(role = ANNOTATION)
 	<A extends Annotation> A getAnnotation(Class<A> annotationType);
 
 	/**
@@ -72,7 +70,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return the annotation if this element is annotated by one annotation of
 	 * the given type
 	 */
-	@PropertyGetter(role = ANNOTATIONS)
+	@PropertyGetter(role = ANNOTATION)
 	<A extends Annotation> CtAnnotation<A> getAnnotation(
 			CtTypeReference<A> annotationType);
 
@@ -81,7 +79,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 *
 	 * For sake of encapsulation, the returned list is unmodifiable.
 	 */
-	@PropertyGetter(role = ANNOTATIONS)
+	@PropertyGetter(role = ANNOTATION)
 	List<CtAnnotation<? extends Annotation>> getAnnotations();
 
 	/**
@@ -102,7 +100,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 *
 	 * @return Source file and line number of this element or null
 	 */
-	@PropertyGetter(role = POSITION)
 	SourcePosition getPosition();
 
 	/**
@@ -142,7 +139,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element in the input source files
 	 */
-	@PropertySetter(role = POSITION)
 	<E extends CtElement> E setPosition(SourcePosition position);
 
 	/**
@@ -194,13 +190,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element and all children in the input source file
 	 */
-	@PropertySetter(role = POSITION)
 	<E extends CtElement> E setPositions(SourcePosition position);
 
 	/**
 	 * Sets the annotations for this element.
 	 */
-	@PropertySetter(role = ANNOTATIONS)
+	@PropertySetter(role = ANNOTATION)
 	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
@@ -209,21 +204,18 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @throws ParentNotInitializedException
 	 * 		when the parent of this element is not initialized
 	 */
-	@PropertyGetter(role = PARENT)
 	@DerivedProperty
 	CtElement getParent() throws ParentNotInitializedException;
 
 	/**
 	 * Gets the first parent that matches the given type.
 	 */
-	@PropertyGetter(role = PARENT)
 	<P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the first parent that matches the filter.
 	 * If the receiver (this) matches the filter, it is also returned
 	 */
-	@PropertyGetter(role = PARENT)
 	<E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException;
 
 	/**
@@ -232,7 +224,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param parent
 	 * 		parent reference.
 	 */
-	@PropertySetter(role = PARENT)
 	<E extends CtElement> E setParent(E parent);
 
 	/**
@@ -274,14 +265,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Set the comment list
 	 */
-	@PropertySetter(role = COMMENTS)
+	@PropertySetter(role = COMMENT)
 	<E extends CtElement> E setComments(List<CtComment> comments);
 
 	/**
 	 * The list of comments
 	 * @return the list of comment
 	 */
-	@PropertyGetter(role = COMMENTS)
+	@PropertyGetter(role = COMMENT)
 	List<CtComment> getComments();
 
 	/**
@@ -289,14 +280,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * <code>element.addComment(element.getFactory().Code().createComment("comment", CtComment.CommentType.INLINE)</code>
 	 * @param comment the comment
 	 */
-	@PropertySetter(role = COMMENTS)
+	@PropertySetter(role = COMMENT)
 	<E extends CtElement> E addComment(CtComment comment);
 
 	/**
 	 * Remove a comment
 	 * @param comment the comment to remove
 	 */
-	@PropertySetter(role = COMMENTS)
+	@PropertySetter(role = COMMENT)
 	<E extends CtElement> E removeComment(CtComment comment);
 
 	/**

@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.support.PropertyGetter;
 import spoon.support.PropertySetter;
 
-import static spoon.reflect.path.CtRole.CONTENT;
+import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
 import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.TYPE;
 
@@ -110,14 +110,14 @@ public interface CtJavaDocTag extends CtElement {
 	 * Get the content of the atg
 	 * @return the content of the tag
 	 */
-	@PropertyGetter(role = CONTENT)
+	@PropertyGetter(role = COMMENT_CONTENT)
 	String getContent();
 
 	/**
 	 * Define the content of the tag
 	 * @param content the new content of the tag
 	 */
-	@PropertySetter(role = CONTENT)
+	@PropertySetter(role = COMMENT_CONTENT)
 	<E extends CtJavaDocTag> E setContent(String content);
 
 	/**

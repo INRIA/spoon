@@ -24,7 +24,7 @@ import spoon.support.PropertySetter;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.MODIFIERS;
+import static spoon.reflect.path.CtRole.MODIFIER;
 import static spoon.reflect.path.CtRole.TYPE;
 
 /**
@@ -54,7 +54,7 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Gets modifiers of the reference.
 	 */
-	@PropertyGetter(role = MODIFIERS)
+	@PropertyGetter(role = MODIFIER)
 	Set<ModifierKind> getModifiers();
 
 	/**

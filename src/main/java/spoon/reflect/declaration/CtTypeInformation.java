@@ -25,8 +25,8 @@ import spoon.support.PropertyGetter;
 import java.util.Collection;
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.INTERFACES;
-import static spoon.reflect.path.CtRole.MODIFIERS;
+import static spoon.reflect.path.CtRole.INTERFACE;
+import static spoon.reflect.path.CtRole.MODIFIER;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
@@ -42,7 +42,7 @@ public interface CtTypeInformation {
 	 * Returns the interface types directly implemented by this class or
 	 * extended by this interface.
 	 */
-	@PropertyGetter(role = INTERFACES)
+	@PropertyGetter(role = INTERFACE)
 	Set<CtTypeReference<?>> getSuperInterfaces();
 
 	/**
@@ -54,7 +54,7 @@ public interface CtTypeInformation {
 	/**
 	 * Gets modifiers of this type.
 	 */
-	@PropertyGetter(role = MODIFIERS)
+	@PropertyGetter(role = MODIFIER)
 	Set<ModifierKind> getModifiers();
 
 	/**

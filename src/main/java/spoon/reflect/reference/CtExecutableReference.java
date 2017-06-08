@@ -25,7 +25,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_STATIC;
 import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.TYPE;
@@ -82,7 +81,6 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Gets the reference to the type that declares this executable.
 	 */
-	@PropertyGetter(role = DECLARING_TYPE)
 	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
@@ -140,7 +138,6 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Sets the declaring type.
 	 */
-	@PropertySetter(role = DECLARING_TYPE)
 	<C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**

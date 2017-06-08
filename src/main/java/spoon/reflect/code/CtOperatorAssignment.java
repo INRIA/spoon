@@ -19,7 +19,7 @@ package spoon.reflect.code;
 import spoon.support.PropertyGetter;
 import spoon.support.PropertySetter;
 
-import static spoon.reflect.path.CtRole.KIND;
+import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 
 
 /**
@@ -36,13 +36,13 @@ public interface CtOperatorAssignment<T, A extends T> extends CtAssignment<T, A>
 	/**
 	 * Sets the operator kind.
 	 */
-	@PropertySetter(role = KIND)
+	@PropertySetter(role = OPERATOR_KIND)
 	<C extends CtOperatorAssignment<T, A>> C setKind(BinaryOperatorKind kind);
 
 	/**
 	 * Gets the operator kind.
 	 */
-	@PropertyGetter(role = KIND)
+	@PropertyGetter(role = OPERATOR_KIND)
 	BinaryOperatorKind getKind();
 
 	@Override

@@ -19,7 +19,6 @@ package spoon.reflect.code;
 import spoon.support.PropertyGetter;
 import spoon.support.PropertySetter;
 
-import static spoon.reflect.path.CtRole.LABEL;
 import static spoon.reflect.path.CtRole.TARGET_LABEL;
 
 
@@ -39,14 +38,12 @@ public interface CtContinue extends CtCFlowBreak {
 	 * Gets the statement where the control flow continues (null if no label
 	 * defined).
 	 */
-	@PropertyGetter(role = LABEL)
 	CtStatement getLabelledStatement();
 
 	/**
 	 * Sets the statement where the control flow continues (null if no label
 	 * defined).
 	 */
-	@PropertySetter(role = LABEL)
 	<T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement);
 
 	/**
