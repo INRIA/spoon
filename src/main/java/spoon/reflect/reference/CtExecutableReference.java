@@ -23,9 +23,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.IS_STATIC;
-import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This interface defines a reference to a

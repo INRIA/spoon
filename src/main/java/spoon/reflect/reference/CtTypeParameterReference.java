@@ -22,8 +22,6 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.BOUND;
-import static spoon.reflect.path.CtRole.IS_UPPER;
 
 /**
  * This interface defines a reference to a type parameter (aka generics).

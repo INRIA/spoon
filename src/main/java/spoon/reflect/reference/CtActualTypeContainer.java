@@ -19,7 +19,6 @@ package spoon.reflect.reference;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
  * This interface defines the capability related to binding generics (aka type parameters).

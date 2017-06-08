@@ -21,8 +21,6 @@ import spoon.support.DerivedProperty;
 
 import java.lang.reflect.Member;
 
-import static spoon.reflect.path.CtRole.IS_FINAL;
-import static spoon.reflect.path.CtRole.IS_STATIC;
 
 /**
  * This interface defines a reference to a

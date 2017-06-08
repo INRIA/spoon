@@ -22,8 +22,6 @@ import spoon.support.DerivedProperty;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.MODIFIER;
-import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This interface defines a reference to a

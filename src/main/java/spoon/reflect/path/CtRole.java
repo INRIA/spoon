@@ -90,12 +90,6 @@ public enum CtRole {
 		if ("implicit".equals(name)) {
 			return IS_IMPLICIT;
 		}
-		if ("fina".equals(name)) {
-			return IS_FINAL;
-		}
-		if ("stat".equals(name)) {
-			return IS_STATIC;
-		}
 		if ("varargs".equals(name)) {
 			return IS_VARARGS;
 		}

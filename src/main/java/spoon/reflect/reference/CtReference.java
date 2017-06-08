@@ -23,7 +23,6 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.NAME;
 
 /**
  * This is the root interface for named program element references. References

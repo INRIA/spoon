@@ -26,8 +26,6 @@ import spoon.support.SpoonClassNotFoundException;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 
 /**
  * This interface defines a reference to a

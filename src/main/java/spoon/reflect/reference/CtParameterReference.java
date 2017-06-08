@@ -19,7 +19,6 @@ package spoon.reflect.reference;
 import spoon.reflect.declaration.CtParameter;
 import spoon.support.DerivedProperty;
 
-import static spoon.reflect.path.CtRole.EXECUTABLE;
 
 /**
  * This interface defines a reference to a

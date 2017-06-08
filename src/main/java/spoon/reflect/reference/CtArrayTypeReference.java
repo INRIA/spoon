@@ -18,8 +18,6 @@ package spoon.reflect.reference;
 
 import spoon.support.DerivedProperty;
 
-import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This interface defines a reference to an array.
