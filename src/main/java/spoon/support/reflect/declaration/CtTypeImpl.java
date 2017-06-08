@@ -892,11 +892,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public Set<CtMethod<?>> getAllMethods() {
 		final Set<String> distinctSignatures = new HashSet<>();
 		final Set<CtMethod<?>> l = new SignatureBasedSortedSet<>();
+		final ClassTypingContext ctc = new ClassTypingContext(this);
 		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
 			public void accept(CtMethod<?> method) {
-				ClassTypingContext ctc = new ClassTypingContext(CtTypeImpl.this);
-
 				for (CtMethod<?> methods : l) {
 					if (ctc.isSameSignature(methods, method)) {
 						return;

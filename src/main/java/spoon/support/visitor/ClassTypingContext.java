@@ -42,6 +42,7 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
+import spoon.support.SpoonClassNotFoundException;
 
 /**
  * Helper class created from type X or reference to X.
@@ -189,6 +190,11 @@ public class ClassTypingContext extends AbstractTypingContext {
 		}
 		final HierarchyListener listener = new HierarchyListener(getVisitedSet());
 		/*
+		 * remove last resolved class from the list of visited,
+		 * because it would avoid visiting it's super hierarchy
+		 */
+		getVisitedSet().remove(lastResolvedSuperclass.getQualifiedName());
+		/*
 		 * visit super inheritance class hierarchy of lastResolve type of level of `type` to found it's actual type arguments.
 		 */
 		((CtElement) lastResolvedSuperclass).map(new SuperInheritanceHierarchyFunction()
@@ -204,7 +210,29 @@ public class ClassTypingContext extends AbstractTypingContext {
 				 * which are going to be substituted as arguments to formal type parameters of super type
 				 */
 				String superTypeQualifiedName = typeRef.getQualifiedName();
-				List<CtTypeReference<?>> superTypeActualTypeArgumentsResolvedFromSubType = resolveTypeParameters(typeRef.getActualTypeArguments());
+				List<CtTypeReference<?>> actualTypeArguments = typeRef.getActualTypeArguments();
+				if (actualTypeArguments.isEmpty()) {
+					//may be they are not set - check whether type declares some generic parameters
+					List<CtTypeParameter> typeParams;
+					try {
+						CtType<?> type = typeRef.getTypeDeclaration();
+						typeParams = type.getFormalCtTypeParameters();
+					} catch (final SpoonClassNotFoundException e) {
+						if (typeRef.getFactory().getEnvironment().getNoClasspath()) {
+							typeParams = Collections.emptyList();
+						} else {
+							throw e;
+						}
+					}
+					if (typeParams.size() > 0) {
+						//yes, there are generic type parameters. Reference should use actualTypeArguments computed from their bounds
+						actualTypeArguments = new ArrayList<>(typeParams.size());
+						for (CtTypeParameter typeParam : typeParams) {
+							actualTypeArguments.add(typeParam.getTypeErasure());
+						}
+					}
+				}
+				List<CtTypeReference<?>> superTypeActualTypeArgumentsResolvedFromSubType = resolveTypeParameters(actualTypeArguments);
 				//Remember actual type arguments of `type`
 				typeToArguments.put(superTypeQualifiedName, superTypeActualTypeArgumentsResolvedFromSubType);
 				if (typeQualifiedName.equals(superTypeQualifiedName)) {
@@ -216,6 +244,12 @@ public class ClassTypingContext extends AbstractTypingContext {
 				}
 			}
 		});
+		if (listener.foundArguments == null) {
+			/*
+			 * superclass was not found. We have scanned whole hierarchy
+			 */
+			lastResolvedSuperclass = null;
+		}
 		return listener.foundArguments;
 	}
 
@@ -427,12 +461,11 @@ public class ClassTypingContext extends AbstractTypingContext {
 		}
 		@Override
 		public ScanningMode enter(CtTypeReference<?> typeRef, boolean isClass) {
-			ScanningMode mode = super.enter(typeRef);
-			if (mode == ScanningMode.SKIP_ALL) {
-				//this interface was already visited. Do not visit it again
-				return mode;
-			}
 			if (isClass) {
+				/*
+				 * test foundArguments and skip all before call of super.enter,
+				 * which would add that not visited type into visitedSet
+				 */
 				if (foundArguments != null) {
 					//we have found result then we can finish before entering super class. All interfaces of found type should be still visited
 					//skip before super class (and it's interfaces) of found type is visited
@@ -444,6 +477,11 @@ public class ClassTypingContext extends AbstractTypingContext {
 				 * If we enter class, then this listener assures that that class and all it's not yet visited interfaces are visited
 				 */
 				lastResolvedSuperclass = typeRef;
+			}
+			ScanningMode mode = super.enter(typeRef);
+			if (mode == ScanningMode.SKIP_ALL) {
+				//this interface was already visited. Do not visit it again
+				return mode;
 			}
 			//this type was not visited yet. Visit it normally
 			return ScanningMode.NORMAL;
