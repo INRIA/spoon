@@ -21,6 +21,7 @@ import spoon.support.DerivedProperty;
 
 import java.lang.reflect.Member;
 
+
 /**
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtField}.

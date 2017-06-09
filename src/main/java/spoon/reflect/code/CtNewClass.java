@@ -21,8 +21,12 @@ import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
  * This code element represents the creation of a anonymous class.
@@ -48,6 +52,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 */
 	@Override
 	@DerivedProperty
+	@PropertyGetter(role = TYPE_PARAMETER)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
@@ -56,6 +61,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
@@ -64,6 +70,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**

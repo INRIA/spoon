@@ -17,7 +17,10 @@
 package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 /**
  * This element defines a constructor declaration.
@@ -27,6 +30,7 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	/**
 	 * Always returns "&lt;init&gt;".
 	 */
+	@PropertyGetter(role = NAME)
 	String getSimpleName();
 
 	@Override

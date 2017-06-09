@@ -20,6 +20,7 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
+
 /**
  * This interface defines a reference to an intersection type in generics or in casts.
  */

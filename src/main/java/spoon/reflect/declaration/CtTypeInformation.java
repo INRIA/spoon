@@ -20,9 +20,14 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
 
 import java.util.Collection;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.INTERFACE;
+import static spoon.reflect.path.CtRole.MODIFIER;
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
  * Returns information that can be obtained both at compile-time and run-time
@@ -37,16 +42,19 @@ public interface CtTypeInformation {
 	 * Returns the interface types directly implemented by this class or
 	 * extended by this interface.
 	 */
+	@PropertyGetter(role = INTERFACE)
 	Set<CtTypeReference<?>> getSuperInterfaces();
 
 	/**
 	 * Returns the fully qualified name of this type declaration.
 	 */
+	@DerivedProperty
 	String getQualifiedName();
 
 	/**
 	 * Gets modifiers of this type.
 	 */
+	@PropertyGetter(role = MODIFIER)
 	Set<ModifierKind> getModifiers();
 
 	/**
@@ -120,6 +128,7 @@ public interface CtTypeInformation {
 	 * @return the class type directly extended by this class, or null if there
 	 *         is none
 	 */
+	@PropertyGetter(role = SUPER_TYPE)
 	CtTypeReference<?> getSuperclass();
 
 	/**

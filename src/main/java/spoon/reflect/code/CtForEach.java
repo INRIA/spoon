@@ -16,6 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.VARIABLE;
+
+
 /**
  * This code element defines a foreach statement.
  * Example:
@@ -30,21 +37,25 @@ public interface CtForEach extends CtLoop {
 	/**
 	 * Gets the iterated expression (an iterable of an array).
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<?> getExpression();
 
 	/**
 	 * Gets the variable that references the currently iterated element.
 	 */
+	@PropertyGetter(role = VARIABLE)
 	CtLocalVariable<?> getVariable();
 
 	/**
 	 * Sets the iterated expression (an iterable of an array).
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<T extends CtForEach> T setExpression(CtExpression<?> expression);
 
 	/**
 	 * Sets the variable that references the currently iterated element.
 	 */
+	@PropertySetter(role = VARIABLE)
 	<T extends CtForEach> T setVariable(CtLocalVariable<?> variable);
 
 	@Override

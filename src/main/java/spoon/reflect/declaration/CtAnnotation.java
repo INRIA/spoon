@@ -22,11 +22,16 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
+
+import static spoon.reflect.path.CtRole.ANNOTATION_TYPE;
+import static spoon.reflect.path.CtRole.VALUE;
 
 /**
  * This element represents an annotation on an element.
@@ -49,6 +54,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * the types referenced by the annotation have been compiled and are in the
 	 * classpath so that accessed values can be converted into the actual types.
 	 */
+	@DerivedProperty
 	A getActualAnnotation();
 
 	/**
@@ -56,6 +62,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 *
 	 * @return a reference to the type of this annotation
 	 */
+	@PropertyGetter(role = ANNOTATION_TYPE)
 	CtTypeReference<A> getAnnotationType();
 
 	/**
@@ -65,6 +72,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * 		Name of searched value.
 	 * @return the value expression or null if not found.
 	 */
+	@PropertyGetter(role = VALUE)
 	<T extends CtExpression> T getValue(String key);
 
 	/**
@@ -76,6 +84,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * @return this annotation's element names and their values, or an empty map
 	 * if there are none
 	 */
+	@PropertyGetter(role = VALUE)
 	Map<String, CtExpression> getValues();
 
 	/**
@@ -84,6 +93,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * @param type
 	 * 		reference to the type of this annotation
 	 */
+	@PropertySetter(role = ANNOTATION_TYPE)
 	<T extends CtAnnotation<A>> T setAnnotationType(CtTypeReference<? extends Annotation> type);
 
 	/**
@@ -92,6 +102,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * values. Note that type values are stored as
 	 * {@link spoon.reflect.reference.CtTypeReference}.
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T setElementValues(Map<String, Object> values);
 
 	/**
@@ -99,6 +110,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * form of a map that associates element names with their corresponding
 	 * values.
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T setValues(Map<String, CtExpression> values);
 
 	/**
@@ -114,31 +126,37 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 *
 	 * @return {@link spoon.reflect.declaration.CtAnnotatedElementType}
 	 */
+	@DerivedProperty
 	CtAnnotatedElementType getAnnotatedElementType();
 
 	/**
 	 * Adds a new key-value pair for this annotation
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T addValue(String elementName, Object value);
 
 	/**
 	 * Adds a new key-literal pair for this annotation.
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T addValue(String elementName, CtLiteral<?> value);
 
 	/**
 	 * Adds a new key-array pair for this annotation.
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T addValue(String elementName, CtNewArray<? extends CtExpression> value);
 
 	/**
 	 * Adds a new key-field access pair for this annotation.
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T addValue(String elementName, CtFieldAccess<?> value);
 
 	/**
 	 * Adds a new key-annotation pair for this annotation.
 	 */
+	@PropertySetter(role = VALUE)
 	<T extends CtAnnotation<A>> T addValue(String elementName, CtAnnotation<?> value);
 
 	@Override

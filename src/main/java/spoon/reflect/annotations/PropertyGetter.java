@@ -14,27 +14,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.reflect.annotations;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 
-import static spoon.reflect.path.CtRole.TYPE;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This abstract element defines a typed element.
+ * Specifies that a method is an official metamodel getter in the Spoon metamodel.
+ * @see PropertySetter
  */
-public interface CtTypedElement<T> extends CtElement {
-	/**
-	 * Gets this element's type.
-	 */
-	@PropertyGetter(role = TYPE)
-	CtTypeReference<T> getType();
-
-	/**
-	 * Sets this element's type.
-	 */
-	@PropertySetter(role = TYPE)
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface PropertyGetter {
+	CtRole role();
 }

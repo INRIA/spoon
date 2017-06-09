@@ -22,6 +22,7 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
+
 /**
  * This interface defines a reference to a type parameter (aka generics).
  */

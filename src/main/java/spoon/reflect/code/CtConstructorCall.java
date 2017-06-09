@@ -21,8 +21,13 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
  * This code element represents a constructor call.
@@ -44,6 +49,7 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 	 */
 	@Override
 	@DerivedProperty
+	@PropertyGetter(role = TYPE_PARAMETER)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
@@ -52,6 +58,7 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
@@ -60,6 +67,7 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	@Override
@@ -67,5 +75,6 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 
 	@Override
 	@DerivedProperty
+	@PropertySetter(role = TYPE)
 	CtTypeReference<T> getType();
 }

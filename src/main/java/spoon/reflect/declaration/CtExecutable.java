@@ -21,9 +21,14 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.THROWN;
 
 /**
  * This element represents an executable element such as a method, a
@@ -53,11 +58,13 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	/**
 	 * Gets the parameters list.
 	 */
+	@PropertyGetter(role = PARAMETER)
 	List<CtParameter<?>> getParameters();
 
 	/**
 	 * Sets the parameters.
 	 */
+	@PropertySetter(role = PARAMETER)
 	<T extends CtExecutable<R>> T setParameters(List<CtParameter<?>> parameters);
 
 	/**
@@ -66,6 +73,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * @param parameter
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = PARAMETER)
 	<T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter);
 
 	/**
@@ -80,11 +88,13 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * Returns the exceptions and other throwables listed in this method or
 	 * constructor's <tt>throws</tt> clause.
 	 */
+	@PropertyGetter(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> getThrownTypes();
 
 	/**
 	 * Sets the thrown types.
 	 */
+	@PropertySetter(role = THROWN)
 	<T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	/**
@@ -93,6 +103,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = THROWN)
 	<T extends CtExecutable<R>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
 
 	/**
