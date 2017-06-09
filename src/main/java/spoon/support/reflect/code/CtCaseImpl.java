@@ -20,7 +20,9 @@ import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -32,8 +34,10 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CASE_STATEMEN
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.CASE)
 	CtExpression<E> caseExpression;
 
+	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	List<CtStatement> statements = emptyList();
 
 	@Override

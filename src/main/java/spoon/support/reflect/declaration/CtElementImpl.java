@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
@@ -35,6 +36,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;
@@ -80,8 +82,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	protected CtElement parent;
 
+	@MetamodelPropertyField(role = CtRole.ANNOTATION)
 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.COMMENT)
 	private List<CtComment> comments = emptyList();
 
 	SourcePosition position = SourcePosition.NOPOSITION;
@@ -238,6 +242,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (List<E>) Query.getElements(this, new AnnotationFilter<>(CtElement.class, annotationType));
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_IMPLICIT)
 	boolean implicit = false;
 
 	public boolean isImplicit() {

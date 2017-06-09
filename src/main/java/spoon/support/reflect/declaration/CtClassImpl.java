@@ -28,9 +28,11 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.reflect.code.CtStatementImpl;
@@ -55,6 +57,7 @@ import java.util.Set;
 public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtClass<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
 	CtTypeReference<?> superClass;
 
 	@Override

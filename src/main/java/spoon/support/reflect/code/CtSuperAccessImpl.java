@@ -19,7 +19,9 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 
 public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSuperAccess<T> {
 
@@ -30,6 +32,7 @@ public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSup
 		visitor.visitCtSuperAccess(this);
 	}
 
+	@MetamodelPropertyField(role = CtRole.TARGET)
 	CtExpression<?> target;
 
 	@Override

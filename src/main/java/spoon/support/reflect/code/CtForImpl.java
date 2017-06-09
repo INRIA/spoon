@@ -19,7 +19,9 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -31,10 +33,13 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_ST
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<Boolean> expression;
 
+	@MetamodelPropertyField(role = CtRole.FOR_INIT)
 	List<CtStatement> forInit = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.FOR_UPDATE)
 	List<CtStatement> forUpdate = emptyList();
 
 	@Override

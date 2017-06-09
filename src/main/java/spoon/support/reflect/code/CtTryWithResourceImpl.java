@@ -18,7 +18,9 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.RESOURCES_CON
 public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResource {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TRY_RESOURCE)
 	List<CtLocalVariable<?>> resources = emptyList();
 
 	@Override

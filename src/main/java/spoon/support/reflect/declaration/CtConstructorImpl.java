@@ -25,11 +25,13 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 import java.util.ArrayList;
@@ -44,8 +46,10 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	List<CtTypeParameterReference> formalTypeParameters = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	@Override
@@ -183,6 +187,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		return null;
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

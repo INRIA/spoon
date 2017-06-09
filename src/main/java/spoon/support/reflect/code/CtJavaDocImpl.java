@@ -18,13 +18,16 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
+	@MetamodelPropertyField(role = CtRole.COMMENT_TAG)
 	List<CtJavaDocTag> tags = new ArrayList<>();
 
 	public CtJavaDocImpl() {

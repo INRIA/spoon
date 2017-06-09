@@ -18,7 +18,9 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -29,8 +31,10 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.NEW_ARRAY_DEF
 public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.DIMENSION)
 	List<CtExpression<Integer>> dimensionExpressions = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	List<CtExpression<?>> expressions = emptyList();
 
 	@Override

@@ -18,15 +18,20 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 
 public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtConditional<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.ELSE)
 	CtExpression<T> elseExpression;
 
+	@MetamodelPropertyField(role = CtRole.CONDITION)
 	CtExpression<Boolean> condition;
 
+	@MetamodelPropertyField(role = CtRole.THEN)
 	CtExpression<T> thenExpression;
 
 	@Override

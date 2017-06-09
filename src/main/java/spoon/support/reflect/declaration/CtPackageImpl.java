@@ -16,15 +16,18 @@
  */
 package spoon.support.reflect.declaration;
 
-import java.util.Set;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 import spoon.support.util.QualifiedNameBasedSortedSet;
+
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
@@ -34,8 +37,10 @@ import spoon.support.util.QualifiedNameBasedSortedSet;
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
 	protected Set<CtPackage> packs = orderedPackageSet();
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	private Set<CtType<?>> types = orderedTypeSet();
 
 	public CtPackageImpl() {
@@ -225,6 +230,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getQualifiedName();
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

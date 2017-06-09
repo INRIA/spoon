@@ -14,35 +14,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.code;
+package spoon.support;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.path.CtRole;
-import spoon.support.MetamodelPropertyField;
 
-public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>> extends CtExpressionImpl<E> implements CtTargetedExpression<E, T> {
-	private static final long serialVersionUID = 1L;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	@MetamodelPropertyField(role = CtRole.TARGET)
-	T target;
-
-	@Override
-	public T getTarget() {
-		return target;
-	}
-
-	@Override
-	public <C extends CtTargetedExpression<E, T>> C setTarget(T target) {
-		if (target != null) {
-			target.setParent(this);
-		}
-		this.target = target;
-		return (C) this;
-	}
-
-	@Override
-	public CtTargetedExpression<E, T> clone() {
-		return (CtTargetedExpression<E, T>) super.clone();
-	}
+/**
+ * Tells that a field is a property of the metamodel
+ * For instance {@link CtClass#name}  is the property name of {@link CtNamedElement}
+ *
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.FIELD })
+public @interface MetamodelPropertyField {
+	CtRole role();
 }

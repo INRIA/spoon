@@ -20,11 +20,14 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.MetamodelPropertyField;
 
 public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.THROWN)
 	CtExpression<? extends Throwable> throwExpression;
 
 	@Override
