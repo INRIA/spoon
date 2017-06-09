@@ -8,16 +8,20 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.Arrays;
@@ -91,5 +95,38 @@ public class MetamodelTest {
 
 
 		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
+
+
+		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
+		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
+
+		List<CtField> fields = factory.getModel().getElements(new AnnotationFilter<CtField>(MetamodelPropertyField.class));
+		for (CtField field : fields) {
+			CtClass parent = field.getParent(CtClass.class);
+			String role = ((CtFieldRead) field.getAnnotation(metamodelPropertyField).getValue("role")).getVariable().getSimpleName();
+
+			CtQuery superQuery = parent.map(new SuperInheritanceHierarchyFunction());
+
+			List<CtType> superType = superQuery.list();
+
+			List<CtMethod> methods = superQuery.map((CtType type) -> type.getMethodsAnnotatedWith(propertyGetter, propertySetter)).list();
+
+			boolean setterFound = false;
+			boolean getterFound = false;
+			for (CtMethod method : methods) {
+				CtAnnotation getterAnnotation = method.getAnnotation(propertyGetter);
+				CtAnnotation setterAnnotation = method.getAnnotation(propertySetter);
+				if (getterAnnotation != null) {
+					getterFound |= ((CtFieldRead) getterAnnotation.getValue("role")).getVariable().getSimpleName().equals(role);
+				}
+				if (setterAnnotation != null) {
+					setterFound |= ((CtFieldRead) setterAnnotation.getValue("role")).getVariable().getSimpleName().equals(role);
+				}
+			}
+
+			Assert.assertTrue(role + " must have a getter in " + parent.getQualifiedName(), getterFound);
+			Assert.assertTrue(role + " must have a setter in " + parent.getQualifiedName(), setterFound);
+		}
+
 	}
 }
