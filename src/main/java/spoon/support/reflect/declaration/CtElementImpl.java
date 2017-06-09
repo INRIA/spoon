@@ -88,6 +88,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@MetamodelPropertyField(role = CtRole.COMMENT)
 	private List<CtComment> comments = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.POSITION)
 	SourcePosition position = SourcePosition.NOPOSITION;
 
 	Map<String, Object> metadata;

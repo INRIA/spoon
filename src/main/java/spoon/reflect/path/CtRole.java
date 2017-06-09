@@ -72,7 +72,8 @@ public enum CtRole {
 	TYPE_PARAMETER,
 	COMMENT_TAG,
 	COMMENT_CONTENT,
-	COMMENT_TYPE;
+	COMMENT_TYPE,
+	POSITION;
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
