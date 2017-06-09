@@ -28,7 +28,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	@MetamodelPropertyField(role = CtRole.CONDITION)
 	CtExpression<Boolean> asserted;
 
-	@MetamodelPropertyField(role = CtRole.VALUE)
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<T> value;
 
 	@Override

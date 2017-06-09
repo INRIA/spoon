@@ -33,7 +33,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 		visitor.visitCtCodeSnippetStatement(this);
 	}
 
-	@MetamodelPropertyField(role = CtRole.VALUE)
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	String value;
 
 	public String getValue() {

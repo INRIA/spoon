@@ -16,6 +16,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
@@ -35,7 +36,7 @@ public interface CtCodeSnippet {
 	/**
 	 * Sets the textual value of the code.
 	 */
-	@PropertySetter(role = EXPRESSION)
+	@PropertyGetter(role = EXPRESSION)
 	<C extends CtCodeSnippet> C setValue(String value);
 
 	/**
