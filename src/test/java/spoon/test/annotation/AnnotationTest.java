@@ -6,9 +6,11 @@ import spoon.Launcher;
 import spoon.OutputType;
 import spoon.processing.AbstractAnnotationProcessor;
 import spoon.processing.ProcessingManager;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -26,12 +28,12 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -54,10 +56,10 @@ import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.annotation.testclasses.InnerAnnot;
 import spoon.test.annotation.testclasses.Main;
+import spoon.test.annotation.testclasses.PortRange;
 import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
-import spoon.test.annotation.testclasses.PortRange;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -67,9 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
 import static org.hamcrest.core.Is.is;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -91,6 +91,17 @@ public class AnnotationTest {
 				"--output-type", "nooutput"
 		});
 		factory = launcher.getFactory();
+	}
+
+	@Test
+	public void testAnnotationValueReflection() throws Exception {
+		Factory factory = new Launcher().getFactory();
+
+		CtTypeReference reference = factory.createCtTypeReference(PropertyGetter.class);
+		CtAnnotation annotation = factory.Interface().get(CtNamedElement.class).getMethod("getSimpleName").getAnnotation(reference);
+
+		assertEquals("The annotation must have a value", 1, annotation.getValues().size());
+		assertEquals("NAME", ((CtFieldRead) annotation.getValue("role")).getVariable().getSimpleName());
 	}
 
 	@Test
