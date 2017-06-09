@@ -143,7 +143,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element in the input source files
 	 */
-	@PropertyGetter(role = POSITION)
+	@PropertySetter(role = POSITION)
 	<E extends CtElement> E setPosition(SourcePosition position);
 
 	/**
