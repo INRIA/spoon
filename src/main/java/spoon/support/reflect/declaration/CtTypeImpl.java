@@ -33,6 +33,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -46,6 +47,7 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -70,12 +72,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.INTERFACE)
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = emptySet();
 
+	@MetamodelPropertyField(role = CtRole.FIELD)
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
@@ -907,6 +913,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return getReference();
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

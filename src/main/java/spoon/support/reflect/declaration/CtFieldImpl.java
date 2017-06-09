@@ -26,9 +26,11 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
@@ -42,10 +44,13 @@ import java.util.Set;
 public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
 	CtExpression<T> defaultExpression;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	public CtFieldImpl() {
@@ -175,6 +180,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		return (C) this;
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

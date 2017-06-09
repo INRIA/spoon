@@ -58,7 +58,7 @@ public interface CtSynchronized extends CtStatement {
 	/**
 	 * Sets the synchronized block.
 	 */
-	@PropertyGetter(role = BODY)
+	@PropertySetter(role = BODY)
 	<T extends CtSynchronized> T setBlock(CtBlock<?> block);
 
 	@Override

@@ -18,11 +18,14 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T, A> implements CtOperatorAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.OPERATOR_KIND)
 	BinaryOperatorKind kind;
 
 	@Override

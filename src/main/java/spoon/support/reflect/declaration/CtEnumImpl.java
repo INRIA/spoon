@@ -21,8 +21,10 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
@@ -33,8 +35,10 @@ import java.util.Set;
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.VALUE)
 	private List<CtEnumValue<?>> enumValues = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.VALUE)
 	private CtMethod<T[]> valuesMethod;
 
 	private CtMethod<T> valueOfMethod;

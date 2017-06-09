@@ -19,13 +19,17 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronized {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.BODY)
 	CtBlock<?> block;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<?> expression;
 
 	@Override

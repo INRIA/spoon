@@ -18,11 +18,14 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> implements CtLiteral<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.VALUE)
 	T value;
 
 	@Override

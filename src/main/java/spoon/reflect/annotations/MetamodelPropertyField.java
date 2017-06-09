@@ -14,37 +14,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.code;
+package spoon.reflect.annotations;
 
-import spoon.reflect.code.CtBreak;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.support.reflect.declaration.CtClassImpl;
 
-public class CtBreakImpl extends CtStatementImpl implements CtBreak {
-	private static final long serialVersionUID = 1L;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	@MetamodelPropertyField(role = CtRole.TARGET_LABEL)
-	String targetLabel;
-
-	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtBreak(this);
-	}
-
-	@Override
-	public String getTargetLabel() {
-		return targetLabel;
-	}
-
-	@Override
-	public <T extends CtBreak> T setTargetLabel(String targetLabel) {
-		this.targetLabel = targetLabel;
-		return (T) this;
-	}
-
-	@Override
-	public CtBreak clone() {
-		return (CtBreak) super.clone();
-	}
+/**
+ * Tells that a field is a property of the metamodel
+ * For instance {@link CtClassImpl#simpleName}  is the property name of {@link CtNamedElement}
+ *
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.FIELD })
+public @interface MetamodelPropertyField {
+	CtRole role();
 }

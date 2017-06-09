@@ -35,6 +35,7 @@ import java.util.Set;
 import static spoon.reflect.path.CtRole.ANNOTATION;
 import static spoon.reflect.path.CtRole.COMMENT;
 import static spoon.reflect.path.CtRole.IS_IMPLICIT;
+import static spoon.reflect.path.CtRole.POSITION;
 
 /**
  * This interface is the root interface for the metamodel elements (any program
@@ -100,6 +101,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 *
 	 * @return Source file and line number of this element or null
 	 */
+	@PropertyGetter(role = POSITION)
 	SourcePosition getPosition();
 
 	/**
@@ -113,6 +115,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = ANNOTATION)
 	<E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
@@ -121,6 +124,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = ANNOTATION)
 	boolean removeAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
@@ -139,6 +143,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element in the input source files
 	 */
+	@PropertySetter(role = POSITION)
 	<E extends CtElement> E setPosition(SourcePosition position);
 
 	/**

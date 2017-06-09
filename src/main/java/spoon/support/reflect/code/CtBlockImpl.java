@@ -23,9 +23,11 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.EmptyIterator;
 
@@ -39,6 +41,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEME
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	private List<CtStatement> statements = emptyList();
 
 	public void accept(CtVisitor visitor) {

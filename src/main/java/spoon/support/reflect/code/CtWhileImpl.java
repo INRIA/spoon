@@ -18,11 +18,14 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<Boolean> expression;
 
 	@Override

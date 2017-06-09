@@ -19,7 +19,9 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -30,8 +32,10 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.CASE)
 	List<CtCase<? super S>> cases = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<S> expression;
 
 	@Override

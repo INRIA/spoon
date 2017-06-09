@@ -23,10 +23,12 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -37,10 +39,13 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CO
 public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.LABEL)
 	String label;
 
+	@MetamodelPropertyField(role = CtRole.ARGUMENT)
 	List<CtExpression<?>> arguments = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.EXECUTABLE)
 	CtExecutableReference<T> executable;
 
 	@Override

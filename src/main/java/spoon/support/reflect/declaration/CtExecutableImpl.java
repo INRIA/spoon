@@ -16,22 +16,24 @@
  */
 package spoon.support.reflect.declaration;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtExecutable}.
@@ -41,10 +43,13 @@ import spoon.support.visitor.SignaturePrinter;
 public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements CtExecutable<R> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.BODY)
 	CtBlock<?> body;
 
+	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	public CtExecutableImpl() {

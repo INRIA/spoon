@@ -21,15 +21,20 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtIfImpl extends CtStatementImpl implements CtIf {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.CONDITION)
 	CtExpression<Boolean> condition;
 
+	@MetamodelPropertyField(role = CtRole.ELSE)
 	CtStatement elseStatement;
 
+	@MetamodelPropertyField(role = CtRole.THEN)
 	CtStatement thenStatement;
 
 	@Override

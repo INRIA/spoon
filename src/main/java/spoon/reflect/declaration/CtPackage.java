@@ -97,11 +97,13 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	/**
 	 * Adds a type to this package.
 	 */
+	@PropertySetter(role = TYPE)
 	<T extends CtPackage> T addType(CtType<?> type);
 
 	/**
 	 * Removes a type from this package.
 	 */
+	@PropertySetter(role = TYPE)
 	void removeType(CtType<?> type);
 
 	/**
@@ -128,6 +130,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = SUB_PACKAGE)
 	boolean removePackage(CtPackage pack);
 
 	/**
@@ -136,7 +139,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param types
 	 * 		new Set of types
 	 */
-	@PropertyGetter(role = TYPE)
+	@PropertySetter(role = TYPE)
 	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
 
 	@Override
