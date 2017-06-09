@@ -27,7 +27,6 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
@@ -43,8 +42,6 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PAR
 
 public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConstructor<T> {
 	private static final long serialVersionUID = 1L;
-
-	List<CtTypeParameterReference> formalTypeParameters = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
