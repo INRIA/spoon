@@ -16,9 +16,9 @@
  */
 package spoon.support;
 
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.path.CtRole;
+import spoon.support.reflect.declaration.CtClassImpl;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 
 /**
  * Tells that a field is a property of the metamodel
- * For instance {@link CtClass#name}  is the property name of {@link CtNamedElement}
+ * For instance {@link CtClassImpl#simpleName}  is the property name of {@link CtNamedElement}
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
