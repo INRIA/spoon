@@ -23,7 +23,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	private static final long serialVersionUID = 1L;

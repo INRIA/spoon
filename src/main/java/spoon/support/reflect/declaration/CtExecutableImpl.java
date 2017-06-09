@@ -25,7 +25,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 

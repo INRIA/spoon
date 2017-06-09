@@ -20,7 +20,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> implements CtLiteral<T> {
 	private static final long serialVersionUID = 1L;

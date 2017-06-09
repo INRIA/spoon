@@ -30,7 +30,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 import java.util.ArrayList;

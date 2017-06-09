@@ -21,7 +21,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtSuperAccessImpl<T> extends CtVariableReadImpl<T> implements CtSuperAccess<T> {
 

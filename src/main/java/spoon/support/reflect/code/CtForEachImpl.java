@@ -21,7 +21,7 @@ import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	private static final long serialVersionUID = 1L;

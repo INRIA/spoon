@@ -20,7 +20,7 @@ import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 import java.util.ArrayList;
 import java.util.List;

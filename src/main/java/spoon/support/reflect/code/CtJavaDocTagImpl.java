@@ -19,7 +19,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {

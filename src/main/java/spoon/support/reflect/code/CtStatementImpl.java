@@ -32,7 +32,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 import java.util.ArrayList;
 import java.util.List;

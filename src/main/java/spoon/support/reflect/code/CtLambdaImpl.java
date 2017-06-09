@@ -32,7 +32,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;

@@ -22,7 +22,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.DerivedProperty;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;

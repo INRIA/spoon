@@ -36,7 +36,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;

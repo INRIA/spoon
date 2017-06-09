@@ -47,7 +47,7 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;

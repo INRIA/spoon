@@ -44,7 +44,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtExpressionImpl;
 

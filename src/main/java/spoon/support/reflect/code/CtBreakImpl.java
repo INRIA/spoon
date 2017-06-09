@@ -19,7 +19,7 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtBreakImpl extends CtStatementImpl implements CtBreak {
 	private static final long serialVersionUID = 1L;

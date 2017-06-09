@@ -24,7 +24,7 @@ import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;

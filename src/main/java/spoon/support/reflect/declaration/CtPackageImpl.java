@@ -24,7 +24,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 
 import java.util.Set;

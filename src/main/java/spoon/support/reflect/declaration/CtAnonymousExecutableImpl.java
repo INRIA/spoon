@@ -26,7 +26,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;

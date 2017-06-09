@@ -20,7 +20,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNewClass<T> {
 	private static final long serialVersionUID = 1L;

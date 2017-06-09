@@ -27,7 +27,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.EmptyIterator;
 

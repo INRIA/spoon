@@ -20,7 +20,7 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	private static final long serialVersionUID = 1L;

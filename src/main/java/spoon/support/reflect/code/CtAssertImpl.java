@@ -20,7 +20,7 @@ import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	private static final long serialVersionUID = 1L;

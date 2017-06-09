@@ -21,7 +21,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;

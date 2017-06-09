@@ -21,7 +21,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> extends CtTargetedExpressionImpl<T, E> implements CtExecutableReferenceExpression<T, E> {
 	@MetamodelPropertyField(role = CtRole.EXECUTABLE)

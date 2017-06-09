@@ -20,7 +20,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationMethod}.

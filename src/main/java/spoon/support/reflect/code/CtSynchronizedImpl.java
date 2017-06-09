@@ -21,7 +21,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronized {
 	private static final long serialVersionUID = 1L;

@@ -21,7 +21,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
-import spoon.support.MetamodelPropertyField;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
 
