@@ -58,7 +58,7 @@ public class MetamodelTest {
 
 	@Test
 	/**
-	 * contract: all  all non-final fields must be annotated with {@link spoon.reflect.annotations.MetamodelPropertyField}
+	 * contract: all non-final fields must be annotated with {@link spoon.reflect.annotations.MetamodelPropertyField}
 	 */
 	public void testRoleOnField() {
 		SpoonAPI implementations = new Launcher();
