@@ -16,7 +16,7 @@ Detected changes: ${reports?size}.
 | New | ${report.newElement!"none"} |
 | Code | ${diff.code} |
 | Description | ${diff.description!"none"} |
-| Breaking | <#list diff.classification?keys as compat><#if compat?lower_case=="source">${compat?lower_case}: ${diff.classification?api.get(compat)?lower_case}<#sep>, </#if></#list> |
+| Breaking | <#list diff.classification?keys as compat><#if compat?lower_case=="binary">${compat?lower_case}: ${diff.classification?api.get(compat)?lower_case}<#sep>, </#if></#list> |
 </#list>
 <#sep>
 

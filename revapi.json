@@ -26,6 +26,7 @@
 
     "reporter" : {
       "text" : {
+        "minSeverity": "BREAKING",
         "output" : "target/revapi_report.md",
         "template": "chore/revapi_tpl.ftl",
         "append": false
