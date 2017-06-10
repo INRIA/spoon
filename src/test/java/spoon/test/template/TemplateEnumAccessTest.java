@@ -28,7 +28,7 @@ public class TemplateEnumAccessTest {
 
 		CtClass<?> resultKlass = factory.Class().create(factory.Package().getOrCreate("spoon.test.template"), "EnumAccessResult");
 		new EnumAccessTemplate(ElementType.FIELD, launcher.getFactory().Type().createReference(ElementType.class)).apply(resultKlass);
-//		assertEquals("java.lang.annotation.ElementType.FIELD.name()", result.toString());
+		assertEquals("java.lang.annotation.ElementType.FIELD.name()", resultKlass.getMethod("method").getBody().getStatement(0).toString());
 		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 		ModelUtils.canBeBuilt(new File("./target/spooned/spoon/test/template/EnumAccessResult.java"), 8);
