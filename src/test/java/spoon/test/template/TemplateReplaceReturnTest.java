@@ -19,7 +19,7 @@ public class TemplateReplaceReturnTest {
 
 	@Test
 	public void testReturnReplaceTemplate() throws Exception {
-		//contract: the template engine supports array access substitution
+		//contract: the template engine supports replace of `return _param_.S()` by `<CtBlock>`
 		Launcher launcher = new Launcher();
 		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ReturnReplaceTemplate.java"));
 
