@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
@@ -40,7 +41,9 @@ import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -81,6 +84,39 @@ public abstract class Substitution {
 				insertGeneratedNestedType(targetType, template, (CtType) typeMember);
 			}
 		}
+	}
+
+	/**
+	 * Generates a type (class, interface, enum, ...) from the template model `templateOfType`
+	 * by by substituting all the template parameters by their values.
+	 *
+	 * Inserts all the methods, fields, constructors, initialization blocks (if
+	 * target is a class), inner types, super class and super interfaces.
+	 *
+	 * Note!
+	 * This algorithm does NOT handle interfaces or annotations
+	 * {@link Template}, {@link spoon.template.Local}, {@link TemplateParameter} or {@link Parameter}
+	 * in a special way, it means they all will be added to the generated type too.
+	 * If you do not want to add them then clone your templateOfType and remove these nodes from that model before.
+	 *
+	 * @param targetPackage
+	 * 		the package where the new type will be added
+	 * @param typeName
+	 * 		the simple name of the new type
+	 * @param templateOfType
+	 * 		the model used as source of generation.
+	 * @param templateParameters
+	 * 		the substitution parameters
+	 */
+	public static <T> CtType<T> insertType(CtPackage targetPackage, String typeName, CtType<T> templateOfType, Map<String, Object> templateParameters) {
+		final Factory f = templateOfType.getFactory();
+		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
+		extendedParams.put(templateOfType.getSimpleName(), f.Type().createReference(targetPackage.getQualifiedName() + "." + typeName));
+		List<CtType<T>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
+		for (CtType<T> ctType : generated) {
+			targetPackage.addType(ctType);
+		}
+		return targetPackage.getType(typeName);
 	}
 
 	/**
@@ -498,8 +534,11 @@ public abstract class Substitution {
 			throw new RuntimeException("target is null in substitution");
 		}
 		E result = (E) code.clone();
-		new SubstitutionVisitor(targetType.getFactory(), targetType, template).scan(result);
-		return result;
+		List<E> results = new SubstitutionVisitor(targetType.getFactory(), targetType, template).substitute(result);
+		if (results.size() > 1) {
+			throw new SpoonException("StatementTemplate cannot return more then one statement");
+		}
+		return results.isEmpty() ? null : results.get(0);
 	}
 
 	/**
@@ -546,7 +585,7 @@ public abstract class Substitution {
 		T result = (T) templateType.clone();
 		result.setPositions(null);
 		// result.setParent(templateType.getParent());
-		new SubstitutionVisitor(templateType.getFactory(), result, template).scan(result);
+		new SubstitutionVisitor(templateType.getFactory(), result, template).substitute(result);
 		return result;
 	}
 
