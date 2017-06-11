@@ -15,7 +15,7 @@ public class TemplateArrayAccessTest {
 
 	@Test
 	public void testArrayAccess() throws Exception {
-		//contract: the template engine supports array access substitution
+		//contract: the template engine supports variable access, typed as Array substitution
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteArrayAccessTemplate.java"));
 
