@@ -83,6 +83,13 @@ public class TemplateMatcher implements Filter<CtElement> {
 		return Parameters.getNames(templateType);
 	}
 
+	/**
+	 * Collects all AST nodes, which has to be substituted, because they represents a template parameter declared by field annotated by {@link Parameter}
+	 *
+	 * TODO test it: This code is probably wrong, or I did not understood it...
+	 * @param templateType CtClass model of {@link Template}
+	 * @return ??
+	 */
 	private List<CtTypeReference<?>> getTemplateTypeParameters(final CtClass<? extends Template<?>> templateType) {
 
 		final List<CtTypeReference<?>> ts = new ArrayList<>();
@@ -90,6 +97,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 		new CtScanner() {
 			@Override
 			public void visitCtTypeParameterReference(CtTypeParameterReference reference) {
+				//BUG? Parameters#isParameterSource() avoids CtTypeParameterReference ... so is it correct?
 				if (c.contains(reference.getSimpleName())) {
 					ts.add(reference);
 				}
@@ -108,6 +116,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 
 	/**
 	 * Looks for fields of type {@link CtStatementList} in the template and returns these fields,
+	 * BUG: ? It does not care about annotation Parameter, so there is actually not possible to generate field of type CtStatementList as part of code generate by template
 	 * @param root CtClass model of {@link Template}
 	 * @param variables
 	 * @return returns for fields of type {@link CtStatementList} in the template
@@ -117,6 +126,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 		for (CtFieldReference<?> field : root.getAllFields()) {
 			if (field.getType().getActualClass() == CtStatementList.class) {
 				boolean alreadyAdded = false;
+				//BUG: alreadyAdded can be never true, because `variables` are collected from fields of type `TemplateParameters`,
+				//so their type can never be CtStatementList ...
 				for (CtInvocation<?> invocation : variables) {
 					alreadyAdded |= ((CtFieldAccess<?>) invocation.getTarget()).getVariable().getDeclaration().equals(field);
 				}
@@ -202,6 +213,22 @@ public class TemplateMatcher implements Filter<CtElement> {
 	private boolean addMatch(Object template, Object target) {
 		Object inv = matches.get(template);
 		Object o = matches.put(template, target);
+		/*
+		 * BUG: it always returns true, because inv==o. It is contract of Map.
+		 * The correct code is probably:
+		 *
+		 * Object inv = matches.get(template);
+		 * if (inv != null && inv.equals(target) == false) {
+		 *   //another value would be inserted. TemplateMatcher does not support matching of different values for the same template parameter
+		 *   return false;
+		 * }
+		 * matches.put(template, target)
+		 * return true;
+		 * Object inv = matches.put(template, target);
+		 * return (null == inv) || inv.equals(target);
+		 *
+		 * But callers of addMatch does not handle return value consistently to this contract ...
+		 */
 		return (null == inv) || inv.equals(o);
 	}
 
@@ -212,8 +239,10 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 */
 	private CtElement checkListStatements(List<?> teList) {
 		for (Object tem : teList) {
-			if (variables.contains(tem) && (tem instanceof CtInvocation)) {
+			//TODO: simplify, if it is same like an item of variables, then it must be a CtInvocation
+			if (containsSame(variables, tem) && (tem instanceof CtInvocation)) {
 				CtInvocation<?> listCand = (CtInvocation<?>) tem;
+				//BUG: it returns true only for parameters of type TemplateParameter, because interface TemplateParameter can never be a subtype of something else
 				boolean ok = listCand.getFactory().Type().createReference(TemplateParameter.class).isSubtypeOf(listCand.getTarget().getType());
 				return ok ? listCand : null;
 			}
@@ -360,6 +389,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 			boolean add = invokeCallBack(target, template);
 			if (add) {
 				//ParameterMatcher matches the target too, add that match
+				//BUG: if addMatch returns false, then report it as
+				//Launcher.LOGGER.debug("incongruent match");
 				return addMatch(template, target);
 			}
 			return false;
@@ -380,9 +411,18 @@ public class TemplateMatcher implements Filter<CtElement> {
 			 * after replacing of variables in template name
 			 */
 			boolean ok = matchNames(tRef.getSimpleName(), ((CtReference) target).getSimpleName());
+			/*
+			 * TODO comment: In what case the template.equals(target) == true??
+			 */
 			if (ok && !template.equals(target)) {
 				boolean remove = !invokeCallBack(target, template);
 				if (remove) {
+					/*
+					 * BUG: if ParameterMatcher does not agrees then it should remove a match,
+					 * but the match was inserted with different key by matchNames!
+					 * The best solution would be to add the match only after it is agreed by ParameterMatcher.
+					 * It avoids replacing of correct match by incorrect match in `matches`
+					 */
 					matches.remove(tRef.getSimpleName());
 					return false;
 				}
@@ -391,6 +431,10 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 
 		if (template instanceof CtNamedElement) {
+			/*
+			 * same code like above, with same bugs
+			 * TODO use a shared function called from both places and fix it once.
+			 */
 			CtNamedElement named = (CtNamedElement) template;
 			boolean ok = matchNames(named.getSimpleName(), ((CtNamedElement) target).getSimpleName());
 			if (ok && !template.equals(target)) {
@@ -432,6 +476,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 
 		if (target instanceof CtElement) {
+			//TODO cache relevant fields for a spoon model class in a static Map
 			for (Field f : RtHelper.getAllFields(target.getClass())) {
 				f.setAccessible(true);
 				if (Modifier.isStatic(f.getModifiers())) {
@@ -475,6 +520,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @param target a potentially matching element
 	 * @param template a matching parameter, which may define extra {@link ParameterMatcher}
 	 * @return true if {@link ParameterMatcher} of `template` matches on `target`
+	 *
+	 * TODO: rename this method to #checkParameterMatcher
 	 */
 	private boolean invokeCallBack(Object target, Object template) {
 		try {
@@ -512,9 +559,11 @@ public class TemplateMatcher implements Filter<CtElement> {
 
 	/**
 	 * Detects whether `object` represent a template variable `inMulti`
+	 * TODO: rename to isCurrentTemplateParameter ?
 	 */
 	private boolean isCurrentTemplate(Object object, CtElement inMulti) {
 		if (object instanceof CtInvocation<?>) {
+			//BUG: should use == instead of equals?
 			return object.equals(inMulti);
 		}
 		if (object instanceof CtParameter) {
@@ -562,7 +611,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 			if (teList.size() != taList.size()) {
 				return false;
 			}
-
+			//TODO simplify the cycle. Use one index for both lists
 			for (int te = 0, ta = 0; (te < teList.size()) && (ta < taList.size()); te++, ta++) {
 				if (!helperMatch(taList.get(ta), teList.get(te))) {
 					return false;
@@ -584,15 +633,25 @@ public class TemplateMatcher implements Filter<CtElement> {
 						return false;
 					}
 					boolean ret = addMatch(inMulti, multi);
+					//BUG: if addMatch returns false, then report it as
+					//Launcher.LOGGER.debug("incongruent match");
 					return ret;
 				}
 				//there is next template parameter. Move to it
 				te++;
 				//adds all target list items, which are not matching to next template parameter, to the actual template parameter
+				/*
+				 * IMPROVE:
+				 * - do not check (te < teList.size()), because it is already tested above
+				 * - get teList.get(te) into local variable
+				 * then it will be clear that this cycle iterates over taList only
+				 */
 				while ((te < teList.size()) && (ta < taList.size()) && !helperMatch(taList.get(ta), teList.get(te))) {
 					multi.add(taList.get(ta));
 					ta++;
 				}
+				//BUG: te-- ?? Or do not increase te above at all?
+
 				//we have found first target parameter, which fits to next template parameter
 				//create statement list for previous parameter and add it's match
 				CtStatementList tpl = templateType.getFactory().Core().createStatementList();
@@ -600,6 +659,9 @@ public class TemplateMatcher implements Filter<CtElement> {
 				if (!invokeCallBack(tpl, inMulti)) {
 					return false;
 				}
+				//BUG: why we do not care about return value here?
+				// if addMatch returns false, then report it as
+				//Launcher.LOGGER.debug("incongruent match");
 				addMatch(inMulti, tpl);
 				// update inMulti
 				inMulti = nextListStatement(teList, inMulti);
@@ -609,6 +671,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 				if (!helperMatch(taList.get(ta), teList.get(te))) {
 					return false;
 				}
+				//TODO: make condition more readable. E.g. ta+1>=taList.size()
 				if (!(ta + 1 < taList.size()) && (inMulti != null)) {
 					/*
 					 * there is no next target item in taList,
@@ -616,17 +679,27 @@ public class TemplateMatcher implements Filter<CtElement> {
 					 * which expects one
 					 */
 					CtStatementList tpl = templateType.getFactory().Core().createStatementList();
+					//BUG: it looks like `multi` must be always empty
+					//TODO: delete this cycle
 					for (Object o : multi) {
 						tpl.addStatement((CtStatement) o);
 					}
-					//so it returns empty statement list
+					//so it returns empty statement list - might be OK
 					if (!invokeCallBack(tpl, inMulti)) {
 						return false;
 					}
+					//BUG: why we do not care about return value here?
+					// if addMatch returns false, then report it as
+					//Launcher.LOGGER.debug("incongruent match");
 					addMatch(inMulti, tpl);
 					// update inMulti
 					inMulti = nextListStatement(teList, inMulti);
 					multi = new ArrayList<>();
+					/*
+					 * BUG: if there is next `inMulti` template parameter,
+					 * then it is not checked whether it matches empty statement list,
+					 * because ta+1==taList.size() and it finishes the main cycle.
+					 */
 				}
 			}
 		}
@@ -639,6 +712,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @param templateName the name from template
 	 * @param elementName the name from target
 	 * @return true if matching
+	 *
+	 * TODO fix BUG: refactor this method and callers, to call addMatch correctly
 	 */
 	private boolean matchNames(String templateName, String elementName) {
 
@@ -667,6 +742,12 @@ public class TemplateMatcher implements Filter<CtElement> {
 
 	/**
 	 * returns next ListStatement parameter from teList
+	 *
+	 * BUG: it works only for first and second parameter. The 3rd call  will return first parameter again!
+	 *
+	 * @param teList
+	 * @param inMulti TODO replace by int index
+	 * @return TODO return int index of found statement or -1 if there is no next one
 	 */
 	private CtElement nextListStatement(List<?> teList, CtElement inMulti) {
 		if (inMulti == null) {
@@ -674,6 +755,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 		}
 		List<?> teList2 = new ArrayList<Object>(teList);
 		if (inMulti instanceof CtInvocation) {
+			//BUG: we should use removeSame, which uses "==" instead of "equals"
 			teList2.remove(inMulti);
 		} else if (inMulti instanceof CtVariable) {
 			CtVariable<?> var = (CtVariable<?>) inMulti;
@@ -681,6 +763,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 				CtVariable<?> teVar = (CtVariable<?>) iter.next();
 				if (teVar.getSimpleName().equals(var.getSimpleName())) {
 					iter.remove();
+					//BUG? Should it really remove all variables of the same name, or should it remove first found?
 				}
 			}
 		}
