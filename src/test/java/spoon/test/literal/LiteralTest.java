@@ -1,6 +1,5 @@
 package spoon.test.literal;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
