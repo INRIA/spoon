@@ -231,8 +231,10 @@ public class SubstitutionVisitor extends CtScanner {
 								.createClassAccess(factory.Type().createReference(((Class<?>) value).getName())));
 					} else if (value instanceof Enum) {
 						CtTypeReference<?> enumType = factory.Type().createReference(value.getClass());
-						toReplace.replace(factory.Code().createVariableRead(
-								factory.Field().createReference(enumType, enumType, ((Enum<?>) value).name()), true));
+						CtFieldRead<T> enumValueAccess = (CtFieldRead<T>) factory.Code().createVariableRead(
+								factory.Field().createReference(enumType, enumType, ((Enum<?>) value).name()), true);
+						enumValueAccess.setTarget(factory.Code().createTypeAccess(enumType));
+						toReplace.replace(enumValueAccess);
 					} else if (value instanceof List) {
 						// replace list of CtParameter for generic access to the
 						// parameters
