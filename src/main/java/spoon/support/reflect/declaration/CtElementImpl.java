@@ -48,6 +48,7 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -177,7 +178,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public void delete() {
-		replace(null);
+		//delete is implemented as replace by no element (empty list of elements)
+		replace(Collections.<CtElement>emptyList());
 	}
 
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
@@ -373,6 +375,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public void replace(CtElement element) {
 		ReplacementVisitor.replace(this, element);
+	}
+
+	@Override
+	public <E extends CtElement> void replace(Collection<E> elements) {
+		ReplacementVisitor.replace(this, elements);
 	}
 
 	@Override

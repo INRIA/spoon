@@ -33,6 +33,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.replace.testclasses.Mole;
 import spoon.test.replace.testclasses.Tacos;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -201,6 +202,29 @@ public class ReplaceTest {
 
 		Assert.assertNull(sample.getMethod("foo"));
 		Assert.assertNotNull(sample.getMethod("notfoo"));
+	}
+
+	@Test
+	public void testReplaceTwoMethods() {
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
+				.getType("Foo");
+
+		Assert.assertNotNull(sample.getMethod("foo"));
+		Assert.assertNull(sample.getMethod("notfoo"));
+
+		CtMethod bar = factory.Core().createMethod();
+		bar.setSimpleName("notfoo");
+		bar.setType(factory.Type().createReference(void.class));
+		CtMethod bar2 = factory.Core().createMethod();
+		bar2.setSimpleName("notfoo2");
+		bar2.setType(factory.Type().createReference(void.class));
+		int originCountOfMethods = sample.getTypeMembers().size();
+		sample.getMethod("foo").replace(Arrays.asList(bar, bar2));
+
+		Assert.assertNull(sample.getMethod("foo"));
+		Assert.assertNotNull(sample.getMethod("notfoo"));
+		Assert.assertNotNull(sample.getMethod("notfoo2"));
+		Assert.assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
 	}
 
 	@Test

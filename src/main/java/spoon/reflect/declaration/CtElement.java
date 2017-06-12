@@ -29,6 +29,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -108,6 +109,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Replaces this element by another one.
 	 */
 	void replace(CtElement element);
+
+	/**
+	 * Replaces this element by several elements.
+	 * If `elements` contains one single element, it is equivalent to {@link #replace(CtElement)}.
+	 * If `elements` is empty, it is equivalent to {@link #delete()}.
+	 */
+	<E extends CtElement> void replace(Collection<E> elements);
 
 	/**
 	 * Add an annotation for this element
