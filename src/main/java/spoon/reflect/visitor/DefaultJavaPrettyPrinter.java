@@ -1,16 +1,16 @@
 /**
  * Copyright (C) 2006-2017 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
- *
+ * <p>
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify
  * and/or redistribute the software under the terms of the CeCILL-C license as
  * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
+ * <p>
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -880,63 +880,63 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return;
 		}
 		switch (comment.getCommentType()) {
-		case FILE:
-			printer.write(JAVADOC_START).writeln();
-			break;
-		case JAVADOC:
-			printer.write(JAVADOC_START).writeln().writeTabs();
-			break;
-		case INLINE:
-			printer.write(INLINE_COMMENT_START);
-			break;
-		case BLOCK:
-			printer.write(BLOCK_COMMENT_START);
-			break;
+			case FILE:
+				printer.write(JAVADOC_START).writeln();
+				break;
+			case JAVADOC:
+				printer.write(JAVADOC_START).writeln().writeTabs();
+				break;
+			case INLINE:
+				printer.write(INLINE_COMMENT_START);
+				break;
+			case BLOCK:
+				printer.write(BLOCK_COMMENT_START);
+				break;
 		}
 		String content = comment.getContent();
 		switch (comment.getCommentType()) {
-		case INLINE:
-			printer.write(content);
-			break;
-		default:
-			String[] lines = content.split(LINE_SEPARATOR);
-			for (int i = 0; i < lines.length; i++) {
-				String com = lines[i];
-				if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
-					printer.write(com);
-					if (lines.length > 1) {
-						printer.writeln().writeTabs();
-					}
-				} else {
-					if (com.length() > 0) {
-						printer.write(COMMENT_STAR + com).writeln().writeTabs();
+			case INLINE:
+				printer.write(content);
+				break;
+			default:
+				String[] lines = content.split(LINE_SEPARATOR);
+				for (int i = 0; i < lines.length; i++) {
+					String com = lines[i];
+					if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
+						printer.write(com);
+						if (lines.length > 1) {
+							printer.writeln().writeTabs();
+						}
 					} else {
-						printer.write(" *" /* no trailing space */ + com).writeln().writeTabs();
+						if (com.length() > 0) {
+							printer.write(COMMENT_STAR + com).writeln().writeTabs();
+						} else {
+							printer.write(" *" /* no trailing space */ + com).writeln().writeTabs();
+						}
+					}
+
+				}
+				if (comment instanceof CtJavaDoc) {
+					if (!((CtJavaDoc) comment).getTags().isEmpty()) {
+						printer.write(" *").writeln().writeTabs();
+					}
+					for (CtJavaDocTag docTag : ((CtJavaDoc) comment).getTags()) {
+						scan(docTag);
 					}
 				}
-
-			}
-			if (comment instanceof CtJavaDoc) {
-				if (!((CtJavaDoc) comment).getTags().isEmpty()) {
-					printer.write(" *").writeln().writeTabs();
-				}
-				for (CtJavaDocTag docTag : ((CtJavaDoc) comment).getTags()) {
-					scan(docTag);
-				}
-			}
-			break;
+				break;
 		}
 
 		switch (comment.getCommentType()) {
-		case BLOCK:
-			printer.write(BLOCK_COMMENT_END);
-			break;
-		case FILE:
-			printer.write(BLOCK_COMMENT_END);
-			break;
-		case JAVADOC:
-			printer.write(BLOCK_COMMENT_END);
-			break;
+			case BLOCK:
+				printer.write(BLOCK_COMMENT_END);
+				break;
+			case FILE:
+				printer.write(BLOCK_COMMENT_END);
+				break;
+			case JAVADOC:
+				printer.write(BLOCK_COMMENT_END);
+				break;
 		}
 	}
 
@@ -1150,7 +1150,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				// if the string in the source is not the same as the string in the literal, the string may contains special characters
 				mayContainsSpecialCharacter = stringLength != 1;
 			}
-			printer.writeCharLiteral((Character)literal.getValue(), mayContainsSpecialCharacter);
+			printer.writeCharLiteral((Character) literal.getValue(), mayContainsSpecialCharacter);
 
 			printer.write("'");
 		} else if (literal.getValue() instanceof String) {
@@ -1387,8 +1387,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * we check that the reference has a declaring type with generics.
 	 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
 	 *
-	 * @param reference
-	 * 		Type reference concerned by the bug.
+	 * @param reference Type reference concerned by the bug.
 	 * @return true if a declaring type have generic types.
 	 */
 	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {

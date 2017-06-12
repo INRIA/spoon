@@ -1,16 +1,16 @@
 /**
  * Copyright (C) 2006-2017 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
- *
+ * <p>
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify
  * and/or redistribute the software under the terms of the CeCILL-C license as
  * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
+ * <p>
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -135,6 +135,7 @@ public class PrinterHelper {
 		nbTabs = tabCount;
 		return this;
 	}
+
 	public boolean removeLine() {
 		String ls = LINE_SEPARATOR;
 		int i = sbf.length() - ls.length();
@@ -229,26 +230,26 @@ public class PrinterHelper {
 	 */
 	public void preWriteUnaryOperator(UnaryOperatorKind o) {
 		switch (o) {
-		case POS:
-			write("+");
-			break;
-		case NEG:
-			write("-");
-			break;
-		case NOT:
-			write("!");
-			break;
-		case COMPL:
-			write("~");
-			break;
-		case PREINC:
-			write("++");
-			break;
-		case PREDEC:
-			write("--");
-			break;
-		default:
-			// do nothing (this does not feel right to ignore invalid ops)
+			case POS:
+				write("+");
+				break;
+			case NEG:
+				write("-");
+				break;
+			case NOT:
+				write("!");
+				break;
+			case COMPL:
+				write("~");
+				break;
+			case PREINC:
+				write("++");
+				break;
+			case PREDEC:
+				write("--");
+				break;
+			default:
+				// do nothing (this does not feel right to ignore invalid ops)
 		}
 	}
 
@@ -257,14 +258,14 @@ public class PrinterHelper {
 	 */
 	public void postWriteUnaryOperator(UnaryOperatorKind o) {
 		switch (o) {
-		case POSTINC:
-			write("++");
-			break;
-		case POSTDEC:
-			write("--");
-			break;
-		default:
-			// do nothing (this does not feel right to ignore invalid ops)
+			case POSTINC:
+				write("++");
+				break;
+			case POSTDEC:
+				write("--");
+				break;
+			default:
+				// do nothing (this does not feel right to ignore invalid ops)
 		}
 	}
 
@@ -273,66 +274,66 @@ public class PrinterHelper {
 	 */
 	public PrinterHelper writeOperator(BinaryOperatorKind o) {
 		switch (o) {
-		case OR:
-			write("||");
-			break;
-		case AND:
-			write("&&");
-			break;
-		case BITOR:
-			write("|");
-			break;
-		case BITXOR:
-			write("^");
-			break;
-		case BITAND:
-			write("&");
-			break;
-		case EQ:
-			write("==");
-			break;
-		case NE:
-			write("!=");
-			break;
-		case LT:
-			write("<");
-			break;
-		case GT:
-			write(">");
-			break;
-		case LE:
-			write("<=");
-			break;
-		case GE:
-			write(">=");
-			break;
-		case SL:
-			write("<<");
-			break;
-		case SR:
-			write(">>");
-			break;
-		case USR:
-			write(">>>");
-			break;
-		case PLUS:
-			write("+");
-			break;
-		case MINUS:
-			write("-");
-			break;
-		case MUL:
-			write("*");
-			break;
-		case DIV:
-			write("/");
-			break;
-		case MOD:
-			write("%");
-			break;
-		case INSTANCEOF:
-			write("instanceof");
-			break;
+			case OR:
+				write("||");
+				break;
+			case AND:
+				write("&&");
+				break;
+			case BITOR:
+				write("|");
+				break;
+			case BITXOR:
+				write("^");
+				break;
+			case BITAND:
+				write("&");
+				break;
+			case EQ:
+				write("==");
+				break;
+			case NE:
+				write("!=");
+				break;
+			case LT:
+				write("<");
+				break;
+			case GT:
+				write(">");
+				break;
+			case LE:
+				write("<=");
+				break;
+			case GE:
+				write(">=");
+				break;
+			case SL:
+				write("<<");
+				break;
+			case SR:
+				write(">>");
+				break;
+			case USR:
+				write(">>>");
+				break;
+			case PLUS:
+				write("+");
+				break;
+			case MINUS:
+				write("-");
+				break;
+			case MUL:
+				write("*");
+				break;
+			case DIV:
+				write("/");
+				break;
+			case MOD:
+				write("%");
+				break;
+			case INSTANCEOF:
+				write("instanceof");
+				break;
 		}
 		return this;
 	}
@@ -403,10 +404,12 @@ public class PrinterHelper {
 	}
 
 	private ArrayDeque<Integer> lengths = new ArrayDeque<>();
+
 	/** stores the length of the printer */
 	public void snapshotLength() {
 		lengths.addLast(toString().length());
 	}
+
 	/** returns true if something has been written since the last call to snapshotLength() */
 	public boolean hasNewContent() {
 		return lengths.pollLast() < toString().length();

@@ -52,6 +52,7 @@ public class LiteralTest {
 		runLaunch.addInputResource("./src/test/resources/noclasspath/LiteralInForEach.java");
 		runLaunch.buildModel();
 	}
+
 	@Test
 	public void testBuildLiternal() throws Exception {
 		CtType<Tacos> ctType = buildClass(Tacos.class);
@@ -140,26 +141,26 @@ public class LiteralTest {
 		launcher.buildModel();
 		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.EscapedLiteral");
 
-		assertTrue('\u0000' == (char)((CtLiteral)ctClass.getField("c1").getDefaultExpression()).getValue());
-		assertTrue('\0' == (char)((CtLiteral)ctClass.getField("c1").getDefaultExpression()).getValue());
+		assertTrue('\u0000' == (char) ((CtLiteral) ctClass.getField("c1").getDefaultExpression()).getValue());
+		assertTrue('\0' == (char) ((CtLiteral) ctClass.getField("c1").getDefaultExpression()).getValue());
 
-		assertTrue('\u0007' == (char)((CtLiteral)ctClass.getField("c2").getDefaultExpression()).getValue());
-		assertTrue('\7' == (char)((CtLiteral)ctClass.getField("c2").getDefaultExpression()).getValue());
+		assertTrue('\u0007' == (char) ((CtLiteral) ctClass.getField("c2").getDefaultExpression()).getValue());
+		assertTrue('\7' == (char) ((CtLiteral) ctClass.getField("c2").getDefaultExpression()).getValue());
 
-		assertTrue('\77' == (char)((CtLiteral)ctClass.getField("c3").getDefaultExpression()).getValue());
-		assertTrue('?' == (char)((CtLiteral)ctClass.getField("c3").getDefaultExpression()).getValue());
+		assertTrue('\77' == (char) ((CtLiteral) ctClass.getField("c3").getDefaultExpression()).getValue());
+		assertTrue('?' == (char) ((CtLiteral) ctClass.getField("c3").getDefaultExpression()).getValue());
 
-		assertTrue('\177' == (char)((CtLiteral)ctClass.getField("c4").getDefaultExpression()).getValue());
-		assertTrue('\u007f' == (char)((CtLiteral)ctClass.getField("c4").getDefaultExpression()).getValue());
+		assertTrue('\177' == (char) ((CtLiteral) ctClass.getField("c4").getDefaultExpression()).getValue());
+		assertTrue('\u007f' == (char) ((CtLiteral) ctClass.getField("c4").getDefaultExpression()).getValue());
 
-		assertTrue('\277' == (char)((CtLiteral)ctClass.getField("c5").getDefaultExpression()).getValue());
-		assertTrue('\u00bf' == (char)((CtLiteral)ctClass.getField("c5").getDefaultExpression()).getValue());
+		assertTrue('\277' == (char) ((CtLiteral) ctClass.getField("c5").getDefaultExpression()).getValue());
+		assertTrue('\u00bf' == (char) ((CtLiteral) ctClass.getField("c5").getDefaultExpression()).getValue());
 
-		assertTrue('\377' == (char)((CtLiteral)ctClass.getField("c6").getDefaultExpression()).getValue());
-		assertTrue('\u00ff' == (char)((CtLiteral)ctClass.getField("c6").getDefaultExpression()).getValue());
+		assertTrue('\377' == (char) ((CtLiteral) ctClass.getField("c6").getDefaultExpression()).getValue());
+		assertTrue('\u00ff' == (char) ((CtLiteral) ctClass.getField("c6").getDefaultExpression()).getValue());
 
-		assertTrue('\u0000' == (char)((CtLiteral)ctClass.getField("c7").getDefaultExpression()).getValue());
-		assertTrue('\u0001' == (char)((CtLiteral)ctClass.getField("c8").getDefaultExpression()).getValue());
-		assertTrue('\u0002' == (char)((CtLiteral)ctClass.getField("c9").getDefaultExpression()).getValue());
+		assertTrue('\u0000' == (char) ((CtLiteral) ctClass.getField("c7").getDefaultExpression()).getValue());
+		assertTrue('\u0001' == (char) ((CtLiteral) ctClass.getField("c8").getDefaultExpression()).getValue());
+		assertTrue('\u0002' == (char) ((CtLiteral) ctClass.getField("c9").getDefaultExpression()).getValue());
 	}
 }
