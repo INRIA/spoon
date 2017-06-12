@@ -1,5 +1,6 @@
 package spoon.test.literal;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtLiteral;
@@ -129,35 +130,36 @@ public class LiteralTest {
 
 	@Test
 	public void testEscapedString() throws Exception {
+
+		/* test escaped char: spoon change octal values by equivalent unicode values */
+
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/literal/testclasses/EscapedLiteral.java");
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
-		assertEquals(expectedClass, launcher.getFactory().Class().get("spoon.test.literal.testclasses.EscapedLiteral").toString());
+		final CtClass<?> ctClass = launcher.getFactory().Class().get("spoon.test.literal.testclasses.EscapedLiteral");
+
+		assertTrue('\u0000' == (char)((CtLiteral)ctClass.getField("c1").getDefaultExpression()).getValue());
+		assertTrue('\0' == (char)((CtLiteral)ctClass.getField("c1").getDefaultExpression()).getValue());
+
+		assertTrue('\u0007' == (char)((CtLiteral)ctClass.getField("c2").getDefaultExpression()).getValue());
+		assertTrue('\7' == (char)((CtLiteral)ctClass.getField("c2").getDefaultExpression()).getValue());
+
+		assertTrue('\77' == (char)((CtLiteral)ctClass.getField("c3").getDefaultExpression()).getValue());
+		assertTrue('?' == (char)((CtLiteral)ctClass.getField("c3").getDefaultExpression()).getValue());
+
+		assertTrue('\177' == (char)((CtLiteral)ctClass.getField("c4").getDefaultExpression()).getValue());
+		assertTrue('\u007f' == (char)((CtLiteral)ctClass.getField("c4").getDefaultExpression()).getValue());
+
+		assertTrue('\277' == (char)((CtLiteral)ctClass.getField("c5").getDefaultExpression()).getValue());
+		assertTrue('\u00bf' == (char)((CtLiteral)ctClass.getField("c5").getDefaultExpression()).getValue());
+
+		assertTrue('\377' == (char)((CtLiteral)ctClass.getField("c6").getDefaultExpression()).getValue());
+		assertTrue('\u00ff' == (char)((CtLiteral)ctClass.getField("c6").getDefaultExpression()).getValue());
+
+		assertTrue('\u0000' == (char)((CtLiteral)ctClass.getField("c7").getDefaultExpression()).getValue());
+		assertTrue('\u0001' == (char)((CtLiteral)ctClass.getField("c8").getDefaultExpression()).getValue());
+		assertTrue('\u0002' == (char)((CtLiteral)ctClass.getField("c9").getDefaultExpression()).getValue());
 	}
-
-	private static final String nl = System.getProperty("line.separator");
-
-	private static final String expectedClass =
-			"public class EscapedLiteral {" + nl  +
-			"  char c1 = '\\0';" + nl  +
-			"" + nl  +
-			"  char c2 = '\\7';" + nl  +
-			"" + nl  +
-			"  char c3 = '\\77';" + nl  +
-			"" + nl  +
-			"  char c4 = '\\177';" + nl  +
-			"" + nl  +
-			"  char c5 = '\\277';" + nl  +
-			"" + nl  +
-			"  char c6 = '\\377';" + nl  +
-			"" + nl  +
-			"  char c7 = '\\u0000';" + nl  +
-			"" + nl  +
-			"  char c8 = '\\u0001';" + nl  +
-			"" + nl  +
-			"  char c9 = '\\u0002';" + nl  +
-			"}";
-
 }
