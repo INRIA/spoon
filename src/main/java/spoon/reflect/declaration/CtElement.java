@@ -111,7 +111,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	void replace(CtElement element);
 
 	/**
-	 * Replaces this element by another zero, one or more elements.
+	 * Replaces this element by several elements.
+	 * If `elements` contains one single element, it is equivalent to {@link #replace(CtElement)}.
+	 * If `elements` is empty, it is equivalent to {@link #delete()}.
 	 */
 	<E extends CtElement> void replace(Collection<E> elements);
 
