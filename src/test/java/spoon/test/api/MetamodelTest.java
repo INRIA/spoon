@@ -62,15 +62,18 @@ public class MetamodelTest {
 
 		Set<String> expectedRoles = Arrays.stream(CtRole.values()).map(r -> r.name()).collect(Collectors.toSet());
 
-		List<CtMethod> getters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod>(PropertyGetter.class));
+		List<CtMethod<?>> getters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod<?>>(PropertyGetter.class));
 		Set<String> getterRoles = getters.stream().map(g -> ((CtFieldRead)g.getAnnotation(propertyGetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
+		Set<CtMethod<?>> isNotGetter = getters.stream().filter(m -> !(m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))).collect(Collectors.toSet());
 
-		List<CtMethod> setters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod>(PropertySetter.class));
+		List<CtMethod<?>> setters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod<?>>(PropertySetter.class));
 		Set<String> setterRoles = setters.stream().map(g -> ((CtFieldRead)g.getAnnotation(propertySetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
-
+		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
 		Assert.assertEquals(expectedRoles, getterRoles);
 		Assert.assertEquals(expectedRoles, setterRoles);
+		Assert.assertEquals(Collections.EMPTY_SET, isNotGetter);
+		Assert.assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}
 
 

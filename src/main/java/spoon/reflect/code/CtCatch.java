@@ -46,7 +46,7 @@ public interface CtCatch extends CtCodeElement, CtBodyHolder {
 	 * Gets the catch's body.
 	 */
 	@Override
-	@PropertySetter(role = BODY)
+	@PropertyGetter(role = BODY)
 	CtBlock<?> getBody();
 
 	@Override

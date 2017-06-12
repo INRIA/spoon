@@ -16,17 +16,17 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.NESTED_TYPE;
 import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
@@ -77,13 +77,13 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	/**
 	 * Gets the created class.
 	 */
-	@PropertyGetter(role = EXPRESSION)
+	@PropertyGetter(role = NESTED_TYPE)
 	CtClass<?> getAnonymousClass();
 
 	/**
 	 * Sets the created class.
 	 */
-	@PropertySetter(role = EXPRESSION)
+	@PropertySetter(role = NESTED_TYPE)
 	<N extends CtNewClass> N setAnonymousClass(CtClass<?> anonymousClass);
 
 	@Override

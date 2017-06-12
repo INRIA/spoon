@@ -82,7 +82,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = emptySet();
 
-	@MetamodelPropertyField(role = CtRole.FIELD)
+	@MetamodelPropertyField(role = {CtRole.FIELD, CtRole.EXECUTABLE, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
