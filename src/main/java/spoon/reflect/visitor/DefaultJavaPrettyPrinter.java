@@ -1150,7 +1150,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				// if the string in the source is not the same as the string in the literal, the string may contains special characters
 				mayContainsSpecialCharacter = stringLength != 1;
 			}
-			printer.writeStringLiteral(new String(new char[] { (Character) literal.getValue() }), mayContainsSpecialCharacter);
+			printer.writeCharLiteral((Character)literal.getValue(), mayContainsSpecialCharacter);
 
 			printer.write("'");
 		} else if (literal.getValue() instanceof String) {

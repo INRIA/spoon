@@ -337,54 +337,58 @@ public class PrinterHelper {
 		return this;
 	}
 
+	public void writeCharLiteral(Character c, boolean mayContainsSpecialCharacter) {
+		if (!mayContainsSpecialCharacter) {
+			write(c);
+		} else if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
+			if (c < 0x10) {
+				write("\\u000" + Integer.toHexString(c));
+			} else if (c < 0x100) {
+				write("\\u00" + Integer.toHexString(c));
+			} else if (c < 0x1000) {
+				write("\\u0" + Integer.toHexString(c));
+			} else {
+				write("\\u" + Integer.toHexString(c));
+			}
+		} else {
+			switch (c) {
+				case '\b':
+					write("\\b"); //$NON-NLS-1$
+					break;
+				case '\t':
+					write("\\t"); //$NON-NLS-1$
+					break;
+				case '\n':
+					write("\\n"); //$NON-NLS-1$
+					break;
+				case '\f':
+					write("\\f"); //$NON-NLS-1$
+					break;
+				case '\r':
+					write("\\r"); //$NON-NLS-1$
+					break;
+				case '\"':
+					write("\\\""); //$NON-NLS-1$
+					break;
+				case '\'':
+					write("\\'"); //$NON-NLS-1$
+					break;
+				case '\\': // take care not to display the escape as a potential
+					// real char
+					write("\\\\"); //$NON-NLS-1$
+					break;
+				default:
+					write(Character.isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c));
+			}
+		}
+	}
+
 	public void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
 		if (!mayContainsSpecialCharacter) {
 			write(value);
-			return;
-		}
-		// handle some special char.....
-		for (int i = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
-			if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
-				if (c < 0x10) {
-					write("\\u000" + Integer.toHexString(c));
-				} else if (c < 0x100) {
-					write("\\u00" + Integer.toHexString(c));
-				} else if (c < 0x1000) {
-					write("\\u0" + Integer.toHexString(c));
-				} else {
-					write("\\u" + Integer.toHexString(c));
-				}
-				continue;
-			}
-			switch (c) {
-			case '\b':
-				write("\\b"); //$NON-NLS-1$
-				break;
-			case '\t':
-				write("\\t"); //$NON-NLS-1$
-				break;
-			case '\n':
-				write("\\n"); //$NON-NLS-1$
-				break;
-			case '\f':
-				write("\\f"); //$NON-NLS-1$
-				break;
-			case '\r':
-				write("\\r"); //$NON-NLS-1$
-				break;
-			case '\"':
-				write("\\\""); //$NON-NLS-1$
-				break;
-			case '\'':
-				write("\\'"); //$NON-NLS-1$
-				break;
-			case '\\': // take care not to display the escape as a potential
-				// real char
-				write("\\\\"); //$NON-NLS-1$
-				break;
-			default:
-				write(value.charAt(i));
+		} else {
+			for (int i = 0; i < value.length(); i++) {
+				writeCharLiteral(value.charAt(i), mayContainsSpecialCharacter);
 			}
 		}
 	}
