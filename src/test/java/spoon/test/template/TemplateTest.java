@@ -591,7 +591,7 @@ public class TemplateTest {
 		TemplateParameter[] params = templateClass.getMethod("sampleBlocks").getBody().getStatements().toArray(new TemplateParameter[0]);
 		new ArrayAccessTemplate(params).apply(resultKlass);
 		CtMethod<?> m = resultKlass.getMethod("method");
-		//check that both TemplateParameter usages were replaced by appropriate parameter value
+		//check that both TemplateParameter usages were replaced by appropriate parameter value and that substitution which miss the value is silently removed
 		assertEquals(2, m.getBody().getStatements().size());
 		assertTrue(m.getBody().getStatements().get(0) instanceof CtBlock);
 		assertEquals("int i = 0", ((CtBlock)m.getBody().getStatements().get(0)).getStatement(0).toString());
@@ -600,6 +600,8 @@ public class TemplateTest {
 		//check that both @Parameter usage was replaced by appropriate parameter value
 		CtMethod<?> m2 = resultKlass.getMethod("method2");
 		assertEquals("java.lang.System.out.println(\"second\")", m2.getBody().getStatement(0).toString());
+		//check that substitution by missing value correctly produces empty expression
+		assertEquals("java.lang.System.out.println(null)", m2.getBody().getStatement(1).toString());
 	}
 
 	@Test
