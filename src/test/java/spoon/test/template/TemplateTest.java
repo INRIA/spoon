@@ -5,6 +5,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -146,9 +147,21 @@ public class TemplateTest {
 		// contract: invocations are replaced by actual invocations
 		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getStatement(3).toString());
 
-		// contract: foreach are inlined without extra block
-		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(4).toString());
-		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(5).toString());
+		// contract: foreach in block is inlined into that wrapping block
+		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getStatement(4);
+		assertEquals("java.lang.System.out.println(0)", templatedForEach.getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)", templatedForEach.getStatement(1).toString());
+		// contract: foreach with single body block are inlined without extra block
+		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(5).toString());
+		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(6).toString());
+		// contract: foreach with double body block are inlined with one extra block for each inlined statement
+		assertEquals("java.lang.System.out.println(0)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
+		// contract: foreach with statement are inlined without extra block
+		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(9).toString());
+		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(10).toString());
+		//contract: for each whose expression is not a template parameter is not inlined
+		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
 	}
 
 	@Test

@@ -22,8 +22,22 @@ public class SubTemplate extends SuperTemplate {
 		ArrayList l = null; // will be replaced by LinkedList l = null;
 		List o = (ArrayList) new ArrayList(); // will be replaced by List o = (LinkedList) new LinkedList();
 		invocation.S();
+		{
+			for(Object x : intValues) {
+				System.out.println(x); // will be inlined
+			}
+		}
 		for(Object x : intValues) {
 			System.out.println(x); // will be inlined
+		}
+		for(Object x : intValues) {
+			{
+				System.out.println(x); // will be inlined
+			}
+		}
+		for(Object x : intValues) System.out.println(x); // will be inlined
+		for(Object x : o) {
+			System.out.println(x); // will be NOT inlined
 		}
 	}
 
