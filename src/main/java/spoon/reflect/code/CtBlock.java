@@ -83,6 +83,7 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	/**
 	 * Gets the ith statement of this block.
 	 */
+	@DerivedProperty
 	<T extends CtStatement> T getStatement(int i);
 
 	/**

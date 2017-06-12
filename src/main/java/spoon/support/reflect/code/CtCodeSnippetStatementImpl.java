@@ -19,7 +19,9 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtCodeSnippet;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
 
@@ -31,6 +33,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 		visitor.visitCtCodeSnippetStatement(this);
 	}
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	String value;
 
 	public String getValue() {

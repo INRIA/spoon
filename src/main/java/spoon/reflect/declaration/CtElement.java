@@ -25,10 +25,18 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.ANNOTATION;
+import static spoon.reflect.path.CtRole.COMMENT;
+import static spoon.reflect.path.CtRole.IS_IMPLICIT;
+import static spoon.reflect.path.CtRole.POSITION;
 
 /**
  * This interface is the root interface for the metamodel elements (any program
@@ -53,6 +61,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * 		the annotation's class
 	 * @return if found, returns a proxy for this annotation
 	 */
+	@PropertyGetter(role = ANNOTATION)
 	<A extends Annotation> A getAnnotation(Class<A> annotationType);
 
 	/**
@@ -63,6 +72,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return the annotation if this element is annotated by one annotation of
 	 * the given type
 	 */
+	@PropertyGetter(role = ANNOTATION)
 	<A extends Annotation> CtAnnotation<A> getAnnotation(
 			CtTypeReference<A> annotationType);
 
@@ -71,17 +81,20 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 *
 	 * For sake of encapsulation, the returned list is unmodifiable.
 	 */
+	@PropertyGetter(role = ANNOTATION)
 	List<CtAnnotation<? extends Annotation>> getAnnotations();
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
 	 * element. The documentation is also accessible via {@link #getComments()}.
 	 */
+	@DerivedProperty
 	String getDocComment();
 
 	/**
 	 * Build a short representation of any element.
 	 */
+	@DerivedProperty
 	String getShortRepresentation();
 
 	/**
@@ -89,6 +102,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 *
 	 * @return Source file and line number of this element or null
 	 */
+	@PropertyGetter(role = POSITION)
 	SourcePosition getPosition();
 
 	/**
@@ -97,11 +111,19 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	void replace(CtElement element);
 
 	/**
+	 * Replaces this element by several elements.
+	 * If `elements` contains one single element, it is equivalent to {@link #replace(CtElement)}.
+	 * If `elements` is empty, it is equivalent to {@link #delete()}.
+	 */
+	<E extends CtElement> void replace(Collection<E> elements);
+
+	/**
 	 * Add an annotation for this element
 	 *
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = ANNOTATION)
 	<E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
@@ -110,6 +132,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param annotation
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = ANNOTATION)
 	boolean removeAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
@@ -128,6 +151,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element in the input source files
 	 */
+	@PropertySetter(role = POSITION)
 	<E extends CtElement> E setPosition(SourcePosition position);
 
 	/**
@@ -149,11 +173,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Java compiler or inferred when the model is built).
 	 * Consequently, implicit elements are not pretty-printed and have no position.
 	 */
+	@PropertyGetter(role = IS_IMPLICIT)
 	boolean isImplicit();
 
 	/**
 	 * Sets this element to be implicit.
 	 */
+	@PropertySetter(role = IS_IMPLICIT)
 	<E extends CtElement> E setImplicit(boolean b);
 
 	/**
@@ -182,6 +208,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Sets the annotations for this element.
 	 */
+	@PropertySetter(role = ANNOTATION)
 	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
@@ -251,12 +278,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Set the comment list
 	 */
+	@PropertySetter(role = COMMENT)
 	<E extends CtElement> E setComments(List<CtComment> comments);
 
 	/**
 	 * The list of comments
 	 * @return the list of comment
 	 */
+	@PropertyGetter(role = COMMENT)
 	List<CtComment> getComments();
 
 	/**
@@ -264,12 +293,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * <code>element.addComment(element.getFactory().Code().createComment("comment", CtComment.CommentType.INLINE)</code>
 	 * @param comment the comment
 	 */
+	@PropertySetter(role = COMMENT)
 	<E extends CtElement> E addComment(CtComment comment);
 
 	/**
 	 * Remove a comment
 	 * @param comment the comment to remove
 	 */
+	@PropertySetter(role = COMMENT)
 	<E extends CtElement> E removeComment(CtComment comment);
 
 	/**

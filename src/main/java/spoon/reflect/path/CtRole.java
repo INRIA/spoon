@@ -20,61 +20,60 @@ package spoon.reflect.path;
  * Created by nicolas on 27/08/2015.
  */
 public enum CtRole {
-	PARENT,
 	NAME,
-	DECLARING_TYPE,
 	TYPE,
 	BODY,
-	IS_FINAL,
 	IS_SHADOW,
-	IS_STATIC,
+	//BOUND, // in reference only
+	//IS_FINAL, // in reference only
+	//IS_STATIC, // in reference only
+	//IS_UPPER, // in reference only
 	IS_IMPLICIT,
 	IS_DEFAULT,
 	IS_VARARGS,
-	IS_UPPER,
 	DEFAULT_EXPRESSION,
 	THEN,
 	ELSE,
-	PACKAGE,
+	SUB_PACKAGE,
 	CONDITION,
-	SUPER_TYPE,
-	POSITION,
 	RIGHT_OPERAND,
 	LEFT_OPERAND,
 	LABEL,
 	CASE,
-	KIND,
+	OPERATOR_KIND,
 	PARAMETER,
 	EXPRESSION,
 	TARGET,
-	OPERAND,
 	VARIABLE,
 	FINALIZER,
-	THROW,
-	EXECUTABLE,
+	THROWN,
 	ASSIGNMENT,
 	ASSIGNED,
-	MODIFIERS,
-	COMMENTS,
-	TYPES,
-	INTERFACES,
-	ANNOTATIONS,
-	STATEMENTS,
-	ARGUMENTS,
-	MEMBERS,
-	CASTS,
-	VALUES,
+	MODIFIER,
+	COMMENT,
+	ANNOTATION_TYPE,
+	INTERFACE,
+	ANNOTATION,
+	STATEMENT,
+	ARGUMENT,
+	SUPER_TYPE,
+	NESTED_TYPE,
+	CONSTRUCTOR,
+	EXECUTABLE,
+	FIELD,
+	CAST,
+	VALUE,
 	FOR_UPDATE,
 	FOR_INIT,
-	RESOURCES,
-	DIMENSIONS,
-	BOUNDS,
-	CATCHERS,
-	ANONYMOUS_CLASS,
+	TRY_RESOURCE,
+	DIMENSION,
+	CATCH,
 	TARGET_LABEL,
-	TYPE_PARAMETERS,
-	CONTENT,
-	TAGS;
+	TYPE_PARAMETER,
+	COMMENT_TAG,
+	COMMENT_CONTENT,
+	COMMENT_TYPE,
+	POSITION;
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -92,12 +91,6 @@ public enum CtRole {
 		if ("implicit".equals(name)) {
 			return IS_IMPLICIT;
 		}
-		if ("fina".equals(name)) {
-			return IS_FINAL;
-		}
-		if ("stat".equals(name)) {
-			return IS_STATIC;
-		}
 		if ("varargs".equals(name)) {
 			return IS_VARARGS;
 		}
@@ -111,16 +104,16 @@ public enum CtRole {
 			return PARAMETER;
 		}
 		if ("dimensionexpressions".equals(name)) {
-			return DIMENSIONS;
+			return DIMENSION;
 		}
 		if ("actualtypearguments".equals(name)) {
-			return TYPE_PARAMETERS;
+			return TYPE_PARAMETER;
 		}
 		if ("formalcttypeparameters".equals(name)) {
-			return TYPE_PARAMETERS;
+			return TYPE_PARAMETER;
 		}
 		if ("typecasts".equals(name)) {
-			return CASTS;
+			return CAST;
 		}
 		if ("cases".equals(name)) {
 			return CASE;
@@ -129,10 +122,10 @@ public enum CtRole {
 			return LABEL;
 		}
 		if ("enumvalues".equals(name) || "elementvalues".equals(name)) {
-			return VALUES;
+			return VALUE;
 		}
 		if ("throwntypes".equals(name)) {
-			return THROW;
+			return THROWN;
 		}
 		if ("value".equals(name) || "returnedexpression".equals(name) || "expressions".equals(name)) {
 			return EXPRESSION;
@@ -144,14 +137,13 @@ public enum CtRole {
 			return PARAMETER;
 		}
 		if ("typemembers".equals(name)) {
-			return MEMBERS;
+			return FIELD;
 		}
 		if ("throwexpression".equals(name)) {
-			return THROW;
+			return THROWN;
 		}
 		if ("returntype".equals(name)
-				|| "componenttype".equals(name)
-				|| "annotationtype".equals(name)) {
+				|| "componenttype".equals(name)) {
 			return TYPE;
 		}
 		if ("caseexpression".equals(name)) {
@@ -170,7 +162,7 @@ public enum CtRole {
 			return LEFT_OPERAND;
 		}
 		if ("pack".equals(name) || "packs".equals(name)) {
-			return PACKAGE;
+			return SUB_PACKAGE;
 		}
 		if ("superclass".equals(name)) {
 			return SUPER_TYPE;

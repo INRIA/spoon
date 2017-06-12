@@ -18,8 +18,13 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtPackageReference;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.SUB_PACKAGE;
+import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * This element defines a package declaration. The packages are represented by a
@@ -50,11 +55,13 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * 		the simple name of searched package
 	 * @return the found package or null
 	 */
+	@PropertyGetter(role = SUB_PACKAGE)
 	CtPackage getPackage(String name);
 
 	/**
 	 * Gets the set of included child packages.
 	 */
+	@PropertyGetter(role = SUB_PACKAGE)
 	Set<CtPackage> getPackages();
 
 	/**
@@ -84,16 +91,19 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	/**
 	 * Returns the set of the top-level types in this package.
 	 */
+	@PropertyGetter(role = TYPE)
 	Set<CtType<?>> getTypes();
 
 	/**
 	 * Adds a type to this package.
 	 */
+	@PropertySetter(role = TYPE)
 	<T extends CtPackage> T addType(CtType<?> type);
 
 	/**
 	 * Removes a type from this package.
 	 */
+	@PropertySetter(role = TYPE)
 	void removeType(CtType<?> type);
 
 	/**
@@ -102,6 +112,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param pack
 	 * 		new set of child packages
 	 */
+	@PropertySetter(role = SUB_PACKAGE)
 	<T extends CtPackage> T setPackages(Set<CtPackage> pack);
 
 	/**
@@ -110,6 +121,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = SUB_PACKAGE)
 	<T extends CtPackage> T addPackage(CtPackage pack);
 
 	/**
@@ -118,6 +130,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param pack
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = SUB_PACKAGE)
 	boolean removePackage(CtPackage pack);
 
 	/**
@@ -126,6 +139,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param types
 	 * 		new Set of types
 	 */
+	@PropertySetter(role = TYPE)
 	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
 
 	@Override

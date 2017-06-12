@@ -16,6 +16,12 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.TARGET_LABEL;
+
+
 /**
  * This code element defines the continue statement.
  * Example:
@@ -44,12 +50,14 @@ public interface CtContinue extends CtCFlowBreak {
 	 * Gets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
+	@PropertyGetter(role = TARGET_LABEL)
 	String getTargetLabel();
 
 	/**
 	 * Sets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
+	@PropertySetter(role = TARGET_LABEL)
 	<T extends CtContinue> T setTargetLabel(String targetLabel);
 
 	@Override

@@ -16,6 +16,11 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.VALUE;
+
 /**
  * This code element defines a literal value (an int, a string, etc).
  *
@@ -32,11 +37,13 @@ public interface CtLiteral<T> extends CtExpression<T> {
 	/**
 	 * Gets the actual value of the literal (statically known).
 	 */
+	@PropertyGetter(role = VALUE)
 	T getValue();
 
 	/**
 	 * Sets the actual value of the literal.
 	 */
+	@PropertySetter(role = VALUE)
 	<C extends CtLiteral<T>> C setValue(T value);
 
 	/** Overriding return type, a clone of a CtLiteral returns a CtLiteral */

@@ -22,6 +22,7 @@ import spoon.support.DerivedProperty;
 
 import java.util.Set;
 
+
 /**
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtVariable} or sub-type.

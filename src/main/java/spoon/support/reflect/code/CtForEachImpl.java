@@ -19,13 +19,17 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<?> expression;
 
+	@MetamodelPropertyField(role = CtRole.VARIABLE)
 	CtLocalVariable<?> variable;
 
 	@Override

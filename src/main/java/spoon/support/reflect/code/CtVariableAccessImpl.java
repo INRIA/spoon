@@ -18,13 +18,16 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implements CtVariableAccess<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.VARIABLE)
 	CtVariableReference<T> variable;
 
 	@Override

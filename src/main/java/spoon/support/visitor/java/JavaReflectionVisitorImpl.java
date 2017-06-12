@@ -154,6 +154,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public void visitAnnotation(Annotation annotation) {
 		if (annotation.annotationType() != null) {
 			visitClassReference(annotation.annotationType());
+			for (RtMethod method : getDeclaredMethods(annotation.annotationType())) {
+				visitMethod(method);
+			}
 		}
 	}
 

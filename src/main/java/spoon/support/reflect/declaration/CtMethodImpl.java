@@ -24,8 +24,10 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
@@ -43,12 +45,16 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PAR
 public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> returnType;
 
+	@MetamodelPropertyField(role = CtRole.IS_DEFAULT)
 	boolean defaultMethod = false;
 
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	public CtMethodImpl() {
@@ -192,6 +198,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		return new ClassTypingContext(getDeclaringType()).isOverriding(this, superMethod);
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

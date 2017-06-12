@@ -23,8 +23,10 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
@@ -34,6 +36,7 @@ import java.util.Set;
 public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = emptySet();
 
 	@Override

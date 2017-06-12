@@ -18,13 +18,17 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.CONDITION)
 	CtExpression<Boolean> asserted;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<T> value;
 
 	@Override

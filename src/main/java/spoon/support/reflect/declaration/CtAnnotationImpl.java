@@ -39,10 +39,12 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtExpressionImpl;
 
@@ -70,8 +72,10 @@ import java.util.TreeSet;
 public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> implements CtAnnotation<A> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.ANNOTATION_TYPE)
 	CtTypeReference<A> annotationType;
 
+	@MetamodelPropertyField(role = CtRole.VALUE)
 	private Map<String, CtExpression> elementValues = new TreeMap() {
 		@Override
 		public Set<Entry<String, CtExpression>> entrySet() {
@@ -479,6 +483,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

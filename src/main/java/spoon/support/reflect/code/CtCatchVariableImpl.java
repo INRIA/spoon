@@ -24,10 +24,12 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -41,12 +43,16 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABL
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.NAME)
 	String name = "";
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	List<CtTypeReference<?>> types = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	@Override

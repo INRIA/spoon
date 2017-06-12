@@ -19,6 +19,7 @@ package spoon.reflect.reference;
 import spoon.reflect.declaration.CtParameter;
 import spoon.support.DerivedProperty;
 
+
 /**
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtParameter}.

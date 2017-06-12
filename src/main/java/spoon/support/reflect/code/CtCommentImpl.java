@@ -17,13 +17,17 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtComment;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.COMMENT_CONTENT)
 	private String content;
 
+	@MetamodelPropertyField(role = CtRole.COMMENT_TYPE)
 	private CommentType type;
 
 	@Override

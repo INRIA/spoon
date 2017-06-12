@@ -16,7 +16,12 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.STATEMENT;
 
 /**
  * This code element represents a list of statements. It is not a valid Java
@@ -27,21 +32,25 @@ public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 	/**
 	 * Returns the statement list.
 	 */
+	@PropertyGetter(role = STATEMENT)
 	List<CtStatement> getStatements();
 
 	/**
 	 * Sets the statement list.
 	 */
+	@PropertySetter(role = STATEMENT)
 	<T extends CtStatementList> T setStatements(List<CtStatement> statements);
 
 	/**
 	 * Adds a statement at the end of the list.
 	 */
+	@PropertySetter(role = STATEMENT)
 	<T extends CtStatementList> T addStatement(CtStatement statement);
 
 	/**
 	 * Removes a statement.
 	 */
+	@PropertySetter(role = STATEMENT)
 	void removeStatement(CtStatement statement);
 
 	@Override

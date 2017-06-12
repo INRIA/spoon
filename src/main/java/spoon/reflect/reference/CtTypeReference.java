@@ -26,6 +26,7 @@ import spoon.support.SpoonClassNotFoundException;
 
 import java.util.Set;
 
+
 /**
  * This interface defines a reference to a
  * {@link spoon.reflect.declaration.CtType} or sub-type.

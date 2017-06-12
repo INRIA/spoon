@@ -18,12 +18,15 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTypeAccess<A> {
-	private CtTypeReference<Void> voidType;
+
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	private CtTypeReference<A> type;
 
 	@Override
@@ -47,11 +50,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 
 	@Override
 	public CtTypeReference<Void> getType() {
-		if (voidType == null) {
-			voidType = getFactory().Type().VOID_PRIMITIVE.clone();
-			voidType.setParent(this);
-		}
-		return voidType;
+		return (CtTypeReference<Void>) getFactory().Type().VOID_PRIMITIVE.clone().<CtTypeAccess>setParent(this);
 	}
 
 	@Override

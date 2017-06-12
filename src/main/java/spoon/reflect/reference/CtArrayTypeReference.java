@@ -18,6 +18,7 @@ package spoon.reflect.reference;
 
 import spoon.support.DerivedProperty;
 
+
 /**
  * This interface defines a reference to an array.
  */
@@ -48,6 +49,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * the number of array types recursively embedded into the current one (see
 	 * {@link #getComponentType()}).
 	 */
+	@DerivedProperty
 	int getDimensionCount();
 
 	/**

@@ -19,15 +19,20 @@ package spoon.support.reflect.code;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBinaryOperator<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.OPERATOR_KIND)
 	BinaryOperatorKind kind;
 
+	@MetamodelPropertyField(role = CtRole.LEFT_OPERAND)
 	CtExpression<?> leftHandOperand;
 
+	@MetamodelPropertyField(role = CtRole.RIGHT_OPERAND)
 	CtExpression<?> rightHandOperand;
 
 	@Override

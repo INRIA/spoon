@@ -21,13 +21,17 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.BODY)
 	CtBlock<?> body;
 
+	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	CtCatchVariable<? extends Throwable> parameter;
 
 	@Override

@@ -18,12 +18,15 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationMethod}.
  */
 public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnnotationMethod<T> {
+	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
 	CtExpression<T> defaultExpression;
 
 	@Override

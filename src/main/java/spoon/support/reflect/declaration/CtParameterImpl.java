@@ -24,9 +24,11 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
@@ -40,10 +42,13 @@ import java.util.Set;
 public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParameter<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.IS_VARARGS)
 	boolean varArgs = false;
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	public CtParameterImpl() {
@@ -160,6 +165,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		return (CtExecutable<?>) super.getParent();
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

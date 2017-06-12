@@ -21,8 +21,10 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -33,12 +35,16 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAIN
 public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements CtAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.ASSIGNED)
 	CtExpression<T> assigned;
 
+	@MetamodelPropertyField(role = CtRole.ASSIGNMENT)
 	CtExpression<A> assignment;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.CAST)
 	List<CtTypeReference<?>> typeCasts = emptyList();
 
 	@Override

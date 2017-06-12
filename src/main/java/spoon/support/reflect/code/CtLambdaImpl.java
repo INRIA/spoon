@@ -28,9 +28,11 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
@@ -42,10 +44,15 @@ import java.util.Set;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
+	@MetamodelPropertyField(role = CtRole.NAME)
 	String simpleName = "";
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<T> expression;
+	@MetamodelPropertyField(role = CtRole.BODY)
 	CtBlock<?> body;
+	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
+	@MetamodelPropertyField(role = CtRole.THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	@Override

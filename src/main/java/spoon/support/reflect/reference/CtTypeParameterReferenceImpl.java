@@ -227,7 +227,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean isSubtypeOf(CtTypeReference<?> type) {
-		return getDeclaration().isSubtypeOf(type);
+		return getTypeDeclaration().isSubtypeOf(type);
 	}
 
 	@Override

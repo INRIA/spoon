@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
@@ -35,6 +36,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;
@@ -46,6 +48,7 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -80,10 +83,13 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	protected CtElement parent;
 
+	@MetamodelPropertyField(role = CtRole.ANNOTATION)
 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.COMMENT)
 	private List<CtComment> comments = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.POSITION)
 	SourcePosition position = SourcePosition.NOPOSITION;
 
 	Map<String, Object> metadata;
@@ -172,7 +178,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public void delete() {
-		replace(null);
+		//delete is implemented as replace by no element (empty list of elements)
+		replace(Collections.<CtElement>emptyList());
 	}
 
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
@@ -238,6 +245,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (List<E>) Query.getElements(this, new AnnotationFilter<>(CtElement.class, annotationType));
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_IMPLICIT)
 	boolean implicit = false;
 
 	public boolean isImplicit() {
@@ -367,6 +375,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public void replace(CtElement element) {
 		ReplacementVisitor.replace(this, element);
+	}
+
+	@Override
+	public <E extends CtElement> void replace(Collection<E> elements) {
+		ReplacementVisitor.replace(this, elements);
 	}
 
 	@Override
