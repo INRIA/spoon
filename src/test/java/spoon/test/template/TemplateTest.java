@@ -157,8 +157,10 @@ public class TemplateTest {
 		// contract: foreach with double body block are inlined with one extra block for each inlined statement
 		assertEquals("java.lang.System.out.println(0)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
 		assertEquals("java.lang.System.out.println(1)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
-		// contract: foreach with statement are inlined without extra block
+		// contract: foreach with statement are inlined without extra (implicit) block
+		assertFalse(methodWithTemplatedParameters.getBody().getStatement(9) instanceof CtBlock);
 		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(9).toString());
+		assertFalse(methodWithTemplatedParameters.getBody().getStatement(10) instanceof CtBlock);
 		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(10).toString());
 		//contract: for each whose expression is not a template parameter is not inlined
 		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
