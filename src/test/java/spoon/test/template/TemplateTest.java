@@ -140,8 +140,9 @@ public class TemplateTest {
 		assertEquals(1, subc.getMethodsByName("newVarName").size());
 		CtMethod<?> varMethod = subc.getMethodsByName("newVarName").get(0);
 		// contract: parameters are replaced in comments too. The Class parameter value is converted to String
-		CtComment comment = varMethod.getComments().get(0);
-		assertEquals("newVarName on {@link LinkedList}", comment.getContent());
+		assertEquals("newVarName", varMethod.getComments().get(0).getContent());
+		assertEquals("{@link LinkedList}", varMethod.getComments().get(1).getContent());
+		assertEquals("{@link SuperClass#toBeOverriden()}", varMethod.getComments().get(2).getContent());
 
 		// contract: variable are renamed
 		assertEquals("java.util.List newVarName = null", methodWithTemplatedParameters.getBody().getStatement(0).toString());
