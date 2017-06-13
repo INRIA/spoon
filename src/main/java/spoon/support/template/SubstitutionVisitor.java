@@ -27,6 +27,7 @@ import spoon.SpoonException;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -76,11 +77,9 @@ public class SubstitutionVisitor extends CtScanner {
 		}
 
 		@Override
-		public void scanCtElement(CtElement element) {
-			if (element.getDocComment() != null) {
-				element.setDocComment(context.substituteName(element.getDocComment()));
-			}
-			super.scanCtElement(element);
+		public void visitCtComment(CtComment e) {
+			e.setContent(context.substituteName(e.getContent()));
+			super.visitCtComment(e);
 		}
 
 		/**
