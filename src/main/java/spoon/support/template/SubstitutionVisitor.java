@@ -156,19 +156,15 @@ public class SubstitutionVisitor extends CtScanner {
 					//create local context which holds local substitution parameter
 					Context localContext = createContext();
 					List<CtExpression> list = getParameterValueAsListOfClones(CtExpression.class, value);
-					CtStatement body = foreach.getBody();
+					//ForEach always contains CtBlock. In some cases it is implicit.
+					CtBlock<?> foreachBlock = (CtBlock<?>) foreach.getBody();
 					String newParamName = foreach.getVariable().getSimpleName();
 					List<CtStatement> newStatements = new ArrayList<>();
 					for (CtExpression element : list) {
 						//for each item of foreach expression copy foreach body and substitute it is using local context containing new parameter
 						localContext.putParameter(newParamName, element);
-						if (body instanceof CtBlock) {
-							CtBlock foreachBlock = (CtBlock) body;
-							for (CtStatement st : foreachBlock.getStatements()) {
-								newStatements.addAll(localContext.substitute(st.clone()));
-							}
-						} else {
-							newStatements.addAll(localContext.substitute(body.clone()));
+						for (CtStatement st : foreachBlock.getStatements()) {
+							newStatements.addAll(localContext.substitute(st.clone()));
 						}
 					}
 					throw context.replace(foreach, newStatements);
