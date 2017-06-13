@@ -24,8 +24,8 @@ public class TemplateArrayAccessTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
-		CtStatement result = new SubstituteArrayAccessTemplate(new String[]{"a","b"}).apply(resultKlass);
-		assertEquals("new java.lang.String[]{ \"a\" , \"b\" }.toString()", result.toString());
+		CtStatement result = new SubstituteArrayAccessTemplate(new String[]{"a",null,"b"}).apply(resultKlass);
+		assertEquals("new java.lang.String[]{ \"a\" , null , \"b\" }.toString()", result.toString());
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class TemplateArrayAccessTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
-		CtStatement result = new SubstituteArrayLengthTemplate(new String[]{"a","b"}).apply(resultKlass);
-		assertEquals("if (2 > 0);", result.toString());
+		CtStatement result = new SubstituteArrayLengthTemplate(new String[]{"a",null,"b"}).apply(resultKlass);
+		assertEquals("if (3 > 0);", result.toString());
 	}
 }
