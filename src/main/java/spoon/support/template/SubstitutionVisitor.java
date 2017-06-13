@@ -67,6 +67,7 @@ class DoNotFurtherTemplateThisElement extends SpoonException {
  */
 public class SubstitutionVisitor extends CtScanner {
 
+	private static final Object NULL_VALUE = new Object();
 	private Context context;
 
 	private class InheritanceSustitutionScanner extends CtInheritanceScanner {
@@ -369,7 +370,9 @@ public class SubstitutionVisitor extends CtScanner {
 					list.add(item);
 				}
 			} else {
-				list.add(parameterValue);
+				if (parameterValue != null && parameterValue != NULL_VALUE) {
+					list.add(parameterValue);
+				}
 			}
 		}
 		return list;
@@ -384,7 +387,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> T getParameterValueAsClass(Class<T> itemClass, Object parameterValue) {
-		if (parameterValue == null) {
+		if (parameterValue == null || parameterValue == NULL_VALUE) {
 			return null;
 		}
 
@@ -430,8 +433,8 @@ public class SubstitutionVisitor extends CtScanner {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> CtTypeReference<T> getParameterValueAsTypeReference(Factory factory, Object parameterValue) {
-		if (parameterValue == null) {
-			return null;
+		if (parameterValue == null || parameterValue == NULL_VALUE) {
+			throw new SpoonException("The null value is not valid substitution for CtTypeReference");
 		}
 		if (parameterValue instanceof Class) {
 			return factory.Type().createReference((Class<T>) parameterValue);
@@ -497,16 +500,18 @@ public class SubstitutionVisitor extends CtScanner {
 			if (parameterNameToValue == null) {
 				parameterNameToValue = new LinkedHashMap<>();
 			}
+			if (value == null) {
+				value = NULL_VALUE;
+			}
 			parameterNameToValue.put(name, value);
 			return this;
 		}
 
 		private Context putParameters(Map<String, Object> parameters) {
 			if (parameters != null && parameters.isEmpty() == false) {
-				if (parameterNameToValue == null) {
-					parameterNameToValue = new LinkedHashMap<>();
+				for (Map.Entry<String, Object> e : parameters.entrySet()) {
+					putParameter(e.getKey(), e.getValue());
 				}
-				parameterNameToValue.putAll(parameters);
 			}
 			return this;
 		}
