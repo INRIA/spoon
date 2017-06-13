@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -134,6 +135,13 @@ public class TemplateTest {
 
 		// contract: nested types of the templates are copied
 		assertEquals(1, subc.getNestedTypes().size());
+		
+		// contract: methods are renamed
+		assertEquals(1, subc.getMethodsByName("newVarName").size());
+		CtMethod<?> varMethod = subc.getMethodsByName("newVarName").get(0);
+		// contract: parameters are replaced in comments too. The Class parameter value is converted to String
+		CtComment comment = varMethod.getComments().get(0);
+		assertEquals("newVarName on {@link LinkedList}", comment.getContent());
 
 		// contract: variable are renamed
 		assertEquals("java.util.List newVarName = null", methodWithTemplatedParameters.getBody().getStatement(0).toString());

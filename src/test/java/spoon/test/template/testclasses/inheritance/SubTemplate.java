@@ -41,7 +41,9 @@ public class SubTemplate extends SuperTemplate {
 		}
 	}
 
-	/** var */
+	/**
+	 *  var on {@link ArrayList}
+	 */
 	void var() {}
 
 	// method parameter template
