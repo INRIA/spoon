@@ -38,6 +38,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -419,8 +420,21 @@ public class SubstitutionVisitor extends CtScanner {
 			return ((CtReference) parameterValue).getSimpleName();
 		} else if (parameterValue instanceof Class) {
 			return ((Class) parameterValue).getSimpleName();
+		} else if (parameterValue instanceof CtInvocation) {
+			return getShortSignature(((CtInvocation<?>) parameterValue).getExecutable().getSignature());
+		} else if (parameterValue instanceof CtExecutableReference) {
+			return getShortSignature(((CtExecutableReference<?>) parameterValue).getSignature());
+		} else if (parameterValue instanceof CtExecutable) {
+			return getShortSignature(((CtExecutable<?>) parameterValue).getSignature());
 		}
 		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ", whose conversion to String is not supported");
+	}
+
+	/*
+	 * cut the package name. We always convert types to simple names here
+	 */
+	private static String getShortSignature(String fullSignature) {
+		return fullSignature.substring(fullSignature.lastIndexOf('.') + 1);
 	}
 
 	/**
