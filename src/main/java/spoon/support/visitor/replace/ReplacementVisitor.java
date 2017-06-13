@@ -65,8 +65,12 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 					throw new spoon.SpoonException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
 				}
 				V val = ((V) (replace[0]));
-				map.put(key, val);
-				val.setParent(shouldBeDeleted.getParent());
+				if (val != null) {
+					map.put(key, val);
+					val.setParent(shouldBeDeleted.getParent());
+				}else {
+					map.remove(key);
+				}
 			}else {
 				map.remove(key);
 			}
@@ -86,8 +90,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		if (shouldBeDeleted != null) {
 			set.remove(shouldBeDeleted);
 			for (spoon.reflect.declaration.CtElement ele : replace) {
-				set.add(((T) (ele)));
-				ele.setParent(shouldBeDeleted.getParent());
+				if (ele != null) {
+					set.add(((T) (ele)));
+					ele.setParent(shouldBeDeleted.getParent());
+				}
 			}
 			listener.set(set);
 		}
@@ -108,8 +114,12 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			list.remove(index);
 			if ((replace.length) > 0) {
 				for (int i = 0; i < (replace.length); i++) {
-					list.add((index + i), ((T) (replace[i])));
-					replace[i].setParent(shouldBeDeleted.getParent());
+					T ele = ((T) (replace[i]));
+					if (ele != null) {
+						list.add(index, ele);
+						ele.setParent(shouldBeDeleted.getParent());
+						index = index + 1;
+					}
 				}
 			}
 			listener.set(list);
