@@ -418,6 +418,8 @@ public class SubstitutionVisitor extends CtScanner {
 			return ((CtNamedElement) parameterValue).getSimpleName();
 		} else if (parameterValue instanceof CtReference) {
 			return ((CtReference) parameterValue).getSimpleName();
+		} else if (parameterValue instanceof Class) {
+			return ((Class) parameterValue).getSimpleName();
 		}
 		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ", whose conversion to String is not supported");
 	}
