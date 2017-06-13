@@ -524,7 +524,9 @@ public class CodeFactory extends SubFactory {
 		if (element instanceof CtBlock<?>) {
 			return (CtBlock<?>) element;
 		}
-		return this.createCtBlock(element);
+		CtBlock<?> block = this.createCtBlock(element);
+		block.setImplicit(true);
+		return block;
 	}
 
 	/**
