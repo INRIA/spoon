@@ -16,17 +16,13 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 
 public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	private static final long serialVersionUID = 1L;
-
-	@MetamodelPropertyField(role = CtRole.LABEL)
-	CtStatement labelledStatement;
 
 	@MetamodelPropertyField(role = CtRole.TARGET_LABEL)
 	String targetLabel;
@@ -34,20 +30,6 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtContinue(this);
-	}
-
-	@Override
-	public CtStatement getLabelledStatement() {
-		return labelledStatement;
-	}
-
-	@Override
-	public <T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement) {
-		if (labelledStatement != null) {
-			labelledStatement.setParent(this);
-		}
-		this.labelledStatement = labelledStatement;
-		return (T) this;
 	}
 
 	@Override

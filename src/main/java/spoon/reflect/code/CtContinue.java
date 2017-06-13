@@ -35,18 +35,6 @@ import static spoon.reflect.path.CtRole.TARGET_LABEL;
  */
 public interface CtContinue extends CtCFlowBreak {
 	/**
-	 * Gets the statement where the control flow continues (null if no label
-	 * defined).
-	 */
-	CtStatement getLabelledStatement();
-
-	/**
-	 * Sets the statement where the control flow continues (null if no label
-	 * defined).
-	 */
-	<T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement);
-
-	/**
 	 * Gets the label from which the control flow breaks (null if no label
 	 * defined).
 	 */
