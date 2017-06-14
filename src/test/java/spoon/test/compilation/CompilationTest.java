@@ -9,6 +9,7 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -38,6 +39,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -400,5 +402,18 @@ public class CompilationTest {
 		System.setProperty("user.dir", userDir);
 
 		assertThat(tempDirPath.toFile().listFiles().length, not(0));
+	}
+
+	@Test
+	public void testGetOrCreateBlockReturnImplicit() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/compilation/testclasses/Bar.java");
+		launcher.buildModel();
+
+		List<CtStatement> statements = launcher.getFactory().getModel().getElements(new TypeFilter<>(CtStatement.class));
+		assertFalse(statements.isEmpty());
+
+		CtBlock block = launcher.getFactory().Code().getOrCreateCtBlock(statements.get(0));
+		assertTrue(block.isImplicit());
 	}
 }
