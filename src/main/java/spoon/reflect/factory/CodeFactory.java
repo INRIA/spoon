@@ -510,7 +510,7 @@ public class CodeFactory extends SubFactory {
 
 	/**
 	 * Accepts instance of CtStatement or CtBlock.
-	 * If element is CtStatement, then it creates wrapping CtBlock, which contains the element
+	 * If element is CtStatement, then it creates wrapping CtBlock, which contains the element: the created block is then implicit.
 	 * If element is CtBlock, then it directly returns that element
 	 * If element is null, then it returns null.
 	 * note: It must not create empty CtBlock - as expected in CtCatch, CtExecutable, CtLoop and CtTry setBody implementations
