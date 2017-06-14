@@ -1036,4 +1036,38 @@ public class GenericsTest {
 
 		assertTrue(invocationDetected);
 	}
+
+	@Test
+	public void testGetDeclarationOfTypeParameterReference() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/ExtendedPaella.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Paella.java");
+		launcher.buildModel();
+
+		Factory factory = launcher.getFactory();
+
+		CtClass extendedPaella = factory.getModel().getElements(new NameFilter<CtClass>("ExtendedPaella")).get(0);
+		List<CtTypeParameter> typeParameterList = extendedPaella.getFormalCtTypeParameters();
+
+		assertEquals(1, typeParameterList.size());
+
+		CtMethod totoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("toto")).get(0);
+		CtTypeReference returnTypeToto = totoMethod.getType();
+
+		CtType declaration = returnTypeToto.getDeclaration();
+
+		assertTrue(declaration.equals(typeParameterList.get(0)));
+
+		CtMethod machinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("machin")).get(0);
+		CtTypeReference returnTypeMachin = machinMethod.getType();
+		List<CtTypeParameter> formalCtTypeParameters = machinMethod.getFormalCtTypeParameters();
+
+		assertEquals(1, formalCtTypeParameters.size());
+
+		CtType declarationMachin = returnTypeMachin.getDeclaration();
+
+		assertFalse(declarationMachin.equals(typeParameterList.get(0)));
+		assertTrue(declarationMachin.equals(formalCtTypeParameters.get(0)));
+
+	}
 }
