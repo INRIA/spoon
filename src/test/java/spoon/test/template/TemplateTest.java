@@ -633,7 +633,8 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testInsertType() throws Exception {
+	public void createTypeFromTemplate() throws Exception {
+		//contract: the Substitution API provides a method createTypeFromTemplate
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addTemplateResource(new FileSystemFolder("./src/test/java/spoon/test/template/testclasses/types"));
@@ -641,17 +642,13 @@ public class TemplateTest {
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
 		
-		CtPackage targetPackage = factory.Package().create(factory.getModel().getRootPackage(), "generated");
-		factory.getModel().getRootPackage().addPackage(targetPackage);
-
-		
 		Map<String, Object> parameters = new HashMap<>();
 		//replace someMethod with genMethod
 		parameters.put("someMethod", "genMethod");
 		
 		//contract: we can generate interface
 		final CtType<?> aIfaceModel = launcher.getFactory().Interface().get(AnIfaceModel.class);
-		CtType<?> genIface = Substitution.insertType(targetPackage, "GenIface", aIfaceModel, parameters);
+		CtType<?> genIface = Substitution.createTypeFromTemplate("generated.GenIface", aIfaceModel, parameters);
 		assertNotNull(genIface);
 		assertSame(genIface, factory.Type().get("generated.GenIface"));
 		CtMethod<?> generatedIfaceMethod = genIface.getMethod("genMethod");
@@ -662,7 +659,7 @@ public class TemplateTest {
 		parameters.put("AnIfaceModel", genIface.getReference());
 		//contract: we can generate class
 		final CtType<?> aClassModel = launcher.getFactory().Class().get(AClassModel.class);
-		CtType<?> genClass = Substitution.insertType(targetPackage, "GenClass", aClassModel, parameters);
+		CtType<?> genClass = Substitution.createTypeFromTemplate("generated.GenClass", aClassModel, parameters);
 		assertNotNull(genClass);
 		assertSame(genClass, factory.Type().get("generated.GenClass"));
 		CtMethod<?> generatedClassMethod = genClass.getMethod("genMethod");
@@ -675,7 +672,7 @@ public class TemplateTest {
 		parameters.put("case1", "GOOD");
 		parameters.put("case2", "BETTER");
 		final CtType<?> aEnumModel = launcher.getFactory().Type().get(AnEnumModel.class);
-		CtEnum<?> genEnum = (CtEnum<?>) Substitution.insertType(targetPackage, "GenEnum", aEnumModel, parameters);
+		CtEnum<?> genEnum = (CtEnum<?>) Substitution.createTypeFromTemplate("generated.GenEnum", aEnumModel, parameters);
 		assertNotNull(genEnum);
 		assertSame(genEnum, factory.Type().get("generated.GenEnum"));
 		assertEquals(2, genEnum.getEnumValues().size());

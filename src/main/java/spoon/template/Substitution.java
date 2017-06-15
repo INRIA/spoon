@@ -99,24 +99,24 @@ public abstract class Substitution {
 	 * in a special way, it means they all will be added to the generated type too.
 	 * If you do not want to add them then clone your templateOfType and remove these nodes from that model before.
 	 *
-	 * @param targetPackage
-	 * 		the package where the new type will be added
-	 * @param typeName
-	 * 		the simple name of the new type
+	 * @param qualifiedTypeName
+	 * 		the qualified name of the new type
 	 * @param templateOfType
 	 * 		the model used as source of generation.
 	 * @param templateParameters
 	 * 		the substitution parameters
 	 */
-	public static <T> CtType<T> insertType(CtPackage targetPackage, String typeName, CtType<T> templateOfType, Map<String, Object> templateParameters) {
+	public static <T> CtType<T> createTypeFromTemplate(String qualifiedTypeName, CtType<T> templateOfType, Map<String, Object> templateParameters) {
 		final Factory f = templateOfType.getFactory();
+		CtTypeReference<T> typeRef = f.Type().createReference(qualifiedTypeName);
+		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
-		extendedParams.put(templateOfType.getSimpleName(), f.Type().createReference(targetPackage.getQualifiedName() + "." + typeName));
+		extendedParams.put(templateOfType.getSimpleName(), typeRef);
 		List<CtType<T>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
 		for (CtType<T> ctType : generated) {
 			targetPackage.addType(ctType);
 		}
-		return targetPackage.getType(typeName);
+		return typeRef.getTypeDeclaration();
 	}
 
 	/**
