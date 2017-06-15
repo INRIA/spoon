@@ -33,6 +33,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.replace.testclasses.Mole;
 import spoon.test.replace.testclasses.Tacos;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -161,6 +162,45 @@ public class ReplaceTest {
 		// we should have only 2 statements after (from the stmt list)
 		assertEquals(1, sample.getMethod("retry").getBody().getStatements().size());
 		assertEquals(2, ((CtBlock) sample.getMethod("retry").getBody().getStatement(0)).getStatements().size());
+	}
+
+	@Test
+	public void testReplaceStmtByListStatements() {
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
+				.getType("Foo");
+
+		// replace retry content by statements
+		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
+		List<CtStatement> lst = sample.getMethod("statements").getBody().getStatements();
+
+		// replace a single statement by a statement list
+		stmt.replace(lst);
+
+		// we should have only 2 statements after (from the stmt list)
+		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
+	}
+
+	@Test
+	public void testReplaceStmtByListStatementsAndNull() {
+		//contract: null elements in list are ignored
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
+				.getType("Foo");
+
+		// replace retry content by statements
+		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
+		List<CtStatement> lst = sample.getMethod("statements").getBody().getStatements();
+		List<CtStatement> lstWithNulls = new ArrayList<>();
+		lstWithNulls.add(null);
+		lstWithNulls.add(lst.get(0));
+		lstWithNulls.add(null);
+		lstWithNulls.add(lst.get(1));
+		lstWithNulls.add(null);
+
+		// replace a single statement by a statement list
+		stmt.replace(lstWithNulls);
+
+		// we should have only 2 statements after (from the stmt list)
+		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
 	}
 
 	@Test
