@@ -24,10 +24,10 @@ public class TemplateInvocationSubstitutionTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtBlock<?> model = factory.Class().get(InvocationSubstitutionByStatementTemplate.class).getMethod("sample").getBody();
+		CtBlock<?> templateArg = factory.Class().get(InvocationSubstitutionByStatementTemplate.class).getMethod("sample").getBody();
 		
 		CtClass<?> resultKlass = factory.Class().create("Result");
-		CtStatement result = new InvocationSubstitutionByStatementTemplate(model).apply(resultKlass);
+		CtStatement result = new InvocationSubstitutionByStatementTemplate(templateArg).apply(resultKlass);
 		assertEquals("throw new java.lang.RuntimeException(\"Failed\")", result.toString());
 	}
 
