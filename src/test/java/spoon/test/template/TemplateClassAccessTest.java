@@ -25,6 +25,10 @@ public class TemplateClassAccessTest {
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtStatement result = new ClassAccessTemplate(String.class).apply(resultKlass);
 		assertEquals("java.lang.String.class.getName()", result.toString());
+
+		//I do not know if it makes sense to use null. But this kind of null handling is probably the best
+		CtStatement result2 = new ClassAccessTemplate(null).apply(resultKlass);
+		assertEquals("null.getName()", result2.toString());
 	}
 
 }
