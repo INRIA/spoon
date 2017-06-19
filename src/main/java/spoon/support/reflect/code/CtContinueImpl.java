@@ -16,8 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtContinue;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -38,9 +40,14 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	}
 
 	@Override
-	public <T extends CtContinue> T setTargetLabel(String targetLabel) {
+	public <T extends CtLabelledFlowBreak> T setTargetLabel(String targetLabel) {
 		this.targetLabel = targetLabel;
 		return (T) this;
+	}
+
+	@Override
+	public CtStatement getLabelledStatement() {
+		return null;
 	}
 
 	@Override
