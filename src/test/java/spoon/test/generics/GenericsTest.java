@@ -1053,10 +1053,12 @@ public class GenericsTest {
 
 		CtMethod totoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("toto")).get(0);
 		CtTypeReference returnTypeToto = totoMethod.getType();
+		CtTypeReference paramToto = ((CtParameter)totoMethod.getParameters().get(0)).getType();
 
 		CtType declaration = returnTypeToto.getDeclaration();
 
-		assertTrue(declaration.equals(typeParameterList.get(0)));
+		assertEquals(typeParameterList.get(0), declaration);
+		assertEquals(typeParameterList.get(0), paramToto.getDeclaration());
 
 		CtMethod machinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("machin")).get(0);
 		CtTypeReference returnTypeMachin = machinMethod.getType();
@@ -1069,5 +1071,25 @@ public class GenericsTest {
 		assertFalse(declarationMachin.equals(typeParameterList.get(0)));
 		assertTrue(declarationMachin.equals(formalCtTypeParameters.get(0)));
 
+		CtClass innerPaella = factory.getModel().getElements(new NameFilter<CtClass>("InnerPaella")).get(0);
+		List<CtTypeParameter> innerTypeParametersList = innerPaella.getFormalCtTypeParameters();
+
+		assertEquals(typeParameterList.get(0), innerTypeParametersList.get(0).getSuperclass().getDeclaration());
+
+		CtMethod innerMachinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerMachin")).get(0);
+		CtTypeReference returnTypeInnerMachin = innerMachinMethod.getType();
+		CtTypeReference paramInnerMachinType = ((CtParameter)innerMachinMethod.getParameters().get(0)).getType();
+		List<CtTypeParameter> innerMachinFormalCtType = innerMachinMethod.getFormalCtTypeParameters();
+
+		assertEquals(typeParameterList.get(0), returnTypeInnerMachin.getDeclaration());
+		assertEquals(innerMachinFormalCtType.get(0), paramInnerMachinType.getDeclaration());
+
+		CtMethod innerTotoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerToto")).get(0);
+		CtTypeReference returnInnerToto = innerTotoMethod.getType();
+		CtTypeReference paramInnerToto = ((CtParameter)innerTotoMethod.getParameters().get(0)).getType();
+		List<CtTypeParameter> innerTotoFormatCtType = innerTotoMethod.getFormalCtTypeParameters();
+
+		assertEquals(innerTotoFormatCtType.get(0), paramInnerToto.getDeclaration());
+		assertEquals(innerTypeParametersList.get(0), returnInnerToto.getDeclaration());
 	}
 }
