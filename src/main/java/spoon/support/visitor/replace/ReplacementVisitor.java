@@ -26,6 +26,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
 		try {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
+		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
+			throw e;
 		} catch (spoon.SpoonException ignore) {
 		}
 	}
@@ -33,6 +35,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public static <E extends spoon.reflect.declaration.CtElement> void replace(spoon.reflect.declaration.CtElement original, java.util.Collection<E> replaces) {
 		try {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
+		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
+			throw e;
 		} catch (spoon.SpoonException ignore) {
 		}
 	}
@@ -62,7 +66,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		if (shouldBeDeleted != null) {
 			if ((replace.length) > 0) {
 				if ((replace.length) > 1) {
-					throw new spoon.SpoonException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
+					throw new spoon.support.visitor.replace.InvalidReplaceException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
 				}
 				V val = ((V) (replace[0]));
 				if (val != null) {
@@ -131,7 +135,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			spoon.reflect.declaration.CtElement val = null;
 			if ((replace.length) > 0) {
 				if ((replace.length) > 1) {
-					throw new spoon.SpoonException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
+					throw new spoon.support.visitor.replace.InvalidReplaceException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
 				}
 				val = replace[0];
 			}

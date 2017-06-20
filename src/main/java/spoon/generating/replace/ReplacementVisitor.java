@@ -19,6 +19,7 @@ package spoon.generating.replace;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.visitor.replace.InvalidReplaceException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,12 +38,16 @@ class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {
 		try {
 			new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
+		} catch (InvalidReplaceException e) {
+			throw e;
 		} catch (SpoonException ignore) {
 		}
 	}
 	public static <E extends CtElement> void replace(CtElement original, Collection<E> replaces) {
 		try {
 			new ReplacementVisitor(original, replaces.toArray(new CtElement[replaces.size()])).scan(original.getParent());
+		} catch (InvalidReplaceException e) {
+			throw e;
 		} catch (SpoonException ignore) {
 		}
 	}
@@ -71,7 +76,7 @@ class ReplacementVisitor extends CtScanner {
 		if (shouldBeDeleted != null) {
 			if (replace.length > 0) {
 				if (replace.length > 1) {
-					throw new SpoonException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
+					throw new InvalidReplaceException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
 				}
 				V val = (V) replace[0];
 				if (val != null) {
@@ -140,7 +145,7 @@ class ReplacementVisitor extends CtScanner {
 			CtElement val = null;
 			if (replace.length > 0) {
 				if (replace.length > 1) {
-					throw new SpoonException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
+					throw new InvalidReplaceException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
 				}
 				val = replace[0];
 			}
