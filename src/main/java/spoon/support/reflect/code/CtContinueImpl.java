@@ -22,6 +22,9 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.filter.ParentFunction;
+
+import java.util.List;
 
 public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	private static final long serialVersionUID = 1L;
@@ -47,6 +50,13 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 
 	@Override
 	public CtStatement getLabelledStatement() {
+		List<CtStatement> listParents = this.map(new ParentFunction()).list();
+
+		for (CtStatement statement : listParents) {
+			if (statement.getLabel() != null && statement.getLabel().equals(this.getTargetLabel())) {
+				return statement;
+			}
+		}
 		return null;
 	}
 
