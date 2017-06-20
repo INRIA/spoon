@@ -9,14 +9,18 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.LambdaFilter;
@@ -449,5 +453,18 @@ public class LambdaTest {
 	// hence w ehcnage the tests
 	private CtLambda<?> getLambdaInFooByNumber(int number) {
 		return foo.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(number);
+	}
+
+	@Test
+	public void testGetDeclarationOnTypeParameterFromLambda() {
+		List<CtTypeParameterReference> listCtTPR  = launcher.getModel().getElements(new TypeFilter<>(CtTypeParameterReference.class));
+
+		for (CtTypeParameterReference typeParameterReference : listCtTPR) {
+			if (!(typeParameterReference instanceof CtWildcardReference) && typeParameterReference.getDeclaration() == null) {
+				System.err.println(typeParameterReference.getSimpleName()+" from parent "+typeParameterReference.getParent(CtClass.class).getPosition()+"  has null declaration");
+				typeParameterReference.getDeclaration();
+				fail();
+			}
+		}
 	}
 }
