@@ -59,7 +59,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1057,8 +1059,8 @@ public class GenericsTest {
 
 		CtType declaration = returnTypeToto.getDeclaration();
 
-		assertEquals(typeParameterList.get(0), declaration);
-		assertEquals(typeParameterList.get(0), paramToto.getDeclaration());
+		assertSame(typeParameterList.get(0), declaration);
+		assertSame(typeParameterList.get(0), paramToto.getDeclaration());
 
 		CtMethod machinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("machin")).get(0);
 		CtTypeReference returnTypeMachin = machinMethod.getType();
@@ -1068,8 +1070,8 @@ public class GenericsTest {
 
 		CtType declarationMachin = returnTypeMachin.getDeclaration();
 
-		assertFalse(declarationMachin.equals(typeParameterList.get(0)));
-		assertTrue(declarationMachin.equals(formalCtTypeParameters.get(0)));
+		assertNotSame(typeParameterList.get(0), declarationMachin);
+		assertSame(formalCtTypeParameters.get(0), declarationMachin);
 
 		CtClass innerPaella = factory.getModel().getElements(new NameFilter<CtClass>("InnerPaella")).get(0);
 		List<CtTypeParameter> innerTypeParametersList = innerPaella.getFormalCtTypeParameters();
@@ -1081,15 +1083,15 @@ public class GenericsTest {
 		CtTypeReference paramInnerMachinType = ((CtParameter)innerMachinMethod.getParameters().get(0)).getType();
 		List<CtTypeParameter> innerMachinFormalCtType = innerMachinMethod.getFormalCtTypeParameters();
 
-		assertEquals(typeParameterList.get(0), returnTypeInnerMachin.getDeclaration());
-		assertEquals(innerMachinFormalCtType.get(0), paramInnerMachinType.getDeclaration());
+		assertSame(typeParameterList.get(0), returnTypeInnerMachin.getDeclaration());
+		assertSame(innerMachinFormalCtType.get(0), paramInnerMachinType.getDeclaration());
 
 		CtMethod innerTotoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerToto")).get(0);
 		CtTypeReference returnInnerToto = innerTotoMethod.getType();
 		CtTypeReference paramInnerToto = ((CtParameter)innerTotoMethod.getParameters().get(0)).getType();
 		List<CtTypeParameter> innerTotoFormatCtType = innerTotoMethod.getFormalCtTypeParameters();
 
-		assertEquals(innerTotoFormatCtType.get(0), paramInnerToto.getDeclaration());
-		assertEquals(innerTypeParametersList.get(0), returnInnerToto.getDeclaration());
+		assertSame(innerTotoFormatCtType.get(0), paramInnerToto.getDeclaration());
+		assertSame(innerTypeParametersList.get(0), returnInnerToto.getDeclaration());
 	}
 }
