@@ -68,6 +68,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -1076,6 +1077,12 @@ public class AnnotationTest {
 		assertNull(a.getValue("string"));
 		//contract: check that null value can be returned
 		assertNull(annot.string());
+
+		//contract: replace with null value in collection means remove
+		a.getValue("clazz").replace(Collections.singletonList(null));
+		assertNull(a.getValue("clazz"));
+		//contract: check that null value can be returned
+		assertNull(annot.clazz());
 
 		//contract: test replace of item in collection
 		assertEquals(1, annot.integers().length);
