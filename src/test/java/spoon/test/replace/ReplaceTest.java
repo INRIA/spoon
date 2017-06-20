@@ -30,6 +30,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.visitor.replace.InvalidReplaceException;
 import spoon.test.replace.testclasses.Mole;
 import spoon.test.replace.testclasses.Tacos;
 
@@ -40,6 +41,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -390,13 +392,21 @@ public class ReplaceTest {
 		final CtExecutableReference oldExecutable = inv.getExecutable();
 		final CtExecutableReference<Object> newExecutable = factory.Executable().createReference("void java.io.PrintStream#print(java.lang.String)");
 
-		assertEquals(oldExecutable, inv.getExecutable());
+		assertSame(oldExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#println(java.lang.String)", inv.getExecutable().toString());
 
 		oldExecutable.replace(newExecutable);
 
-		assertEquals(newExecutable, inv.getExecutable());
+		assertSame(newExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#print(java.lang.String)", inv.getExecutable().toString());
+		
+		//contract: replace of single value by multiple values in single value field must fail
+		try {
+			newExecutable.replace(Arrays.asList(oldExecutable, null));
+			fail();
+		} catch (InvalidReplaceException e) {
+			//OK
+		}
 	}
 
 	@Test
