@@ -118,9 +118,6 @@ public enum CtRole {
 		if ("cases".equals(name)) {
 			return CASE;
 		}
-		if ("labelledstatement".equals(name)) {
-			return LABEL;
-		}
 		if ("enumvalues".equals(name) || "elementvalues".equals(name)) {
 			return VALUE;
 		}

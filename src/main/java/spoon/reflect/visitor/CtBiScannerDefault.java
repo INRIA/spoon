@@ -238,7 +238,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		spoon.reflect.code.CtContinue other = ((spoon.reflect.code.CtContinue) (this.stack.peek()));
 		enter(continueStatement);
 		biScan(continueStatement.getAnnotations(), other.getAnnotations());
-		biScan(continueStatement.getLabelledStatement(), other.getLabelledStatement());
 		biScan(continueStatement.getComments(), other.getComments());
 		exit(continueStatement);
 	}

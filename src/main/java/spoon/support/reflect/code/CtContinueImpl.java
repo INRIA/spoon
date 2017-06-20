@@ -16,17 +16,19 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.code.CtLabelledFlowBreak;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.visitor.filter.ParentFunction;
+
+import java.util.List;
 
 public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	private static final long serialVersionUID = 1L;
-
-	@MetamodelPropertyField(role = CtRole.LABEL)
-	CtStatement labelledStatement;
 
 	@MetamodelPropertyField(role = CtRole.TARGET_LABEL)
 	String targetLabel;
@@ -37,28 +39,30 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 	}
 
 	@Override
-	public CtStatement getLabelledStatement() {
-		return labelledStatement;
-	}
-
-	@Override
-	public <T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement) {
-		if (labelledStatement != null) {
-			labelledStatement.setParent(this);
-		}
-		this.labelledStatement = labelledStatement;
-		return (T) this;
-	}
-
-	@Override
 	public String getTargetLabel() {
 		return targetLabel;
 	}
 
 	@Override
-	public <T extends CtContinue> T setTargetLabel(String targetLabel) {
+	public <T extends CtLabelledFlowBreak> T setTargetLabel(String targetLabel) {
 		this.targetLabel = targetLabel;
 		return (T) this;
+	}
+
+	@Override
+	public CtStatement getLabelledStatement() {
+		List<CtStatement> listParents = this.map(new ParentFunction().includingSelf(true)).list();
+
+		for (CtElement parent : listParents) {
+			if (parent instanceof CtStatement) {
+				CtStatement statement = (CtStatement) parent;
+
+				if (statement.getLabel() != null && statement.getLabel().equals(this.getTargetLabel())) {
+					return statement;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

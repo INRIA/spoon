@@ -49,6 +49,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -180,6 +181,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract control flow break.
 	 */
 	public void scanCtCFlowBreak(CtCFlowBreak flowBreak) {
+	}
+
+	/**
+	 * Scans a labelled control flow break.
+	 */
+	public void scanCtLabelledFlowBreak(CtLabelledFlowBreak labelledFlowBreak) {
 	}
 
 	/**
@@ -430,6 +437,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void visitCtBreak(CtBreak e) {
+		scanCtLabelledFlowBreak(e);
 		scanCtCFlowBreak(e);
 		scanCtStatement(e);
 		scanCtCodeElement(e);
@@ -493,6 +501,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void visitCtContinue(CtContinue e) {
+		scanCtLabelledFlowBreak(e);
 		scanCtCFlowBreak(e);
 		scanCtStatement(e);
 		scanCtCodeElement(e);
