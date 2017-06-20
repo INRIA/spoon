@@ -16,6 +16,9 @@
  */
 package spoon.template;
 
+import java.util.List;
+
+import spoon.SpoonException;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -43,8 +46,11 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement
 		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
-		new SubstitutionVisitor(c.getFactory(), targetType, this).scan(result);
-		return result;
+		List<CtStatement> statements = new SubstitutionVisitor(c.getFactory(), targetType, this).substitute(result);
+		if (statements.size() > 1) {
+			throw new SpoonException("StatementTemplate cannot return more then one statement");
+		}
+		return statements.isEmpty() ? null : statements.get(0);
 	}
 
 	public Void S() {

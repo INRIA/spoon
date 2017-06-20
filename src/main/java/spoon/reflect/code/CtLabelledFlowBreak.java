@@ -16,19 +16,31 @@
  */
 package spoon.reflect.code;
 
-/**
- * This code element defines the continue statement.
- * Example:
- * <pre>
- *     for(int i=0; i&lt;10; i++) {
- *         if (i&gt;3) {
- *				continue; // &lt;-- continue statement
- *         }
- *     }
- * </pre>
- */
-public interface CtContinue extends CtLabelledFlowBreak {
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.support.DerivedProperty;
 
-	@Override
-	CtContinue clone();
+import static spoon.reflect.path.CtRole.TARGET_LABEL;
+
+/**
+ * This abstract code element represents all the statements that break the
+ * control flow of the program and which can support a label.
+ */
+public interface CtLabelledFlowBreak extends CtCFlowBreak {
+	/**
+	 * Gets the label from which the control flow breaks (null if no label
+	 * defined).
+	 */
+	@PropertyGetter(role = TARGET_LABEL)
+	String getTargetLabel();
+
+	/**
+	 * Sets the label from which the control flow breaks (null if no label
+	 * defined).
+	 */
+	@PropertySetter(role = TARGET_LABEL)
+	<T extends CtLabelledFlowBreak> T setTargetLabel(String targetLabel);
+
+	@DerivedProperty
+	CtStatement getLabelledStatement();
 }

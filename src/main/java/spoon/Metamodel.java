@@ -74,6 +74,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtInvocation.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtJavaDoc.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtJavaDocTag.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtLabelledFlowBreak.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLambda.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLiteral.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLocalVariable.class));

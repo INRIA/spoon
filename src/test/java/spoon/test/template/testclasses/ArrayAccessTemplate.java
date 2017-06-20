@@ -10,11 +10,13 @@ public class ArrayAccessTemplate extends ExtensionTemplate {
 
 	public void method() throws Throwable {
 		blocks[0].S();
+		blocks[2].S();
 		blocks[1].S();
 	}
 	
 	public void method2() throws Throwable {
 		System.out.println(strings[1]);
+		System.out.println(strings[100]);
 	}
 
 	@Parameter

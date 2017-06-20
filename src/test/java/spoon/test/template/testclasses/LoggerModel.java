@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2006-2017 INRIA and contributors
+/*
+ * Copyright (C) 2006-2015 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -14,21 +14,23 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.code;
 
-/**
- * This code element defines the continue statement.
- * Example:
- * <pre>
- *     for(int i=0; i&lt;10; i++) {
- *         if (i&gt;3) {
- *				continue; // &lt;-- continue statement
- *         }
- *     }
- * </pre>
- */
-public interface CtContinue extends CtLabelledFlowBreak {
+package spoon.test.template.testclasses;
 
-	@Override
-	CtContinue clone();
+import spoon.reflect.code.CtBlock;
+import spoon.test.template.testclasses.logger.Logger;
+
+public class LoggerModel {
+	private String _classname_;
+	private String _methodName_;
+	private CtBlock<?> _block_;
+
+	public void block() throws Throwable {
+		try {
+			Logger.enter(_classname_, _methodName_);
+			_block_.S();
+		} finally {
+			Logger.exit(_methodName_);
+		}
+	}
 }

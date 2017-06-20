@@ -16,12 +16,6 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-
-import static spoon.reflect.path.CtRole.TARGET_LABEL;
-
-
 /**
  * This code element defines a break statement.
  * Example:
@@ -33,20 +27,7 @@ import static spoon.reflect.path.CtRole.TARGET_LABEL;
  *     }
  * </pre>
  */
-public interface CtBreak extends CtCFlowBreak {
-	/**
-	 * Gets the label from which the control flow breaks (null if no label
-	 * defined).
-	 */
-	@PropertyGetter(role = TARGET_LABEL)
-	String getTargetLabel();
-
-	/**
-	 * Sets the label from which the control flow breaks (null if no label
-	 * defined).
-	 */
-	@PropertySetter(role = TARGET_LABEL)
-	<T extends CtBreak> T setTargetLabel(String targetLabel);
+public interface CtBreak extends CtLabelledFlowBreak {
 
 	@Override
 	CtBreak clone();
