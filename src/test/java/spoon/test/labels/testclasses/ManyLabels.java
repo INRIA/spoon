@@ -29,15 +29,28 @@ public class ManyLabels {
                 label:
                 do {
                     System.out.println("do");
+                    lWhile:
                     while (true) {
-                        for (int i = 0; i < 4; i++) {
+                        forloop:
+                        for (int i = 0; i < 10; i++) {
                             System.out.println("for");
                             if (i % 2 == 0) {
-                                break label;
-                            } else if (i == 3) {
+                                continue forloop;
+                            }
+                            if (i == 9) {
+                                continue lWhile;
+                            }
+
+                            if (i < 8) {
                                 continue label;
                             }
+                            if (i == 8) {
+                                break label;
+                            }
+
                             System.out.println("for 1");
+                            labelbreak:
+                            break labelbreak;
                         }
                         break sw;
                     }

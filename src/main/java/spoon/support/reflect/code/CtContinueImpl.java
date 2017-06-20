@@ -20,6 +20,7 @@ import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.ParentFunction;
@@ -50,11 +51,15 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 
 	@Override
 	public CtStatement getLabelledStatement() {
-		List<CtStatement> listParents = this.map(new ParentFunction()).list();
+		List<CtStatement> listParents = this.map(new ParentFunction().includingSelf(true)).list();
 
-		for (CtStatement statement : listParents) {
-			if (statement.getLabel() != null && statement.getLabel().equals(this.getTargetLabel())) {
-				return statement;
+		for (CtElement parent : listParents) {
+			if (parent instanceof CtStatement) {
+				CtStatement statement = (CtStatement) parent;
+
+				if (statement.getLabel() != null && statement.getLabel().equals(this.getTargetLabel())) {
+					return statement;
+				}
 			}
 		}
 		return null;
