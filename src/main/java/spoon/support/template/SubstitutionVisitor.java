@@ -34,6 +34,7 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
@@ -81,6 +82,16 @@ public class SubstitutionVisitor extends CtScanner {
 		public void visitCtComment(CtComment e) {
 			e.setContent(context.substituteName(e.getContent()));
 			super.visitCtComment(e);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> void visitCtLiteral(CtLiteral<T> e) {
+			Object value = e.getValue();
+			if (value instanceof String) {
+				e.setValue((T) context.substituteName((String) value));
+			}
+			super.visitCtLiteral(e);
 		}
 
 		/**
@@ -402,6 +413,13 @@ public class SubstitutionVisitor extends CtScanner {
 			}
 			return (T) parameterValue;
 		}
+		if (itemClass.isAssignableFrom(CtCodeElement.class)) {
+			if (parameterValue instanceof CtTypeReference) {
+				//convert type reference into code element as class access
+				CtTypeReference<?> tr = (CtTypeReference<?>) parameterValue;
+				return (T) tr.getFactory().Code().createClassAccess(tr);
+			}
+		}
 		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ". Expected class is: " + itemClass.getName());
 	}
 	/**
@@ -426,6 +444,9 @@ public class SubstitutionVisitor extends CtScanner {
 			return getShortSignature(((CtExecutableReference<?>) parameterValue).getSignature());
 		} else if (parameterValue instanceof CtExecutable) {
 			return getShortSignature(((CtExecutable<?>) parameterValue).getSignature());
+		} else if (parameterValue instanceof CtLiteral) {
+			Object val = ((CtLiteral<Object>) parameterValue).getValue();
+			return val == null ? null : val.toString();
 		}
 		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ", whose conversion to String is not supported");
 	}
