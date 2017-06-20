@@ -1071,8 +1071,10 @@ public class AnnotationTest {
 		} catch (NullPointerException e) {
 			//OK - fails because int cannot be null
 		}
-		a.getValue("string").delete();
+		//contract: replace with null value means remove
+		a.getValue("string").replace((CtElement) null);
 		assertNull(a.getValue("string"));
+		//contract: check that null value can be returned
 		assertNull(annot.string());
 
 		//contract: test replace of item in collection
