@@ -7,6 +7,7 @@ import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Collection;
@@ -34,6 +35,13 @@ public class TypeTest {
 		// we have 3  methods in Foo + 2 in Baz - 1 common in Foo.bar (m) + 12 in Object + 1 explicit constructor in Foo
 		Collection<CtExecutableReference<?>> allExecutables = type.getAllExecutables();
 		assertEquals(17, allExecutables.size());
+
+		for (CtFieldReference<?> ref : type.getAllFields()) {
+			assertEquals(type.getReference(), ref.getDeclaringType());
+		}
+		for (CtExecutableReference<?> ref : type.getAllExecutables()) {
+			assertEquals(type.getReference(), ref.getDeclaringType());
+		}
 	}
 
 	@Test
