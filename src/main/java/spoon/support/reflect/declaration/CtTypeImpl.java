@@ -896,8 +896,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		final Set<String> distinctSignatures = new HashSet<>();
-		final Set<CtMethod<?>> l = new SignatureBasedSortedSet<>();
+		final Set<CtMethod<?>> l = new HashSet<>();
 		final ClassTypingContext ctc = new ClassTypingContext(this);
 		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
@@ -908,9 +907,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					}
 				}
 
-				if (distinctSignatures.add(method.getSignature())) {
-					l.add(method);
-				}
+				l.add(method);
 			}
 		});
 		return Collections.unmodifiableSet(l);
