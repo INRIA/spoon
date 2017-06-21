@@ -71,9 +71,11 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 			return adaptTypeParameterReferenceBoundingType(typeParamRef, typeParamRef.getBoundingType());
 		}
 		CtTypeReference<?> typeRefAdapted = adaptTypeParameter(typeParamRef.getDeclaration());
-		if (typeRefAdapted instanceof CtTypeParameterReference) {
-			return adaptTypeParameterReferenceBoundingType((CtTypeParameterReference) typeRefAdapted, typeParamRef.getBoundingType());
-		}
+		//Do not adapt bounding type of TypeParameterReference. That bounding type is already adapted as part of typeParamRef adaptation
+		//... at least in case of GenericsTest#testIsSameSignatureWithGenerics of Iterator<T extends String>
+//		if (typeRefAdapted instanceof CtTypeParameterReference) {
+//			return adaptTypeParameterReferenceBoundingType((CtTypeParameterReference) typeRefAdapted, typeParamRef.getBoundingType());
+//		}
 		return typeRefAdapted;
 	}
 
