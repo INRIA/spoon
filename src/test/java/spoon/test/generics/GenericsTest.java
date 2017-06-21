@@ -49,6 +49,7 @@ import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Orange;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
+import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
@@ -1093,5 +1094,25 @@ public class GenericsTest {
 
 		assertSame(innerTotoFormatCtType.get(0), paramInnerToto.getDeclaration());
 		assertSame(innerTypeParametersList.get(0), returnInnerToto.getDeclaration());
+	}
+
+	@Test
+	public void testIsSameSignatureWithGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/SameSignature.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature.class);
+
+		List<CtMethod> methods = ctClass.getMethodsByName("forEach");
+		assertEquals(1, methods.size());
+
+		CtType<?> iterableItf = launcher.getFactory().Type().get(Iterable.class);
+
+		List<CtMethod<?>> methodsItf = iterableItf.getMethodsByName("forEach");
+		assertEquals(1, methodsItf.size());
+
+		ClassTypingContext ctc = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
 	}
 }
