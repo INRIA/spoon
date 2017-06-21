@@ -688,13 +688,9 @@ public class TemplateTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtClass<?> templateClass = factory.Class().get(SubstituteLiteralTemplate.class);
-		
 		{
 			//contract: String value is substituted in String literal
-			Map<String, Object> params = new HashMap<>();
-			params.put("$param1$", "value1") ;
-			final CtClass<?> result = new SubstitutionVisitor(factory, params).substitute(templateClass.clone()).get(0);
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate("value1").apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"value1\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring value1 is substituted too - value1\";", result.getField("stringField2").toString());
 			//contract: the parameter of type string replaces only method name
@@ -702,9 +698,7 @@ public class TemplateTest {
 		}
 		{
 			//contract: String Literal value is substituted in String literal
-			Map<String, Object> params = new HashMap<>();
-			params.put("$param1$", factory.createLiteral("value2")) ;
-			final CtClass<?> result = new SubstitutionVisitor(factory, params).substitute(templateClass.clone()).get(0);
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.createLiteral("value2")).apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"value2\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring value2 is substituted too - value2\";", result.getField("stringField2").toString());
 			//contract: the parameter of type String literal replaces whole invocation
@@ -712,9 +706,7 @@ public class TemplateTest {
 		}
 		{
 			//contract: simple name of type reference is substituted in String literal 
-			Map<String, Object> params = new HashMap<>();
-			params.put("$param1$", factory.Type().createReference("some.ignored.package.TypeName")) ;
-			final CtClass<?> result = new SubstitutionVisitor(factory, params).substitute(templateClass.clone()).get(0);
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.package.TypeName")).apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"TypeName\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring TypeName is substituted too - TypeName\";", result.getField("stringField2").toString());
 			//contract type reference is substituted in invocation as class access
@@ -722,9 +714,7 @@ public class TemplateTest {
 		}
 		{
 			//contract: number literal is substituted in String literal as number converted to string
-			Map<String, Object> params = new HashMap<>();
-			params.put("$param1$", factory.createLiteral(7)) ;
-			final CtClass<?> result = new SubstitutionVisitor(factory, params).substitute(templateClass.clone()).get(0);
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.createLiteral(7)).apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"7\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring 7 is substituted too - 7\";", result.getField("stringField2").toString());
 			//contract number literal is substituted in invocation as number literal
