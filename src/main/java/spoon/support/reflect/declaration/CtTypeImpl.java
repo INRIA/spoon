@@ -900,14 +900,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		final ClassTypingContext ctc = new ClassTypingContext(this);
 		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
-			public void accept(CtMethod<?> method) {
-				for (CtMethod<?> methods : l) {
-					if (ctc.isSameSignature(methods, method)) {
+			public void accept(CtMethod<?> currentMethod) {
+				for (CtMethod<?> alreadyVisitedMethod : l) {
+					if (ctc.isSameSignature(currentMethod, alreadyVisitedMethod)) {
 						return;
 					}
 				}
 
-				l.add(method);
+				l.add(currentMethod);
 			}
 		});
 		return Collections.unmodifiableSet(l);
