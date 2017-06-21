@@ -515,7 +515,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		map(new AllTypeMembersFunction(CtField.class)).forEach(new CtConsumer<CtField<?>>() {
 			@Override
 			public void accept(CtField<?> field) {
-				fields.add(field.getReference());
+				CtFieldReference<?> reference = field.getReference();
+				reference.setDeclaringType(CtTypeImpl.this.getReference());
+				fields.add(reference);
 			}
 		});
 		return fields;
@@ -888,7 +890,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Set<CtExecutableReference<?>> l = new SignatureBasedSortedSet();
 		for (CtMethod<?> m : getAllMethods()) {
-			l.add((CtExecutableReference<?>) m.getReference());
+			CtExecutableReference<?> reference = m.getReference();
+			reference.setDeclaringType(CtTypeImpl.this.getReference());
+			l.add(reference);
 		}
 		return l;
 	}
