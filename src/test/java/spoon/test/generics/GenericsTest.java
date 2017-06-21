@@ -1113,6 +1113,9 @@ public class GenericsTest {
 		assertEquals(1, methodsItf.size());
 
 		ClassTypingContext ctc = new ClassTypingContext(ctClass.getReference());
-		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isOverriding(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
+
+		// assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
 	}
 }
