@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -43,6 +44,7 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
@@ -1117,5 +1119,17 @@ public class GenericsTest {
 		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
 
 		// assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
+	}
+	@Test
+	public void testGetExecDeclarationOfEnumSetOf() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/EnumSetOf.java");
+		launcher.buildModel();
+
+		CtClass<?> ctClass = launcher.getFactory().Class().get(EnumSetOf.class);
+
+		CtInvocation invocation = ctClass.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtExecutable<?> decl = invocation.getExecutable().getDeclaration();
+		assertNotNull(decl);
 	}
 }
