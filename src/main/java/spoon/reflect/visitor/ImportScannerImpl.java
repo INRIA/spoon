@@ -395,6 +395,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean addMethodImport(CtExecutableReference ref) {
+		// static import is not supported below java 1.5
+		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
+			return false;
+		}
 		if (this.methodImports.containsKey(ref.getSimpleName())) {
 			return isImportedInMethodImports(ref);
 		}
@@ -428,6 +432,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean addFieldImport(CtFieldReference ref) {
+		// static import is not supported below java 1.5
+		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
+			return false;
+		}
 		if (this.fieldImports.containsKey(ref.getSimpleName())) {
 			return isImportedInFieldImports(ref);
 		}

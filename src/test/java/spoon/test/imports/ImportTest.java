@@ -43,6 +43,7 @@ import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
 import spoon.test.imports.testclasses2.apachetestsuite.AllLangTestSuite;
+import spoon.test.imports.testclasses2.staticjava3.AllLangTestJava3;
 import spoon.test.imports.testclasses2.staticmethod.AllLangTestSuiteStaticMethod;
 import spoon.testing.utils.ModelUtils;
 
@@ -1054,6 +1055,31 @@ public class ImportTest {
 
 
 		canBeBuilt(outputDir, 7);
+	}
+
+	@Test
+	public void testStaticMethodWithDifferentClassSameNameJava3NoCollision() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-staticjava3";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/staticjava3/");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setComplianceLevel(3);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(AllLangTestJava3.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertFalse("The file should not contain a static import ", output.contains("import static"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.staticmethod.enums.EnumTestSuite.suite());"));
+
+
+		canBeBuilt(outputDir, 3);
 	}
 
 	@Test
