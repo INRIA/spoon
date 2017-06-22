@@ -43,6 +43,7 @@ import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
 import spoon.test.imports.testclasses2.apachetestsuite.AllLangTestSuite;
+import spoon.test.imports.testclasses2.staticmethod.AllLangTestSuiteStaticMethod;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -1028,6 +1029,31 @@ public class ImportTest {
 		String codeB = IOUtils.toString(new FileReader(outputB));
 
 		assertThat(codeB, containsString("import java.awt.List;"));
+	}
+
+	@Test
+	public void testStaticMethodWithDifferentClassSameNameJava7NoCollision() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-staticmethod";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/staticmethod/");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setComplianceLevel(7);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(AllLangTestSuiteStaticMethod.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should contain a static import ", output.contains("import static spoon.test.imports.testclasses2.staticmethod.enums.EnumTestSuite.suite;"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(suite());"));
+
+
+		canBeBuilt(outputDir, 7);
 	}
 
 	@Test

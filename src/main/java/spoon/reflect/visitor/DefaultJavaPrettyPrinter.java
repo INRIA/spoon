@@ -1099,14 +1099,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			// It's a method invocation
 			printer.snapshotLength();
-			try (Writable _context = context.modify()) {
-				if (invocation.getTarget() instanceof CtTypeAccess) {
-					_context.ignoreGenerics(true);
+			if (!this.importsContext.isImported(invocation.getExecutable())) {
+				try (Writable _context = context.modify()) {
+					if (invocation.getTarget() instanceof CtTypeAccess) {
+						_context.ignoreGenerics(true);
+					}
+					scan(invocation.getTarget());
 				}
-				scan(invocation.getTarget());
-			}
-			if (printer.hasNewContent()) {
-				printer.write(".");
+				if (printer.hasNewContent()) {
+					printer.write(".");
+				}
 			}
 
 			elementPrinterHelper.writeActualTypeArguments(invocation);
