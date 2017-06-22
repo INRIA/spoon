@@ -394,6 +394,24 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return false;
 	}
 
+	/**
+	 * Test if the given executable reference is targeted a method name which is in collision with a method name of the current class
+	 * @param ref
+	 * @return
+	 */
+	private boolean isInCollisionWithLocalMethod(CtExecutableReference ref) {
+		CtType<?> typeDecl = ref.getParent(CtType.class);
+
+		String methodName = ref.getSimpleName();
+
+		for (CtMethod<?> method : typeDecl.getAllMethods()) {
+			if (method.getSimpleName().equals(methodName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected boolean addMethodImport(CtExecutableReference ref) {
 		// static import is not supported below java 1.5
 		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
@@ -405,6 +423,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		// if the whole class is imported: no need to import the method.
 		if (declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
+			return false;
+		}
+
+		if (this.isInCollisionWithLocalMethod(ref)) {
 			return false;
 		}
 

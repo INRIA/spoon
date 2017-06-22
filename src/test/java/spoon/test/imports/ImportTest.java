@@ -59,7 +59,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1088,11 +1087,14 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testStaticMethodWithDifferentClassSameName() {
+	public void testStaticMethodWithDifferentClassSameNameCollision() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-apache";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticcollision/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.getEnvironment().setComplianceLevel(3);
 		launcher.run();
@@ -1107,7 +1109,6 @@ public class ImportTest {
 
 		assertTrue("The file should not contain a static import ",!output.contains("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;"));
 		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
-
 
 		canBeBuilt(outputDir, 3);
 	}
