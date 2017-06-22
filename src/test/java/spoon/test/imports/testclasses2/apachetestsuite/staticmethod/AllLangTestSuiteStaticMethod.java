@@ -1,4 +1,4 @@
-package spoon.test.imports.testclasses2.apachetestsuite;
+package spoon.test.imports.testclasses2.apachetestsuite.staticmethod;
 
 /**
  * Created by urli on 22/06/2017.
@@ -24,21 +24,22 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import spoon.test.imports.testclasses2.apachetestsuite.LangTestSuite;
+import spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite;
 
-import spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite;
-
+import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;
 /**
  * Test suite for [lang].
  *
  * @author Stephen Colebourne
  * @version $Id$
  */
-public class AllLangTestSuite extends TestCase {
+public class AllLangTestSuiteStaticMethod extends TestCase {
 
     /**
      * Construct a new instance.
      */
-    public AllLangTestSuite(String name) {
+    public AllLangTestSuiteStaticMethod(String name) {
         super(name);
     }
 
@@ -46,18 +47,18 @@ public class AllLangTestSuite extends TestCase {
      * Command-line interface.
      */
     public static void main(String[] args) {
-        TestRunner.run(suite());
+        TestRunner.run(truc());
     }
 
     /**
      * Get the suite of tests
      */
-    public static Test suite() {
+    public static Test truc() {
         TestSuite suite = new TestSuite();
         suite.setName("Commons-Lang (all) Tests");
         suite.addTest(LangTestSuite.suite());
         suite.addTest(EnumTestSuite.suite());
-        suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());
+        suite.addTest(suite());
         return suite;
     }
 }

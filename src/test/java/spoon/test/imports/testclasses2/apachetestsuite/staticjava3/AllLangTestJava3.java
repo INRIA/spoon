@@ -1,4 +1,4 @@
-package spoon.test.imports.testclasses2.staticjava3;
+package spoon.test.imports.testclasses2.apachetestsuite.staticjava3;
 
 /**
  * Created by urli on 22/06/2017.
@@ -24,7 +24,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import spoon.test.imports.testclasses2.staticjava3.enum2.EnumTestSuite;
+import spoon.test.imports.testclasses2.apachetestsuite.LangTestSuite;
+import spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite;
 
 /**
  * Test suite for [lang].
@@ -56,7 +57,7 @@ public class AllLangTestJava3 extends TestCase {
         suite.setName("Commons-Lang (all) Tests");
         suite.addTest(LangTestSuite.suite());
         suite.addTest(EnumTestSuite.suite());
-        suite.addTest(spoon.test.imports.testclasses2.staticmethod.enums.EnumTestSuite.suite());
+        suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());
         return suite;
     }
 }

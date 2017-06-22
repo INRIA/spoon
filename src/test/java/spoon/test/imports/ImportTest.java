@@ -42,13 +42,12 @@ import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
-import spoon.test.imports.testclasses2.apachetestsuite.AllLangTestSuite;
-import spoon.test.imports.testclasses2.staticjava3.AllLangTestJava3;
-import spoon.test.imports.testclasses2.staticmethod.AllLangTestSuiteStaticMethod;
+import spoon.test.imports.testclasses2.apachetestsuite.staticcollision.AllLangTestSuite;
+import spoon.test.imports.testclasses2.apachetestsuite.staticjava3.AllLangTestJava3;
+import spoon.test.imports.testclasses2.apachetestsuite.staticmethod.AllLangTestSuiteStaticMethod;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1037,7 +1036,10 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-staticmethod";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/staticmethod/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticmethod/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.getEnvironment().setComplianceLevel(7);
 		launcher.run();
@@ -1050,7 +1052,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertTrue("The file should contain a static import ", output.contains("import static spoon.test.imports.testclasses2.staticmethod.enums.EnumTestSuite.suite;"));
+		assertTrue("The file should contain a static import ", output.contains("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;"));
 		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(suite());"));
 
 
@@ -1062,7 +1064,10 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-staticjava3";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/staticjava3/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticjava3/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.getEnvironment().setComplianceLevel(3);
 		launcher.run();
@@ -1076,7 +1081,7 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertFalse("The file should not contain a static import ", output.contains("import static"));
-		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.staticmethod.enums.EnumTestSuite.suite());"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
 
 
 		canBeBuilt(outputDir, 3);
