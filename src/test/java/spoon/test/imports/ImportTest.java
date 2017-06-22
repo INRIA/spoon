@@ -1032,6 +1032,7 @@ public class ImportTest {
 
 	@Test
 	public void testStaticMethodWithDifferentClassSameNameJava7NoCollision() {
+		// contract: when there is a collision between class names when using static method, we should create a static import for the method
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-staticmethod";
@@ -1060,6 +1061,8 @@ public class ImportTest {
 
 	@Test
 	public void testStaticMethodWithDifferentClassSameNameJava3NoCollision() {
+		// contract: when there is a collision between class names when using static method, we could not create a static import
+		// as it is not compliant with java < 1.5, so we should use fully qualified name of the class
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-staticjava3";
@@ -1088,6 +1091,8 @@ public class ImportTest {
 
 	@Test
 	public void testStaticMethodWithDifferentClassSameNameCollision() {
+		// contract: when using static method, if there is a collision between class name AND between method names,
+		// we can only use the fully qualified name of the class to call the static method
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-apache";
