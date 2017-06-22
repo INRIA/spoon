@@ -52,6 +52,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
+import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -895,14 +896,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
-		final Set<String> distinctSignatures = new HashSet<>();
-		final Set<CtMethod<?>> l = new SignatureBasedSortedSet<>();
+		final Set<CtMethod<?>> l = new HashSet<>();
+		final ClassTypingContext ctc = new ClassTypingContext(this);
 		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
-			public void accept(CtMethod<?> method) {
-				if (distinctSignatures.add(method.getSignature())) {
-					l.add(method);
+			public void accept(CtMethod<?> currentMethod) {
+				for (CtMethod<?> alreadyVisitedMethod : l) {
+					if (ctc.isSameSignature(currentMethod, alreadyVisitedMethod)) {
+						return;
+					}
 				}
+
+				l.add(currentMethod);
 			}
 		});
 		return Collections.unmodifiableSet(l);
