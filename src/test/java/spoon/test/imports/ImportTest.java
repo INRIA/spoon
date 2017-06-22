@@ -42,6 +42,7 @@ import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
+import spoon.test.imports.testclasses2.apachetestsuite.AllLangTestSuite;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -392,6 +393,21 @@ public class ImportTest {
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
 		assertEquals("spoon.test.imports.testclasses.internal4.Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+	}
+
+	@Test
+	public void testImportStaticAndFieldAccessWithImport() throws Exception {
+		// contract: Qualified field access and an import static with import should import the type first, and not use static import
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Tacos.java");
+		launcher.buildModel();
+
+		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
+		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+		assertTrue(assignment instanceof CtLocalVariable);
+		assertEquals("Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
 
 	@Test
@@ -1012,6 +1028,31 @@ public class ImportTest {
 		String codeB = IOUtils.toString(new FileReader(outputB));
 
 		assertThat(codeB, containsString("import java.awt.List;"));
+	}
+
+	@Test
+	public void testStaticMethodWithDifferentClassSameName() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-apache";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setComplianceLevel(3);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(AllLangTestSuite.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should not contain a static import ",!output.contains("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
+
+
+		canBeBuilt(outputDir, 3);
 	}
 
 }
