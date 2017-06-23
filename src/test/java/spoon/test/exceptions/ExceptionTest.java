@@ -6,10 +6,15 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -99,6 +104,19 @@ public class ExceptionTest {
 					SpoonResourceHelper
 							.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java"))
 					.build();
+	}
+
+	@Test
+	public void testUnionCatchExceptionInsideLambdaInNoClasspath() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/UnionCatch.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		List<CtCatch> catches = launcher.getFactory().getModel().getElements(new TypeFilter<>(CtCatch.class));
+		assertEquals(1, catches.size());
+
+		CtCatchVariable variable = catches.get(0).getParameter();
 	}
 
 }
