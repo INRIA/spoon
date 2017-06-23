@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * is the listener that creates the action on the model
  */
-public class FineModelChangeHandler {
+public class FineModelChangeListener {
 
 	private final List<ActionBasedChangeListener> listeners = new ArrayList<>(2);
 
@@ -123,7 +123,7 @@ public class FineModelChangeHandler {
 	public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue) {
 	}
 
-	public class ListeningChangeFactory extends FineModelChangeHandler {
+	public class ListeningChangeFactory extends FineModelChangeListener {
 
 		@Override
 		public void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue) {

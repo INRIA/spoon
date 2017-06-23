@@ -34,7 +34,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.experimental.modelobs.FineModelChangeHandler;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 
@@ -86,7 +86,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks;
 
-	private FineModelChangeHandler modelChangeHandler = new FineModelChangeHandler();
+	private FineModelChangeListener modelChangeHandler = new FineModelChangeListener();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -485,11 +485,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public FineModelChangeHandler getModelChangeHandler() {
+	public FineModelChangeListener getModelChangeHandler() {
 		return modelChangeHandler;
 	}
 
-	public void setModelChangeHandler(FineModelChangeHandler modelChangeHandler) {
+	public void setModelChangeHandler(FineModelChangeListener modelChangeHandler) {
 		this.modelChangeHandler = modelChangeHandler;
 	}
 }

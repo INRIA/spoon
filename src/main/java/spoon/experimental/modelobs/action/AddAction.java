@@ -21,9 +21,9 @@ import spoon.experimental.modelobs.context.Context;
 public class AddAction<T>  extends Action {
 	private T newValue;
 
-	public AddAction(Context context, T newElement) {
+	public AddAction(Context context, T newValue) {
 		super(context);
-		this.newValue = newElement;
+		this.newValue = newValue;
 	}
 
 	@Override
