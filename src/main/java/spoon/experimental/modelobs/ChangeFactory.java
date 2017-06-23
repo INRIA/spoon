@@ -14,14 +14,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.factory;
+package spoon.experimental.modelobs;
 
-import spoon.experimental.modelobs.Action;
-import spoon.experimental.modelobs.ModelChangeListener;
-import spoon.experimental.modelobs.AddAction;
-import spoon.experimental.modelobs.DeleteAction;
-import spoon.experimental.modelobs.DeleteAllAction;
-import spoon.experimental.modelobs.UpdateAction;
 import spoon.experimental.modelobs.context.ListContext;
 import spoon.experimental.modelobs.context.MapContext;
 import spoon.experimental.modelobs.context.ObjectContext;

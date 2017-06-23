@@ -34,7 +34,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.factory.ChangeFactory;
+import spoon.experimental.modelobs.ChangeFactory;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 

@@ -17,6 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
+import spoon.experimental.modelobs.ChangeFactory;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;

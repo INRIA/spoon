@@ -24,7 +24,7 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.factory.ChangeFactory;
+import spoon.experimental.modelobs.ChangeFactory;
 import spoon.reflect.factory.Factory;
 
 /**
