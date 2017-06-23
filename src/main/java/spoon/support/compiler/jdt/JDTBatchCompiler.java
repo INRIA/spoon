@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -108,8 +109,15 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		}
 		CompilerOptions compilerOptions = new CompilerOptions(this.options);
 		compilerOptions.parseLiteralExpressionsAsConstants = false;
+
+		IErrorHandlingPolicy errorHandlingPolicy = getHandlingPolicy();
+
+		if (jdtCompiler.getEnvironment().getNoClasspath()) {
+			errorHandlingPolicy = DefaultErrorHandlingPolicies.ignoreAllProblems();
+		}
+
 		TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
-				environment, getHandlingPolicy(), compilerOptions,
+				environment, errorHandlingPolicy, compilerOptions,
 				this.jdtCompiler.requestor, getProblemFactory(), this.out,
 				null);
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
