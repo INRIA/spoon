@@ -182,7 +182,7 @@ public class ChangeFactory {
 
 		@Override
 		public void onSetDelete(CtElement currentElement, CtRole role, Set field, ModifierKind oldValue) {
-			propagateModelChange(new DeleteAction(new SetContext(currentElement, role, field), oldValue));
+			propagateModelChange(new DeleteAction<>(new SetContext(currentElement, role, field), oldValue));
 		}
 
 		@Override
