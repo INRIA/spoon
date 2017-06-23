@@ -14,32 +14,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff.context;
+package spoon.experimental.modelobs;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+import spoon.experimental.modelobs.context.Context;
 
-import java.util.Map;
+public abstract class Action {
+	private final Context context;
 
-public class MapContext<K, V> extends Context {
-	private final Map<K, V> map;
-	private  K key;
-
-	public MapContext(CtElement element, CtRole role, Map<K, V> map) {
-		super(element, role);
-		this.map = map;
+	Action(Context context) {
+		this.context = context;
 	}
 
-	public MapContext(CtElement element, CtRole role, Map<K, V> map, K key) {
-		this(element, role, map);
-		this.key = key;
-	}
+	public abstract <T> T getChangedElement();
 
-	public K getKey() {
-		return key;
-	}
-
-	public Map<K, V> getMap() {
-		return map;
+	public Context getContext() {
+		return context;
 	}
 }

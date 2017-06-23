@@ -14,39 +14,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff;
+package spoon.experimental.modelobs;
 
-/**
- * notifies all change on the AST
- */
-public interface ModelChangeListener {
-	/**
-	 * when an element is removed
-	 * @param action contains information of the change
-	 */
-	void onDelete(DeleteAction action);
+import spoon.experimental.modelobs.context.Context;
 
-	/**
-	 * when all element are removed
-	 * @param action contains information of the change
-	 */
-	void onDeleteAll(DeleteAllAction action);
+import java.util.Collection;
+import java.util.Map;
 
-	/**
-	 * when an element is added
-	 * @param action contains information of the change
-	 */
-	void onAdd(AddAction action);
+public class DeleteAllAction<T> extends DeleteAction {
 
-	/**
-	 * when an element is modified
-	 * @param action contains information of the change
-	 */
-	void onUpdate(UpdateAction action);
+	public DeleteAllAction(Context context, Collection oldElement) {
+		super(context, oldElement);
+	}
 
-	/**
-	 * when an element is changed
-	 * @param action contains information of the change
-	 */
-	void onAction(Action action);
+	public DeleteAllAction(Context context, Map oldElement) {
+		super(context, oldElement);
+	}
 }

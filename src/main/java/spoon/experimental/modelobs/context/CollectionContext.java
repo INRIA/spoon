@@ -14,28 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff;
+package spoon.experimental.modelobs.context;
 
-import spoon.diff.context.Context;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
-public class AddAction<T>  extends Action {
-	private T newElement;
+import java.util.Collection;
 
-	public AddAction(Context context, T newElement) {
-		super(context);
-		this.newElement = newElement;
-	}
+public class CollectionContext<T extends Collection<?>> extends Context {
+	protected final T original;
 
-	@Override
-	public T getChangedElement() {
-		return getNewElement();
-	}
-
-	/**
-	 * Returns the added element
-	 * @return the new element
-	 */
-	public T getNewElement() {
-		return newElement;
+	public CollectionContext(CtElement element, CtRole role, T original) {
+		super(element, role);
+		this.original = original;
 	}
 }

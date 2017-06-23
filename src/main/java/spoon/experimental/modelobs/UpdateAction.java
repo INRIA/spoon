@@ -14,25 +14,30 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff.context;
+package spoon.experimental.modelobs;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+import spoon.experimental.modelobs.context.Context;
 
-public abstract class Context {
-	private CtElement element;
-	private CtRole role;
+public class UpdateAction<T> extends Action {
+	private final T oldElement;
+	private final T newElement;
 
-	public Context(CtElement element, CtRole role) {
-		this.element = element;
-		this.role = role;
+	public UpdateAction(Context context, T newElement, T oldElement) {
+		super(context);
+		this.oldElement = oldElement;
+		this.newElement = newElement;
 	}
 
-	public CtElement getElement() {
-		return element;
+	@Override
+	public T getChangedElement() {
+		return getNewElement();
 	}
 
-	public CtRole getRole() {
-		return role;
+	public T getNewElement() {
+		return newElement;
+	}
+
+	public T getOldElement() {
+		return oldElement;
 	}
 }

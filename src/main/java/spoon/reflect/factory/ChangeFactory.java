@@ -16,16 +16,16 @@
  */
 package spoon.reflect.factory;
 
-import spoon.diff.Action;
-import spoon.diff.ModelChangeListener;
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
-import spoon.diff.context.ListContext;
-import spoon.diff.context.MapContext;
-import spoon.diff.context.ObjectContext;
-import spoon.diff.context.SetContext;
+import spoon.experimental.modelobs.Action;
+import spoon.experimental.modelobs.ModelChangeListener;
+import spoon.experimental.modelobs.AddAction;
+import spoon.experimental.modelobs.DeleteAction;
+import spoon.experimental.modelobs.DeleteAllAction;
+import spoon.experimental.modelobs.UpdateAction;
+import spoon.experimental.modelobs.context.ListContext;
+import spoon.experimental.modelobs.context.MapContext;
+import spoon.experimental.modelobs.context.ObjectContext;
+import spoon.experimental.modelobs.context.SetContext;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;

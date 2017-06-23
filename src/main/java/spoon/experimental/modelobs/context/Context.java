@@ -14,20 +14,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff;
+package spoon.experimental.modelobs.context;
 
-import spoon.diff.context.Context;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
-import java.util.Collection;
-import java.util.Map;
+public abstract class Context {
+	private CtElement element;
+	private CtRole role;
 
-public class DeleteAllAction<T> extends DeleteAction {
-
-	public DeleteAllAction(Context context, Collection oldElement) {
-		super(context, oldElement);
+	public Context(CtElement element, CtRole role) {
+		this.element = element;
+		this.role = role;
 	}
 
-	public DeleteAllAction(Context context, Map oldElement) {
-		super(context, oldElement);
+	public CtElement getElement() {
+		return element;
+	}
+
+	public CtRole getRole() {
+		return role;
 	}
 }

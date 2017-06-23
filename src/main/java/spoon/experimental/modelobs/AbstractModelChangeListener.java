@@ -14,15 +14,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff.context;
+package spoon.experimental.modelobs;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+/**
+ * notifies all change on the AST
+ */
+public abstract class AbstractModelChangeListener implements ModelChangeListener {
+	@Override
+	public void onDelete(DeleteAction action) {
 
-import java.util.Set;
+	}
 
-public class SetContext extends CollectionContext<Set<?>> {
-	public SetContext(CtElement element, CtRole role, Set<?> original) {
-		super(element, role, original);
+	@Override
+	public void onDeleteAll(DeleteAllAction action) {
+
+	}
+
+	@Override
+	public void onAdd(AddAction action) {
+
+	}
+
+	@Override
+	public void onUpdate(UpdateAction action) {
+
+	}
+
+	@Override
+	public void onAction(Action action) {
+
 	}
 }

@@ -14,26 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff.context;
+package spoon.experimental.modelobs.context;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-import java.util.List;
+import java.util.Set;
 
-public class ListContext extends CollectionContext<List<?>> {
-	private final int position;
-
-	public ListContext(CtElement element, CtRole role, List<?> original) {
-		this(element, role, original, -1);
-	}
-
-	public ListContext(CtElement element, CtRole role, List<?> original, int position) {
+public class SetContext extends CollectionContext<Set<?>> {
+	public SetContext(CtElement element, CtRole role, Set<?> original) {
 		super(element, role, original);
-		this.position = position;
-	}
-
-	public int getPosition() {
-		return position;
 	}
 }

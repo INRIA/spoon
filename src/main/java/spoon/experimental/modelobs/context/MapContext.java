@@ -14,14 +14,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff.context;
+package spoon.experimental.modelobs.context;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-public class ObjectContext extends Context {
+import java.util.Map;
 
-	public ObjectContext(CtElement ctElement, CtRole role) {
-		super(ctElement, role);
+public class MapContext<K, V> extends Context {
+	private final Map<K, V> map;
+	private  K key;
+
+	public MapContext(CtElement element, CtRole role, Map<K, V> map) {
+		super(element, role);
+		this.map = map;
+	}
+
+	public MapContext(CtElement element, CtRole role, Map<K, V> map, K key) {
+		this(element, role, map);
+		this.key = key;
+	}
+
+	public K getKey() {
+		return key;
+	}
+
+	public Map<K, V> getMap() {
+		return map;
 	}
 }

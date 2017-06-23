@@ -14,17 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff;
+package spoon.experimental.modelobs;
 
-import spoon.diff.context.Context;
+import spoon.experimental.modelobs.context.Context;
 
-public class UpdateAction<T> extends Action {
-	private final T oldElement;
-	private final T newElement;
+public class AddAction<T>  extends Action {
+	private T newElement;
 
-	public UpdateAction(Context context, T newElement, T oldElement) {
+	public AddAction(Context context, T newElement) {
 		super(context);
-		this.oldElement = oldElement;
 		this.newElement = newElement;
 	}
 
@@ -33,11 +31,11 @@ public class UpdateAction<T> extends Action {
 		return getNewElement();
 	}
 
+	/**
+	 * Returns the added element
+	 * @return the new element
+	 */
 	public T getNewElement() {
 		return newElement;
-	}
-
-	public T getOldElement() {
-		return oldElement;
 	}
 }

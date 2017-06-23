@@ -14,20 +14,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff;
+package spoon.experimental.modelobs;
 
-import spoon.diff.context.Context;
+import spoon.experimental.modelobs.context.Context;
 
-public abstract class Action {
-	private final Context context;
+public class DeleteAction<T> extends Action {
+	private T oldElement;
 
-	Action(Context context) {
-		this.context = context;
+	public DeleteAction(Context context, T oldElement) {
+		super(context);
+		this.oldElement = oldElement;
 	}
 
-	public abstract <T> T getChangedElement();
+	@Override
+	public T getChangedElement() {
+		return getRemovedElement();
+	}
 
-	public Context getContext() {
-		return context;
+	/**
+	 * Returns the removed element
+	 * @return the removed element
+	 */
+	public T getRemovedElement() {
+		return oldElement;
 	}
 }

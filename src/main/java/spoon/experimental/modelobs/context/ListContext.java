@@ -14,28 +14,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.diff;
+package spoon.experimental.modelobs.context;
 
-import spoon.diff.context.Context;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
-public class DeleteAction<T> extends Action {
-	private T oldElement;
+import java.util.List;
 
-	public DeleteAction(Context context, T oldElement) {
-		super(context);
-		this.oldElement = oldElement;
+public class ListContext extends CollectionContext<List<?>> {
+	private final int position;
+
+	public ListContext(CtElement element, CtRole role, List<?> original) {
+		this(element, role, original, -1);
 	}
 
-	@Override
-	public T getChangedElement() {
-		return getRemovedElement();
+	public ListContext(CtElement element, CtRole role, List<?> original, int position) {
+		super(element, role, original);
+		this.position = position;
 	}
 
-	/**
-	 * Returns the removed element
-	 * @return the removed element
-	 */
-	public T getRemovedElement() {
-		return oldElement;
+	public int getPosition() {
+		return position;
 	}
 }
