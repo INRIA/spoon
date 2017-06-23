@@ -125,7 +125,7 @@ public class ExceptionTest {
 		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
 
 		// for now the type of CtCatchVariable is not the same
-		// this should be fix in the future (see:
+		// this should be fix in the future (see: https://github.com/INRIA/spoon/issues/1420)
 		//assertEquals(variable2, variable1);
 	}
 
