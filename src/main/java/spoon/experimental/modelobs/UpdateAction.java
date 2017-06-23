@@ -23,33 +23,33 @@ import spoon.experimental.modelobs.context.Context;
  * @param <T>
  */
 public class UpdateAction<T> extends Action {
-	private final T oldElement;
-	private final T newElement;
+	private final T oldValue;
+	private final T newValue;
 
-	public UpdateAction(Context context, T newElement, T oldElement) {
+	public UpdateAction(Context context, T newValue, T oldValue) {
 		super(context);
-		this.oldElement = oldElement;
-		this.newElement = newElement;
+		this.oldValue = oldValue;
+		this.newValue = newValue;
 	}
 
 	@Override
 	public T getChangedValue() {
-		return getNewElement();
+		return getNewValue();
 	}
 
 	/**
 	 * the new value in the model
 	 * @return the new value
 	 */
-	public T getNewElement() {
-		return newElement;
+	public T getNewValue() {
+		return newValue;
 	}
 
 	/**
 	 * the old value in the model
 	 * @return the old value
 	 */
-	public T getOldElement() {
-		return oldElement;
+	public T getOldValue() {
+		return oldValue;
 	}
 }

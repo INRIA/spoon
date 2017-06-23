@@ -22,6 +22,7 @@ import spoon.reflect.path.CtRole;
 import java.util.Set;
 
 public class SetContext extends CollectionContext<Set<?>> {
+
 	public SetContext(CtElement element, CtRole role, Set<?> original) {
 		super(element, role, original);
 	}

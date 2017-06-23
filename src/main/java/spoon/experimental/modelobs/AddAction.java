@@ -19,23 +19,23 @@ package spoon.experimental.modelobs;
 import spoon.experimental.modelobs.context.Context;
 
 public class AddAction<T>  extends Action {
-	private T newElement;
+	private T newValue;
 
 	public AddAction(Context context, T newElement) {
 		super(context);
-		this.newElement = newElement;
+		this.newValue = newElement;
 	}
 
 	@Override
 	public T getChangedValue() {
-		return getNewElement();
+		return getNewValue();
 	}
 
 	/**
 	 * Returns the added element
 	 * @return the new element
 	 */
-	public T getNewElement() {
-		return newElement;
+	public T getNewValue() {
+		return newValue;
 	}
 }

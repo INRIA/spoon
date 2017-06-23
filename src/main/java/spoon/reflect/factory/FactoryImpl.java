@@ -17,7 +17,7 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
-import spoon.experimental.modelobs.ChangeFactory;
+import spoon.experimental.modelobs.FineModelChangeHandler;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -357,8 +357,8 @@ public class FactoryImpl implements Factory, Serializable {
 	 * The change sub-factory.
 	 */
 	@Override
-	public ChangeFactory Change() {
-		return getEnvironment().getChangeFactory();
+	public FineModelChangeHandler Change() {
+		return getEnvironment().getModelChangeHandler();
 	}
 
 	/**

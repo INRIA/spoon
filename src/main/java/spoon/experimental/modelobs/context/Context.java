@@ -23,27 +23,27 @@ import spoon.reflect.path.CtRole;
  * defines the context of an action
  */
 public abstract class Context {
-	private CtElement element;
-	private CtRole role;
+	private CtElement elementWhereChangeHappens;
+	private CtRole changedProperty;
 
-	public Context(CtElement element, CtRole role) {
-		this.element = element;
-		this.role = role;
+	public Context(CtElement element, CtRole changedProperty) {
+		this.elementWhereChangeHappens = element;
+		this.changedProperty = changedProperty;
 	}
 
 	/**
 	 * the changed parent
 	 * @return the changed parent
 	 */
-	public CtElement getElement() {
-		return element;
+	public CtElement getElementWhereChangeHappens() {
+		return elementWhereChangeHappens;
 	}
 
 	/**
 	 * the role that has been modified
 	 * @return the role that has been modified
 	 */
-	public CtRole getRole() {
-		return role;
+	public CtRole getChangedProperty() {
+		return changedProperty;
 	}
 }

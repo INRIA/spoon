@@ -31,22 +31,22 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * is the factory that create the action on the model
+ * is the listener that creates the action on the model
  */
-public class ChangeFactory {
+public class FineModelChangeHandler {
 
-	private final List<ModelChangeListener> listeners = new ArrayList<>(2);
+	private final List<ActionBasedChangeListener> listeners = new ArrayList<>(2);
 
-	public void addModelChangeListener(final ModelChangeListener listener) {
+	public void addModelChangeListener(final ActionBasedChangeListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeModelChangeListener(final ModelChangeListener listener) {
+	public void removeModelChangeListener(final ActionBasedChangeListener listener) {
 		listeners.remove(listener);
 	}
 
 	private void propagateModelChange(final Action action) {
-		for (ModelChangeListener listener : listeners) {
+		for (ActionBasedChangeListener listener : listeners) {
 			listener.onAction(action);
 			if (action instanceof DeleteAllAction) {
 				listener.onDeleteAll((DeleteAllAction) action);
@@ -118,7 +118,7 @@ public class ChangeFactory {
 	public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue) {
 	}
 
-	public class ListeningChangeFactory extends ChangeFactory {
+	public class ListeningChangeFactory extends FineModelChangeHandler {
 
 		@Override
 		public void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue) {

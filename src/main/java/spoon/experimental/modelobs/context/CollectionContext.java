@@ -21,11 +21,11 @@ import spoon.reflect.path.CtRole;
 
 import java.util.Collection;
 
-public class CollectionContext<T extends Collection<?>> extends Context {
-	protected final T original;
+public abstract class CollectionContext<T extends Collection<?>> extends Context {
+	protected final T copyOfTheCollection;
 
-	public CollectionContext(CtElement element, CtRole role, T original) {
+	public CollectionContext(CtElement element, CtRole role, T copyOfTheCollection) {
 		super(element, role);
-		this.original = original;
+		this.copyOfTheCollection = copyOfTheCollection;
 	}
 }

@@ -17,31 +17,36 @@
 package spoon.experimental.modelobs;
 
 /**
- * abstract implementation of the ModelChangeListener
+ * notifies all change on the AST
  */
-public abstract class AbstractModelChangeListener implements ModelChangeListener {
-	@Override
-	public void onDelete(DeleteAction action) {
+public interface ActionBasedChangeListener {
+	/**
+	 * when an element is removed
+	 * @param action contains information of the change
+	 */
+	void onDelete(DeleteAction action);
 
-	}
+	/**
+	 * when all element are removed
+	 * @param action contains information of the change
+	 */
+	void onDeleteAll(DeleteAllAction action);
 
-	@Override
-	public void onDeleteAll(DeleteAllAction action) {
+	/**
+	 * when an element is added
+	 * @param action contains information of the change
+	 */
+	void onAdd(AddAction action);
 
-	}
+	/**
+	 * when an element is modified
+	 * @param action contains information of the change
+	 */
+	void onUpdate(UpdateAction action);
 
-	@Override
-	public void onAdd(AddAction action) {
-
-	}
-
-	@Override
-	public void onUpdate(UpdateAction action) {
-
-	}
-
-	@Override
-	public void onAction(Action action) {
-
-	}
+	/**
+	 * when an element is changed
+	 * @param action contains information of the change
+	 */
+	void onAction(Action action);
 }

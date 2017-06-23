@@ -27,11 +27,11 @@ import java.util.Map;
  */
 public class DeleteAllAction<T> extends DeleteAction<T> {
 
-	public DeleteAllAction(Context context, Collection oldElement) {
-		super(context, (T) oldElement);
+	public DeleteAllAction(Context context, Collection oldValue) {
+		super(context, (T) oldValue);
 	}
 
-	public DeleteAllAction(Context context, Map oldElement) {
-		super(context, (T) oldElement);
+	public DeleteAllAction(Context context, Map oldValue) {
+		super(context, (T) oldValue);
 	}
 }

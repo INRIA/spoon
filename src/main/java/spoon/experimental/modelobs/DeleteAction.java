@@ -23,23 +23,23 @@ import spoon.experimental.modelobs.context.Context;
  * @param <T>
  */
 public class DeleteAction<T> extends Action {
-	private T oldElement;
+	private T oldValue;
 
-	public DeleteAction(Context context, T oldElement) {
+	public DeleteAction(Context context, T oldValue) {
 		super(context);
-		this.oldElement = oldElement;
+		this.oldValue = oldValue;
 	}
 
 	@Override
 	public T getChangedValue() {
-		return getRemovedElement();
+		return getRemovedValue();
 	}
 
 	/**
 	 * Returns the removed element
 	 * @return the removed element
 	 */
-	public T getRemovedElement() {
-		return oldElement;
+	public T getRemovedValue() {
+		return oldValue;
 	}
 }
