@@ -14,32 +14,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs;
+package spoon.experimental.modelobs.action;
 
 import spoon.experimental.modelobs.context.Context;
 
 /**
- * defines the delete action
- * @param <T>
+ * defines an action change on the model
  */
-public class DeleteAction<T> extends Action {
-	private T oldValue;
+public abstract class Action {
+	private final Context context;
 
-	public DeleteAction(Context context, T oldValue) {
-		super(context);
-		this.oldValue = oldValue;
-	}
-
-	@Override
-	public T getChangedValue() {
-		return getRemovedValue();
+	Action(Context context) {
+		this.context = context;
 	}
 
 	/**
-	 * Returns the removed element
-	 * @return the removed element
+	 * get the changed value of the model
+	 * @param <T> the type of the element
+	 * @return the changed value
 	 */
-	public T getRemovedValue() {
-		return oldValue;
+	public abstract <T> T getChangedValue();
+
+	/**
+	 * get the context of the change
+	 * @return the context
+	 */
+	public Context getContext() {
+		return context;
 	}
 }

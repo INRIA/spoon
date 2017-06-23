@@ -14,24 +14,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs;
+package spoon.experimental.modelobs.action;
 
 import spoon.experimental.modelobs.context.Context;
 
-import java.util.Collection;
-import java.util.Map;
+public class AddAction<T>  extends Action {
+	private T newValue;
 
-/**
- * defines the delete all action.
- * @param <T>
- */
-public class DeleteAllAction<T> extends DeleteAction<T> {
-
-	public DeleteAllAction(Context context, Collection oldValue) {
-		super(context, (T) oldValue);
+	public AddAction(Context context, T newElement) {
+		super(context);
+		this.newValue = newElement;
 	}
 
-	public DeleteAllAction(Context context, Map oldValue) {
-		super(context, (T) oldValue);
+	@Override
+	public T getChangedValue() {
+		return getNewValue();
+	}
+
+	/**
+	 * Returns the added element
+	 * @return the new element
+	 */
+	public T getNewValue() {
+		return newValue;
 	}
 }
