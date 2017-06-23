@@ -19,7 +19,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -28,36 +27,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AstCheckerTest {
-	@Test
-	public void testStackChanges() throws Exception {
-		final Launcher launcher = new Launcher();
-		launcher.getModelBuilder().setSourceClasspath(System.getProperty("java.class.path").split(File.pathSeparator));
-		// interfaces.
-		launcher.addInputResource("./src/main/java/spoon/reflect/code");
-		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
-		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
-		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
-		// Implementations.
-		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
-		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
-		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
-		launcher.addInputResource("./src/main/java/spoon/support/reflect/internal");
-		// Utils.
-		launcher.addInputResource("./src/test/java/spoon/reflect/ast/AstCheckerTest.java");
-		launcher.buildModel();
-
-		final GetterListChecker getterListChecker = new GetterListChecker(launcher.getFactory());
-		getterListChecker.scan(launcher.getModel().getRootPackage());
-		if (getterListChecker.result != null) {
-			throw new AssertionError(getterListChecker.result);
-		}
-	}
 
 	@Test
 	public void testAvoidSetCollectionSavedOnAST() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setBuildStackChanges(true);
 		launcher.addInputResource("src/main/java");
 		launcher.buildModel();
 
@@ -250,67 +224,6 @@ public class AstCheckerTest {
 				process(m);
 			}
 			super.visitCtMethod(m);
-		}
-	}
-
-	private class GetterListChecker extends CtScanner {
-		private final List<CtTypeReference<?>> COLLECTIONS;
-		private final CtExpression<Boolean> conditionExpected;
-		private String result;
-
-		GetterListChecker(Factory factory) {
-			COLLECTIONS = Arrays.asList(factory.Type().createReference(Collection.class), factory.Type().createReference(List.class), factory.Type().createReference(Set.class));
-			final CtType<Object> templateClass = factory.Type().get(Template.class);
-			conditionExpected = ((CtIf) templateClass.getMethod("template").getBody().getStatement(0)).getCondition();
-		}
-
-		private boolean isToBeProcessed(CtMethod<?> candidate) {
-			return candidate.getBody() != null //
-					&& candidate.getParameters().size() == 0 //
-					&& candidate.getDeclaringType().getSimpleName().startsWith("Ct") //
-					&& COLLECTIONS.contains(candidate.getType()) //
-					&& isConditionExpected(candidate.getBody().getStatement(0)) //
-					&& isReturnCollection(candidate.getBody().getLastStatement());
-		}
-
-		private boolean isConditionExpected(CtStatement statement) {
-			final TemplateMatcher matcher = new TemplateMatcher(conditionExpected);
-			return matcher.find(statement).size() == 0;
-		}
-
-		private boolean isReturnCollection(CtStatement statement) {
-			return statement instanceof CtReturn //
-					&& ((CtReturn) statement).getReturnedExpression() instanceof CtFieldRead<?> //
-					&& COLLECTIONS.contains(((CtFieldRead) ((CtReturn) statement).getReturnedExpression()).getVariable().getType());
-		}
-
-		private void process(CtMethod<?> element) {
-			result += element.getSignature() + " on " + element.getDeclaringType().getQualifiedName() + "\n";
-		}
-
-		@Override
-		public <T> void visitCtMethod(CtMethod<T> m) {
-			if (isToBeProcessed(m)) {
-				process(m);
-			}
-			super.visitCtMethod(m);
-		}
-	}
-
-	class Template {
-		TemplateParameter<Action> _action_;
-
-		public void template() {
-			if (getFactory().getEnvironment().buildStackChanges()) {
-			}
-		}
-
-		public void templatePush() {
-			getFactory().getEnvironment().pushToStack(_action_.S());
-		}
-
-		public Factory getFactory() {
-			return null;
 		}
 	}
 }
