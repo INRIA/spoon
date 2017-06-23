@@ -142,6 +142,12 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
+	public <T extends CtBlock<R>> T insertAtPosition(int i, CtStatement statement) {
+		this.statements.add(i, statement);
+		return (T) this;
+	}
+
+	@Override
 	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
