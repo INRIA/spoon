@@ -111,6 +111,11 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
+		return this.addArgument(this.arguments.size(), argument);
+	}
+
+	@Override
+	public <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
 		if (argument == null) {
 			return (C) this;
 		}
@@ -118,7 +123,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 			arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		argument.setParent(this);
-		arguments.add(argument);
+		arguments.add(position, argument);
 		return (C) this;
 	}
 

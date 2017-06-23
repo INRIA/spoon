@@ -49,6 +49,12 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	<C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument);
 
 	/**
+	 * Adds an argument expression to the invocation at the specified position
+	 */
+	@PropertySetter(role = ARGUMENT)
+	<C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument);
+
+	/**
 	 * Removes an argument expression from the invocation.
 	 */
 	@PropertySetter(role = ARGUMENT)
