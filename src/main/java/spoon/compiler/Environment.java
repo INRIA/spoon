@@ -332,5 +332,5 @@ public interface Environment {
 	/** Set the directory where binary .class files are created */
 	String getBinaryOutputDirectory();
 
-	FineModelChangeListener getModelChangeHandler();
+	FineModelChangeListener getModelChangeListener();
 }

@@ -358,7 +358,7 @@ public class FactoryImpl implements Factory, Serializable {
 	 */
 	@Override
 	public FineModelChangeListener Change() {
-		return getEnvironment().getModelChangeHandler();
+		return getEnvironment().getModelChangeListener();
 	}
 
 	/**

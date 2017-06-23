@@ -86,7 +86,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks;
 
-	private FineModelChangeListener modelChangeHandler = new FineModelChangeListener();
+	private FineModelChangeListener modelChangeListener = new FineModelChangeListener();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -485,11 +485,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public FineModelChangeListener getModelChangeHandler() {
-		return modelChangeHandler;
+	public FineModelChangeListener getModelChangeListener() {
+		return modelChangeListener;
 	}
 
-	public void setModelChangeHandler(FineModelChangeListener modelChangeHandler) {
-		this.modelChangeHandler = modelChangeHandler;
+	public void setModelChangeListener(FineModelChangeListener modelChangeListener) {
+		this.modelChangeListener = modelChangeListener;
 	}
 }
