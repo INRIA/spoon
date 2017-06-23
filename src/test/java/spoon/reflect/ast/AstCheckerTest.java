@@ -2,17 +2,13 @@ package spoon.reflect.ast;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.diff.Action;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -22,8 +18,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
-import spoon.template.TemplateMatcher;
-import spoon.template.TemplateParameter;
 
 import java.io.File;
 import java.util.Arrays;
@@ -77,30 +71,36 @@ public class AstCheckerTest {
 		final List<CtInvocation<?>> invocations = Query.getElements(factory, new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 			@Override
 			public boolean matches(CtInvocation<?> element) {
-				if (!element.getExecutable().getSimpleName().startsWith("get")) {
+				if (!(element.getParent() instanceof CtInvocation)) {
 					return false;
 				}
-				if (!collectionsRef.contains(element.getType())) {
+				final CtInvocation<?> parent = (CtInvocation<?>) element.getParent();
+				if (parent.getTarget() == null || !parent.getTarget().equals(element)) {
 					return false;
 				}
 				if (!element.getExecutable().getDeclaringType().getSimpleName().startsWith("Ct")) {
 					return false;
 				}
-				if (!(element.getParent() instanceof CtInvocation)) {
+				boolean isDataStructure = false;
+				for (int i = 0; i < collectionsRef.size(); i++) {
+					CtTypeReference<?> ctTypeReference = collectionsRef.get(i);
+					if (element.getType().isSubtypeOf(ctTypeReference)) {
+						isDataStructure = true;
+						break;
+					}
+				}
+				if (!isDataStructure) {
 					return false;
 				}
-				final CtInvocation<?> parent = (CtInvocation<?>) element.getParent();
-				if (!parent.getTarget().equals(element)) {
-					return false;
-				}
+
 				final String simpleName = parent.getExecutable().getSimpleName();
-				return simpleName.startsWith("add") || simpleName.startsWith("remove");
+				return simpleName.startsWith("add") || simpleName.startsWith("remove") || simpleName.startsWith("put");
 			}
 		});
 		if (invocations.size() > 0) {
 			final String error = invocations.stream() //
 					.sorted(new CtLineElementComparator()) //
-					.map(i -> "see " + i.getPosition().getFile().getName() + " at " + i.getPosition().getLine()) //
+					.map(i -> "see " + i.getPosition().getFile().getAbsoluteFile() + " at " + i.getPosition().getLine()) //
 					.collect(Collectors.joining(",\n"));
 			throw new AssertionError(error);
 		}
@@ -110,7 +110,6 @@ public class AstCheckerTest {
 	public void testPushToStackChanges() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setBuildStackChanges(true);
 		// Implementations.
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
@@ -120,7 +119,7 @@ public class AstCheckerTest {
 		launcher.addInputResource("./src/test/java/spoon/reflect/ast/AstCheckerTest.java");
 		launcher.buildModel();
 
-		final PushStackInIntercessionChecker checker = new PushStackInIntercessionChecker(launcher.getFactory());
+		final PushStackInIntercessionChecker checker = new PushStackInIntercessionChecker();
 		checker.scan(launcher.getModel().getRootPackage());
 		if (!checker.result.isEmpty()) {
 			System.err.println(checker.count);
@@ -129,39 +128,21 @@ public class AstCheckerTest {
 	}
 
 	private class PushStackInIntercessionChecker extends CtScanner {
-		private final CtInvocation<?> template;
 		private final List<String> notCandidates;
 		private String result = "";
 		private int count;
 
-		PushStackInIntercessionChecker(Factory factory) {
-			final CtType<Object> templateClass = factory.Type().get(Template.class);
-			template = templateClass.getMethod("templatePush").getBody().getStatement(0);
+		PushStackInIntercessionChecker() {
 			notCandidates = Arrays.asList( //
-					"CtTypeImpl#addTypeMember", //
-					"CtTypeImpl#removeTypeMember", //
-					"CtTypeImpl#addFieldAtTop", //
-					"CtTypeImpl#addField", //
-					"CtTypeImpl#removeField", //
-					"CtTypeImpl#addBound", //
-					"CtTypeImpl#addNestedType", //
-					"CtTypeImpl#removeNestedType", //
-					"CtTypeImpl#addMethod", //
-					"CtTypeImpl#removeMethod", //
-					"CtBlockImpl#removeStatement", //
-					"CtAnnotationTypeImpl#addMethod", //
-					"CtClassImpl#removeConstructor", //
-					"CtConstructorCallImpl#addArgument", //
-					"CtInvocationImpl#addArgument", //
-					"CtTypeParameterReferenceImpl#addBound", //
-					"CtTypeParameterReferenceImpl#removeBound", //
-					"CtTypeParameterReferenceImpl#setBounds", //
+					"CtTypeImpl#setTypeMembers", //
+					"CtStatementListImpl#setPosition", //
 					"CtElementImpl#setFactory", //
 					"CtElementImpl#setPositions", //
 					"CtElementImpl#setDocComment", //
-					"CtStatementListImpl#setPosition", //
-					"CtAnnotationImpl#addValue", //
-					"CtAnnotationTypeImpl#setFields" //
+					"CtElementImpl#setParent", //
+					"CtTypeParameterReferenceImpl#addBound", //
+					"CtTypeParameterReferenceImpl#removeBound", //
+					"CtTypeParameterReferenceImpl#setBounds" //
 			);
 		}
 
@@ -178,17 +159,43 @@ public class AstCheckerTest {
 					&& (candidate.getSimpleName().startsWith("add") || candidate.getSimpleName().startsWith("set") || candidate.getSimpleName().startsWith("remove")) //
 					&& candidate.getDeclaringType().getSimpleName().startsWith("Ct") //
 					&& !isNotCandidate(candidate) //
+					&& !isSurcharged(candidate) //
 					&& !isDelegateMethod(candidate) //
 					&& !isUnsupported(candidate.getBody()) //
-					&& !hasPushToStackInvocation(candidate.getBody())
-					&& isSettable(candidate);
+					&& !hasPushToStackInvocation(candidate.getBody());
 		}
 
-		private boolean isSettable(CtMethod<?> candidate) {
-			return candidate.getAnnotation(UnsettableProperty.class) == null;
-		}
 		private boolean isNotCandidate(CtMethod<?> candidate) {
 			return "setVisibility".equals(candidate.getSimpleName()) || notCandidates.contains(candidate.getDeclaringType().getSimpleName() + "#" + candidate.getSimpleName());
+		}
+
+		private boolean isSurcharged(CtMethod<?> candidate) {
+			CtBlock<?> block = candidate.getBody();
+			if (block.getStatements().size() == 0) {
+				return false;
+			}
+			CtInvocation potentialDelegate;
+			if (block.getLastStatement() instanceof CtReturn) {
+				if (!(((CtReturn) block.getLastStatement()).getReturnedExpression() instanceof CtInvocation)) {
+					if (block.getStatement(0) instanceof CtInvocation) {
+						potentialDelegate = block.getStatement(0);
+					} else {
+						return false;
+					}
+				} else {
+					potentialDelegate = (CtInvocation) ((CtReturn) block.getLastStatement()).getReturnedExpression();
+				}
+			} else if (block.getStatement(0) instanceof CtInvocation && block.getStatements().size() == 1) {
+				potentialDelegate = block.getStatement(0);
+			} else {
+				return false;
+			}
+			CtExecutable declaration = potentialDelegate.getExecutable().getDeclaration();
+			if (declaration == null || !(declaration instanceof CtMethod)) {
+				return false;
+			}
+			// check if the invocation has a model change listener
+			return !isToBeProcessed((CtMethod<?>) declaration);
 		}
 
 		private boolean isDelegateMethod(CtMethod<?> candidate) {
@@ -227,9 +234,9 @@ public class AstCheckerTest {
 			return body.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 				@Override
 				public boolean matches(CtInvocation<?> element) {
-					return element.getExecutable().getSimpleName().equals(template.getExecutable().getSimpleName()) && super.matches(element);
+					return "ChangeFactory".equals(element.getExecutable().getDeclaringType().getSimpleName()) && super.matches(element);
 				}
-			}).size() == 1;
+			}).size() > 0;
 		}
 
 		private void process(CtMethod<?> element) {
