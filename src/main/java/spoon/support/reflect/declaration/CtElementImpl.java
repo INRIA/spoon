@@ -60,6 +60,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTA
 import static spoon.reflect.path.CtRole.ANNOTATION;
 import static spoon.reflect.path.CtRole.COMMENT;
 import static spoon.reflect.path.CtRole.IS_IMPLICIT;
+import static spoon.reflect.path.CtRole.POSITION;
 
 /**
  * Contains the default implementation of most CtElement methods.
@@ -219,6 +220,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> E setPosition(SourcePosition position) {
+		getFactory().Change().onObjectUpdate(this, POSITION, position, this.position);
 		this.position = position;
 		return (E) this;
 	}
