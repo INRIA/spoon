@@ -17,7 +17,7 @@
 package spoon.experimental.modelobs;
 
 /**
- * notifies all change on the AST
+ * abstract implementation of the ModelChangeListener
  */
 public abstract class AbstractModelChangeListener implements ModelChangeListener {
 	@Override

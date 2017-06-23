@@ -21,6 +21,9 @@ import spoon.reflect.path.CtRole;
 
 import java.util.List;
 
+/**
+ * defines a list context
+ */
 public class ListContext extends CollectionContext<List<?>> {
 	private final int position;
 
@@ -33,6 +36,11 @@ public class ListContext extends CollectionContext<List<?>> {
 		this.position = position;
 	}
 
+	/**
+	 * the position where the change has been made (returns -1 if no position is defined).
+	 *
+	 * @return the position of the change
+	 */
 	public int getPosition() {
 		return position;
 	}

@@ -21,13 +21,17 @@ import spoon.experimental.modelobs.context.Context;
 import java.util.Collection;
 import java.util.Map;
 
-public class DeleteAllAction<T> extends DeleteAction {
+/**
+ * defines the delete all action.
+ * @param <T>
+ */
+public class DeleteAllAction<T> extends DeleteAction<T> {
 
 	public DeleteAllAction(Context context, Collection oldElement) {
-		super(context, oldElement);
+		super(context, (T) oldElement);
 	}
 
 	public DeleteAllAction(Context context, Map oldElement) {
-		super(context, oldElement);
+		super(context, (T) oldElement);
 	}
 }

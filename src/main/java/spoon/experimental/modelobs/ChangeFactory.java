@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * is the factory that create the action on the model
+ */
 public class ChangeFactory {
 
 	private final List<ModelChangeListener> listeners = new ArrayList<>(2);

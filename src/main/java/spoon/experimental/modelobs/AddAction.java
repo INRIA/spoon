@@ -27,7 +27,7 @@ public class AddAction<T>  extends Action {
 	}
 
 	@Override
-	public T getChangedElement() {
+	public T getChangedValue() {
 		return getNewElement();
 	}
 

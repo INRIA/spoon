@@ -18,6 +18,9 @@ package spoon.experimental.modelobs;
 
 import spoon.experimental.modelobs.context.Context;
 
+/**
+ * defines an action change on the model
+ */
 public abstract class Action {
 	private final Context context;
 
@@ -25,8 +28,17 @@ public abstract class Action {
 		this.context = context;
 	}
 
-	public abstract <T> T getChangedElement();
+	/**
+	 * get the changed value of the model
+	 * @param <T> the type of the element
+	 * @return the changed value
+	 */
+	public abstract <T> T getChangedValue();
 
+	/**
+	 * get the context of the change
+	 * @return the context
+	 */
 	public Context getContext() {
 		return context;
 	}

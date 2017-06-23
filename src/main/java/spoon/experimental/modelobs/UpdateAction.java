@@ -18,6 +18,10 @@ package spoon.experimental.modelobs;
 
 import spoon.experimental.modelobs.context.Context;
 
+/**
+ * defines the update action
+ * @param <T>
+ */
 public class UpdateAction<T> extends Action {
 	private final T oldElement;
 	private final T newElement;
@@ -29,14 +33,22 @@ public class UpdateAction<T> extends Action {
 	}
 
 	@Override
-	public T getChangedElement() {
+	public T getChangedValue() {
 		return getNewElement();
 	}
 
+	/**
+	 * the new value in the model
+	 * @return the new value
+	 */
 	public T getNewElement() {
 		return newElement;
 	}
 
+	/**
+	 * the old value in the model
+	 * @return the old value
+	 */
 	public T getOldElement() {
 		return oldElement;
 	}

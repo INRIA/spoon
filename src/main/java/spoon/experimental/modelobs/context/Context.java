@@ -19,6 +19,9 @@ package spoon.experimental.modelobs.context;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
+/**
+ * defines the context of an action
+ */
 public abstract class Context {
 	private CtElement element;
 	private CtRole role;
@@ -28,10 +31,18 @@ public abstract class Context {
 		this.role = role;
 	}
 
+	/**
+	 * the changed parent
+	 * @return the changed parent
+	 */
 	public CtElement getElement() {
 		return element;
 	}
 
+	/**
+	 * the role that has been modified
+	 * @return the role that has been modified
+	 */
 	public CtRole getRole() {
 		return role;
 	}

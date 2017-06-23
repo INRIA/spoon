@@ -21,6 +21,11 @@ import spoon.reflect.path.CtRole;
 
 import java.util.Map;
 
+/**
+ * defines the map context
+ * @param <K>
+ * @param <V>
+ */
 public class MapContext<K, V> extends Context {
 	private final Map<K, V> map;
 	private  K key;
@@ -35,10 +40,18 @@ public class MapContext<K, V> extends Context {
 		this.key = key;
 	}
 
+	/**
+	 * get the changed key
+	 * @return the changed key
+	 */
 	public K getKey() {
 		return key;
 	}
 
+	/**
+	 * the changed map
+	 * @return the changed map
+	 */
 	public Map<K, V> getMap() {
 		return map;
 	}

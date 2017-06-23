@@ -18,6 +18,10 @@ package spoon.experimental.modelobs;
 
 import spoon.experimental.modelobs.context.Context;
 
+/**
+ * defines the delete action
+ * @param <T>
+ */
 public class DeleteAction<T> extends Action {
 	private T oldElement;
 
@@ -27,7 +31,7 @@ public class DeleteAction<T> extends Action {
 	}
 
 	@Override
-	public T getChangedElement() {
+	public T getChangedValue() {
 		return getRemovedElement();
 	}
 
