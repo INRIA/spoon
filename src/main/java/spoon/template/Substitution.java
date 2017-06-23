@@ -438,7 +438,7 @@ public abstract class Substitution {
 		if (newConstrutor.getParameters().isEmpty()) {
 			CtConstructor<?> c = targetClass.getConstructor();
 			if (c != null && c.isImplicit()) {
-				targetClass.getConstructors().remove(c);
+				targetClass.removeConstructor((CtConstructor<T>) c);
 			}
 		}
 		targetClass.addConstructor(newConstrutor);
