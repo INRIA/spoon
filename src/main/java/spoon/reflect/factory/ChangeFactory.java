@@ -94,10 +94,8 @@ public class ChangeFactory extends SubFactory {
 
 
 	public void onListDelete(CtElement currentElement, CtRole role, List field, Collection<? extends CtElement> oldValue) {
-		if (factory.getEnvironment().buildStackChanges()) {
-			for (CtElement ctElement : oldValue) {
-				onListDelete(currentElement, role, field, field.indexOf(ctElement), ctElement);
-			}
+		for (CtElement ctElement : oldValue) {
+			onListDelete(currentElement, role, field, field.indexOf(ctElement), ctElement);
 		}
 	}
 
@@ -140,10 +138,8 @@ public class ChangeFactory extends SubFactory {
 	}
 
 	public void onSetDelete(CtElement currentElement, CtRole role, Set field, Collection<ModifierKind> oldValue) {
-		if (factory.getEnvironment().buildStackChanges()) {
-			for (ModifierKind modifierKind : oldValue) {
-				onSetDelete(currentElement, role, field, modifierKind);
-			}
+		for (ModifierKind modifierKind : oldValue) {
+			onSetDelete(currentElement, role, field, modifierKind);
 		}
 	}
 
