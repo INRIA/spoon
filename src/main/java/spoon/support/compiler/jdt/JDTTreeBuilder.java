@@ -116,6 +116,8 @@ import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -1415,7 +1417,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		if (context.stack.peekFirst().node instanceof UnionTypeReference) {
-			context.enter(references.<Throwable>getTypeReference(singleTypeReference.resolvedType), singleTypeReference);
+			if (singleTypeReference.resolvedType == null) {
+				context.enter(factory.Type().createReference(singleTypeReference.toString()), singleTypeReference);
+			} else {
+				context.enter(references.<Throwable>getTypeReference(singleTypeReference.resolvedType), singleTypeReference);
+			}
+
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
 			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);

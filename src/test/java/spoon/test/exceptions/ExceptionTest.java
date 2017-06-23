@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -108,15 +109,20 @@ public class ExceptionTest {
 
 	@Test
 	public void testUnionCatchExceptionInsideLambdaInNoClasspath() {
+		// contract: the model should be built when defining a union catch inside a lambda which is not known (noclasspath)
+		// and the catch variable should be the same than outside a lambda
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/UnionCatch.java");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.buildModel();
 
 		List<CtCatch> catches = launcher.getFactory().getModel().getElements(new TypeFilter<>(CtCatch.class));
-		assertEquals(1, catches.size());
+		assertEquals(2, catches.size());
 
-		CtCatchVariable variable = catches.get(0).getParameter();
+		CtCatchVariable variable1 = catches.get(0).getParameter(); // inside a lambda
+		CtCatchVariable variable2 = catches.get(1).getParameter(); // outside the lambda
+
+		assertEquals(variable2, variable1);
 	}
 
 }

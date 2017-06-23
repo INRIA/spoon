@@ -12,17 +12,29 @@ import toto.NbpOperator;
 public class UnionCatch {
     public void toto() {
         bla((NbpOperator) t -> {
-                try {
-                    Reader reader = new StringReader("machin");
-                    int i = -1;
-                    while (reader.ready()) {
-                        i = reader.read();
-                    }
-                    return i;
-                } catch (IOException | NullPointerException e) {
-                    System.out.printf("Error");
-                    return 0;
+            try {
+                Reader reader = new StringReader("machin");
+                int i = -1;
+                while (reader.ready()) {
+                    i = reader.read();
                 }
-            });
+                return i;
+            } catch (IOException | NullPointerException e) {
+                System.out.printf("Error");
+                return 0;
+            }
+        });
+
+        try {
+            Reader reader = new StringReader("machin");
+            int i = -1;
+            while (reader.ready()) {
+                i = reader.read();
+            }
+            return i;
+        } catch (IOException | NullPointerException e) {
+            System.out.printf("Error");
+            return 0;
+        }
     }
 }
