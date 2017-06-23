@@ -17,14 +17,15 @@
 package spoon.diff.context;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 import java.util.Collection;
 
 public class CollectionContext<T extends Collection<?>> extends Context {
 	protected final T original;
 
-	public CollectionContext(CtElement element, T original) {
-		super(element);
+	public CollectionContext(CtElement element, CtRole role, T original) {
+		super(element, role);
 		this.original = original;
 	}
 }

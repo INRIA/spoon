@@ -17,11 +17,12 @@
 package spoon.diff.context;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 import java.util.Set;
 
 public class SetContext extends CollectionContext<Set<?>> {
-	public SetContext(CtElement element, Set<?> original) {
-		super(element, original);
+	public SetContext(CtElement element, CtRole role, Set<?> original) {
+		super(element, role, original);
 	}
 }

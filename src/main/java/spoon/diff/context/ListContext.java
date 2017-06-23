@@ -17,19 +17,23 @@
 package spoon.diff.context;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 import java.util.List;
 
 public class ListContext extends CollectionContext<List<?>> {
 	private final int position;
 
-	public ListContext(CtElement element, List<?> original) {
-		super(element, original);
-		this.position = -1;
+	public ListContext(CtElement element, CtRole role, List<?> original) {
+		this(element, role, original, -1);
 	}
 
-	public ListContext(CtElement element, List<?> original, int position) {
-		super(element, original);
+	public ListContext(CtElement element, CtRole role, List<?> original, int position) {
+		super(element, role, original);
 		this.position = position;
+	}
+
+	public int getPosition() {
+		return position;
 	}
 }

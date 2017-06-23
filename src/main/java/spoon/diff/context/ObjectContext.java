@@ -17,20 +17,11 @@
 package spoon.diff.context;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 public class ObjectContext extends Context {
-	private final String fieldName;
 
-	public ObjectContext(CtElement ctElement, String fieldName) {
-		super(ctElement);
-		this.fieldName = fieldName;
+	public ObjectContext(CtElement ctElement, CtRole role) {
+		super(ctElement, role);
 	}
-
-/*
-	try {
-		final Field field = ctElement.getClass().getField(fieldName);
-	} catch (NoSuchFieldException e) {
-		throw new IllegalArgumentException("Can't find the field named by " + fieldName, e);
-	}
-*/
 }

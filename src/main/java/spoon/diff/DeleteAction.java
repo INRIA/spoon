@@ -17,19 +17,25 @@
 package spoon.diff;
 
 import spoon.diff.context.Context;
-import spoon.reflect.declaration.CtElement;
 
-public class DeleteAction extends Action {
-	public DeleteAction(Context context, CtElement oldElement) {
-		super(context, oldElement);
-	}
+public class DeleteAction<T> extends Action {
+	private T oldElement;
 
-	public DeleteAction(Context context, Object oldElement) {
-		super(context, oldElement);
+	public DeleteAction(Context context, T oldElement) {
+		super(context);
+		this.oldElement = oldElement;
 	}
 
 	@Override
-	public void rollback() {
+	public T getChangedElement() {
+		return getRemovedElement();
+	}
 
+	/**
+	 * Returns the removed element
+	 * @return the removed element
+	 */
+	public T getRemovedElement() {
+		return oldElement;
 	}
 }

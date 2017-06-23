@@ -16,29 +16,18 @@
  */
 package spoon.diff;
 
-import spoon.diff.context.CollectionContext;
 import spoon.diff.context.Context;
-import spoon.diff.context.MapContext;
+
+import java.util.Collection;
+import java.util.Map;
 
 public class DeleteAllAction<T> extends DeleteAction {
-	private T oldContent;
 
-	public DeleteAllAction(Context context, T oldElement) {
+	public DeleteAllAction(Context context, Collection oldElement) {
 		super(context, oldElement);
-		oldContent = oldElement;
 	}
 
-	public DeleteAllAction(CollectionContext context, T copy) {
-		super(context, null);
-		oldContent = copy;
-	}
-
-	public DeleteAllAction(MapContext context, T copy) {
-		super(context, null);
-		oldContent = copy;
-	}
-
-	public T getOldContent() {
-		return oldContent;
+	public DeleteAllAction(Context context, Map oldElement) {
+		super(context, oldElement);
 	}
 }

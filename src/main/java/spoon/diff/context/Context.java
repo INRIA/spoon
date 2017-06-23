@@ -17,15 +17,22 @@
 package spoon.diff.context;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 public abstract class Context {
 	private CtElement element;
+	private CtRole role;
 
-	public Context(CtElement element) {
+	public Context(CtElement element, CtRole role) {
 		this.element = element;
+		this.role = role;
 	}
 
 	public CtElement getElement() {
 		return element;
+	}
+
+	public CtRole getRole() {
+		return role;
 	}
 }

@@ -17,18 +17,25 @@
 package spoon.diff;
 
 import spoon.diff.context.Context;
-import spoon.reflect.declaration.CtElement;
 
-public class AddAction extends Action {
-	public AddAction(Context context, CtElement newElement) {
-		super(context, newElement);
-	}
+public class AddAction<T>  extends Action {
+	private T newElement;
 
-	public AddAction(Context context, Object newValue) {
-		super(context, newValue);
+	public AddAction(Context context, T newElement) {
+		super(context);
+		this.newElement = newElement;
 	}
 
 	@Override
-	public void rollback() {
+	public T getChangedElement() {
+		return getNewElement();
+	}
+
+	/**
+	 * Returns the added element
+	 * @return the new element
+	 */
+	public T getNewElement() {
+		return newElement;
 	}
 }

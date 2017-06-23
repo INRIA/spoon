@@ -17,20 +17,21 @@
 package spoon.diff.context;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 import java.util.Map;
 
 public class MapContext <K, V> extends Context {
 	private final Map<K, V> map;
-	private K key;
+	private  K key;
 
-	public MapContext(CtElement element, Map<K, V> map) {
-		super(element);
+	public MapContext(CtElement element, CtRole role, Map<K, V> map) {
+		super(element, role);
 		this.map = map;
 	}
 
-	public MapContext(CtElement element, Map<K, V> map, K key) {
-		this(element, map);
+	public MapContext(CtElement element, CtRole role, Map<K, V> map, K key) {
+		this(element, role, map);
 		this.key = key;
 	}
 
