@@ -2,6 +2,7 @@ package spoon.reflect.ast;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
@@ -208,7 +209,7 @@ public class AstCheckerTest {
 			return body.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 				@Override
 				public boolean matches(CtInvocation<?> element) {
-					return "ChangeFactory".equals(element.getExecutable().getDeclaringType().getSimpleName()) && super.matches(element);
+					return FineModelChangeListener.class.getSimpleName().equals(element.getExecutable().getDeclaringType().getSimpleName()) && super.matches(element);
 				}
 			}).size() > 0;
 		}
