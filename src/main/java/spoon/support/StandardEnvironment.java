@@ -24,9 +24,6 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
-import spoon.diff.AbstractModelChangeListener;
-import spoon.diff.Action;
-import spoon.diff.UpdateAction;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -45,9 +42,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -89,10 +84,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean shouldCompile = false;
 
 	private boolean skipSelfChecks;
-
-	private boolean buildStackChanges;
-
-	private Deque<Action> actions = new ArrayDeque<>();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -156,43 +147,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSelfChecks(boolean skip) {
 		skipSelfChecks = skip;
-	}
-
-	@Override
-	public boolean buildStackChanges() {
-		return buildStackChanges;
-	}
-
-	private AbstractModelChangeListener stackListener = new AbstractModelChangeListener() {
-		@Override
-		public void onAction(Action action) {
-			factory.getEnvironment().pushToStack(action);
-		}
-	};
-
-	@Override
-	public void setBuildStackChanges(boolean buildStackChanges) {
-		this.buildStackChanges = buildStackChanges;
-		if (buildStackChanges) {
-			getFactory().Change().addModelChangeListener(stackListener);
-		} else {
-			getFactory().Change().removeModelChangeListener(stackListener);
-		}
-	}
-
-	@Override
-	public void pushToStack(Action action) {
-		if (action instanceof UpdateAction) {
-			if (((UpdateAction) action).getOldElement() == ((UpdateAction) action).getNewElement()) {
-				return;
-			}
-		}
-		actions.push(action);
-	}
-
-	@Override
-	public Deque<Action> getActionChanges() {
-		return actions;
 	}
 
 	private Level toLevel(String level) {

@@ -333,22 +333,4 @@ public interface Environment {
 
 	/** Set the directory where binary .class files are created */
 	String getBinaryOutputDirectory();
-
-	/**
-	 * Checks if we want to build the stack changes on the AST.
-	 */
-	boolean buildStackChanges();
-
-	/**
-	 * If you set at true this method, you'll stack any changes done on your AST but you can't modify
-	 * list or set returned by the AST.
-	 */
-	void setBuildStackChanges(boolean buildStackChanges);
-
-	/**
-	 * Push an action on the stack changes.
-	 */
-	void pushToStack(Action action);
-
-	Deque<Action> getActionChanges();
 }
