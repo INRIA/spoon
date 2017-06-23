@@ -109,7 +109,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		CompilerOptions compilerOptions = new CompilerOptions(this.options);
 		compilerOptions.parseLiteralExpressionsAsConstants = false;
 		TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
-				environment, DefaultErrorHandlingPolicies.ignoreAllProblems(), compilerOptions,
+				environment, getHandlingPolicy(), compilerOptions,
 				this.jdtCompiler.requestor, getProblemFactory(), this.out,
 				null);
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
