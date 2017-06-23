@@ -498,9 +498,6 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				return ctField.getModifiers().contains(ModifierKind.FINAL) || ctField.getModifiers().contains(ModifierKind.STATIC);
 			}
 		}.scan(getFactory().Class().get(CtInheritanceScanner.class));
-
-		Collections.sort(target.getTypeMembers(), new CtLineElementComparator());
-		Collections.sort(targetBuilder.getTypeMembers(), new CtLineElementComparator());
 	}
 
 	private CtClass<Object> createCloneVisitor() {

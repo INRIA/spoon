@@ -38,10 +38,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			return Collections.unmodifiableList(bounds);
-		}
-		return bounds;
+		return Collections.unmodifiableList(bounds);
 	}
 
 	@Override

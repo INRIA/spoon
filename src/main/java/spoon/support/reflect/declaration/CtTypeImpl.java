@@ -49,9 +49,11 @@ import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.UnsettableProperty;
+import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
+import spoon.support.util.SortedList;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
@@ -99,10 +101,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public List<CtTypeMember> getTypeMembers() {
-		if (getFactory().getEnvironment().buildStackChanges()) {
-			return Collections.unmodifiableList(typeMembers);
-		}
-		return typeMembers;
+		return Collections.unmodifiableList(typeMembers);
 	}
 
 	@Override
@@ -119,7 +118,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return (C) this;
 		}
 		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
-			this.typeMembers = new ArrayList<>();
+			this.typeMembers = new SortedList<>(new CtLineElementComparator());
 		}
 		if (!this.typeMembers.contains(member)) {
 			member.setParent(this);
