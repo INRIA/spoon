@@ -3,11 +3,14 @@ package spoon.test.api;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.Metamodel;
 import spoon.SpoonAPI;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -17,7 +20,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
-import spoon.Metamodel;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -25,6 +27,7 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -118,11 +121,19 @@ public class MetamodelTest {
 		List<CtField> fields = factory.getModel().getElements(new AnnotationFilter<CtField>(MetamodelPropertyField.class));
 		for (CtField field : fields) {
 			CtClass parent = field.getParent(CtClass.class);
-			String role = ((CtFieldRead) field.getAnnotation(metamodelPropertyField).getValue("role")).getVariable().getSimpleName();
+			CtExpression roleExpression = field.getAnnotation(metamodelPropertyField).getValue("role");
+			List<String> roles = new ArrayList<>();
+			if (roleExpression instanceof CtFieldRead) {
+				roles.add(((CtFieldRead) roleExpression).getVariable().getSimpleName());
+			} else  if (roleExpression instanceof CtNewArray) {
+				List<CtFieldRead> elements = ((CtNewArray) roleExpression).getElements();
+				for (int i = 0; i < elements.size(); i++) {
+					CtFieldRead ctFieldRead =  elements.get(i);
+					roles.add(ctFieldRead.getVariable().getSimpleName());
+				}
+			}
 
 			CtQuery superQuery = parent.map(new SuperInheritanceHierarchyFunction());
-
-			List<CtType> superType = superQuery.list();
 
 			List<CtMethod> methods = superQuery.map((CtType type) -> type.getMethodsAnnotatedWith(propertyGetter, propertySetter)).list();
 
@@ -132,15 +143,15 @@ public class MetamodelTest {
 				CtAnnotation getterAnnotation = method.getAnnotation(propertyGetter);
 				CtAnnotation setterAnnotation = method.getAnnotation(propertySetter);
 				if (getterAnnotation != null) {
-					getterFound |= ((CtFieldRead) getterAnnotation.getValue("role")).getVariable().getSimpleName().equals(role);
+					getterFound |= roles.contains(((CtFieldRead) getterAnnotation.getValue("role")).getVariable().getSimpleName());
 				}
 				if (setterAnnotation != null) {
-					setterFound |= ((CtFieldRead) setterAnnotation.getValue("role")).getVariable().getSimpleName().equals(role);
+					setterFound |= roles.contains(((CtFieldRead) setterAnnotation.getValue("role")).getVariable().getSimpleName());
 				}
 			}
 
-			Assert.assertTrue(role + " must have a getter in " + parent.getQualifiedName(), getterFound);
-			Assert.assertTrue(role + " must have a setter in " + parent.getQualifiedName(), setterFound);
+			Assert.assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
+			Assert.assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
 		}
 
 	}
