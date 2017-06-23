@@ -34,6 +34,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.factory.ChangeFactory;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 
@@ -84,6 +85,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean shouldCompile = false;
 
 	private boolean skipSelfChecks;
+
+	private ChangeFactory changeFactory = new ChangeFactory();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -479,5 +482,14 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public String getBinaryOutputDirectory() {
 		return binaryOutputDirectory;
+	}
+
+	@Override
+	public ChangeFactory getChangeFactory() {
+		return changeFactory;
+	}
+
+	public void setChangeFactory(ChangeFactory changeFactory) {
+		this.changeFactory = changeFactory;
 	}
 }
