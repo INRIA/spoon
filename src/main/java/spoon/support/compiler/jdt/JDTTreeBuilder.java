@@ -21,8 +21,6 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
-import java.util.Collections;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -156,7 +154,6 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
-import spoon.support.comparator.CtLineElementComparator;
 
 /**
  * A visitor for iterating through the parse tree.

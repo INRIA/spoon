@@ -16,13 +16,6 @@
  */
 package spoon.generating;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -58,8 +51,14 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.visitor.clone.CloneBuilder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private static final String TARGET_CLONE_PACKAGE = "spoon.support.visitor.clone";

@@ -21,7 +21,7 @@ import spoon.reflect.path.CtRole;
 
 import java.util.Map;
 
-public class MapContext <K, V> extends Context {
+public class MapContext<K, V> extends Context {
 	private final Map<K, V> map;
 	private  K key;
 

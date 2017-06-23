@@ -83,7 +83,7 @@ public class ChangeFactory extends SubFactory {
 	}
 
 	public void onListAdd(CtElement currentElement, CtRole role, List field, CtElement newValue) {
-		AddAction action = new AddAction<>(new ListContext(currentElement, role,field), newValue);
+		AddAction action = new AddAction<>(new ListContext(currentElement, role, field), newValue);
 		propagateModelChange(action);
 	}
 
@@ -111,12 +111,12 @@ public class ChangeFactory extends SubFactory {
 	}
 
 
-	public <K,V> void onMapAdd(CtElement currentElement, CtRole role, Map<K,V> field, K key, CtElement newValue) {
+	public <K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue) {
 		AddAction action = new AddAction<>(new MapContext<>(currentElement, role, field, key), newValue);
 		propagateModelChange(action);
 	}
 
-	public <K,V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K,V> field, Map<K,V> oldValue) {
+	public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue) {
 		DeleteAllAction action = new DeleteAllAction(new MapContext<>(currentElement, role, field), oldValue);
 		propagateModelChange(action);
 	}

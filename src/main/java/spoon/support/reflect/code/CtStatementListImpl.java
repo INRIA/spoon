@@ -80,7 +80,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 	@Override
 	public void removeStatement(CtStatement statement) {
 		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
-			return ;
+			return;
 		}
 		getFactory().Change().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
 		statements.remove(statement);
