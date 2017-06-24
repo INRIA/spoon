@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2017 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.experimental.modelobs;
 
 import spoon.experimental.modelobs.action.AddAction;
@@ -21,73 +37,73 @@ import java.util.Set;
  */
 public class ListeningChangeFactory extends FineModelChangeListener {
 
-		@Override
-		public void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue) {
-			propagateModelChange(new UpdateAction<>(new ObjectContext(currentElement, role), newValue, oldValue));
-		}
-
-		@Override
-		public void onObjectUpdate(CtElement currentElement, CtRole role, Object newValue, Object oldValue) {
-			propagateModelChange(new UpdateAction<>(new ObjectContext(currentElement, role), newValue, oldValue));
-		}
-
-		@Override
-		public void onObjectDelete(CtElement currentElement, CtRole role, CtElement oldValue) {
-			propagateModelChange(new DeleteAction<>(new ObjectContext(currentElement, role), oldValue));
-		}
-
-		@Override
-		public void onListAdd(CtElement currentElement, CtRole role, List field, CtElement newValue) {
-			propagateModelChange(new AddAction<>(new ListContext(currentElement, role, field), newValue));
-		}
-
-		@Override
-		public void onListAdd(CtElement currentElement, CtRole role, List field, int index, CtElement newValue) {
-			propagateModelChange(new AddAction<>(new ListContext(currentElement, role, field, index), newValue));
-		}
-
-		@Override
-		public void onListDelete(CtElement currentElement, CtRole role, List field, int index, CtElement oldValue) {
-			propagateModelChange(new DeleteAction<>(new ListContext(currentElement, role, field, index), oldValue));
-		}
-
-		@Override
-		public void onListDeleteAll(CtElement currentElement, CtRole role, List field, List oldValue) {
-			propagateModelChange(new DeleteAllAction(new ListContext(currentElement, role, field), oldValue));
-		}
-
-		@Override
-		public <K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue) {
-			propagateModelChange(new AddAction<>(new MapContext<>(currentElement, role, field, key), newValue));
-		}
-
-		@Override
-		public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue) {
-			propagateModelChange(new DeleteAllAction(new MapContext<>(currentElement, role, field), oldValue));
-		}
-
-		@Override
-		public void onSetAdd(CtElement currentElement, CtRole role, Set field, CtElement newValue) {
-			propagateModelChange(new AddAction<>(new SetContext(currentElement, role, field), newValue));
-		}
-
-		@Override
-		public void onSetAdd(CtElement currentElement, CtRole role, Set field, ModifierKind newValue) {
-			propagateModelChange(new AddAction<>(new SetContext(currentElement, role, field), newValue));
-		}
-
-		@Override
-		public void onSetDelete(CtElement currentElement, CtRole role, Set field, CtElement oldValue) {
-			propagateModelChange(new DeleteAction<>(new SetContext(currentElement, role, field), oldValue));
-		}
-
-		@Override
-		public void onSetDelete(CtElement currentElement, CtRole role, Set field, ModifierKind oldValue) {
-			propagateModelChange(new DeleteAction<>(new SetContext(currentElement, role, field), oldValue));
-		}
-
-		@Override
-		public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue) {
-			propagateModelChange(new DeleteAllAction(new SetContext(currentElement, role, field), oldValue));
-		}
+	@Override
+	public void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue) {
+		propagateModelChange(new UpdateAction<>(new ObjectContext(currentElement, role), newValue, oldValue));
 	}
+
+	@Override
+	public void onObjectUpdate(CtElement currentElement, CtRole role, Object newValue, Object oldValue) {
+		propagateModelChange(new UpdateAction<>(new ObjectContext(currentElement, role), newValue, oldValue));
+	}
+
+	@Override
+	public void onObjectDelete(CtElement currentElement, CtRole role, CtElement oldValue) {
+		propagateModelChange(new DeleteAction<>(new ObjectContext(currentElement, role), oldValue));
+	}
+
+	@Override
+	public void onListAdd(CtElement currentElement, CtRole role, List field, CtElement newValue) {
+		propagateModelChange(new AddAction<>(new ListContext(currentElement, role, field), newValue));
+	}
+
+	@Override
+	public void onListAdd(CtElement currentElement, CtRole role, List field, int index, CtElement newValue) {
+		propagateModelChange(new AddAction<>(new ListContext(currentElement, role, field, index), newValue));
+	}
+
+	@Override
+	public void onListDelete(CtElement currentElement, CtRole role, List field, int index, CtElement oldValue) {
+		propagateModelChange(new DeleteAction<>(new ListContext(currentElement, role, field, index), oldValue));
+	}
+
+	@Override
+	public void onListDeleteAll(CtElement currentElement, CtRole role, List field, List oldValue) {
+		propagateModelChange(new DeleteAllAction(new ListContext(currentElement, role, field), oldValue));
+	}
+
+	@Override
+	public <K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue) {
+		propagateModelChange(new AddAction<>(new MapContext<>(currentElement, role, field, key), newValue));
+	}
+
+	@Override
+	public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue) {
+		propagateModelChange(new DeleteAllAction(new MapContext<>(currentElement, role, field), oldValue));
+	}
+
+	@Override
+	public void onSetAdd(CtElement currentElement, CtRole role, Set field, CtElement newValue) {
+		propagateModelChange(new AddAction<>(new SetContext(currentElement, role, field), newValue));
+	}
+
+	@Override
+	public void onSetAdd(CtElement currentElement, CtRole role, Set field, ModifierKind newValue) {
+		propagateModelChange(new AddAction<>(new SetContext(currentElement, role, field), newValue));
+	}
+
+	@Override
+	public void onSetDelete(CtElement currentElement, CtRole role, Set field, CtElement oldValue) {
+		propagateModelChange(new DeleteAction<>(new SetContext(currentElement, role, field), oldValue));
+	}
+
+	@Override
+	public void onSetDelete(CtElement currentElement, CtRole role, Set field, ModifierKind oldValue) {
+		propagateModelChange(new DeleteAction<>(new SetContext(currentElement, role, field), oldValue));
+	}
+
+	@Override
+	public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue) {
+		propagateModelChange(new DeleteAllAction(new SetContext(currentElement, role, field), oldValue));
+	}
+}
