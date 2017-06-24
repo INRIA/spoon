@@ -22,9 +22,8 @@ import spoon.experimental.modelobs.action.AddAction;
 import spoon.experimental.modelobs.action.DeleteAction;
 import spoon.experimental.modelobs.action.DeleteAllAction;
 import spoon.experimental.modelobs.action.UpdateAction;
-import spoon.reflect.declaration.CtElement;
 
-public abstract class AbstractSniperListener<T extends CtElement> implements
+public abstract class AbstractSniperListener<T> implements
 		ActionBasedChangeListener {
 	private SniperWriter writer;
 	private T element;

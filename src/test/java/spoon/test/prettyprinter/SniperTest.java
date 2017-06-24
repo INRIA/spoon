@@ -3,16 +3,20 @@ package spoon.test.prettyprinter;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.Metamodel;
 import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.experimental.modelobs.action.Action;
+import spoon.experimental.modelobs.action.UpdateAction;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
-import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
@@ -23,10 +27,13 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -35,18 +42,28 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.printer.sniper.AbstractSniperListener;
 import spoon.reflect.visitor.printer.sniper.SniperJavaPrettyPrinter;
+import spoon.reflect.visitor.printer.sniper.SniperWriter;
+import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
+import spoon.test.prettyprinter.testclasses.SniperTemplate;
+import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +92,263 @@ public class SniperTest {
 		fieldRead.setVariable(fieldReference);
 		return fieldRead;
 	}
+
+	private List<CtClass> getAllImpOf(Factory factory, CtType ctType)  {
+		List<CtClass> output = new ArrayList<>();
+		List<CtType<?>> allClasses = factory.Class().getAll();
+		for (CtType<?> allClass : allClasses) {
+			if (allClass.isClass() && allClass.isSubtypeOf(ctType.getReference())) {
+				output.add((CtClass) allClass);
+			}
+		}
+		return output;
+	}
+
+	private boolean isAnnotatedElementIsList(List<CtClass> allImps, CtRole annotation) {
+		for (CtClass ctClass : allImps) {
+			List<CtField> annotatedFields = ctClass.getElements(new AnnotationFilter<CtField>(MetamodelPropertyField.class));
+			for (CtField annotatedField : annotatedFields) {
+				CtRole[] roles = annotatedField.getAnnotation(MetamodelPropertyField.class).role();
+				for (int i = 0; i < roles.length; i++) {
+					CtRole role = roles[i];
+					if (role == annotation) {
+						CtTypeReference annotatedFieldType = annotatedField.getType();
+						if (annotatedFieldType.isSubtypeOf(annotatedFieldType.getFactory().createCtTypeReference(Collection.class))) {
+							return true;
+						} else if (annotatedFieldType.isSubtypeOf(annotatedFieldType.getFactory().createCtTypeReference(Map.class))) {
+							return true;
+						}
+						break;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isAnnotatedElementIsObject(List<CtClass> allImps, CtRole annotation) {
+		boolean isObject = true;
+		for (CtClass ctClass : allImps) {
+			List<CtField> annotatedFields = ctClass.getElements(new AnnotationFilter<CtField>(MetamodelPropertyField.class));
+			for (CtField annotatedField : annotatedFields) {
+				CtRole[] roles = annotatedField.getAnnotation(MetamodelPropertyField.class).role();
+				for (CtRole role : roles) {
+					if (role == annotation) {
+						CtTypeReference annotatedFieldType = annotatedField.getType();
+						isObject &= !annotatedFieldType.isSubtypeOf(annotatedFieldType.getFactory().createCtTypeReference(Collection.class));
+						isObject &= !annotatedFieldType.isSubtypeOf(annotatedFieldType.getFactory().createCtTypeReference(Map.class));
+						break;
+					}
+				}
+			}
+		}
+		return isObject;
+	}
+
+	@Test
+	public void generateSniper() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/main/java/spoon/support/");
+		spoon.addInputResource("./src/main/java/spoon/reflect/");
+		spoon.getEnvironment().useTabulations(true);
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.buildModel();
+
+
+		CtClass<?> templateCtType = (CtClass) ModelUtils.buildClass(SniperTemplate.class);
+		Factory factory = spoon.getFactory();
+		factory.getEnvironment().setAutoImports(true);
+		JavaOutputProcessor output = new JavaOutputProcessor(new File("src/main/java/"), new DefaultJavaPrettyPrinter(factory.getEnvironment()));
+		output.setFactory(factory);
+
+		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
+		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
+
+		CtClass<Object> inheritanceScanner = factory.Class().get(CtInheritanceScanner.class);
+
+		for (CtType<?> ctType : Metamodel.getAllMetamodelInterfaces()) {
+			List<CtClass> allImps = getAllImpOf(factory, ctType);
+
+			Set<CtRole> roleForInterface = new HashSet<>();
+
+			Set<CtMethod<?>> getterSetter = ctType.getMethodsAnnotatedWith(propertySetter, propertyGetter);
+			for (CtMethod<?> ctMethod : getterSetter) {
+				CtAnnotation annotation = ctMethod.getAnnotation(propertyGetter);
+				if (annotation == null) {
+					annotation = ctMethod.getAnnotation(propertySetter);
+				}
+
+				String strRole = ((CtFieldRead)annotation.getValue("role")).getVariable().getSimpleName();
+				CtRole role = CtRole.fromName(strRole);
+
+				if (ctMethod.getAnnotation(Override.class) != null) {
+					continue;
+				}
+				if (role == CtRole.BODY && !ctType.getSimpleName().equals("CtBodyHolder")) {
+					continue;
+				}
+				roleForInterface.add(role);
+			}
+			if (roleForInterface.isEmpty()) {
+				continue;
+			}
+
+			CtMethod<?> inheritanceMethod = inheritanceScanner.getMethod("scan" + ctType.getSimpleName(), ctType.getReference());
+			if (inheritanceMethod == null) {
+				inheritanceMethod = inheritanceScanner.getMethod("visit" + ctType.getSimpleName(), ctType.getReference());
+			}
+
+
+
+			CtClass<Object> sniper = factory.Class().create("spoon.reflect.visitor.printer.sniper.element.Sniper" + ctType.getSimpleName());
+			CtTypeReference<Object> superType = factory.createCtTypeReference(AbstractSniperListener.class);
+			superType.addActualTypeArgument(ctType.getReference());
+			sniper.setSuperclass(superType);
+			sniper.setVisibility(ModifierKind.PUBLIC);
+
+			if (inheritanceMethod == null) {
+				// System.out.println(ctType.getQualifiedName());
+			} else {
+				CtMethod<?> inheritanceMethodClone = inheritanceMethod.clone();
+				inheritanceMethodClone.setBody(factory.createBlock());
+				inheritanceMethodClone.addAnnotation(factory.createAnnotation(factory.createCtTypeReference(Override.class)));
+				inheritanceMethodClone.getParameters().get(0).setSimpleName("e");
+
+				CtClass<Object> sniperInWriter = factory.Class().get(SniperJavaPrettyPrinter.class.getCanonicalName() + "$SniperWriter");
+
+				sniperInWriter.addMethod(inheritanceMethodClone);
+
+				CtInvocation<?> applyActions = factory.createInvocation(null, factory.Executable().createReference(sniperInWriter.getMethodsByName("applyActions").get(0)));
+
+				CtFieldReference fieldReference = factory.createFieldReference();
+				fieldReference.setDeclaringType(factory.Class().get(SniperJavaPrettyPrinter.class).getReference());
+				fieldReference.setSimpleName("writer");
+
+				CtConstructorCall writer = factory.Code()
+						.createConstructorCall(sniper.getReference(),
+								factory.createVariableRead(fieldReference, false),
+								factory.createVariableRead(inheritanceMethodClone.getParameters().get(0).getReference(), false));
+				applyActions.addArgument(writer);
+				inheritanceMethodClone.getBody().addStatement(applyActions);
+				CtInvocation<?> invocation = factory.createInvocation(factory.createSuperAccess(), inheritanceMethod.getReference());
+				for (CtParameter<?> ctParameter : inheritanceMethodClone.getParameters()) {
+					invocation.addArgument(factory.createVariableRead(ctParameter.getReference(), false));
+				}
+				inheritanceMethodClone.getBody().addStatement(invocation);
+				System.out.println(inheritanceMethodClone);
+			}
+
+			CtConstructor constructor = factory.createConstructor();
+			constructor.setVisibility(ModifierKind.PUBLIC);
+			sniper.addConstructor(constructor);
+
+			CtInvocation constructorCall = factory.createInvocation();
+			constructorCall.setExecutable(factory.Executable().createReference(factory.Class().get(AbstractSniperListener.class).getConstructors().iterator().next()));
+			constructor.setBody(factory.createCtBlock(constructorCall));
+
+			CtParameter parameter = factory.createParameter();
+			parameter.setSimpleName("writer");
+			parameter.setType(factory.createCtTypeReference(SniperWriter.class));
+			constructor.addParameter(parameter);
+			constructorCall.addArgument(factory.createVariableRead(parameter.getReference(), false));
+
+			parameter = factory.createParameter();
+			parameter.setSimpleName("element");
+			parameter.setType(ctType.getReference());
+			constructor.addParameter(parameter);
+			constructorCall.addArgument(factory.createVariableRead(parameter.getReference(), false));
+
+			List<CtMethod> handlingMethods = new ArrayList<>();
+
+			List<String> eventMethodNames = Arrays.asList("Add", "Delete", "DeleteAll", "Update");
+			for (String methodName : eventMethodNames) {
+				boolean isEmpty = true;
+				CtMethod method = factory.createMethod();
+				method.addAnnotation(factory.createAnnotation(factory.createCtTypeReference(Override.class)));
+				method.setVisibility(ModifierKind.PUBLIC);
+				method.setType(factory.Type().voidPrimitiveType());
+				sniper.addMethod(method);
+
+				method.setSimpleName("on" + methodName);
+
+				parameter = factory.createParameter();
+				parameter.setSimpleName("action");
+				CtTypeReference ctTypeReference = factory.createCtTypeReference(UpdateAction.class);
+				ctTypeReference.setSimpleName(methodName + "Action");
+				parameter.setType(ctTypeReference);
+				method.addParameter(parameter);
+
+				method.setBody(factory.createBlock());
+
+
+
+				for (CtRole ctRole : roleForInterface) {
+					boolean annotatedElementIsList = isAnnotatedElementIsList(allImps, ctRole);
+					boolean annotatedElementIsObject = isAnnotatedElementIsObject(allImps, ctRole);
+
+					if (annotatedElementIsList && !annotatedElementIsObject) {
+						if ("Update".equals(methodName)) {
+							continue;
+						}
+					}
+					if (!annotatedElementIsList && annotatedElementIsObject) {
+						if (!"Update".equals(methodName)) {
+							continue;
+						}
+					}
+					isEmpty = false;
+
+					CtIf anIf = templateCtType.getElements(new TypeFilter<>(CtIf.class)).get(0).clone();
+					CtBlock ifBlock = factory.createBlock();
+					anIf.setThenStatement(ifBlock);
+
+
+					((CtFieldRead)((CtBinaryOperator)anIf.getCondition()).getRightHandOperand()).getVariable().setSimpleName(ctRole.name());
+					method.getBody().addStatement(anIf);
+
+					CtMethod actionHandling = factory.createMethod();
+					actionHandling.setVisibility(ModifierKind.PRIVATE);
+					actionHandling.setType(factory.Type().voidPrimitiveType());
+					actionHandling.setBody(factory.createBlock());
+					actionHandling.setSimpleName("on"+ctRole.getTitleName() + methodName);
+					actionHandling.addParameter(parameter.clone());
+					sniper.addMethod(actionHandling);
+
+					CtInvocation invocation = factory
+							.createInvocation(factory.createTypeAccess(),
+									actionHandling.getReference(),
+									factory.createVariableRead(parameter.getReference(), false));
+					ifBlock.addStatement(invocation);
+					ifBlock.addStatement(factory.createReturn());
+
+					sniper.removeMethod(actionHandling);
+					handlingMethods.add(actionHandling);
+				}
+
+				if (isEmpty) {
+					sniper.removeMethod(method);
+					continue;
+				}
+				CtInvocation notHandled = factory
+						.createInvocation(null,
+								factory.Executable().createReference(sniper.getReference(),
+										factory.Type().voidPrimitiveType(), "notHandled",
+										factory.createCtTypeReference(Action.class)),
+								factory.createVariableRead(parameter.getReference(), false));
+				method.getBody().addStatement(notHandled);
+
+			}
+
+			Collections.sort(handlingMethods, Comparator.comparing(CtNamedElement::getSimpleName));
+
+			for (CtMethod handlingMethod : handlingMethods) {
+				sniper.addMethod(handlingMethod);
+			}
+
+			output.process(sniper);
+		}
+	}
+
 
 
 	@Test

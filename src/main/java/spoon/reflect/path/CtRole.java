@@ -84,10 +84,8 @@ public enum CtRole {
 	 * @return
 	 */
 	public static CtRole fromName(String name) {
-		name = name.toLowerCase();
 		for (int i = 0; i < CtRole.values().length; i++) {
-			if (CtRole.values()[i].getCamelCaseName().toLowerCase()
-					.equals(name)) {
+			if (CtRole.values()[i].name().equals(name) || CtRole.values()[i].getCamelCaseName().toLowerCase().equals(name.toLowerCase())) {
 				return CtRole.values()[i];
 			}
 		}
