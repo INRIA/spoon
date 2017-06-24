@@ -81,6 +81,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
+			getFactory().Change().onListAdd(this, STATEMENT, this.statements, 0, statement);
 			this.statements.add(0, statement);
 		}
 		if (isImplicit() && this.statements.size() > 1) {
@@ -104,6 +105,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
+		getFactory().Change().onListAdd(this, STATEMENT, this.statements, 0, statement);
 		this.statements.add(0, statement);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
@@ -179,7 +181,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		getFactory().Change().onListAdd(this, STATEMENT, this.statements, statement);
+		getFactory().Change().onListAdd(this, STATEMENT, this.statements, this.statements.size(), statement);
 		this.statements.add(statement);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
