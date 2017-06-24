@@ -16,14 +16,16 @@
  */
 package spoon.reflect.visitor.printer.sniper;
 
-import spoon.diff.Action;
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
+import spoon.experimental.modelobs.ActionBasedChangeListener;
+import spoon.experimental.modelobs.action.Action;
+import spoon.experimental.modelobs.action.AddAction;
+import spoon.experimental.modelobs.action.DeleteAction;
+import spoon.experimental.modelobs.action.DeleteAllAction;
+import spoon.experimental.modelobs.action.UpdateAction;
 import spoon.reflect.declaration.CtElement;
 
-public abstract class AbstractSniperListener<T extends CtElement> implements SniperListener {
+public abstract class AbstractSniperListener<T extends CtElement> implements
+		ActionBasedChangeListener {
 	private SniperWriter writer;
 	private T element;
 
@@ -40,28 +42,32 @@ public abstract class AbstractSniperListener<T extends CtElement> implements Sni
 		return writer;
 	}
 
+	protected void notHandled(Action action) throws SniperNotHandledAction {
+		throw new SniperNotHandledAction(action);
+	}
+
 	@Override
 	public void onAdd(AddAction action) {
-		throw new SniperNotHandledAction(action);
+		notHandled(action);
 	}
 
 	@Override
 	public void onDelete(DeleteAction action) {
-		throw new SniperNotHandledAction(action);
+		notHandled(action);
 	}
 
 	@Override
 	public void onDeleteAll(DeleteAllAction action) {
-		throw new SniperNotHandledAction(action);
+		notHandled(action);
 	}
 
 	@Override
 	public void onUpdate(UpdateAction action) {
-		throw new SniperNotHandledAction(action);
+		notHandled(action);
 	}
 
 	@Override
 	public void onAction(Action action) {
-		throw new SniperNotHandledAction(action);
+		notHandled(action);
 	}
 }

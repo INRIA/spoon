@@ -16,13 +16,13 @@
  */
 package spoon.reflect.visitor.printer.sniper;
 
-import spoon.diff.UpdateAction;
+import spoon.experimental.modelobs.action.UpdateAction;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.path.CtRole;
 
-public class SniperCtNamedElement extends
-		AbstractSniperListener<CtNamedElement> {
+public class SniperCtNamedElement extends AbstractSniperListener<CtNamedElement> {
 
 	public SniperCtNamedElement(SniperWriter writer, CtNamedElement element) {
 		super(writer, element);
@@ -30,12 +30,13 @@ public class SniperCtNamedElement extends
 
 	@Override
 	public void onUpdate(UpdateAction action) {
-		CtElement element = action.getContext().getElement();
+		if (action.getContext().getChangedProperty() != CtRole.NAME) {
+			notHandled(action);
+		}
+		CtElement element = action.getContext().getElementWhereChangeHappens();
 		if (element.getPosition() instanceof DeclarationSourcePosition) {
 			DeclarationSourcePosition position = (DeclarationSourcePosition) element.getPosition();
-			getWriter().replace(position.getNameStart(), position.getNameEnd(), action.getNewElement() + "");
-			return;
+			getWriter().replace(position.getNameStart(), position.getNameEnd(), action.getNewValue() + "");
 		}
-		throw new SniperNotHandledAction(action);
 	}
 }

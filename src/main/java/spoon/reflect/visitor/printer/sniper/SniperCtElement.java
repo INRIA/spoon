@@ -16,7 +16,7 @@
  */
 package spoon.reflect.visitor.printer.sniper;
 
-import spoon.diff.AddAction;
+import spoon.experimental.modelobs.action.AddAction;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -30,22 +30,24 @@ public class SniperCtElement extends AbstractSniperListener<CtElement> {
 
 	@Override
 	public void onAdd(AddAction action) {
-		CtElement newElement = (CtElement) action.getNewElement();
+		if (!(action.getNewValue() instanceof CtElement)) {
+			notHandled(action);
+		}
+		CtElement newElement = (CtElement) action.getNewValue();
 		if (newElement instanceof CtAnnotation) {
 			CtAnnotation annotation = (CtAnnotation) newElement;
 			CtElement parent = annotation.getParent();
 			SourcePosition parentPosition = parent.getPosition();
 			int sourceStart = parentPosition.getSourceStart();
 			if (!parent.getComments().isEmpty()) {
-				sourceStart = parent.getComments().get(parent.getComments().size() -1).getPosition().getSourceEnd();
+				sourceStart = parent.getComments().get(parent.getComments().size() - 1).getPosition().getSourceEnd();
 			}
-
-			getWriter().write(annotation, sourceStart - 1,true);
+			getWriter().write(annotation, sourceStart - 1, true);
 		} else if (newElement instanceof CtComment) {
 			int position = newElement.getParent().getPosition().getSourceStart();
 			getWriter().write(newElement, position - 1, true);
 		} else {
-			throw new SniperNotHandledAction(action);
+			notHandled(action);
 		}
 	}
 }

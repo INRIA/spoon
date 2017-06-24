@@ -3,6 +3,7 @@ package spoon.test.prettyprinter;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.code.CtFieldRead;
@@ -28,7 +29,6 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.ChangeFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
@@ -58,7 +58,7 @@ public class SniperTest {
 	public Launcher createSpoon() throws Exception {
 	    Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/");
-		spoon.getEnvironment().setBuildStackChanges(true);
+		spoon.getEnvironment().setSniperMode(true);
 		spoon.buildModel();
 		return spoon;
 	}
@@ -75,6 +75,7 @@ public class SniperTest {
 		fieldRead.setVariable(fieldReference);
 		return fieldRead;
 	}
+
 
 	@Test
 	public void testAddAnnotation() throws Exception {
@@ -233,7 +234,7 @@ public class SniperTest {
 					return;
 				}
 				String methodName = "on" + context.getTitleName() + type.getTitleName();
-				List<CtMethod<?>> factoryMethods = getFactory().Type().get(ChangeFactory.class).getMethodsByName(methodName);
+				List<CtMethod<?>> factoryMethods = getFactory().Type().get(FineModelChangeListener.class).getMethodsByName(methodName);
 				if (factoryMethods.isEmpty()) {
 					System.out.println(methodName);
 					return;
@@ -260,9 +261,9 @@ public class SniperTest {
 
 				factoryCall.setArguments(arguments);
 
-				spoon.getEnvironment().setBuildStackChanges(true);
+				spoon.getEnvironment().setSniperMode(true);
 				element.replace(factoryCall);
-				spoon.getEnvironment().setBuildStackChanges(false);
+				spoon.getEnvironment().setSniperMode(false);
 				count ++;
 			}
 
@@ -356,11 +357,11 @@ public class SniperTest {
 					}
 				}
 
-				spoon.getEnvironment().setBuildStackChanges(true);
+				spoon.getEnvironment().setSniperMode(true);
 				getFactory().Annotation().annotate(element, MetamodelPropertyField.class);
 				CtAnnotation<Annotation> annotation = element.getAnnotation(getFactory().createCtTypeReference(MetamodelPropertyField.class));
 				annotation.addValue("role", role);
-				spoon.getEnvironment().setBuildStackChanges(false);
+				spoon.getEnvironment().setSniperMode(false);
 			}
 
 			@Override
@@ -454,9 +455,9 @@ public class SniperTest {
 					if (methodName.startsWith("get" + titleName)
 							|| methodName.startsWith(titleName)) {
 
-						spoon.getEnvironment().setBuildStackChanges(true);
+						spoon.getEnvironment().setSniperMode(true);
 						factory.Annotation().annotate(method, PropertyGetter.class);
-						spoon.getEnvironment().setBuildStackChanges(false);
+						spoon.getEnvironment().setSniperMode(false);
 
 						annotation = method.getAnnotation(factory.createCtTypeReference(PropertyGetter.class));
 
@@ -464,9 +465,9 @@ public class SniperTest {
 							|| methodName.startsWith("add" + titleName)
 							|| methodName.startsWith("remove" + titleName)
 							|| methodName.startsWith("put" + titleName)) {
-						spoon.getEnvironment().setBuildStackChanges(true);
+						spoon.getEnvironment().setSniperMode(true);
 						factory.Annotation().annotate(method, PropertySetter.class);
-						spoon.getEnvironment().setBuildStackChanges(false);
+						spoon.getEnvironment().setSniperMode(false);
 
 						annotation = method.getAnnotation(factory.createCtTypeReference(PropertySetter.class));
 					} else {

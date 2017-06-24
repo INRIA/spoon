@@ -16,7 +16,7 @@
  */
 package spoon.reflect.visitor.printer.sniper;
 
-import spoon.diff.AddAction;
+import spoon.experimental.modelobs.action.AddAction;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -34,7 +34,7 @@ public class SniperCtType extends AbstractSniperListener<CtType> {
 	public void onAdd(AddAction action) {
 		CtType<?> type = getElement();
 		int position = 0;
-		if (action.getNewElement() instanceof CtField) {
+		if (action.getNewValue() instanceof CtField) {
 			for (int i = getElement().getFields().size() - 1; i >= 0; i--) {
 				CtField<?> ctField = type.getFields().get(i);
 				if (ctField.getPosition() != null) {
@@ -42,23 +42,23 @@ public class SniperCtType extends AbstractSniperListener<CtType> {
 					break;
 				}
 			}
-		} else if (action.getNewElement() instanceof CtMethod) {
+		} else if (action.getNewValue() instanceof CtMethod) {
 			for (CtMethod<?> method : type.getMethods()) {
 				if (method.getPosition() != null) {
 					position = method.getPosition().getSourceEnd() + 2;
 					break;
 				}
 			}
-		} else if (action.getNewElement() instanceof CtComment) {
-			throw new SniperNotHandledAction(action);
-		} else if (action.getContext().getRole() == CtRole.MODIFIER) {
-			throw new SniperNotHandledAction(action);
+		} else if (action.getNewValue() instanceof CtComment) {
+			notHandled(action);
+		} else if (action.getContext().getChangedProperty() == CtRole.MODIFIER) {
+			notHandled(action);
 		} else {
-			throw new SniperNotHandledAction(action);
+			notHandled(action);
 		}
 		if (position == 0) {
 			position = type.getPosition().getSourceEnd() - 2;
 		}
-		getWriter().write((CtElement) action.getNewElement(), position);
+		getWriter().write((CtElement) action.getNewValue(), position);
 	}
 }

@@ -17,7 +17,7 @@
 package spoon.reflect.visitor.printer.sniper;
 
 import spoon.SpoonException;
-import spoon.diff.Action;
+import spoon.experimental.modelobs.action.Action;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
@@ -32,8 +32,8 @@ public class SniperCtModifiable extends AbstractSniperListener<CtModifiable> {
 
 	@Override
 	public void onAction(Action action) {
-		if (action.getChangedElement() instanceof ModifierKind) {
-			CtElement element = action.getContext().getElement();
+		if (action.getChangedValue() instanceof ModifierKind) {
+			CtElement element = action.getContext().getElementWhereChangeHappens();
 			if (element.getPosition() instanceof BodyHolderSourcePosition) {
 				BodyHolderSourcePosition position = (BodyHolderSourcePosition) element.getPosition();
 				getWriter().replaceModifiers(position.getModifierSourceStart(), position.getModifierSourceEnd(), (CtModifiable) element);
@@ -42,6 +42,6 @@ public class SniperCtModifiable extends AbstractSniperListener<CtModifiable> {
 				throw new SpoonException("Position is not correct" + element.getPosition());
 			}
 		}
-		throw new SniperNotHandledAction(action);
+		notHandled(action);
 	}
 }

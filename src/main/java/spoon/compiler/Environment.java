@@ -17,6 +17,8 @@
 package spoon.compiler;
 
 import org.apache.log4j.Level;
+import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.experimental.modelobs.action.Action;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -24,10 +26,10 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.factory.Factory;
 
 import java.nio.charset.Charset;
+import java.util.Deque;
 
 /**
  * This interface represents the environment in which Spoon is launched -
@@ -353,4 +355,10 @@ public interface Environment {
 	 * Set the encoding to use for parsing source code
 	 */
 	void setEncoding(Charset encoding);
+
+	boolean isSniperMode();
+
+	void setSniperMode(boolean sniperMode);
+
+	Deque<Action> getActionChanges();
 }

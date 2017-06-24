@@ -16,9 +16,9 @@
  */
 package spoon.reflect.visitor.printer.sniper;
 
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
+import spoon.experimental.modelobs.action.AddAction;
+import spoon.experimental.modelobs.action.DeleteAction;
+import spoon.experimental.modelobs.action.DeleteAllAction;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
@@ -35,7 +35,7 @@ public class SniperCtBlock extends AbstractSniperListener<CtBlock> {
 	public void onAdd(AddAction action) {
 		CtBlock block = getElement();
 
-		CtElement element = (CtElement) action.getNewElement();
+		CtElement element = (CtElement) action.getNewValue();
 		int position;
 		int index = block.getStatements().indexOf(element);
 		// add at the beginning
@@ -50,13 +50,13 @@ public class SniperCtBlock extends AbstractSniperListener<CtBlock> {
 
 	@Override
 	public void onDelete(DeleteAction action) {
-		CtElement statement = (CtElement) action.getRemovedElement();
+		CtElement statement = (CtElement) action.getRemovedValue();
 		getWriter().remove(statement);
 	}
 
 	@Override
 	public void onDeleteAll(DeleteAllAction action) {
-		List<CtStatement> statements = (List<CtStatement>) action.getRemovedElement();
+		List<CtStatement> statements = (List<CtStatement>) action.getRemovedValue();
 		if (!statements.isEmpty()) {
 			getWriter().remove(statements.get(0).getPosition().getSourceStart(), statements.get(statements.size() - 1).getPosition().getSourceEnd());
 		}

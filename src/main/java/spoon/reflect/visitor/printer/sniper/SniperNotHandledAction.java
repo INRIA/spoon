@@ -16,7 +16,7 @@
  */
 package spoon.reflect.visitor.printer.sniper;
 
-import spoon.diff.Action;
+import spoon.experimental.modelobs.action.Action;
 
 /**
  * This exception is thrown when an action is not handled

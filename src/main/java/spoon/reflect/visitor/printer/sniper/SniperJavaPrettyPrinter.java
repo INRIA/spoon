@@ -17,11 +17,12 @@
 package spoon.reflect.visitor.printer.sniper;
 
 import spoon.compiler.Environment;
-import spoon.diff.Action;
-import spoon.diff.AddAction;
-import spoon.diff.DeleteAction;
-import spoon.diff.DeleteAllAction;
-import spoon.diff.UpdateAction;
+import spoon.experimental.modelobs.ActionBasedChangeListener;
+import spoon.experimental.modelobs.action.Action;
+import spoon.experimental.modelobs.action.AddAction;
+import spoon.experimental.modelobs.action.DeleteAction;
+import spoon.experimental.modelobs.action.DeleteAllAction;
+import spoon.experimental.modelobs.action.UpdateAction;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -65,11 +66,6 @@ public class SniperJavaPrettyPrinter extends CtScanner
 	}
 
 	@Override
-	public String getPackageDeclaration() {
-		return null;
-	}
-
-	@Override
 	public String printPackageInfo(CtPackage pack) {
 		return "";
 	}
@@ -79,7 +75,6 @@ public class SniperJavaPrettyPrinter extends CtScanner
 		return writer.toString();
 	}
 
-	@Override
 	public void reset() {
 		writer.clear();
 	}
@@ -90,7 +85,7 @@ public class SniperJavaPrettyPrinter extends CtScanner
 		Deque<Action> actionOnTypes = new ArrayDeque<>();
 		for (CtType<?> ctType : types) {
 			for (Action action : actions) {
-				CtElement element = action.getContext().getElement();
+				CtElement element = action.getContext().getElementWhereChangeHappens();
 				if (element instanceof CtReference && element.isParentInitialized()) {
 					element = element.getParent();
 				}
@@ -129,15 +124,15 @@ public class SniperJavaPrettyPrinter extends CtScanner
 				continue;
 			}
 			if (currentDeleteAllAction != null && action instanceof AddAction) {
-				Object oldContent = currentDeleteAllAction.getRemovedElement();
+				Object oldContent = currentDeleteAllAction.getRemovedValue();
 				if (oldContent instanceof List) {
 					List<?> list = (List) oldContent;
-					if (list.contains(((AddAction) action).getNewElement())) {
+					if (list.contains(((AddAction) action).getNewValue())) {
 						List<?> elementToRemove = new ArrayList<>(list);
 						List<Action> addToDelete = new ArrayList<>();
 						for (Object o : list) {
 							for (Action a : new ArrayDeque<>(actions)) {
-								if (o.equals(a.getChangedElement())) {
+								if (o.equals(a.getChangedValue())) {
 									elementToRemove.remove(o);
 									addToDelete.add(a);
 								}
@@ -146,9 +141,9 @@ public class SniperJavaPrettyPrinter extends CtScanner
 						actions.removeFirstOccurrence(currentDeleteAllAction);
 						for (Object o : elementToRemove) {
 							if (o instanceof CtElement) {
-								actions.addFirst(new DeleteAction(currentDeleteAllAction.getContext(), (CtElement) o));
+								actions.addFirst(new DeleteAction<>(currentDeleteAllAction.getContext(), (CtElement) o));
 							} else {
-								actions.addFirst(new DeleteAction(currentDeleteAllAction.getContext(), o));
+								actions.addFirst(new DeleteAction<>(currentDeleteAllAction.getContext(), o));
 							}
 						}
 						for (Action action1 : addToDelete) {
@@ -164,7 +159,7 @@ public class SniperJavaPrettyPrinter extends CtScanner
 	private void removeMultiModifiersActions(Deque<Action> actions) {
 		boolean isModifiersAlreadyPresent = false;
 		for (Action action : new ArrayDeque<>(actions)) {
-			if (action.getContext().getRole() == CtRole.MODIFIER) {
+			if (action.getContext().getChangedProperty() == CtRole.MODIFIER) {
 				if (isModifiersAlreadyPresent) {
 					actions.remove(action);
 				}
@@ -203,7 +198,7 @@ public class SniperJavaPrettyPrinter extends CtScanner
 			return actions;
 		}
 
-		private Action applyAction(SniperListener sniper, Action action) {
+		private Action applyAction(ActionBasedChangeListener sniper, Action action) {
 			try {
 				sniper.onAction(action);
 				return null;
@@ -225,7 +220,7 @@ public class SniperJavaPrettyPrinter extends CtScanner
 			return null;
 		}
 
-		private void applyActions(SniperListener sniper) {
+		private void applyActions(ActionBasedChangeListener sniper) {
 			Iterator<Action> actionIterator = actions.iterator();
 			while (actionIterator.hasNext()) {
 				Action action = actionIterator.next();

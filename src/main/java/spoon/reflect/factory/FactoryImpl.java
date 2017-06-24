@@ -17,6 +17,8 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
+import spoon.experimental.modelobs.EmptyModelChangeListener;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -147,10 +149,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public AnnotationFactory Annotation() {
 		if (annotation == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			annotation = new AnnotationFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return annotation;
 	}
@@ -163,10 +165,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public ClassFactory Class() {
 		if (clazz == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			clazz = new ClassFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return clazz;
 	}
@@ -179,10 +181,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CodeFactory Code() {
 		if (code == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			code = new CodeFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return code;
 	}
@@ -195,10 +197,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public ConstructorFactory Constructor() {
 		if (constructor == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			constructor = new ConstructorFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return constructor;
 	}
@@ -211,12 +213,12 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CoreFactory Core() {
 		if (core == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			//During deserialization, the transient field core, is null
 			core = new DefaultCoreFactory();
 			core.setMainFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return core;
 	}
@@ -229,10 +231,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public EnumFactory Enum() {
 		if (enumF == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			enumF = new EnumFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return enumF;
 	}
@@ -258,10 +260,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public ExecutableFactory Executable() {
 		if (executable == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			executable = new ExecutableFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return executable;
 	}
@@ -287,10 +289,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public FieldFactory Field() {
 		if (field == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			field = new FieldFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return field;
 	}
@@ -306,10 +308,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public InterfaceFactory Interface() {
 		if (interfaceF == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			interfaceF = new InterfaceFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return interfaceF;
 	}
@@ -322,10 +324,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public MethodFactory Method() {
 		if (methodF == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			methodF = new MethodFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return methodF;
 	}
@@ -338,10 +340,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public PackageFactory Package() {
 		if (packageF == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			packageF = new PackageFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return packageF;
 	}
@@ -354,10 +356,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CompilationUnitFactory CompilationUnit() {
 		if (compilationUnit == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			compilationUnit = new CompilationUnitFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return compilationUnit;
 	}
@@ -370,10 +372,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public TypeFactory Type() {
 		if (type == null) {
-			boolean buildStackChanges = getEnvironment().buildStackChanges();
-			getEnvironment().setBuildStackChanges(false);
+			FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+			getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 			type = new TypeFactory(this);
-			getEnvironment().setBuildStackChanges(buildStackChanges);
+			getEnvironment().setModelChangeListener(buildStackChanges);
 		}
 		return type;
 	}

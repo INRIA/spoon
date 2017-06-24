@@ -1764,7 +1764,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return printer.getPrinterHelper().toString();
 	}
 
-	private void reset() {
+	public void reset() {
 		printer.reset();
 		context = new PrintingContext();
 		if (env.isAutoImports()) {
