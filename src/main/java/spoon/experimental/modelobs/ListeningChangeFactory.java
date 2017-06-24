@@ -16,6 +16,7 @@
  */
 package spoon.experimental.modelobs;
 
+import spoon.experimental.modelobs.action.Action;
 import spoon.experimental.modelobs.action.AddAction;
 import spoon.experimental.modelobs.action.DeleteAction;
 import spoon.experimental.modelobs.action.DeleteAllAction;
@@ -28,6 +29,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +38,31 @@ import java.util.Set;
  * This listener will propagate the change to the listener
  */
 public class ListeningChangeFactory extends FineModelChangeListener {
+
+	private final List<ActionBasedChangeListener> listeners = new ArrayList<>(2);
+
+	public void addModelChangeListener(final ActionBasedChangeListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeModelChangeListener(final ActionBasedChangeListener listener) {
+		listeners.remove(listener);
+	}
+
+	private void propagateModelChange(final Action action) {
+		for (ActionBasedChangeListener listener : listeners) {
+			listener.onAction(action);
+			if (action instanceof DeleteAllAction) {
+				listener.onDeleteAll((DeleteAllAction) action);
+			} else if (action instanceof DeleteAction) {
+				listener.onDelete((DeleteAction) action);
+			} else if (action instanceof AddAction) {
+				listener.onAdd((AddAction) action);
+			} else if (action instanceof UpdateAction) {
+				listener.onUpdate((UpdateAction) action);
+			}
+		}
+	}
 
 	@Override
 	public void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue) {
