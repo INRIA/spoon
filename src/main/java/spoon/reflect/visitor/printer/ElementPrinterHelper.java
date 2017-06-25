@@ -234,19 +234,14 @@ public class ElementPrinterHelper {
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
 		if (arguments != null && arguments.size() > 0) {
-			printer.write("<");
-			boolean isImplicitTypeReference = true;
-			for (CtTypeReference<?> argument : arguments) {
-				if (!argument.isImplicit()) {
-					isImplicitTypeReference = false;
-					prettyPrinter.scan(argument);
-					printer.write(", ");
+			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
+				for (CtTypeReference<?> argument : arguments) {
+					if (!argument.isImplicit()) {
+						lp.itemStart();
+						prettyPrinter.scan(argument);
+					}
 				}
 			}
-			if (!isImplicitTypeReference) {
-				printer.removeLastChar();
-			}
-			printer.write(">");
 		}
 	}
 

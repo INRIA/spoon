@@ -414,4 +414,17 @@ public class PrinterHelper {
 	public boolean hasNewContent() {
 		return lengths.pollLast() < toString().length();
 	}
+
+	/**
+	 * Creates new handler which assures consistent printing of lists
+	 * prefixed with `start`, separated by `next` and suffixed by `end`
+	 * @param start the string which has to be printed at the beginning of the list
+	 * @param next the string which has to be used as separator before each next item
+	 * @param end the string which has to be printed after the list
+	 * @return the {@link ListPrinter} whose {@link ListPrinter#itemStart()} has to be called
+	 * before printing of each item.
+	 */
+	public ListPrinter createListPrinter(String start, String next, String end) {
+		return new ListPrinter(this, start, next, end);
+	}
 }
