@@ -76,6 +76,7 @@ public class ElementPrinterHelper {
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
 			prettyPrinter.scan(annotation);
+			printer.writeln().writeTabs();
 		}
 	}
 

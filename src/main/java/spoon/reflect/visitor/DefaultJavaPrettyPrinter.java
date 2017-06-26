@@ -342,7 +342,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 		}
-		printer.writeln().writeTabs();
 	}
 
 	@Override

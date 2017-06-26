@@ -118,8 +118,7 @@ public class AnnotationTest {
 	@Test
 	public void testWritingAnnotParamArray() throws Exception {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
-		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })"
-						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR,
+		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })",
 				type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
 	}
 
@@ -650,7 +649,7 @@ public class AnnotationTest {
 		final String arrayAnnotationParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(ias = { @spoon.test.annotation.testclasses.InnerAnnot(value = \"\") })" + System.lineSeparator() + "T> list10";
 		assertEquals("array of annotations parameter in type annotation", arrayAnnotationParam, method.getBody().getStatement(9).toString());
 
-		final String complexArrayParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(inceptions = { @spoon.test.annotation.testclasses.Inception(value = @spoon.test.annotation.testclasses.InnerAnnot(value = \"\")" + System.lineSeparator() + ", values = { @spoon.test.annotation.testclasses.InnerAnnot(value = \"\") }) })" + System.lineSeparator() + "T> list11";
+		final String complexArrayParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(inceptions = { @spoon.test.annotation.testclasses.Inception(value = @spoon.test.annotation.testclasses.InnerAnnot(value = \"\"), values = { @spoon.test.annotation.testclasses.InnerAnnot(value = \"\") }) })" + System.lineSeparator() + "T> list11";
 		assertEquals("array of complexes parameters in type annotation", complexArrayParam, method.getBody().getStatement(10).toString());
 	}
 
