@@ -43,7 +43,7 @@ public class InvocationTest {
 			}
 		});
 
-		assertEquals(2, elements.size());
+		assertEquals(3, elements.size());
 		assertTrue(elements.get(0).getTarget() instanceof CtTypeAccess);
 		assertTrue(elements.get(1).getTarget() instanceof CtTypeAccess);
 	}
