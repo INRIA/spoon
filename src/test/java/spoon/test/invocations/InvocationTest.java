@@ -3,10 +3,14 @@ package spoon.test.invocations;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -57,5 +61,33 @@ public class InvocationTest {
 		} catch (NullPointerException e) {
 			fail();
 		}
+	}
+
+	@Test
+	public void testInvocationWithArgument() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/invocations/testclasses/Foo.java");
+		launcher.buildModel();
+
+		CtClass<?> foo = launcher.getFactory().Class().get(Foo.class);
+		CtConstructor<?> constructor = foo.getConstructors().iterator().next();
+
+		CtInvocation<?> invocBar = constructor.getBody().getLastStatement();
+
+		assertEquals(3, invocBar.getArguments().size());
+		CtExpression secondArg = invocBar.getArguments().get(1);
+
+		assertTrue(secondArg instanceof CtLiteral);
+
+		CtLiteral arg = (CtLiteral)secondArg;
+		assertEquals(42, arg.getValue());
+
+		secondArg = launcher.getFactory().Core().createLiteral().setValue(12);
+
+		invocBar.addArgument(1, secondArg);
+
+		assertEquals(12, ((CtLiteral)invocBar.getArguments().get(1)).getValue());
+		assertEquals(42, ((CtLiteral)invocBar.getArguments().get(2)).getValue());
+		assertEquals(4, invocBar.getArguments().size());
 	}
 }
