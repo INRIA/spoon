@@ -46,7 +46,7 @@ public class ListPrinter implements Closeable {
 	/**
 	 * Call that before printing of list item starts
 	 */
-	public void itemStart() {
+	public void printSeparatorIfAppropriate() {
 		if (isFirst) {
 			/*
 			 * we are starting first item. Do not print `next` separator yet

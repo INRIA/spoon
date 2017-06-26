@@ -101,35 +101,32 @@ public class ElementPrinterHelper {
 
 	public void writeImplementsClause(CtType<?> type) {
 		if (type.getSuperInterfaces().size() > 0) {
-			printer.write(" implements ");
-			for (CtTypeReference<?> ref : type.getSuperInterfaces()) {
-				prettyPrinter.scan(ref);
-				printer.write(" , ");
+			try (ListPrinter lp = printer.createListPrinter(" implements ", " , ", null)) {
+				for (CtTypeReference<?> ref : type.getSuperInterfaces()) {
+					lp.printSeparatorIfAppropriate();
+					prettyPrinter.scan(ref);
+				}
 			}
-			printer.removeLastChar();
 		}
 	}
 
 	public void writeExecutableParameters(CtExecutable<?> executable) {
-		printer.write("(");
-		if (executable.getParameters().size() > 0) {
+		try (ListPrinter lp = printer.createListPrinter("(", ", ", ")")) {
 			for (CtParameter<?> p : executable.getParameters()) {
+				lp.printSeparatorIfAppropriate();
 				prettyPrinter.scan(p);
-				printer.write(", ");
 			}
-			printer.removeLastChar();
 		}
-		printer.write(")");
 	}
 
 	public void writeThrowsClause(CtExecutable<?> executable) {
 		if (executable.getThrownTypes().size() > 0) {
-			printer.write(" throws ");
-			for (CtTypeReference<?> ref : executable.getThrownTypes()) {
-				prettyPrinter.scan(ref);
-				printer.write(", ");
+			try (ListPrinter lp = printer.createListPrinter(" throws ", ", ", null)) {
+				for (CtTypeReference<?> ref : executable.getThrownTypes()) {
+					lp.printSeparatorIfAppropriate();
+					prettyPrinter.scan(ref);
+				}
 			}
-			printer.removeLastChar();
 		}
 	}
 
@@ -173,25 +170,19 @@ public class ElementPrinterHelper {
 		} else if (value instanceof String) {
 			printer.write("\"" + value.toString() + "\"");
 		} else if (value instanceof Collection) {
-			printer.write("{");
-			if (!((Collection<?>) value).isEmpty()) {
+			try (ListPrinter lp = printer.createListPrinter("{", " ,", "}")) {
 				for (Object obj : (Collection<?>) value) {
+					lp.printSeparatorIfAppropriate();
 					writeAnnotationElement(factory, obj);
-					printer.write(" ,");
 				}
-				printer.removeLastChar();
 			}
-			printer.write("}");
 		} else if (value instanceof Object[]) {
-			printer.write("{");
-			if (((Object[]) value).length > 0) {
+			try (ListPrinter lp = printer.createListPrinter("{", " ,", "}")) {
 				for (Object obj : (Object[]) value) {
+					lp.printSeparatorIfAppropriate();
 					writeAnnotationElement(factory, obj);
-					printer.write(" ,");
 				}
-				printer.removeLastChar();
 			}
-			printer.write("}");
 		} else if (value instanceof Enum) {
 			try (Writable c = prettyPrinter.getContext().modify().ignoreGenerics(true)) {
 				prettyPrinter.scan(factory.Type().createReference(((Enum<?>) value).getDeclaringClass()));
@@ -215,13 +206,12 @@ public class ElementPrinterHelper {
 			return;
 		}
 		if (parameters.size() > 0) {
-			printer.write('<');
-			for (CtTypeParameter parameter : parameters) {
-				prettyPrinter.scan(parameter);
-				printer.write(", ");
+			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
+				for (CtTypeParameter parameter : parameters) {
+					lp.printSeparatorIfAppropriate();
+					prettyPrinter.scan(parameter);
+				}
 			}
-			printer.removeLastChar();
-			printer.write('>');
 		}
 	}
 
@@ -237,7 +227,7 @@ public class ElementPrinterHelper {
 			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
 				for (CtTypeReference<?> argument : arguments) {
 					if (!argument.isImplicit()) {
-						lp.itemStart();
+						lp.printSeparatorIfAppropriate();
 						prettyPrinter.scan(argument);
 					}
 				}
