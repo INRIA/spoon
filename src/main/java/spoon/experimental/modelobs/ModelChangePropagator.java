@@ -37,7 +37,7 @@ import java.util.Set;
 /**
  * This listener will propagate the change to the listener
  */
-public class ListeningChangeFactory extends FineModelChangeListener {
+public class ModelChangePropagator extends FineModelChangeListener {
 
 	private final List<ActionBasedChangeListener> listeners = new ArrayList<>(2);
 
