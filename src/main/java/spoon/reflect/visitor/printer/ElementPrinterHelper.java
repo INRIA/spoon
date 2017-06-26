@@ -53,7 +53,7 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 public class ElementPrinterHelper {
@@ -241,13 +241,6 @@ public class ElementPrinterHelper {
 		return importType.matches("^(java\\.lang\\.)[^.]*$");
 	}
 
-	private static final Comparator<String> stringComparator = new Comparator<String>() {
-		@Override
-		public int compare(String o1, String o2) {
-			return o1.compareTo(o2);
-		}
-	};
-
 	/**
 	 * Write the compilation unit header.
 	 */
@@ -285,7 +278,7 @@ public class ElementPrinterHelper {
 					sortedImports.add(importStr + " " + importTypeStr + ";");
 				}
 			}
-			sortedImports.sort(stringComparator);
+			Collections.sort(sortedImports);
 			for (String importLine : sortedImports) {
 				printer.write(importLine).writeln().writeTabs();
 			}
