@@ -62,8 +62,7 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		return arguments;
 	}
 
-	@Override
-	public <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
+	private <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
 		if (argument == null) {
 			return (C) this;
 		}

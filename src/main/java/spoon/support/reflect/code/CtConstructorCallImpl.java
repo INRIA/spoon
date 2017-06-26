@@ -114,8 +114,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		return (C) this;
 	}
 
-	@Override
-	public <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
+	private <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
 		if (argument == null) {
 			return (C) this;
 		}

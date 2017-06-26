@@ -74,7 +74,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 					clone.getBody().getStatement(i--).delete();
 					continue;
 				}
-				CtInvocation replace = (CtInvocation) factory.Core().clone(clone.getBody().getStatement(i));
+				CtInvocation<?> replace = factory.Core().clone(clone.getBody().getStatement(i));
 
 				// Changes to biScan method.
 				replace.getExecutable().setSimpleName("biScan");
@@ -85,8 +85,8 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 
 				if ("Map".equals(targetInvocation.getExecutable().getType().getSimpleName())) {
 					((CtExpression) replace.getArguments().get(0)).replace(factory.Code().createInvocation(targetInvocation, factory.Executable().createReference("List Map#values()")));
-					replace.addArgument(1, factory.Code().createInvocation((CtExpression) replace.getArguments().get(1), factory.Executable().createReference("List Map#values()")));
-					replace.removeArgument((CtExpression) replace.getArguments().get(2));
+					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(1).clone(), factory.Executable().createReference("List Map#values()"));
+					replace.getArguments().get(1).replace(invocation);
 				}
 
 				clone.getBody().getStatement(i).replace(replace);
