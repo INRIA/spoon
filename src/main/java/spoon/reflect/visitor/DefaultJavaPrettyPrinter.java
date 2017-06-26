@@ -1773,10 +1773,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
 
 		elementPrinterHelper.writeComment(pack);
-
-		for (CtAnnotation<?> a : pack.getAnnotations()) {
-			a.accept(this);
-		}
+		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
 			printer.write("package " + pack.getQualifiedName() + ";");
