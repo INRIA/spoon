@@ -16,7 +16,6 @@
  */
 package spoon.reflect.reference;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
