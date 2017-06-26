@@ -20,7 +20,6 @@ version of 03/09/2015
     * sniper mode (only rewrites the changed nodes)
     * Transactional transformations (rollback if transfo fails)
     * adds generic transformations: a generic transformation is a transformation that is independent of the domain and can be applied to any source code, their goal is to facilitate analysis and transformation
-        * everything in a block
         * unfinalizer (remove as many "final" keywords as possible)
 * Processor orchestration 
     * specify the current strategy
@@ -38,4 +37,5 @@ version of 03/09/2015
         * with anonymous classes
         * with lambda
 * Write spoon processors, compile them to ASM transformations on bytecode
+
  
