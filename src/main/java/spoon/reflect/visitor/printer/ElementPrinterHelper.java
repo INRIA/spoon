@@ -53,6 +53,7 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 public class ElementPrinterHelper {
@@ -240,6 +241,13 @@ public class ElementPrinterHelper {
 		return importType.matches("^(java\\.lang\\.)[^.]*$");
 	}
 
+	private static final Comparator<String> stringComparator = new Comparator<String>() {
+		@Override
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
+		}
+	};
+
 	/**
 	 * Write the compilation unit header.
 	 */
@@ -253,6 +261,7 @@ public class ElementPrinterHelper {
 				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
 			}
 			printer.writeln().writeln().writeTabs();
+			List<String> sortedImports = new ArrayList<>(imports.size());
 			for (CtReference ref : imports) {
 				String importStr = "import";
 				String importTypeStr = "";
@@ -273,8 +282,12 @@ public class ElementPrinterHelper {
 				}
 
 				if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
-					printer.write(importStr + " " + importTypeStr + ";").writeln().writeTabs();
+					sortedImports.add(importStr + " " + importTypeStr + ";");
 				}
+			}
+			sortedImports.sort(stringComparator);
+			for (String importLine : sortedImports) {
+				printer.write(importLine).writeln().writeTabs();
 			}
 			printer.writeln().writeTabs();
 		}
