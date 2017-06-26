@@ -74,7 +74,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 					clone.getBody().getStatement(i--).delete();
 					continue;
 				}
-				CtInvocation<?> replace = factory.Core().clone(clone.getBody().getStatement(i));
+				CtInvocation<?> replace = (CtInvocation<?>) clone.getBody().getStatement(i).clone();
 
 				// Changes to biScan method.
 				replace.getExecutable().setSimpleName("biScan");
