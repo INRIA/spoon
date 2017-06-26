@@ -9,7 +9,7 @@ public class BurritosStaticMethod {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				BurritosStaticMethod.toto();
+				toto();
 			}
 		});
 	}

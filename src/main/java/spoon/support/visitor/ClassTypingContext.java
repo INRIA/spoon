@@ -423,6 +423,9 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 */
 	@Override
 	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+		if (typeParam == null) {
+			throw new SpoonException("You cannot adapt a null type parameter.");
+		}
 		CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
 		if ((declarer instanceof CtType<?>) == false) {
 			return null;
@@ -643,6 +646,10 @@ public class ClassTypingContext extends AbstractTypingContext {
 		if (typeRef instanceof CtTypeParameterReference) {
 			CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
 			CtTypeParameter typeParam = typeParamRef.getDeclaration();
+			if (typeParam == null) {
+				throw new SpoonException("Declaration of the CtTypeParameter should not be null.");
+			}
+
 			if (typeParam.getTypeParameterDeclarer() instanceof CtExecutable) {
 				//the parameter is declared in scope of Method or Constructor
 				return typeRef.clone();

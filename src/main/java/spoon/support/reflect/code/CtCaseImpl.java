@@ -34,7 +34,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.CASE_STATEMEN
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.CASE)
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<E> caseExpression;
 
 	@MetamodelPropertyField(role = CtRole.STATEMENT)

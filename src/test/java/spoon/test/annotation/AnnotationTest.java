@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonException;
 import spoon.processing.AbstractAnnotationProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.annotations.PropertyGetter;
@@ -66,6 +67,8 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -77,6 +80,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -1028,4 +1032,67 @@ public class AnnotationTest {
 		assertTrue(type.isAnnotationType());
 		assertSame(type, type.getReference().getDeclaration());
 	}
+	
+	@Test
+	public void testReplaceAnnotationValue() throws Exception {
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+
+		CtMethod<?> m1 = type.getElements(new NameFilter<CtMethod<?>>("m1")).get(0);
+
+		List<CtAnnotation<? extends Annotation>> annotations = m1.getAnnotations();
+		assertEquals(1, annotations.size());
+
+		CtAnnotation<?> a = annotations.get(0);
+		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
+		
+		//contract: test replace of single value
+		CtExpression integerValue = a.getValue("integer");
+		assertEquals(42, ((CtLiteral<Integer>) integerValue).getValue().intValue());
+		assertEquals(42, annot.integer());
+		integerValue.replace(factory.createLiteral(17));
+		CtExpression newIntegerValue = a.getValue("integer");
+		assertEquals(17, ((CtLiteral<Integer>) newIntegerValue).getValue().intValue());
+		assertEquals(17, annot.integer());
+		
+		//contract: replacing of single value of map by multiple values must fail
+		//even if second value is null
+		try {
+			a.getValue("integer").replace(Arrays.asList(factory.createLiteral(18), null));
+			fail();
+		} catch (SpoonException e)  {
+			//OK
+		}
+		
+		//contract: replacing of single value by no value
+		a.getValue("integer").delete();
+		assertNull(a.getValue("integer"));
+		try {
+			annot.integer();
+			fail();
+		} catch (NullPointerException e) {
+			//OK - fails because int cannot be null
+		}
+		//contract: replace with null value means remove
+		a.getValue("string").replace((CtElement) null);
+		assertNull(a.getValue("string"));
+		//contract: check that null value can be returned
+		assertNull(annot.string());
+
+		//contract: replace with null value in collection means remove
+		a.getValue("clazz").replace(Collections.singletonList(null));
+		assertNull(a.getValue("clazz"));
+		//contract: check that null value can be returned
+		assertNull(annot.clazz());
+
+		//contract: test replace of item in collection
+		assertEquals(1, annot.integers().length);
+		assertEquals(42, annot.integers()[0]);
+		CtNewArray<?> integersNewArray = (CtNewArray)a.getValue("integers");
+		integersNewArray.getElements().get(0).replace(Arrays.asList(null, factory.createLiteral(101), null, factory.createLiteral(102)));
+		assertEquals(2, annot.integers().length);
+		assertEquals(101, annot.integers()[0]);
+		assertEquals(102, annot.integers()[1]);
+	}
+	
+	
 }

@@ -75,6 +75,6 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 
 	@Override
 	@DerivedProperty
-	@PropertySetter(role = TYPE)
+	@PropertyGetter(role = TYPE)
 	CtTypeReference<T> getType();
 }

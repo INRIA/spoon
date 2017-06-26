@@ -367,11 +367,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 */
 	private boolean declaringTypeIsLocalOrImported(CtTypeReference declaringType) {
 		if (declaringType != null) {
-			if (!isTypeInCollision(declaringType, false) && addClassImport(declaringType)) {
-				return true;
+
+			boolean isInCollision = isTypeInCollision(declaringType, false);
+			if (!isInCollision) {
+				boolean importSuccess = addClassImport(declaringType);
+				if (importSuccess) {
+					return true;
+				}
 			}
 
-			if (isImportedInClassImports(declaringType) || classNamePresentInJavaLang(declaringType)) {
+			boolean importedInClassImports = isImportedInClassImports(declaringType);
+			boolean inJavaLang = classNamePresentInJavaLang(declaringType);
+
+			if (importedInClassImports || inJavaLang) {
 				return true;
 			}
 
@@ -386,13 +394,39 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return false;
 	}
 
+	/**
+	 * Test if the given executable reference is targeted a method name which is in collision with a method name of the current class
+	 * @param ref
+	 * @return
+	 */
+	private boolean isInCollisionWithLocalMethod(CtExecutableReference ref) {
+		CtType<?> typeDecl = ref.getParent(CtType.class);
+
+		String methodName = ref.getSimpleName();
+
+		for (CtMethod<?> method : typeDecl.getAllMethods()) {
+			if (method.getSimpleName().equals(methodName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected boolean addMethodImport(CtExecutableReference ref) {
+		// static import is not supported below java 1.5
+		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
+			return false;
+		}
 		if (this.methodImports.containsKey(ref.getSimpleName())) {
 			return isImportedInMethodImports(ref);
 		}
 
 		// if the whole class is imported: no need to import the method.
 		if (declaringTypeIsLocalOrImported(ref.getDeclaringType())) {
+			return false;
+		}
+
+		if (this.isInCollisionWithLocalMethod(ref)) {
 			return false;
 		}
 
@@ -420,6 +454,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean addFieldImport(CtFieldReference ref) {
+		// static import is not supported below java 1.5
+		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
+			return false;
+		}
 		if (this.fieldImports.containsKey(ref.getSimpleName())) {
 			return isImportedInFieldImports(ref);
 		}

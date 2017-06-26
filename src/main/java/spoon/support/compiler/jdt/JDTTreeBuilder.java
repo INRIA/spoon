@@ -153,6 +153,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.comparator.CtLineElementComparator;
@@ -1415,7 +1416,15 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		if (context.stack.peekFirst().node instanceof UnionTypeReference) {
-			context.enter(references.<Throwable>getTypeReference(singleTypeReference.resolvedType), singleTypeReference);
+			if (singleTypeReference.resolvedType == null) {
+				CtTypeReference typeReference = factory.Type().createReference(singleTypeReference.toString());
+				CtReference ref = references.getDeclaringReferenceFromImports(singleTypeReference.getLastToken());
+				references.setPackageOrDeclaringType(typeReference, ref);
+				context.enter(typeReference, singleTypeReference);
+			} else {
+				context.enter(references.<Throwable>getTypeReference(singleTypeReference.resolvedType), singleTypeReference);
+			}
+
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
 			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);

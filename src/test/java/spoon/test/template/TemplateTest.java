@@ -4,7 +4,6 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
@@ -16,7 +15,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -35,6 +33,7 @@ import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.NtonCodeTemplate;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 import spoon.test.template.testclasses.SimpleTemplate;
+import spoon.test.template.testclasses.SubstituteLiteralTemplate;
 import spoon.test.template.testclasses.SubstituteRootTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
@@ -57,7 +56,6 @@ import spoon.test.template.testclasses.types.AnIfaceModel;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.Remote;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -667,7 +665,7 @@ public class TemplateTest {
 		assertNull(genClass.getMethod("someMethod"));
 		assertTrue(generatedIfaceMethod!=generatedClassMethod);
 		assertTrue(generatedClassMethod.isOverriding(generatedIfaceMethod));
-		
+
 		//contract: we can generate enum
 		parameters.put("case1", "GOOD");
 		parameters.put("case2", "BETTER");
@@ -678,5 +676,49 @@ public class TemplateTest {
 		assertEquals(2, genEnum.getEnumValues().size());
 		assertEquals("GOOD", genEnum.getEnumValues().get(0).getSimpleName());
 		assertEquals("BETTER", genEnum.getEnumValues().get(1).getSimpleName());
+	}
+	
+	@Test
+	public void substituteStringLiteral() throws Exception {
+		//contract: the substitution of literals is possible too
+		//contract: the template engine supports substitution of root element
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteLiteralTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate("value1").apply(factory.createClass());
+			assertEquals("java.lang.String stringField1 = \"value1\";", result.getField("stringField1").toString());
+			assertEquals("java.lang.String stringField2 = \"Substring value1 is substituted too - value1\";", result.getField("stringField2").toString());
+			//contract: the parameter of type string replaces only method name
+			assertEquals("java.lang.System.out.println(spoon.test.template.testclasses.Params.value1())", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+		}
+		{
+			//contract: String Literal value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.createLiteral("value2")).apply(factory.createClass());
+			assertEquals("java.lang.String stringField1 = \"value2\";", result.getField("stringField1").toString());
+			assertEquals("java.lang.String stringField2 = \"Substring value2 is substituted too - value2\";", result.getField("stringField2").toString());
+			//contract: the parameter of type String literal replaces whole invocation
+			assertEquals("java.lang.System.out.println(\"value2\")", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+		}
+		{
+			//contract: simple name of type reference is substituted in String literal 
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.package.TypeName")).apply(factory.createClass());
+			assertEquals("java.lang.String stringField1 = \"TypeName\";", result.getField("stringField1").toString());
+			assertEquals("java.lang.String stringField2 = \"Substring TypeName is substituted too - TypeName\";", result.getField("stringField2").toString());
+			//contract type reference is substituted in invocation as class access
+			assertEquals("java.lang.System.out.println(some.ignored.package.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+		}
+		{
+			//contract: number literal is substituted in String literal as number converted to string
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.createLiteral(7)).apply(factory.createClass());
+			assertEquals("java.lang.String stringField1 = \"7\";", result.getField("stringField1").toString());
+			assertEquals("java.lang.String stringField2 = \"Substring 7 is substituted too - 7\";", result.getField("stringField2").toString());
+			//contract number literal is substituted in invocation as number literal
+			assertEquals("java.lang.System.out.println(7)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+		}
 	}
 }

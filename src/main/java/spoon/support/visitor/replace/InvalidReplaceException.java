@@ -14,24 +14,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.annotations;
+package spoon.support.visitor.replace;
 
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.path.CtRole;
-import spoon.support.reflect.declaration.CtClassImpl;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import spoon.SpoonException;
 
 /**
- * Tells that a field is a property of the metamodel
- * For instance {@link CtClassImpl#simpleName}  is the property name of {@link CtNamedElement}
- *
+ * Thrown when replacing of element by another element is not possible
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
-public @interface MetamodelPropertyField {
-	CtRole[] role();
+public class InvalidReplaceException extends SpoonException {
+
+	public InvalidReplaceException() {
+	}
+
+	public InvalidReplaceException(String msg) {
+		super(msg);
+	}
+
+	public InvalidReplaceException(Throwable e) {
+		super(e);
+	}
+
+	public InvalidReplaceException(String msg, Throwable e) {
+		super(msg, e);
+	}
+
 }

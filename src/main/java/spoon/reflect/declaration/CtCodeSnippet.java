@@ -36,13 +36,13 @@ public interface CtCodeSnippet {
 	/**
 	 * Sets the textual value of the code.
 	 */
-	@PropertyGetter(role = EXPRESSION)
+	@PropertySetter(role = EXPRESSION)
 	<C extends CtCodeSnippet> C setValue(String value);
 
 	/**
 	 * Gets the textual value of the code.
 	 */
-	@PropertySetter(role = EXPRESSION)
+	@PropertyGetter(role = EXPRESSION)
 	String getValue();
 
 }

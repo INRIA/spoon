@@ -25,7 +25,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNewClass<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = CtRole.NESTED_TYPE)
 	CtClass<?> anonymousClass;
 
 	@Override
