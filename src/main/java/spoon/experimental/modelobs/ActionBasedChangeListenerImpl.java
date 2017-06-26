@@ -36,7 +36,7 @@ import java.util.Set;
 /**
  * This listener will propagate the change to the listener
  */
-public abstract class ModelChangePropagator extends FineModelChangeListener implements ActionBasedChangeListener{
+public abstract class ActionBasedChangeListenerImpl extends FineModelChangeListener implements ActionBasedChangeListener {
 
 	private void propagateModelChange(final Action action) {
 		this.onAction(action);
