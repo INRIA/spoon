@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
@@ -145,7 +146,16 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
 		final CtTypeReference<?> typeRef = getDeclaringType();
-		return typeRef == null ? null : getCtExecutable(typeRef.getTypeDeclaration());
+		if (typeRef == null) {
+			return null;
+		}
+
+		try {
+			return getCtExecutable(typeRef.getTypeDeclaration());
+		} catch (SpoonClassNotFoundException e) {
+			return null;
+		}
+
 	}
 
 	@Override

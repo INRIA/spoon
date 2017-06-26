@@ -447,7 +447,9 @@ public class FilterTest {
 		final CtExecutableReference<?> expectedExecutable = expectedInv.getExecutable();
 		assertNotNull(expectedExecutable);
 		assertEquals("size", expectedExecutable.getSimpleName());
-		assertNull(expectedExecutable.getDeclaration());
+		CtExecutable<?> exec = expectedExecutable.getDeclaration();
+		assertEquals("size", exec.getSimpleName());
+		assertEquals("ArrayList", ((CtClass)exec.getParent()).getSimpleName());
 		final CtExecutable<?> declaration = expectedExecutable.getExecutableDeclaration();
 		assertNotNull(declaration);
 		assertEquals("size", declaration.getSimpleName());

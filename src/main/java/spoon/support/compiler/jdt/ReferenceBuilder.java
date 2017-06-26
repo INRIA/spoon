@@ -707,7 +707,7 @@ public class ReferenceBuilder {
 					// this case could happen with Enum<E extends Enum<E>> for example:
 					// in that case we only want to have E -> Enum -> E
 					// to conserve the same behavior as JavaReflectionTreeBuilder
-					if (!this.exploringParameterizedBindings.containsKey(superClass)) {
+					if (!(superClass instanceof ParameterizedTypeBinding) || !this.exploringParameterizedBindings.containsKey(superClass)) {
 						refSuperClass = this.getTypeReference(superClass);
 					}
 
