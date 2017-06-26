@@ -80,7 +80,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
-			this.statements.add(0, statement);
+			this.addStatement(0, statement);
 		}
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
@@ -103,7 +103,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		this.statements.add(0, statement);
+		this.addStatement(0, statement);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
@@ -142,12 +142,6 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertAtPosition(int i, CtStatement statement) {
-		this.statements.add(i, statement);
-		return (T) this;
-	}
-
-	@Override
 	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
@@ -178,12 +172,17 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int i, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		this.statements.add(statement);
+		this.statements.add(i, statement);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}

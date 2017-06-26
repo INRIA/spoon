@@ -79,6 +79,11 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int i, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
@@ -86,7 +91,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 			statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		statements.add(statement);
+		statements.add(i, statement);
 		return (T) this;
 	}
 

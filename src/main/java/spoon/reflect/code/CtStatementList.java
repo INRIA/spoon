@@ -48,6 +48,11 @@ public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 	<T extends CtStatementList> T addStatement(CtStatement statement);
 
 	/**
+	 * Inserts the given statement at a specific position in the list of statements
+	 */
+	<T extends CtStatementList> T addStatement(int i, CtStatement statement);
+
+	/**
 	 * Removes a statement.
 	 */
 	@PropertySetter(role = STATEMENT)

@@ -81,11 +81,6 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	<T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements);
 
 	/**
-	 * Inserts the given statement at a specific position in the list of statements
-	 */
-	<T extends CtBlock<R>> T insertAtPosition(int i, CtStatement statement);
-
-	/**
 	 * Gets the ith statement of this block.
 	 */
 	@DerivedProperty

@@ -63,6 +63,11 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int i, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
@@ -70,7 +75,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = new ArrayList<>(BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		this.statements.add(statement);
+		this.statements.add(i, statement);
 		return (T) this;
 	}
 
