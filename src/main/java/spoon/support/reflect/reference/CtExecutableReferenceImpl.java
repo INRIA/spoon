@@ -145,7 +145,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
 		final CtTypeReference<?> typeRef = getDeclaringType();
-		return typeRef == null ? null : getCtExecutable(typeRef.getDeclaration());
+		return typeRef == null ? null : getCtExecutable(typeRef.getTypeDeclaration());
 	}
 
 	@Override
