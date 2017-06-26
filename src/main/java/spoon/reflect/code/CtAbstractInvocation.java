@@ -52,7 +52,7 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	 * Removes an argument expression from the invocation.
 	 */
 	@PropertySetter(role = ARGUMENT)
-	boolean removeArgument(CtExpression<?> argument);
+	void removeArgument(CtExpression<?> argument);
 
 	/**
 	 * Sets the invocation's arguments.

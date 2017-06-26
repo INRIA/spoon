@@ -221,12 +221,12 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public boolean removeType(CtType<?> type) {
+	public void removeType(CtType<?> type) {
 		if (types == CtElementImpl.<CtType<?>>emptySet()) {
-			return false;
+			return;
 		}
 		getFactory().Change().onSetDelete(this, TYPE, types, type);
-		return types.remove(type);
+		types.remove(type);
 	}
 
 	@Override

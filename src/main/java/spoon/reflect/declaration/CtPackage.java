@@ -104,7 +104,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * Removes a type from this package.
 	 */
 	@PropertySetter(role = TYPE)
-	boolean removeType(CtType<?> type);
+	void removeType(CtType<?> type);
 
 	/**
 	 * Sets the children defined in this package

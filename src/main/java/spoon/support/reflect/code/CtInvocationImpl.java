@@ -81,12 +81,12 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public boolean removeArgument(CtExpression<?> argument) {
+	public void removeArgument(CtExpression<?> argument) {
 		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
-			return false;
+			return;
 		}
 		getFactory().Change().onListDelete(this, ARGUMENT, arguments, arguments.indexOf(argument), argument);
-		return arguments.remove(argument);
+		arguments.remove(argument);
 	}
 
 	@Override
