@@ -29,7 +29,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,30 +36,18 @@ import java.util.Set;
 /**
  * This listener will propagate the change to the listener
  */
-public class ModelChangePropagator extends FineModelChangeListener {
-
-	private final List<ActionBasedChangeListener> listeners = new ArrayList<>(2);
-
-	public void addModelChangeListener(final ActionBasedChangeListener listener) {
-		listeners.add(listener);
-	}
-
-	public void removeModelChangeListener(final ActionBasedChangeListener listener) {
-		listeners.remove(listener);
-	}
+public abstract class ModelChangePropagator extends FineModelChangeListener implements ActionBasedChangeListener{
 
 	private void propagateModelChange(final Action action) {
-		for (ActionBasedChangeListener listener : listeners) {
-			listener.onAction(action);
-			if (action instanceof DeleteAllAction) {
-				listener.onDeleteAll((DeleteAllAction) action);
-			} else if (action instanceof DeleteAction) {
-				listener.onDelete((DeleteAction) action);
-			} else if (action instanceof AddAction) {
-				listener.onAdd((AddAction) action);
-			} else if (action instanceof UpdateAction) {
-				listener.onUpdate((UpdateAction) action);
-			}
+		this.onAction(action);
+		if (action instanceof DeleteAllAction) {
+			this.onDeleteAll((DeleteAllAction) action);
+		} else if (action instanceof DeleteAction) {
+			this.onDelete((DeleteAction) action);
+		} else if (action instanceof AddAction) {
+			this.onAdd((AddAction) action);
+		} else if (action instanceof UpdateAction) {
+			this.onUpdate((UpdateAction) action);
 		}
 	}
 
@@ -132,5 +119,25 @@ public class ModelChangePropagator extends FineModelChangeListener {
 	@Override
 	public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue) {
 		propagateModelChange(new DeleteAllAction(new SetContext(currentElement, role, field), oldValue));
+	}
+
+	@Override
+	public void onDelete(DeleteAction action) {
+	}
+
+	@Override
+	public void onDeleteAll(DeleteAllAction action) {
+	}
+
+	@Override
+	public void onAdd(AddAction action) {
+	}
+
+	@Override
+	public void onUpdate(UpdateAction action) {
+	}
+
+	@Override
+	public void onAction(Action action) {
 	}
 }
