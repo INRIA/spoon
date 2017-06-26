@@ -51,6 +51,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,12 +111,37 @@ public class CommentTest {
 
 	@Test
 	public void testJavaDocComment() {
-		String EOL = System.getProperty("line.separator");
+		//the EOL is taken from JavaDocComment.java, which is commited in git with linux \n
+		//that is true on Windows too.
+		String EOL = "\n";
 
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
 
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		//contract: test that java doc is printed correctly
+		String str = classJavaDoc.toString();
+		StringTokenizer st = new StringTokenizer(str, "\n\r");
+		boolean first = true;
+		while(st.hasMoreTokens()) {
+			String line = st.nextToken();
+			if(first) {
+				//first
+				first = false;
+				assertTrue(line.length()==3);
+				assertEquals("/**", line); 
+			} else {
+				if(st.hasMoreTokens()) {
+					//in the middle
+					assertTrue(line.length()>=2);
+					assertEquals(" *", line.substring(0, 2)); 
+				} else {
+					//last
+					assertTrue(line.length()==3);
+					assertEquals(" */", line.substring(0, 3)); 
+				}
+			}
+		}
 		assertEquals("JavaDoc test class."+EOL+EOL
 				+ "Long description", classJavaDoc.getContent());
 

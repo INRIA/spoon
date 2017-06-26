@@ -860,7 +860,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(docTag.getParam()).writeln().writeTabs();
 		}
 
-		String[] tagLines = docTag.getContent().split(LINE_SEPARATOR);
+		String[] tagLines = docTag.getContent().split("\\n\\r|\\n|\\r");
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
 			if (i > 0 || docTag.getType().hasParam()) {
@@ -898,7 +898,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.write(content);
 				break;
 			default:
-				String[] lines = content.split(LINE_SEPARATOR);
+				String[] lines = content.split("\\n\\r|\\n|\\r");
 				for (int i = 0; i < lines.length; i++) {
 					String com = lines[i];
 					if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
