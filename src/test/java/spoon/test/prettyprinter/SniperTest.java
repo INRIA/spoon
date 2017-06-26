@@ -145,7 +145,6 @@ public class SniperTest {
 		return isObject;
 	}
 
-	@Test
 	public void generateSniper() throws Exception {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/main/java/spoon/support/");
