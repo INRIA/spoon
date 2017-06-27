@@ -58,6 +58,7 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -65,6 +66,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1117,8 +1119,7 @@ public class GenericsTest {
 		ClassTypingContext ctc = new ClassTypingContext(ctClass.getReference());
 		assertTrue(ctc.isOverriding(methods.get(0), methodsItf.get(0)));
 		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
-
-		// assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
 	}
 	@Test
 	public void testGetExecDeclarationOfEnumSetOf() {
@@ -1130,6 +1131,21 @@ public class GenericsTest {
 
 		CtInvocation invocation = ctClass.getMethodsByName("m").get(0).getBody().getStatement(0);
 		CtExecutable<?> decl = invocation.getExecutable().getDeclaration();
-		assertNotNull(decl);
+		assertNull(decl);
+
+		CtClass<?> enumClass = launcher.getFactory().Class().get(EnumSet.class);
+		List<CtMethod<?>> methods = enumClass.getMethodsByName("of");
+
+		CtMethod rightOfMethod = null;
+		for (CtMethod method : methods) {
+			if (method.getParameters().size() == 1) {
+				rightOfMethod = method;
+			}
+		}
+
+		assertNotNull(rightOfMethod);
+
+		decl = invocation.getExecutable().getExecutableDeclaration();
+		assertEquals(rightOfMethod, decl);
 	}
 }

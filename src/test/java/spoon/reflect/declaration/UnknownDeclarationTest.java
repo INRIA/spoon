@@ -21,11 +21,7 @@ public class UnknownDeclarationTest {
         @Override
         public <T> void visitCtExecutableReference(final CtExecutableReference<T> reference) {
             final CtExecutable executable = reference.getDeclaration();
-            if (reference.getType() != null && reference.getType().getSimpleName().equals("Object")) {
-                assertNotNull(executable);
-            } else {
-                assertNull(executable);
-            }
+            assertNull(executable);
 
             referenceCounter++;
         }
