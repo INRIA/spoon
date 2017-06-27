@@ -111,7 +111,7 @@ public class CommentTest {
 
 	@Test
 	public void testJavaDocComment() {
-		//the EOL is taken from JavaDocComment.java, which is commited in git with linux \n
+		//the EOL is taken from JavaDocComment.java, which is committed in git with linux \n
 		//that is true on Windows too.
 		String EOL = "\n";
 
@@ -121,7 +121,7 @@ public class CommentTest {
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
 		//contract: test that java doc is printed correctly
 		String str = classJavaDoc.toString();
-		StringTokenizer st = new StringTokenizer(str, "\n\r");
+		StringTokenizer st = new StringTokenizer(str, System.getProperty("line.separator"));
 		boolean first = true;
 		while(st.hasMoreTokens()) {
 			String line = st.nextToken();
