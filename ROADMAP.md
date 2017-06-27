@@ -37,5 +37,5 @@ version of 03/09/2015
         * with anonymous classes
         * with lambda
 * Write spoon processors, compile them to ASM transformations on bytecode
+* Spoonifyier: give a snippet as input and produce as output the Spoon code that would create this snippet 
 
- 
