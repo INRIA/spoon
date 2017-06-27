@@ -30,7 +30,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NameFilter;
-import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
