@@ -55,7 +55,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
 		}
-		getFactory().Change().onObjectUpdate(this, NAME, simplename, this.simplename);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, this.simplename);
 		this.simplename = simplename;
 		return (T) this;
 	}

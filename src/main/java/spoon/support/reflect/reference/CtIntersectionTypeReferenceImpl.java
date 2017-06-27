@@ -50,7 +50,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.bounds = new ArrayList<>();
 		}
-		getFactory().Change().onListDeleteAll(this, BOUND, this.bounds, new ArrayList<>(this.bounds));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, BOUND, this.bounds, new ArrayList<>(this.bounds));
 		this.bounds.clear();
 		for (CtTypeReference<?> bound : bounds) {
 			addBound(bound);
@@ -68,7 +68,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		}
 		if (!bounds.contains(bound)) {
 			bound.setParent(this);
-			getFactory().Change().onListAdd(this, BOUND, this.bounds, bound);
+			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, BOUND, this.bounds, bound);
 			bounds.add(bound);
 		}
 		return (C) this;
@@ -79,7 +79,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, BOUND, bounds, bounds.indexOf(bound), bound);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, BOUND, bounds, bounds.indexOf(bound), bound);
 		return bounds.remove(bound);
 	}
 

@@ -44,7 +44,7 @@ public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> e
 		if (executable != null) {
 			executable.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

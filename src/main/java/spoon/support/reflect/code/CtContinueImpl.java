@@ -47,7 +47,7 @@ public class CtContinueImpl extends CtStatementImpl implements CtContinue {
 
 	@Override
 	public <T extends CtLabelledFlowBreak> T setTargetLabel(String targetLabel) {
-		getFactory().Change().onObjectUpdate(this, TARGET_LABEL, targetLabel, this.targetLabel);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET_LABEL, targetLabel, this.targetLabel);
 		this.targetLabel = targetLabel;
 		return (T) this;
 	}

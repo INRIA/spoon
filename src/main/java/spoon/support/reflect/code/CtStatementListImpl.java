@@ -55,7 +55,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().Change().onListDeleteAll(this, STATEMENT, this.statements, new ArrayList<>(this.statements));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, STATEMENT, this.statements, new ArrayList<>(this.statements));
 		this.statements.clear();
 		for (CtStatement stmt : stmts) {
 			addStatement(stmt);
@@ -72,7 +72,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = new ArrayList<>(BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		getFactory().Change().onListAdd(this, STATEMENT, this.statements, statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, statement);
 		this.statements.add(statement);
 		return (T) this;
 	}
@@ -82,7 +82,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
 			return;
 		}
-		getFactory().Change().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
 		statements.remove(statement);
 	}
 

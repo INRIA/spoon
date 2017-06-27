@@ -45,7 +45,7 @@ public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNew
 		if (anonymousClass != null) {
 			anonymousClass.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXECUTABLE, anonymousClass, this.anonymousClass);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, anonymousClass, this.anonymousClass);
 		this.anonymousClass = anonymousClass;
 		return (N) this;
 	}

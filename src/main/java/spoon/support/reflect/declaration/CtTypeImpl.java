@@ -132,7 +132,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			} else {
 				role = NESTED_TYPE;
 			}
-			getFactory().Change().onListAdd(this, role, this.typeMembers, position, member);
+			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.typeMembers, position, member);
 			this.typeMembers.add(position, member);
 		}
 		return (C) this;
@@ -152,7 +152,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		if (typeMembers.size() == 1) {
 			if (typeMembers.contains(member)) {
-				getFactory().Change().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
+				getFactory().getEnvironment().getModelChangeListener().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
 				typeMembers = emptyList();
 				return true;
 			} else {
@@ -160,7 +160,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			}
 		}
 		if (typeMembers.contains(member)) {
-			getFactory().Change().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
+			getFactory().getEnvironment().getModelChangeListener().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
 			return typeMembers.remove(member);
 		}
 		return false;
@@ -204,7 +204,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			this.typeMembers.removeAll(oldFields);
 			return (C) this;
 		}
-		getFactory().Change().onListDelete(this, FIELD, this.typeMembers, new ArrayList<>(oldFields));
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, FIELD, this.typeMembers, new ArrayList<>(oldFields));
 		typeMembers.removeAll(oldFields);
 		for (CtField<?> field : fields) {
 			addField(field);
@@ -264,7 +264,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
 		Set<CtType<?>> oldNestedTypes = getNestedTypes();
-		getFactory().Change().onListDelete(this, NESTED_TYPE, typeMembers, oldNestedTypes);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, NESTED_TYPE, typeMembers, oldNestedTypes);
 		if (nestedTypes == null || nestedTypes.isEmpty()) {
 			this.typeMembers.removeAll(oldNestedTypes);
 			return (C) this;
@@ -462,7 +462,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -476,7 +476,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.of(modifier);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -486,7 +486,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -625,14 +625,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			interfaces = new QualifiedNameBasedSortedSet<>();
 		}
 		interfac.setParent(this);
-		getFactory().Change().onSetAdd(this, INTERFACE, this.interfaces, interfac);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, INTERFACE, this.interfaces, interfac);
 		interfaces.add(interfac);
 		return (C) this;
 	}
 
 	@Override
 	public <S> boolean removeSuperInterface(CtTypeReference<S> interfac) {
-		getFactory().Change().onSetDelete(this, INTERFACE, interfaces, interfac);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, INTERFACE, interfaces, interfac);
 		if (interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			return false;
 		} else if (interfaces.size() == 1) {
@@ -655,7 +655,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		getFactory().Change().onListDeleteAll(this, TYPE_PARAMETER, formalCtTypeParameters, new ArrayList<>(formalCtTypeParameters));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_PARAMETER, formalCtTypeParameters, new ArrayList<>(formalCtTypeParameters));
 		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
 			this.formalCtTypeParameters = CtElementImpl.emptyList();
 			return (C) this;
@@ -679,7 +679,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		formalTypeParameter.setParent(this);
-		getFactory().Change().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalCtTypeParameters.add(formalTypeParameter);
 		return (C) this;
 	}
@@ -689,7 +689,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
 		return formalCtTypeParameters.remove(formalTypeParameter);
 	}
 
@@ -900,7 +900,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
 		Set<CtMethod<?>> allMethods = getMethods();
-		getFactory().Change().onListDelete(this, EXECUTABLE, this.typeMembers, new ArrayList(allMethods));
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXECUTABLE, this.typeMembers, new ArrayList(allMethods));
 		typeMembers.removeAll(allMethods);
 		if (methods == null || methods.isEmpty()) {
 			return (C) this;
@@ -927,7 +927,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (this.interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.interfaces = new QualifiedNameBasedSortedSet<>();
 		}
-		getFactory().Change().onSetDeleteAll(this, INTERFACE, this.interfaces, new HashSet<>(this.interfaces));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, INTERFACE, this.interfaces, new HashSet<>(this.interfaces));
 		this.interfaces.clear();
 		for (CtTypeReference<?> anInterface : interfaces) {
 			addSuperInterface(anInterface);
@@ -990,7 +990,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

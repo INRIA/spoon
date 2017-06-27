@@ -61,7 +61,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 			this.cases = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().Change().onListDeleteAll(this, CASE, this.cases, new ArrayList<>(this.cases));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CASE, this.cases, new ArrayList<>(this.cases));
 		this.cases.clear();
 		for (CtCase<? super S> aCase : cases) {
 			addCase(aCase);
@@ -74,7 +74,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		if (selector != null) {
 			selector.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, selector, this.expression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, selector, this.expression);
 		this.expression = selector;
 		return (T) this;
 	}
@@ -88,7 +88,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 			cases = new ArrayList<>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		c.setParent(this);
-		getFactory().Change().onListAdd(this, CASE, this.cases, c);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CASE, this.cases, c);
 		cases.add(c);
 		return (T) this;
 	}
@@ -98,7 +98,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		if (cases == CtElementImpl.<CtCase<? super S>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, CASE, cases, cases.indexOf(c), c);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CASE, cases, cases.indexOf(c), c);
 		return cases.remove(c);
 	}
 

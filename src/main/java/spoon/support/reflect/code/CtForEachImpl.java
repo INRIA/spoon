@@ -55,7 +55,7 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}
@@ -65,7 +65,7 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 		if (variable != null) {
 			variable.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, VARIABLE, variable, this.variable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, VARIABLE, variable, this.variable);
 		this.variable = variable;
 		return (T) this;
 	}

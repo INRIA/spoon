@@ -105,7 +105,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		if (this.formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			this.formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().Change().onListDeleteAll(this, TYPE_PARAMETER, this.formalCtTypeParameters, new ArrayList<>(this.formalCtTypeParameters));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_PARAMETER, this.formalCtTypeParameters, new ArrayList<>(this.formalCtTypeParameters));
 		this.formalCtTypeParameters.clear();
 		for (CtTypeParameter formalTypeParameter : formalTypeParameters) {
 			addFormalCtTypeParameter(formalTypeParameter);
@@ -118,7 +118,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		if (formalTypeParameter == null) {
 			return (C) this;
 		}
-		getFactory().Change().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
@@ -132,7 +132,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		if (!formalCtTypeParameters.contains(formalTypeParameter)) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
 		return formalCtTypeParameters.remove(formalTypeParameter);
 	}
 
@@ -149,7 +149,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -163,7 +163,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -173,7 +173,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -213,7 +213,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

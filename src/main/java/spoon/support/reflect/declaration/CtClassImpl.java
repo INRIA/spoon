@@ -117,13 +117,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 			return (C) this;
 		}
 		e.setParent(this);
-		getFactory().Change().onListAdd(this, EXECUTABLE, typeMembers, e);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, EXECUTABLE, typeMembers, e);
 		return addTypeMember(e);
 	}
 
 	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		getFactory().Change().onListDelete(this, EXECUTABLE, typeMembers, typeMembers.indexOf(e), e);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXECUTABLE, typeMembers, typeMembers.indexOf(e), e);
 		return removeTypeMember(e);
 	}
 
@@ -134,7 +134,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
-		getFactory().Change().onListDelete(this, EXECUTABLE, typeMembers, new ArrayList<>(getAnonymousExecutables()));
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXECUTABLE, typeMembers, new ArrayList<>(getAnonymousExecutables()));
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
 			this.typeMembers.removeAll(getAnonymousExecutables());
 			return (C) this;
@@ -149,7 +149,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	@Override
 	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
 		Set<CtConstructor<T>> oldConstructor = getConstructors();
-		getFactory().Change().onListDelete(this, CONSTRUCTOR, typeMembers, oldConstructor);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CONSTRUCTOR, typeMembers, oldConstructor);
 		if (constructors == null || constructors.isEmpty()) {
 			this.typeMembers.removeAll(oldConstructor);
 			return (C) this;
@@ -163,7 +163,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
-		getFactory().Change().onListAdd(this, CONSTRUCTOR, typeMembers, constructor);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CONSTRUCTOR, typeMembers, constructor);
 		return addTypeMember(constructor);
 	}
 
@@ -177,7 +177,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
 		return (C) this;
 	}

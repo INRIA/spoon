@@ -86,14 +86,14 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().Change().onObjectUpdate(this, NAME, simpleName, this.name);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.name);
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -103,7 +103,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -121,7 +121,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -136,7 +136,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -146,7 +146,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 

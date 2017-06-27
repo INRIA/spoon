@@ -39,7 +39,7 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>> ext
 		if (target != null) {
 			target.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TARGET, target, this.target);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET, target, this.target);
 		this.target = target;
 		return (C) this;
 	}

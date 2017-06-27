@@ -193,7 +193,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		} else {
 			// Add the new value.
 			expression.setParent(this);
-			getFactory().Change().onMapAdd(this, VALUE, this.elementValues, elementName, expression);
+			getFactory().getEnvironment().getModelChangeListener().onMapAdd(this, VALUE, this.elementValues, elementName, expression);
 			elementValues.put(elementName, expression);
 		}
 		return (T) this;
@@ -389,14 +389,14 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		if (annotationType != null) {
 			annotationType.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, annotationType, this.annotationType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, annotationType, this.annotationType);
 		this.annotationType = (CtTypeReference<A>) annotationType;
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtAnnotation<A>> T setElementValues(Map<String, Object> values) {
-		getFactory().Change().onMapDeleteAll(this, VALUE, this.elementValues, new HashMap<>(elementValues));
+		getFactory().getEnvironment().getModelChangeListener().onMapDeleteAll(this, VALUE, this.elementValues, new HashMap<>(elementValues));
 		this.elementValues.clear();
 		for (Entry<String, Object> e : values.entrySet()) {
 			addValue(e.getKey(), e.getValue());
@@ -406,7 +406,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public <T extends CtAnnotation<A>> T setValues(Map<String, CtExpression> values) {
-		getFactory().Change().onMapDeleteAll(this, VALUE, this.elementValues, new HashMap<>(elementValues));
+		getFactory().getEnvironment().getModelChangeListener().onMapDeleteAll(this, VALUE, this.elementValues, new HashMap<>(elementValues));
 		this.elementValues.clear();
 		for (Entry<String, CtExpression> e : values.entrySet()) {
 			addValue(e.getKey(), e.getValue());
@@ -502,7 +502,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

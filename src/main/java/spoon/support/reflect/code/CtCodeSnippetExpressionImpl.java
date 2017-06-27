@@ -43,7 +43,7 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 	}
 
 	public <C extends CtCodeSnippet> C setValue(String value) {
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, value, this.value);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
 		return (C) this;
 	}

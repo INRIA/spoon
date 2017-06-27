@@ -82,7 +82,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, type, this.returnType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.returnType);
 		this.returnType = type;
 		return (C) this;
 	}
@@ -94,7 +94,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod) {
-		getFactory().Change().onObjectUpdate(this, IS_DEFAULT, defaultMethod, this.defaultMethod);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_DEFAULT, defaultMethod, this.defaultMethod);
 		this.defaultMethod = defaultMethod;
 		return (C) this;
 	}
@@ -106,7 +106,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		getFactory().Change().onListDeleteAll(this, TYPE_PARAMETER, this.formalCtTypeParameters, new ArrayList<>(this.formalCtTypeParameters));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_PARAMETER, this.formalCtTypeParameters, new ArrayList<>(this.formalCtTypeParameters));
 		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
 			this.formalCtTypeParameters = CtElementImpl.emptyList();
 			return (C) this;
@@ -129,7 +129,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().Change().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalTypeParameter.setParent(this);
 		formalCtTypeParameters.add(formalTypeParameter);
 		return (C) this;
@@ -140,7 +140,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_PARAMETER, formalCtTypeParameters, formalCtTypeParameters.indexOf(formalTypeParameter), formalTypeParameter);
 		return formalCtTypeParameters.remove(formalTypeParameter);
 	}
 
@@ -157,7 +157,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -171,7 +171,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -181,7 +181,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -231,7 +231,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

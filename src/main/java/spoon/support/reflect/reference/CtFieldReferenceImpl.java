@@ -190,21 +190,21 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtFieldReference<T>> C setFinal(boolean fina) {
-		getFactory().Change().onObjectUpdate(this, IS_FINAL, fina, this.fina);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_FINAL, fina, this.fina);
 		this.fina = fina;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
-		getFactory().Change().onObjectUpdate(this, IS_STATIC, stat, this.stat);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_STATIC, stat, this.stat);
 		this.stat = stat;
 		return (C) this;
 	}

@@ -39,7 +39,7 @@ public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>> extends Ct
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (C) this;
 	}

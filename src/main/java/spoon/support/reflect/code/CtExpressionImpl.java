@@ -53,7 +53,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -67,7 +67,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().Change().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
 		this.typeCasts.clear();
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);
@@ -84,7 +84,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
-		getFactory().Change().onListAdd(this, CAST, this.typeCasts, type);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CAST, this.typeCasts, type);
 		typeCasts.add(type);
 		return (C) this;
 	}

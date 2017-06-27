@@ -274,7 +274,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 	@Override
 	public <T extends CtStatement> T setLabel(String label) {
-		getFactory().Change().onObjectUpdate(this, LABEL, label, this.label);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (T) this;
 	}

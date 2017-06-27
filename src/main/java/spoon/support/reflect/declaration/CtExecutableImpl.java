@@ -79,13 +79,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-			getFactory().Change().onObjectUpdate(this, BODY, body, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
-			getFactory().Change().onObjectDelete(this, BODY, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 		return (T) this;
@@ -105,7 +105,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().Change().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
 		this.parameters.clear();
 		for (CtParameter<?> p : parameters) {
 			addParameter(p);
@@ -122,7 +122,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
-		getFactory().Change().onListAdd(this, PARAMETER, this.parameters, parameter);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
 		parameters.add(parameter);
 		return (T) this;
 	}
@@ -132,7 +132,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, PARAMETER, parameters, parameters.indexOf(parameter), parameter);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, PARAMETER, parameters, parameters.indexOf(parameter), parameter);
 		return parameters.remove(parameter);
 	}
 
@@ -150,7 +150,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
-		getFactory().Change().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<Object>(this.thrownTypes));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<Object>(this.thrownTypes));
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
 			addThrownType(thrownType);
@@ -167,7 +167,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
-		getFactory().Change().onSetAdd(this, THROWN, this.thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
 		return (T) this;
 	}
@@ -177,7 +177,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, THROWN, thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, THROWN, thrownTypes, throwType);
 		return thrownTypes.remove(throwType);
 	}
 

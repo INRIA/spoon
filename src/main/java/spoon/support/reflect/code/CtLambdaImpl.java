@@ -73,7 +73,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().Change().onObjectUpdate(this, NAME, simpleName, this.simpleName);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
 		this.simpleName = simpleName;
 		return (C) this;
 	}
@@ -88,7 +88,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	public <C extends CtBodyHolder> C setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-			getFactory().Change().onObjectUpdate(this, BODY, body, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (expression != null && body != null) {
 				throw new SpoonException("A lambda can't have two bodys.");
 			}
@@ -97,7 +97,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			}
 			this.body = body;
 		} else {
-			getFactory().Change().onObjectDelete(this, BODY, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 
@@ -153,7 +153,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().Change().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
 		this.parameters.clear();
 		for (CtParameter<?> p : params) {
 			addParameter(p);
@@ -170,7 +170,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		parameter.setParent(this);
-		getFactory().Change().onListAdd(this, PARAMETER, this.parameters, parameter);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
 		parameters.add(parameter);
 		return (C) this;
 	}
@@ -180,7 +180,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, PARAMETER, parameters, parameters.indexOf(parameter), parameter);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, PARAMETER, parameters, parameters.indexOf(parameter), parameter);
 		return parameters.remove(parameter);
 	}
 
@@ -198,7 +198,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
-		getFactory().Change().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<>(this.thrownTypes));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<>(this.thrownTypes));
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
 			addThrownType(thrownType);
@@ -215,7 +215,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
-		getFactory().Change().onSetAdd(this, THROWN, this.thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
 		return (C) this;
 	}
@@ -225,7 +225,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, THROWN, thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, THROWN, thrownTypes, throwType);
 		return thrownTypes.remove(throwType);
 	}
 
@@ -254,7 +254,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			if (expression != null) {
 				expression.setParent(this);
 			}
-			getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 			this.expression = expression;
 		}
 		return (C) this;

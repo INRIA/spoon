@@ -60,7 +60,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}
@@ -79,7 +79,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			forInit = new ArrayList<>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		getFactory().Change().onListAdd(this, FOR_INIT, this.forInit, statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, FOR_INIT, this.forInit, statement);
 		forInit.add(statement);
 		return (T) this;
 	}
@@ -90,7 +90,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			this.forInit = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().Change().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
@@ -103,7 +103,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (forInit == CtElementImpl.<CtStatement>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, FOR_INIT, forInit, forInit.indexOf(statement), statement);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, FOR_INIT, forInit, forInit.indexOf(statement), statement);
 		return forInit.remove(statement);
 	}
 
@@ -121,7 +121,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			forUpdate = new ArrayList<>(FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		getFactory().Change().onListAdd(this, FOR_UPDATE, this.forUpdate, statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, FOR_UPDATE, this.forUpdate, statement);
 		forUpdate.add(statement);
 		return (T) this;
 	}
@@ -132,7 +132,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			this.forUpdate = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().Change().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);
@@ -145,7 +145,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (forUpdate == CtElementImpl.<CtStatement>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, FOR_UPDATE, forUpdate, forUpdate.indexOf(statement), statement);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, FOR_UPDATE, forUpdate, forUpdate.indexOf(statement), statement);
 		return forUpdate.remove(statement);
 	}
 

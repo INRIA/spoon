@@ -47,7 +47,7 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, THROWN, expression, this.throwExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THROWN, expression, this.throwExpression);
 		this.throwExpression = expression;
 		return (T) this;
 	}

@@ -56,13 +56,13 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-			getFactory().Change().onObjectUpdate(this, BODY, body, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
-			getFactory().Change().onObjectDelete(this, BODY, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 
@@ -74,7 +74,7 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 		if (parameter != null) {
 			parameter.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, PARAMETER, parameter, this.parameter);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, PARAMETER, parameter, this.parameter);
 		this.parameter = parameter;
 		return (T) this;
 	}

@@ -17,7 +17,6 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
-import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
@@ -156,8 +155,6 @@ public interface Factory {
 	ConstructorFactory Constructor(); // used 3 times
 
 	QueryFactory Query();
-
-	FineModelChangeListener Change();
 
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)

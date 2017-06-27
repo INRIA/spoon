@@ -49,7 +49,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 		if (asserted != null) {
 			asserted.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, CONDITION, asserted, this.asserted);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, asserted, this.asserted);
 		this.asserted = asserted;
 		return (A) this;
 	}
@@ -64,7 +64,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 		if (value != null) {
 			value.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, value, this.value);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
 		return (A) this;
 	}

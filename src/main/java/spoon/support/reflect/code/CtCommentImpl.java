@@ -47,7 +47,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setContent(String content) {
-		getFactory().Change().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
 		this.content = content;
 		return (E) this;
 	}
@@ -59,7 +59,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setCommentType(CommentType commentType) {
-		getFactory().Change().onObjectUpdate(this, TYPE, commentType, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, commentType, this.type);
 		type = commentType;
 		return (E) this;
 	}

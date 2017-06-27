@@ -94,7 +94,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().Change().onObjectUpdate(this, NAME, simpleName, this.name);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.name);
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -104,7 +104,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -118,7 +118,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			types = new ArrayList<>(CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
-		getFactory().Change().onListAdd(this, TYPE, this.types, type);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE, this.types, type);
 		types.add(type);
 		return (T) this;
 	}
@@ -128,7 +128,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (this.types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, TYPE, types, types.indexOf(ref), ref);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE, types, types.indexOf(ref), ref);
 		return types.remove(ref);
 	}
 
@@ -139,7 +139,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types) {
-		getFactory().Change().onListDeleteAll(this, TYPE, this.types, new ArrayList<>(this.types));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE, this.types, new ArrayList<>(this.types));
 		if (types == null || types.isEmpty()) {
 			this.types = CtElementImpl.emptyList();
 			return (T) this;
@@ -167,7 +167,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -181,7 +181,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -191,7 +191,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 

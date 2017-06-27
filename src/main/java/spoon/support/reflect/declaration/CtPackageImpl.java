@@ -82,7 +82,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 
 		pack.setParent(this);
-		getFactory().Change().onSetAdd(this, SUB_PACKAGE, this.packs, pack);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, SUB_PACKAGE, this.packs, pack);
 		this.packs.add(pack);
 
 		return (T) this;
@@ -120,7 +120,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (packs == CtElementImpl.<CtPackage>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, SUB_PACKAGE, packs, pack);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, SUB_PACKAGE, packs, pack);
 		return packs.remove(pack);
 	}
 
@@ -179,7 +179,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.packs = CtElementImpl.emptySet();
 			return (T) this;
 		}
-		getFactory().Change().onSetDeleteAll(this, SUB_PACKAGE, this.packs, new HashSet<>(this.packs));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, SUB_PACKAGE, this.packs, new HashSet<>(this.packs));
 		this.packs.clear();
 		for (CtPackage p : packs) {
 			addPackage(p);
@@ -193,7 +193,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.types = CtElementImpl.emptySet();
 			return (T) this;
 		}
-		getFactory().Change().onSetDeleteAll(this, TYPE, this.types, new HashSet<>(this.types));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, TYPE, this.types, new HashSet<>(this.types));
 		this.types.clear();
 		for (CtType<?> t : types) {
 			addType(t);
@@ -215,7 +215,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.types = orderedTypeSet();
 		}
 		type.setParent(this);
-		getFactory().Change().onSetAdd(this, TYPE, this.types, type);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, TYPE, this.types, type);
 		types.add(type);
 		return (T) this;
 	}
@@ -225,7 +225,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (types == CtElementImpl.<CtType<?>>emptySet()) {
 			return;
 		}
-		getFactory().Change().onSetDelete(this, TYPE, types, type);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, TYPE, types, type);
 		types.remove(type);
 	}
 
@@ -257,7 +257,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

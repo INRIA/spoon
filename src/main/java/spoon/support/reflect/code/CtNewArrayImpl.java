@@ -60,7 +60,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.dimensionExpressions = CtElementImpl.emptyList();
 			return (C) this;
 		}
-		getFactory().Change().onListDeleteAll(this, DIMENSION, this.dimensionExpressions, new ArrayList<>(this.dimensionExpressions));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, DIMENSION, this.dimensionExpressions, new ArrayList<>(this.dimensionExpressions));
 		this.dimensionExpressions.clear();
 		for (CtExpression<Integer> expr : dimensionExpressions) {
 			addDimensionExpression(expr);
@@ -77,7 +77,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			dimensionExpressions = new ArrayList<>(NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		dimension.setParent(this);
-		getFactory().Change().onListAdd(this, DIMENSION, this.dimensionExpressions, dimension);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, DIMENSION, this.dimensionExpressions, dimension);
 		dimensionExpressions.add(dimension);
 		return (C) this;
 	}
@@ -87,7 +87,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 		if (dimensionExpressions == CtElementImpl.<CtExpression<Integer>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, DIMENSION, dimensionExpressions, dimensionExpressions.indexOf(dimension), dimension);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, DIMENSION, dimensionExpressions, dimensionExpressions.indexOf(dimension), dimension);
 		return dimensionExpressions.remove(dimension);
 	}
 
@@ -97,7 +97,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.expressions = CtElementImpl.emptyList();
 			return (C) this;
 		}
-		getFactory().Change().onListDeleteAll(this, EXPRESSION, this.expressions, new ArrayList<>(this.expressions));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, EXPRESSION, this.expressions, new ArrayList<>(this.expressions));
 		this.expressions.clear();
 		for (CtExpression<?> expr : expressions) {
 			addElement(expr);
@@ -114,7 +114,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.expressions = new ArrayList<>();
 		}
 		expression.setParent(this);
-		getFactory().Change().onListAdd(this, EXPRESSION, this.expressions, expression);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, EXPRESSION, this.expressions, expression);
 		expressions.add(expression);
 		return (C) this;
 	}
@@ -124,7 +124,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 		if (expressions == CtElementImpl.<CtExpression<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, EXPRESSION, expressions, expressions.indexOf(expression), expression);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXPRESSION, expressions, expressions.indexOf(expression), expression);
 		return expressions.remove(expression);
 	}
 

@@ -45,7 +45,7 @@ public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> impleme
 		if (this.value instanceof CtElement) {
 			((CtElement) this.value).setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, value, this.value);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
 		return (C) this;
 	}

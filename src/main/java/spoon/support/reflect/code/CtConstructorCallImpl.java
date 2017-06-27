@@ -106,7 +106,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (this.arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			this.arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().Change().onListDeleteAll(this, ARGUMENT, this.arguments, new ArrayList<>(this.arguments));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ARGUMENT, this.arguments, new ArrayList<>(this.arguments));
 		this.arguments.clear();
 		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
@@ -122,7 +122,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 			arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		argument.setParent(this);
-		getFactory().Change().onListAdd(this, ARGUMENT, this.arguments, position, argument);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT, this.arguments, position, argument);
 		arguments.add(position, argument);
 		return (C) this;
 	}
@@ -137,7 +137,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			return;
 		}
-		getFactory().Change().onListDelete(this, ARGUMENT, arguments, arguments.indexOf(argument), argument);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, ARGUMENT, arguments, arguments.indexOf(argument), argument);
 		arguments.remove(argument);
 	}
 
@@ -146,14 +146,14 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (executable != null) {
 			executable.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtStatement> C setLabel(String label) {
-		getFactory().Change().onObjectUpdate(this, LABEL, label, this.label);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (C) this;
 	}

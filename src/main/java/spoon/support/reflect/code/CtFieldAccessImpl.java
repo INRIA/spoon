@@ -41,7 +41,7 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> imple
 		if (target != null) {
 			target.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TARGET, target, this.target);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET, target, this.target);
 		this.target = target;
 		return null;
 	}

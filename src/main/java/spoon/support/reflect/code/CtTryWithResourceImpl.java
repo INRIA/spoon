@@ -51,7 +51,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 			this.resources = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().Change().onListDeleteAll(this, TRY_RESOURCE, this.resources, new ArrayList<>(this.resources));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TRY_RESOURCE, this.resources, new ArrayList<>(this.resources));
 		this.resources.clear();
 		for (CtLocalVariable<?> l : resources) {
 			addResource(l);
@@ -68,7 +68,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 			resources = new ArrayList<>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
-		getFactory().Change().onListAdd(this, TRY_RESOURCE, this.resources, resource);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TRY_RESOURCE, this.resources, resource);
 		resources.add(resource);
 		return (T) this;
 	}
@@ -78,7 +78,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 		if (resources == CtElementImpl.<CtLocalVariable<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, TRY_RESOURCE, resources, resources.indexOf(resource), resource);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TRY_RESOURCE, resources, resources.indexOf(resource), resource);
 		return resources.remove(resource);
 	}
 

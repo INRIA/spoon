@@ -62,7 +62,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
 		return (C) this;
 	}

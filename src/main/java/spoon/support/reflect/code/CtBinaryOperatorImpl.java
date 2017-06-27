@@ -59,7 +59,7 @@ public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBi
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, LEFT_OPERAND, expression, this.leftHandOperand);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LEFT_OPERAND, expression, this.leftHandOperand);
 		leftHandOperand = expression;
 		return (C) this;
 	}
@@ -69,14 +69,14 @@ public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBi
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, RIGHT_OPERAND, expression, this.rightHandOperand);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, RIGHT_OPERAND, expression, this.rightHandOperand);
 		rightHandOperand = expression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtBinaryOperator<T>> C setKind(BinaryOperatorKind kind) {
-		getFactory().Change().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
 		return (C) this;
 	}

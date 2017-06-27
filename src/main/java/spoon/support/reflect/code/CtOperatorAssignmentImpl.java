@@ -42,7 +42,7 @@ public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T
 
 	@Override
 	public <C extends CtOperatorAssignment<T, A>> C setKind(BinaryOperatorKind kind) {
-		getFactory().Change().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
 		return (C) this;
 	}

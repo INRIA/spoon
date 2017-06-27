@@ -91,21 +91,21 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.operand);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.operand);
 		this.operand = expression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind) {
-		getFactory().Change().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtStatement> C setLabel(String label) {
-		getFactory().Change().onObjectUpdate(this, LABEL, label, this.label);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (C) this;
 	}

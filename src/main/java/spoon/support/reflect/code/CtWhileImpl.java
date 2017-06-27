@@ -45,7 +45,7 @@ public class CtWhileImpl extends CtLoopImpl implements CtWhile {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}

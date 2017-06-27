@@ -173,7 +173,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			this.annotations = CtElementImpl.emptyList();
 			return (E) this;
 		}
-		getFactory().Change().onListDeleteAll(this, ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
@@ -195,7 +195,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			this.annotations = new ArrayList<>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		annotation.setParent(this);
-		getFactory().Change().onListAdd(this, ANNOTATION, this.annotations, annotation);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ANNOTATION, this.annotations, annotation);
 		this.annotations.add(annotation);
 		return (E) this;
 	}
@@ -204,7 +204,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		if (this.annotations == CtElementImpl.<CtAnnotation<? extends Annotation>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, ANNOTATION, annotations, annotations.indexOf(annotation), annotation);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, ANNOTATION, annotations, annotations.indexOf(annotation), annotation);
 		return this.annotations.remove(annotation);
 	}
 
@@ -220,7 +220,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> E setPosition(SourcePosition position) {
-		getFactory().Change().onObjectUpdate(this, POSITION, position, this.position);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, POSITION, position, this.position);
 		this.position = position;
 		return (E) this;
 	}
@@ -264,7 +264,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> E setImplicit(boolean implicit) {
-		getFactory().Change().onObjectUpdate(this, IS_IMPLICIT, implicit, this.implicit);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_IMPLICIT, implicit, this.implicit);
 		this.implicit = implicit;
 		return (E) this;
 	}
@@ -437,7 +437,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			comments = new ArrayList<>(COMMENT_CONTAINER_DEFAULT_CAPACITY);
 		}
 		comment.setParent(this);
-		getFactory().Change().onListAdd(this, COMMENT, this.comments, comment);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, COMMENT, this.comments, comment);
 		comments.add(comment);
 		return (E) this;
 	}
@@ -447,7 +447,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		if (this.comments == CtElementImpl.<CtComment>emptyList()) {
 			return (E) this;
 		}
-		getFactory().Change().onListDelete(this, COMMENT, comments, comments.indexOf(comment), comment);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, COMMENT, comments, comments.indexOf(comment), comment);
 		this.comments.remove(comment);
 		return (E) this;
 	}
@@ -458,7 +458,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			this.comments = CtElementImpl.emptyList();
 			return (E) this;
 		}
-		getFactory().Change().onListDeleteAll(this, COMMENT, this.comments, new ArrayList<>(this.comments));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, COMMENT, this.comments, new ArrayList<>(this.comments));
 		this.comments.clear();
 		for (CtComment comment : comments) {
 			addComment(comment);

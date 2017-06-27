@@ -47,7 +47,7 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.returnedExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.returnedExpression);
 		this.returnedExpression = expression;
 		return (T) this;
 	}

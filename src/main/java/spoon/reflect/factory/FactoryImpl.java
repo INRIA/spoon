@@ -17,7 +17,6 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
-import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -353,13 +352,6 @@ public class FactoryImpl implements Factory, Serializable {
 		return query;
 	}
 
-	/**
-	 * The change sub-factory.
-	 */
-	@Override
-	public FineModelChangeListener Change() {
-		return getEnvironment().getModelChangeListener();
-	}
 
 	/**
 	 * A constructor that takes the parent factory

@@ -48,7 +48,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setType(TagType type) {
-		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (E) this;
 	}
@@ -60,7 +60,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setContent(String content) {
-		getFactory().Change().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
 		this.content = content;
 		return (E) this;
 	}
@@ -72,7 +72,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setParam(String param) {
-		getFactory().Change().onObjectUpdate(this, PARAMETER, param, this.param);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, PARAMETER, param, this.param);
 		this.param = param;
 		return (E) this;
 	}

@@ -55,7 +55,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 		if (block != null) {
 			block.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, BODY, block, this.block);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, block, this.block);
 		this.block = block;
 		return (T) this;
 	}
@@ -65,7 +65,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, EXPRESSION, expression, this.expression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}

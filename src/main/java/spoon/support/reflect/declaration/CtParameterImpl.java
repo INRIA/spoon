@@ -93,7 +93,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -105,7 +105,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	@Override
 	public <C extends CtParameter<T>> C setVarArgs(boolean varArgs) {
-		getFactory().Change().onObjectUpdate(this, IS_VARARGS, varArgs, this.varArgs);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_VARARGS, varArgs, this.varArgs);
 		this.varArgs = varArgs;
 		return (C) this;
 	}
@@ -123,7 +123,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
@@ -137,7 +137,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
@@ -147,7 +147,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -192,7 +192,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().Change().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

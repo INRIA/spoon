@@ -46,7 +46,7 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 		if (assignedExpression != null) {
 			assignedExpression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, DEFAULT_EXPRESSION, assignedExpression, this.defaultExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DEFAULT_EXPRESSION, assignedExpression, this.defaultExpression);
 		this.defaultExpression = assignedExpression;
 		return (C) this;
 	}

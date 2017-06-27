@@ -78,7 +78,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
-		getFactory().Change().onObjectUpdate(this, IS_UPPER, upper, this.upper);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_UPPER, upper, this.upper);
 		this.upper = upper;
 		return (T) this;
 	}
@@ -164,7 +164,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, SUPER_TYPE, superType, this.superType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;
 	}

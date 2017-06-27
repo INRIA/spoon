@@ -43,13 +43,13 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-			getFactory().Change().onObjectUpdate(this, BODY, body, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
-			getFactory().Change().onObjectDelete(this, BODY, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 		return (T) this;

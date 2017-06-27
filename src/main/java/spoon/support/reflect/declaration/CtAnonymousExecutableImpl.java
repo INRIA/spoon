@@ -52,7 +52,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getFactory().Change().onSetAdd(this, MODIFIER, this.modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (T) this;
 	}
@@ -62,7 +62,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			return false;
 		}
-		getFactory().Change().onSetDelete(this, MODIFIER, modifiers, modifier);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
 		return modifiers.remove(modifier);
 	}
 
@@ -93,7 +93,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	@Override
 	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			getFactory().Change().onSetDelete(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);

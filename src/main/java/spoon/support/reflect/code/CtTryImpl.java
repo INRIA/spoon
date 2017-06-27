@@ -64,7 +64,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 			this.catchers = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().Change().onListDeleteAll(this, CATCH, this.catchers, new ArrayList<>(this.catchers));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CATCH, this.catchers, new ArrayList<>(this.catchers));
 		this.catchers.clear();
 		for (CtCatch c : catchers) {
 			addCatcher(c);
@@ -81,7 +81,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 			catchers = new ArrayList<>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		catcher.setParent(this);
-		getFactory().Change().onListAdd(this, CATCH, this.catchers, catcher);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CATCH, this.catchers, catcher);
 		catchers.add(catcher);
 		return (T) this;
 	}
@@ -91,7 +91,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		if (catchers == CtElementImpl.<CtCatch>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, CATCH, catchers, catchers.indexOf(catcher), catcher);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CATCH, catchers, catchers.indexOf(catcher), catcher);
 		return catchers.remove(catcher);
 	}
 
@@ -105,7 +105,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		if (finalizer != null) {
 			finalizer.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, FINALIZER, finalizer, this.finalizer);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, FINALIZER, finalizer, this.finalizer);
 		this.finalizer = finalizer;
 		return (T) this;
 	}
@@ -119,13 +119,13 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
-			getFactory().Change().onObjectUpdate(this, BODY, body, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
-			getFactory().Change().onObjectDelete(this, BODY, this.body);
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 

@@ -75,7 +75,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		}
 		if (!enumValues.contains(enumValue)) {
 			enumValue.setParent(this);
-			getFactory().Change().onListAdd(this, VALUE, this.enumValues, enumValue);
+			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
 		}
 
@@ -88,7 +88,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
 			return false;
 		}
-		getFactory().Change().onListDelete(this, VALUE, enumValues, enumValues.indexOf(enumValue), enumValue);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, VALUE, enumValues, enumValues.indexOf(enumValue), enumValue);
 		return enumValues.remove(enumValue);
 	}
 
@@ -109,7 +109,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
-		getFactory().Change().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
 		if (enumValues == null || enumValues.isEmpty()) {
 			this.enumValues = emptyList();
 			return (C) this;

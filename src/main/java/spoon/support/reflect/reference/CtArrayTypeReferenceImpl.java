@@ -61,7 +61,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 		if (componentType != null) {
 			componentType.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, componentType, this.componentType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, componentType, this.componentType);
 		this.componentType = componentType;
 		return (C) this;
 	}

@@ -50,7 +50,7 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 		if (variable != null) {
 			variable.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, VARIABLE, variable, this.variable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, VARIABLE, variable, this.variable);
 		this.variable = variable;
 		return (C) this;
 	}

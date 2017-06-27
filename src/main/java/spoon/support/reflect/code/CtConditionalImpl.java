@@ -63,7 +63,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		if (elseExpression != null) {
 			elseExpression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, ELSE, elseExpression, this.elseExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseExpression, this.elseExpression);
 		this.elseExpression = elseExpression;
 		return (C) this;
 	}
@@ -73,7 +73,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		if (condition != null) {
 			condition.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, CONDITION, condition, this.condition);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
 		return (C) this;
 	}
@@ -83,7 +83,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		if (thenExpression != null) {
 			thenExpression.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, THEN, thenExpression, this.thenExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenExpression, this.thenExpression);
 		this.thenExpression = thenExpression;
 		return (C) this;
 	}

@@ -68,7 +68,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (condition != null) {
 			condition.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, CONDITION, condition, this.condition);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
 		return (T) this;
 	}
@@ -78,7 +78,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (elseStatement != null) {
 			elseStatement.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, ELSE, elseStatement, this.elseStatement);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseStatement, this.elseStatement);
 		this.elseStatement = elseStatement;
 		return (T) this;
 	}
@@ -89,7 +89,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (thenStatement != null) {
 			thenStatement.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, THEN, thenStatement, this.thenStatement);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenStatement, this.thenStatement);
 		this.thenStatement = thenStatement;
 		return (T) this;
 	}

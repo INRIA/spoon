@@ -46,7 +46,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 		if (accessedType != null) {
 			accessedType.setParent(this);
 		}
-		getFactory().Change().onObjectUpdate(this, TYPE, accessedType, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, accessedType, this.type);
 		type = accessedType;
 		return (C) this;
 	}
