@@ -25,66 +25,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * is the listener that creates the action on the model. This default listener does nothing.
- */
-public class FineModelChangeListener {
 
-	public void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue) {
-	}
+public interface FineModelChangeListener {
+	void onObjectUpdate(CtElement currentElement, CtRole role, CtElement newValue, CtElement oldValue);
 
-	public void onObjectUpdate(CtElement currentElement, CtRole role, Object newValue, Object oldValue) {
-	}
+	void onObjectUpdate(CtElement currentElement, CtRole role, Object newValue, Object oldValue);
 
-	public void onObjectDelete(CtElement currentElement, CtRole role, CtElement oldValue) {
-	}
+	void onObjectDelete(CtElement currentElement, CtRole role, CtElement oldValue);
 
-	public void onListAdd(CtElement currentElement, CtRole role, List field, CtElement newValue) {
-	}
+	void onListAdd(CtElement currentElement, CtRole role, List field, CtElement newValue);
 
-	public void onListAdd(CtElement currentElement, CtRole role, List field, int index, CtElement newValue) {
-	}
+	void onListAdd(CtElement currentElement, CtRole role, List field, int index, CtElement newValue);
 
+	void onListDelete(CtElement currentElement, CtRole role, List field, Collection<? extends CtElement> oldValue);
 
-	public void onListDelete(CtElement currentElement, CtRole role, List field, Collection<? extends CtElement> oldValue) {
-		for (CtElement ctElement : oldValue) {
-			onListDelete(currentElement, role, field, field.indexOf(ctElement), ctElement);
-		}
-	}
+	void onListDelete(CtElement currentElement, CtRole role, List field, int index, CtElement oldValue);
 
-	public void onListDelete(CtElement currentElement, CtRole role, List field, int index, CtElement oldValue) {
-	}
+	void onListDeleteAll(CtElement currentElement, CtRole role, List field, List oldValue);
 
+	<K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue);
 
-	public void onListDeleteAll(CtElement currentElement, CtRole role, List field, List oldValue) {
-	}
+	<K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue);
 
+	void onSetAdd(CtElement currentElement, CtRole role, Set field, CtElement newValue);
 
-	public <K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue) {
-	}
+	void onSetAdd(CtElement currentElement, CtRole role, Set field, ModifierKind newValue);
 
-	public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue) {
-	}
+	void onSetDelete(CtElement currentElement, CtRole role, Set field, CtElement oldValue);
 
-	public void onSetAdd(CtElement currentElement, CtRole role, Set field, CtElement newValue) {
-	}
+	void onSetDelete(CtElement currentElement, CtRole role, Set field, Collection<ModifierKind> oldValue);
 
-	public void onSetAdd(CtElement currentElement, CtRole role, Set field, ModifierKind newValue) {
-	}
+	void onSetDelete(CtElement currentElement, CtRole role, Set field, ModifierKind oldValue);
 
-
-	public void onSetDelete(CtElement currentElement, CtRole role, Set field, CtElement oldValue) {
-	}
-
-	public void onSetDelete(CtElement currentElement, CtRole role, Set field, Collection<ModifierKind> oldValue) {
-		for (ModifierKind modifierKind : oldValue) {
-			onSetDelete(currentElement, role, field, modifierKind);
-		}
-	}
-
-	public void onSetDelete(CtElement currentElement, CtRole role, Set field, ModifierKind oldValue) {
-	}
-
-	public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue) {
-	}
+	void onSetDeleteAll(CtElement currentElement, CtRole role, Set field, Set oldValue);
 }

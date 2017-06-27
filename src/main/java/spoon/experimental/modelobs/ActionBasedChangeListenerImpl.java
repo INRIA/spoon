@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +37,7 @@ import java.util.Set;
 /**
  * This listener will propagate the change to the listener
  */
-public abstract class ActionBasedChangeListenerImpl extends FineModelChangeListener implements ActionBasedChangeListener {
+public abstract class ActionBasedChangeListenerImpl implements ActionBasedChangeListener, FineModelChangeListener {
 
 	private void propagateModelChange(final Action action) {
 		this.onAction(action);
@@ -77,6 +78,13 @@ public abstract class ActionBasedChangeListenerImpl extends FineModelChangeListe
 	}
 
 	@Override
+	public void onListDelete(CtElement currentElement, CtRole role, List field, Collection<? extends CtElement> oldValue) {
+		for (CtElement ctElement : oldValue) {
+			onListDelete(currentElement, role, field, field.indexOf(ctElement), ctElement);
+		}
+	}
+
+	@Override
 	public void onListDelete(CtElement currentElement, CtRole role, List field, int index, CtElement oldValue) {
 		propagateModelChange(new DeleteAction<>(new ListContext(currentElement, role, field, index), oldValue));
 	}
@@ -109,6 +117,13 @@ public abstract class ActionBasedChangeListenerImpl extends FineModelChangeListe
 	@Override
 	public void onSetDelete(CtElement currentElement, CtRole role, Set field, CtElement oldValue) {
 		propagateModelChange(new DeleteAction<>(new SetContext(currentElement, role, field), oldValue));
+	}
+
+	@Override
+	public void onSetDelete(CtElement currentElement, CtRole role, Set field, Collection<ModifierKind> oldValue) {
+		for (ModifierKind modifierKind : oldValue) {
+			onSetDelete(currentElement, role, field, modifierKind);
+		}
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.experimental.modelobs.EmptyModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -86,7 +87,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks;
 
-	private FineModelChangeListener modelChangeListener = new FineModelChangeListener();
+	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
