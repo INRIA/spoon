@@ -98,6 +98,7 @@ public abstract class Parameters {
 			if (Modifier.isFinal(rtField.getModifiers())) {
 				Map<String, Object> m = finals.get(template);
 				if (m == null) {
+					//BUG: parameters marked as final will always return null, even if they have a value!
 					return null;
 				}
 				return m.get(parameterName);
@@ -268,6 +269,7 @@ public abstract class Parameters {
 			//the reference to this is not template parameter
 			return false;
 		}
+		//BUG: it returns true only for parameters of type TemplateParameter, because interface TemplateParameter can never be a subtype of something else
 		if (getTemplateParameterType(ref.getFactory()).isSubtypeOf(ref.getType())) {
 			//the type of template field is or extends from class TemplateParameter.
 			return true;

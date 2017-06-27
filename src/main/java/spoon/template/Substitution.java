@@ -438,6 +438,7 @@ public abstract class Substitution {
 		if (newConstrutor.getParameters().isEmpty()) {
 			CtConstructor<?> c = targetClass.getConstructor();
 			if (c != null && c.isImplicit()) {
+				//BUG: it removes nothing, because temporary collection is returned
 				targetClass.getConstructors().remove(c);
 			}
 		}
