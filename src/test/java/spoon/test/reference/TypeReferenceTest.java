@@ -429,7 +429,7 @@ public class TypeReferenceTest {
 		final CtMethod run = anonymousClass.getMethod("run");
 		assertNotNull(run);
 		assertEquals(1, run.getAnnotations().size());
-		assertEquals("@java.lang.Override" + System.lineSeparator(), run.getAnnotations().get(0).toString());
+		assertEquals("@java.lang.Override", run.getAnnotations().get(0).toString());
 	}
 
 	@Test
