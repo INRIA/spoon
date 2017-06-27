@@ -47,7 +47,7 @@ public interface CtReference extends CtElement {
 
 	/**
 	 * Returns the declaration that corresponds to the referenced element only
-	 * if the declaration is in the analied source files.
+	 * if the declaration is in the analyzed source files.
 	 * It is strongly advised to use the more robust {@link CtTypeReference#getTypeDeclaration()} and {@link CtExecutableReference#getExecutableDeclaration()} that never return null.
 	 * @return referenced element or null if element is not in the source path (aka input resource).
 	 */
