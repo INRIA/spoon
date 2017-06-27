@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -32,7 +33,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.UnsettableProperty;
 import spoon.support.visitor.GenericTypeAdapter;
 
@@ -40,6 +40,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypeParameter {
 	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
@@ -60,6 +62,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
 		return (C) this;
 	}

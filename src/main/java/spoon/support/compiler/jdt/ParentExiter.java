@@ -771,9 +771,9 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtPackage(CtPackage ctPackage) {
 		if (child instanceof CtType) {
 			if (ctPackage.getTypes().contains(child)) {
-				ctPackage.getTypes().remove(child);
+				ctPackage.removeType((CtType<?>) child);
 			}
-			ctPackage.getTypes().add((CtType<?>) child);
+			ctPackage.addType((CtType<?>) child);
 			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
 				child.getPosition().getCompilationUnit().getDeclaredTypes().add((CtType<?>) child);
 			}

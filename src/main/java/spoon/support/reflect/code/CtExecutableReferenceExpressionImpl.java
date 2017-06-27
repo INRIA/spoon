@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+
+import static spoon.reflect.path.CtRole.EXECUTABLE;
 
 public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> extends CtTargetedExpressionImpl<T, E> implements CtExecutableReferenceExpression<T, E> {
 	@MetamodelPropertyField(role = CtRole.EXECUTABLE)
@@ -42,6 +44,7 @@ public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> e
 		if (executable != null) {
 			executable.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

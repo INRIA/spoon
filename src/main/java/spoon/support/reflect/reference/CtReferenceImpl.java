@@ -26,6 +26,8 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 
+import static spoon.reflect.path.CtRole.NAME;
+
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -46,9 +48,14 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
+		if (factory == null) {
+			this.simplename = simplename;
+			return (T) this;
+		}
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, this.simplename);
 		this.simplename = simplename;
 		return (T) this;
 	}

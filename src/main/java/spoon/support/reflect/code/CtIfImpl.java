@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -23,7 +24,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+
+import static spoon.reflect.path.CtRole.CONDITION;
+import static spoon.reflect.path.CtRole.ELSE;
+import static spoon.reflect.path.CtRole.THEN;
 
 public class CtIfImpl extends CtStatementImpl implements CtIf {
 	private static final long serialVersionUID = 1L;
@@ -64,6 +68,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (condition != null) {
 			condition.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
 		return (T) this;
 	}
@@ -73,6 +78,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (elseStatement != null) {
 			elseStatement.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseStatement, this.elseStatement);
 		this.elseStatement = elseStatement;
 		return (T) this;
 	}
@@ -83,6 +89,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		if (thenStatement != null) {
 			thenStatement.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenStatement, this.thenStatement);
 		this.thenStatement = thenStatement;
 		return (T) this;
 	}

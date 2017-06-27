@@ -21,8 +21,6 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
-import java.util.Collections;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -156,7 +154,6 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
-import spoon.support.comparator.CtLineElementComparator;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -681,14 +678,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
-		Collections.sort(((CtType) context.stack.peek().element).getTypeMembers(), new CtLineElementComparator());
 		context.exit(localTypeDeclaration);
 	}
 
 	@Override
 	public void endVisit(TypeDeclaration memberTypeDeclaration, ClassScope scope) {
 		while (!context.stack.isEmpty() && context.stack.peek().node == memberTypeDeclaration) {
-			Collections.sort(((CtType) context.stack.peek().element).getTypeMembers(), new CtLineElementComparator());
 			context.exit(memberTypeDeclaration);
 		}
 	}
@@ -696,9 +691,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		while (!context.stack.isEmpty() && context.stack.peek().node == typeDeclaration) {
-			if (context.stack.peek().element instanceof CtType) {
-				Collections.sort(((CtType) context.stack.peek().element).getTypeMembers(), new CtLineElementComparator());
-			}
 			context.exit(typeDeclaration);
 		}
 	}

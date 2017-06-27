@@ -16,6 +16,8 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -25,6 +27,7 @@ import spoon.support.SpoonClassNotFoundException;
 
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.PACKAGE_REF;
 
 /**
  * This interface defines a reference to a
@@ -96,6 +99,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
+	@PropertyGetter(role = PACKAGE_REF)
 	CtPackageReference getPackage();
 
 	/**
@@ -119,6 +123,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Sets the reference to the declaring package.
 	 */
+	@PropertySetter(role = PACKAGE_REF)
 	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
 
 	/**

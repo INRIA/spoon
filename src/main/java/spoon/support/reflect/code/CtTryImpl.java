@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCatch;
@@ -25,13 +26,15 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_CASES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.CATCH;
+import static spoon.reflect.path.CtRole.FINALIZER;
 
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
@@ -61,6 +64,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 			this.catchers = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CATCH, this.catchers, new ArrayList<>(this.catchers));
 		this.catchers.clear();
 		for (CtCatch c : catchers) {
 			addCatcher(c);
@@ -77,13 +81,18 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 			catchers = new ArrayList<>(CATCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		catcher.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CATCH, this.catchers, catcher);
 		catchers.add(catcher);
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeCatcher(CtCatch catcher) {
-		return catchers != CtElementImpl.<CtCatch>emptyList() && catchers.remove(catcher);
+		if (catchers == CtElementImpl.<CtCatch>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CATCH, catchers, catchers.indexOf(catcher), catcher);
+		return catchers.remove(catcher);
 	}
 
 	@Override
@@ -96,6 +105,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 		if (finalizer != null) {
 			finalizer.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, FINALIZER, finalizer, this.finalizer);
 		this.finalizer = finalizer;
 		return (T) this;
 	}
@@ -109,11 +119,13 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 

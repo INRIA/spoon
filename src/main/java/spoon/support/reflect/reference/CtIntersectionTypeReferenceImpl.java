@@ -16,13 +16,17 @@
  */
 package spoon.support.reflect.reference;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static spoon.reflect.path.CtRole.BOUND;
+
 
 public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtIntersectionTypeReference<T> {
 	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
@@ -34,7 +38,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public List<CtTypeReference<?>> getBounds() {
-		return bounds;
+		return Collections.unmodifiableList(bounds);
 	}
 
 	@Override
@@ -46,6 +50,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.bounds = new ArrayList<>();
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, BOUND, this.bounds, new ArrayList<>(this.bounds));
 		this.bounds.clear();
 		for (CtTypeReference<?> bound : bounds) {
 			addBound(bound);
@@ -63,6 +68,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		}
 		if (!bounds.contains(bound)) {
 			bound.setParent(this);
+			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, BOUND, this.bounds, bound);
 			bounds.add(bound);
 		}
 		return (C) this;
@@ -70,7 +76,11 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		return bounds != CtElementImpl.<CtTypeReference<?>>emptyList() && bounds.remove(bound);
+		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, BOUND, bounds, bounds.indexOf(bound), bound);
+		return bounds.remove(bound);
 	}
 
 	@Override

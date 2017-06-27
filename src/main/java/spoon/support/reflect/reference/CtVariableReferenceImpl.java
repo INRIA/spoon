@@ -26,6 +26,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Collections;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.TYPE;
+
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl implements CtVariableReference<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -50,6 +52,7 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 		if (type != null) {
 			type.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}

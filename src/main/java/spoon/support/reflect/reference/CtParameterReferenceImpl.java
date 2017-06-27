@@ -26,6 +26,8 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.util.List;
 
+import static spoon.reflect.path.CtRole.EXECUTABLE;
+
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -97,6 +99,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 		if (executable != null) {
 			executable.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

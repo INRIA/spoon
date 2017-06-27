@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 
 public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implements CtWildcardReference {
 	@Override
@@ -32,6 +33,7 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	}
 
 	@Override
+	@UnsettableProperty
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		return (T) this;
 	}
