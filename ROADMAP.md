@@ -5,9 +5,6 @@ Spoon Roadmap
 
 Short-term, long term and crazy ideas about Spoon
 
-version of 03/09/2015
-
-
 * Model
     * support for analyzing bound vs unbound type references (`List<T>` vs `List<String>`) 
     * build model of binary code using a decompiler 
@@ -15,7 +12,6 @@ version of 03/09/2015
     * Add an embedded DSL / builder mechanism (see https://github.com/INRIA/spoon/pull/741) 
 * Transformations:
     * Keep original when printing after transformation
-        * inline comments
         * indentation and formatting   
     * sniper mode (only rewrites the changed nodes)
     * Transactional transformations (rollback if transfo fails)
@@ -38,4 +34,4 @@ version of 03/09/2015
         * with lambda
 * Write spoon processors, compile them to ASM transformations on bytecode
 * Spoonifyier: give a snippet as input and produce as output the Spoon code that would create this snippet 
-
+* From Github: see <https://github.com/INRIA/spoon/issues?q=is%3Aopen+is%3Aissue+label%3Afeature>
