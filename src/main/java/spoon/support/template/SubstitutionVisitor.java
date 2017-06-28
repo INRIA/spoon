@@ -114,6 +114,9 @@ public class SubstitutionVisitor extends CtScanner {
 					List<? extends CtNamedElement> values = getParameterValueAsListOfClones(element.getClass(), value);
 					throw context.replace(element, values);
 				}
+			} else {
+				//try to substitute substring of the name
+				element.setSimpleName(context.substituteName(element.getSimpleName()));
 			}
 			super.scanCtNamedElement(element);
 		}
@@ -153,6 +156,9 @@ public class SubstitutionVisitor extends CtScanner {
 					}
 				}
 
+			} else {
+				//try to substitute substring of the name
+				reference.setSimpleName(context.substituteName(reference.getSimpleName()));
 			}
 			super.scanCtReference(reference);
 		}
