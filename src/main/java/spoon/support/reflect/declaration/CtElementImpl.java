@@ -25,6 +25,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -37,6 +38,8 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;
@@ -70,6 +73,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	private static final long serialVersionUID = 1L;
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
+	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(),new StandardEnvironment());
+
 
 	public static <T> List<T> emptyList() {
 		return EmptyClearableList.instance();
@@ -379,6 +384,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public Factory getFactory() {
+		if (this.factory == null) {
+			return DEFAULT_FACTORY;
+		}
 		return factory;
 	}
 
