@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
@@ -24,13 +25,16 @@ import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.ASSIGNED;
+import static spoon.reflect.path.CtRole.ASSIGNMENT;
+import static spoon.reflect.path.CtRole.CAST;
+import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements CtAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
@@ -77,6 +81,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		if (assigned != null) {
 			assigned.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ASSIGNED, assigned, this.assigned);
 		this.assigned = assigned;
 		return (C) this;
 	}
@@ -86,6 +91,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		if (assignment != null) {
 			assignment.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ASSIGNMENT, assignment, this.assignment);
 		this.assignment = assignment;
 		return (C) this;
 	}
@@ -95,6 +101,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		if (type != null) {
 			type.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -108,6 +115,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
 		this.typeCasts.clear();
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);
@@ -124,6 +132,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CAST, typeCasts, type);
 		typeCasts.add(type);
 		return (C) this;
 	}

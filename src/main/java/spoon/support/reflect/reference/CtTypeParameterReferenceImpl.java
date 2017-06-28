@@ -34,6 +34,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
+import static spoon.reflect.path.CtRole.IS_UPPER;
+
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
@@ -75,6 +78,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_UPPER, upper, this.upper);
 		this.upper = upper;
 		return (T) this;
 	}
@@ -114,6 +118,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@UnsettableProperty
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		return false;
 	}
@@ -159,6 +164,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;
 	}

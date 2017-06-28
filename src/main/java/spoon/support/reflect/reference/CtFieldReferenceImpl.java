@@ -32,6 +32,10 @@ import java.lang.reflect.Member;
 import java.util.Collections;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.IS_FINAL;
+import static spoon.reflect.path.CtRole.IS_STATIC;
+import static spoon.reflect.path.CtRole.TYPE;
+
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -186,18 +190,21 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
 
 	@Override
-	public <C extends CtFieldReference<T>> C setFinal(boolean b) {
-		fina = b;
+	public <C extends CtFieldReference<T>> C setFinal(boolean fina) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_FINAL, fina, this.fina);
+		this.fina = fina;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_STATIC, stat, this.stat);
 		this.stat = stat;
 		return (C) this;
 	}

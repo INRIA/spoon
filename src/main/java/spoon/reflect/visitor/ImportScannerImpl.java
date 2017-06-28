@@ -402,11 +402,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private boolean isInCollisionWithLocalMethod(CtExecutableReference ref) {
 		CtType<?> typeDecl = ref.getParent(CtType.class);
 
-		String methodName = ref.getSimpleName();
+		if (typeDecl != null) {
+			String methodName = ref.getSimpleName();
 
-		for (CtMethod<?> method : typeDecl.getAllMethods()) {
-			if (method.getSimpleName().equals(methodName)) {
-				return true;
+			for (CtMethod<?> method : typeDecl.getAllMethods()) {
+				if (method.getSimpleName().equals(methodName)) {
+					return true;
+				}
 			}
 		}
 		return false;

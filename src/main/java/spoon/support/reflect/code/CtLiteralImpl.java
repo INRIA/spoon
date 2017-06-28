@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> implements CtLiteral<T> {
 	private static final long serialVersionUID = 1L;
@@ -40,10 +42,11 @@ public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> impleme
 
 	@Override
 	public <C extends CtLiteral<T>> C setValue(T value) {
-		this.value = value;
 		if (this.value instanceof CtElement) {
 			((CtElement) this.value).setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
+		this.value = value;
 		return (C) this;
 	}
 

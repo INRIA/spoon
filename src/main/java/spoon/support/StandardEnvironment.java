@@ -24,6 +24,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.experimental.modelobs.EmptyModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -34,6 +35,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 
@@ -84,6 +86,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean shouldCompile = false;
 
 	private boolean skipSelfChecks;
+
+	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -479,5 +483,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public String getBinaryOutputDirectory() {
 		return binaryOutputDirectory;
+	}
+
+	@Override
+	public FineModelChangeListener getModelChangeListener() {
+		return modelChangeListener;
+	}
+
+	@Override
+	public void setModelChangeListener(FineModelChangeListener modelChangeListener) {
+		this.modelChangeListener = modelChangeListener;
 	}
 }

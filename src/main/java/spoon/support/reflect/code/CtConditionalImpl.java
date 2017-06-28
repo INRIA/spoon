@@ -16,11 +16,15 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+
+import static spoon.reflect.path.CtRole.CONDITION;
+import static spoon.reflect.path.CtRole.ELSE;
+import static spoon.reflect.path.CtRole.THEN;
 
 public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtConditional<T> {
 	private static final long serialVersionUID = 1L;
@@ -59,6 +63,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		if (elseExpression != null) {
 			elseExpression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseExpression, this.elseExpression);
 		this.elseExpression = elseExpression;
 		return (C) this;
 	}
@@ -68,6 +73,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		if (condition != null) {
 			condition.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
 		return (C) this;
 	}
@@ -77,6 +83,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 		if (thenExpression != null) {
 			thenExpression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenExpression, this.thenExpression);
 		this.thenExpression = thenExpression;
 		return (C) this;
 	}

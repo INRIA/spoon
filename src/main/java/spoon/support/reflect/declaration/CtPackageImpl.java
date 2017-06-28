@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
@@ -24,10 +25,14 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import static spoon.reflect.path.CtRole.IS_SHADOW;
+import static spoon.reflect.path.CtRole.SUB_PACKAGE;
+import static spoon.reflect.path.CtRole.TYPE;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
@@ -77,6 +82,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 
 		pack.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, SUB_PACKAGE, this.packs, pack);
 		this.packs.add(pack);
 
 		return (T) this;
@@ -111,6 +117,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean removePackage(CtPackage pack) {
+		if (packs == CtElementImpl.<CtPackage>emptySet()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, SUB_PACKAGE, packs, pack);
 		return packs.remove(pack);
 	}
 
@@ -169,6 +179,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.packs = CtElementImpl.emptySet();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, SUB_PACKAGE, this.packs, new HashSet<>(this.packs));
 		this.packs.clear();
 		for (CtPackage p : packs) {
 			addPackage(p);
@@ -182,6 +193,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.types = CtElementImpl.emptySet();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, TYPE, this.types, new HashSet<>(this.types));
 		this.types.clear();
 		for (CtType<?> t : types) {
 			addType(t);
@@ -203,12 +215,17 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.types = orderedTypeSet();
 		}
 		type.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, TYPE, this.types, type);
 		types.add(type);
 		return (T) this;
 	}
 
 	@Override
 	public void removeType(CtType<?> type) {
+		if (types == CtElementImpl.<CtType<?>>emptySet()) {
+			return;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, TYPE, types, type);
 		types.remove(type);
 	}
 
@@ -240,6 +257,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

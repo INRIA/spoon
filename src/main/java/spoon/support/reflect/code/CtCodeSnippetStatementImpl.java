@@ -16,14 +16,16 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCodeSnippetStatement {
 
@@ -41,6 +43,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 	}
 
 	public <C extends CtCodeSnippet> C setValue(String value) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
 		return (C) this;
 	}

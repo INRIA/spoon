@@ -16,18 +16,20 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.CASE;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
@@ -59,6 +61,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 			this.cases = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CASE, this.cases, new ArrayList<>(this.cases));
 		this.cases.clear();
 		for (CtCase<? super S> aCase : cases) {
 			addCase(aCase);
@@ -71,6 +74,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		if (selector != null) {
 			selector.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, selector, this.expression);
 		this.expression = selector;
 		return (T) this;
 	}
@@ -84,13 +88,18 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 			cases = new ArrayList<>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		c.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CASE, this.cases, c);
 		cases.add(c);
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeCase(CtCase<? super S> c) {
-		return cases != CtElementImpl.<CtCase<? super S>>emptyList() && cases.remove(c);
+		if (cases == CtElementImpl.<CtCase<? super S>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CASE, cases, cases.indexOf(c), c);
+		return cases.remove(c);
 	}
 
 	@Override

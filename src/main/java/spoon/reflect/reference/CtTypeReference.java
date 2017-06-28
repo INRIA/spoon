@@ -16,7 +16,8 @@
  */
 package spoon.reflect.reference;
 
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -26,6 +27,7 @@ import spoon.support.SpoonClassNotFoundException;
 
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.PACKAGE_REF;
 
 /**
  * This interface defines a reference to a
@@ -61,9 +63,10 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	Class<T> getActualClass();
 
 	/**
-	 * Returns the {@link CtElement}, a {@link CtType}, that corresponds to the
+	 * Returns the {@link CtType}, that corresponds to the
 	 * reference or <code>null</code> if the type declaration is not in the
 	 * analyzed source files,
+	 *
 	 * {@link #getTypeDeclaration()} is a newer and better alternative that never returns null.
 	 *
 	 * @return the referenced element or <code>null</code> if the type
@@ -75,7 +78,8 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Returns the {@link CtType} that corresponds to the reference even if the
 	 * type isn't in the Spoon source path  (in this case, the Spoon elements are
-	 * built with runtime reflection)
+	 * built with runtime reflection, and the resulting CtType is called a "shadow" class,
+	 * see {@link CtShadowable#isShadow()}).
 	 *
 	 * @return the type declaration that corresponds to the reference.
 	 */
@@ -95,6 +99,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the declaring package or null if this if a inner class
 	 */
+	@PropertyGetter(role = PACKAGE_REF)
 	CtPackageReference getPackage();
 
 	/**
@@ -118,6 +123,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	/**
 	 * Sets the reference to the declaring package.
 	 */
+	@PropertySetter(role = PACKAGE_REF)
 	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
 
 	/**

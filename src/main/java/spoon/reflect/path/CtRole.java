@@ -24,16 +24,17 @@ public enum CtRole {
 	TYPE,
 	BODY,
 	IS_SHADOW,
-	//BOUND, // in reference only
-	//IS_FINAL, // in reference only
-	//IS_STATIC, // in reference only
-	//IS_UPPER, // in reference only
+	BOUND, // in reference only
+	IS_FINAL, // in reference only
+	IS_STATIC, // in reference only
+	IS_UPPER, // in reference only
 	IS_IMPLICIT,
 	IS_DEFAULT,
 	IS_VARARGS,
 	DEFAULT_EXPRESSION,
 	THEN,
 	ELSE,
+	PACKAGE_REF,
 	SUB_PACKAGE,
 	CONDITION,
 	RIGHT_OPERAND,

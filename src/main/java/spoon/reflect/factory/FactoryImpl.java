@@ -352,6 +352,7 @@ public class FactoryImpl implements Factory, Serializable {
 		return query;
 	}
 
+
 	/**
 	 * A constructor that takes the parent factory
 	 */

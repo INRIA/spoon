@@ -16,13 +16,15 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+
+import static spoon.reflect.path.CtRole.THROWN;
 
 public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 	private static final long serialVersionUID = 1L;
@@ -45,6 +47,7 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THROWN, expression, this.throwExpression);
 		this.throwExpression = expression;
 		return (T) this;
 	}

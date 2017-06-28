@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.annotations.MetamodelPropertyField;
+
+import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationMethod}.
@@ -44,6 +46,7 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 		if (assignedExpression != null) {
 			assignedExpression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DEFAULT_EXPRESSION, assignedExpression, this.defaultExpression);
 		this.defaultExpression = assignedExpression;
 		return (C) this;
 	}
