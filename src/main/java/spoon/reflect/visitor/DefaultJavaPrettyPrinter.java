@@ -167,6 +167,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String BLOCK_COMMENT_START = "/* ";
 
 	/**
+	 * RegExp which matches all possible line separators
+	 */
+	private static final String LINE_SEPARATORS_RE = "\\n\\r|\\n|\\r";
+
+	/**
 	 * The printing context.
 	 */
 	public PrintingContext context = new PrintingContext();
@@ -860,7 +865,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(docTag.getParam()).writeln().writeTabs();
 		}
 
-		String[] tagLines = docTag.getContent().split(LINE_SEPARATOR);
+		String[] tagLines = docTag.getContent().split(LINE_SEPARATORS_RE);
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
 			if (i > 0 || docTag.getType().hasParam()) {
@@ -898,7 +903,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.write(content);
 				break;
 			default:
-				String[] lines = content.split(LINE_SEPARATOR);
+				String[] lines = content.split(LINE_SEPARATORS_RE);
 				for (int i = 0; i < lines.length; i++) {
 					String com = lines[i];
 					if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
