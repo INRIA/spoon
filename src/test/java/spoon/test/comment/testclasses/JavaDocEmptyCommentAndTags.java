@@ -1,7 +1,7 @@
 package spoon.test.comment.testclasses;
 
 /**
- * @category there is tag, but there is no comment
+ * @author there is tag, but there is no comment
  */
 public class JavaDocEmptyCommentAndTags {
 
