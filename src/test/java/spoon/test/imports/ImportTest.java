@@ -22,6 +22,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -56,6 +57,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -1117,4 +1119,45 @@ public class ImportTest {
 		canBeBuilt(outputDir, 3);
 	}
 
+	@Test
+	public void testSortingOfImports() {
+		// contract: imports are sorted alphabetically
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned";
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(DefaultJavaPrettyPrinter.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		StringTokenizer st = new StringTokenizer(output, System.getProperty("line.separator"));
+		String lastImport = null;
+		int countOfImports = 0;
+		while(st.hasMoreTokens()) {
+			String line = st.nextToken();
+			if(line.startsWith("import")) {
+				countOfImports++;
+				if(lastImport!=null) {
+					//check that next import is alphabetically higher then last import
+					assertTrue(lastImport.compareTo(line)<0);
+				}
+				lastImport = line;
+			} else {
+				if(lastImport!=null) {
+					//there are no more imports. Finish
+					break;
+				}
+				//no import found yet. Continue with next line
+			}
+		}
+		assertTrue(countOfImports>10);
+	}
 }
