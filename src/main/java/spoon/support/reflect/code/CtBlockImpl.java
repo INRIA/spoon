@@ -81,8 +81,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
-			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, 0, statement);
-			this.statements.add(0, statement);
+			this.addStatement(0, statement);
 		}
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
@@ -105,8 +104,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, 0, statement);
-		this.statements.add(0, statement);
+		this.addStatement(0, statement);
+
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
@@ -176,13 +175,18 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int index, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, this.statements.size(), statement);
-		this.statements.add(statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, index, statement);
+		this.statements.add(index, statement);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
