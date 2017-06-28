@@ -110,10 +110,50 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		CompilerOptions compilerOptions = new CompilerOptions(this.options);
 		compilerOptions.parseLiteralExpressionsAsConstants = false;
 
-		IErrorHandlingPolicy errorHandlingPolicy = getHandlingPolicy();
+		IErrorHandlingPolicy errorHandlingPolicy;
 
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
-			errorHandlingPolicy = DefaultErrorHandlingPolicies.ignoreAllProblems();
+
+			// in no classpath, we should proceed on error,
+			// as we will encounter some
+			errorHandlingPolicy = new IErrorHandlingPolicy() {
+				@Override
+				public boolean proceedOnErrors() {
+					return true;
+				}
+
+				@Override
+				public boolean stopOnFirstError() {
+					return false;
+				}
+
+				// we cannot ignore them, because JDT will continue its process
+				// and it led to NPE in several places
+				@Override
+				public boolean ignoreAllErrors() {
+					return false;
+				}
+			};
+		} else {
+
+			// when there is a classpath, we should not have any error
+			errorHandlingPolicy = new IErrorHandlingPolicy() {
+				@Override
+				public boolean proceedOnErrors() {
+					return false;
+				}
+
+				// we wait for all errors to be gathered before stopping
+				@Override
+				public boolean stopOnFirstError() {
+					return false;
+				}
+
+				@Override
+				public boolean ignoreAllErrors() {
+					return false;
+				}
+			};
 		}
 
 		TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
