@@ -81,12 +81,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
-<<<<<<< HEAD
 			this.addStatement(0, statement);
-=======
-			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, 0, statement);
-			this.statements.add(0, statement);
->>>>>>> inria/master
 		}
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
@@ -109,12 +104,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-<<<<<<< HEAD
 		this.addStatement(0, statement);
-=======
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, 0, statement);
-		this.statements.add(0, statement);
->>>>>>> inria/master
+
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}

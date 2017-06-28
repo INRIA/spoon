@@ -50,7 +50,7 @@ public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 	/**
 	 * Inserts the given statement at a specific position in the list of statements
 	 */
-	<T extends CtStatementList> T addStatement(int i, CtStatement statement);
+	<T extends CtStatementList> T addStatement(int index, CtStatement statement);
 
 	/**
 	 * Removes a statement.
