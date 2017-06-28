@@ -86,7 +86,11 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(3, refConstructors.size());
 		assertEquals(0, emptyConstructorClass1.getParameters().size());
 		assertEquals(0, emptyConstructorClass3.getParameters().size());
-		assertNull(refConstructors.get(0).getDeclaration()); // reference to Object constructor.
+
+		assertNull(refConstructors.get(0).getDeclaration());
+		CtExecutable<?> decl = refConstructors.get(0).getExecutableDeclaration();
+		assertEquals("Object", decl.getType().getSimpleName());
+		assertEquals(0, decl.getParameters().size());
 		assertNotNull(refConstructors.get(0).getExecutableDeclaration());
 		assertEquals(emptyConstructorClass1, refConstructors.get(1).getDeclaration());
 		assertEquals(emptyConstructorClass3, refConstructors.get(2).getDeclaration());

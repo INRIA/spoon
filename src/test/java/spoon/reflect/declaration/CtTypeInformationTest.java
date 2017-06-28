@@ -137,18 +137,13 @@ public class CtTypeInformationTest {
 
 		// + 48 of ArrayList (in library)
 		// + 12 of java.lang.Object
-		// The final +1 is the result of the only usage of `ClassTypingContext#isSameSignature` in `getAllMethods`
-		// (see: https://github.com/INRIA/spoon/pull/1375)
-		// now it gets both `ArrayList#forEach` and `Iterable#forEach`
-		// this has been spotted as an issue in https://github.com/INRIA/spoon/issues/1407
-		Assert.assertEquals(1+12+48+1, extendObject.getAllMethods().size());
+		Assert.assertEquals(1+12+48, extendObject.getAllMethods().size());
 
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		assertEquals(2, subClass.getMethods().size());
 
 		// the abstract method from Comparable which is overridden should not be present in the model
-		// The +1 happens for the same reason as below
-		assertEquals(61+2+1, subClass.getAllMethods().size());
+		assertEquals(61+2, subClass.getAllMethods().size());
 
 		CtTypeReference<?> superclass = subClass.getSuperclass();
 		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());

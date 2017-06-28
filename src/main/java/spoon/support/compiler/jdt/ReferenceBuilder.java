@@ -632,6 +632,7 @@ public class ReferenceBuilder {
 				ref = getTypeReference(binding.actualType());
 			} else {
 				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+				this.exploringParameterizedBindings.put(binding, ref);
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName("");
 				} else {
@@ -702,7 +703,13 @@ public class ReferenceBuilder {
 				// if the type parameter has a super class other than java.lang.Object, we get it
 				// superClass.superclass() is null if it's java.lang.Object
 				if (superClass != null && !(superClass.superclass() == null)) {
-					refSuperClass = this.getTypeReference(superClass);
+
+					// this case could happen with Enum<E extends Enum<E>> for example:
+					// in that case we only want to have E -> Enum -> E
+					// to conserve the same behavior as JavaReflectionTreeBuilder
+					if (!(superClass instanceof ParameterizedTypeBinding) || !this.exploringParameterizedBindings.containsKey(superClass)) {
+						refSuperClass = this.getTypeReference(superClass);
+					}
 
 				// if the type parameter has a super interface, then we'll get it too, as a superclass
 				// type parameter can only extends an interface or a class, so we don't make the distinction

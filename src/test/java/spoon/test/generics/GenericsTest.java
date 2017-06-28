@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -43,18 +44,21 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Orange;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
+import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -62,6 +66,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1093,5 +1098,54 @@ public class GenericsTest {
 
 		assertSame(innerTotoFormatCtType.get(0), paramInnerToto.getDeclaration());
 		assertSame(innerTypeParametersList.get(0), returnInnerToto.getDeclaration());
+	}
+
+	@Test
+	public void testIsSameSignatureWithGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/SameSignature.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature.class);
+
+		List<CtMethod> methods = ctClass.getMethodsByName("forEach");
+		assertEquals(1, methods.size());
+
+		CtType<?> iterableItf = launcher.getFactory().Type().get(Iterable.class);
+
+		List<CtMethod<?>> methodsItf = iterableItf.getMethodsByName("forEach");
+		assertEquals(1, methodsItf.size());
+
+		ClassTypingContext ctc = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctc.isOverriding(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
+	}
+	@Test
+	public void testGetExecDeclarationOfEnumSetOf() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/EnumSetOf.java");
+		launcher.buildModel();
+
+		CtClass<?> ctClass = launcher.getFactory().Class().get(EnumSetOf.class);
+
+		CtInvocation invocation = ctClass.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtExecutable<?> decl = invocation.getExecutable().getDeclaration();
+		assertNull(decl);
+
+		CtClass<?> enumClass = launcher.getFactory().Class().get(EnumSet.class);
+		List<CtMethod<?>> methods = enumClass.getMethodsByName("of");
+
+		CtMethod rightOfMethod = null;
+		for (CtMethod method : methods) {
+			if (method.getParameters().size() == 1) {
+				rightOfMethod = method;
+			}
+		}
+
+		assertNotNull(rightOfMethod);
+
+		decl = invocation.getExecutable().getExecutableDeclaration();
+		assertEquals(rightOfMethod, decl);
 	}
 }

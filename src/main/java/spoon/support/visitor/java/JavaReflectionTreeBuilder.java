@@ -329,7 +329,12 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitType(Type type) {
-		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
+		CtTypeReference<?> ctTypeReference;
+		if (type instanceof TypeVariable) {
+			ctTypeReference = factory.Core().createTypeParameterReference();
+		} else {
+			ctTypeReference = factory.Core().createTypeReference();
+		}
 		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		ctTypeReference.setSimpleName(getTypeName(type));
 
