@@ -309,7 +309,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 *
 	 * @param thisMethod - the scope method
 	 * @param thatMethod - to be checked method
-	 * @return true if thisMethod overrides thatMethod or the contrary
+	 * @return true if thisMethod overrides thatMethod
 	 */
 	public boolean isOverriding(CtMethod<?> thisMethod, CtMethod<?> thatMethod) {
 		if (thisMethod == thatMethod) {
