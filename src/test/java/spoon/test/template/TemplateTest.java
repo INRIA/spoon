@@ -1041,5 +1041,9 @@ public class TemplateTest {
 		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getParameters().get(0).getType().toString());
 		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.out", method.getBody().getStatement(0).toString());
 		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date> ret = new spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>()", method.getBody().getStatement(1).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.currentTimeMillis()", method.getBody().getStatement(2).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.class", method.getBody().getStatement(3).toString());
+		assertEquals("o = (o) instanceof spoon.test.template.TypeReferenceClassAccess.Example", method.getBody().getStatement(4).toString());
+		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
 	}
 }
