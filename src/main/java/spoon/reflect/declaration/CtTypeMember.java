@@ -22,7 +22,7 @@ import spoon.support.DerivedProperty;
  * This interface represents a member of a class (field, method,
  * nested class or static/instance initializer).
  */
-public interface CtTypeMember extends CtModifiable {
+public interface CtTypeMember extends CtModifiable, CtNamedElement {
 
 	/**
 	 * Gets the type that declares this class member.
