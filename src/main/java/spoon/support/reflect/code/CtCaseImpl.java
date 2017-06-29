@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.CASE;
 import static spoon.reflect.path.CtRole.STATEMENT;
@@ -186,7 +185,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtStatement> T getLastStatement() {
-		return (T) statements.get(statements.size()-1);
+		return (T) statements.get(statements.size() - 1);
 	}
 
 	@Override

@@ -16,8 +16,6 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.visitor.Filter;
-import spoon.support.DerivedProperty;
 import spoon.template.TemplateParameter;
 
 /**
