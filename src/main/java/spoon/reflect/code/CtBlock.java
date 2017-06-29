@@ -37,62 +37,6 @@ import spoon.template.TemplateParameter;
 public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParameter<R> {
 
 	/**
-	 * Inserts the given statement at the beginning of the block.
-	 */
-	<T extends CtBlock<R>> T insertBegin(CtStatement statement);
-
-	/**
-	 * Inserts the given statement list at the beginning of the block.
-	 */
-	<T extends CtBlock<R>> T insertBegin(CtStatementList statements);
-
-	/**
-	 * Inserts the given statement at the end of the block.
-	 */
-	<T extends CtBlock<R>> T insertEnd(CtStatement statement);
-
-	/**
-	 * Inserts the given statements at the end of the block.
-	 */
-	<T extends CtBlock<R>> T insertEnd(CtStatementList statements);
-
-	/**
-	 * Inserts the given statement before a set of insertion points given by a
-	 * filter.
-	 */
-	<T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement);
-
-	/**
-	 * Inserts the given statement list before a set of insertion points given
-	 * by a filter.
-	 */
-	<T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements);
-
-	/**
-	 * Inserts the given statement after a set of insertion points given by a
-	 * filter.
-	 */
-	<T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement);
-
-	/**
-	 * Inserts the given statement list after a set of insertion points given by
-	 * a filter.
-	 */
-	<T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements);
-
-	/**
-	 * Gets the ith statement of this block.
-	 */
-	@DerivedProperty
-	<T extends CtStatement> T getStatement(int i);
-
-	/**
-	 * Gets the last statement of this block.
-	 */
-	@DerivedProperty
-	<T extends CtStatement> T getLastStatement();
-
-	/**
 	 * Replaces this element by another one.
 	 */
 	<T extends R> void replace(CtBlock<T> element);
