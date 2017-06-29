@@ -73,7 +73,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	private static final long serialVersionUID = 1L;
 	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
-	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(),new StandardEnvironment());
+	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 
 
 	public static <T> List<T> emptyList() {
