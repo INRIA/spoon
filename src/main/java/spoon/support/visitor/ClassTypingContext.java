@@ -301,8 +301,13 @@ public class ClassTypingContext extends AbstractTypingContext {
 	}
 
 	/**
+	 * isOverriding is defined as a relation between two methods
+	 * where one is the subsignature of the other. There is no order in this relation.
+	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+	 *
+	 * @param thisMethod - the scope method
 	 * @param thatMethod - to be checked method
-	 * @return true if scope method overrides `thatMethod`
+	 * @return true if thisMethod overrides thatMethod or the contrary
 	 */
 	public boolean isOverriding(CtMethod<?> thisMethod, CtMethod<?> thatMethod) {
 		if (thisMethod == thatMethod) {
@@ -318,26 +323,32 @@ public class ClassTypingContext extends AbstractTypingContext {
 			}
 		}
 		//TODO check method visibility following https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.8.1
-		return isSubSignature(thisMethod, thatMethod);
+		return isSubSignature(thisMethod, thatMethod) || isSubSignature(thatMethod, thisMethod);
 	}
 
 	/**
-	 * scope method is subsignature of thatMethod if either
-	 * A) scope method is same signature like thatMethod
-	 * B) scope method is same signature like type erasure of thatMethod
+	 * isSubsignature is defined as an oriented relation between two methods as defined in
 	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
 	 *
+	 * thisMethod is subsignature of thatMethod if either
+	 * A) thisMethod is same signature like thatMethod
+	 * B) thisMethod is same signature like type erasure of thatMethod
+	 *
+	 * @param thisMethod - the scope method to be checked with
 	 * @param thatMethod - the checked method
-	 * @return true if scope method is subsignature of thatMethod
+	 * @return true if thisMethod is subsignature of thatMethod
 	 */
 	public boolean isSubSignature(CtMethod<?> thisMethod, CtMethod<?> thatMethod) {
 		return isSameSignature(thisMethod, thatMethod, true);
 	}
 
 	/**
-	 * The same signature is the necessary condition for method A overrides method B.
+	 * Two methods are considered as having the same signature if they have the same name and argument types
+	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+	 *
+	 * @param thisExecutable - the scope method to be checked with
 	 * @param thatExecutable - the checked method
-	 * @return true if this method and `thatMethod` has same signature
+	 * @return true if this method and thatMethod has same signature
 	 */
 	public boolean isSameSignature(CtExecutable<?> thisExecutable, CtMethod<?> thatExecutable) {
 		if ((thatExecutable instanceof CtMethod || thatExecutable instanceof CtConstructor) == false) {
