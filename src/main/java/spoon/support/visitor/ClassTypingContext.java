@@ -301,9 +301,11 @@ public class ClassTypingContext extends AbstractTypingContext {
 	}
 
 	/**
-	 * isOverriding is defined as a relation between two methods
-	 * where one is the subsignature of the other. There is no order in this relation.
-	 * See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.2
+	 * thisMethod overrides thatMethod if
+	 * 1) thisMethod class is a subclass of thatMethod class
+	 * 2) thisMethod is a subsignature of thatMethod
+	 *
+	 * See http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.8.1
 	 *
 	 * @param thisMethod - the scope method
 	 * @param thatMethod - to be checked method
@@ -323,7 +325,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 			}
 		}
 		//TODO check method visibility following https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.8.1
-		return isSubSignature(thisMethod, thatMethod) || isSubSignature(thatMethod, thisMethod);
+		return isSubSignature(thisMethod, thatMethod);
 	}
 
 	/**
