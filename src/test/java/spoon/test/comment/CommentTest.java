@@ -46,6 +46,7 @@ import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
+import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -187,6 +188,26 @@ public class CommentTest {
 		assertEquals(-1, classJavaDoc.toString().indexOf("@deprecated"));
 		classJavaDoc.addTag(deprecatedTag);
 		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+	}
+
+	@Test
+	public void testJavaDocEmptyCommentAndTag() {
+		String EOL = "\n";	//the sources are checked out with \n even on Windows.
+
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocEmptyCommentAndTags.class);
+
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		//contract: content is never null
+		assertNotNull(classJavaDoc.getContent());
+		//contract: empty content is ""
+		assertEquals("", classJavaDoc.getContent());
+
+		CtJavaDoc methodJavaDoc = (CtJavaDoc) type.getMethodsByName("m").get(0).getComments().get(1);
+		//contract: content is never null
+		assertNotNull(methodJavaDoc.getContent());
+		//contract: empty content is ""
+		assertEquals("", methodJavaDoc.getContent());
 	}
 
 	@Test
