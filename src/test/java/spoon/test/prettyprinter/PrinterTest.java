@@ -2,15 +2,19 @@ package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.PrettyPrinter;
+import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,4 +144,23 @@ public class PrinterTest {
 		canBeBuilt(output, 7);
 	}
 
+	@Test
+	public void testPrintingOfOrphanFieldReference() throws Exception {
+		CtType<?> type = ModelUtils.buildClass(MissingVariableDeclaration.class);
+		//delete the field, so the model is broken.
+		//It may happen during substitution operations and then it is helpful to display descriptive error message
+		type.getField("testedField").delete();
+		//contract: printer fails with descriptive exception and not with NPE
+		try {
+			type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString();
+			fail();
+		} catch (SpoonException e) {
+			//the name of the missing field declaration is part of exception
+			assertTrue(e.getMessage().indexOf("testedField")>=0);
+			//the name of the method where field declaration is missing is part of exception
+			assertTrue(e.getMessage().indexOf("failingMethod")>=0);
+			//the name of the class where field is missing is part of exception
+			assertTrue(e.getMessage().indexOf("MissingVariableDeclaration")>=0);
+		} //other exceptions are not OK
+	}
 }
