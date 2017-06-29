@@ -43,7 +43,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.IS_STATIC;
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -145,7 +150,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
 		final CtTypeReference<?> typeRef = getDeclaringType();
-		return typeRef == null ? null : getCtExecutable(typeRef.getDeclaration());
+		if (typeRef == null || typeRef.getDeclaration() == null) {
+			return null;
+		}
+		return getCtExecutable(typeRef.getDeclaration());
 	}
 
 	@Override
@@ -198,21 +206,26 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.parameters = new ArrayList<>();
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
 		this.parameters.clear();
 		for (CtTypeReference<?> parameter : parameters) {
-			if (parameter == null) {
-				continue;
-			}
-			parameter.setParent(this);
-			this.parameters.add(parameter);
+			addParameter(parameter);
 		}
 		return (C) this;
 	}
 
+	private boolean addParameter(CtTypeReference<?> parameter) {
+		if (parameter == null) {
+			return false;
+		}
+		parameter.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
+		return this.parameters.add(parameter);
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S extends T> CtExecutableReference<S> getOverridingExecutable(
-			CtTypeReference<?> subType) {
+	public <S extends T> CtExecutableReference<S> getOverridingExecutable(CtTypeReference<?> subType) {
 		if ((subType == null) || subType.equals(getDeclaringType())) {
 			return null;
 		}
@@ -264,6 +277,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>();
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_PARAMETER, this.actualTypeArguments, new ArrayList<>(this.actualTypeArguments));
 		this.actualTypeArguments.clear();
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
@@ -276,6 +290,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
@@ -285,6 +300,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (type != null) {
 			type.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -304,8 +320,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 		method_loop:
 		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
-			if (!m.getDeclaringClass().isSynthetic()
-					&& m.isSynthetic()) {
+			if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
 				continue;
 			}
 			if (!m.getName().equals(getSimpleName())) {
@@ -350,8 +365,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setStatic(boolean b) {
-		this.stat = b;
+	public <C extends CtExecutableReference<T>> C setStatic(boolean stat) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_STATIC, stat, this.stat);
+		this.stat = stat;
 		return (C) this;
 	}
 
@@ -406,8 +422,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return getOverloadedExecutable(st, objectType);
 	}
 
-	private CtExecutableReference<?> getOverloadedExecutable(
-			CtTypeReference<?> t, CtTypeReference<Object> objectType) {
+	private CtExecutableReference<?> getOverloadedExecutable(CtTypeReference<?> t, CtTypeReference<Object> objectType) {
 		if (t == null) {
 			return null;
 		}
@@ -435,15 +450,18 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_PARAMETER, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}
 
 	@Override
-	public boolean removeActualTypeArgument(
-			CtTypeReference<?> actualTypeArgument) {
-		return actualTypeArguments != CtElementImpl.<CtTypeReference<?>>emptyList()
-				&& actualTypeArguments.remove(actualTypeArgument);
+	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_PARAMETER, actualTypeArguments, actualTypeArguments.indexOf(actualTypeArgument), actualTypeArgument);
+		return actualTypeArguments.remove(actualTypeArgument);
 	}
 
 	@Override

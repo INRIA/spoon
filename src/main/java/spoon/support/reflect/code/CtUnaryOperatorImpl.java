@@ -16,21 +16,30 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.LABEL;
+import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 
 public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.OPERATOR_KIND)
 	UnaryOperatorKind kind;
 
+	@MetamodelPropertyField(role = CtRole.LABEL)
 	String label;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<T> operand;
 
 	@Override
@@ -82,18 +91,21 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.operand);
 		this.operand = expression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtStatement> C setLabel(String label) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (C) this;
 	}

@@ -16,16 +16,23 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronized {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.BODY)
 	CtBlock<?> block;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<?> expression;
 
 	@Override
@@ -48,6 +55,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 		if (block != null) {
 			block.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, block, this.block);
 		this.block = block;
 		return (T) this;
 	}
@@ -57,6 +65,7 @@ public class CtSynchronizedImpl extends CtStatementImpl implements CtSynchronize
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}

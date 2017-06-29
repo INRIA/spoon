@@ -24,6 +24,7 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -330,4 +331,14 @@ public interface Environment {
 
 	/** Set the directory where binary .class files are created */
 	String getBinaryOutputDirectory();
+
+	/**
+	 * get the model change listener that is used to follow the change of the AST.
+	 */
+	FineModelChangeListener getModelChangeListener();
+
+	/**
+	 * set the model change listener
+	 */
+	void setModelChangeListener(FineModelChangeListener modelChangeListener);
 }

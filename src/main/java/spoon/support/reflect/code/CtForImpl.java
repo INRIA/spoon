@@ -16,9 +16,11 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -27,14 +29,20 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.FOR_INIT;
+import static spoon.reflect.path.CtRole.FOR_UPDATE;
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<Boolean> expression;
 
+	@MetamodelPropertyField(role = CtRole.FOR_INIT)
 	List<CtStatement> forInit = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.FOR_UPDATE)
 	List<CtStatement> forUpdate = emptyList();
 
 	@Override
@@ -52,6 +60,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}
@@ -70,6 +79,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			forInit = new ArrayList<>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, FOR_INIT, this.forInit, statement);
 		forInit.add(statement);
 		return (T) this;
 	}
@@ -80,6 +90,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			this.forInit = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
@@ -89,7 +100,11 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public boolean removeForInit(CtStatement statement) {
-		return forInit != CtElementImpl.<CtStatement>emptyList() && forInit.remove(statement);
+		if (forInit == CtElementImpl.<CtStatement>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, FOR_INIT, forInit, forInit.indexOf(statement), statement);
+		return forInit.remove(statement);
 	}
 
 	@Override
@@ -106,6 +121,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			forUpdate = new ArrayList<>(FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, FOR_UPDATE, this.forUpdate, statement);
 		forUpdate.add(statement);
 		return (T) this;
 	}
@@ -116,6 +132,7 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 			this.forUpdate = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);
@@ -125,7 +142,11 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public boolean removeForUpdate(CtStatement statement) {
-		return forUpdate != CtElementImpl.<CtStatement>emptyList() && forUpdate.remove(statement);
+		if (forUpdate == CtElementImpl.<CtStatement>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, FOR_UPDATE, forUpdate, forUpdate.indexOf(statement), statement);
+		return forUpdate.remove(statement);
 	}
 
 	@Override

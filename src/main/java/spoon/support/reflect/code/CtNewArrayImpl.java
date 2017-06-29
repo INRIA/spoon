@@ -16,8 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -25,12 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.DIMENSION;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.DIMENSION)
 	List<CtExpression<Integer>> dimensionExpressions = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	List<CtExpression<?>> expressions = emptyList();
 
 	@Override
@@ -54,6 +60,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.dimensionExpressions = CtElementImpl.emptyList();
 			return (C) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, DIMENSION, this.dimensionExpressions, new ArrayList<>(this.dimensionExpressions));
 		this.dimensionExpressions.clear();
 		for (CtExpression<Integer> expr : dimensionExpressions) {
 			addDimensionExpression(expr);
@@ -70,15 +77,18 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			dimensionExpressions = new ArrayList<>(NEW_ARRAY_DEFAULT_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		dimension.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, DIMENSION, this.dimensionExpressions, dimension);
 		dimensionExpressions.add(dimension);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeDimensionExpression(CtExpression<Integer> dimension) {
-		return dimensionExpressions
-				!= CtElementImpl.<CtExpression<Integer>>emptyList()
-				&& dimensionExpressions.remove(dimension);
+		if (dimensionExpressions == CtElementImpl.<CtExpression<Integer>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, DIMENSION, dimensionExpressions, dimensionExpressions.indexOf(dimension), dimension);
+		return dimensionExpressions.remove(dimension);
 	}
 
 	@Override
@@ -87,6 +97,7 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.expressions = CtElementImpl.emptyList();
 			return (C) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, EXPRESSION, this.expressions, new ArrayList<>(this.expressions));
 		this.expressions.clear();
 		for (CtExpression<?> expr : expressions) {
 			addElement(expr);
@@ -103,13 +114,18 @@ public class CtNewArrayImpl<T> extends CtExpressionImpl<T> implements CtNewArray
 			this.expressions = new ArrayList<>();
 		}
 		expression.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, EXPRESSION, this.expressions, expression);
 		expressions.add(expression);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeElement(CtExpression<?> expression) {
-		return expressions != CtElementImpl.<CtExpression<?>>emptyList() && expressions.remove(expression);
+		if (expressions == CtElementImpl.<CtExpression<?>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXPRESSION, expressions, expressions.indexOf(expression), expression);
+		return expressions.remove(expression);
 	}
 
 	@Override

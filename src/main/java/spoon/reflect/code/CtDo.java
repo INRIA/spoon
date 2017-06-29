@@ -16,6 +16,11 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
+
 /**
  * This code element defines a <code>do</code> loop.
  *
@@ -32,11 +37,13 @@ public interface CtDo extends CtLoop {
 	/**
 	 * Returns the looping test as a boolean expression.
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<Boolean> getLoopingExpression();
 
 	/**
 	 * Sets the looping test as a boolean expression.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<T extends CtDo> T setLoopingExpression(CtExpression<Boolean> expression);
 
 	@Override

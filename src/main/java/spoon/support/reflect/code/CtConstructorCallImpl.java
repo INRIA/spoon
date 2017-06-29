@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -23,22 +24,30 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.ARGUMENT;
+import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.LABEL;
 
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtConstructorCall<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.ARGUMENT)
 	List<CtExpression<?>> arguments = emptyList();
+	@MetamodelPropertyField(role = CtRole.EXECUTABLE)
 	CtExecutableReference<T> executable;
+	@MetamodelPropertyField(role = CtRole.LABEL)
 	String label;
 
 	@Override
@@ -97,6 +106,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (this.arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			this.arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ARGUMENT, this.arguments, new ArrayList<>(this.arguments));
 		this.arguments.clear();
 		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
@@ -104,8 +114,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		return (C) this;
 	}
 
-	@Override
-	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
+	private <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
 		if (argument == null) {
 			return (C) this;
 		}
@@ -113,15 +122,23 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 			arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		argument.setParent(this);
-		arguments.add(argument);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT, this.arguments, position, argument);
+		arguments.add(position, argument);
 		return (C) this;
 	}
 
 	@Override
+	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
+		return addArgument(arguments.size(), argument);
+	}
+
+	@Override
 	public void removeArgument(CtExpression<?> argument) {
-		if (arguments != CtElementImpl.<CtExpression<?>>emptyList()) {
-			arguments.remove(argument);
+		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
+			return;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, ARGUMENT, arguments, arguments.indexOf(argument), argument);
+		arguments.remove(argument);
 	}
 
 	@Override
@@ -129,12 +146,14 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (executable != null) {
 			executable.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtStatement> C setLabel(String label) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (C) this;
 	}
@@ -145,11 +164,13 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
+	@DerivedProperty
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return getExecutable() == null ? CtElementImpl.<CtTypeReference<?>>emptyList() : getExecutable().getActualTypeArguments();
 	}
 
 	@Override
+	@DerivedProperty
 	public <T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (getExecutable() != null) {
 			getExecutable().setActualTypeArguments(actualTypeArguments);
@@ -158,6 +179,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
+	@DerivedProperty
 	public <T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (getExecutable() != null) {
 			getExecutable().addActualTypeArgument(actualTypeArgument);
@@ -166,16 +188,22 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
+	@DerivedProperty
 	public boolean removeActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return getExecutable() != null && getExecutable().removeActualTypeArgument(actualTypeArgument);
+		if (getExecutable() != null) {
+			return getExecutable().removeActualTypeArgument(actualTypeArgument);
+		}
+		return false;
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<T> getType() {
 		return getExecutable() == null ? null : getExecutable().getType();
 	}
 
 	@Override
+	@DerivedProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);

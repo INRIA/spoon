@@ -221,7 +221,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtContinue(final spoon.reflect.code.CtContinue continueStatement) {
 		spoon.reflect.code.CtContinue aCtContinue = spoon.support.visitor.clone.CloneBuilder.build(this.builder, continueStatement, continueStatement.getFactory().Core().createContinue());
 		aCtContinue.setAnnotations(spoon.support.visitor.equals.CloneHelper.clone(continueStatement.getAnnotations()));
-		aCtContinue.setLabelledStatement(spoon.support.visitor.equals.CloneHelper.clone(continueStatement.getLabelledStatement()));
 		aCtContinue.setComments(spoon.support.visitor.equals.CloneHelper.clone(continueStatement.getComments()));
 		this.other = aCtContinue;
 	}

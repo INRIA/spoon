@@ -113,7 +113,7 @@ public class QualifiedThisRefTest {
 		CtTypeReference tmp = param.getType();
 
 		CtExpression arg = null;
-		CtFieldReference ctfe = new CtFieldReferenceImpl();
+		CtFieldReference ctfe = factory.createFieldReference();
 		ctfe.setSimpleName("class");
 		ctfe.setDeclaringType(tmp.box());
 		arg = factory.Core().createFieldRead();

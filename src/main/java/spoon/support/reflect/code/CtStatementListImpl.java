@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -29,10 +31,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.STATEMENT;
 
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtStatementList {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	List<CtStatement> statements = emptyList();
 
 	@Override
@@ -51,6 +55,7 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, STATEMENT, this.statements, new ArrayList<>(this.statements));
 		this.statements.clear();
 		for (CtStatement stmt : stmts) {
 			addStatement(stmt);
@@ -60,6 +65,11 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int index, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
@@ -67,15 +77,18 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 			this.statements = new ArrayList<>(BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		this.statements.add(statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, index, statement);
+		this.statements.add(index, statement);
 		return (T) this;
 	}
 
 	@Override
 	public void removeStatement(CtStatement statement) {
-		if (this.statements != CtElementImpl.<CtStatement>emptyList()) {
-			this.statements.remove(statement);
+		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
+			return;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
+		statements.remove(statement);
 	}
 
 	@Override

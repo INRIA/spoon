@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.SignatureBasedSortedSet;
@@ -30,11 +32,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.VALUE;
+
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.VALUE)
 	private List<CtEnumValue<?>> enumValues = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.VALUE)
 	private CtMethod<T[]> valuesMethod;
 
 	private CtMethod<T> valueOfMethod;
@@ -69,6 +75,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		}
 		if (!enumValues.contains(enumValue)) {
 			enumValue.setParent(this);
+			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
 		}
 
@@ -78,6 +85,10 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public boolean removeEnumValue(CtEnumValue<?> enumValue) {
+		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, VALUE, enumValues, enumValues.indexOf(enumValue), enumValue);
 		return enumValues.remove(enumValue);
 	}
 
@@ -98,6 +109,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
 		if (enumValues == null || enumValues.isEmpty()) {
 			this.enumValues = emptyList();
 			return (C) this;

@@ -16,6 +16,12 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.OPERATOR_KIND;
+
+
 /**
  * This code element defines an self-operated assignment such as += or *=.
  *
@@ -30,11 +36,13 @@ public interface CtOperatorAssignment<T, A extends T> extends CtAssignment<T, A>
 	/**
 	 * Sets the operator kind.
 	 */
+	@PropertySetter(role = OPERATOR_KIND)
 	<C extends CtOperatorAssignment<T, A>> C setKind(BinaryOperatorKind kind);
 
 	/**
 	 * Gets the operator kind.
 	 */
+	@PropertyGetter(role = OPERATOR_KIND)
 	BinaryOperatorKind getKind();
 
 	@Override

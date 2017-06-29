@@ -50,9 +50,12 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrintingContext.Writable;
+import spoon.support.util.SortedList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ElementPrinterHelper {
@@ -76,6 +79,7 @@ public class ElementPrinterHelper {
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
 			prettyPrinter.scan(annotation);
+			printer.writeln().writeTabs();
 		}
 	}
 
@@ -101,35 +105,32 @@ public class ElementPrinterHelper {
 
 	public void writeImplementsClause(CtType<?> type) {
 		if (type.getSuperInterfaces().size() > 0) {
-			printer.write(" implements ");
-			for (CtTypeReference<?> ref : type.getSuperInterfaces()) {
-				prettyPrinter.scan(ref);
-				printer.write(" , ");
+			try (ListPrinter lp = printer.createListPrinter(" implements ", " , ", null)) {
+				for (CtTypeReference<?> ref : type.getSuperInterfaces()) {
+					lp.printSeparatorIfAppropriate();
+					prettyPrinter.scan(ref);
+				}
 			}
-			printer.removeLastChar();
 		}
 	}
 
 	public void writeExecutableParameters(CtExecutable<?> executable) {
-		printer.write("(");
-		if (executable.getParameters().size() > 0) {
+		try (ListPrinter lp = printer.createListPrinter("(", ", ", ")")) {
 			for (CtParameter<?> p : executable.getParameters()) {
+				lp.printSeparatorIfAppropriate();
 				prettyPrinter.scan(p);
-				printer.write(", ");
 			}
-			printer.removeLastChar();
 		}
-		printer.write(")");
 	}
 
 	public void writeThrowsClause(CtExecutable<?> executable) {
 		if (executable.getThrownTypes().size() > 0) {
-			printer.write(" throws ");
-			for (CtTypeReference<?> ref : executable.getThrownTypes()) {
-				prettyPrinter.scan(ref);
-				printer.write(", ");
+			try (ListPrinter lp = printer.createListPrinter(" throws ", ", ", null)) {
+				for (CtTypeReference<?> ref : executable.getThrownTypes()) {
+					lp.printSeparatorIfAppropriate();
+					prettyPrinter.scan(ref);
+				}
 			}
-			printer.removeLastChar();
 		}
 	}
 
@@ -173,25 +174,19 @@ public class ElementPrinterHelper {
 		} else if (value instanceof String) {
 			printer.write("\"" + value.toString() + "\"");
 		} else if (value instanceof Collection) {
-			printer.write("{");
-			if (!((Collection<?>) value).isEmpty()) {
+			try (ListPrinter lp = printer.createListPrinter("{", " ,", "}")) {
 				for (Object obj : (Collection<?>) value) {
+					lp.printSeparatorIfAppropriate();
 					writeAnnotationElement(factory, obj);
-					printer.write(" ,");
 				}
-				printer.removeLastChar();
 			}
-			printer.write("}");
 		} else if (value instanceof Object[]) {
-			printer.write("{");
-			if (((Object[]) value).length > 0) {
+			try (ListPrinter lp = printer.createListPrinter("{", " ,", "}")) {
 				for (Object obj : (Object[]) value) {
+					lp.printSeparatorIfAppropriate();
 					writeAnnotationElement(factory, obj);
-					printer.write(" ,");
 				}
-				printer.removeLastChar();
 			}
-			printer.write("}");
 		} else if (value instanceof Enum) {
 			try (Writable c = prettyPrinter.getContext().modify().ignoreGenerics(true)) {
 				prettyPrinter.scan(factory.Type().createReference(((Enum<?>) value).getDeclaringClass()));
@@ -215,13 +210,12 @@ public class ElementPrinterHelper {
 			return;
 		}
 		if (parameters.size() > 0) {
-			printer.write('<');
-			for (CtTypeParameter parameter : parameters) {
-				prettyPrinter.scan(parameter);
-				printer.write(", ");
+			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
+				for (CtTypeParameter parameter : parameters) {
+					lp.printSeparatorIfAppropriate();
+					prettyPrinter.scan(parameter);
+				}
 			}
-			printer.removeLastChar();
-			printer.write('>');
 		}
 	}
 
@@ -234,19 +228,14 @@ public class ElementPrinterHelper {
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
 		if (arguments != null && arguments.size() > 0) {
-			printer.write("<");
-			boolean isImplicitTypeReference = true;
-			for (CtTypeReference<?> argument : arguments) {
-				if (!argument.isImplicit()) {
-					isImplicitTypeReference = false;
-					prettyPrinter.scan(argument);
-					printer.write(", ");
+			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
+				for (CtTypeReference<?> argument : arguments) {
+					if (!argument.isImplicit()) {
+						lp.printSeparatorIfAppropriate();
+						prettyPrinter.scan(argument);
+					}
 				}
 			}
-			if (!isImplicitTypeReference) {
-				printer.removeLastChar();
-			}
-			printer.write(">");
 		}
 	}
 
@@ -267,11 +256,9 @@ public class ElementPrinterHelper {
 				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
 			}
 			printer.writeln().writeln().writeTabs();
-			for (CtReference ref : imports) {
-				String anImport = printImport(ref);
-				if (!"".equals(anImport)) {
-					printer.write(anImport + ";").writeln().writeTabs();
-				}
+			List<String> sortedImports = this.createAndSortImports(imports);
+			for (String importLine : sortedImports) {
+				printer.write(importLine).writeln().writeTabs();
 			}
 			printer.writeln().writeTabs();
 		}
@@ -297,9 +284,27 @@ public class ElementPrinterHelper {
 		}
 
 		if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
-			return importStr + " " + importTypeStr;
+			return importStr + " " + importTypeStr + ";";
 		}
 		return "";
+	}
+
+	private List<String> createAndSortImports(Collection<CtReference> imports) {
+		List<String> sortedImports = new SortedList<>(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+
+		for (CtReference ref : imports) {
+			String importStr = printImport(ref);
+			if (!"".equals(importStr)) {
+				sortedImports.add(importStr);
+			}
+		}
+
+		return sortedImports;
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {

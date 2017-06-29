@@ -16,13 +16,6 @@
  */
 package spoon.generating;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -58,8 +51,14 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.visitor.clone.CloneBuilder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private static final String TARGET_CLONE_PACKAGE = "spoon.support.visitor.clone";
@@ -194,7 +193,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			private final List<String> excludesAST = Arrays.asList(//
 					"spoon.support.reflect.declaration.CtTypeInformationImpl", "spoon.support.reflect.code.CtAbstractInvocationImpl", //
 					"spoon.support.reflect.declaration.CtTypedElementImpl", "spoon.support.reflect.declaration.CtVariableImpl", //
-					"spoon.support.reflect.reference.CtActualTypeContainerImpl", "spoon.support.reflect.code.CtCFlowBreakImpl", //
+					"spoon.support.reflect.reference.CtActualTypeContainerImpl", "spoon.support.reflect.code.CtCFlowBreakImpl", "spoon.support.reflect.code.CtLabelledFlowBreakImpl", //
 					"spoon.support.reflect.declaration.CtCodeSnippetImpl", "spoon.support.reflect.declaration.CtFormalTypeDeclarerImpl", //
 					"spoon.support.reflect.declaration.CtGenericElementImpl", "spoon.support.reflect.reference.CtGenericElementReferenceImpl", //
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
@@ -422,11 +421,11 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					@Override
 					public boolean matches(CtMethod element) {
 						final CtBlock body = element.getBody();
-						if (body.getStatements().size() != 2) {
+						if (body.getStatements().size() != 3) {
 							return false;
 						}
-						if (body.getStatement(0) instanceof CtAssignment) {
-							final CtExpression assigned = ((CtAssignment) body.getStatement(0)).getAssigned();
+						if (body.getStatement(1) instanceof CtAssignment) {
+							final CtExpression assigned = ((CtAssignment) body.getStatement(1)).getAssigned();
 							if (!(assigned instanceof CtFieldAccess)) {
 								return false;
 							}
@@ -440,7 +439,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					}
 				});
 				if (matchers.size() != 1) {
-					throw new SpoonException("Get more than one setter. Please make an more ingenious method to get setter method.");
+					throw new SpoonException("Get more than one setter. Please make an more ingenious method to get setter method. " + matchers.size() + " " + ctField);
 				}
 				return matchers.get(0);
 			}
@@ -498,9 +497,6 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				return ctField.getModifiers().contains(ModifierKind.FINAL) || ctField.getModifiers().contains(ModifierKind.STATIC);
 			}
 		}.scan(getFactory().Class().get(CtInheritanceScanner.class));
-
-		Collections.sort(target.getTypeMembers(), new CtLineElementComparator());
-		Collections.sort(targetBuilder.getTypeMembers(), new CtLineElementComparator());
 	}
 
 	private CtClass<Object> createCloneVisitor() {

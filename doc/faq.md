@@ -81,14 +81,6 @@ final String[] builder = new JDTBuilderImpl() //
 		.build();
 ```
 
-## How to use Spoon as an alternative reflection API?
-
-Use `TypeFactory` as follows.
-
-```java
-CtType s = new TypeFactory().get(String.class);
-System.out.println(s.getSimpleName());
-
 ## What are references? How are they handled?
 
 Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). Those library may be or not in the classpath. The boundary between source and libraries is handled by the reference mechanism.

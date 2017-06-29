@@ -217,10 +217,20 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public void visitAnnotation(Annotation annotation) {
+	public void visitAnnotation(final Annotation annotation) {
 		final CtAnnotation<Annotation> ctAnnotation = factory.Core().createAnnotation();
 
-		enter(new AnnotationRuntimeBuilderContext(ctAnnotation));
+		enter(new AnnotationRuntimeBuilderContext(ctAnnotation) {
+			@Override
+			public void addMethod(CtMethod ctMethod) {
+				try {
+					Object value = annotation.getClass().getMethod(ctMethod.getSimpleName()).invoke(annotation);
+					ctAnnotation.addValue(ctMethod.getSimpleName(), value);
+				} catch (Exception ignore) {
+					ctAnnotation.addValue(ctMethod.getSimpleName(), "");
+				}
+			}
+		});
 		super.visitAnnotation(annotation);
 		exit();
 
@@ -319,7 +329,12 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitType(Type type) {
-		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
+		CtTypeReference<?> ctTypeReference;
+		if (type instanceof TypeVariable) {
+			ctTypeReference = factory.Core().createTypeParameterReference();
+		} else {
+			ctTypeReference = factory.Core().createTypeReference();
+		}
 		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference));
 		ctTypeReference.setSimpleName(getTypeName(type));
 

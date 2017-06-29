@@ -16,8 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -25,10 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.RESOURCES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.TRY_RESOURCE;
 
 public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResource {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TRY_RESOURCE)
 	List<CtLocalVariable<?>> resources = emptyList();
 
 	@Override
@@ -47,6 +51,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 			this.resources = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TRY_RESOURCE, this.resources, new ArrayList<>(this.resources));
 		this.resources.clear();
 		for (CtLocalVariable<?> l : resources) {
 			addResource(l);
@@ -63,13 +68,18 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 			resources = new ArrayList<>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TRY_RESOURCE, this.resources, resource);
 		resources.add(resource);
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeResource(CtLocalVariable<?> resource) {
-		return resources != CtElementImpl.<CtLocalVariable<?>>emptyList() && resources.remove(resource);
+		if (resources == CtElementImpl.<CtLocalVariable<?>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TRY_RESOURCE, resources, resources.indexOf(resource), resource);
+		return resources.remove(resource);
 	}
 
 	@Override

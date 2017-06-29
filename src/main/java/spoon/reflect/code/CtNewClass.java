@@ -16,6 +16,8 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
@@ -23,6 +25,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.NESTED_TYPE;
+import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 /**
  * This code element represents the creation of a anonymous class.
@@ -48,6 +53,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 */
 	@Override
 	@DerivedProperty
+	@PropertyGetter(role = TYPE_PARAMETER)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
@@ -56,6 +62,7 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
@@ -64,16 +71,19 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
+	@PropertySetter(role = TYPE_PARAMETER)
 	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Gets the created class.
 	 */
+	@PropertyGetter(role = NESTED_TYPE)
 	CtClass<?> getAnonymousClass();
 
 	/**
 	 * Sets the created class.
 	 */
+	@PropertySetter(role = NESTED_TYPE)
 	<N extends CtNewClass> N setAnonymousClass(CtClass<?> anonymousClass);
 
 	@Override

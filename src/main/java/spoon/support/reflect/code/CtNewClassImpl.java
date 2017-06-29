@@ -16,13 +16,18 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.EXECUTABLE;
 
 public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNewClass<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.NESTED_TYPE)
 	CtClass<?> anonymousClass;
 
 	@Override
@@ -40,6 +45,7 @@ public class CtNewClassImpl<T> extends CtConstructorCallImpl<T> implements CtNew
 		if (anonymousClass != null) {
 			anonymousClass.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, anonymousClass, this.anonymousClass);
 		this.anonymousClass = anonymousClass;
 		return (N) this;
 	}

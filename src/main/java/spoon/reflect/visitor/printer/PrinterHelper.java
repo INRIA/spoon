@@ -135,6 +135,7 @@ public class PrinterHelper {
 		nbTabs = tabCount;
 		return this;
 	}
+
 	public boolean removeLine() {
 		String ls = LINE_SEPARATOR;
 		int i = sbf.length() - ls.length();
@@ -206,7 +207,9 @@ public class PrinterHelper {
 
 	/**
 	 * Removes the last non-white character.
+	 * Use {@link PrinterHelper#createListPrinter(String, String, String)} to print separators only when needed
 	 */
+	@Deprecated
 	public PrinterHelper removeLastChar() {
 		while (isWhite(sbf.charAt(sbf.length() - 1))) {
 			if (sbf.charAt(sbf.length() - 1) == '\n') {
@@ -229,26 +232,26 @@ public class PrinterHelper {
 	 */
 	public void preWriteUnaryOperator(UnaryOperatorKind o) {
 		switch (o) {
-		case POS:
-			write("+");
-			break;
-		case NEG:
-			write("-");
-			break;
-		case NOT:
-			write("!");
-			break;
-		case COMPL:
-			write("~");
-			break;
-		case PREINC:
-			write("++");
-			break;
-		case PREDEC:
-			write("--");
-			break;
-		default:
-			// do nothing (this does not feel right to ignore invalid ops)
+			case POS:
+				write("+");
+				break;
+			case NEG:
+				write("-");
+				break;
+			case NOT:
+				write("!");
+				break;
+			case COMPL:
+				write("~");
+				break;
+			case PREINC:
+				write("++");
+				break;
+			case PREDEC:
+				write("--");
+				break;
+			default:
+				// do nothing (this does not feel right to ignore invalid ops)
 		}
 	}
 
@@ -257,14 +260,14 @@ public class PrinterHelper {
 	 */
 	public void postWriteUnaryOperator(UnaryOperatorKind o) {
 		switch (o) {
-		case POSTINC:
-			write("++");
-			break;
-		case POSTDEC:
-			write("--");
-			break;
-		default:
-			// do nothing (this does not feel right to ignore invalid ops)
+			case POSTINC:
+				write("++");
+				break;
+			case POSTDEC:
+				write("--");
+				break;
+			default:
+				// do nothing (this does not feel right to ignore invalid ops)
 		}
 	}
 
@@ -273,118 +276,122 @@ public class PrinterHelper {
 	 */
 	public PrinterHelper writeOperator(BinaryOperatorKind o) {
 		switch (o) {
-		case OR:
-			write("||");
-			break;
-		case AND:
-			write("&&");
-			break;
-		case BITOR:
-			write("|");
-			break;
-		case BITXOR:
-			write("^");
-			break;
-		case BITAND:
-			write("&");
-			break;
-		case EQ:
-			write("==");
-			break;
-		case NE:
-			write("!=");
-			break;
-		case LT:
-			write("<");
-			break;
-		case GT:
-			write(">");
-			break;
-		case LE:
-			write("<=");
-			break;
-		case GE:
-			write(">=");
-			break;
-		case SL:
-			write("<<");
-			break;
-		case SR:
-			write(">>");
-			break;
-		case USR:
-			write(">>>");
-			break;
-		case PLUS:
-			write("+");
-			break;
-		case MINUS:
-			write("-");
-			break;
-		case MUL:
-			write("*");
-			break;
-		case DIV:
-			write("/");
-			break;
-		case MOD:
-			write("%");
-			break;
-		case INSTANCEOF:
-			write("instanceof");
-			break;
+			case OR:
+				write("||");
+				break;
+			case AND:
+				write("&&");
+				break;
+			case BITOR:
+				write("|");
+				break;
+			case BITXOR:
+				write("^");
+				break;
+			case BITAND:
+				write("&");
+				break;
+			case EQ:
+				write("==");
+				break;
+			case NE:
+				write("!=");
+				break;
+			case LT:
+				write("<");
+				break;
+			case GT:
+				write(">");
+				break;
+			case LE:
+				write("<=");
+				break;
+			case GE:
+				write(">=");
+				break;
+			case SL:
+				write("<<");
+				break;
+			case SR:
+				write(">>");
+				break;
+			case USR:
+				write(">>>");
+				break;
+			case PLUS:
+				write("+");
+				break;
+			case MINUS:
+				write("-");
+				break;
+			case MUL:
+				write("*");
+				break;
+			case DIV:
+				write("/");
+				break;
+			case MOD:
+				write("%");
+				break;
+			case INSTANCEOF:
+				write("instanceof");
+				break;
 		}
 		return this;
+	}
+
+	public void writeCharLiteral(Character c, boolean mayContainsSpecialCharacter) {
+		if (!mayContainsSpecialCharacter) {
+			write(c);
+		} else if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
+			if (c < 0x10) {
+				write("\\u000" + Integer.toHexString(c));
+			} else if (c < 0x100) {
+				write("\\u00" + Integer.toHexString(c));
+			} else if (c < 0x1000) {
+				write("\\u0" + Integer.toHexString(c));
+			} else {
+				write("\\u" + Integer.toHexString(c));
+			}
+		} else {
+			switch (c) {
+				case '\b':
+					write("\\b"); //$NON-NLS-1$
+					break;
+				case '\t':
+					write("\\t"); //$NON-NLS-1$
+					break;
+				case '\n':
+					write("\\n"); //$NON-NLS-1$
+					break;
+				case '\f':
+					write("\\f"); //$NON-NLS-1$
+					break;
+				case '\r':
+					write("\\r"); //$NON-NLS-1$
+					break;
+				case '\"':
+					write("\\\""); //$NON-NLS-1$
+					break;
+				case '\'':
+					write("\\'"); //$NON-NLS-1$
+					break;
+				case '\\': // take care not to display the escape as a potential
+					// real char
+					write("\\\\"); //$NON-NLS-1$
+					break;
+				default:
+					write(Character.isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c));
+			}
+		}
 	}
 
 	public void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
 		if (!mayContainsSpecialCharacter) {
 			write(value);
-			return;
-		}
-		// handle some special char.....
-		for (int i = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
-			if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
-				if (c < 0x10) {
-					write("\\u000" + Integer.toHexString(c));
-				} else if (c < 0x100) {
-					write("\\u00" + Integer.toHexString(c));
-				} else if (c < 0x1000) {
-					write("\\u0" + Integer.toHexString(c));
-				} else {
-					write("\\u" + Integer.toHexString(c));
-				}
-				continue;
-			}
-			switch (c) {
-			case '\b':
-				write("\\b"); //$NON-NLS-1$
-				break;
-			case '\t':
-				write("\\t"); //$NON-NLS-1$
-				break;
-			case '\n':
-				write("\\n"); //$NON-NLS-1$
-				break;
-			case '\f':
-				write("\\f"); //$NON-NLS-1$
-				break;
-			case '\r':
-				write("\\r"); //$NON-NLS-1$
-				break;
-			case '\"':
-				write("\\\""); //$NON-NLS-1$
-				break;
-			case '\'':
-				write("\\'"); //$NON-NLS-1$
-				break;
-			case '\\': // take care not to display the escape as a potential
-				// real char
-				write("\\\\"); //$NON-NLS-1$
-				break;
-			default:
-				write(value.charAt(i));
+		} else {
+			for (int i = 0; i < value.length(); i++) {
+				writeCharLiteral(value.charAt(i), mayContainsSpecialCharacter);
 			}
 		}
 	}
@@ -399,12 +406,27 @@ public class PrinterHelper {
 	}
 
 	private ArrayDeque<Integer> lengths = new ArrayDeque<>();
+
 	/** stores the length of the printer */
 	public void snapshotLength() {
 		lengths.addLast(toString().length());
 	}
+
 	/** returns true if something has been written since the last call to snapshotLength() */
 	public boolean hasNewContent() {
 		return lengths.pollLast() < toString().length();
+	}
+
+	/**
+	 * Creates new handler which assures consistent printing of lists
+	 * prefixed with `start`, separated by `next` and suffixed by `end`
+	 * @param start the string which has to be printed at the beginning of the list
+	 * @param next the string which has to be used as separator before each next item
+	 * @param end the string which has to be printed after the list
+	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
+	 * before printing of each item.
+	 */
+	public ListPrinter createListPrinter(String start, String next, String end) {
+		return new ListPrinter(this, start, next, end);
 	}
 }

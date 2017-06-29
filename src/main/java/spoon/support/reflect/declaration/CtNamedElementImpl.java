@@ -16,15 +16,20 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
 
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.NAME)
 	String simpleName = "";
 
 	@Override
@@ -40,10 +45,14 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
 		Factory factory = getFactory();
+		if (factory == null) {
+			this.simpleName = simpleName;
+			return (T) this;
+		}
 		if (factory instanceof FactoryImpl) {
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		}
-
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
 		this.simpleName = simpleName;
 		return (T) this;
 	}

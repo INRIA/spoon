@@ -16,6 +16,11 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
+
 /**
  * This code element defines a one-dimensional array access. When
  * multi-dimensional, array accesses are applied to other one-dimensional array
@@ -31,11 +36,13 @@ public interface CtArrayAccess<T, E extends CtExpression<?>> extends CtTargetedE
 	/**
 	 * Sets the expression that defines the index.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<C extends CtArrayAccess<T, E>> C setIndexExpression(CtExpression<Integer> expression);
 
 	/**
 	 * Returns the expression that defines the index.
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<Integer> getIndexExpression();
 
 	@Override

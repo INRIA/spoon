@@ -14,8 +14,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.support.visitor.replace;
+
 
 /**
  * Used to replace an element by another one.
@@ -25,18 +25,31 @@ package spoon.support.visitor.replace;
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
 		try {
-			new spoon.support.visitor.replace.ReplacementVisitor(original, replace).scan(original.getParent());
+			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
+		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
+			throw e;
+		} catch (spoon.SpoonException ignore) {
+		}
+	}
+
+	public static <E extends spoon.reflect.declaration.CtElement> void replace(spoon.reflect.declaration.CtElement original, java.util.Collection<E> replaces) {
+		try {
+			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
+		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
+			throw e;
 		} catch (spoon.SpoonException ignore) {
 		}
 	}
 
 	private spoon.reflect.declaration.CtElement original;
 
-	private spoon.reflect.declaration.CtElement replace;
+	private spoon.reflect.declaration.CtElement[] replace;
 
-	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
+	private static final spoon.reflect.declaration.CtElement[] EMPTY = new spoon.reflect.declaration.CtElement[0];
+
+	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement... replace) {
 		this.original = original;
-		this.replace = replace;
+		this.replace = (replace == null) ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : replace;
 	}
 
 	private <K, V extends spoon.reflect.declaration.CtElement> void replaceInMapIfExist(java.util.Map<K, V> mapProtected, spoon.generating.replace.ReplaceMapListener listener) {
@@ -51,9 +64,17 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			}
 		}
 		if (shouldBeDeleted != null) {
-			if ((replace) != null) {
-				map.put(key, ((V) (replace)));
-				replace.setParent(shouldBeDeleted.getParent());
+			if ((replace.length) > 0) {
+				if ((replace.length) > 1) {
+					throw new spoon.support.visitor.replace.InvalidReplaceException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
+				}
+				V val = ((V) (replace[0]));
+				if (val != null) {
+					map.put(key, val);
+					val.setParent(shouldBeDeleted.getParent());
+				}else {
+					map.remove(key);
+				}
 			}else {
 				map.remove(key);
 			}
@@ -72,9 +93,11 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			set.remove(shouldBeDeleted);
-			if ((replace) != null) {
-				set.add(((T) (replace)));
-				replace.setParent(shouldBeDeleted.getParent());
+			for (spoon.reflect.declaration.CtElement ele : replace) {
+				if (ele != null) {
+					set.add(((T) (ele)));
+					ele.setParent(shouldBeDeleted.getParent());
+				}
 			}
 			listener.set(set);
 		}
@@ -92,11 +115,16 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			}
 		}
 		if (shouldBeDeleted != null) {
-			if ((replace) != null) {
-				list.set(index, ((T) (replace)));
-				replace.setParent(shouldBeDeleted.getParent());
-			}else {
-				list.remove(index);
+			list.remove(index);
+			if ((replace.length) > 0) {
+				for (int i = 0; i < (replace.length); i++) {
+					T ele = ((T) (replace[i]));
+					if (ele != null) {
+						list.add(index, ele);
+						ele.setParent(shouldBeDeleted.getParent());
+						index = index + 1;
+					}
+				}
 			}
 			listener.set(list);
 		}
@@ -104,10 +132,17 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	private void replaceElementIfExist(spoon.reflect.declaration.CtElement candidate, spoon.generating.replace.ReplaceListener listener) {
 		if (candidate == (original)) {
-			listener.set(replace);
-			if ((replace) != null) {
-				replace.setParent(candidate.getParent());
+			spoon.reflect.declaration.CtElement val = null;
+			if ((replace.length) > 0) {
+				if ((replace.length) > 1) {
+					throw new spoon.support.visitor.replace.InvalidReplaceException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
+				}
+				val = replace[0];
 			}
+			if (val != null) {
+				val.setParent(candidate.getParent());
+			}
+			listener.set(val);
 		}
 	}
 
@@ -725,24 +760,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtContinueLabelledStatementReplaceListener implements spoon.generating.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
-		private final spoon.reflect.code.CtContinue element;
-
-		CtContinueLabelledStatementReplaceListener(spoon.reflect.code.CtContinue element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtStatement replace) {
-			this.element.setLabelledStatement(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
 	public void visitCtContinue(final spoon.reflect.code.CtContinue continueStatement) {
 		replaceInListIfExist(continueStatement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(continueStatement));
-		replaceElementIfExist(continueStatement.getLabelledStatement(), new spoon.support.visitor.replace.ReplacementVisitor.CtContinueLabelledStatementReplaceListener(continueStatement));
 		replaceInListIfExist(continueStatement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(continueStatement));
 	}
 
@@ -1944,7 +1964,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			this.element.setTags(replace);
 		}
 	}
-
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override

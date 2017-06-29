@@ -16,16 +16,21 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtRole;
+
+import static spoon.reflect.path.CtRole.BODY;
 
 public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.BODY)
 	CtStatement body;
 
 	@Override
@@ -38,11 +43,13 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
 			if (body != null) {
 				body.setParent(this);
 			}
 			this.body = body;
 		} else {
+			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
 		return (T) this;

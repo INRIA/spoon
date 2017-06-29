@@ -16,11 +16,15 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.util.List;
+
 
 /**
  * This interface defines a reference to a type parameter (aka generics).
@@ -31,6 +35,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
 	 * {@code false} means a <code>super</code> clause.
 	 */
+	@PropertyGetter(role = CtRole.IS_UPPER)
 	boolean isUpper();
 
 	/**
@@ -43,6 +48,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
+	@PropertySetter(role = CtRole.IS_UPPER)
 	<T extends CtTypeParameterReference> T setUpper(boolean upper);
 
 	/**

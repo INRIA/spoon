@@ -4,11 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonException;
 import spoon.processing.AbstractAnnotationProcessor;
 import spoon.processing.ProcessingManager;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -26,12 +29,12 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -54,22 +57,22 @@ import spoon.test.annotation.testclasses.Foo.OuterAnnotation;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.annotation.testclasses.InnerAnnot;
 import spoon.test.annotation.testclasses.Main;
+import spoon.test.annotation.testclasses.PortRange;
 import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
-import spoon.test.annotation.testclasses.PortRange;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-
 import static org.hamcrest.core.Is.is;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -77,6 +80,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -94,6 +98,17 @@ public class AnnotationTest {
 	}
 
 	@Test
+	public void testAnnotationValueReflection() throws Exception {
+		Factory factory = new Launcher().getFactory();
+
+		CtTypeReference reference = factory.createCtTypeReference(PropertyGetter.class);
+		CtAnnotation annotation = factory.Interface().get(CtNamedElement.class).getMethod("getSimpleName").getAnnotation(reference);
+
+		assertEquals("The annotation must have a value", 1, annotation.getValues().size());
+		assertEquals("NAME", ((CtFieldRead) annotation.getValue("role")).getVariable().getSimpleName());
+	}
+
+	@Test
 	public void testModelBuildingAnnotationBound() throws Exception {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Bound");
 		assertEquals("Bound", type.getSimpleName());
@@ -103,8 +118,7 @@ public class AnnotationTest {
 	@Test
 	public void testWritingAnnotParamArray() throws Exception {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
-		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })"
-						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR,
+		assertEquals("@java.lang.SuppressWarnings(value = { \"unused\" , \"rawtypes\" })",
 				type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
 	}
 
@@ -635,7 +649,7 @@ public class AnnotationTest {
 		final String arrayAnnotationParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(ias = { @spoon.test.annotation.testclasses.InnerAnnot(value = \"\") })" + System.lineSeparator() + "T> list10";
 		assertEquals("array of annotations parameter in type annotation", arrayAnnotationParam, method.getBody().getStatement(9).toString());
 
-		final String complexArrayParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(inceptions = { @spoon.test.annotation.testclasses.Inception(value = @spoon.test.annotation.testclasses.InnerAnnot(value = \"\")" + System.lineSeparator() + ", values = { @spoon.test.annotation.testclasses.InnerAnnot(value = \"\") }) })" + System.lineSeparator() + "T> list11";
+		final String complexArrayParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(inceptions = { @spoon.test.annotation.testclasses.Inception(value = @spoon.test.annotation.testclasses.InnerAnnot(value = \"\"), values = { @spoon.test.annotation.testclasses.InnerAnnot(value = \"\") }) })" + System.lineSeparator() + "T> list11";
 		assertEquals("array of complexes parameters in type annotation", complexArrayParam, method.getBody().getStatement(10).toString());
 	}
 
@@ -1017,4 +1031,67 @@ public class AnnotationTest {
 		assertTrue(type.isAnnotationType());
 		assertSame(type, type.getReference().getDeclaration());
 	}
+	
+	@Test
+	public void testReplaceAnnotationValue() throws Exception {
+		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+
+		CtMethod<?> m1 = type.getElements(new NameFilter<CtMethod<?>>("m1")).get(0);
+
+		List<CtAnnotation<? extends Annotation>> annotations = m1.getAnnotations();
+		assertEquals(1, annotations.size());
+
+		CtAnnotation<?> a = annotations.get(0);
+		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
+		
+		//contract: test replace of single value
+		CtExpression integerValue = a.getValue("integer");
+		assertEquals(42, ((CtLiteral<Integer>) integerValue).getValue().intValue());
+		assertEquals(42, annot.integer());
+		integerValue.replace(factory.createLiteral(17));
+		CtExpression newIntegerValue = a.getValue("integer");
+		assertEquals(17, ((CtLiteral<Integer>) newIntegerValue).getValue().intValue());
+		assertEquals(17, annot.integer());
+		
+		//contract: replacing of single value of map by multiple values must fail
+		//even if second value is null
+		try {
+			a.getValue("integer").replace(Arrays.asList(factory.createLiteral(18), null));
+			fail();
+		} catch (SpoonException e)  {
+			//OK
+		}
+		
+		//contract: replacing of single value by no value
+		a.getValue("integer").delete();
+		assertNull(a.getValue("integer"));
+		try {
+			annot.integer();
+			fail();
+		} catch (NullPointerException e) {
+			//OK - fails because int cannot be null
+		}
+		//contract: replace with null value means remove
+		a.getValue("string").replace((CtElement) null);
+		assertNull(a.getValue("string"));
+		//contract: check that null value can be returned
+		assertNull(annot.string());
+
+		//contract: replace with null value in collection means remove
+		a.getValue("clazz").replace(Collections.singletonList(null));
+		assertNull(a.getValue("clazz"));
+		//contract: check that null value can be returned
+		assertNull(annot.clazz());
+
+		//contract: test replace of item in collection
+		assertEquals(1, annot.integers().length);
+		assertEquals(42, annot.integers()[0]);
+		CtNewArray<?> integersNewArray = (CtNewArray)a.getValue("integers");
+		integersNewArray.getElements().get(0).replace(Arrays.asList(null, factory.createLiteral(101), null, factory.createLiteral(102)));
+		assertEquals(2, annot.integers().length);
+		assertEquals(101, annot.integers()[0]);
+		assertEquals(102, annot.integers()[1]);
+	}
+	
+	
 }

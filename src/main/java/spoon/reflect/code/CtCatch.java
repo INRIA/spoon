@@ -16,6 +16,13 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.PARAMETER;
+
+
 /**
  * This code element defines a <code>catch</code> of a <code>try</code>.
  *
@@ -26,17 +33,20 @@ public interface CtCatch extends CtCodeElement, CtBodyHolder {
 	/**
 	 * Gets the catch's parameter (a throwable).
 	 */
+	@PropertyGetter(role = PARAMETER)
 	CtCatchVariable<? extends Throwable> getParameter();
 
 	/**
 	 * Sets the catch's parameter (a throwable).
 	 */
+	@PropertySetter(role = PARAMETER)
 	<T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter);
 
 	/**
 	 * Gets the catch's body.
 	 */
 	@Override
+	@PropertyGetter(role = BODY)
 	CtBlock<?> getBody();
 
 	@Override

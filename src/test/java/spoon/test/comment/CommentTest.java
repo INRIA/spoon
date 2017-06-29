@@ -46,11 +46,13 @@ import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
+import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,12 +112,37 @@ public class CommentTest {
 
 	@Test
 	public void testJavaDocComment() {
-		String EOL = System.getProperty("line.separator");
+		//the EOL is taken from JavaDocComment.java, which is committed in git with linux \n
+		//that is true on Windows too.
+		String EOL = "\n";
 
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
 
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		//contract: test that java doc is printed correctly
+		String str = classJavaDoc.toString();
+		StringTokenizer st = new StringTokenizer(str, System.getProperty("line.separator"));
+		boolean first = true;
+		while(st.hasMoreTokens()) {
+			String line = st.nextToken();
+			if(first) {
+				//first
+				first = false;
+				assertTrue(line.length()==3);
+				assertEquals("/**", line); 
+			} else {
+				if(st.hasMoreTokens()) {
+					//in the middle
+					assertTrue(line.length()>=2);
+					assertEquals(" *", line.substring(0, 2)); 
+				} else {
+					//last
+					assertTrue(line.length()==3);
+					assertEquals(" */", line.substring(0, 3)); 
+				}
+			}
+		}
 		assertEquals("JavaDoc test class."+EOL+EOL
 				+ "Long description", classJavaDoc.getContent());
 
@@ -161,6 +188,26 @@ public class CommentTest {
 		assertEquals(-1, classJavaDoc.toString().indexOf("@deprecated"));
 		classJavaDoc.addTag(deprecatedTag);
 		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+	}
+
+	@Test
+	public void testJavaDocEmptyCommentAndTag() {
+		String EOL = "\n";	//the sources are checked out with \n even on Windows.
+
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocEmptyCommentAndTags.class);
+
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		//contract: content is never null
+		assertNotNull(classJavaDoc.getContent());
+		//contract: empty content is ""
+		assertEquals("", classJavaDoc.getContent());
+
+		CtJavaDoc methodJavaDoc = (CtJavaDoc) type.getMethodsByName("m").get(0).getComments().get(1);
+		//contract: content is never null
+		assertNotNull(methodJavaDoc.getContent());
+		//contract: empty content is ""
+		assertEquals("", methodJavaDoc.getContent());
 	}
 
 	@Test

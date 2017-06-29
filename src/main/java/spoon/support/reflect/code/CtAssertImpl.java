@@ -16,15 +16,22 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.CONDITION;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.CONDITION)
 	CtExpression<Boolean> asserted;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<T> value;
 
 	@Override
@@ -42,6 +49,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 		if (asserted != null) {
 			asserted.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, asserted, this.asserted);
 		this.asserted = asserted;
 		return (A) this;
 	}
@@ -56,6 +64,7 @@ public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 		if (value != null) {
 			value.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
 		return (A) this;
 	}

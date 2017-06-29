@@ -16,10 +16,14 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 
 import java.lang.reflect.Member;
+
 
 /**
  * This interface defines a reference to a
@@ -61,11 +65,13 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Tells if the referenced field is final.
 	 */
+	@PropertyGetter(role = CtRole.IS_FINAL)
 	boolean isFinal();
 
 	/**
 	 * Tells if the referenced field is static.
 	 */
+	@PropertyGetter(role = CtRole.IS_STATIC)
 	boolean isStatic();
 
 	/**
@@ -76,11 +82,13 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Forces a reference to a final element.
 	 */
+	@PropertySetter(role = CtRole.IS_FINAL)
 	<C extends CtFieldReference<T>> C setFinal(boolean b);
 
 	/**
 	 * Forces a reference to a static element.
 	 */
+	@PropertySetter(role = CtRole.IS_STATIC)
 	<C extends CtFieldReference<T>> C setStatic(boolean b);
 
 	@Override

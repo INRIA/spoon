@@ -16,7 +16,11 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.template.TemplateParameter;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 /**
  * This code element represents a <code>return</code> statement.
@@ -37,11 +41,13 @@ public interface CtReturn<R> extends CtCFlowBreak, TemplateParameter<Void> {
 	/**
 	 * Gets the returned expression.
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	CtExpression<R> getReturnedExpression();
 
 	/**
 	 * Sets the returned expression.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<T extends CtReturn<R>> T setReturnedExpression(CtExpression<R> returnedExpression);
 
 	@Override

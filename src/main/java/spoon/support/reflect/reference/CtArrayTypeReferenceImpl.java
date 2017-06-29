@@ -22,6 +22,8 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.reflect.Array;
 
+import static spoon.reflect.path.CtRole.TYPE;
+
 public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -59,6 +61,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 		if (componentType != null) {
 			componentType.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, componentType, this.componentType);
 		this.componentType = componentType;
 		return (C) this;
 	}

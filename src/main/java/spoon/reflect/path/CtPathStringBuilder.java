@@ -80,7 +80,7 @@ public class CtPathStringBuilder {
 			} else if (CtTypedNameElement.STRING.equals(kind)) {
 				pathElement = new CtTypedNameElement(load(matcher.group(2)));
 			} else if (CtRolePathElement.STRING.equals(kind)) {
-				pathElement = new CtRolePathElement(CtPathRole.fromName(matcher.group(2)));
+				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
 			}
 
 			String args = matcher.group(4);

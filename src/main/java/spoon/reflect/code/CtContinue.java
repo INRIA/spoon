@@ -27,30 +27,7 @@ package spoon.reflect.code;
  *     }
  * </pre>
  */
-public interface CtContinue extends CtCFlowBreak {
-	/**
-	 * Gets the statement where the control flow continues (null if no label
-	 * defined).
-	 */
-	CtStatement getLabelledStatement();
-
-	/**
-	 * Sets the statement where the control flow continues (null if no label
-	 * defined).
-	 */
-	<T extends CtContinue> T setLabelledStatement(CtStatement labelledStatement);
-
-	/**
-	 * Gets the label from which the control flow breaks (null if no label
-	 * defined).
-	 */
-	String getTargetLabel();
-
-	/**
-	 * Sets the label from which the control flow breaks (null if no label
-	 * defined).
-	 */
-	<T extends CtContinue> T setTargetLabel(String targetLabel);
+public interface CtContinue extends CtLabelledFlowBreak {
 
 	@Override
 	CtContinue clone();

@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtModifiable;
@@ -24,6 +25,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -33,20 +35,28 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.MODIFIER;
+import static spoon.reflect.path.CtRole.NAME;
+import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.NAME)
 	String name = "";
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	List<CtTypeReference<?>> types = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	@Override
@@ -84,6 +94,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.name);
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -93,25 +104,31 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (type != null) {
 			type.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
 
 	@Override
-	public <T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> ref) {
-		if (ref == null) {
+	public <T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> type) {
+		if (type == null) {
 			return (T) this;
 		}
 		if (types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			types = new ArrayList<>(CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
-		ref.setParent(this);
-		types.add(ref);
+		type.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE, this.types, type);
+		types.add(type);
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeMultiType(CtTypeReference<?> ref) {
+		if (this.types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE, types, types.indexOf(ref), ref);
 		return types.remove(ref);
 	}
 
@@ -122,6 +139,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types) {
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE, this.types, new ArrayList<>(this.types));
 		if (types == null || types.isEmpty()) {
 			this.types = CtElementImpl.emptyList();
 			return (T) this;
@@ -149,7 +167,11 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.size() > 0) {
-			this.modifiers = EnumSet.copyOf(modifiers);
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			this.modifiers.clear();
+			for (ModifierKind modifier : modifiers) {
+				addModifier(modifier);
+			}
 		}
 		return (C) this;
 	}
@@ -159,13 +181,18 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
 		modifiers.add(modifier);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		return !modifiers.isEmpty() && modifiers.remove(modifier);
+		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
+			return false;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
+		return modifiers.remove(modifier);
 	}
 
 	@Override
@@ -173,10 +200,10 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
 			this.modifiers = EnumSet.noneOf(ModifierKind.class);
 		}
-		getModifiers().remove(ModifierKind.PUBLIC);
-		getModifiers().remove(ModifierKind.PROTECTED);
-		getModifiers().remove(ModifierKind.PRIVATE);
-		getModifiers().add(visibility);
+		removeModifier(ModifierKind.PUBLIC);
+		removeModifier(ModifierKind.PROTECTED);
+		removeModifier(ModifierKind.PRIVATE);
+		addModifier(visibility);
 		return (C) this;
 	}
 

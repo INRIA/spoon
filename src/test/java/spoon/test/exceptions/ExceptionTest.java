@@ -6,10 +6,16 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -99,6 +105,28 @@ public class ExceptionTest {
 					SpoonResourceHelper
 							.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java"))
 					.build();
+	}
+
+	@Test
+	public void testUnionCatchExceptionInsideLambdaInNoClasspath() {
+		// contract: the model should be built when defining a union catch inside a lambda which is not known (noclasspath)
+		// and the catch variable types should be the same than outside a lambda
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/UnionCatch.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		List<CtCatch> catches = launcher.getFactory().getModel().getElements(new TypeFilter<>(CtCatch.class));
+		assertEquals(2, catches.size());
+
+		CtCatchVariable variable1 = catches.get(0).getParameter(); // inside a lambda
+		CtCatchVariable variable2 = catches.get(1).getParameter(); // outside the lambda
+
+		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
+
+		// for now the type of CtCatchVariable is not the same
+		// this should be fix in the future (see: https://github.com/INRIA/spoon/issues/1420)
+		//assertEquals(variable2, variable1);
 	}
 
 }

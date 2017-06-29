@@ -345,7 +345,6 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtContinue(final CtContinue continueStatement) {
 		enter(continueStatement);
 		scan(continueStatement.getAnnotations());
-		scan(continueStatement.getLabelledStatement());
 		scan(continueStatement.getComments());
 		exit(continueStatement);
 	}

@@ -16,14 +16,19 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
+
+import static spoon.reflect.path.CtRole.TARGET;
 
 public abstract class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> implements CtFieldAccess<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TARGET)
 	CtExpression<?> target;
 
 	@Override
@@ -32,11 +37,11 @@ public abstract class CtFieldAccessImpl<T> extends CtVariableAccessImpl<T> imple
 	}
 
 	@Override
-	public <C extends CtTargetedExpression<T, CtExpression<?>>> C setTarget(
-			CtExpression<?> target) {
+	public <C extends CtTargetedExpression<T, CtExpression<?>>> C setTarget(CtExpression<?> target) {
 		if (target != null) {
 			target.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET, target, this.target);
 		this.target = target;
 		return null;
 	}

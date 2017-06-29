@@ -17,6 +17,7 @@
 package spoon.support.reflect.code;
 
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtIf;
@@ -29,11 +30,14 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static spoon.reflect.path.CtRole.LABEL;
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements CtStatement {
 	private static final long serialVersionUID = 1L;
@@ -260,6 +264,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		return (T) this;
 	}
 
+	@MetamodelPropertyField(role = CtRole.LABEL)
 	String label;
 
 	@Override
@@ -269,6 +274,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 
 	@Override
 	public <T extends CtStatement> T setLabel(String label) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (T) this;
 	}

@@ -16,7 +16,11 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.template.TemplateParameter;
+
+import static spoon.reflect.path.CtRole.THROWN;
 
 /**
  * This code element defines a <code>throw</code> statement.
@@ -31,11 +35,13 @@ public interface CtThrow extends CtCFlowBreak, TemplateParameter<Void> {
 	/**
 	 * Returns the thrown expression (must be a throwable).
 	 */
+	@PropertyGetter(role = THROWN)
 	CtExpression<? extends Throwable> getThrownExpression();
 
 	/**
 	 * Sets the thrown expression (must be a throwable).
 	 */
+	@PropertySetter(role = THROWN)
 	<T extends CtThrow> T setThrownExpression(CtExpression<? extends Throwable> thrownExpression);
 
 	@Override

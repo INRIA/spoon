@@ -6,6 +6,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtScanner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -21,6 +22,7 @@ public class UnknownDeclarationTest {
         public <T> void visitCtExecutableReference(final CtExecutableReference<T> reference) {
             final CtExecutable executable = reference.getDeclaration();
             assertNull(executable);
+
             referenceCounter++;
         }
     }

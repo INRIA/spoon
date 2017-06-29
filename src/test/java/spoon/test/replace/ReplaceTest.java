@@ -30,14 +30,18 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.visitor.replace.InvalidReplaceException;
 import spoon.test.replace.testclasses.Mole;
 import spoon.test.replace.testclasses.Tacos;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -163,6 +167,45 @@ public class ReplaceTest {
 	}
 
 	@Test
+	public void testReplaceStmtByListStatements() {
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
+				.getType("Foo");
+
+		// replace retry content by statements
+		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
+		List<CtStatement> lst = sample.getMethod("statements").getBody().getStatements();
+
+		// replace a single statement by a statement list
+		stmt.replace(lst);
+
+		// we should have only 2 statements after (from the stmt list)
+		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
+	}
+
+	@Test
+	public void testReplaceStmtByListStatementsAndNull() {
+		//contract: null elements in list are ignored
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
+				.getType("Foo");
+
+		// replace retry content by statements
+		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
+		List<CtStatement> lst = sample.getMethod("statements").getBody().getStatements();
+		List<CtStatement> lstWithNulls = new ArrayList<>();
+		lstWithNulls.add(null);
+		lstWithNulls.add(lst.get(0));
+		lstWithNulls.add(null);
+		lstWithNulls.add(lst.get(1));
+		lstWithNulls.add(null);
+
+		// replace a single statement by a statement list
+		stmt.replace(lstWithNulls);
+
+		// we should have only 2 statements after (from the stmt list)
+		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
+	}
+
+	@Test
 	public void testReplaceField() {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
@@ -201,6 +244,29 @@ public class ReplaceTest {
 
 		Assert.assertNull(sample.getMethod("foo"));
 		Assert.assertNotNull(sample.getMethod("notfoo"));
+	}
+
+	@Test
+	public void testReplaceTwoMethods() {
+		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
+				.getType("Foo");
+
+		Assert.assertNotNull(sample.getMethod("foo"));
+		Assert.assertNull(sample.getMethod("notfoo"));
+
+		CtMethod bar = factory.Core().createMethod();
+		bar.setSimpleName("notfoo");
+		bar.setType(factory.Type().createReference(void.class));
+		CtMethod bar2 = factory.Core().createMethod();
+		bar2.setSimpleName("notfoo2");
+		bar2.setType(factory.Type().createReference(void.class));
+		int originCountOfMethods = sample.getTypeMembers().size();
+		sample.getMethod("foo").replace(Arrays.asList(bar, bar2));
+
+		Assert.assertNull(sample.getMethod("foo"));
+		Assert.assertNotNull(sample.getMethod("notfoo"));
+		Assert.assertNotNull(sample.getMethod("notfoo2"));
+		Assert.assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
 	}
 
 	@Test
@@ -326,13 +392,21 @@ public class ReplaceTest {
 		final CtExecutableReference oldExecutable = inv.getExecutable();
 		final CtExecutableReference<Object> newExecutable = factory.Executable().createReference("void java.io.PrintStream#print(java.lang.String)");
 
-		assertEquals(oldExecutable, inv.getExecutable());
+		assertSame(oldExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#println(java.lang.String)", inv.getExecutable().toString());
 
 		oldExecutable.replace(newExecutable);
 
-		assertEquals(newExecutable, inv.getExecutable());
+		assertSame(newExecutable, inv.getExecutable());
 		assertEquals("java.io.PrintStream#print(java.lang.String)", inv.getExecutable().toString());
+		
+		//contract: replace of single value by multiple values in single value field must fail
+		try {
+			newExecutable.replace(Arrays.asList(oldExecutable, null));
+			fail();
+		} catch (InvalidReplaceException e) {
+			//OK
+		}
 	}
 
 	@Test

@@ -16,10 +16,12 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -28,12 +30,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.CASE;
+import static spoon.reflect.path.CtRole.STATEMENT;
 
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<E> caseExpression;
 
+	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	List<CtStatement> statements = emptyList();
 
 	@Override
@@ -56,6 +62,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (caseExpression != null) {
 			caseExpression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CASE, caseExpression, this.caseExpression);
 		this.caseExpression = caseExpression;
 		return (T) this;
 	}
@@ -66,6 +73,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 			this.statements = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, STATEMENT, this.statements, new ArrayList<>(this.statements));
 		this.statements.clear();
 		for (CtStatement stmt : statements) {
 			addStatement(stmt);
@@ -75,6 +83,11 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int index, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
@@ -82,7 +95,8 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 			statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		statement.setParent(this);
-		statements.add(statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, index, statement);
+		statements.add(index, statement);
 		return (T) this;
 	}
 
@@ -91,6 +105,7 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (statements == CtElementImpl.<CtStatement>emptyList()) {
 			return;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
 		statements.remove(statement);
 	}
 

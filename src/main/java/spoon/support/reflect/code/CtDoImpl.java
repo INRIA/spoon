@@ -16,13 +16,18 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtDoImpl extends CtLoopImpl implements CtDo {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<Boolean> expression;
 
 	@Override
@@ -40,6 +45,7 @@ public class CtDoImpl extends CtLoopImpl implements CtDo {
 		if (expression != null) {
 			expression.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
 		return (T) this;
 	}

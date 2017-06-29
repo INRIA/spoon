@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -25,6 +26,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -39,7 +41,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.SUPER_TYPE;
+
 public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypeParameter {
+	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
 	CtTypeReference<?> superClass;
 
 	@Override
@@ -57,6 +62,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
 		return (C) this;
 	}

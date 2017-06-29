@@ -27,18 +27,7 @@ package spoon.reflect.code;
  *     }
  * </pre>
  */
-public interface CtBreak extends CtCFlowBreak {
-	/**
-	 * Gets the label from which the control flow breaks (null if no label
-	 * defined).
-	 */
-	String getTargetLabel();
-
-	/**
-	 * Sets the label from which the control flow breaks (null if no label
-	 * defined).
-	 */
-	<T extends CtBreak> T setTargetLabel(String targetLabel);
+public interface CtBreak extends CtLabelledFlowBreak {
 
 	@Override
 	CtBreak clone();

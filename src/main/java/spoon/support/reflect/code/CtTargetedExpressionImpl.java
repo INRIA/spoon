@@ -16,12 +16,17 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.path.CtRole;
+
+import static spoon.reflect.path.CtRole.TARGET;
 
 public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>> extends CtExpressionImpl<E> implements CtTargetedExpression<E, T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TARGET)
 	T target;
 
 	@Override
@@ -34,6 +39,7 @@ public abstract class CtTargetedExpressionImpl<E, T extends CtExpression<?>> ext
 		if (target != null) {
 			target.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TARGET, target, this.target);
 		this.target = target;
 		return (C) this;
 	}

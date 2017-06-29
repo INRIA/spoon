@@ -16,6 +16,11 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
+
 /**
  * This interface represents snippets of source code that can be used in the AST
  * to represent complex code without having to build the corresponding program
@@ -31,11 +36,13 @@ public interface CtCodeSnippet {
 	/**
 	 * Sets the textual value of the code.
 	 */
+	@PropertySetter(role = EXPRESSION)
 	<C extends CtCodeSnippet> C setValue(String value);
 
 	/**
 	 * Gets the textual value of the code.
 	 */
+	@PropertyGetter(role = EXPRESSION)
 	String getValue();
 
 }

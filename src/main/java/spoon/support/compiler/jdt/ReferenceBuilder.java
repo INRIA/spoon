@@ -86,10 +86,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,7 +100,7 @@ public class ReferenceBuilder {
 
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
-	private Set<TypeBinding> exploringParameterizedBindings = new HashSet<>();
+	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
 	private Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
 	private boolean bounds = false;
@@ -634,6 +632,7 @@ public class ReferenceBuilder {
 				ref = getTypeReference(binding.actualType());
 			} else {
 				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+				this.exploringParameterizedBindings.put(binding, ref);
 				if (binding.isAnonymousType()) {
 					ref.setSimpleName("");
 				} else {
@@ -654,11 +653,16 @@ public class ReferenceBuilder {
 					if (bindingCache.containsKey(b)) {
 						ref.addActualTypeArgument(getCtCircularTypeReference(b));
 					} else {
-						if (!this.exploringParameterizedBindings.contains(b)) {
-							this.exploringParameterizedBindings.add(b);
-							ref.addActualTypeArgument(getTypeReference(b));
+						if (!this.exploringParameterizedBindings.containsKey(b)) {
+							this.exploringParameterizedBindings.put(b, null);
+							CtTypeReference typeRefB = getTypeReference(b);
+							this.exploringParameterizedBindings.put(b, typeRefB);
+							ref.addActualTypeArgument(typeRefB);
 						} else {
-							this.exploringParameterizedBindings.remove(b);
+							CtTypeReference typeRefB = this.exploringParameterizedBindings.get(b);
+							if (typeRefB != null) {
+								ref.addActualTypeArgument(typeRefB.clone());
+							}
 						}
 					}
 				}
@@ -699,7 +703,13 @@ public class ReferenceBuilder {
 				// if the type parameter has a super class other than java.lang.Object, we get it
 				// superClass.superclass() is null if it's java.lang.Object
 				if (superClass != null && !(superClass.superclass() == null)) {
-					refSuperClass = this.getTypeReference(superClass);
+
+					// this case could happen with Enum<E extends Enum<E>> for example:
+					// in that case we only want to have E -> Enum -> E
+					// to conserve the same behavior as JavaReflectionTreeBuilder
+					if (!(superClass instanceof ParameterizedTypeBinding) || !this.exploringParameterizedBindings.containsKey(superClass)) {
+						refSuperClass = this.getTypeReference(superClass);
+					}
 
 				// if the type parameter has a super interface, then we'll get it too, as a superclass
 				// type parameter can only extends an interface or a class, so we don't make the distinction

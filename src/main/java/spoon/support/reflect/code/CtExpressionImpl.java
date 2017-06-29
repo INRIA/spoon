@@ -16,8 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -25,12 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.CAST;
+import static spoon.reflect.path.CtRole.TYPE;
 
 public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements CtExpression<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.CAST)
 	List<CtTypeReference<?>> typeCasts = emptyList();
 
 	public CtTypeReference<T> getType() {
@@ -47,6 +53,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		if (type != null) {
 			type.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -60,6 +67,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
 		this.typeCasts.clear();
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);
@@ -76,6 +84,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CAST, this.typeCasts, type);
 		typeCasts.add(type);
 		return (C) this;
 	}

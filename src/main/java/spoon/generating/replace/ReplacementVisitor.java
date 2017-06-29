@@ -19,8 +19,10 @@ package spoon.generating.replace;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.visitor.replace.InvalidReplaceException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,17 +37,29 @@ import java.util.Set;
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {
 		try {
-			new ReplacementVisitor(original, replace).scan(original.getParent());
+			new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
+		} catch (InvalidReplaceException e) {
+			throw e;
+		} catch (SpoonException ignore) {
+		}
+	}
+	public static <E extends CtElement> void replace(CtElement original, Collection<E> replaces) {
+		try {
+			new ReplacementVisitor(original, replaces.toArray(new CtElement[replaces.size()])).scan(original.getParent());
+		} catch (InvalidReplaceException e) {
+			throw e;
 		} catch (SpoonException ignore) {
 		}
 	}
 
 	private CtElement original;
-	private CtElement replace;
+	private CtElement[] replace;
 
-	private ReplacementVisitor(CtElement original, CtElement replace) {
+	private static final CtElement[] EMPTY = new CtElement[0];
+
+	private ReplacementVisitor(CtElement original, CtElement... replace) {
 		this.original = original;
-		this.replace = replace;
+		this.replace = replace == null ? EMPTY : replace;
 	}
 
 	private <K, V extends CtElement> void replaceInMapIfExist(Map<K, V> mapProtected, ReplaceMapListener listener) {
@@ -60,9 +74,17 @@ class ReplacementVisitor extends CtScanner {
 			}
 		}
 		if (shouldBeDeleted != null) {
-			if (replace != null) {
-				map.put(key, (V) replace);
-				replace.setParent(shouldBeDeleted.getParent());
+			if (replace.length > 0) {
+				if (replace.length > 1) {
+					throw new InvalidReplaceException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
+				}
+				V val = (V) replace[0];
+				if (val != null) {
+					map.put(key, val);
+					val.setParent(shouldBeDeleted.getParent());
+				} else {
+					map.remove(key);
+				}
 			} else {
 				map.remove(key);
 			}
@@ -81,9 +103,11 @@ class ReplacementVisitor extends CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			set.remove(shouldBeDeleted);
-			if (replace != null) {
-				set.add((T) replace);
-				replace.setParent(shouldBeDeleted.getParent());
+			for (CtElement ele : replace) {
+				if (ele != null) {
+					set.add((T) ele);
+					ele.setParent(shouldBeDeleted.getParent());
+				}
 			}
 			listener.set(set);
 		}
@@ -101,11 +125,16 @@ class ReplacementVisitor extends CtScanner {
 			}
 		}
 		if (shouldBeDeleted != null) {
-			if (replace != null) {
-				list.set(index, (T) replace);
-				replace.setParent(shouldBeDeleted.getParent());
-			} else {
-				list.remove(index);
+			list.remove(index);
+			if (replace.length > 0) {
+				for (int i = 0; i < replace.length; i++) {
+					T ele = (T) replace[i];
+					if (ele != null) {
+						list.add(index, ele);
+						ele.setParent(shouldBeDeleted.getParent());
+						index = index + 1;
+					}
+				}
 			}
 			listener.set(list);
 		}
@@ -113,10 +142,17 @@ class ReplacementVisitor extends CtScanner {
 
 	private void replaceElementIfExist(CtElement candidate, ReplaceListener listener) {
 		if (candidate == original) {
-			listener.set(replace);
-			if (replace != null) {
-				replace.setParent(candidate.getParent());
+			CtElement val = null;
+			if (replace.length > 0) {
+				if (replace.length > 1) {
+					throw new InvalidReplaceException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
+				}
+				val = replace[0];
 			}
+			if (val != null) {
+				val.setParent(candidate.getParent());
+			}
+			listener.set(val);
 		}
 	}
 }

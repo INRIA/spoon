@@ -16,14 +16,23 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE;
+
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	private CtJavaDocTag.TagType type;
+	@MetamodelPropertyField(role = CtRole.COMMENT_CONTENT)
 	private String content;
+	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	private String param;
 
 	@Override
@@ -39,6 +48,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setType(TagType type) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
 		return (E) this;
 	}
@@ -50,6 +60,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setContent(String content) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
 		this.content = content;
 		return (E) this;
 	}
@@ -61,6 +72,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setParam(String param) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, PARAMETER, param, this.param);
 		this.param = param;
 		return (E) this;
 	}

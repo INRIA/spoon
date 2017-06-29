@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -43,23 +44,29 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Orange;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
+import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1006,6 +1013,139 @@ public class GenericsTest {
 		factory = launcher.getFactory();
 		CtInterface<?> fakeTplItf2 = factory.Interface().get(FakeTpl.class);
 		checkFakeTpl(fakeTplItf2);
+	}
 
+	@Test
+	public void testDiamondComplexGenericsRxJava() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/rxjava/");
+		launcher.setSourceOutputDirectory("./target/spooned-rxjava");
+		launcher.run();
+
+		Factory factory = launcher.getFactory();
+
+		List<CtConstructorCall> invocations = factory.getModel().getElements(new TypeFilter<>(CtConstructorCall.class));
+
+		boolean invocationDetected = false;
+		for (CtConstructorCall call : invocations) {
+			if (call.getType().getSimpleName().equals("ToNotificationSubscriber")) {
+				assertEquals(1, call.getType().getActualTypeArguments().size());
+
+				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
+				assertTrue(actualTA instanceof CtWildcardReference);
+				assertEquals("?", actualTA.getSimpleName());
+				assertTrue( ((CtWildcardReference)actualTA).getBoundingType() == null );
+				invocationDetected = true;
+			}
+		}
+
+		canBeBuilt("./target/spooned-rxjava",8);
+
+		assertTrue(invocationDetected);
+	}
+
+	@Test
+	public void testGetDeclarationOfTypeParameterReference() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/ExtendedPaella.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Paella.java");
+		launcher.buildModel();
+
+		Factory factory = launcher.getFactory();
+
+		CtClass extendedPaella = factory.getModel().getElements(new NameFilter<CtClass>("ExtendedPaella")).get(0);
+		List<CtTypeParameter> typeParameterList = extendedPaella.getFormalCtTypeParameters();
+
+		assertEquals(1, typeParameterList.size());
+
+		CtMethod totoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("toto")).get(0);
+		CtTypeReference returnTypeToto = totoMethod.getType();
+		CtTypeReference paramToto = ((CtParameter)totoMethod.getParameters().get(0)).getType();
+
+		CtType declaration = returnTypeToto.getDeclaration();
+
+		assertSame(typeParameterList.get(0), declaration);
+		assertSame(typeParameterList.get(0), paramToto.getDeclaration());
+
+		CtMethod machinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("machin")).get(0);
+		CtTypeReference returnTypeMachin = machinMethod.getType();
+		List<CtTypeParameter> formalCtTypeParameters = machinMethod.getFormalCtTypeParameters();
+
+		assertEquals(1, formalCtTypeParameters.size());
+
+		CtType declarationMachin = returnTypeMachin.getDeclaration();
+
+		assertNotSame(typeParameterList.get(0), declarationMachin);
+		assertSame(formalCtTypeParameters.get(0), declarationMachin);
+
+		CtClass innerPaella = factory.getModel().getElements(new NameFilter<CtClass>("InnerPaella")).get(0);
+		List<CtTypeParameter> innerTypeParametersList = innerPaella.getFormalCtTypeParameters();
+
+		assertEquals(typeParameterList.get(0), innerTypeParametersList.get(0).getSuperclass().getDeclaration());
+
+		CtMethod innerMachinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerMachin")).get(0);
+		CtTypeReference returnTypeInnerMachin = innerMachinMethod.getType();
+		CtTypeReference paramInnerMachinType = ((CtParameter)innerMachinMethod.getParameters().get(0)).getType();
+		List<CtTypeParameter> innerMachinFormalCtType = innerMachinMethod.getFormalCtTypeParameters();
+
+		assertSame(typeParameterList.get(0), returnTypeInnerMachin.getDeclaration());
+		assertSame(innerMachinFormalCtType.get(0), paramInnerMachinType.getDeclaration());
+
+		CtMethod innerTotoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerToto")).get(0);
+		CtTypeReference returnInnerToto = innerTotoMethod.getType();
+		CtTypeReference paramInnerToto = ((CtParameter)innerTotoMethod.getParameters().get(0)).getType();
+		List<CtTypeParameter> innerTotoFormatCtType = innerTotoMethod.getFormalCtTypeParameters();
+
+		assertSame(innerTotoFormatCtType.get(0), paramInnerToto.getDeclaration());
+		assertSame(innerTypeParametersList.get(0), returnInnerToto.getDeclaration());
+	}
+
+	@Test
+	public void testIsSameSignatureWithGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/SameSignature.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature.class);
+
+		List<CtMethod> methods = ctClass.getMethodsByName("forEach");
+		assertEquals(1, methods.size());
+
+		CtType<?> iterableItf = launcher.getFactory().Type().get(Iterable.class);
+
+		List<CtMethod<?>> methodsItf = iterableItf.getMethodsByName("forEach");
+		assertEquals(1, methodsItf.size());
+
+		ClassTypingContext ctc = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctc.isOverriding(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
+		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
+	}
+	@Test
+	public void testGetExecDeclarationOfEnumSetOf() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/EnumSetOf.java");
+		launcher.buildModel();
+
+		CtClass<?> ctClass = launcher.getFactory().Class().get(EnumSetOf.class);
+
+		CtInvocation invocation = ctClass.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtExecutable<?> decl = invocation.getExecutable().getDeclaration();
+		assertNull(decl);
+
+		CtClass<?> enumClass = launcher.getFactory().Class().get(EnumSet.class);
+		List<CtMethod<?>> methods = enumClass.getMethodsByName("of");
+
+		CtMethod rightOfMethod = null;
+		for (CtMethod method : methods) {
+			if (method.getParameters().size() == 1) {
+				rightOfMethod = method;
+			}
+		}
+
+		assertNotNull(rightOfMethod);
+
+		decl = invocation.getExecutable().getExecutableDeclaration();
+		assertEquals(rightOfMethod, decl);
 	}
 }

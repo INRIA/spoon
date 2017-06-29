@@ -23,6 +23,7 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
+
 /**
  * This is the root interface for named program element references. References
  * can point to program element built in the model or not. In the latter case,
@@ -45,10 +46,10 @@ public interface CtReference extends CtElement {
 	<T extends CtReference> T setSimpleName(String simpleName);
 
 	/**
-	 * Tries to get the declaration that corresponds to the referenced element.
-	 *
-	 * Consider using the more robust {@link CtTypeReference#getTypeDeclaration()} and {@link CtExecutableReference#getExecutableDeclaration()}.
-	 * @return referenced element or null if element does not exist
+	 * Returns the declaration that corresponds to the referenced element only
+	 * if the declaration is in the analyzed source files.
+	 * It is strongly advised to use the more robust {@link CtTypeReference#getTypeDeclaration()} and {@link CtExecutableReference#getExecutableDeclaration()} that never return null.
+	 * @return referenced element or null if element is not in the source path (aka input resource).
 	 */
 	@DerivedProperty
 	CtElement getDeclaration();

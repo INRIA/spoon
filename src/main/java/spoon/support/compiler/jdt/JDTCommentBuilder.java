@@ -126,6 +126,12 @@ class JDTCommentBuilder {
 			}
 		}
 
+		/**
+		 * Comment, which contains only javadoc tags never set content.
+		 * So set content now, to avoid unexpected null content.
+		 */
+		comment.setContent("");
+
 		String commentContent = getCommentContent(start, end);
 
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;

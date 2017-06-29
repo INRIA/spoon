@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -23,6 +24,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
@@ -35,10 +37,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.STATEMENT;
 
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	private List<CtStatement> statements = emptyList();
 
 	public void accept(CtVisitor visitor) {
@@ -77,7 +81,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
-			this.statements.add(0, statement);
+			this.addStatement(0, statement);
 		}
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
@@ -100,7 +104,8 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		this.statements.add(0, statement);
+		this.addStatement(0, statement);
+
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
@@ -160,6 +165,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 			this.statements = CtElementImpl.emptyList();
 			return (T) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, STATEMENT, this.statements, new ArrayList<>(this.statements));
 		this.statements.clear();
 		for (CtStatement s : statements) {
 			addStatement(s);
@@ -169,12 +175,18 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	@Override
 	public <T extends CtStatementList> T addStatement(CtStatement statement) {
+		return this.addStatement(this.statements.size(), statement);
+	}
+
+	@Override
+	public <T extends CtStatementList> T addStatement(int index, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
-		this.statements.add(statement);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, index, statement);
+		this.statements.add(index, statement);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
@@ -190,12 +202,12 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	@Override
 	public void removeStatement(CtStatement statement) {
 		if (this.statements != CtElementImpl.<CtStatement>emptyList()) {
-
 			boolean hasBeenRemoved = false;
 			// we cannot use a remove(statement) as it uses the equals
 			// and a block can have twice exactly the same statement.
 			for (int i = 0; i < this.statements.size(); i++) {
 				if (this.statements.get(i) == statement) {
+					getFactory().getEnvironment().getModelChangeListener().onListDelete(this, STATEMENT, statements, i, statement);
 					this.statements.remove(i);
 					hasBeenRemoved = true;
 					break;
@@ -204,6 +216,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 			// in case we use it with a statement manually built
 			if (!hasBeenRemoved) {
+				getFactory().getEnvironment().getModelChangeListener().onListDelete(this, STATEMENT, statements, statements.indexOf(statement), statement);
 				this.statements.remove(statement);
 			}
 

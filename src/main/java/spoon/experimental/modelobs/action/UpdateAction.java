@@ -14,48 +14,42 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.path;
+package spoon.experimental.modelobs.action;
+
+import spoon.experimental.modelobs.context.Context;
 
 /**
- * Created by nicolas on 27/08/2015.
+ * defines the update action
+ * @param <T>
  */
-public enum CtPathRole {
-	/**
-	 * Default value for a field
-	 */
-	DEFAULT_VALUE("defaultValue"),
-	/**
-	 * Then part of a CtIf
-	 */
-	THEN("then"),
-	/**
-	 * Else part of a CtIf
-	 */
-	ELSE("else"),
-	/**
-	 * Body of CtExecutable.
-	 */
-	BODY("body");
+public class UpdateAction<T> extends Action {
+	private final T oldValue;
+	private final T newValue;
 
-	private final String[] names;
-
-	CtPathRole(String... names) {
-		this.names = names;
-	}
-
-	public static CtPathRole fromName(String name) {
-		for (CtPathRole role : values()) {
-			for (String roleName : role.names) {
-				if (roleName.equals(name)) {
-					return role;
-				}
-			}
-		}
-		throw new IllegalArgumentException("no role found with name :" + name);
+	public UpdateAction(Context context, T newValue, T oldValue) {
+		super(context);
+		this.oldValue = oldValue;
+		this.newValue = newValue;
 	}
 
 	@Override
-	public String toString() {
-		return names[0];
+	public T getChangedValue() {
+		return getNewValue();
+	}
+
+	/**
+	 * the new value in the model
+	 * @return the new value
+	 */
+	public T getNewValue() {
+		return newValue;
+	}
+
+	/**
+	 * the old value in the model
+	 * @return the old value
+	 */
+	public T getOldValue() {
+		return oldValue;
 	}
 }

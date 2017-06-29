@@ -22,6 +22,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -42,10 +43,12 @@ import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
+import spoon.test.imports.testclasses2.apachetestsuite.staticcollision.AllLangTestSuite;
+import spoon.test.imports.testclasses2.apachetestsuite.staticjava3.AllLangTestJava3;
+import spoon.test.imports.testclasses2.apachetestsuite.staticmethod.AllLangTestSuiteStaticMethod;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,10 +57,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -184,10 +187,9 @@ public class ImportTest {
 		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
 		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString());
-		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
-				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator()
-				+ "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
-				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
+		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
+				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
+				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
 		assertEquals(expected, subClass.toString());
 	}
 
@@ -392,6 +394,21 @@ public class ImportTest {
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
 		assertEquals("spoon.test.imports.testclasses.internal4.Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+	}
+
+	@Test
+	public void testImportStaticAndFieldAccessWithImport() throws Exception {
+		// contract: Qualified field access and an import static with import should import the type first, and not use static import
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Tacos.java");
+		launcher.buildModel();
+
+		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
+		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+		assertTrue(assignment instanceof CtLocalVariable);
+		assertEquals("Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
 
 	@Test
@@ -1014,4 +1031,133 @@ public class ImportTest {
 		assertThat(codeB, containsString("import java.awt.List;"));
 	}
 
+	@Test
+	public void testStaticMethodWithDifferentClassSameNameJava7NoCollision() {
+		// contract: when there is a collision between class names when using static method, we should create a static import for the method
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-staticmethod";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticmethod/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setComplianceLevel(7);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(AllLangTestSuiteStaticMethod.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should contain a static import ", output.contains("import static spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite;"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(suite());"));
+
+
+		canBeBuilt(outputDir, 7);
+	}
+
+	@Test
+	public void testStaticMethodWithDifferentClassSameNameJava3NoCollision() {
+		// contract: when there is a collision between class names when using static method, we could not create a static import
+		// as it is not compliant with java < 1.5, so we should use fully qualified name of the class
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-staticjava3";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticjava3/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setComplianceLevel(3);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(AllLangTestJava3.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertFalse("The file should not contain a static import ", output.contains("import static"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
+
+
+		canBeBuilt(outputDir, 3);
+	}
+
+	@Test
+	public void testStaticMethodWithDifferentClassSameNameCollision() {
+		// contract: when using static method, if there is a collision between class name AND between method names,
+		// we can only use the fully qualified name of the class to call the static method
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-apache";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticcollision/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setComplianceLevel(3);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(AllLangTestSuite.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should not contain a static import ",!output.contains("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;"));
+		assertTrue("The call to the last EnumTestSuite should be in FQN", output.contains("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
+
+		canBeBuilt(outputDir, 3);
+	}
+
+	@Test
+	public void testSortingOfImports() {
+		// contract: imports are sorted alphabetically
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned";
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().get(DefaultJavaPrettyPrinter.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		StringTokenizer st = new StringTokenizer(output, System.getProperty("line.separator"));
+		String lastImport = null;
+		int countOfImports = 0;
+		while(st.hasMoreTokens()) {
+			String line = st.nextToken();
+			if(line.startsWith("import")) {
+				countOfImports++;
+				if(lastImport!=null) {
+					//check that next import is alphabetically higher then last import
+					assertTrue(lastImport.compareTo(line)<0);
+				}
+				lastImport = line;
+			} else {
+				if(lastImport!=null) {
+					//there are no more imports. Finish
+					break;
+				}
+				//no import found yet. Continue with next line
+			}
+		}
+		assertTrue(countOfImports>10);
+	}
 }

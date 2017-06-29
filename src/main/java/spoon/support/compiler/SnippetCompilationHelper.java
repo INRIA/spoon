@@ -90,7 +90,7 @@ public class SnippetCompilationHelper {
 		CtStatement ret = statements.get(statements.size() - 1);
 
 		// Clean up
-		c.getPackage().getTypes().remove(c);
+		c.getPackage().removeType(c);
 
 		if (ret instanceof CtClass) {
 			CtClass klass = (CtClass) ret;
@@ -147,7 +147,7 @@ public class SnippetCompilationHelper {
 
 		String contents = w.toString();
 		// Clean up (delete wrapper from factory) after it is printed. The DefaultJavaPrettyPrinter needs w in model to be able to print it correctly
-		w.getPackage().getTypes().remove(w);
+		w.getPackage().removeType(w);
 
 		return contents;
 	}
