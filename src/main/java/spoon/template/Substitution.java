@@ -19,7 +19,9 @@ package spoon.template;
 import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -35,13 +37,17 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,7 +91,7 @@ public abstract class Substitution {
 			}
 		}
 	}
-
+	
 	/**
 	 * Generates a type (class, interface, enum, ...) from the template model `templateOfType`
 	 * by by substituting all the template parameters by their values.
@@ -106,17 +112,18 @@ public abstract class Substitution {
 	 * @param templateParameters
 	 * 		the substitution parameters
 	 */
-	public static <T> CtType<T> createTypeFromTemplate(String qualifiedTypeName, CtType<T> templateOfType, Map<String, Object> templateParameters) {
+	@SuppressWarnings("unchecked")
+	public static <T extends CtType<?>> T createTypeFromTemplate(String qualifiedTypeName, CtType<?> templateOfType, Map<String, Object> templateParameters) {
 		final Factory f = templateOfType.getFactory();
 		CtTypeReference<T> typeRef = f.Type().createReference(qualifiedTypeName);
 		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
 		extendedParams.put(templateOfType.getSimpleName(), typeRef);
-		List<CtType<T>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-		for (CtType<T> ctType : generated) {
+		List<CtType<?>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
+		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
 		}
-		return typeRef.getTypeDeclaration();
+		return (T) typeRef.getTypeDeclaration();
 	}
 
 	/**
