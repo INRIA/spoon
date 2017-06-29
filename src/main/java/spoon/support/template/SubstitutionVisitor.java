@@ -630,6 +630,9 @@ public class SubstitutionVisitor extends CtScanner {
 		}
 
 		private String substituteName(String name) {
+			if (name == null) {
+				return null;
+			}
 			if (parameterNameToValue != null) {
 				for (Map.Entry<String, Object> e : parameterNameToValue.entrySet()) {
 					String pname = e.getKey();
