@@ -743,48 +743,5 @@ public class TemplateTest {
 			assertEquals("this.m_A = p_A", method1.getBody().getStatement(0).toString());
 			assertEquals("setA(\"The A is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
 		}
-		{
-			//contract: Type value name is substituted in substring of literal, named element and reference
-			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.Type().OBJECT.getTypeDeclaration()).apply(factory.createClass());
-			assertEquals("java.lang.String m_Object = \"Object is here more times: Object\";", result.getField("m_Object").toString());
-			//contract: the parameter of type string replaces substring in method name
-			CtMethod<?> method1 = result.getMethodsByName("setObject").get(0);
-			assertEquals("setObject", method1.getSimpleName());
-			assertEquals("java.lang.String p_Object", method1.getParameters().get(0).toString());
-			assertEquals("this.m_Object = p_Object", method1.getBody().getStatement(0).toString());
-			assertEquals("setObject(\"The Object is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
-		}
-		{
-			//contract: Type reference value name is substituted in substring of literal, named element and reference
-			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.Type().OBJECT).apply(factory.createClass());
-			assertEquals("java.lang.String m_Object = \"Object is here more times: Object\";", result.getField("m_Object").toString());
-			//contract: the parameter of type string replaces substring in method name
-			CtMethod<?> method1 = result.getMethodsByName("setObject").get(0);
-			assertEquals("setObject", method1.getSimpleName());
-			assertEquals("java.lang.String p_Object", method1.getParameters().get(0).toString());
-			assertEquals("this.m_Object = p_Object", method1.getBody().getStatement(0).toString());
-			assertEquals("setObject(\"The Object is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
-		}
-		{
-			//contract: String literal value name is substituted in substring of literal, named element and reference
-			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.createLiteral("Xxx")).apply(factory.createClass());
-			assertEquals("java.lang.String m_Xxx = \"Xxx is here more times: Xxx\";", result.getField("m_Xxx").toString());
-			//contract: the parameter of type string replaces substring in method name
-			CtMethod<?> method1 = result.getMethodsByName("setXxx").get(0);
-			assertEquals("setXxx", method1.getSimpleName());
-			assertEquals("java.lang.String p_Xxx", method1.getParameters().get(0).toString());
-			assertEquals("this.m_Xxx = p_Xxx", method1.getBody().getStatement(0).toString());
-			assertEquals("setXxx(\"The Xxx is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
-		}
-		{
-			//contract: The elements which cannot be converted to String should throw exception
-			SubStringTemplate template = new SubStringTemplate(factory.createSwitch());
-			try {
-				template.apply(factory.createClass());
-				fail();
-			} catch(SpoonException e) {
-				//OK
-			}
-		}
 	}
 }

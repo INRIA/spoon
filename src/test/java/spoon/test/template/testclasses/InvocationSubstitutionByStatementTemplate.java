@@ -12,12 +12,12 @@ public class InvocationSubstitutionByStatementTemplate extends StatementTemplate
 		_statement_();
 	}
 	
-	@Parameter("_statement_")
-	CtStatement statement;
+	@Parameter
+	CtStatement _statement_;
 
 	@Local
 	public InvocationSubstitutionByStatementTemplate(CtStatement statement) {
-		this.statement = statement;
+		this._statement_ = statement;
 	}
 	
 	@Local

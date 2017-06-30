@@ -37,11 +37,24 @@ import spoon.support.template.ParameterMatcher;
 public @interface Parameter {
 	/**
 	 * Defines the name of the parameter (optional, mostly to avoid name
-	 * clashes). By default, the name of a template parameter is the simple name
-	 * of the annotated field. However, in some cases, it can be useful to set a
-	 * different name to a parameter in order to avoid name clashes, in
-	 * particular when a parameter represents the name of a templated field. For
-	 * instance:
+	 * clashes). In most cases, the annotation does not have a "value" and the name of a template parameter is the simple name
+	 * of the annotated field.
+	 *
+	 * <pre>
+	 * class T extends Template {
+	 * 	\@Parameter
+	 * 	CtExpression&lt;String&gt; $i;
+	 *
+	 * 	String s = $i.S();
+	 * }
+	 * </pre>
+	 *
+	 * However, in rare cases, eg to rename named elements that are in the same scope
+	 * as the template parameter, such as renaming of fields or nested types, the annotation value
+	 * is used to set a
+	 * template parameter name (aka a proxy). In this case:
+	 * contract 1: if "value" is set, then the template field type must be String
+	 * contract 2: if "value" is set, then the actual name of the field must be the name of the template parameter prefixed by "_"
 	 *
 	 * <pre>
 	 * class T extends Template {
@@ -49,7 +62,7 @@ public @interface Parameter {
 	 * 	\@Parameter(&quot;_i_&quot;)
 	 * 	String __i_;
 	 *
-	 * 	int _i_;
+	 * 	int _i_; // the field to be renamed
 	 * }
 	 * </pre>
 	 */

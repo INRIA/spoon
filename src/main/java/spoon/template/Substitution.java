@@ -663,7 +663,25 @@ public abstract class Substitution {
 		if (c.isShadow()) {
 			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
 		}
+		checkTemplateContracts(c);
 		return c;
+	}
+
+	private static <T> void checkTemplateContracts(CtClass<T> c) {
+		for (CtField f : c.getFields()) {
+			if (f.getAnnotation(Parameter.class) != null && !f.getAnnotation(Parameter.class).value().equals("")) {
+				// contract: if value, then the field type must be String
+				if (!f.getType().equals(c.getFactory().Type().STRING)) {
+					throw new TemplateException("proxy template parameter must be typed as String " +  f.getType().getQualifiedName());
+				}
+
+				// contract: the name of the template parameter must correspond to the name of the field
+				if (!f.getSimpleName().equals("_" + f.getAnnotation(Parameter.class).value())) {
+					throw new TemplateException("the field name of a proxy template parameter must be called _" + f.getSimpleName());
+				}
+
+			}
+		}
 	}
 
 	/**
