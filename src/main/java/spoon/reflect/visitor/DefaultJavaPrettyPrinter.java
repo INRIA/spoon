@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -67,6 +68,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -292,10 +294,44 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.adjustStartPosition(e);
 				}
 			}
-			e.accept(this);
+			try {
+				e.accept(this);
+			} catch (SpoonException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				String elementInfo = e.getClass().getName();
+				elementInfo += " on path " + getPath(e) + "\n";
+				if (e.getPosition() != null) {
+					elementInfo += "at position " + e.getPosition().toString() + " ";
+				}
+				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
+			}
 			context.elementStack.pop();
 		}
 		return this;
+	}
+
+	private static String getPath(CtElement ele) {
+		StringBuilder sb = new StringBuilder();
+		addParentPath(sb, ele);
+		if (ele instanceof CtVariableAccess) {
+			sb.append(':').append(((CtVariableAccess) ele).getVariable().getSimpleName());
+		}
+		return sb.toString();
+	}
+	private static void addParentPath(StringBuilder sb, CtElement ele) {
+		if (ele == null || (ele instanceof CtPackage && ((CtPackage) ele).isUnnamedPackage())) {
+			return;
+		}
+		if (ele.isParentInitialized()) {
+			addParentPath(sb, ele.getParent());
+		}
+		sb.append("\n\t").append(ele.getClass().getSimpleName());
+		if (ele instanceof CtNamedElement) {
+			sb.append(":").append(((CtNamedElement) ele).getSimpleName());
+		} else if (ele instanceof CtReference) {
+			sb.append(":").append(((CtReference) ele).getSimpleName());
+		}
 	}
 
 	/**
