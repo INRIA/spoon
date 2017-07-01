@@ -685,14 +685,14 @@ public abstract class Substitution {
 //				}
 
 				// contract: if a proxy parameter is declared and named "x" (@Parameter("x")), then a type member named "x" must exist.
-				boolean found=false;
-				for(CtTypeMember member: c.getTypeMembers()) {
+				boolean found = false;
+				for (CtTypeMember member: c.getTypeMembers()) {
 					if (member.getSimpleName().equals(proxyName)) {
 						found = true;
 					}
 				}
 				if (!found) {
-					throw new TemplateException("if a proxy parameter is declared and named \""+proxyName+"\", then a type member named \"\"+proxyName+\"\" must exist.");
+					throw new TemplateException("if a proxy parameter is declared and named \"" + proxyName + "\", then a type member named \"\" + proxyName + \"\" must exist.");
 				}
 
 			}
