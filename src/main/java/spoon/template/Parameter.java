@@ -54,7 +54,7 @@ public @interface Parameter {
 	 * is used to set a
 	 * template parameter name (aka a proxy). In this case:
 	 * contract 1: if "value" is set, then the template field type must be String
-	 * contract 2: if "value" is set, then the actual name of the field must be the name of the template parameter prefixed by "_"
+	 * contract 2: if a proxy parameter is declared and named "x" (@Parameter("x")), then a type member named "x" must exist (the one to be renamed).
 	 *
 	 * <pre>
 	 * class T extends Template {
