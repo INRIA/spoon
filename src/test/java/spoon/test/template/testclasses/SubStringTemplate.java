@@ -17,10 +17,10 @@ public class SubStringTemplate extends ExtensionTemplate{
 	}
 	
 	@Parameter
-	String $name$;
+	Object $name$;
 	
 	@Local
-	public SubStringTemplate(String name) {
-		this.$name$ = name.toString();
+	public SubStringTemplate(Object o) {
+		this.$name$ = o;
 	}
 }
