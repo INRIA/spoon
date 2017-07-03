@@ -15,15 +15,15 @@ public class InvocationTemplate extends ExtensionTemplate {
 	
 	@Local
 	public InvocationTemplate(CtTypeReference<?> ifaceType, String methodName) {
-		this.ifaceType = ifaceType;
-		this.methodName = methodName;
+		this._IFace = ifaceType.getSimpleName();
+		this.$method$ = methodName;
 	}
 
 	@Parameter("IFace")
-	CtTypeReference<?> ifaceType;
+	String _IFace;
 	
-	@Parameter("$method$")
-	String methodName;
+	@Parameter
+	String $method$;
 
 	
 	

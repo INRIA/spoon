@@ -1,7 +1,6 @@
 package spoon.test.template.testclasses;
 
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
 import spoon.template.Parameter;
@@ -13,7 +12,7 @@ public class EnumAccessTemplate extends ExtensionTemplate {
 	}
 	
 	@Parameter("_AnEnum_")
-	CtTypeReference<?> anEnum;
+	String __AnEnum_;
 	
 	@Parameter
 	Enum _value_;
@@ -21,7 +20,7 @@ public class EnumAccessTemplate extends ExtensionTemplate {
 	@Local
 	public EnumAccessTemplate(Enum enumValue, Factory factory) {
 		this._value_ = enumValue;
-		this.anEnum = factory.Type().createReference(enumValue.getClass()); 
+		this.__AnEnum_ = enumValue.getClass().getCanonicalName();
 	}
 	
 	@Local
