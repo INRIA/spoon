@@ -878,12 +878,28 @@ public class FilterTest {
 			int count = 0;
 		}
 		
-		Context context = new Context();
-		//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
-		launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
-			context.count++;
-		});
-		assertTrue(context.count>0);
+		{
+			Context context = new Context();
+			//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
+			launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
+				context.count++;
+			});
+			assertTrue(context.count>0);
+		}
+		{
+			Context context = new Context();
+			//contract: if the for each implementation throws CCE then it is reported
+			try {
+				launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
+					context.count++;
+					throw new ClassCastException("TEST");
+				});
+				fail("It must fail, because body of forEach should be called and thrown CCE");
+			} catch (SpoonException e) {
+				assertTrue(context.count>0);
+				assertEquals("TEST", e.getCause().getMessage());
+			}
+		}
 	}
 	
 	@Test
