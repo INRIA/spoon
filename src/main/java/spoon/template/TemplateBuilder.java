@@ -469,7 +469,7 @@ public class TemplateBuilder {
 	 * @param localName
 	 * 		required value of {@link Local} annotation
 	 */
-	public TemplateBuilder includeTaggedBy(String localName)
+	public TemplateBuilder includeTaggedBy(String... localName)
 	{
 		include(new Filter<CtTypeMember>(){
 			@Override
@@ -478,8 +478,11 @@ public class TemplateBuilder {
 				Tag local = typeMember.getAnnotation(Tag.class);
 				if (local != null) {
 					for (String value : local.value()) {
-						if(localName.equals(value)) {
-							return true;
+						for (String name : localName)
+						{
+							if(name.equals(value)) {
+								return true;
+							}
 						}
 					}
 				}
