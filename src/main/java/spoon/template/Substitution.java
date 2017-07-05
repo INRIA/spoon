@@ -119,7 +119,7 @@ public abstract class Substitution {
 		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
 		extendedParams.put(templateOfType.getSimpleName(), typeRef);
-		List<CtType<?>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
+		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
 		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
 		}
