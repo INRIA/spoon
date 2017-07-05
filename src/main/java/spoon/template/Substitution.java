@@ -106,17 +106,18 @@ public abstract class Substitution {
 	 * @param templateParameters
 	 * 		the substitution parameters
 	 */
-	public static <T> CtType<T> createTypeFromTemplate(String qualifiedTypeName, CtType<T> templateOfType, Map<String, Object> templateParameters) {
+	@SuppressWarnings("unchecked")
+	public static <T extends CtType<?>> T createTypeFromTemplate(String qualifiedTypeName, CtType<?> templateOfType, Map<String, Object> templateParameters) {
 		final Factory f = templateOfType.getFactory();
 		CtTypeReference<T> typeRef = f.Type().createReference(qualifiedTypeName);
 		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
 		extendedParams.put(templateOfType.getSimpleName(), typeRef);
-		List<CtType<T>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-		for (CtType<T> ctType : generated) {
+		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
+		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
 		}
-		return typeRef.getTypeDeclaration();
+		return (T) typeRef.getTypeDeclaration();
 	}
 
 	/**
@@ -207,7 +208,6 @@ public abstract class Substitution {
 	 * 		the model of source template
 	 */
 	static void insertAllMethods(CtType<?> targetType, Template<?> template, CtClass<?> sourceClass) {
-
 		Set<CtMethod<?>> methodsOfTemplate = sourceClass.getFactory().Type().get(Template.class).getMethods();
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
