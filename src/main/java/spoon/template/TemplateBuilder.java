@@ -323,7 +323,7 @@ public class TemplateBuilder {
 		CtTypeReference<T> targetTypeRef = factory.Type().createReference(qualifiedTypeName);
 		CtPackage targetPackage = factory.Package().getOrCreate(targetTypeRef.getPackage().getSimpleName());
 		substituteClass(clonedTemplate, targetTypeRef);
-		List<CtType<?>> generated = new SubstitutionVisitor(factory, parameters).substitute(clonedTemplate);
+		List<CtType<?>> generated = (List) new SubstitutionVisitor(factory, parameters).substitute(clonedTemplate);
 		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
 		}
@@ -337,7 +337,7 @@ public class TemplateBuilder {
 	public List<CtTypeMember> applyToType(CtType<?> target) {
 		CtType<?> clonedTemplate = cloneAndFilterTemplate();
 		substituteClass(clonedTemplate, target.getReference());
-		List<CtType<?>> generated = new SubstitutionVisitor(factory, parameters).substitute(clonedTemplate);
+		List<CtType<?>> generated = (List) new SubstitutionVisitor(factory, parameters).substitute(clonedTemplate);
 		if (generated.size() > 1) {
 			throw new SpoonException("Unexpected count of generated types");
 		}
@@ -363,7 +363,7 @@ public class TemplateBuilder {
 		clonedTemplate.setParent(this.template.getParent());
 		//filter type members. Copy the list, because the origin will be modified later
 		List<CtTypeMember> allTypeMembers = new ArrayList<>(clonedTemplate.getTypeMembers());
-		Set<CtTypeMember> includedTypeMembers = Collections.newSetFromMap(new IdentityHashMap<>(allTypeMembers.size()));
+		Set<CtTypeMember> includedTypeMembers = Collections.<CtTypeMember>newSetFromMap(new IdentityHashMap<>(allTypeMembers.size()));
 		//by default all members are included
 		includedTypeMembers.addAll(allTypeMembers);
 		//apply all defined type member filters
@@ -402,7 +402,7 @@ public class TemplateBuilder {
 			clonedTemplate.setSuperclass(null);
 		}
 		if (includeInterfaces == false) {
-			clonedTemplate.setSuperInterfaces(Collections.emptySet());
+			clonedTemplate.setSuperInterfaces(Collections.<Set<CtTypeReference<?>>>emptySet());
 		}
 		return clonedTemplate;
 	}
@@ -451,7 +451,7 @@ public class TemplateBuilder {
 		private Filter<CtTypeMember> filter;
 
 		@SuppressWarnings("unchecked")
-		private FilterRequest(boolean including, Filter<? extends CtTypeMember> filter) {
+		private FilterRequest(boolean including, Filter<? extends CtElement> filter) {
 			super();
 			this.including = including;
 			this.filter = (Filter<CtTypeMember>) filter;
