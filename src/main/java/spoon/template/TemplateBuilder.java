@@ -470,7 +470,7 @@ public class TemplateBuilder {
 	 * @param localName
 	 * 		required value of {@link Local} annotation
 	 */
-	public TemplateBuilder includeTaggedBy(String... localName)
+	public TemplateBuilder includeTaggedBy(final String... localName)
 	{
 		include(new Filter<CtTypeMember>(){
 			@Override
