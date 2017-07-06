@@ -38,8 +38,10 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -49,6 +51,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.template.Parameter;
 import spoon.template.Template;
 import spoon.template.TemplateParameter;
@@ -270,8 +273,19 @@ public class SubstitutionVisitor extends CtScanner {
 						 * String field = "x"
 						 * System.printLn("field") //is substitutes as: System.printLn("x")
 						 */
-						//New implementation always replaces the name of the accessed field
-						//so do nothing here. The string substitution is handled by #scanCtReference
+						// if parameter value is not the same name as field name
+						// then we substitute the value
+						CtType declaringClass = ref.getDeclaringType().getDeclaration();
+						List<CtField> fields = declaringClass.getElements(new TypeFilter<>(CtField.class));
+
+						for (CtField field : fields) {
+							Parameter param = field.getAnnotation(Parameter.class);
+							if (param != null && param.value().equals(ref.getSimpleName())) {
+								return; // case B do nothing
+							}
+						}
+
+						throw context.replace(toReplace, factory.Code().createLiteral(value)); // case A
 					} else {
 						throw context.replace(toReplace, factory.Code().createLiteral(value));
 					}
