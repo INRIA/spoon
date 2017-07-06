@@ -691,7 +691,7 @@ public abstract class Substitution {
 					}
 				}
 				if (!found) {
-					throw new TemplateException("if a proxy parameter is declared and named \"" + proxyName + "\", then a type member named \"\" + proxyName + \"\" must exist.");
+					throw new TemplateException("if a proxy parameter is declared and named \"" + proxyName + "\", then a type member named \"" + proxyName + "\" must exist.");
 				}
 
 			}
