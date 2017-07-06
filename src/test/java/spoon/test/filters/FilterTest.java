@@ -868,6 +868,7 @@ public class FilterTest {
 	@Test
 	public void testClassCastExceptionOnForEach() throws Exception {
 		// contract: bound query, without any mapping
+		// This test could fail with a version of JDK <= 8.0.40. 
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
