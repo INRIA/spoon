@@ -27,10 +27,10 @@ public class LoggerModel {
 
 	public void block() throws Throwable {
 		try {
-			Logger.enter("_classname_",  "_methodName_");
+			Logger.enter(_classname_, _methodName_);
 			_block_.S();
 		} finally {
-			Logger.exit("_methodName_");
+			Logger.exit(_methodName_);
 		}
 	}
 }
