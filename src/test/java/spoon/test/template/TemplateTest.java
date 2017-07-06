@@ -29,6 +29,7 @@ import spoon.support.template.SubstitutionVisitor;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
+import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.FieldAccessTemplate;
 import spoon.test.template.testclasses.InnerClassTemplate;
@@ -845,6 +846,25 @@ public class TemplateTest {
 			assertEquals("int value;", result.getField("value").toString());
 			
 			assertEquals("value = 7", result.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void testAnotherFieldAccessNameSubstitution() throws Exception {
+		//contract: the substitution of name of whole field is possible
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/AnotherFieldAccessTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new AnotherFieldAccessTemplate().apply(factory.Class().create("x.X"));
+			assertEquals("int x;", result.getField("x").toString());
+			assertEquals("int m_x;", result.getField("m_x").toString());
+
+			assertEquals("java.lang.System.out.println(((x) + (m_x)))", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
 		}
 	}
 }
