@@ -23,6 +23,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.Query;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
@@ -86,18 +88,104 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		return this.addStatement(this.statements.size(), statement);
 	}
 
+	private void ensureModifiableStatementsList() {
+		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
+			this.statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+	}
+
 	@Override
 	public <T extends CtStatementList> T addStatement(int index, CtStatement statement) {
 		if (statement == null) {
 			return (T) this;
 		}
-		if (statements == CtElementImpl.<CtStatement>emptyList()) {
-			statements = new ArrayList<>(CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
-		}
+		this.ensureModifiableStatementsList();
 		statement.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, STATEMENT, this.statements, index, statement);
 		statements.add(index, statement);
 		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertBegin(CtStatement statement) {
+		ensureModifiableStatementsList();
+		statement.setParent(this);
+		this.addStatement(0, statement);
+
+		if (isImplicit() && this.statements.size() > 1) {
+			setImplicit(false);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertBegin(CtStatementList statements) {
+		this.ensureModifiableStatementsList();
+		for (CtStatement statement : statements.getStatements()) {
+			statement.setParent(this);
+			this.addStatement(0, statement);
+		}
+		if (isImplicit() && this.statements.size() > 1) {
+			setImplicit(false);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertEnd(CtStatement statement) {
+		ensureModifiableStatementsList();
+		addStatement(statement);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertEnd(CtStatementList statements) {
+		for (CtStatement s : statements.getStatements()) {
+			insertEnd(s);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
+		for (CtStatement e : Query.getElements(this, insertionPoints)) {
+			e.insertBefore(statement);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
+		for (CtStatement e : Query.getElements(this, insertionPoints)) {
+			e.insertBefore(statements);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
+		for (CtStatement e : Query.getElements(this, insertionPoints)) {
+			e.insertAfter(statement);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
+		for (CtStatement e : Query.getElements(this, insertionPoints)) {
+			e.insertAfter(statements);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtStatement> T getStatement(int i) {
+		return (T) statements.get(i);
+	}
+
+	@Override
+	public <T extends CtStatement> T getLastStatement() {
+		return (T) statements.get(statements.size() - 1);
 	}
 
 	@Override
