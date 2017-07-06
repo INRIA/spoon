@@ -31,6 +31,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
@@ -363,7 +364,7 @@ public class TemplateBuilder {
 		clonedTemplate.setParent(this.template.getParent());
 		//filter type members. Copy the list, because the origin will be modified later
 		List<CtTypeMember> allTypeMembers = new ArrayList<>(clonedTemplate.getTypeMembers());
-		Set<CtTypeMember> includedTypeMembers = Collections.<CtTypeMember>newSetFromMap(new IdentityHashMap<>(allTypeMembers.size()));
+		Set<CtTypeMember> includedTypeMembers = Collections.newSetFromMap(new IdentityHashMap<CtTypeMember, Boolean>(allTypeMembers.size()));
 		//by default all members are included
 		includedTypeMembers.addAll(allTypeMembers);
 		//apply all defined type member filters
@@ -402,7 +403,7 @@ public class TemplateBuilder {
 			clonedTemplate.setSuperclass(null);
 		}
 		if (includeInterfaces == false) {
-			clonedTemplate.setSuperInterfaces(Collections.<Set<CtTypeReference<?>>>emptySet());
+			clonedTemplate.setSuperInterfaces(Collections.<CtTypeReference<?>>emptySet());
 		}
 		return clonedTemplate;
 	}
