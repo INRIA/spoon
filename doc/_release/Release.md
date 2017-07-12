@@ -17,10 +17,6 @@ This article is a short summary of the [official documentation of sonatype](http
 1. push the release commit on Github (git push origin master)
     - `git push origin master`
     - `git push origin spoon-core-X.X.X`
-1. update the `stable` branch
-    - `git checkout stable`
-    - `git reset --hard <commit-id>` # Where commit-id corresponds to the last commit before those created by maven: we need two commits from previous release to deploy a hotfix.
-    - `git push origin stable`
 1. update the doc, etc., see checklist below
 
 ### Checklists 
@@ -38,7 +34,6 @@ This article is a short summary of the [official documentation of sonatype](http
     - Update of Spoon's website
     	- News section in `doc/doc_homepage.md`
     	- Maven version in `doc/_config.yml`
-    	- Maven snippets in `doc/doc_homepage.md`
     - Updates main `README.md`
 - Add changelog on release page on GitHub 
 - Announces release on the mailing list (give credits to the contributors)
