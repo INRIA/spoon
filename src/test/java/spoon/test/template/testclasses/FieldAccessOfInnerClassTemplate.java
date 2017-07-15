@@ -8,7 +8,7 @@ public class FieldAccessOfInnerClassTemplate extends ExtensionTemplate {
 
 	class Inner {
 		int $field$;
-		
+
 		void m() {
 			$field$ = 7;
 		}
@@ -16,9 +16,9 @@ public class FieldAccessOfInnerClassTemplate extends ExtensionTemplate {
 	
 	@Local
 	public FieldAccessOfInnerClassTemplate(String fieldName) {
-		this.$field$ = fieldName;
+		this.fieldName = fieldName;
 	}
 
-	@Parameter
-	String $field$;
+	@Parameter("$field$")
+	String fieldName;
 }
