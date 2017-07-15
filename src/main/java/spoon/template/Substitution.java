@@ -309,11 +309,10 @@ public abstract class Substitution {
 	 */
 	static void insertGeneratedNestedType(CtType<?> targetType, Template<?> template, CtType<?> nestedType) {
 
-		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		if (nestedType.getAnnotation(Local.class) != null) {
 			return;
 		}
-		CtType<?> result = substitute(sourceClass, template, (CtType) nestedType);
+		CtType<?> result = substitute(targetType, template, (CtType) nestedType);
 		targetType.addNestedType(result);
 	}
 
