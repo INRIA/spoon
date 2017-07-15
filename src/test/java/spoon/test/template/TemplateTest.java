@@ -31,6 +31,7 @@ import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
+import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
 import spoon.test.template.testclasses.FieldAccessTemplate;
 import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
@@ -846,6 +847,25 @@ public class TemplateTest {
 			assertEquals("int value;", result.getField("value").toString());
 			
 			assertEquals("value = 7", result.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void testFieldAccessNameSubstitutionInInnerClass() throws Exception {
+		//contract: the substitution of name of whole field is possible in inner class too
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessOfInnerClassTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new FieldAccessOfInnerClassTemplate("value").apply(factory.Class().create("x.X"));
+			final CtClass<?> innerClass = result.getNestedType("Inner");
+			assertEquals("int value;", innerClass.getField("value").toString());
+			
+			assertEquals("value = 7", innerClass.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
 		}
 	}
 
