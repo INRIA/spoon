@@ -441,8 +441,8 @@ public class TemplateTest {
 
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("_classname_", aTargetType.getSimpleName()) ;
-		params.put("_methodName_", toBeLoggedMethod.getSimpleName());
+		params.put("_classname_", factory.Code().createLiteral(aTargetType.getSimpleName()));
+		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
 		params.put("_block_", toBeLoggedMethod.getBody());
 		final List<CtMethod<?>> aMethods = new SubstitutionVisitor(factory, params).substitute(aTemplateModel.clone());
 		assertEquals(1, aMethods.size());
