@@ -19,6 +19,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NameFilter;
 import spoon.support.compiler.FileSystemFile;
@@ -29,6 +30,7 @@ import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
+import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.NtonCodeTemplate;
@@ -613,6 +615,28 @@ public class TemplateTest {
 		assertEquals("java.lang.System.out.println(\"second\")", m2.getBody().getStatement(0).toString());
 		//check that substitution by missing value correctly produces empty expression
 		assertEquals("java.lang.System.out.println(null)", m2.getBody().getStatement(1).toString());
+	}
+
+	@Test
+	public void testSubstituteInnerClass() throws Exception {
+		//contract: the inner class is substituted well too and references to target class are substituted well
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InnerClassTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> result = factory.Class().create("x.Result");
+		new InnerClassTemplate().apply(result);
+		assertEquals(1, result.getNestedTypes().size());
+		CtType<?> innerType = result.getNestedType("Inner");
+		assertNotNull(innerType);
+		CtField<?> innerField = innerType.getField("innerField");
+		assertNotNull(innerField);
+		assertSame(innerType, innerField.getDeclaringType());
+		CtFieldReference<?> fr = innerType.filterChildren((CtFieldReference<?> e)->true).first();
+		//check that reference to declaring type is correctly substituted
+		assertEquals("x.Result$Inner",fr.getDeclaringType().getQualifiedName());
 	}
 
 	@Test
