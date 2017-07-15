@@ -212,11 +212,28 @@ public abstract class Parameters {
 	public static Map<String, Object> getNamesToValues(Template<?> template, CtClass<? extends Template<?>> templateType) {
 		//use linked hash map to assure same order of parameter names. There are cases during substitution of parameters when substitution order matters. E.g. SubstitutionVisitor#substituteName(...)
 		Map<String, Object> params = new LinkedHashMap<>();
+		final Factory factory = templateType.getFactory();
 		try {
 			for (CtFieldReference<?> f : templateType.getAllFields()) {
 				if (isParameterSource(f)) {
 					String parameterName = getParameterName(f);
-					params.put(parameterName, getValue(template, parameterName, (Field) f.getActualField()));
+					Field field = (Field) f.getActualField();
+					Object value = getValue(template, parameterName, field);
+					if (parameterName.equals(f.getSimpleName()) && field.getType().equals(String.class)) {
+						/*
+						 * it is not a proxy parameter but the value type is String.
+						 * In this case the String must be always understood as String literal
+						 * otherwise the SubstitutionVisitor would not know whether
+						 * A) field reference name should be replaced by field reference with the new name equal to value of string
+						 * B) field reference should be replaced by String literal
+						 */
+						value = factory.Code().createLiteral((String) value);
+					}
+					/*
+					 * ... else ... it is a proxy parameter whose value type is always a String - assured by Substitution#checkTemplateContracts.
+					 * And which is used to replace one field reference to another - keep String value there
+					 */
+					params.put(parameterName, value);
 				}
 			}
 		} catch (Exception e) {
