@@ -58,8 +58,10 @@ class DoNotFurtherTemplateThisElement extends SpoonException {
 
 	Object skipped;
 
-	DoNotFurtherTemplateThisElement(Object e) {
-		super("skipping " + e.toString());
+	DoNotFurtherTemplateThisElement(CtElement e) {
+		//Do not use e.toString(), which computes expensive String representation of whole element,
+		//which is sometime impossible to compute correctly in the middle of the substitution process
+		super("Skipping " + e.getClass().getName());
 		skipped = e;
 	}
 
