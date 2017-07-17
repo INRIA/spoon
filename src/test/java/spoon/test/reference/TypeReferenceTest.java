@@ -281,6 +281,22 @@ public class TypeReferenceTest {
 	}
 
 	@Test
+	public void testUnknownSuperClassWithSameNameInNoClasspath() throws Exception {
+		// contract: Gets the import of a type specified in the declaration of a class.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/Attachment.java");
+		launcher.setSourceOutputDirectory("./target/class-declaration");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		CtClass<?> ctType = (CtClass<?>) launcher.getFactory().Class().getAll().get(0);
+		assertNotEquals(ctType.getSuperclass(), ctType.getReference());
+		assertEquals("it.feio.android.omninotes.commons.models.Attachment", ctType.getSuperclass().toString());
+		assertEquals("it.feio.android.omninotes.models.Attachment", ctType.getReference().toString());
+
+	}
+
+	@Test
 	public void testPackageInNoClasspath () {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");

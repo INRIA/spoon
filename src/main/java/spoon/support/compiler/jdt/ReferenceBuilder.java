@@ -540,6 +540,10 @@ public class ReferenceBuilder {
 			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
 			inner.setPackage(packageReference);
 		}
+		if (!res.toString().replace(", ?", ",?").endsWith(CharOperation.toString(ref.getParameterizedTypeName()))) {
+			// verify that we did not match a class that have the same name in a different package
+			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+		}
 		return res;
 	}
 
