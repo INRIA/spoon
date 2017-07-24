@@ -133,7 +133,7 @@ public class AnnotationValuesTest {
 	private static final String nl = System.lineSeparator();
 
 	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9 , 8 , 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA" +
-			", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(value = \"bar\")" +
+			", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(\"bar\")" +
 			", r = { java.lang.Float.class , java.lang.Double.class })" + nl +
 			"public class IsAnnotated {}";
 

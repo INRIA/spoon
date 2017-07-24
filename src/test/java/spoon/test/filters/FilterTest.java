@@ -96,7 +96,7 @@ public class FilterTest {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
-		assertEquals(4, expressions.size());
+		assertEquals(2, expressions.size());
 	}
 
 	@Test

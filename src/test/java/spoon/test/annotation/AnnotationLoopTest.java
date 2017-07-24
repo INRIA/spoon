@@ -30,7 +30,7 @@ public class AnnotationLoopTest {
 		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(2)).getType());
 
 		final String nl = System.lineSeparator();
-		final String expected = "for (@java.lang.SuppressWarnings(value = \"rawtypes\")" + nl + "java.lang.String u = \"\", p = \"\", e = \"\"; u != e; u = p , p = \"\") {" + nl + "}";
+		final String expected = "for (@java.lang.SuppressWarnings(\"rawtypes\")" + nl + "java.lang.String u = \"\", p = \"\", e = \"\"; u != e; u = p , p = \"\") {" + nl + "}";
 		assertEquals(expected, aLoop.toString());
 	}
 }
