@@ -41,7 +41,7 @@ public class FactoryCompilerConfig implements SpoonModelBuilder.InputType {
 		List<CompilationUnit> unitList = new ArrayList<>();
 		for (CtType<?> ctType : jdtCompiler.getFactory().Type().getAll()) {
 			if (ctType.isTopLevel()) {
-				unitList.add(new CompilationUnitWrapper(ctType));
+				unitList.add(CompilationUnitWrapper.createCompilationUnit(ctType));
 			}
 		}
 		compiler.setCompilationUnits(unitList.toArray(new CompilationUnit[unitList.size()]));
