@@ -384,7 +384,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			return EMPTY_RESULT;
 		}
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourcesFolder));
+		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourceFiles));
 
 		String[] args;
 		if (jdtBuilder == null) {
