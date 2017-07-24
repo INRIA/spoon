@@ -378,7 +378,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			try (ListPrinter lp = printer.createListPrinter("(", ", ", ")")) {
 				for (Entry<String, CtExpression> e : annotation.getValues().entrySet()) {
 					lp.printSeparatorIfAppropriate();
-					printer.write(e.getKey() + " = ");
+					if ((annotation.getValues().size() == 1 && "value".equals(e.getKey())) == false) {
+						//it is not a default value attribute. We must print a attribute name too.
+						printer.write(e.getKey() + " = ");
+					}
 					elementPrinterHelper.writeAnnotationElement(annotation.getFactory(), e.getValue());
 				}
 			}
@@ -1767,6 +1770,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(variableWrite);
 	}
 
+	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
 		enterCtStatement(whileLoop);
 		printer.write("while (");
