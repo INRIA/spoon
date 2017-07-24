@@ -24,22 +24,20 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import java.util.ArrayList;
 import java.util.List;
 
-class CompilationUnitWrapper extends CompilationUnit {
+class CompilationUnitWrapper {
 
-	private CtType type;
+	private CompilationUnitWrapper() {
+	}
 
-	CompilationUnitWrapper(CtType type) {
-		// char[] contents, String fileName, String encoding, String destinationPath, boolean ignoreOptionalProblems
-		super(null,
+	static CompilationUnit createCompilationUnit(CtType type) {
+		return new CompilationUnit(getContents(type),
 				type.getSimpleName() + ".java",
 				"UTF-8",
 				type.getFactory().getEnvironment().getBinaryOutputDirectory(),
 				false);
-		this.type = type;
 	}
 
-	@Override
-	public char[] getContents() {
+	private static char[] getContents(CtType type) {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
 		List<CtType<?>> types = new ArrayList<>();
 		types.add(type);
@@ -49,6 +47,4 @@ class CompilationUnitWrapper extends CompilationUnit {
 		char[] content = result.toCharArray();
 		return content;
 	}
-
-
 }
