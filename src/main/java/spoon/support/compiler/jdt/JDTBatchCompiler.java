@@ -168,22 +168,25 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		final CompilationUnitDeclaration[] result = treeBuilderCompiler.buildUnits(getCompilationUnits());
 
 		// now adding the doc
-		for (int i = 0; i < result.length; i++) {
-			CompilationUnitDeclaration unit = result[i];
-			CommentRecorderParser parser =
-					new CommentRecorderParser(
-							new ProblemReporter(
-									DefaultErrorHandlingPolicies.proceedWithAllProblems(),
-									compilerOptions,
-									new DefaultProblemFactory(Locale.getDefault())),
-							false);
+		if (jdtCompiler.getEnvironment().isCommentsEnabled()) {
+			//compile comments only if they are needed
+			for (int i = 0; i < result.length; i++) {
+				CompilationUnitDeclaration unit = result[i];
+				CommentRecorderParser parser =
+						new CommentRecorderParser(
+								new ProblemReporter(
+										DefaultErrorHandlingPolicies.proceedWithAllProblems(),
+										compilerOptions,
+										new DefaultProblemFactory(Locale.getDefault())),
+								false);
 
-			//reuse the source compilation unit
-			ICompilationUnit sourceUnit = unit.compilationResult.compilationUnit;
+				//reuse the source compilation unit
+				ICompilationUnit sourceUnit = unit.compilationResult.compilationUnit;
 
-			final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
-			CompilationUnitDeclaration tmpDeclForComment = parser.dietParse(sourceUnit, compilationResult);
-			unit.comments = tmpDeclForComment.comments;
+				final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
+				CompilationUnitDeclaration tmpDeclForComment = parser.dietParse(sourceUnit, compilationResult);
+				unit.comments = tmpDeclForComment.comments;
+			}
 		}
 		return result;
 	}
