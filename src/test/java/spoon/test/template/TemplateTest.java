@@ -29,7 +29,10 @@ import spoon.support.template.SubstitutionVisitor;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
+import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
+import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
+import spoon.test.template.testclasses.FieldAccessTemplate;
 import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.LoggerModel;
@@ -175,6 +178,23 @@ public class TemplateTest {
 		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(10).toString());
 		//contract: for each whose expression is not a template parameter is not inlined
 		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
+
+		// contract: local variable write are replaced by local variable write with modified local variable name
+		assertEquals("newVarName = o", methodWithTemplatedParameters.getBody().getStatement(12).toString());
+
+		// contract: local variable read are replaced by local variable read with modified local variable name
+		assertEquals("l = ((java.util.LinkedList) (newVarName))", methodWithTemplatedParameters.getBody().getStatement(13).toString());
+		
+		// contract; field access is handled same like local variable access
+		CtMethod<?> methodWithFieldAccess = subc.getElements(
+				new NameFilter<CtMethod<?>>("methodWithFieldAccess")).get(0);
+
+		// contract: field write are replaced by field write with modified field name
+		assertEquals("newVarName = o", methodWithFieldAccess.getBody().getStatement(2).toString());
+
+		// contract: field read are replaced by field read with modified field name
+		assertEquals("l = ((java.util.LinkedList) (newVarName))", methodWithFieldAccess.getBody().getStatement(3).toString());
+		
 	}
 
 	@Test
@@ -809,6 +829,62 @@ public class TemplateTest {
 			} catch(SpoonException e) {
 				//OK
 			}
+		}
+	}
+
+	@Test
+	public void testFieldAccessNameSubstitution() throws Exception {
+		//contract: the substitution of name of whole field is possible
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new FieldAccessTemplate("value").apply(factory.Class().create("x.X"));
+			assertEquals("int value;", result.getField("value").toString());
+			
+			assertEquals("value = 7", result.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void testFieldAccessNameSubstitutionInInnerClass() throws Exception {
+		//contract: the substitution of name of whole field is possible in inner class too
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessOfInnerClassTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new FieldAccessOfInnerClassTemplate("value").apply(factory.Class().create("x.X"));
+			final CtClass<?> innerClass = result.getNestedType("Inner");
+			assertEquals("int value;", innerClass.getField("value").toString());
+			
+			assertEquals("value = 7", innerClass.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void testAnotherFieldAccessNameSubstitution() throws Exception {
+		//contract: the substitution of name of whole field is possible
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/AnotherFieldAccessTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new AnotherFieldAccessTemplate().apply(factory.Class().create("x.X"));
+			assertEquals("int x;", result.getField("x").toString());
+			assertEquals("int m_x;", result.getField("m_x").toString());
+
+			assertEquals("java.lang.System.out.println(((x) + (m_x)))", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
 		}
 	}
 }
