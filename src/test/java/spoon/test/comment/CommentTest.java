@@ -15,6 +15,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
@@ -47,6 +48,7 @@ import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
+import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
 
 import java.io.File;
@@ -58,6 +60,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -860,5 +863,23 @@ public class CommentTest {
 		assertEquals("This file contains MS Windows EOL.\n"
 				+ "It is here to test whether comments are printed well\n"
 				+ "in this case", classJavaDoc.getContent());
+	}
+
+	@Test
+	public void testWildComments() {
+		//contract: tests that value of comment is correct even for wild combinations of characters. See WildComments class for details
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(WildComments.class);
+		List<CtLiteral<String>> literals = (List)((CtNewArray<?>)type.getField("comments").getDefaultExpression()).getElements();
+		assertTrue(literals.size()>10);
+		/*
+		 * each string literal has a comment and string value, which defines expected value of it's comment
+		 */
+		for (CtLiteral<String> literal : literals) {
+			assertEquals(1, literal.getComments().size());
+			CtComment comment = literal.getComments().get(0);
+			String expected = literal.getValue();
+			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
+		}
 	}
 }
