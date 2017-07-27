@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.test.position.testclasses.Foo;
+import spoon.test.position.testclasses.FooAnnotation;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
 import spoon.test.position.testclasses.FooField;
@@ -27,6 +28,9 @@ import spoon.test.position.testclasses.FooStatement;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,12 +80,13 @@ public class PositionTest {
 
 		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
 
-		assertEquals(4, position.getLine());
-		assertEquals(6, position.getEndLine());
+		assertEquals(7, position.getLine());
+		assertEquals(9, position.getEndLine());
 
-		assertEquals(42, position.getSourceStart());
-		assertEquals(87, position.getSourceEnd());
+		assertEquals(77, position.getSourceStart());
+		assertEquals(152, position.getSourceEnd());
 		assertEquals("@Deprecated\n"
+				+ "@Resource(description=\"fake\")\n"
 				+ "public interface FooInterface {\n"
 				+ "\n"
 				+ "}", contentAtPosition(classContent, position));
@@ -96,6 +101,37 @@ public class PositionTest {
 
 		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+	}
+
+	@Test
+	public void testPositionAnnotation() throws Exception {
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
+
+		assertEquals(9, position.getLine());
+		assertEquals(11, position.getEndLine());
+
+		assertEquals(163, position.getSourceStart());
+		assertEquals(263, position.getSourceEnd());
+		assertEquals("@Target(value={})\n"
+				+ "@Retention(RetentionPolicy.RUNTIME)  \n"
+				+ "public abstract @interface FooAnnotation {\n"
+				+ "\n"
+				+ "}", contentAtPosition(classContent, position));
+
+		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
+
+		// this specifies that getLine starts at name (and not at Javadoc or annotation)
+		final CtType<FooClazz> foo2 = build.Type().get(FooClazz2.class);
+		assertEquals(42, foo2.getPosition().getSourceStart());
+		assertEquals(4, foo2.getPosition().getLine());
+		assertEquals(4, foo2.getPosition().getEndLine());
+
+		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
+		assertEquals("public abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
 
 	@Test
