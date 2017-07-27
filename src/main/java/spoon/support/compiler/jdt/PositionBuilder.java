@@ -58,9 +58,19 @@ public class PositionBuilder {
 
 		int sourceStart = node.sourceStart;
 		int sourceEnd = node.sourceEnd;
-		if ((node instanceof Expression)) {
-			if (((Expression) node).statementEnd > 0) {
-				sourceEnd = ((Expression) node).statementEnd;
+		if ((node instanceof Annotation)) {
+			Annotation ann = (Annotation) node;
+			int declEnd = ann.declarationSourceEnd;
+
+			if (declEnd > 0) {
+				sourceEnd = declEnd;
+			}
+		} else if ((node instanceof Expression)) {
+			Expression expression = (Expression) node;
+			int statementEnd = expression.statementEnd;
+
+			if (statementEnd > 0) {
+				sourceEnd = statementEnd;
 			}
 		}
 
@@ -183,14 +193,6 @@ public class PositionBuilder {
 							bodyStart - 1, bodyEnd + 1,
 							lineSeparatorPositions);
 				}
-			}
-		}
-		if ((node instanceof Expression)) {
-			Expression expression = (Expression) node;
-			int statementEnd = expression.statementEnd;
-
-			if (statementEnd > 0) {
-				sourceEnd = statementEnd;
 			}
 		}
 
