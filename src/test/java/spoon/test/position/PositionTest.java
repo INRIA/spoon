@@ -20,6 +20,7 @@ import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
 import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooGeneric;
+import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 
@@ -64,6 +65,36 @@ public class PositionTest {
 		assertEquals(4, foo2.getPosition().getEndLine());
 
 		assertEquals("FooClazz", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
+		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+	}
+	
+	@Test
+	public void testPositionInterface() throws Exception {
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
+
+		assertEquals(4, position.getLine());
+		assertEquals(6, position.getEndLine());
+
+		assertEquals(42, position.getSourceStart());
+		assertEquals(87, position.getSourceEnd());
+		assertEquals("@Deprecated\n"
+				+ "public interface FooInterface {\n"
+				+ "\n"
+				+ "}", contentAtPosition(classContent, position));
+
+		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
+
+		// this specifies that getLine starts at name (and not at Javadoc or annotation)
+		final CtType<FooClazz> foo2 = build.Type().get(FooClazz2.class);
+		assertEquals(42, foo2.getPosition().getSourceStart());
+		assertEquals(4, foo2.getPosition().getLine());
+		assertEquals(4, foo2.getPosition().getEndLine());
+
+		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
 
