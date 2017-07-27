@@ -112,7 +112,7 @@ public class PositionBuilder {
 			Annotation[] annotations = typeDeclaration.annotations;
 			if (annotations != null && annotations.length > 0) {
 				if (annotations[0].sourceStart() == declarationSourceStart) {
-					modifiersSourceStart = annotations[annotations.length - 1].sourceEnd() + 2;
+					modifiersSourceStart = findNextNonWhitespace(contents, annotations[annotations.length - 1].declarationSourceEnd + 1);
 				}
 			}
 			if (modifiersSourceStart == 0) {
@@ -197,6 +197,33 @@ public class PositionBuilder {
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
+	/**
+	 * @return index of first non whitespace char, searching backward. Can return off if it is non whitespace.
+	 */
+	private int findNextNonWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c) == false) {
+				return off;
+			}
+			off++;
+		}
+		return -1;
+	}
+
+	/**
+	 * @return index of first whitespace char, searching backward. Can return off if it is whitespace.
+	 */
+	private int findNextWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c)) {
+				return off;
+			}
+			off++;
+		}
+		return -1;
+	}
 	/**
 	 * @return index of first non whitespace char, searching backward. Can return off if it is non whitespace.
 	 */
