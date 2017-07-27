@@ -107,6 +107,8 @@ public class PositionBuilder {
 			int bodyStart = typeDeclaration.bodyStart;
 			int bodyEnd = typeDeclaration.bodyEnd;
 
+			char[] contents = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.compilationUnit.getContents();
+
 			Annotation[] annotations = typeDeclaration.annotations;
 			if (annotations != null && annotations.length > 0) {
 				if (annotations[0].sourceStart() == declarationSourceStart) {
@@ -116,8 +118,12 @@ public class PositionBuilder {
 			if (modifiersSourceStart == 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
-			// the position the name minus the size of "class" minus at least 2 spaces
-			int modifiersSourceEnd = sourceStart - 8;
+			//look for start of first keyword before the type keyword e.g. "class". `sourceStart` points at first char of type name
+			int modifiersSourceEnd = findPrevNonWhitespace(contents, findPrevWhitespace(contents, findPrevNonWhitespace(contents, sourceStart - 1)));
+			if (modifiersSourceEnd < modifiersSourceStart) {
+				//there is no modifier
+				modifiersSourceEnd = modifiersSourceStart - 1;
+			}
 
 			return cf.createBodyHolderSourcePosition(cu, sourceStart, sourceEnd,
 					modifiersSourceStart, modifiersSourceEnd,
@@ -189,5 +195,33 @@ public class PositionBuilder {
 		}
 
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+	}
+
+	/**
+	 * @return index of first non whitespace char, searching backward. Can return off if it is non whitespace.
+	 */
+	private int findPrevNonWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c) == false) {
+				return off;
+			}
+			off--;
+		}
+		return -1;
+	}
+
+	/**
+	 * @return index of first whitespace char, searching backward. Can return off if it is whitespace.
+	 */
+	private int findPrevWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c)) {
+				return off;
+			}
+			off--;
+		}
+		return -1;
 	}
 }
