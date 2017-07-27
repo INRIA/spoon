@@ -93,14 +93,17 @@ public class PositionTest {
 
 		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
 
-		// this specifies that getLine starts at name (and not at Javadoc or annotation)
-		final CtType<FooClazz> foo2 = build.Type().get(FooClazz2.class);
-		assertEquals(42, foo2.getPosition().getSourceStart());
-		assertEquals(4, foo2.getPosition().getLine());
-		assertEquals(4, foo2.getPosition().getEndLine());
-
 		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		
+		{
+			SourcePosition annPosition = foo.getAnnotations().get(0).getPosition();
+			assertEquals("@Deprecated", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
+		}
+		{
+			SourcePosition annPosition = foo.getAnnotations().get(1).getPosition();
+			assertEquals("@Resource(description=\"fake\")", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
+		}
 	}
 
 	@Test
@@ -123,12 +126,6 @@ public class PositionTest {
 				+ "}", contentAtPosition(classContent, position));
 
 		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
-
-		// this specifies that getLine starts at name (and not at Javadoc or annotation)
-		final CtType<FooClazz> foo2 = build.Type().get(FooClazz2.class);
-		assertEquals(42, foo2.getPosition().getSourceStart());
-		assertEquals(4, foo2.getPosition().getLine());
-		assertEquals(4, foo2.getPosition().getEndLine());
 
 		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
