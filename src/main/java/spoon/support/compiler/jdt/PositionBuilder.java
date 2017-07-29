@@ -16,16 +16,20 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
+
+import spoon.SpoonException;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -54,7 +58,10 @@ public class PositionBuilder {
 	SourcePosition buildPositionCtElement(CtElement e, ASTNode node) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
-		int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		char[] contents = cr.compilationUnit.getContents();
+
 
 		int sourceStart = node.sourceStart;
 		int sourceEnd = node.sourceEnd;
@@ -117,8 +124,6 @@ public class PositionBuilder {
 			int bodyStart = typeDeclaration.bodyStart;
 			int bodyEnd = typeDeclaration.bodyEnd;
 
-			char[] contents = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.compilationUnit.getContents();
-
 			Annotation[] annotations = typeDeclaration.annotations;
 			if (annotations != null && annotations.length > 0) {
 				if (annotations[0].sourceStart() == declarationSourceStart) {
@@ -151,6 +156,13 @@ public class PositionBuilder {
 			if (modifiersSourceStart == 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
+
+			if (node instanceof AnnotationMethodDeclaration && bodyStart == bodyEnd) {
+				//The ";" at the end of annotation method declaration is not part of body
+				//let it behave same like in abstract MethodDeclaration
+				bodyEnd--;
+			}
+
 			Javadoc javadoc = methodDeclaration.javadoc;
 			if (javadoc != null && javadoc.sourceEnd() > declarationSourceStart) {
 				modifiersSourceStart = javadoc.sourceEnd() + 1;
@@ -186,11 +198,22 @@ public class PositionBuilder {
 				if (bodyStart == 0) {
 					return SourcePosition.NOPOSITION;
 				} else {
+					if (bodyStart < bodyEnd) {
+						//include brackets if they are there
+						if (contents[bodyStart - 1] == '{') {
+							bodyStart--;
+							if (contents[bodyEnd + 1] == '}') {
+								bodyEnd++;
+							} else {
+								throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
+							}
+						}
+					}
 					return cf.createBodyHolderSourcePosition(cu,
 							sourceStart, sourceEnd,
 							modifiersSourceStart, modifiersSourceEnd,
 							declarationSourceStart, declarationSourceEnd,
-							bodyStart - 1, bodyEnd + 1,
+							bodyStart, bodyEnd,
 							lineSeparatorPositions);
 				}
 			}
