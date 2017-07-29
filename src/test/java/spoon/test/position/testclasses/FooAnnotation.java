@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 @Target(value={})
 @Retention(RetentionPolicy.RUNTIME)  
 public abstract @interface FooAnnotation {
-
+	String value();
 }

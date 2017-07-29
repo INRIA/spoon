@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.test.position.testclasses.Foo;
+import spoon.test.position.testclasses.FooAbstractMethod;
 import spoon.test.position.testclasses.FooAnnotation;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
@@ -118,17 +119,34 @@ public class PositionTest {
 		assertEquals(11, position.getEndLine());
 
 		assertEquals(163, position.getSourceStart());
-		assertEquals(263, position.getSourceEnd());
+		assertEquals(279, position.getSourceEnd());
 		assertEquals("@Target(value={})\n"
 				+ "@Retention(RetentionPolicy.RUNTIME)  \n"
 				+ "public abstract @interface FooAnnotation {\n"
-				+ "\n"
+				+ "\tString value();\n"
 				+ "}", contentAtPosition(classContent, position));
 
-		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
+		assertEquals("{\n"
+				+ "\tString value();\n"
+				+ "}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
 
 		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		
+		CtMethod<?> method1 = foo.getMethodsByName("value").get(0);
+		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();
+
+		assertEquals(10, position1.getLine());
+		assertEquals(10, position1.getEndLine());
+
+		assertEquals(263, position1.getSourceStart());
+		assertEquals(277, position1.getSourceEnd());
+
+		assertEquals("String value();", contentAtPosition(classContent, position1));
+		assertEquals("value", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
+		assertEquals("", contentAtPosition(classContent, position1.getModifierSourceStart(), position1.getModifierSourceEnd()));
+		//contract: body of abstract method is empty
+		assertEquals("", contentAtPosition(classContent, position1.getBodyStart(), position1.getBodyEnd()));
 	}
 
 	@Test
@@ -257,6 +275,10 @@ public class PositionTest {
 				+ "\t}", contentAtPosition(classContent, position1));
 		assertEquals("m", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
 		assertEquals("public static", contentAtPosition(classContent, position1.getModifierSourceStart(), position1.getModifierSourceEnd()));
+		//contract: body contains starting and ending brackets {}
+		assertEquals("{\n"
+				+ "\t\treturn;\n"
+				+ "\t}", contentAtPosition(classContent, position1.getBodyStart(), position1.getBodyEnd()));
 
 		DeclarationSourcePosition positionParam1 = (DeclarationSourcePosition) method1.getParameters().get(0).getPosition();
 
@@ -293,6 +315,40 @@ public class PositionTest {
 		CtMethod mWithLine = foo.getMethod("mWithLine", build.Type().integerPrimitiveType());
 		SourcePosition position4 = mWithLine.getPosition();
 		contentAtPosition(classContent, position4);
+	}
+
+	@Test
+	public void testPositionAbstractMethod() throws Exception {
+		final Factory build = build(FooAbstractMethod.class);
+		final CtClass<FooMethod> foo = build.Class().get(FooAbstractMethod.class);
+		String classContent = getClassContent(foo);
+
+		CtMethod<?> method1 = foo.getMethodsByName("m").get(0);
+		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();
+
+		assertEquals(5, position1.getLine());
+		assertEquals(5, position1.getEndLine());
+
+		assertEquals(86, position1.getSourceStart());
+		assertEquals(125, position1.getSourceEnd());
+
+		assertEquals("public abstract void m(final int parm1);", contentAtPosition(classContent, position1));
+		assertEquals("m", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
+		assertEquals("public abstract", contentAtPosition(classContent, position1.getModifierSourceStart(), position1.getModifierSourceEnd()));
+		//contract: body of abstract method is empty
+		assertEquals("", contentAtPosition(classContent, position1.getBodyStart(), position1.getBodyEnd()));
+
+		DeclarationSourcePosition positionParam1 = (DeclarationSourcePosition) method1.getParameters().get(0).getPosition();
+
+		assertEquals(5, positionParam1.getLine());
+		assertEquals(5, positionParam1.getEndLine());
+
+		assertEquals(109, positionParam1.getSourceStart());
+		assertEquals(123, positionParam1.getSourceEnd());
+
+		assertEquals("final int parm1", contentAtPosition(classContent, positionParam1));
+		assertEquals("parm1", contentAtPosition(classContent, positionParam1.getNameStart(), positionParam1.getNameEnd()));
+		assertEquals("final", contentAtPosition(classContent, positionParam1.getModifierSourceStart(), positionParam1.getModifierSourceEnd()));
 	}
 
 	@Test
