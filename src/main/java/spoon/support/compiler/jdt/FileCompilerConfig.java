@@ -50,6 +50,10 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 		this.files = files;
 	}
 
+	/*
+	 * This method is not used now, so let's get rid of it.
+	 */
+	@Deprecated
 	public FileCompilerConfig(SpoonFolder folder) {
 		this(folder.getAllJavaFiles());
 	}
