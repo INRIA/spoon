@@ -223,7 +223,7 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @return index of first non whitespace char, searching backward. Can return off if it is non whitespace.
+	 * @return index of first non whitespace char, searching forward. Can return off if it is non whitespace.
 	 */
 	private int findNextNonWhitespace(char[] content, int off) {
 		while (off >= 0) {
@@ -237,7 +237,7 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @return index of first whitespace char, searching backward. Can return off if it is whitespace.
+	 * @return index of first whitespace char, searching forward. Can return off if it is whitespace.
 	 */
 	private int findNextWhitespace(char[] content, int off) {
 		while (off >= 0) {
