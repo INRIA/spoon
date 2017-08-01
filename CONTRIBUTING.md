@@ -19,6 +19,7 @@ Current integrators (alphabetical order):
 - Thomas Durieux @tdurieux
 - Martin Monperrus @monperrus
 - Simon Urli @surli
+- Pavel Vojtechovsky @pvojtechovsky
 
 Guidelines for pull requests
 ----------------------------

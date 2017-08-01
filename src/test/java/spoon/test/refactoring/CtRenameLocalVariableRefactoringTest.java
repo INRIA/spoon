@@ -14,6 +14,7 @@ import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
 import spoon.refactoring.CtRenameLocalVariableRefactoring;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
@@ -22,6 +23,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.test.refactoring.testclasses.TestTryRename;
 import spoon.test.refactoring.testclasses.CtRenameLocalVariableRefactoringTestSubject;
@@ -55,7 +57,13 @@ public class CtRenameLocalVariableRefactoringTest
 	 */
 	@Test
 	public void testRenameAllLocalVariablesOfRenameTestSubject() throws Exception {
-		CtClass<?> varRenameClass = (CtClass<?>)ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
+		final Launcher launcher = new Launcher();
+		final SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + CtRenameLocalVariableRefactoringTestSubject.class.getName().replace('.', '/') + ".java"));
+		comp.build();
+		final Factory factory = comp.getFactory();
+		
+		CtClass<?> varRenameClass = (CtClass<?>)factory.Type().get(CtRenameLocalVariableRefactoringTestSubject.class);
 		CtTypeReference<TestTryRename> tryRename = varRenameClass.getFactory().createCtTypeReference(TestTryRename.class);
 		
 		varRenameClass.getMethods().forEach(method->{
@@ -77,7 +85,7 @@ public class CtRenameLocalVariableRefactoringTest
 								//put breakpoint here and continue debugging of the buggy case
 								this.getClass();
 							}
-							checkLocalVariableRename((CtLocalVariable<?>) targetVariable, newName, renameShouldPass);
+							checkLocalVariableRename(launcher, (CtLocalVariable<?>) targetVariable, newName, renameShouldPass);
 						} else {
 							//TODO test rename of other variables, e.g. parameters and catch... later
 						}
@@ -86,7 +94,7 @@ public class CtRenameLocalVariableRefactoringTest
 		});
 	}
 	
-	protected void checkLocalVariableRename(CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
+	protected void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
 		
 		String originName = targetVariable.getSimpleName();
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
@@ -99,7 +107,7 @@ public class CtRenameLocalVariableRefactoringTest
 				throw new AssertionError(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" should NOT fail when trying rename to \""+newName+"\"\n"+targetVariable.toString(), e);
 			}
 			assertEquals(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\" passed, but the name of variable was not changed", newName, targetVariable.getSimpleName());
-			assertCorrectModel(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\"");
+			assertCorrectModel(launcher, getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\"");
 		} else {
 			try {
 				refactor.refactor();
@@ -127,8 +135,7 @@ public class CtRenameLocalVariableRefactoringTest
 		}
 	}
 
-	private void assertCorrectModel(String refactoringDescription) {
-		Launcher launcher = new Launcher();
+	private void assertCorrectModel(Launcher launcher, String refactoringDescription) {
 		File outputBinDirectory = new File("./target/spooned-refactoring-test");
 		if (!outputBinDirectory.exists()) {
 			outputBinDirectory.mkdirs();

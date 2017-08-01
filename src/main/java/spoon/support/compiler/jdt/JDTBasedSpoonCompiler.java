@@ -379,12 +379,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
 
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		List<SpoonFile> sourceFiles = sourcesFolder.getAllJavaFiles();
+		List<SpoonFile> sourceFiles = Collections.unmodifiableList(sourcesFolder.getAllJavaFiles());
 		if (sourceFiles.isEmpty()) {
 			return EMPTY_RESULT;
 		}
 
-		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourcesFolder));
+		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourceFiles));
 
 		String[] args;
 		if (jdtBuilder == null) {
@@ -392,7 +392,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(classpath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(sourcesFolder.getAllJavaFiles())) // no sources, handled by the JDTBatchCompiler
+					.sources(new SourceOptions().sources(sourceFiles)) // no sources, handled by the JDTBatchCompiler
 					.build();
 		} else {
 			args = jdtBuilder.build();

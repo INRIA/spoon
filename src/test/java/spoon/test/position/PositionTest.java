@@ -16,16 +16,22 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.test.position.testclasses.Foo;
+import spoon.test.position.testclasses.FooAbstractMethod;
+import spoon.test.position.testclasses.FooAnnotation;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
 import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooGeneric;
+import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -65,6 +71,82 @@ public class PositionTest {
 
 		assertEquals("FooClazz", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+	}
+	
+	@Test
+	public void testPositionInterface() throws Exception {
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
+
+		assertEquals(7, position.getLine());
+		assertEquals(9, position.getEndLine());
+
+		assertEquals(77, position.getSourceStart());
+		assertEquals(152, position.getSourceEnd());
+		assertEquals("@Deprecated\n"
+				+ "@Resource(description=\"fake\")\n"
+				+ "public interface FooInterface {\n"
+				+ "\n"
+				+ "}", contentAtPosition(classContent, position));
+
+		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
+
+		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
+		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		
+		{
+			SourcePosition annPosition = foo.getAnnotations().get(0).getPosition();
+			assertEquals("@Deprecated", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
+		}
+		{
+			SourcePosition annPosition = foo.getAnnotations().get(1).getPosition();
+			assertEquals("@Resource(description=\"fake\")", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
+		}
+	}
+
+	@Test
+	public void testPositionAnnotation() throws Exception {
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
+
+		assertEquals(9, position.getLine());
+		assertEquals(11, position.getEndLine());
+
+		assertEquals(163, position.getSourceStart());
+		assertEquals(279, position.getSourceEnd());
+		assertEquals("@Target(value={})\n"
+				+ "@Retention(RetentionPolicy.RUNTIME)  \n"
+				+ "public abstract @interface FooAnnotation {\n"
+				+ "\tString value();\n"
+				+ "}", contentAtPosition(classContent, position));
+
+		assertEquals("{\n"
+				+ "\tString value();\n"
+				+ "}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
+
+		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
+		assertEquals("public abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		
+		CtMethod<?> method1 = foo.getMethodsByName("value").get(0);
+		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();
+
+		assertEquals(10, position1.getLine());
+		assertEquals(10, position1.getEndLine());
+
+		assertEquals(263, position1.getSourceStart());
+		assertEquals(277, position1.getSourceEnd());
+
+		assertEquals("String value();", contentAtPosition(classContent, position1));
+		assertEquals("value", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
+		assertEquals("", contentAtPosition(classContent, position1.getModifierSourceStart(), position1.getModifierSourceEnd()));
+		//contract: body of abstract method is empty
+		assertEquals("", contentAtPosition(classContent, position1.getBodyStart(), position1.getBodyEnd()));
 	}
 
 	@Test
@@ -193,6 +275,10 @@ public class PositionTest {
 				+ "\t}", contentAtPosition(classContent, position1));
 		assertEquals("m", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
 		assertEquals("public static", contentAtPosition(classContent, position1.getModifierSourceStart(), position1.getModifierSourceEnd()));
+		//contract: body contains starting and ending brackets {}
+		assertEquals("{\n"
+				+ "\t\treturn;\n"
+				+ "\t}", contentAtPosition(classContent, position1.getBodyStart(), position1.getBodyEnd()));
 
 		DeclarationSourcePosition positionParam1 = (DeclarationSourcePosition) method1.getParameters().get(0).getPosition();
 
@@ -229,6 +315,40 @@ public class PositionTest {
 		CtMethod mWithLine = foo.getMethod("mWithLine", build.Type().integerPrimitiveType());
 		SourcePosition position4 = mWithLine.getPosition();
 		contentAtPosition(classContent, position4);
+	}
+
+	@Test
+	public void testPositionAbstractMethod() throws Exception {
+		final Factory build = build(FooAbstractMethod.class);
+		final CtClass<FooMethod> foo = build.Class().get(FooAbstractMethod.class);
+		String classContent = getClassContent(foo);
+
+		CtMethod<?> method1 = foo.getMethodsByName("m").get(0);
+		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();
+
+		assertEquals(5, position1.getLine());
+		assertEquals(5, position1.getEndLine());
+
+		assertEquals(86, position1.getSourceStart());
+		assertEquals(125, position1.getSourceEnd());
+
+		assertEquals("public abstract void m(final int parm1);", contentAtPosition(classContent, position1));
+		assertEquals("m", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
+		assertEquals("public abstract", contentAtPosition(classContent, position1.getModifierSourceStart(), position1.getModifierSourceEnd()));
+		//contract: body of abstract method is empty
+		assertEquals("", contentAtPosition(classContent, position1.getBodyStart(), position1.getBodyEnd()));
+
+		DeclarationSourcePosition positionParam1 = (DeclarationSourcePosition) method1.getParameters().get(0).getPosition();
+
+		assertEquals(5, positionParam1.getLine());
+		assertEquals(5, positionParam1.getEndLine());
+
+		assertEquals(109, positionParam1.getSourceStart());
+		assertEquals(123, positionParam1.getSourceEnd());
+
+		assertEquals("final int parm1", contentAtPosition(classContent, positionParam1));
+		assertEquals("parm1", contentAtPosition(classContent, positionParam1.getNameStart(), positionParam1.getNameEnd()));
+		assertEquals("final", contentAtPosition(classContent, positionParam1.getModifierSourceStart(), positionParam1.getModifierSourceEnd()));
 	}
 
 	@Test
