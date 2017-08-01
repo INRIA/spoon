@@ -35,6 +35,7 @@ import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.NtonCodeTemplate;
+import spoon.test.template.testclasses.ObjectIsNotParamTemplate;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
 import spoon.test.template.testclasses.SimpleTemplate;
 import spoon.test.template.testclasses.SubStringTemplate;
@@ -893,5 +894,18 @@ public class TemplateTest {
 				//OK
 			}
 		}
+	}
+
+	@Test
+	public void testObjectIsNotParamTemplate() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ObjectIsNotParamTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+		//contract: String value is substituted in substring of literal, named element and reference
+		final CtClass<?> result = (CtClass<?>) new ObjectIsNotParamTemplate().apply(factory.createClass());
+		assertEquals(0, result.getMethodsByName("methXXXd").size());
+		assertEquals(1, result.getMethodsByName("method").size());
 	}
 }
