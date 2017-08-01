@@ -1806,6 +1806,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	@Deprecated
 	public String getPackageDeclaration() {
 		return printPackageInfo(context.currentTopLevel.getPackage());
 	}
