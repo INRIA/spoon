@@ -31,6 +31,7 @@ public interface PrettyPrinter {
 	/**
 	 * Gets the package declaration contents.
 	 */
+	@Deprecated
 	String getPackageDeclaration();
 
 	/**
