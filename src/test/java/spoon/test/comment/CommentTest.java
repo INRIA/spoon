@@ -15,6 +15,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
@@ -47,10 +48,19 @@ import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
+import spoon.test.comment.testclasses.WildComments;
+import spoon.test.comment.testclasses.WindowsEOL;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -798,5 +808,78 @@ public class CommentTest {
 
 		CtComment commentD = comments.get(1);
 		assertEquals("D", commentD.getContent());
+	}
+	
+	@Test
+	public void testCommentsInResourcesWithWindowsEOL() throws IOException {
+		//contract: the WindowsEOL.java contains MS Windows \r\n as EOL 
+		try(InputStream is = new FileInputStream(new File("./src/test/java/spoon/test/comment/testclasses/WindowsEOL.java"))) {
+			int b;
+			boolean lastWasCR = false;
+			while((b = is.read())!=-1) {
+				if(lastWasCR) {
+					//next must be LF
+					assertTrue(b=='\n');
+					lastWasCR = false;
+				}
+				if(b=='\r') {
+					lastWasCR = true;
+				}
+			}
+		}
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[]{
+				"-i", "./src/test/java/spoon/test/comment/testclasses/WindowsEOL.java",
+				"-o", "./target/spooned/",
+				"-c"
+		});
+		Factory f = launcher.getFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(WindowsEOL.class);
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		//contract: test that java doc is printed correctly
+		String str = classJavaDoc.toString();
+		StringTokenizer st = new StringTokenizer(str, System.getProperty("line.separator"));
+		boolean first = true;
+		while(st.hasMoreTokens()) {
+			String line = st.nextToken();
+			if(first) {
+				//first
+				first = false;
+				assertTrue(line.length()==3);
+				assertEquals("/**", line); 
+			} else {
+				if(st.hasMoreTokens()) {
+					//in the middle
+					assertTrue(line.length()>=2);
+					assertEquals(" *", line.substring(0, 2)); 
+				} else {
+					//last
+					assertTrue(line.length()==3);
+					assertEquals(" */", line.substring(0, 3)); 
+				}
+			}
+		}
+		//This test passes on MS Windows too - why spoon uses `\n` on MS Windows too?
+		assertEquals("This file contains MS Windows EOL.\n"
+				+ "It is here to test whether comments are printed well\n"
+				+ "in this case", classJavaDoc.getContent());
+	}
+
+	@Test
+	public void testWildComments() {
+		//contract: tests that value of comment is correct even for wild combinations of characters. See WildComments class for details
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(WildComments.class);
+		List<CtLiteral<String>> literals = (List)((CtNewArray<?>)type.getField("comments").getDefaultExpression()).getElements();
+		assertTrue(literals.size()>10);
+		/*
+		 * each string literal has a comment and string value, which defines expected value of it's comment
+		 */
+		for (CtLiteral<String> literal : literals) {
+			assertEquals(1, literal.getComments().size());
+			CtComment comment = literal.getComments().get(0);
+			String expected = literal.getValue();
+			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
+		}
 	}
 }
