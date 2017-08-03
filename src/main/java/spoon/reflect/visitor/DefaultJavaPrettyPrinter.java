@@ -213,6 +213,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
+	 * @return current line separator. By default there is CR LF, LF or CR depending on the Operation system
+	 * defined by System.getProperty("line.separator")
+	 */
+	public String getLineSeparator() {
+		return printer.getLineSeparator();
+	}
+
+	/**
+	 * @param lineSeparator characters which will be printed as End of line.
+	 * By default there is System.getProperty("line.separator")
+	 */
+	public DefaultJavaPrettyPrinter setLineSeparator(String lineSeparator) {
+		printer.setLineSeparator(lineSeparator);
+		return this;
+	}
+
+	/**
 	 * Enters an expression.
 	 */
 	protected void enterCtExpression(CtExpression<?> e) {
@@ -1808,22 +1825,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public String printPackageInfo(CtPackage pack) {
-		PrinterHelper bck = printer;
-		ElementPrinterHelper bck2 = elementPrinterHelper;
-		printer = new PrinterHelper(env);
-		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
-
+		reset();
 		elementPrinterHelper.writeComment(pack);
 		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
 			printer.write("package " + pack.getQualifiedName() + ";");
 		}
-		String ret = printer.toString();
-		elementPrinterHelper = bck2;
-		printer = bck;
-
-		return ret;
+		return printer.toString();
 	}
 
 	@Override
@@ -1833,8 +1842,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void reset() {
-		printer = new PrinterHelper(env);
-		elementPrinterHelper.setPrinter(printer);
+		printer.reset();
 		context = new PrintingContext();
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
@@ -1845,14 +1853,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
-		this.sourceCompilationUnit = sourceCompilationUnit;
-
 		// reset the importsContext to avoid errors with multiple CU
-		if (env.isAutoImports()) {
-			this.importsContext = new ImportScannerImpl();
-		} else {
-			this.importsContext = new MinimalImportScanner();
-		}
+		reset();
+
+		this.sourceCompilationUnit = sourceCompilationUnit;
 
 		Set<CtReference> imports = new HashSet<>();
 		for (CtType<?> t : types) {
