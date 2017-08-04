@@ -684,16 +684,15 @@ public abstract class Substitution {
 //				}
 
 				// contract: if a proxy parameter is declared and named "x" (@Parameter("x")), then a type member named "x" must exist.
-				// it is not good contract, because fields of inner classes and method invocations cannot be handled then
-//				boolean found = false;
-//				for (CtTypeMember member: c.getTypeMembers()) {
-//					if (member.getSimpleName().equals(proxyName)) {
-//						found = true;
-//					}
-//				}
-//				if (!found) {
-//					throw new TemplateException("if a proxy parameter is declared and named \"" + proxyName + "\", then a type member named \"" + proxyName + "\" must exist.");
-//				}
+				boolean found = false;
+				for (CtTypeMember member: c.getTypeMembers()) {
+					if (member.getSimpleName().equals(proxyName)) {
+						found = true;
+					}
+				}
+				if (!found) {
+					throw new TemplateException("if a proxy parameter is declared and named \"" + proxyName + "\", then a type member named \"\" + proxyName + \"\" must exist.");
+				}
 
 			}
 		}
