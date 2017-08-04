@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+
+import spoon.SpoonException;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
@@ -51,15 +53,20 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST
  */
-@SuppressWarnings("unchecked")
 class JDTCommentBuilder {
 
 	private static final Logger LOGGER = Logger.getLogger(JDTCommentBuilder.class);
@@ -526,38 +533,60 @@ class JDTCommentBuilder {
 	 * @return the content of the comment
 	 */
 	private String getCommentContent(int start, int end) {
-		//skip comment prefix
-		start += 2;
-		return cleanComment(new String(contents, start, end - start));
+		return cleanComment(new CharArrayReader(contents, start, end - start));
 	}
 
 	public static String cleanComment(String comment) {
-		StringBuffer ret = new StringBuffer();
-		String[] lines = comment.split("\n");
-		// limit case
-		if (lines.length == 1) {
-			return lines[0].replaceAll("^/\\*+ ?", "").replaceAll("\\*+/$", "").trim();
-		}
+		return cleanComment(new StringReader(comment));
+	}
 
-		for (String s : lines) {
-			String cleanUpLine = s.trim();
-			if (cleanUpLine.startsWith("/**")) {
-				cleanUpLine = cleanUpLine.replaceAll("/\\*+ ?", "");
-			} else if (cleanUpLine.endsWith("*/")) {
-				cleanUpLine = cleanUpLine.replaceAll("\\*+/$", "").replaceAll("^[ \t]*\\*+ ?", "");
+	private static final Pattern startCommentRE = Pattern.compile("^/\\*{1,2} ?");
+	private static final Pattern middleCommentRE = Pattern.compile("^[ \t]*\\*? ?");
+	private static final Pattern endCommentRE = Pattern.compile("\\*/$");
+
+	private static String cleanComment(Reader comment) {
+		StringBuilder ret = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(comment)) {
+			String line = br.readLine();
+			if (line.length() < 2 || line.charAt(0) != '/') {
+				throw new SpoonException("Unexpected beginning of comment");
+			}
+			boolean isLastLine = false;
+			if (line.charAt(1) == '/') {
+				//it is single line comment, which starts with "//"
+				isLastLine = true;
+				line = line.substring(2);
 			} else {
-				cleanUpLine = cleanUpLine.replaceAll("^[ \t]*\\*+ ?", "");
+				//it is potentially multiline comment, which starts with "/*" or "/**"
+				//check end first
+				if (line.endsWith("*/")) {
+					//it is last line
+					line = endCommentRE.matcher(line).replaceFirst("");
+					isLastLine = true;
+				}
+				//skip beginning
+				line = startCommentRE.matcher(line).replaceFirst("");
 			}
-			ret.append(cleanUpLine);
-			ret.append("\n");
-		}
-		// clean '\r'
-		StringBuffer ret2 = new StringBuffer();
-		for (int i = 0; i < ret.length(); i++) {
-			if (ret.charAt(i) != '\r') {
-				ret2.append(ret.charAt(i));
+			//append first line
+			ret.append(line);
+			while ((line = br.readLine()) != null) {
+				if (isLastLine) {
+					throw new SpoonException("Unexpected next line after last line");
+				}
+				if (line.endsWith("*/")) {
+					//it is last line
+					line = endCommentRE.matcher(line).replaceFirst("");
+					isLastLine = true;
+				}
+				//always clean middle comment, but after end comment is detected
+				line = middleCommentRE.matcher(line).replaceFirst("");
+				//write next line - Note that Spoon model comment's lines are always separated by "\n"
+				ret.append(CtComment.LINE_SEPARATOR);
+				ret.append(line);
 			}
+			return ret.toString().trim();
+		} catch (IOException e) {
+			throw new SpoonException(e);
 		}
-		return ret2.toString().trim();
 	}
 }

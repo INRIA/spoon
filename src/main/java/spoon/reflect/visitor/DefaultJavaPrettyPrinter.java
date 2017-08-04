@@ -169,11 +169,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String BLOCK_COMMENT_START = "/* ";
 
 	/**
-	 * RegExp which matches all possible line separators
-	 */
-	private static final String LINE_SEPARATORS_RE = "\\n\\r|\\n|\\r";
-
-	/**
 	 * The printing context.
 	 */
 	public PrintingContext context = new PrintingContext();
@@ -215,6 +210,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			this.importsContext = new MinimalImportScanner();
 		}
+	}
+
+	/**
+	 * @return current line separator. By default there is CR LF, LF or CR depending on the Operation system
+	 * defined by System.getProperty("line.separator")
+	 */
+	public String getLineSeparator() {
+		return printer.getLineSeparator();
+	}
+
+	/**
+	 * @param lineSeparator characters which will be printed as End of line.
+	 * By default there is System.getProperty("line.separator")
+	 */
+	public DefaultJavaPrettyPrinter setLineSeparator(String lineSeparator) {
+		printer.setLineSeparator(lineSeparator);
+		return this;
 	}
 
 	/**
@@ -904,7 +916,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.write(docTag.getParam()).writeln().writeTabs();
 		}
 
-		String[] tagLines = docTag.getContent().split(LINE_SEPARATORS_RE);
+		String[] tagLines = docTag.getContent().split(CtComment.LINE_SEPARATOR);
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
 			if (i > 0 || docTag.getType().hasParam()) {
@@ -942,7 +954,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.write(content);
 				break;
 			default:
-				String[] lines = content.split(LINE_SEPARATORS_RE);
+				String[] lines = content.split(CtComment.LINE_SEPARATOR);
 				for (int i = 0; i < lines.length; i++) {
 					String com = lines[i];
 					if (comment.getCommentType() == CtComment.CommentType.BLOCK) {
@@ -1806,28 +1818,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	@Deprecated
 	public String getPackageDeclaration() {
 		return printPackageInfo(context.currentTopLevel.getPackage());
 	}
 
 	@Override
 	public String printPackageInfo(CtPackage pack) {
-		PrinterHelper bck = printer;
-		ElementPrinterHelper bck2 = elementPrinterHelper;
-		printer = new PrinterHelper(env);
-		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
-
+		reset();
 		elementPrinterHelper.writeComment(pack);
 		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
 			printer.write("package " + pack.getQualifiedName() + ";");
 		}
-		String ret = printer.toString();
-		elementPrinterHelper = bck2;
-		printer = bck;
-
-		return ret;
+		return printer.toString();
 	}
 
 	@Override
@@ -1837,8 +1842,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void reset() {
-		printer = new PrinterHelper(env);
-		elementPrinterHelper.setPrinter(printer);
+		printer.reset();
 		context = new PrintingContext();
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
@@ -1849,14 +1853,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
-		this.sourceCompilationUnit = sourceCompilationUnit;
-
 		// reset the importsContext to avoid errors with multiple CU
-		if (env.isAutoImports()) {
-			this.importsContext = new ImportScannerImpl();
-		} else {
-			this.importsContext = new MinimalImportScanner();
-		}
+		reset();
+
+		this.sourceCompilationUnit = sourceCompilationUnit;
 
 		Set<CtReference> imports = new HashSet<>();
 		for (CtType<?> t : types) {

@@ -175,7 +175,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		} else if (nameElement instanceof CtPackage) {
 			createPackageFile((CtPackage) nameElement);
 		}
-		printer.reset();
 	}
 
 	private void createPackageFile(CtPackage pack) {

@@ -31,10 +31,12 @@ public interface PrettyPrinter {
 	/**
 	 * Gets the package declaration contents.
 	 */
+	@Deprecated
 	String getPackageDeclaration();
 
 	/**
 	 * Prints the package info.
+	 * It always resets the printing context at the beginning of this process.
 	 */
 	String printPackageInfo(CtPackage pack);
 
@@ -44,13 +46,17 @@ public interface PrettyPrinter {
 	String getResult();
 
 	/**
-	 * Resets the buffering of results
+	 * It does not have to be called by clients now.
+	 * The printing buffer is reset automatically at the beginning of #printPackageInfo or #calculate call
+	 * So this method can be removed from the API, but should be kept in internal implementation and inherited PrettyPrinters
 	 */
+	@Deprecated
 	void reset();
 
 	/**
 	 * Calculates the resulting source file for a list of types. The source
 	 * compilation unit is required for calculating the line numbers mapping.
+	 * It always resets the printing context at the beginning of this process.
 	 */
 	void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types);
 

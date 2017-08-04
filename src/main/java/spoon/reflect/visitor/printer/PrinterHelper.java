@@ -23,14 +23,16 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PrinterHelper {
 	/**
-	 * Line separator which is used by the system
+	 * Line separator which is used by the printer helper.
+	 * By default the system line separator is used
 	 */
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private String lineSeparator = System.getProperty("line.separator");
 
 	/**
 	 * Environment which Spoon is executed.
@@ -69,6 +71,18 @@ public class PrinterHelper {
 	}
 
 	/**
+	 * resets to the initial state
+	 */
+	public void reset() {
+		sbf.setLength(0);
+		nbTabs = 0;
+		line = 1;
+		column = 1;
+		//create new map, because clients keeps reference to it
+		lineNumberMapping = new HashMap<>();
+	}
+
+	/**
 	 * Outputs a string.
 	 */
 	public PrinterHelper write(String s) {
@@ -92,7 +106,7 @@ public class PrinterHelper {
 	 * Generates a new line.
 	 */
 	public PrinterHelper writeln() {
-		write(LINE_SEPARATOR);
+		write(lineSeparator);
 		line++;
 		// reset the column index
 		column = 1;
@@ -137,7 +151,7 @@ public class PrinterHelper {
 	}
 
 	public boolean removeLine() {
-		String ls = LINE_SEPARATOR;
+		String ls = lineSeparator;
 		int i = sbf.length() - ls.length();
 		boolean hasWhite = false;
 		while (i > 0 && !ls.equals(sbf.substring(i, i + ls.length()))) {
@@ -375,7 +389,7 @@ public class PrinterHelper {
 	}
 
 	public Map<Integer, Integer> getLineNumberMapping() {
-		return lineNumberMapping;
+		return Collections.unmodifiableMap(lineNumberMapping);
 	}
 
 	@Override
@@ -406,5 +420,21 @@ public class PrinterHelper {
 	 */
 	public ListPrinter createListPrinter(String start, String next, String end) {
 		return new ListPrinter(this, start, next, end);
+	}
+
+	/**
+	 * @return current line separator. By default there is CR LF, LF or CR depending on the Operation system
+	 * defined by System.getProperty("line.separator")
+	 */
+	public String getLineSeparator() {
+		return lineSeparator;
+	}
+
+	/**
+	 * @param lineSeparator characters which will be printed as End of line.
+	 * By default there is System.getProperty("line.separator")
+	 */
+	public void setLineSeparator(String lineSeparator) {
+		this.lineSeparator = lineSeparator;
 	}
 }
