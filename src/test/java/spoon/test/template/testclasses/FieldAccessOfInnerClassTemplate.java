@@ -16,9 +16,9 @@ public class FieldAccessOfInnerClassTemplate extends ExtensionTemplate {
 	
 	@Local
 	public FieldAccessOfInnerClassTemplate(String fieldName) {
-		this.fieldName = fieldName;
+		this.$field$ = fieldName;
 	}
 
-	@Parameter("$field$")
-	String fieldName;
+	@Parameter
+	String $field$;
 }
