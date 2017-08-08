@@ -87,12 +87,19 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
 	protected List<SpoonResource> forceBuildList = new ArrayList<>();
 	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
+	
+	/**
+	 * @deprecated The encoding of Environment should be used instead
+	 */
+	@Deprecated
+	protected String encoding;
 
 	/**
 	 * Default constructor
 	 */
 	public JDTBasedSpoonCompiler(Factory factory) {
 		this.factory = factory;
+		this.encoding = factory.getEnvironment().getEncoding().displayName();
 	}
 
 	@Override
