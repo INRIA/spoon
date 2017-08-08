@@ -40,94 +40,94 @@ import java.util.Set;
  */
 public class JDTImportBuilder {
 
-    private final CompilationUnitDeclaration declarationUnit;
-    private String filePath;
-    private CompilationUnit spoonUnit;
-    private ICompilationUnit sourceUnit;
-    private Factory factory;
-    private Set<CtReference> imports;
+	private final CompilationUnitDeclaration declarationUnit;
+	private String filePath;
+	private CompilationUnit spoonUnit;
+	private ICompilationUnit sourceUnit;
+	private Factory factory;
+	private Set<CtReference> imports;
 
-    JDTImportBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
-        this.declarationUnit = declarationUnit;
-        this.factory = factory;
-        this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
-        this.filePath = CharOperation.charToString(sourceUnit.getFileName());
-        this.spoonUnit = factory.CompilationUnit().create(filePath);
-        this.imports = new HashSet<>();
-    }
+	JDTImportBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
+		this.declarationUnit = declarationUnit;
+		this.factory = factory;
+		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
+		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
+		this.spoonUnit = factory.CompilationUnit().create(filePath);
+		this.imports = new HashSet<>();
+	}
 
-    public void build() {
-        if (declarationUnit.imports == null || declarationUnit.imports.length == 0) {
-            return;
-        }
+	public void build() {
+		if (declarationUnit.imports == null || declarationUnit.imports.length == 0) {
+			return;
+		}
 
-        for (ImportReference importRef : declarationUnit.imports) {
-            String importName = importRef.toString();
-            if (!importRef.isStatic()) {
-                CtType klass = this.getOrLoadClass(importName);
-                if (klass != null) {
-                    this.imports.add(klass.getReference());
-                }
-            } else {
-                int lastDot = importName.lastIndexOf(".");
-                String className = importName.substring(0, lastDot);
-                String methodOrFieldName = importName.substring(lastDot+1);
+		for (ImportReference importRef : declarationUnit.imports) {
+			String importName = importRef.toString();
+			if (!importRef.isStatic()) {
+				CtType klass = this.getOrLoadClass(importName);
+				if (klass != null) {
+					this.imports.add(klass.getReference());
+				}
+			} else {
+				int lastDot = importName.lastIndexOf(".");
+				String className = importName.substring(0, lastDot);
+				String methodOrFieldName = importName.substring(lastDot+1);
 
-                CtType klass = this.getOrLoadClass(className);
-                if (klass != null) {
+				CtType klass = this.getOrLoadClass(className);
+				if (klass != null) {
 
-                    // for now starred import are treated by importing
-                    // all static fields and methods
-                    // or all fields and methods if it concerns an interface
-                    if (methodOrFieldName.equals("*")) {
-                        Collection<CtFieldReference<?>> fields = klass.getAllFields();
-                        Set<CtMethod> methods = klass.getAllMethods();
+					// for now starred import are treated by importing
+					// all static fields and methods
+					// or all fields and methods if it concerns an interface
+					if (methodOrFieldName.equals("*")) {
+						Collection<CtFieldReference<?>> fields = klass.getAllFields();
+						Set<CtMethod> methods = klass.getAllMethods();
 
-                        for (CtFieldReference fieldReference : fields) {
-                            if (fieldReference.isStatic() || klass.isInterface()) {
-                                this.imports.add(fieldReference.clone());
-                            }
-                        }
+						for (CtFieldReference fieldReference : fields) {
+							if (fieldReference.isStatic() || klass.isInterface()) {
+								this.imports.add(fieldReference.clone());
+							}
+						}
 
-                        for (CtMethod method : methods) {
-                            if (method.hasModifier(ModifierKind.STATIC) || klass.isInterface()) {
-                                this.imports.add(method.getReference());
-                            }
-                        }
-                    } else {
-                        List<CtField> fields = klass.getElements(new NameFilter<CtField>(methodOrFieldName));
-                        List<CtMethod> methods = klass.getElements(new NameFilter<CtMethod>(methodOrFieldName));
+						for (CtMethod method : methods) {
+							if (method.hasModifier(ModifierKind.STATIC) || klass.isInterface()) {
+								this.imports.add(method.getReference());
+							}
+						}
+					} else {
+						List<CtField> fields = klass.getElements(new NameFilter<CtField>(methodOrFieldName));
+						List<CtMethod> methods = klass.getElements(new NameFilter<CtMethod>(methodOrFieldName));
 
-                        if (fields.size() > 0) {
-                            this.imports.add(fields.get(0).getReference());
-                        } else if (methods.size() > 0) {
-                            this.imports.add(methods.get(0).getReference());
-                        }
-                    }
-                }
-            }
-        }
+						if (fields.size() > 0) {
+							this.imports.add(fields.get(0).getReference());
+						} else if (methods.size() > 0) {
+							this.imports.add(methods.get(0).getReference());
+						}
+					}
+				}
+			}
+		}
 
-        spoonUnit.setImports(this.imports);
-    }
+		spoonUnit.setImports(this.imports);
+	}
 
-    private CtType getOrLoadClass(String className) {
-        CtType klass = this.factory.Class().get(className);
+	private CtType getOrLoadClass(String className) {
+		CtType klass = this.factory.Class().get(className);
 
-        if (klass == null) {
-            klass = this.factory.Interface().get(className);
+		if (klass == null) {
+			klass = this.factory.Interface().get(className);
 
-            if (klass == null) {
-                try {
-                    Class zeClass = this.getClass().getClassLoader().loadClass(className);
+			if (klass == null) {
+				try {
+					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 
-                    klass = this.factory.Class().get(zeClass);
-                    return klass;
-                } catch (ClassNotFoundException e) {
-                    return null;
-                }
-            }
-        }
-        return klass;
-    }
+					klass = this.factory.Class().get(zeClass);
+					return klass;
+				} catch (ClassNotFoundException e) {
+					return null;
+				}
+			}
+		}
+		return klass;
+	}
 }
