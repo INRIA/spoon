@@ -336,12 +336,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	@Override
 	public String getEncoding() {
-		return this.getEnvironment().getEncoding().displayName();
+		return this.encoding;
 	}
 
 	@Override
 	public void setEncoding(String encoding) {
-		// do nothing
+		this.encoding = encoding;
 	}
 
 	@Override
