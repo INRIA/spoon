@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -21,6 +22,7 @@ import spoon.reflect.visitor.printer.PrinterHelper;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,15 +56,20 @@ public class ImportScannerTest {
 			if (!ctType.isTopLevel()) {
 				continue;
 			}
+
+			CompilationUnit unit = spoon.getFactory().CompilationUnit().getMap().get(ctType.getPosition().getFile().getPath());
+			Collection<CtReference> computedRefImports = unit.getImports();
+
 			ImportScanner importContext = new ImportScannerImpl();
 			importContext.computeImports(ctType);
 
-			Collection<CtReference> computedRefImports = importContext.getAllImports();
+			computedRefImports.addAll(importContext.getAllImports());
+
 			Set<String> computedTypeImports = new HashSet<>();
 			Set<String> computedStaticImports = new HashSet<>();
 
 			for (CtReference computedImport : computedRefImports) {
-				String computedImportStr = printerHelper.printImport(computedImport).replace("import ", "").trim();
+				String computedImportStr = printerHelper.printImport(computedImport).replace("import ", "").replace(";", "").trim();
 
 				if (computedImportStr.contains("static ")) {
 					computedStaticImports.add(computedImportStr.replace("static ", "").trim());
