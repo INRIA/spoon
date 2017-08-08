@@ -8,6 +8,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
@@ -48,7 +49,7 @@ public class JDTImportBuilder {
         for (ImportReference importRef : declarationUnit.imports) {
             String importName = importRef.toString();
             if (!importRef.isStatic()) {
-                CtClass klass = this.getOrLoadClass(importName);
+                CtType klass = this.getOrLoadClass(importName);
                 if (klass != null) {
                     this.imports.add(klass.getReference());
                 }
@@ -57,21 +58,24 @@ public class JDTImportBuilder {
                 String className = importName.substring(0, lastDot);
                 String methodOrFieldName = importName.substring(lastDot+1);
 
-                CtClass klass = this.getOrLoadClass(className);
+                CtType klass = this.getOrLoadClass(className);
                 if (klass != null) {
 
+                    // for now starred import are treated by importing
+                    // all static fields and methods
+                    // or all fields and methods if it concerns an interface
                     if (methodOrFieldName.equals("*")) {
                         Collection<CtFieldReference<?>> fields = klass.getAllFields();
                         Set<CtMethod> methods = klass.getAllMethods();
 
                         for (CtFieldReference fieldReference : fields) {
-                            if (fieldReference.isStatic()) {
+                            if (fieldReference.isStatic() || klass.isInterface()) {
                                 this.imports.add(fieldReference.clone());
                             }
                         }
 
                         for (CtMethod method : methods) {
-                            if (method.hasModifier(ModifierKind.STATIC)) {
+                            if (method.hasModifier(ModifierKind.STATIC) || klass.isInterface()) {
                                 this.imports.add(method.getReference());
                             }
                         }
@@ -92,17 +96,21 @@ public class JDTImportBuilder {
         spoonUnit.setImports(this.imports);
     }
 
-    private CtClass getOrLoadClass(String className) {
-        CtClass klass = this.factory.Class().get(className);
+    private CtType getOrLoadClass(String className) {
+        CtType klass = this.factory.Class().get(className);
 
         if (klass == null) {
-            try {
-                Class zeClass = this.getClass().getClassLoader().loadClass(className);
+            klass = this.factory.Interface().get(className);
 
-                klass = this.factory.Class().get(zeClass);
-                return klass;
-            } catch (ClassNotFoundException e) {
-                return null;
+            if (klass == null) {
+                try {
+                    Class zeClass = this.getClass().getClassLoader().loadClass(className);
+
+                    klass = this.factory.Class().get(zeClass);
+                    return klass;
+                } catch (ClassNotFoundException e) {
+                    return null;
+                }
             }
         }
         return klass;
