@@ -432,8 +432,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		}
 
 		// we need first to go through the whole model before getting the right reference for imports
-		for (CompilationUnitDeclaration unit : units) {
-			if (getFactory().getEnvironment().isAutoImports()) {
+		if (getFactory().getEnvironment().isAutoImports()) {
+			for (CompilationUnitDeclaration unit : units) {
 				new JDTImportBuilder(unit, factory).build();
 			}
 		}
