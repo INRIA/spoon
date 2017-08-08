@@ -3,7 +3,6 @@ package spoon.test.variable.testclasses;
 import java.util.List;
 
 import static spoon.Launcher.SPOONED_CLASSES;
-import static spoon.test.variable.testclasses.ForStaticVariables.foo;
 
 public class MultiBurritos {
 	static Object spoon = "bla";
@@ -23,8 +22,7 @@ public class MultiBurritos {
 			public void run() {
 				MultiBurritos.toto();
 				MultiBurritos.spoon = "truc";
-				foo();
-
+				ForStaticVariables.foo();
 			}
 		});
 	}
