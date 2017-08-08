@@ -21,13 +21,16 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -38,6 +41,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
 
 	CtPackage ctPackage;
+
+	Set<CtReference> imports = new HashSet<>();
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -185,6 +190,16 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return tabCount;
 	}
 
+	@Override
+	public Set<CtReference> getImports() {
+		return this.imports;
+	}
+
+	@Override
+	public void setImports(Set<CtReference> imports) {
+		this.imports = imports;
+	}
+
 	public Factory getFactory() {
 		return factory;
 	}
@@ -202,6 +217,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	public void setAutoImport(boolean autoImport) {
 		this.autoImport = autoImport;
 	}
+
 
 
 }
