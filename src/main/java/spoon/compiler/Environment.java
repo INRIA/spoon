@@ -341,4 +341,14 @@ public interface Environment {
 	 * set the model change listener
 	 */
 	void setModelChangeListener(FineModelChangeListener modelChangeListener);
+
+	/**
+	 * Get the encoding used inside the project
+	 */
+	String getEncoding();
+
+	/**
+	 * Set the encoding to use for parsing source code
+	 */
+	void setEncoding(String encoding);
 }

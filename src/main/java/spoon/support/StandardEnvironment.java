@@ -89,6 +89,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
+	private String encoding;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -493,5 +495,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setModelChangeListener(FineModelChangeListener modelChangeListener) {
 		this.modelChangeListener = modelChangeListener;
+	}
+
+	@Override
+	public String getEncoding() {
+		return this.encoding;
+	}
+
+	@Override
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 }

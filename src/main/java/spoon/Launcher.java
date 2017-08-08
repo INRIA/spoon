@@ -436,6 +436,7 @@ public class Launcher implements SpoonAPI {
 		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
+		environment.setEncoding(jsapActualArgs.getString("encoding"));
 
 		if (getArguments().getString("generate-files") != null) {
 			setOutputFilter(getArguments().getString("generate-files").split(":"));
@@ -544,11 +545,10 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setEncoding(getArguments().getString("encoding"));
+		comp.setEncoding(env.getEncoding());
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
-		comp.setEncoding(jsapActualArgs.getString("encoding"));
 
 		// backward compatibility
 		// we don't have to set the source classpath
