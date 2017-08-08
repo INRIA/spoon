@@ -71,7 +71,7 @@ public class JDTImportBuilder {
 			} else {
 				int lastDot = importName.lastIndexOf(".");
 				String className = importName.substring(0, lastDot);
-				String methodOrFieldName = importName.substring(lastDot+1);
+				String methodOrFieldName = importName.substring(lastDot + 1);
 
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
