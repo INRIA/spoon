@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -95,13 +96,10 @@ public class JDTImportBuilder {
 							}
 						}
 					} else {
-						List<CtField> fields = klass.getElements(new NameFilter<CtField>(methodOrFieldName));
-						List<CtMethod> methods = klass.getElements(new NameFilter<CtMethod>(methodOrFieldName));
+						List<CtNamedElement> methodOrFields = klass.getElements(new NameFilter<>(methodOrFieldName));
 
-						if (fields.size() > 0) {
-							this.imports.add(fields.get(0).getReference());
-						} else if (methods.size() > 0) {
-							this.imports.add(methods.get(0).getReference());
+						if (methodOrFields.size() > 0) {
+							this.imports.add(methodOrFields.get(0).getReference());
 						}
 					}
 				}
