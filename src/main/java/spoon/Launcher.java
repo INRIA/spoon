@@ -53,6 +53,7 @@ import spoon.support.gui.SpoonModelTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -436,7 +437,13 @@ public class Launcher implements SpoonAPI {
 		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
-		environment.setEncoding(jsapActualArgs.getString("encoding"));
+
+		try {
+			Charset charset = Charset.forName(jsapActualArgs.getString("encoding"));
+			environment.setEncoding(charset);
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
 
 		if (getArguments().getString("generate-files") != null) {
 			setOutputFilter(getArguments().getString("generate-files").split(":"));
@@ -545,7 +552,6 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setEncoding(env.getEncoding());
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
