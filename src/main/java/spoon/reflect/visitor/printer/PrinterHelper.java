@@ -206,28 +206,6 @@ public class PrinterHelper {
 	}
 
 	/**
-	 * Removes the last non-white character.
-	 * Use {@link PrinterHelper#createListPrinter(String, String, String)} to print separators only when needed
-	 */
-	@Deprecated
-	public PrinterHelper removeLastChar() {
-		while (isWhite(sbf.charAt(sbf.length() - 1))) {
-			if (sbf.charAt(sbf.length() - 1) == '\n') {
-				line--;
-			}
-			sbf.deleteCharAt(sbf.length() - 1);
-		}
-		sbf.deleteCharAt(sbf.length() - 1);
-		while (isWhite(sbf.charAt(sbf.length() - 1))) {
-			if (sbf.charAt(sbf.length() - 1) == '\n') {
-				line--;
-			}
-			sbf.deleteCharAt(sbf.length() - 1);
-		}
-		return this;
-	}
-
-	/**
 	 * Write a pre unary operator.
 	 */
 	public void preWriteUnaryOperator(UnaryOperatorKind o) {

@@ -16,16 +16,20 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
+import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
+
+import spoon.SpoonException;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -54,13 +58,26 @@ public class PositionBuilder {
 	SourcePosition buildPositionCtElement(CtElement e, ASTNode node) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
-		int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		char[] contents = cr.compilationUnit.getContents();
+
 
 		int sourceStart = node.sourceStart;
 		int sourceEnd = node.sourceEnd;
-		if ((node instanceof Expression)) {
-			if (((Expression) node).statementEnd > 0) {
-				sourceEnd = ((Expression) node).statementEnd;
+		if ((node instanceof Annotation)) {
+			Annotation ann = (Annotation) node;
+			int declEnd = ann.declarationSourceEnd;
+
+			if (declEnd > 0) {
+				sourceEnd = declEnd;
+			}
+		} else if ((node instanceof Expression)) {
+			Expression expression = (Expression) node;
+			int statementEnd = expression.statementEnd;
+
+			if (statementEnd > 0) {
+				sourceEnd = statementEnd;
 			}
 		}
 
@@ -110,14 +127,18 @@ public class PositionBuilder {
 			Annotation[] annotations = typeDeclaration.annotations;
 			if (annotations != null && annotations.length > 0) {
 				if (annotations[0].sourceStart() == declarationSourceStart) {
-					modifiersSourceStart = annotations[annotations.length - 1].sourceEnd() + 2;
+					modifiersSourceStart = findNextNonWhitespace(contents, annotations[annotations.length - 1].declarationSourceEnd + 1);
 				}
 			}
 			if (modifiersSourceStart == 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
-			// the position the name minus the size of "class" minus at least 2 spaces
-			int modifiersSourceEnd = sourceStart - 8;
+			//look for start of first keyword before the type keyword e.g. "class". `sourceStart` points at first char of type name
+			int modifiersSourceEnd = findPrevNonWhitespace(contents, findPrevWhitespace(contents, findPrevNonWhitespace(contents, sourceStart - 1)));
+			if (modifiersSourceEnd < modifiersSourceStart) {
+				//there is no modifier
+				modifiersSourceEnd = modifiersSourceStart - 1;
+			}
 
 			return cf.createBodyHolderSourcePosition(cu, sourceStart, sourceEnd,
 					modifiersSourceStart, modifiersSourceEnd,
@@ -135,6 +156,13 @@ public class PositionBuilder {
 			if (modifiersSourceStart == 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
+
+			if (node instanceof AnnotationMethodDeclaration && bodyStart == bodyEnd) {
+				//The ";" at the end of annotation method declaration is not part of body
+				//let it behave same like in abstract MethodDeclaration
+				bodyEnd--;
+			}
+
 			Javadoc javadoc = methodDeclaration.javadoc;
 			if (javadoc != null && javadoc.sourceEnd() > declarationSourceStart) {
 				modifiersSourceStart = javadoc.sourceEnd() + 1;
@@ -170,24 +198,82 @@ public class PositionBuilder {
 				if (bodyStart == 0) {
 					return SourcePosition.NOPOSITION;
 				} else {
+					if (bodyStart < bodyEnd) {
+						//include brackets if they are there
+						if (contents[bodyStart - 1] == '{') {
+							bodyStart--;
+							if (contents[bodyEnd + 1] == '}') {
+								bodyEnd++;
+							} else {
+								throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
+							}
+						}
+					}
 					return cf.createBodyHolderSourcePosition(cu,
 							sourceStart, sourceEnd,
 							modifiersSourceStart, modifiersSourceEnd,
 							declarationSourceStart, declarationSourceEnd,
-							bodyStart - 1, bodyEnd + 1,
+							bodyStart, bodyEnd,
 							lineSeparatorPositions);
 				}
 			}
 		}
-		if ((node instanceof Expression)) {
-			Expression expression = (Expression) node;
-			int statementEnd = expression.statementEnd;
-
-			if (statementEnd > 0) {
-				sourceEnd = statementEnd;
-			}
-		}
 
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+	}
+
+	/**
+	 * @return index of first non whitespace char, searching forward. Can return off if it is non whitespace.
+	 */
+	private int findNextNonWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c) == false) {
+				return off;
+			}
+			off++;
+		}
+		return -1;
+	}
+
+	/**
+	 * @return index of first whitespace char, searching forward. Can return off if it is whitespace.
+	 */
+	private int findNextWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c)) {
+				return off;
+			}
+			off++;
+		}
+		return -1;
+	}
+	/**
+	 * @return index of first non whitespace char, searching backward. Can return off if it is non whitespace.
+	 */
+	private int findPrevNonWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c) == false) {
+				return off;
+			}
+			off--;
+		}
+		return -1;
+	}
+
+	/**
+	 * @return index of first whitespace char, searching backward. Can return off if it is whitespace.
+	 */
+	private int findPrevWhitespace(char[] content, int off) {
+		while (off >= 0) {
+			char c = content[off];
+			if (Character.isWhitespace(c)) {
+				return off;
+			}
+			off--;
+		}
+		return -1;
 	}
 }

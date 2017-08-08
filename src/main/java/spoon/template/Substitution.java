@@ -106,17 +106,18 @@ public abstract class Substitution {
 	 * @param templateParameters
 	 * 		the substitution parameters
 	 */
-	public static <T> CtType<T> createTypeFromTemplate(String qualifiedTypeName, CtType<T> templateOfType, Map<String, Object> templateParameters) {
+	@SuppressWarnings("unchecked")
+	public static <T extends CtType<?>> T createTypeFromTemplate(String qualifiedTypeName, CtType<?> templateOfType, Map<String, Object> templateParameters) {
 		final Factory f = templateOfType.getFactory();
 		CtTypeReference<T> typeRef = f.Type().createReference(qualifiedTypeName);
 		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
 		extendedParams.put(templateOfType.getSimpleName(), typeRef);
-		List<CtType<T>> generated = new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-		for (CtType<T> ctType : generated) {
+		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
+		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
 		}
-		return typeRef.getTypeDeclaration();
+		return (T) typeRef.getTypeDeclaration();
 	}
 
 	/**
@@ -207,7 +208,6 @@ public abstract class Substitution {
 	 * 		the model of source template
 	 */
 	static void insertAllMethods(CtType<?> targetType, Template<?> template, CtClass<?> sourceClass) {
-
 		Set<CtMethod<?>> methodsOfTemplate = sourceClass.getFactory().Type().get(Template.class).getMethods();
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
@@ -309,11 +309,10 @@ public abstract class Substitution {
 	 */
 	static void insertGeneratedNestedType(CtType<?> targetType, Template<?> template, CtType<?> nestedType) {
 
-		CtClass<?> sourceClass = getTemplateCtClass(targetType, template);
 		if (nestedType.getAnnotation(Local.class) != null) {
 			return;
 		}
-		CtType<?> result = substitute(sourceClass, template, (CtType) nestedType);
+		CtType<?> result = substitute(targetType, template, (CtType) nestedType);
 		targetType.addNestedType(result);
 	}
 
@@ -663,7 +662,40 @@ public abstract class Substitution {
 		if (c.isShadow()) {
 			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
 		}
+		checkTemplateContracts(c);
 		return c;
+	}
+
+	private static <T> void checkTemplateContracts(CtClass<T> c) {
+		for (CtField f : c.getFields()) {
+			Parameter templateParamAnnotation = f.getAnnotation(Parameter.class);
+			if (templateParamAnnotation != null && !templateParamAnnotation.value().equals("")) {
+				String proxyName = templateParamAnnotation.value();
+				// contract: if value, then the field type must be String
+				if (!f.getType().equals(c.getFactory().Type().STRING)) {
+					throw new TemplateException("proxy template parameter must be typed as String " +  f.getType().getQualifiedName());
+				}
+
+				// contract: the name of the template parameter must correspond to the name of the field
+				// as found, by Pavel, this is not good contract because it prevents easy refactoring of templates
+				// we remove it but keep th commented code in case somebody would come up with this bad idae
+//				if (!f.getSimpleName().equals("_" + f.getAnnotation(Parameter.class).value())) {
+//					throw new TemplateException("the field name of a proxy template parameter must be called _" + f.getSimpleName());
+//				}
+
+				// contract: if a proxy parameter is declared and named "x" (@Parameter("x")), then a type member named "x" must exist.
+				boolean found = false;
+				for (CtTypeMember member: c.getTypeMembers()) {
+					if (member.getSimpleName().equals(proxyName)) {
+						found = true;
+					}
+				}
+				if (!found) {
+					throw new TemplateException("if a proxy parameter is declared and named \"" + proxyName + "\", then a type member named \"\" + proxyName + \"\" must exist.");
+				}
+
+			}
+		}
 	}
 
 	/**

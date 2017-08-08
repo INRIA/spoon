@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -67,6 +68,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -292,10 +294,44 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.adjustStartPosition(e);
 				}
 			}
-			e.accept(this);
+			try {
+				e.accept(this);
+			} catch (SpoonException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				String elementInfo = e.getClass().getName();
+				elementInfo += " on path " + getPath(e) + "\n";
+				if (e.getPosition() != null) {
+					elementInfo += "at position " + e.getPosition().toString() + " ";
+				}
+				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
+			}
 			context.elementStack.pop();
 		}
 		return this;
+	}
+
+	private static String getPath(CtElement ele) {
+		StringBuilder sb = new StringBuilder();
+		addParentPath(sb, ele);
+		if (ele instanceof CtVariableAccess) {
+			sb.append(':').append(((CtVariableAccess) ele).getVariable().getSimpleName());
+		}
+		return sb.toString();
+	}
+	private static void addParentPath(StringBuilder sb, CtElement ele) {
+		if (ele == null || (ele instanceof CtPackage && ((CtPackage) ele).isUnnamedPackage())) {
+			return;
+		}
+		if (ele.isParentInitialized()) {
+			addParentPath(sb, ele.getParent());
+		}
+		sb.append("\n\t").append(ele.getClass().getSimpleName());
+		if (ele instanceof CtNamedElement) {
+			sb.append(":").append(((CtNamedElement) ele).getSimpleName());
+		} else if (ele instanceof CtReference) {
+			sb.append(":").append(((CtReference) ele).getSimpleName());
+		}
 	}
 
 	/**
@@ -342,7 +378,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			try (ListPrinter lp = printer.createListPrinter("(", ", ", ")")) {
 				for (Entry<String, CtExpression> e : annotation.getValues().entrySet()) {
 					lp.printSeparatorIfAppropriate();
-					printer.write(e.getKey() + " = ");
+					if ((annotation.getValues().size() == 1 && "value".equals(e.getKey())) == false) {
+						//it is not a default value attribute. We must print a attribute name too.
+						printer.write(e.getKey() + " = ");
+					}
 					elementPrinterHelper.writeAnnotationElement(annotation.getFactory(), e.getValue());
 				}
 			}
@@ -1731,6 +1770,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(variableWrite);
 	}
 
+	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
 		enterCtStatement(whileLoop);
 		printer.write("while (");
@@ -1819,6 +1859,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		Set<CtReference> imports = new HashSet<>();
+		if (sourceCompilationUnit != null) {
+			imports.addAll(sourceCompilationUnit.getImports());
+		}
+
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}

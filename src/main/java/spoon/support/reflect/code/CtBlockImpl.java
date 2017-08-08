@@ -67,18 +67,27 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		return (T) statements.get(statements.size() - 1);
 	}
 
-	@Override
-	public <T extends CtBlock<R>> T insertBegin(CtStatementList statements) {
-		if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
-			CtStatement first = getStatements().get(0);
-			if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
-				first.insertAfter(statements);
-				return (T) this;
+	private boolean shouldInsertAfterSuper() {
+		try {
+			if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
+				CtStatement first = getStatements().get(0);
+				if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
+					return true;
+				}
 			}
+		} catch (ParentNotInitializedException ignore) {
+			// CtBlock hasn't a parent. So, it isn't in a constructor.
 		}
-		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
-			this.statements = new ArrayList<>(statements.getStatements().size() + BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+		return false;
+	}
+
+	@Override
+	public <T extends CtStatementList> T insertBegin(CtStatementList statements) {
+		if (this.shouldInsertAfterSuper()) {
+			getStatements().get(0).insertAfter(statements);
+			return (T) this;
 		}
+		ensureModifiableStatementsList();
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
 			this.addStatement(0, statement);
@@ -90,17 +99,10 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBegin(CtStatement statement) {
-		try {
-			if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
-				CtStatement first = getStatements().get(0);
-				if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
-					first.insertAfter(statement);
-					return (T) this;
-				}
-			}
-		} catch (ParentNotInitializedException ignore) {
-			// CtBlock hasn't a parent. So, it isn't in a constructor.
+	public <T extends CtStatementList> T insertBegin(CtStatement statement) {
+		if (this.shouldInsertAfterSuper()) {
+			getStatements().get(0).insertAfter(statement);
+			return (T) this;
 		}
 		ensureModifiableStatementsList();
 		statement.setParent(this);
@@ -113,14 +115,14 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertEnd(CtStatement statement) {
+	public <T extends CtStatementList> T insertEnd(CtStatement statement) {
 		ensureModifiableStatementsList();
 		addStatement(statement);
 		return (T) this;
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertEnd(CtStatementList statements) {
+	public <T extends CtStatementList> T insertEnd(CtStatementList statements) {
 		for (CtStatement s : statements.getStatements()) {
 			insertEnd(s);
 		}
@@ -128,7 +130,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
+	public <T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statement);
 		}
@@ -136,7 +138,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
+	public <T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statements);
 		}
@@ -144,7 +146,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
+	public <T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
 		}
@@ -152,7 +154,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends CtBlock<R>> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
+	public <T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statements);
 		}

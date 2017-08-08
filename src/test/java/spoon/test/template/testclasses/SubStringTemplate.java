@@ -16,11 +16,11 @@ public class SubStringTemplate extends ExtensionTemplate{
 		set$name$("The $name$ is here too");
 	}
 	
-	@Parameter("$name$")
-	Object name;
+	@Parameter
+	Object $name$;
 	
 	@Local
-	public SubStringTemplate(Object name) {
-		this.name = name;
+	public SubStringTemplate(Object o) {
+		this.$name$ = o;
 	}
 }

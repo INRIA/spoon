@@ -18,6 +18,8 @@ package spoon.reflect.code;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.visitor.Filter;
+import spoon.support.DerivedProperty;
 
 import java.util.List;
 
@@ -51,7 +53,72 @@ public interface CtStatementList extends CtCodeElement, Iterable<CtStatement> {
 	 * Inserts the given statement at a specific position in the list of statements
 	 * Shifts the statement currently at that position (if any) and any subsequent statements to the right (adds one to their indices).
 	 */
+	@PropertySetter(role = STATEMENT)
 	<T extends CtStatementList> T addStatement(int index, CtStatement statement);
+
+	/**
+	 * Inserts the given statement at the beginning of the block.
+	 */
+	@PropertySetter(role = STATEMENT)
+	<T extends CtStatementList> T insertBegin(CtStatement statement);
+
+	/**
+	 * Inserts the given statement list at the beginning of the block.
+	 */
+	@PropertySetter(role = STATEMENT)
+	<T extends CtStatementList> T insertBegin(CtStatementList statements);
+
+	/**
+	 * Inserts the given statement at the end of the block.
+	 */
+	@PropertySetter(role = STATEMENT)
+	<T extends CtStatementList> T insertEnd(CtStatement statement);
+
+	/**
+	 * Inserts the given statements at the end of the block.
+	 */
+	@PropertySetter(role = STATEMENT)
+	<T extends CtStatementList> T insertEnd(CtStatementList statements);
+
+	/**
+	 * Inserts the given statement before a set of insertion points given by a
+	 * filter.
+	 */
+	@DerivedProperty
+	<T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement);
+
+	/**
+	 * Inserts the given statement list before a set of insertion points given
+	 * by a filter.
+	 */
+	@DerivedProperty
+	<T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements);
+
+	/**
+	 * Inserts the given statement after a set of insertion points given by a
+	 * filter.
+	 */
+	@DerivedProperty
+	<T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement);
+
+	/**
+	 * Inserts the given statement list after a set of insertion points given by
+	 * a filter.
+	 */
+	@DerivedProperty
+	<T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements);
+
+	/**
+	 * Gets the ith statement of this block.
+	 */
+	@DerivedProperty
+	<T extends CtStatement> T getStatement(int i);
+
+	/**
+	 * Gets the last statement of this block.
+	 */
+	@DerivedProperty
+	<T extends CtStatement> T getLastStatement();
 
 	/**
 	 * Removes a statement.

@@ -96,7 +96,7 @@ public class FilterTest {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
-		assertEquals(4, expressions.size());
+		assertEquals(2, expressions.size());
 	}
 
 	@Test
@@ -868,6 +868,7 @@ public class FilterTest {
 	@Test
 	public void testClassCastExceptionOnForEach() throws Exception {
 		// contract: bound query, without any mapping
+		// This test could fail with a version of JDK <= 8.0.40. 
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -878,12 +879,28 @@ public class FilterTest {
 			int count = 0;
 		}
 		
-		Context context = new Context();
-		//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
-		launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
-			context.count++;
-		});
-		assertTrue(context.count>0);
+		{
+			Context context = new Context();
+			//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
+			launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
+				context.count++;
+			});
+			assertTrue(context.count>0);
+		}
+		{
+			Context context = new Context();
+			//contract: if the for each implementation throws CCE then it is reported
+			try {
+				launcher.getFactory().Package().getRootPackage().filterChildren(f->{return true;}).forEach((CtType t)->{
+					context.count++;
+					throw new ClassCastException("TEST");
+				});
+				fail("It must fail, because body of forEach should be called and thrown CCE");
+			} catch (SpoonException e) {
+				assertTrue(context.count>0);
+				assertEquals("TEST", e.getCause().getMessage());
+			}
+		}
 	}
 	
 	@Test

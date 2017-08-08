@@ -13,12 +13,12 @@ public class SubstituteLiteralTemplate extends ExtensionTemplate{
 		System.out.println(Params.$param1$());
 	}
 	
-	@Parameter("$param1$")
-	Object param;
+	@Parameter
+	Object $param1$;
 	
 	@Local
 	public SubstituteLiteralTemplate(Object param) {
-		this.param = param;
+		this.$param1$ = param;
 	}
 }
 

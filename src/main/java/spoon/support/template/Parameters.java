@@ -268,8 +268,8 @@ public abstract class Parameters {
 			//the reference to this is not template parameter
 			return false;
 		}
-		if (getTemplateParameterType(ref.getFactory()).isSubtypeOf(ref.getType())) {
-			//the type of template field is or extends from class TemplateParameter.
+		if (TemplateParameter.class.getName().equals(ref.getType().getQualifiedName())) {
+			//the type of template field is TemplateParameter.
 			return true;
 		}
 		return false;

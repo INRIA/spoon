@@ -219,7 +219,7 @@ public class Launcher implements SpoonAPI {
 			// Level logging.
 			opt2 = new FlaggedOption("level");
 			opt2.setLongFlag("level");
-			opt2.setHelp("Level of the ouput messages about what spoon is doing. Default value is ALL level.");
+			opt2.setHelp("Level of the ouput messages about what spoon is doing.");
 			opt2.setStringParser(JSAP.STRING_PARSER);
 			opt2.setDefault(Level.OFF.toString());
 			jsap.registerParameter(opt2);
