@@ -20,9 +20,12 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -64,9 +67,37 @@ public class JDTImportBuilder {
 		for (ImportReference importRef : declarationUnit.imports) {
 			String importName = importRef.toString();
 			if (!importRef.isStatic()) {
-				CtType klass = this.getOrLoadClass(importName);
-				if (klass != null) {
-					this.imports.add(klass.getReference());
+				// in case of starred import, we need to import all classes of the given package
+				// we could consider only the classes given to be processed (inside the model)
+				// but then we would miss all classes inside the classpath which are not considered for the process
+				// then we consider first the classes from the classpath and then those from the model
+				if (importName.endsWith("*")) {
+					int lastDot = importName.lastIndexOf(".");
+					String packageName = importName.substring(0, lastDot);
+
+					Reflections reflections = new Reflections(packageName, new SubTypesScanner(false));
+					Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
+
+					for (Class<?> classe : allClasses) {
+						CtType klass = this.getOrLoadClass(classe.getName());
+						if (klass != null) {
+							this.imports.add(klass.getReference());
+						}
+					}
+
+					CtPackage ctPackage = this.factory.Package().get(packageName);
+
+					if (ctPackage != null) {
+						for (CtType type : ctPackage.getTypes()) {
+							this.imports.add(type.getReference());
+						}
+					}
+
+				} else {
+					CtType klass = this.getOrLoadClass(importName);
+					if (klass != null) {
+						this.imports.add(klass.getReference());
+					}
 				}
 			} else {
 				int lastDot = importName.lastIndexOf(".");

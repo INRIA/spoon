@@ -8,11 +8,17 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.Tacos;
+import spoon.test.jdtimportbuilder.testclasses.StarredImport;
+import spoon.test.jdtimportbuilder.testclasses.StaticImport;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -86,29 +92,63 @@ public class ImportBuilderTest {
     }
 
     @Test
-    public void testWithStaticStarredImportFromInterface() {
-        // contract: when a starred static import is used with a target interface, all fields/methods should be imported
+    public void testSimpleStaticImport() {
+        // contract: simple static import are imported correctly
         Launcher spoon = new Launcher();
-        spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/Tacos.java");
+        spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImport.java");
         spoon.getEnvironment().setAutoImports(true);
         spoon.buildModel();
 
-        CtClass classA = spoon.getFactory().Class().get(Tacos.class);
+        CtClass classA = spoon.getFactory().Class().get(StaticImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
         Set<CtReference> imports = unitA.getImports();
 
-        assertEquals(2, imports.size());
+        assertEquals(1, imports.size());
+
+        CtReference ref = imports.iterator().next();
+
+        assertTrue(ref instanceof CtFieldReference);
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", ((CtFieldReference) ref).getQualifiedName());
+    }
+
+    @Test
+    public void testWithStaticStarredImportFromInterface() {
+        // contract: when a starred import is used with a target package, all classes of the package should be imported
+        Launcher spoon = new Launcher();
+        spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StarredImport.java");
+        spoon.getEnvironment().setAutoImports(true);
+        spoon.buildModel();
+
+        CtClass classA = spoon.getFactory().Class().get(StarredImport.class);
+        CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+        Set<CtReference> imports = unitA.getImports();
+
+        assertEquals(3, imports.size());
 
         Iterator<CtReference> iterator = imports.iterator();
         CtReference firstRef = iterator.next();
         CtReference secondRef = iterator.next();
+        CtReference thirdRef = iterator.next();
 
-        assertTrue(firstRef instanceof CtFieldReference);
-        assertTrue(secondRef instanceof CtExecutableReference);
+        assertTrue(firstRef instanceof CtTypeReference);
+        assertTrue(secondRef instanceof CtTypeReference);
+        assertTrue(thirdRef instanceof CtTypeReference);
 
-        assertEquals("CONSTANT", firstRef.getSimpleName());
-        assertEquals("spoon.test.imports.testclasses.internal4.Foo", ((CtFieldReference) firstRef).getFieldDeclaration().getType().getQualifiedName());
+        List<String> importNames = new SortedList<String>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
 
-        assertEquals("mamethode", secondRef.getSimpleName());
+        importNames.add(((CtTypeReference) firstRef).getQualifiedName());
+        importNames.add(((CtTypeReference) secondRef).getQualifiedName());
+        importNames.add(((CtTypeReference) thirdRef).getQualifiedName());
+
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack.A", importNames.get(0));
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack.B", importNames.get(1));
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack.C", importNames.get(2));
     }
+
+
 }
