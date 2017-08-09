@@ -118,7 +118,11 @@ public class JDTImportBuilder {
 				try {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 
-					klass = this.factory.Class().get(zeClass);
+					if (zeClass.isInterface()) {
+						klass = this.factory.Interface().get(zeClass);
+					} else {
+						klass = this.factory.Class().get(zeClass);
+					}
 					return klass;
 				} catch (ClassNotFoundException e) {
 					return null;
