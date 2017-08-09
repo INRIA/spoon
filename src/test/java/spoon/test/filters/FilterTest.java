@@ -80,6 +80,7 @@ import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
+import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelUtils;
 
 public class FilterTest {
@@ -1123,5 +1124,18 @@ public class FilterTest {
 
 		// only one subtype remains unvisited
 		assertEquals(1, c2.counter);
+	}
+
+	@Test
+	public void testNameFilterWithGenericType() {
+		// contract: NameFilter of T should only return T elements
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/Constants.java");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Constants.class);
+		List<CtMethod> ctMethods = type.getElements(new NameFilter<CtMethod>("CONSTANT"));
+		assertTrue(ctMethods.isEmpty());
 	}
 }
