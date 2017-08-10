@@ -7,8 +7,7 @@ import spoon.reflect.declaration.CtClass;
  */
 public class CtClassProcessor extends GenericCtTypeProcessor<CtClass> {
 
-    @Override
-    public void process(CtClass element) {
-        super.process(element);
+    public CtClassProcessor() {
+        super(CtClass.class);
     }
 }

@@ -11,6 +11,10 @@ import java.util.List;
  */
 public abstract class GenericCtTypeProcessor<T extends CtType> extends AbstractProcessor<T> {
 
+    public GenericCtTypeProcessor(Class<T> zeClass) {
+        super.addProcessedElementType(zeClass);
+    }
+
     public List<T> elements = new ArrayList<T>();
 
     @Override
