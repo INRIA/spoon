@@ -19,6 +19,7 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.Filter;
 
+
 /**
  * Filters elements by name (for instance to find a method). Example:
  *
@@ -29,6 +30,7 @@ import spoon.reflect.visitor.Filter;
  */
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
+	private Class<T> acceptedClass;
 
 	public NameFilter(String name) {
 		if (name == null) {
@@ -37,9 +39,18 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		this.name = name;
 	}
 
+	public NameFilter(String name, Class<T> acceptedClass) {
+		this(name);
+		this.acceptedClass = acceptedClass;
+	}
+
+	public void setAcceptedClass(Class<T> zeClass) {
+		this.acceptedClass = zeClass;
+	}
+
 	public boolean matches(T element) {
 		try {
-			return name.equals(element.getSimpleName());
+			return (acceptedClass == null || acceptedClass.isAssignableFrom(element.getClass())) && name.equals(element.getSimpleName());
 		} catch (UnsupportedOperationException e) {
 			return false;
 		}
