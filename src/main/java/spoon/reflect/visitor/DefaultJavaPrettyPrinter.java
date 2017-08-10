@@ -780,7 +780,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				boolean isImportedField = importsContext.isImported(f.getVariable());
 
 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
-					if (target.isImplicit()) {
+					if (target.isImplicit() && !(f.getVariable().getFieldDeclaration() == null && this.env.getNoClasspath())) {
 						/*
 						 * target is implicit, check whether there is no conflict with an local variable, catch variable or parameter
 						 * in case of conflict make it explicit, otherwise the field access is shadowed by that variable.
