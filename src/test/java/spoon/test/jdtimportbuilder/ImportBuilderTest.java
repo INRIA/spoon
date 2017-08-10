@@ -116,6 +116,7 @@ public class ImportBuilderTest {
         // contract: when a starred import is used with a target package, all classes of the package should be imported
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StarredImport.java");
+        spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/fullpack/");
         spoon.getEnvironment().setAutoImports(true);
         spoon.buildModel();
 

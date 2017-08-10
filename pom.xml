@@ -252,16 +252,6 @@
       <version>3.5</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.11</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-nop</artifactId>
-      <version>1.7.25</version>
-    </dependency>
   </dependencies>
 
   <build>

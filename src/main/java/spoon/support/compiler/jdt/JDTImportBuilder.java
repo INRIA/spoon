@@ -67,23 +67,11 @@ public class JDTImportBuilder {
 		for (ImportReference importRef : declarationUnit.imports) {
 			String importName = importRef.toString();
 			if (!importRef.isStatic()) {
-				// in case of starred import, we need to import all classes of the given package
-				// we could consider only the classes given to be processed (inside the model)
-				// but then we would miss all classes inside the classpath which are not considered for the process
-				// then we consider first the classes from the classpath and then those from the model
+				// Starred import are only managed by importing types of the model for now
+				// as it can cost a lot to retrieve all classes of a package by reflection
 				if (importName.endsWith("*")) {
 					int lastDot = importName.lastIndexOf(".");
 					String packageName = importName.substring(0, lastDot);
-
-					Reflections reflections = new Reflections(packageName, new SubTypesScanner(false));
-					Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
-
-					for (Class<?> classe : allClasses) {
-						CtType klass = this.getOrLoadClass(classe.getName());
-						if (klass != null) {
-							this.imports.add(klass.getReference());
-						}
-					}
 
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
