@@ -14,8 +14,10 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.test.processing.testclasses.CtClassProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.util.Collections;
@@ -179,5 +181,24 @@ public class ProcessingTest {
 		assertEquals("foo", p.aString);
 		assertEquals(5, p.anInt);
 		assertSame(o, p.anObject);
+	}
+
+	@Test
+	public void testProcessorWithGenericType() {
+		// contract: we can use generic type for another abstract processor
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses");
+
+		CtClassProcessor classProcessor = new CtClassProcessor();
+		spoon.addProcessor(classProcessor);
+
+		spoon.run();
+
+		assertFalse(classProcessor.elements.isEmpty());
+
+		for (CtType type : classProcessor.elements) {
+			assertTrue("Type "+type.getSimpleName()+" is not a class", type instanceof CtClass);
+		}
 	}
 }
