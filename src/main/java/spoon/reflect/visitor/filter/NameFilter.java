@@ -32,6 +32,12 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
 	private Class<T> acceptedClass;
 
+	/**
+	 *
+	 * @param name Name of the expected element
+	 * @deprecated Prefer to use the constructor with a class to check the type of the results
+	 */
+	@Deprecated
 	public NameFilter(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException();
