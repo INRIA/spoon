@@ -788,7 +788,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						 */
 						final CtField<?> field = f.getVariable().getFieldDeclaration();
 						if (field == null) {
-							throw new SpoonException("The reference to field named \"" + f.getVariable().getSimpleName() + "\" is invalid, because there is no field with such name.");
+							throw new SpoonException("The reference to field named \"" + f.getVariable().getSimpleName() + "\" is invalid, because there is no field with such name on path:" + getPath(f));
 						}
 						final String fieldName = field.getSimpleName();
 						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
