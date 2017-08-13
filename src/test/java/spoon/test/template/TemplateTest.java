@@ -51,6 +51,7 @@ import spoon.test.template.testclasses.bounds.FooBound;
 import spoon.test.template.testclasses.constructors.C1;
 import spoon.test.template.testclasses.constructors.TemplateWithConstructor;
 import spoon.test.template.testclasses.constructors.TemplateWithFieldsAndMethods;
+import spoon.test.template.testclasses.constructors.TemplateWithFieldsAndMethods_Wrong;
 import spoon.test.template.testclasses.inheritance.InterfaceTemplate;
 import spoon.test.template.testclasses.inheritance.SubClass;
 import spoon.test.template.testclasses.inheritance.SubTemplate;
@@ -340,7 +341,34 @@ public class TemplateTest {
 
 		assertEquals(0, factory.getEnvironment().getErrorCount());
 		assertEquals(0, factory.getEnvironment().getWarningCount());
+	}
 
+	@Test
+	public void testTemplateWithWrongUsedStringParam() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper
+						.resources("./src/test/java/spoon/test/template/testclasses/constructors/C1.java"),
+				SpoonResourceHelper
+						.resources(
+								"./src/test/java/spoon/test/template/testclasses/constructors/TemplateWithFieldsAndMethods_Wrong.java"))
+				.build();
+
+		CtClass<?> c1 = factory.Class().get(C1.class);
+
+		new TemplateWithFieldsAndMethods_Wrong(
+				"testparam").apply(c1);
+
+		CtMethod<?> m = c1.getMethod("methodToBeInserted");
+		assertNotNull(m);
+		//contract: printing of code which contains invalid field reference, fails with nice exception
+		try {
+			m.getBody().getStatement(0).toString();
+		} catch (SpoonException e) {
+			assertTrue("The error description doesn't contain name of invalid field. There is:\n" + e.getMessage(), e.getMessage().indexOf("testparam") >= 0);
+		}
 	}
 
 	@Test
