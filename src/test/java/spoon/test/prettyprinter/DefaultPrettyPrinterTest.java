@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -292,6 +293,18 @@ public class DefaultPrettyPrinterTest {
 		// Pretty-printing the Spooned code snippet and compiling the resulting code.
 		snippet = launcher.getFactory().Code().createCodeSnippetStatement(compile.toString());
 		assertEquals(compile, snippet.compile());
+	}
+
+	@Test
+	public void testIssue1501() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/orwall/PreferencesActivity.java");
+		launcher.addInputResource("./src/test/resources/noclasspath/orwall/BackgroundProcess.java");
+		launcher.setSourceOutputDirectory("./target/issue1501");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		assertFalse(launcher.getModel().getAllTypes().isEmpty());
 	}
 
 }

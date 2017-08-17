@@ -1,12 +1,14 @@
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 import org.junit.Test;
 
+import org.mockito.internal.matchers.Null;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
@@ -155,6 +157,7 @@ public class PrinterTest {
 			type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString();
 			fail();
 		} catch (SpoonException e) {
+			assertTrue(e.getCause() instanceof NullPointerException);
 			//the name of the missing field declaration is part of exception
 			assertTrue(e.getMessage().indexOf("testedField")>=0);
 			//the name of the method where field declaration is missing is part of exception
