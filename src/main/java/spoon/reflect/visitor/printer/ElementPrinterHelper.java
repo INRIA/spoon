@@ -54,7 +54,9 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ElementPrinterHelper {
 	private final DefaultJavaPrettyPrinter prettyPrinter;
@@ -254,7 +256,7 @@ public class ElementPrinterHelper {
 				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
 			}
 			printer.writeln().writeln().writeTabs();
-			List<String> sortedImports = new ArrayList<>(imports.size());
+			Set<String> setImports = new HashSet<>();
 			for (CtReference ref : imports) {
 				String importStr = "import";
 				String importTypeStr = "";
@@ -275,9 +277,11 @@ public class ElementPrinterHelper {
 				}
 
 				if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
-					sortedImports.add(importStr + " " + importTypeStr + ";");
+					setImports.add(importStr + " " + importTypeStr + ";");
 				}
 			}
+
+			List<String> sortedImports = new ArrayList<>(setImports);
 			Collections.sort(sortedImports);
 			for (String importLine : sortedImports) {
 				printer.write(importLine).writeln().writeTabs();

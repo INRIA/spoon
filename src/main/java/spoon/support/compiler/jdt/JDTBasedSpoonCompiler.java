@@ -430,9 +430,17 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					}
 				}
 				unit.traverse(builder, unit.scope);
+
 				if (getFactory().getEnvironment().isCommentsEnabled()) {
 					new JDTCommentBuilder(unit, factory).build();
 				}
+			}
+		}
+
+		// we need first to go through the whole model before getting the right reference for imports
+		if (getFactory().getEnvironment().isAutoImports()) {
+			for (CompilationUnitDeclaration unit : units) {
+				new JDTImportBuilder(unit, factory).build();
 			}
 		}
 	}
