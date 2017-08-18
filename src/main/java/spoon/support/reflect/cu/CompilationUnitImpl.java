@@ -28,9 +28,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -42,7 +42,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtPackage ctPackage;
 
-	Set<CtReference> imports = new HashSet<>();
+	Collection<CtReference> imports = new HashSet<>();
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -191,12 +191,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Set<CtReference> getImports() {
+	public Collection<CtReference> getImports() {
 		return this.imports;
 	}
 
 	@Override
-	public void setImports(Set<CtReference> imports) {
+	public void setImports(Collection<CtReference> imports) {
 		this.imports = imports;
 	}
 

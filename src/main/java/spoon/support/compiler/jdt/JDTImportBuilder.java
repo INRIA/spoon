@@ -39,7 +39,7 @@ import java.util.Set;
 /**
  * Created by urli on 08/08/2017.
  */
-public class JDTImportBuilder {
+class JDTImportBuilder {
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private String filePath;
@@ -53,6 +53,7 @@ public class JDTImportBuilder {
 		this.factory = factory;
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
+		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
 		this.spoonUnit = factory.CompilationUnit().create(filePath);
 		this.imports = new HashSet<>();
 	}
@@ -71,6 +72,8 @@ public class JDTImportBuilder {
 					int lastDot = importName.lastIndexOf(".");
 					String packageName = importName.substring(0, lastDot);
 
+					// only get package from the model by traversing from rootPackage the model
+					// it does not use reflection to achieve that
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
 					if (ctPackage != null) {
@@ -101,13 +104,13 @@ public class JDTImportBuilder {
 						Set<CtMethod> methods = klass.getAllMethods();
 
 						for (CtFieldReference fieldReference : fields) {
-							if (fieldReference.isStatic() || klass.isInterface()) {
+							if (fieldReference.isStatic() && fieldReference.getFieldDeclaration().hasModifier(ModifierKind.PUBLIC) || klass.isInterface()) {
 								this.imports.add(fieldReference.clone());
 							}
 						}
 
 						for (CtMethod method : methods) {
-							if (method.hasModifier(ModifierKind.STATIC) || klass.isInterface()) {
+							if (method.hasModifier(ModifierKind.STATIC) && method.hasModifier(ModifierKind.PUBLIC) || klass.isInterface()) {
 								this.imports.add(method.getReference());
 							}
 						}
@@ -134,12 +137,7 @@ public class JDTImportBuilder {
 			if (klass == null) {
 				try {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
-
-					if (zeClass.isInterface()) {
-						klass = this.factory.Interface().get(zeClass);
-					} else {
-						klass = this.factory.Class().get(zeClass);
-					}
+					klass = this.factory.Type().get(zeClass);
 					return klass;
 				} catch (ClassNotFoundException e) {
 					return null;

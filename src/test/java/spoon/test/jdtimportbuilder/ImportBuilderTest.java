@@ -15,6 +15,7 @@ import spoon.test.imports.testclasses.Tacos;
 import spoon.test.jdtimportbuilder.testclasses.StarredImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImport;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -52,7 +53,7 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Set<CtReference> imports = unitA.getImports();
+        Collection<CtReference> imports = unitA.getImports();
 
         assertEquals(1, imports.size());
 
@@ -101,7 +102,7 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(StaticImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Set<CtReference> imports = unitA.getImports();
+        Collection<CtReference> imports = unitA.getImports();
 
         assertEquals(1, imports.size());
 
@@ -122,7 +123,7 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(StarredImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Set<CtReference> imports = unitA.getImports();
+        Collection<CtReference> imports = unitA.getImports();
 
         assertEquals(3, imports.size());
 

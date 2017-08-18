@@ -22,8 +22,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -109,8 +109,16 @@ public interface CompilationUnit extends FactoryAccessor {
 	 */
 	int getTabCount(int index);
 
-	Set<CtReference> getImports();
+	/**
+	 * Get the imports computed for this CU
+	 * @return All the imports from the original source code
+	 */
+	Collection<CtReference> getImports();
 
-	void setImports(Set<CtReference> imports);
+	/**
+	 * Set the imports of this CU
+	 * @param imports All the imports of the original source code
+	 */
+	void setImports(Collection<CtReference> imports);
 
 }
