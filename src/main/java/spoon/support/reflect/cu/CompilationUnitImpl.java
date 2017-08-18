@@ -140,7 +140,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 				byte[] elementBytes = new byte[s.available()];
 				s.read(elementBytes);
 				s.close();
-				originalSourceCode = new String(elementBytes);
+				originalSourceCode = new String(elementBytes, this.getFactory().getEnvironment().getEncoding());
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

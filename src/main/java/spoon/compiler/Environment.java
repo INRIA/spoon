@@ -27,6 +27,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.factory.Factory;
 
+import java.nio.charset.Charset;
+
 /**
  * This interface represents the environment in which Spoon is launched -
  * accessible through {@link spoon.reflect.factory.Factory#getEnvironment()}. Its
@@ -341,4 +343,14 @@ public interface Environment {
 	 * set the model change listener
 	 */
 	void setModelChangeListener(FineModelChangeListener modelChangeListener);
+
+	/**
+	 * Get the encoding used inside the project
+	 */
+	Charset getEncoding();
+
+	/**
+	 * Set the encoding to use for parsing source code
+	 */
+	void setEncoding(Charset encoding);
 }
