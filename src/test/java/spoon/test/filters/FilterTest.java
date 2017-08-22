@@ -81,6 +81,7 @@ import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
 import spoon.testing.utils.ModelUtils;
+import spoon.test.imports.testclasses.internal4.Constants;
 
 public class FilterTest {
 
@@ -1123,5 +1124,40 @@ public class FilterTest {
 
 		// only one subtype remains unvisited
 		assertEquals(1, c2.counter);
+	}
+
+	@Test
+	public void testNameFilterWithGenericType() {
+		// contract: NameFilter of T should only return T elements
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/Constants.java");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Constants.class);
+
+		// this returns a confusing result
+		List<CtMethod> ctMethods1 = type.getElements(new NameFilter<CtMethod>("CONSTANT"));
+		// there is one element in the list but it is CtField
+		// the reason is that runtime reflection on generic type T in NameFilter is not powerful enough
+		// and returns "CtElement" (the top-most type in the hierarchy, specified in Filter
+		assertEquals(1, ctMethods1.size());
+		// this contradicts static type checking!!
+		assertTrue(ctMethods1.get(0) instanceof CtField);
+		try {
+			// interesting: if we try to call any method on this element, we have a cast error
+			ctMethods1.get(0).toString();
+			fail();
+		} catch (ClassCastException expected) {}
+
+		// however, there is a workaround to force runtime reflection on generic type to work
+		// by creating a dumb method matches with CtMethod
+		List<CtMethod> ctMethods2 = type.getElements(new NameFilter<CtMethod>("CONSTANT") {
+			@Override
+			public boolean matches(CtMethod element) {
+				return super.matches(element);
+			}
+		});
+		assertTrue(ctMethods2.isEmpty());
 	}
 }
