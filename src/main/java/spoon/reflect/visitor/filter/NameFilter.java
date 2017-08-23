@@ -27,17 +27,17 @@ import spoon.reflect.visitor.Filter;
  * CtMethod&lt;?&gt; normalFor = type.getElements(
  * 		new NameFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;)).get(0);
  * </pre>
+ *
+ * @deprecated Use {@link NamedElementFilter} instead
  */
+@Deprecated
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
-	private Class<T> acceptedClass;
 
 	/**
 	 *
 	 * @param name Name of the expected element
-	 * @deprecated Prefer to use the constructor with a class to check the type of the results
 	 */
-	@Deprecated
 	public NameFilter(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException();
@@ -45,18 +45,9 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		this.name = name;
 	}
 
-	public NameFilter(String name, Class<T> acceptedClass) {
-		this(name);
-		this.acceptedClass = acceptedClass;
-	}
-
-	public void setAcceptedClass(Class<T> zeClass) {
-		this.acceptedClass = zeClass;
-	}
-
 	public boolean matches(T element) {
 		try {
-			return (acceptedClass == null || acceptedClass.isAssignableFrom(element.getClass())) && name.equals(element.getSimpleName());
+			return name.equals(element.getSimpleName());
 		} catch (UnsupportedOperationException e) {
 			return false;
 		}

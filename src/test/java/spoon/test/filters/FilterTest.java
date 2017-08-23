@@ -63,6 +63,7 @@ import spoon.reflect.visitor.filter.FilteringOperator;
 import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodQuery;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
@@ -1135,7 +1136,11 @@ public class FilterTest {
 		spoon.buildModel();
 
 		CtType type = spoon.getFactory().Type().get(Constants.class);
-		List<CtMethod> ctMethods = type.getElements(new NameFilter<CtMethod>("CONSTANT", CtMethod.class));
-		assertTrue(ctMethods.isEmpty());
+		List<CtNamedElement> ctFiltered = type.getElements(new NamedElementFilter("CONSTANT", CtMethod.class));
+		assertTrue(ctFiltered.isEmpty());
+
+		ctFiltered = type.getElements(new NamedElementFilter("CONSTANT", CtField.class));
+		assertEquals(1, ctFiltered.size());
+		assertTrue(ctFiltered.get(0) instanceof CtField);
 	}
 }
