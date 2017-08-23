@@ -28,40 +28,40 @@ import spoon.reflect.visitor.Filter;
  * </pre>
  */
 public class NamedElementFilter implements Filter<CtNamedElement> {
-    private final String name;
-    private Class<? extends CtNamedElement> acceptedClass;
+	private final String name;
+	private Class<? extends CtNamedElement> acceptedClass;
 
-    /**
-     *
-     * @param name Name of the expected element
-     */
-    public NamedElementFilter(String name) {
-        this(name, CtNamedElement.class);
-    }
+	/**
+	 *
+	 * @param name Name of the expected element
+	 */
+	public NamedElementFilter(String name) {
+		this(name, CtNamedElement.class);
+	}
 
-    /**
-     *
-     * @param name Name of the expected element
-     * @param acceptedClass Expected class of the results
-     */
-    public NamedElementFilter(String name, Class<? extends CtNamedElement> acceptedClass) {
-        if (name == null || acceptedClass == null) {
-            throw new IllegalArgumentException();
-        }
-        this.name = name;
-        this.acceptedClass = acceptedClass;
-    }
+	/**
+	 *
+	 * @param name Name of the expected element
+	 * @param acceptedClass Expected class of the results
+	 */
+	public NamedElementFilter(String name, Class<? extends CtNamedElement> acceptedClass) {
+		if (name == null || acceptedClass == null) {
+			throw new IllegalArgumentException();
+		}
+		this.name = name;
+		this.acceptedClass = acceptedClass;
+	}
 
-    public boolean matches(CtNamedElement element) {
-        try {
-            return acceptedClass.isAssignableFrom(element.getClass()) && name.equals(element.getSimpleName());
-        } catch (UnsupportedOperationException e) {
-            return false;
-        }
-    }
+	public boolean matches(CtNamedElement element) {
+		try {
+			return acceptedClass.isAssignableFrom(element.getClass()) && name.equals(element.getSimpleName());
+		} catch (UnsupportedOperationException e) {
+			return false;
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends CtNamedElement> getType() {
-        return acceptedClass;
-    }
+	@SuppressWarnings("unchecked")
+	public Class<? extends CtNamedElement> getType() {
+		return acceptedClass;
+	}
 }
