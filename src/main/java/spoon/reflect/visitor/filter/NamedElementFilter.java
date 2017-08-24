@@ -24,27 +24,19 @@ import spoon.reflect.visitor.Filter;
  *
  * <pre>
  * CtMethod&lt;?&gt; normalFor = type.getElements(
- * 		new NamedElementFilter(&quot;normalFor&quot;, CtMethod.class)).get(0);
+ * 		new NamedElementFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;, CtMethod.class)).get(0);
  * </pre>
  */
-public class NamedElementFilter implements Filter<CtNamedElement> {
+public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
-	private Class<? extends CtNamedElement> acceptedClass;
-
-	/**
-	 *
-	 * @param name Name of the expected element
-	 */
-	public NamedElementFilter(String name) {
-		this(name, CtNamedElement.class);
-	}
+	private Class<T> acceptedClass;
 
 	/**
 	 *
 	 * @param name Name of the expected element
 	 * @param acceptedClass Expected class of the results
 	 */
-	public NamedElementFilter(String name, Class<? extends CtNamedElement> acceptedClass) {
+	public NamedElementFilter(String name, Class<T> acceptedClass) {
 		if (name == null || acceptedClass == null) {
 			throw new IllegalArgumentException();
 		}
@@ -52,7 +44,7 @@ public class NamedElementFilter implements Filter<CtNamedElement> {
 		this.acceptedClass = acceptedClass;
 	}
 
-	public boolean matches(CtNamedElement element) {
+	public boolean matches(T element) {
 		try {
 			return acceptedClass.isAssignableFrom(element.getClass()) && name.equals(element.getSimpleName());
 		} catch (UnsupportedOperationException e) {
@@ -61,7 +53,7 @@ public class NamedElementFilter implements Filter<CtNamedElement> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Class<? extends CtNamedElement> getType() {
+	public Class<T> getType() {
 		return acceptedClass;
 	}
 }

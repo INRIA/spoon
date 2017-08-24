@@ -1129,18 +1129,18 @@ public class FilterTest {
 
 	@Test
 	public void testNameFilterWithGenericType() {
-		// contract: NameFilter of T should only return T elements
+		// contract: NamedElementFilter of T should only return T elements
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/Constants.java");
 		spoon.buildModel();
 
 		CtType type = spoon.getFactory().Type().get(Constants.class);
-		List<CtNamedElement> ctFiltered = type.getElements(new NamedElementFilter("CONSTANT", CtMethod.class));
-		assertTrue(ctFiltered.isEmpty());
+		List<CtMethod> ctMethods = type.getElements(new NamedElementFilter<>("CONSTANT", CtMethod.class));
+		assertTrue(ctMethods.isEmpty());
 
-		ctFiltered = type.getElements(new NamedElementFilter("CONSTANT", CtField.class));
-		assertEquals(1, ctFiltered.size());
-		assertTrue(ctFiltered.get(0) instanceof CtField);
+		List<CtField> ctFields = type.getElements(new NamedElementFilter<>("CONSTANT", CtField.class));
+		assertEquals(1, ctFields.size());
+		assertTrue(ctFields.get(0) instanceof CtField);
 	}
 }
