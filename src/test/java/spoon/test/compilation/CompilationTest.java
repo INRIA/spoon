@@ -1,8 +1,25 @@
 package spoon.test.compilation;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.Assert;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -19,29 +36,13 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
-import spoon.support.SpoonClassNotFoundException;
 import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class CompilationTest {
 
@@ -379,6 +380,24 @@ public class CompilationTest {
 
 		assertEquals(3, l.size());
 		assertTrue(l.contains("KJHKY"));
+	}
+	
+	@Test
+	public void testURLClassLoader() throws Exception {
+		// contract: Spoon handles URLClassLoader and retrieves path elements
+		
+		String expected = "target/classes/";
+
+		File f = new File(expected);
+		URL[] urls = new URL[]{f.toURL()};
+		URLClassLoader urlClassLoader = new URLClassLoader(urls);
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
+		
+		String[] sourceClassPath = launcher.getEnvironment().getSourceClasspath();
+		assertEquals(1, sourceClassPath.length);
+		String tail = sourceClassPath[0].substring(sourceClassPath[0].length()-expected.length());
+		assertEquals(expected, tail);
 	}
 
 	@Test
