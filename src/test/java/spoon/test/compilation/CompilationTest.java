@@ -380,6 +380,7 @@ public class CompilationTest {
 
 		assertEquals(3, l.size());
 		assertTrue(l.contains("KJHKY"));
+		assertEquals(MyClassLoader.class, launcher.getEnvironment().getInputClassLoader().getClass());
 	}
 	
 	@Test

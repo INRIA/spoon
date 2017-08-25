@@ -356,19 +356,19 @@ public class StandardEnvironment implements Serializable, Environment {
 				// Check that the URLs are only file URLs
 				boolean onlyFileURLs = true;
 				for (URL url : urls) {
-					if( ! url.getProtocol().equals("file")) {
+					if (!url.getProtocol().equals("file")) {
 						onlyFileURLs = false;
 					}
 				}
-				if( onlyFileURLs ) {
+				if (onlyFileURLs) {
 					List<String> classpath = new ArrayList<>();
 					for (URL url : urls) {
 						classpath.add(url.getPath());
 					}
 					setSourceClasspath(classpath.toArray(new String[0]));
 				}
-				return;
 			}
+			return;
 		}
 		this.classloader = aClassLoader;
 	}
