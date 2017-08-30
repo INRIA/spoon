@@ -3,6 +3,7 @@ package spoon.test.compilation;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -399,6 +400,24 @@ public class CompilationTest {
 		assertEquals(1, sourceClassPath.length);
 		String tail = sourceClassPath[0].substring(sourceClassPath[0].length()-expected.length());
 		assertEquals(expected, tail);
+	}
+
+	@Test
+	public void testURLClassLoaderWithOtherResourcesThanOnlyFiles() throws Exception {
+		// contract: Spoon handles URLClassLoader which contain other resources than only files by not adding anything
+
+		String file = "target/classes/";
+		String distantJar = "http://central.maven.org/maven2/fr/inria/gforge/spoon/spoon-core/5.8.0/spoon-core-5.8.0.jar";
+
+		File f = new File(file);
+		URL url = new URL(distantJar);
+		URL[] urls = new URL[]{ f.toURL(), url };
+		URLClassLoader urlClassLoader = new URLClassLoader(urls);
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
+
+		String[] sourceClassPath = launcher.getEnvironment().getSourceClasspath();
+		assertNull(sourceClassPath);
 	}
 
 	@Test
