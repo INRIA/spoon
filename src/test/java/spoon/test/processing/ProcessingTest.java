@@ -13,9 +13,14 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.test.processing.testclasses.CtClassProcessor;
+import spoon.test.processing.testclasses.CtInterfaceProcessor;
+import spoon.test.processing.testclasses.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.util.Collections;
@@ -179,5 +184,70 @@ public class ProcessingTest {
 		assertEquals("foo", p.aString);
 		assertEquals(5, p.anInt);
 		assertSame(o, p.anObject);
+	}
+
+	@Test
+	public void testProcessorWithGenericType() {
+		// contract: we can use generic type for another abstract processor
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses");
+
+		CtClassProcessor classProcessor = new CtClassProcessor();
+		spoon.addProcessor(classProcessor);
+
+		spoon.run();
+
+		assertFalse(classProcessor.elements.isEmpty());
+
+		for (CtType type : classProcessor.elements) {
+			assertTrue("Type "+type.getSimpleName()+" is not a class", type instanceof CtClass);
+		}
+	}
+
+	@Test
+	public void testCallProcessorWithMultipleTypes() {
+		// contract: when calling a processor capable of treating CtClass and another capable of treating CtType, they are called on the right types
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses");
+
+		CtClassProcessor classProcessor = new CtClassProcessor();
+		spoon.addProcessor(classProcessor);
+
+		CtTypeProcessor typeProcessor = new CtTypeProcessor();
+		spoon.addProcessor(typeProcessor);
+
+		CtInterfaceProcessor interfaceProcessor = new CtInterfaceProcessor();
+		spoon.addProcessor(interfaceProcessor);
+
+		spoon.run();
+
+		assertFalse(classProcessor.elements.isEmpty());
+
+		for (CtType type : classProcessor.elements) {
+			assertTrue("Type "+type.getSimpleName()+" is not a class", type instanceof CtClass);
+		}
+
+		assertFalse(classProcessor.elements.isEmpty());
+
+		for (CtType type : interfaceProcessor.elements) {
+			assertTrue("Type "+type.getSimpleName()+" is not an interface", type instanceof CtInterface);
+		}
+
+		assertFalse(typeProcessor.elements.isEmpty());
+
+		for (CtType type : typeProcessor.elements) {
+			if (type instanceof CtClass) {
+				assertTrue(classProcessor.elements.contains(type));
+				assertFalse(interfaceProcessor.elements.contains(type));
+			} else if (type instanceof CtInterface){
+				assertFalse(classProcessor.elements.contains(type));
+				assertTrue(interfaceProcessor.elements.contains(type));
+			} else {
+				assertFalse(classProcessor.elements.contains(type));
+				assertFalse(interfaceProcessor.elements.contains(type));
+			}
+		}
 	}
 }
