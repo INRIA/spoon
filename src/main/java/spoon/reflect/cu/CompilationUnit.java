@@ -19,8 +19,10 @@ package spoon.reflect.cu;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtReference;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -106,5 +108,17 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * @return the number of tabs for this line
 	 */
 	int getTabCount(int index);
+
+	/**
+	 * Get the imports computed for this CU
+	 * @return All the imports from the original source code
+	 */
+	Collection<CtReference> getImports();
+
+	/**
+	 * Set the imports of this CU
+	 * @param imports All the imports of the original source code
+	 */
+	void setImports(Collection<CtReference> imports);
 
 }

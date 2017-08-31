@@ -44,6 +44,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean skipSelfChecks;
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+
+	private Charset encoding = Charset.defaultCharset();
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -493,5 +496,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setModelChangeListener(FineModelChangeListener modelChangeListener) {
 		this.modelChangeListener = modelChangeListener;
+	}
+
+	@Override
+	public Charset getEncoding() {
+		return this.encoding;
+	}
+
+	@Override
+	public void setEncoding(Charset encoding) {
+		this.encoding = encoding;
 	}
 }
