@@ -1136,10 +1136,10 @@ public class FilterTest {
 		spoon.buildModel();
 
 		CtType type = spoon.getFactory().Type().get(Constants.class);
-		List<CtMethod> ctMethods = type.getElements(new NamedElementFilter<>("CONSTANT", CtMethod.class));
+		List<CtMethod> ctMethods = type.getElements(new NamedElementFilter<>(CtMethod.class, "CONSTANT"));
 		assertTrue(ctMethods.isEmpty());
 
-		List<CtField> ctFields = type.getElements(new NamedElementFilter<>("CONSTANT", CtField.class));
+		List<CtField> ctFields = type.getElements(new NamedElementFilter<>(CtField.class, "CONSTANT"));
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
 	}

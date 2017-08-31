@@ -24,7 +24,7 @@ import spoon.reflect.visitor.Filter;
  *
  * <pre>
  * CtMethod&lt;?&gt; normalFor = type.getElements(
- * 		new NamedElementFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;, CtMethod.class)).get(0);
+ * 		new NamedElementFilter&lt;CtMethod&lt;?&gt;&gt;(CtMethod.class, &quot;normalFor&quot;)).get(0);
  * </pre>
  */
 public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
@@ -36,7 +36,7 @@ public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
 	 * @param name Name of the expected element
 	 * @param acceptedClass Expected class of the results
 	 */
-	public NamedElementFilter(String name, Class<T> acceptedClass) {
+	public NamedElementFilter(Class<T> acceptedClass, String name) {
 		if (name == null || acceptedClass == null) {
 			throw new IllegalArgumentException();
 		}
