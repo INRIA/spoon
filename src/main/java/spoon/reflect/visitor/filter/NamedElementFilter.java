@@ -19,35 +19,34 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.Filter;
 
-
 /**
- * Filters elements by name (for instance to find a method). Example:
+ * Filters elements by name and by type (for instance to find a method). Example:
  *
  * <pre>
  * CtMethod&lt;?&gt; normalFor = type.getElements(
- * 		new NameFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;)).get(0);
+ * 		new NamedElementFilter&lt;CtMethod&lt;?&gt;&gt;(CtMethod.class, &quot;normalFor&quot;)).get(0);
  * </pre>
- *
- * @deprecated Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
  */
-@Deprecated
-public class NameFilter<T extends CtNamedElement> implements Filter<T> {
+public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
+	private Class<T> acceptedClass;
 
 	/**
 	 *
 	 * @param name Name of the expected element
+	 * @param acceptedClass Expected class of the results
 	 */
-	public NameFilter(String name) {
-		if (name == null) {
+	public NamedElementFilter(Class<T> acceptedClass, String name) {
+		if (name == null || acceptedClass == null) {
 			throw new IllegalArgumentException();
 		}
 		this.name = name;
+		this.acceptedClass = acceptedClass;
 	}
 
 	public boolean matches(T element) {
 		try {
-			return name.equals(element.getSimpleName());
+			return acceptedClass.isAssignableFrom(element.getClass()) && name.equals(element.getSimpleName());
 		} catch (UnsupportedOperationException e) {
 			return false;
 		}
@@ -55,6 +54,6 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 
 	@SuppressWarnings("unchecked")
 	public Class<T> getType() {
-		return (Class<T>) CtNamedElement.class;
+		return acceptedClass;
 	}
 }

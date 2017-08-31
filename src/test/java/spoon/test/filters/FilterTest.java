@@ -63,6 +63,7 @@ import spoon.reflect.visitor.filter.FilteringOperator;
 import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.LineFilter;
 import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodFilter;
 import spoon.reflect.visitor.filter.OverriddenMethodQuery;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
@@ -80,6 +81,7 @@ import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
+import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelUtils;
 
 public class FilterTest {
@@ -1123,5 +1125,22 @@ public class FilterTest {
 
 		// only one subtype remains unvisited
 		assertEquals(1, c2.counter);
+	}
+
+	@Test
+	public void testNameFilterWithGenericType() {
+		// contract: NamedElementFilter of T should only return T elements
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/Constants.java");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Constants.class);
+		List<CtMethod> ctMethods = type.getElements(new NamedElementFilter<>(CtMethod.class, "CONSTANT"));
+		assertTrue(ctMethods.isEmpty());
+
+		List<CtField> ctFields = type.getElements(new NamedElementFilter<>(CtField.class, "CONSTANT"));
+		assertEquals(1, ctFields.size());
+		assertTrue(ctFields.get(0) instanceof CtField);
 	}
 }
