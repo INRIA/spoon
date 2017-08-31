@@ -78,7 +78,7 @@ import spoon.reflect.declaration.CtType;
  *
  * <pre>
  * public class A {
- * 	public void methodwithpPrameterizedName() {
+ * 	public void methodwithParameterizedName() {
  * 		System.out.println(&quot;hello templated world&quot;);
  *    }
  * }
