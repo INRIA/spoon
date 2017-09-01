@@ -366,6 +366,8 @@ public class StandardEnvironment implements Serializable, Environment {
 						classpath.add(url.getPath());
 					}
 					setSourceClasspath(classpath.toArray(new String[0]));
+				} else {
+					throw new SpoonException("Spoon does not support a URLClassLoader containing other resources than local file.");
 				}
 			}
 			return;

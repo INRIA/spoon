@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -414,10 +415,12 @@ public class CompilationTest {
 		URL[] urls = new URL[]{ f.toURL(), url };
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
-
-		String[] sourceClassPath = launcher.getEnvironment().getSourceClasspath();
-		assertNull(sourceClassPath);
+		try {
+			launcher.getEnvironment().setInputClassLoader(urlClassLoader);
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains("Spoon does not support a URLClassLoader containing other resources than local file."));
+		}
 	}
 
 	@Test
