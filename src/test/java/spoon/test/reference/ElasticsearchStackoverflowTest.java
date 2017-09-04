@@ -6,7 +6,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtScanner;
 
-public class ElasticsearchStackoverflow {
+public class ElasticsearchStackoverflowTest {
 
 	private class Scanner extends CtScanner {
 		@Override
