@@ -190,12 +190,18 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			parent = parent.getParent();
 		}
 		if (parent instanceof CtExecutableReference) {
-			CtElement parent2 = ((CtExecutableReference) parent).getExecutableDeclaration();
-			if (parent2 instanceof CtMethod) {
-				e = parent2;
+			CtExecutableReference parentExec = (CtExecutableReference) parent;
+			if (!parentExec.getDeclaringType().equals(e)) {
+				CtElement parent2 = parentExec.getExecutableDeclaration();
+				if (parent2 instanceof CtMethod) {
+					e = parent2;
+				} else {
+					e = e.getParent(CtFormalTypeDeclarer.class);
+				}
 			} else {
 				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
+
 		} else {
 			e = e.getParent(CtFormalTypeDeclarer.class);
 		}
