@@ -515,10 +515,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 				// the path must be given relatively to to the working directory
 				try (InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
-                        		FileOutputStream outFile = new FileOutputStream(file);) {
-
-                    			IOUtils.copy(is, outFile);
-                		}
+					FileOutputStream outFile = new FileOutputStream(file);) {
+					
+					IOUtils.copy(is, outFile);
+				}
 
 				if (!printedFiles.contains(file)) {
 					printedFiles.add(file);
