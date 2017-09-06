@@ -243,11 +243,46 @@ public class SubstitutionVisitor extends CtScanner {
 						throw context.replace(toReplace, enumValueAccess);
 					} else if ((value != null) && value.getClass().isArray()) {
 						throw context.replace(toReplace, factory.Code().createLiteralArray((Object[]) value));
+					} else if (fieldAccess == toReplace && value instanceof String) {
+						/*
+						 * If the value is type String, then it is ambiguous request, because:
+						 * A) sometime client wants to replace parameter field access by String literal
+						 *
+						 * @Parameter
+						 * String field = "x"
+						 *
+						 * System.printLn(field) //is substitutes as: System.printLn("x")
+						 *
+						 * but in the case of local variables it already behaves like this
+						 * {
+						 * 		int field;
+						 * 		System.printLn(field) //is substitutes as: System.printLn(x)
+						 * }
+						 *
+						 * B) sometime client wants to keep field access and just substitute field name
+						 *
+						 * @Parameter("field")
+						 * String fieldName = "x"
+						 *
+						 * System.printLn(field) //is substitutes as: System.printLn(x)
+						 *
+						 * ----------------------
+						 *
+						 * The case B is more clear and is compatible with substitution of name of local variable, method name, etc.
+						 * And case A can be easily modeled using this clear code
+						 *
+						 * @Parameter
+						 * String field = "x"
+						 * System.printLn("field") //is substitutes as: System.printLn("x")
+						 * System.printLn(field) //is substitutes as: System.printLn("x") because the parameter `field` is constructed with literal value
+						 */
+						//New implementation always replaces the name of the accessed field
+						//so do nothing here. The string substitution is handled by #scanCtReference
 					} else {
 						throw context.replace(toReplace, factory.Code().createLiteral(value));
 					}
 				} else {
-					throw context.replace(toReplace, toReplace.clone());
+					throw context.replace(toReplace, (CtElement) value);
 				}
 			}
 		}
@@ -501,14 +536,14 @@ public class SubstitutionVisitor extends CtScanner {
 	 * @return list where each item is assured to be of type itemClass
 	 */
 	@SuppressWarnings("unchecked")
-	private static <T> List<T> getParameterValueAsListOfClones(Class<T> itemClass, Object parameterValue) {
+	private <T> List<T> getParameterValueAsListOfClones(Class<T> itemClass, Object parameterValue) {
 		List<Object> list = getParameterValueAsNewList(parameterValue);
 		for (int i = 0; i < list.size(); i++) {
 			list.set(i, getParameterValueAsClass(itemClass, list.get(i)));
 		}
 		return (List<T>) list;
 	}
-	private static List<Object> getParameterValueAsNewList(Object parameterValue) {
+	private List<Object> getParameterValueAsNewList(Object parameterValue) {
 		List<Object> list = new ArrayList<>();
 		if (parameterValue != null) {
 			if (parameterValue instanceof Object[]) {
@@ -536,7 +571,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 * @return parameterValue cast (in future potentially converted) to itemClass
 	 */
 	@SuppressWarnings("unchecked")
-	private static <T> T getParameterValueAsClass(Class<T> itemClass, Object parameterValue) {
+	private <T> T getParameterValueAsClass(Class<T> itemClass, Object parameterValue) {
 		if (parameterValue == null || parameterValue == NULL_VALUE) {
 			return null;
 		}
@@ -556,7 +591,11 @@ public class SubstitutionVisitor extends CtScanner {
 			if (parameterValue instanceof CtTypeReference) {
 				//convert type reference into code element as class access
 				CtTypeReference<?> tr = (CtTypeReference<?>) parameterValue;
-				return (T) tr.getFactory().Code().createClassAccess(tr);
+				return (T) factory.Code().createClassAccess(tr);
+			}
+			if (parameterValue instanceof String) {
+				//convert String to code element as Literal
+				return (T) factory.Code().createLiteral((String) parameterValue);
 			}
 		}
 		throw new SpoonException("Parameter value has unexpected class: " + parameterValue.getClass().getName() + ". Expected class is: " + itemClass.getName());
@@ -565,7 +604,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 * @param parameterValue a value of an template parameter
 	 * @return parameter value converted to String
 	 */
-	private static String getParameterValueAsString(Object parameterValue) {
+	private String getParameterValueAsString(Object parameterValue) {
 		if (parameterValue == null) {
 			return null;
 		}
@@ -634,7 +673,7 @@ public class SubstitutionVisitor extends CtScanner {
 	 * @param index index of item from the list, or null if item is not expected to be a list
 	 * @return parameterValue (optionally item from the list) cast (in future potentially converted) to itemClass
 	 */
-	private static <T> T getParameterValueAtIndex(Class<T> itemClass, Object parameterValue, Integer index) {
+	private <T> T getParameterValueAtIndex(Class<T> itemClass, Object parameterValue, Integer index) {
 		if (index != null) {
 			//convert to list, but do not clone
 			List<Object> list = getParameterValueAsNewList(parameterValue);

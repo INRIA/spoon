@@ -20,7 +20,7 @@ public class TemplateWithFieldsAndMethods extends ExtensionTemplate {
 	}
 
 	public String methodToBeInserted() {
-		return PARAM;
+		return "PARAM";
 	}
 
 	public String fieldToBeInserted;
