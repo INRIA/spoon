@@ -787,6 +787,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						 * Search for potential variable declaration until we found a class which declares or inherits this field
 						 */
 						final CtField<?> field = f.getVariable().getFieldDeclaration();
+						if (field == null) {
+							throw new SpoonException("The reference to field named \"" + f.getVariable().getSimpleName() + "\" is invalid, because there is no field with such name on path:" + getPath(f));
+						}
 						final String fieldName = field.getSimpleName();
 						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
 						if (var != field) {

@@ -209,7 +209,7 @@ is transformed into:
 #### Literal template Parameters
 
 For literals, Spoon provides developers with  *literal template parameters*. When the parameter is known to
-be a literal (primitive types, `String`, `Class` or a one-dimensional array of
+be a literal (primitive types, `Class` or a one-dimensional array of
 these types), a template parameter, annotated with `@Parameter` enables one to have concise template code.
 
 ```java
@@ -222,6 +222,48 @@ val = 5;
 if (list.size()>val) {...}
 ```
 
+String parameters are not working like other primitive type parameters, since we're using String parameters only to rename elements of the code like fields and methods.
+
+```java
+// with String template parameter, which is used to substitute method name. 
+@Parameter
+String methodName;
+...
+methodName = "generatedMethod";
+...
+void methodName() {
+	//a body of generated method
+}
+```
+
+To use a parameter with a type String like other primitive types, use CtLiteral<String>.
+
+```java
+// with CtLiteral<String> template parameter, which is used to substitute String literal 
+@Parameter
+CtLiteral<String> val;
+...
+val = factory.Code().createLiteral("Some string");
+...
+String someMethod() {
+	return val.S();	//is substituted as return "Some string";
+}
+```
+
+or String literal can be optionally generated like this
+
+```java
+// with CtLiteral<String> template parameter, which is used to substitute String literal 
+@Parameter
+String val;
+...
+val = "Some string";
+...
+String someMethod() {
+	return "val";	//is substituted as return "Some string";
+}
+```
+
 Note that AST elements can also be given as parameter using `@Parameter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/template/Parameter.html))
 annotation.
 
@@ -230,6 +272,6 @@ class ATemplate extends BlockTemplate {
 @Parameter
 CtExpression<String> exp;
 ...
-if ("er".equals(val)) {...}
+if ("er".equals(exp.S())) {...}
 }
 ```
