@@ -32,7 +32,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
@@ -319,7 +319,7 @@ public class SignatureTest {
 		comp.addInputSources(SpoonResourceHelper.resources("./src/main/java/spoon/SpoonModelBuilder.java"));
 		comp.build();
 		CtType<?> ctClass = (CtType<?>) comp.getFactory().Type().get(SpoonModelBuilder.class);
-		List<CtMethod<?>> methods = ctClass.getElements(new NameFilter<CtMethod<?>>("addInputSource"));
+		List<CtMethod> methods = ctClass.getElements(new NamedElementFilter<>(CtMethod.class,"addInputSource"));
 		assertEquals(2, methods.size());
 		CtMethod<?> method = methods.get(0);
 		assertEquals(

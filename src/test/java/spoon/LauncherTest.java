@@ -40,7 +40,7 @@ public class LauncherTest {
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
 		assertEquals(new File("spooned"), builder.getSourceOutputDirectory());
 		assertEquals(0, builder.getInputSources().size());
-		assertEquals("UTF-8", builder.getEncoding());
+		assertEquals("UTF-8", environment.getEncoding().displayName());
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class LauncherTest {
 		// the input directories
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());
 		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
-		assertEquals("UTF-16", builder.getEncoding());
+		assertEquals("UTF-16", environment.getEncoding().displayName());
 
 	}
 

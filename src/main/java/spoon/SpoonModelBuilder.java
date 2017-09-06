@@ -286,22 +286,6 @@ public interface SpoonModelBuilder {
 	void forceBuild(SpoonResource source);
 
 	/**
-	 * Sets the encoding to use when different from the system encoding.
-	 * @deprecated encoding is directly used from Environment
-	 */
-	@Deprecated
-	void setEncoding(String encoding);
-
-	/**
-	 * Gets the encoding used by this compiler. Null means that it uses the
-	 * system encoding.
-	 *
-	 * @deprecated encoding is directly used from Environment
-	 */
-	@Deprecated
-	String getEncoding();
-
-	/**
 	 * Returns the working factory
 	 */
 	Factory getFactory();

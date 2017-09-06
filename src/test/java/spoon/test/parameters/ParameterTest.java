@@ -7,7 +7,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class ParameterTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.eclipse.draw2d.text.FlowUtilities");
-		final CtParameter<?> parameter = aClass.getElements(new NameFilter<CtParameter<?>>("font")).get(0);
+		final CtParameter<?> parameter = aClass.getElements(new NamedElementFilter<>(CtParameter.class,"font")).get(0);
 
 		assertEquals("font", parameter.getSimpleName());
 		assertNotNull(parameter.getType());
@@ -74,7 +74,7 @@ public class ParameterTest {
 
 		// test string parameters
 		parameters = launcher.getModel()
-						.getElements(new NameFilter<CtMethod>("stringLambda"))
+						.getElements(new NamedElementFilter<>(CtMethod.class,"stringLambda"))
 						.get(0)
 						.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
@@ -89,7 +89,7 @@ public class ParameterTest {
 
 		// test integer parameters
 		parameters = launcher.getModel()
-				.getElements(new NameFilter<CtMethod>("integerLambda"))
+				.getElements(new NamedElementFilter<>(CtMethod.class,"integerLambda"))
 				.get(0)
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
@@ -104,7 +104,7 @@ public class ParameterTest {
 
 		// test unknown parameters
 		parameters = launcher.getModel()
-				.getElements(new NameFilter<CtMethod>("unknownLambda"))
+				.getElements(new NamedElementFilter<>(CtMethod.class,"unknownLambda"))
 				.get(0)
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());

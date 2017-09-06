@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.utils.ModelUtils;
 
@@ -62,7 +62,7 @@ public class CastTest {
 								+ "public void foo() {" + " Class<?> x = null;"
 								+ " addConsumedAnnotationType((Class<A>) x);"
 								+ "}" + "};").compile();
-		CtMethod<?> foo = clazz.getElements(new NameFilter<CtMethod<?>>("foo"))
+		CtMethod<?> foo = clazz.getElements(new NamedElementFilter<>(CtMethod.class,"foo"))
 				.get(0);
 		CtVariableRead<?> a = (CtVariableRead<?>) clazz.getElements(
 				new TypeFilter<>(CtVariableRead.class)).get(0);

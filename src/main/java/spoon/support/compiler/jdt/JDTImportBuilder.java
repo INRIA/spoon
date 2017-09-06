@@ -29,7 +29,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -115,7 +115,7 @@ class JDTImportBuilder {
 							}
 						}
 					} else {
-						List<CtNamedElement> methodOrFields = klass.getElements(new NameFilter<>(methodOrFieldName));
+						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class,methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
 							this.imports.add(methodOrFields.get(0).getReference());

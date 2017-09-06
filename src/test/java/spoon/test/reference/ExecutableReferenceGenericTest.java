@@ -10,23 +10,20 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * Created by gerard on 21/11/2014.
@@ -229,7 +226,7 @@ public class ExecutableReferenceGenericTest {
 	public void testExecutableReferences() throws Exception {
 		// factory has loaded MyClass, MyClass2 and MyClass3
 
-		CtClass<?> classMyClass = Query.getElements(factory, new NameFilter<CtClass>("MyClass")).get(0);
+		CtClass<?> classMyClass = Query.getElements(factory, new NamedElementFilter<>(CtClass.class,"MyClass")).get(0);
 		assertEquals("MyClass", classMyClass.getSimpleName());
 		List<CtExecutableReference<?>> refsExecutableClass1 = Query.getElements(classMyClass,
 				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
@@ -238,7 +235,7 @@ public class ExecutableReferenceGenericTest {
 					}
 				});
 
-		CtClass<?> classMyClass2 =  Query.getElements(factory, new NameFilter<CtClass>("MyClass2")).get(0);
+		CtClass<?> classMyClass2 =  Query.getElements(factory, new NamedElementFilter<>(CtClass.class,"MyClass2")).get(0);
 		assertEquals("MyClass2", classMyClass2.getSimpleName());
 		List<CtExecutableReference<?>> refsExecutableClass2 = Query.getElements(classMyClass2,
 				new AbstractReferenceFilter<CtExecutableReference<?>>(CtExecutableReference.class) {

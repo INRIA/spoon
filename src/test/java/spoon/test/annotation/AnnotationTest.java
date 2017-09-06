@@ -36,9 +36,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
 import spoon.test.annotation.testclasses.AnnotArray;
@@ -158,7 +157,7 @@ public class AnnotationTest {
 	public void testAnnotationParameterTypes() throws Exception {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
 
-		CtMethod<?> m1 = type.getElements(new NameFilter<CtMethod<?>>("m1")).get(0);
+		CtMethod<?> m1 = type.getElements(new NamedElementFilter<>(CtMethod.class, "m1")).get(0);
 
 		List<CtAnnotation<? extends Annotation>> annotations = m1.getAnnotations();
 		assertEquals(1, annotations.size());
@@ -186,7 +185,7 @@ public class AnnotationTest {
 		assertEquals(AnnotParamTypeEnum.G, annot.e());
 		assertEquals("dd", annot.ia().value());
 
-		CtMethod<?> m2 = type.getElements(new NameFilter<CtMethod<?>>("m2")).get(0);
+		CtMethod<?> m2 = type.getElements(new NamedElementFilter<>(CtMethod.class, "m2")).get(0);
 
 		annotations = m2.getAnnotations();
 		assertEquals(1, annotations.size());
@@ -210,7 +209,7 @@ public class AnnotationTest {
 		assertEquals("dd", annot.ia().value());
 
 		// tests binary expressions
-		CtMethod<?> m3 = type.getElements(new NameFilter<CtMethod<?>>("m3")).get(0);
+		CtMethod<?> m3 = type.getElements(new NamedElementFilter<>(CtMethod.class,"m3")).get(0);
 
 		annotations = m3.getAnnotations();
 		assertEquals(1, annotations.size());
@@ -512,7 +511,7 @@ public class AnnotationTest {
 	public void testUsageOfTypeAnnotationInExtendsImplementsOfAClass() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
-		final CtClass<?> innerClass = ctClass.getElements(new NameFilter<CtClass<?>>("DummyClass")).get(0);
+		final CtClass<?> innerClass = ctClass.getElements(new NamedElementFilter<>(CtClass.class,"DummyClass")).get(0);
 		final CtTypeReference<?> extendsActual = innerClass.getSuperclass();
 		final List<CtAnnotation<? extends Annotation>> extendsTypeAnnotations = extendsActual.getAnnotations();
 		final String superClassExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "AnnotArrayInnerClass";
@@ -530,7 +529,7 @@ public class AnnotationTest {
 		assertEquals(CtAnnotatedElementType.TYPE_USE, implementsTypeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Extends with an type annotation must be well printed", superInterfaceExpected, firstSuperInterface.toString());
 
-		final CtEnum<?> enumActual = ctClass.getElements(new NameFilter<CtEnum<?>>("DummyEnum")).get(0);
+		final CtEnum<?> enumActual = ctClass.getElements(new NamedElementFilter<>(CtEnum.class,"DummyEnum")).get(0);
 		final Set<CtTypeReference<?>> superInterfacesOfEnum = enumActual.getSuperInterfaces();
 		final CtTypeReference<?> firstSuperInterfaceOfEnum = superInterfacesOfEnum.toArray(new CtTypeReference<?>[0])[0];
 		final List<CtAnnotation<? extends Annotation>> enumTypeAnnotations = firstSuperInterfaceOfEnum.getAnnotations();
@@ -540,7 +539,7 @@ public class AnnotationTest {
 		assertEquals(CtAnnotatedElementType.TYPE_USE, enumTypeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Implements in a enum with an type annotation must be well printed", enumExpected, enumActual.toString());
 
-		final CtInterface<?> interfaceActual = ctClass.getElements(new NameFilter<CtInterface<?>>("DummyInterface")).get(0);
+		final CtInterface<?> interfaceActual = ctClass.getElements(new NamedElementFilter<>(CtInterface.class,"DummyInterface")).get(0);
 		final Set<CtTypeReference<?>> superInterfacesOfInterface = interfaceActual.getSuperInterfaces();
 		final CtTypeReference<?> firstSuperInterfaceOfInterface = superInterfacesOfInterface.toArray(new CtTypeReference<?>[0])[0];
 		final List<CtAnnotation<? extends Annotation>> interfaceTypeAnnotations = firstSuperInterfaceOfInterface.getAnnotations();
@@ -555,7 +554,7 @@ public class AnnotationTest {
 	public void testUsageOfTypeAnnotationWithGenericTypesInClassDeclaration() throws Exception {
 		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
-		final CtClass<?> genericClass = ctClass.getElements(new NameFilter<CtClass<?>>("DummyGenericClass")).get(0);
+		final CtClass<?> genericClass = ctClass.getElements(new NamedElementFilter<>(CtClass.class,"DummyGenericClass")).get(0);
 
 		// New type parameter declaration.
 		final List<CtTypeParameter> typeParameters = genericClass.getFormalCtTypeParameters();
@@ -931,7 +930,7 @@ public class AnnotationTest {
 		//spoon2.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
 		spoon2.buildModel();
 
-		List<CtMethod<?>> methods = spoon2.getModel().getElements(new NameFilter<CtMethod<?>>("getPort"));
+		List<CtMethod<?>> methods = spoon2.getModel().getElements(new NamedElementFilter(CtMethod.class, "getPort"));
 
 		assertEquals("Number of method getPort should be 1", 1, methods.size());
 
@@ -958,7 +957,7 @@ public class AnnotationTest {
 		factory = spoon.getFactory();
 		spoon.buildModel();
 
-		List<CtMethod> methods = factory.getModel().getElements(new NameFilter<CtMethod>("setField"));
+		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "setField"));
 		assertThat(methods.size(), is(1));
 
 		CtMethod methodSet = methods.get(0);
@@ -994,7 +993,7 @@ public class AnnotationTest {
 
 		factory = spoon.getFactory();
 
-		List<CtMethod> methods = factory.getModel().getElements(new NameFilter<CtMethod>("bidule"));
+		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "bidule"));
 
 		assertThat(methods.size(), is(1));
 
@@ -1036,7 +1035,7 @@ public class AnnotationTest {
 	public void testReplaceAnnotationValue() throws Exception {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
 
-		CtMethod<?> m1 = type.getElements(new NameFilter<CtMethod<?>>("m1")).get(0);
+		CtMethod<?> m1 = type.getElements(new NamedElementFilter<>(CtMethod.class,"m1")).get(0);
 
 		List<CtAnnotation<? extends Annotation>> annotations = m1.getAnnotations();
 		assertEquals(1, annotations.size());

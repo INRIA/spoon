@@ -26,6 +26,8 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -93,7 +95,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 				.select(new TypeFilter<>(CtVariable.class));
 		if (variableName != null) {
 			//variable name is defined so we have to search only for variables with that name
-			siblingsQuery = siblingsQuery.select(new NameFilter<>(variableName));
+			siblingsQuery = siblingsQuery.select(new NamedElementFilter<>(CtNamedElement.class,variableName));
 		}
 
 		CtElement scopeElement = input;

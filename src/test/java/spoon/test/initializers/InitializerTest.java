@@ -3,11 +3,12 @@ package spoon.test.initializers;
 import org.junit.Test;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import static org.junit.Assert.assertEquals;
@@ -41,19 +42,19 @@ public class InitializerTest {
 				"InstanceInitializers");
 		assertEquals("InstanceInitializers", type.getSimpleName());
 
-		CtField<?> k = type.getElements(new NameFilter<CtField<?>>("k")).get(0);
+		CtField<?> k = type.getElements(new NamedElementFilter<>(CtField.class,"k")).get(0);
 		assertTrue(k.getDefaultExpression() instanceof CtConstructorCall);
 
-		CtField<?> l = type.getElements(new NameFilter<CtField<?>>("l")).get(0);
+		CtField<?> l = type.getElements(new NamedElementFilter<>(CtField.class,"l")).get(0);
 		assertTrue(l.getDefaultExpression() instanceof CtConstructorCall);
 
-		CtField<?> x = type.getElements(new NameFilter<CtField<?>>("x")).get(0);
+		CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x")).get(0);
 		assertTrue(x.getDefaultExpression() == null);
 
-		CtField<?> y = type.getElements(new NameFilter<CtField<?>>("y")).get(0);
+		CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y")).get(0);
 		assertTrue(y.getDefaultExpression() instanceof CtLiteral);
 
-		CtField<?> z = type.getElements(new NameFilter<CtField<?>>("z")).get(0);
+		CtField<?> z = type.getElements(new NamedElementFilter<>(CtField.class,"z")).get(0);
 		assertTrue(z.getDefaultExpression().toString().equals("5"));
 
 		// static initializer

@@ -9,7 +9,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.ctBlock.testclasses.Toto;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class TestCtBlock {
         spoon.addInputResource("./src/test/java/spoon/test/ctBlock/testclasses/Toto.java");
         spoon.buildModel();
 
-        List<CtMethod> methods = spoon.getModel().getElements(new NameFilter<CtMethod>("foo"));
+        List<CtMethod> methods = spoon.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"foo"));
 
         assertEquals(1, methods.size());
 

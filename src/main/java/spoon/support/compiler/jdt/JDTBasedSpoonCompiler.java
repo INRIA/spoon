@@ -89,17 +89,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
 
 	/**
-	 * @deprecated The encoding of Environment should be used instead
-	 */
-	@Deprecated
-	protected String encoding;
-
-	/**
 	 * Default constructor
 	 */
 	public JDTBasedSpoonCompiler(Factory factory) {
 		this.factory = factory;
-		this.encoding = factory.getEnvironment().getEncoding().displayName();
 	}
 
 	@Override
@@ -150,7 +143,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 
 		final String[] args = new JDTBuilderImpl() //
-				.classpathOptions(new ClasspathOptions().encoding(this.getEncoding()).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
+				.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
 				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
 				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
@@ -335,16 +328,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	@Override
-	public String getEncoding() {
-		return this.encoding;
-	}
-
-	@Override
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
-	@Override
 	public Factory getFactory() {
 		return factory;
 	}
@@ -395,7 +378,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		String[] args;
 		if (jdtBuilder == null) {
 			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.getEncoding()).classpath(classpath)) //
+					.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(classpath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
 					.sources(new SourceOptions().sources(sourceFiles)) // no sources, handled by the JDTBatchCompiler

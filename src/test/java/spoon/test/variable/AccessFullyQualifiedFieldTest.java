@@ -2,22 +2,15 @@ package spoon.test.variable;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.reflect.visitor.filter.NameFilter;
-import spoon.support.JavaOutputProcessor;
 import spoon.test.main.MainTest;
 import spoon.test.variable.testclasses.Tacos;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
