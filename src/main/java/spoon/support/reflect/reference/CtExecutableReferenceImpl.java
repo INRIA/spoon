@@ -173,7 +173,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		} else if (method == null && getSimpleName().startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
-			final List<CtLambda> elements = (List<CtLambda>) typeDecl.getElements(new NamedElementFilter<>(CtLambda.class,getSimpleName()));
+			final List<CtLambda> elements = (List<CtLambda>) typeDecl.getElements(new NamedElementFilter<>(CtLambda.class, getSimpleName()));
 			if (elements.size() == 0) {
 				return null;
 			}

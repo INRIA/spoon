@@ -115,7 +115,7 @@ class JDTImportBuilder {
 							}
 						}
 					} else {
-						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class,methodOrFieldName));
+						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
 							this.imports.add(methodOrFields.get(0).getReference());

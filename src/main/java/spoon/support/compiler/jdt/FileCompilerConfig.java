@@ -23,7 +23,6 @@ import java.util.List;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;

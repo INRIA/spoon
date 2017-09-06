@@ -235,7 +235,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtField<?> field = map(new AllTypeMembersFunction(CtField.class)).select(new NamedElementFilter<>(CtField.class,fieldName)).first();
+		CtField<?> field = map(new AllTypeMembersFunction(CtField.class)).select(new NamedElementFilter<>(CtField.class, fieldName)).first();
 		return field == null ? null : field.getReference();
 	}
 
