@@ -202,7 +202,7 @@ public class TemplateTest {
 		
 		// contract; field access is handled same like local variable access
 		CtMethod<?> methodWithFieldAccess = subc.getElements(
-				new NameFilter<CtMethod<?>>("methodWithFieldAccess")).get(0);
+				new NamedElementFilter<>(CtMethod.class, "methodWithFieldAccess")).get(0);
 		elementToGeneratedByMember.put(methodWithFieldAccess, "#methodWithFieldAccess");
 		elementToGeneratedByMember.put(subc.getField("newVarName"), "#var");
 
