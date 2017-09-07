@@ -143,6 +143,13 @@ public class PrinterHelper {
 	}
 
 	/**
+	 * @return the current number of tabs.
+	 */
+	public int getTabCount() {
+		return nbTabs;
+	}
+
+	/**
 	 * Sets the current number of tabs.
 	 */
 	public PrinterHelper setTabCount(int tabCount) {
@@ -223,27 +230,8 @@ public class PrinterHelper {
 	 * Write a pre unary operator.
 	 */
 	public void preWriteUnaryOperator(UnaryOperatorKind o) {
-		switch (o) {
-			case POS:
-				write("+");
-				break;
-			case NEG:
-				write("-");
-				break;
-			case NOT:
-				write("!");
-				break;
-			case COMPL:
-				write("~");
-				break;
-			case PREINC:
-				write("++");
-				break;
-			case PREDEC:
-				write("--");
-				break;
-			default:
-				// do nothing (this does not feel right to ignore invalid ops)
+		if (OperatorHelper.isPrefixOperator(o)) {
+			write(OperatorHelper.getOperatorText(o));
 		}
 	}
 
@@ -251,15 +239,8 @@ public class PrinterHelper {
 	 * Write a post unary operator.
 	 */
 	public void postWriteUnaryOperator(UnaryOperatorKind o) {
-		switch (o) {
-			case POSTINC:
-				write("++");
-				break;
-			case POSTDEC:
-				write("--");
-				break;
-			default:
-				// do nothing (this does not feel right to ignore invalid ops)
+		if (OperatorHelper.isSufixOperator(o)) {
+			write(OperatorHelper.getOperatorText(o));
 		}
 	}
 
@@ -267,125 +248,18 @@ public class PrinterHelper {
 	 * Writes a binary operator.
 	 */
 	public PrinterHelper writeOperator(BinaryOperatorKind o) {
-		switch (o) {
-			case OR:
-				write("||");
-				break;
-			case AND:
-				write("&&");
-				break;
-			case BITOR:
-				write("|");
-				break;
-			case BITXOR:
-				write("^");
-				break;
-			case BITAND:
-				write("&");
-				break;
-			case EQ:
-				write("==");
-				break;
-			case NE:
-				write("!=");
-				break;
-			case LT:
-				write("<");
-				break;
-			case GT:
-				write(">");
-				break;
-			case LE:
-				write("<=");
-				break;
-			case GE:
-				write(">=");
-				break;
-			case SL:
-				write("<<");
-				break;
-			case SR:
-				write(">>");
-				break;
-			case USR:
-				write(">>>");
-				break;
-			case PLUS:
-				write("+");
-				break;
-			case MINUS:
-				write("-");
-				break;
-			case MUL:
-				write("*");
-				break;
-			case DIV:
-				write("/");
-				break;
-			case MOD:
-				write("%");
-				break;
-			case INSTANCEOF:
-				write("instanceof");
-				break;
-		}
+		write(OperatorHelper.getOperatorText(o));
 		return this;
 	}
 
 	public void writeCharLiteral(Character c, boolean mayContainsSpecialCharacter) {
-		if (!mayContainsSpecialCharacter) {
-			write(c);
-		} else if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
-			if (c < 0x10) {
-				write("\\u000" + Integer.toHexString(c));
-			} else if (c < 0x100) {
-				write("\\u00" + Integer.toHexString(c));
-			} else if (c < 0x1000) {
-				write("\\u0" + Integer.toHexString(c));
-			} else {
-				write("\\u" + Integer.toHexString(c));
-			}
-		} else {
-			switch (c) {
-				case '\b':
-					write("\\b"); //$NON-NLS-1$
-					break;
-				case '\t':
-					write("\\t"); //$NON-NLS-1$
-					break;
-				case '\n':
-					write("\\n"); //$NON-NLS-1$
-					break;
-				case '\f':
-					write("\\f"); //$NON-NLS-1$
-					break;
-				case '\r':
-					write("\\r"); //$NON-NLS-1$
-					break;
-				case '\"':
-					write("\\\""); //$NON-NLS-1$
-					break;
-				case '\'':
-					write("\\'"); //$NON-NLS-1$
-					break;
-				case '\\': // take care not to display the escape as a potential
-					// real char
-					write("\\\\"); //$NON-NLS-1$
-					break;
-				default:
-					write(Character.isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c));
-			}
-		}
+		StringBuilder sb = new StringBuilder(10);
+		LiteralHelper.appendCharLiteral(sb, c, mayContainsSpecialCharacter);
+		write(sb.toString());
 	}
 
 	public void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
-		if (!mayContainsSpecialCharacter) {
-			write(value);
-		} else {
-			for (int i = 0; i < value.length(); i++) {
-				writeCharLiteral(value.charAt(i), mayContainsSpecialCharacter);
-			}
-		}
+		write(LiteralHelper.getStringLiteral(value, mayContainsSpecialCharacter));
 	}
 
 	public Map<Integer, Integer> getLineNumberMapping() {
