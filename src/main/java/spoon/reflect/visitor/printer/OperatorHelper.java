@@ -28,6 +28,13 @@ class OperatorHelper {
 	private OperatorHelper() {
 	}
 
+	public static boolean isPrefixOperator(UnaryOperatorKind o) {
+		return isSufixOperator(o) == false;
+	}
+	public static boolean isSufixOperator(UnaryOperatorKind o) {
+		return o.name().startsWith("POST");
+	}
+
 	/**
 	 * @return java source code representation of a pre or post unary operator.
 	 */
