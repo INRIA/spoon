@@ -9,7 +9,7 @@ import spoon.reflect.declaration.CtPackage;
  */
 public class ElementProcessor extends AbstractProcessor<CtElement> {
     public void process(CtElement element) {
-        if(element instanceof CtPackage){
+        if(element instanceof CtPackage && element != getFactory().Package().getRootPackage()){
             ((CtPackage) element).setSimpleName("newtest");
         }
     }
