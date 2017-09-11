@@ -16,9 +16,12 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.pkg.name.PackageTestClass;
+import spoon.test.pkg.testclasses.ElementProcessor;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -161,5 +164,25 @@ public class PackageTest {
 		String result = prettyPrinter.getResult();
 
 		assertTrue(result.contains("package otherName;"));
+	}
+
+	@Test
+	public void testRenamePackageAndPrettyPrintWithProcessor() throws Exception {
+		String destPath = "./target/spoon-rename-processor";
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.addProcessor(new ElementProcessor());
+		spoon.setSourceOutputDirectory(destPath);
+		spoon.run();
+
+		String fileDir = destPath+"/newtest/Test.java";
+		File f = new File(fileDir);
+		assertTrue(f.exists());
+
+		BufferedReader reader = new BufferedReader(new FileReader(f));
+		assertTrue(reader.lines().anyMatch((s) -> {
+			return s.equals("package newtest;");
+		}));
 	}
 }
