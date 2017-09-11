@@ -26,7 +26,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.B;
 import spoon.test.fieldaccesses.testclasses.Kuu;
@@ -54,9 +54,9 @@ public class FieldAccessTest {
 		assertEquals("Mouse", type.getSimpleName());
 
 		CtMethod<?> meth1 = type.getElements(
-				new NameFilter<CtMethod<?>>("meth1")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"meth1")).get(0);
 		CtMethod<?> meth1b = type.getElements(
-				new NameFilter<CtMethod<?>>("meth1b")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"meth1b")).get(0);
 
 		assertEquals(
 				3,
@@ -71,7 +71,7 @@ public class FieldAccessTest {
 						.size());
 
 		CtMethod<?> meth2 = type.getElements(
-				new NameFilter<CtMethod<?>>("meth2")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"meth2")).get(0);
 		assertEquals(
 				2,
 				meth2.getElements(
@@ -79,7 +79,7 @@ public class FieldAccessTest {
 						.size());
 
 		CtMethod<?> meth3 = type.getElements(
-				new NameFilter<CtMethod<?>>("meth3")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"meth3")).get(0);
 		assertEquals(
 				3,
 				meth3.getElements(
@@ -87,7 +87,7 @@ public class FieldAccessTest {
 						.size());
 
 		CtMethod<?> meth4 = type.getElements(
-				new NameFilter<CtMethod<?>>("meth4")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"meth4")).get(0);
 		assertEquals(
 				1,
 				meth4.getElements(

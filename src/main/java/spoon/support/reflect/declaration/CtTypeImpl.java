@@ -46,7 +46,7 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
@@ -235,7 +235,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtField<?> field = map(new AllTypeMembersFunction(CtField.class)).select(new NameFilter<>(fieldName)).first();
+		CtField<?> field = map(new AllTypeMembersFunction(CtField.class)).select(new NamedElementFilter<>(CtField.class, fieldName)).first();
 		return field == null ? null : field.getReference();
 	}
 

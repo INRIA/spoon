@@ -13,16 +13,16 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.methodreference.testclasses.AssertJ;
 import spoon.test.methodreference.testclasses.Cloud;
@@ -191,21 +191,21 @@ public class MethodReferenceTest {
 
 		// some consistency checks...
 		assertEquals(1, model.getElements(
-				new NameFilter<CtMethod>("a")).size());
+				new NamedElementFilter<>(CtMethod.class,"a")).size());
 		assertEquals(1, model.getElements(
-				new NameFilter<CtMethod>("b")).size());
+				new NamedElementFilter<>(CtMethod.class,"b")).size());
 		assertEquals(1, model.getElements(
-				new NameFilter<CtMethod>("toString")).size());
+				new NamedElementFilter<>(CtMethod.class,"toString")).size());
 
 		// get super method of a class not available in classpath
 		final CtMethod bMethod = model.getElements(
-				new NameFilter<CtMethod>("b")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"b")).get(0);
 		assertNotNull(bMethod.getAnnotation(overrideRef));
 		assertNull(bMethod.getReference().getOverridingExecutable());
 
 		// get super method of a class available in classpath (Object)
 		final CtMethod toStringMethod = model.getElements(
-				new NameFilter<CtMethod>("toString")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"toString")).get(0);
 		assertNotNull(toStringMethod.getAnnotation(overrideRef));
 		assertNotNull(toStringMethod.getReference().getOverridingExecutable());
 	}

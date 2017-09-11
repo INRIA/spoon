@@ -15,7 +15,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctType.testclasses.X;
 
@@ -115,8 +115,8 @@ public class CtTypeTest {
 		CtType<?> P_D_CtType = pTypeParameters.get(0);
 		CtType<?> P_F_CtType = pTypeParameters.get(1);
 
-		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NameFilter<>("foo")).first();
-		CtMethod<?> P_FooMethod = pCtType.filterChildren(new NameFilter<>("foo")).first();
+		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NamedElementFilter<>(CtMethod.class,"foo")).first();
+		CtMethod<?> P_FooMethod = pCtType.filterChildren(new NamedElementFilter<>(CtMethod.class,"foo")).first();
 
 		CtType<?> O_B_CtType = O_FooMethod.getType().getDeclaration();
 		CtType<?> P_E_CtType = P_FooMethod.getType().getDeclaration();
@@ -144,7 +144,7 @@ public class CtTypeTest {
 		Factory factory = launcher.getFactory();
 		
 		CtType<?> oCtType = factory.Class().get("spoon.test.ctType.testclasses.SubtypeModel");
-		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NameFilter<>("foo")).first();
+		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NamedElementFilter<>(CtMethod.class,"foo")).first();
 
 		Map<String, CtTypeReference<?>> nameToTypeRef = new HashMap<>();
 		O_FooMethod.filterChildren(new TypeFilter<>(CtLocalVariable.class)).forEach((CtLocalVariable var)->{

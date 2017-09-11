@@ -14,10 +14,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.filter;
+package spoon.legacy;
 
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 
 /**

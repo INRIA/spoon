@@ -12,8 +12,9 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class TestLabels {
         launcher.addInputResource("./src/test/java/spoon/test/labels/testclasses/ManyLabels.java");
         launcher.buildModel();
 
-        CtMethod mainMethod = launcher.getFactory().getModel().getElements(new NameFilter<CtMethod>("main")).get(0);
+        CtMethod mainMethod = launcher.getFactory().getModel().getElements(new NamedElementFilter<>(CtMethod.class,"main")).get(0);
 
         CtBlock body = mainMethod.getBody();
         assertEquals(2, body.getStatements().size());

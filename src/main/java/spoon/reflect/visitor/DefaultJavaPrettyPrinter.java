@@ -1750,12 +1750,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
-	@Deprecated
-	public String getPackageDeclaration() {
-		return printPackageInfo(context.currentTopLevel.getPackage());
-	}
-
-	@Override
 	public String printPackageInfo(CtPackage pack) {
 		reset();
 		elementPrinterHelper.writeComment(pack);
@@ -1772,8 +1766,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return printer.toString();
 	}
 
-	@Override
-	public void reset() {
+	private void reset() {
 		printer.reset();
 		context = new PrintingContext();
 		if (env.isAutoImports()) {

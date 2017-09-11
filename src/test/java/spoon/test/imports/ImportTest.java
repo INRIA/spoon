@@ -17,6 +17,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -29,7 +30,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
@@ -85,9 +86,9 @@ public class ImportTest {
 		spoon.setSourceOutputDirectory("./target/spoon/super_imports/src");
 		spoon.run();
 
-		final List<CtClass<?>> classes = Query.getElements(spoon.getFactory(), new NameFilter<CtClass<?>>("ClientClass"));
+		final List<CtClass> classes = Query.getElements(spoon.getFactory(), new NamedElementFilter<>(CtClass.class,"ClientClass"));
 
-		final CtClass<?> innerClass = classes.get(0).getNestedType("InnerClass");
+		final CtType<?> innerClass = classes.get(0).getNestedType("InnerClass");
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
 
@@ -115,9 +116,9 @@ public class ImportTest {
 		spoon.setSourceOutputDirectory("./target/spoon/super_imports/src");
 		spoon.run();
 
-		final List<CtClass<?>> classes = Query.getElements(spoon.getFactory(), new NameFilter<CtClass<?>>("ClientClass"));
+		final List<CtClass> classes = Query.getElements(spoon.getFactory(), new NamedElementFilter<>(CtClass.class,"ClientClass"));
 
-		final CtClass<?> innerClass = classes.get(0).getNestedType("InnerClass");
+		final CtType<?> innerClass = classes.get(0).getNestedType("InnerClass");
 		
 		assertEquals("spoon.test.imports.testclasses.ClientClass$InnerClass", innerClass.getQualifiedName());
 		
@@ -220,9 +221,10 @@ public class ImportTest {
 		SpoonModelBuilder compiler = spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/import-resources/fr/inria/AnotherMissingImport.java"));
 
 		compiler.build();
-		List<CtMethod<?>> methods = factory.getModel().getElements(new NameFilter<CtMethod<?>>("doSomething"));
+		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"doSomething"));
 
-		CtTypeReference<?> type = methods.get(0).getParameters().get(0).getType();
+		List<CtParameter> parameters = methods.get(0).getParameters();
+		CtTypeReference<?> type = parameters.get(0).getType();
 		assertEquals("SomeType", type.getSimpleName());
 		assertEquals("externallib", type.getPackage().getSimpleName());
 

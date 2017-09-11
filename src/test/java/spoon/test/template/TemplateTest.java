@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.ModelConsistencyChecker;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
@@ -112,7 +112,7 @@ public class TemplateTest {
 		new SuperTemplate().addGeneratedBy(true).apply(superc);
 
 		CtMethod<?> addedMethod = superc.getElements(
-				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod.getSimpleName());
 		elementToGeneratedByMember.put(addedMethod, "#toBeOverriden");
 
@@ -137,7 +137,7 @@ public class TemplateTest {
 		template.apply(subc);
 
 		CtMethod<?> addedMethod2 = subc.getElements(
-				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod2.getSimpleName());
 		assertEquals("super.toBeOverriden()", addedMethod2.getBody()
 				.getStatements().get(0).toString());
@@ -145,7 +145,7 @@ public class TemplateTest {
 
 		// contract; method parameter templates are handled
 		CtMethod<?> methodWithTemplatedParameters = subc.getElements(
-				new NameFilter<CtMethod<?>>("methodWithTemplatedParameters")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"methodWithTemplatedParameters")).get(0);
 		assertEquals("methodWithTemplatedParameters", methodWithTemplatedParameters.getSimpleName());
 		assertEquals("x", methodWithTemplatedParameters.getParameters().get(0).getSimpleName());
 		assertEquals("int x", methodWithTemplatedParameters.getParameters().get(0).toString());
@@ -202,7 +202,7 @@ public class TemplateTest {
 		
 		// contract; field access is handled same like local variable access
 		CtMethod<?> methodWithFieldAccess = subc.getElements(
-				new NameFilter<CtMethod<?>>("methodWithFieldAccess")).get(0);
+				new NamedElementFilter<>(CtMethod.class, "methodWithFieldAccess")).get(0);
 		elementToGeneratedByMember.put(methodWithFieldAccess, "#methodWithFieldAccess");
 		elementToGeneratedByMember.put(subc.getField("newVarName"), "#var");
 
@@ -314,7 +314,7 @@ public class TemplateTest {
 		assertEquals(3, c1.getConstructors().size());
 
 		CtField<?> toBeInserted = c1.getElements(
-				new NameFilter<CtField<?>>("toBeInserted")).get(0);
+				new NamedElementFilter<>(CtField.class,"toBeInserted")).get(0);
 		assertEquals(Date.class, toBeInserted.getType()
 				.getActualTypeArguments().get(0).getActualClass());
 		assertEquals(
@@ -428,7 +428,7 @@ public class TemplateTest {
 		{// testing matcher1
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -437,7 +437,7 @@ public class TemplateTest {
 		{// testing matcher2
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher2")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
 			assertThat(asList("bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -446,7 +446,7 @@ public class TemplateTest {
 		{// testing matcher3
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -455,7 +455,7 @@ public class TemplateTest {
 		{// testing matcher4
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -464,7 +464,7 @@ public class TemplateTest {
 		{// testing matcher5
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -473,7 +473,7 @@ public class TemplateTest {
 		{// testing matcher6
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher6")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("baz","bou"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -484,7 +484,7 @@ public class TemplateTest {
 		{
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0);
 
 			// exact match
 			meth.setSimpleName("foo");
@@ -498,7 +498,7 @@ public class TemplateTest {
 			// contract: the name to be matched does not have to be an exact match
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0);
 
 			// together with the appropriate @Parameter _w_, this means
 			// we match all methods with name f*, because parameter _w_ acts as a wildcard
@@ -606,7 +606,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
-		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
@@ -649,7 +649,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
-		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
@@ -684,7 +684,7 @@ public class TemplateTest {
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		new InvocationTemplate(factory.Type().OBJECT, "hashCode").apply(resultKlass);
-		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NameFilter("invoke")).get(0);
+		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NamedElementFilter<>(CtMethod.class,"invoke")).get(0);
 		CtStatement templateRoot = (CtStatement) templateMethod.getBody().getStatement(0);
 		//iface.$method$() becomes iface.hashCode()
 		assertEquals("iface.hashCode()", templateRoot.toString());

@@ -30,7 +30,7 @@ import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ParameterReferenceFunction;
 import spoon.reflect.visitor.filter.ParameterScopeFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -93,7 +93,7 @@ public class VariableReferencesTest {
 //		System.out.println("Next available key is: "+(context.maxKey+1));
 		assertTrue(context.unique.size()>0);
 		assertEquals("Only these keys were found: "+context.unique.keySet(), context.maxKey, context.unique.size());
-		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NameFilter("maxValue")).first()), context.maxKey);
+		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class,"maxValue")).first()), context.maxKey);
 	}
 	
 	@Test

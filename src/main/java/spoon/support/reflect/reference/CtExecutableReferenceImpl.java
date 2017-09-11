@@ -29,7 +29,7 @@ import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
@@ -173,7 +173,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		} else if (method == null && getSimpleName().startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
-			final List<CtLambda<T>> elements = (List<CtLambda<T>>) typeDecl.getElements(new NameFilter<CtLambda<T>>(getSimpleName()));
+			final List<CtLambda> elements = (List<CtLambda>) typeDecl.getElements(new NamedElementFilter<>(CtLambda.class, getSimpleName()));
 			if (elements.size() == 0) {
 				return null;
 			}
