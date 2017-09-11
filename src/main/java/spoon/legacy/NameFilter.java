@@ -33,29 +33,29 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
  */
 @Deprecated
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
-    private final String name;
+	private final String name;
 
-    /**
-     *
-     * @param name Name of the expected element
-     */
-    public NameFilter(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException();
-        }
-        this.name = name;
-    }
+	/**
+	 *
+	 * @param name Name of the expected element
+	 */
+	public NameFilter(String name) {
+		if (name == null) {
+			throw new IllegalArgumentException();
+		}
+		this.name = name;
+	}
 
-    public boolean matches(T element) {
-        try {
-            return name.equals(element.getSimpleName());
-        } catch (UnsupportedOperationException e) {
-            return false;
-        }
-    }
+	public boolean matches(T element) {
+		try {
+			return name.equals(element.getSimpleName());
+		} catch (UnsupportedOperationException e) {
+			return false;
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public Class<T> getType() {
-        return (Class<T>) CtNamedElement.class;
-    }
+	@SuppressWarnings("unchecked")
+	public Class<T> getType() {
+		return (Class<T>) CtNamedElement.class;
+	}
 }
