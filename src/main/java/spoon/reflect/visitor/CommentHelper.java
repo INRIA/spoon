@@ -38,7 +38,7 @@ import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.COMMENT_STAR;
 class CommentHelper {
 
 	/**
-	 * RegExp which matches all possible line separators.
+	 * RegExp which matches all possible line separators
 	 */
 	private static final Pattern LINE_SEPARATORS_RE = Pattern.compile("\\n\\r|\\n|\\r");
 
