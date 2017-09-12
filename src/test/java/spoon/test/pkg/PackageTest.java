@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
@@ -184,5 +185,39 @@ public class PackageTest {
 		assertTrue(reader.lines().anyMatch((s) -> {
 			return s.equals("package newtest;");
 		}));
+	}
+
+	@Test
+	public void testRenameRootPackage() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+		CtPackage rootPackage = spoon.getFactory().Package().getRootPackage();
+		try {
+			rootPackage.setSimpleName("test");
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains("CtRootPackage cannot be renamed"));
+		}
+	}
+
+	@Test
+	public void testRenameRootPackageWithNullOrEmpty() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+		CtPackage rootPackage = spoon.getFactory().Package().getRootPackage();
+		String rootPackageName = rootPackage.getSimpleName();
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
+
+		rootPackage.setSimpleName("");
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
+
+		rootPackage.setSimpleName(null);
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
 	}
 }
