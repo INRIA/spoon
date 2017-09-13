@@ -68,7 +68,7 @@ public class CtModelImpl implements CtModel {
 
 		@Override
 		public <T extends CtNamedElement> T setSimpleName(String name) {
-			if (name == null || name.equals("")) {
+			if (name == null ) {
 				return (T) this;
 			}
 
@@ -76,7 +76,7 @@ public class CtModelImpl implements CtModel {
 				return super.setSimpleName(name);
 			}
 
-			throw new SpoonException("CtRootPackage cannot be renamed.");
+			return (T) this;
 		}
 
 		@Override

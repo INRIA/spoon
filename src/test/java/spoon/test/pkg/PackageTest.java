@@ -195,12 +195,9 @@ public class PackageTest {
 		spoon.buildModel();
 
 		CtPackage rootPackage = spoon.getFactory().Package().getRootPackage();
-		try {
-			rootPackage.setSimpleName("test");
-			fail();
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().contains("CtRootPackage cannot be renamed"));
-		}
+		String rootPackageName = rootPackage.getSimpleName();
+		rootPackage.setSimpleName("test");
+		assertEquals(rootPackageName, rootPackage.getSimpleName());
 	}
 
 	@Test
