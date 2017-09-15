@@ -184,6 +184,9 @@ public class MavenLauncher extends Launcher {
 				File jar = depPath.toFile();
 				if (jar.exists()) {
 					output.add(jar);
+				} else {
+					// if the a dependency is not found, uses the no classpath mode
+					getEnvironment().setNoClasspath(true);
 				}
 			}
 
