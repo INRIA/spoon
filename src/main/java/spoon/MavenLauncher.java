@@ -37,9 +37,14 @@ import java.util.Set;
  */
 public class MavenLauncher extends Launcher {
 	private String m2RepositoryPath;
+	public enum SOURCE_TYPE {
+		SOURCE,
+		TEST,
+		ALL
+	}
 
-	public MavenLauncher(String pomPatch, boolean includeTest) {
-		this(pomPatch, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), includeTest);
+	public MavenLauncher(String pomPatch, SOURCE_TYPE sourceType) {
+		this(pomPatch, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
 	}
 
 	/**
@@ -47,7 +52,7 @@ public class MavenLauncher extends Launcher {
 	 * @param projectRoot the path to the root of the project (the folder that contains the pom)
 	 * @param m2RepositoryPath the path to the m2repository
 	 */
-	public MavenLauncher(String projectRoot, String m2RepositoryPath, boolean includeTest) {
+	public MavenLauncher(String projectRoot, String m2RepositoryPath, SOURCE_TYPE sourceType) {
 		this.m2RepositoryPath = m2RepositoryPath;
 
 		if (!new File(projectRoot).isDirectory()) {
@@ -65,13 +70,15 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// source
-		List<File> sourceDirectories = model.getSourceDirectories();
-		for (File sourceDirectory : sourceDirectories) {
-			this.addInputResource(sourceDirectory.getAbsolutePath());
+		if (sourceType == SOURCE_TYPE.SOURCE || sourceType == SOURCE_TYPE.ALL) {
+			List<File> sourceDirectories = model.getSourceDirectories();
+			for (File sourceDirectory : sourceDirectories) {
+				this.addInputResource(sourceDirectory.getAbsolutePath());
+			}
 		}
 
 		// test
-		if (includeTest) {
+		if (sourceType == SOURCE_TYPE.TEST || sourceType == SOURCE_TYPE.ALL) {
 			List<File> testSourceDirectories = model.getTestDirectories();
 			for (File sourceDirectory : testSourceDirectories) {
 				this.addInputResource(sourceDirectory.getAbsolutePath());
