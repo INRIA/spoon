@@ -90,12 +90,12 @@ public class MavenLauncher extends Launcher {
 
 
 	private InheritanceModel readPOM(String path, InheritanceModel parent) throws IOException, XmlPullParserException {
-		File parentPOM = Paths.get(path, "pom.xml").toFile();
-		if (!parentPOM.exists()) {
+		File pomFile = Paths.get(path, "pom.xml").toFile();
+		if (!pomFile.exists()) {
 			return null;
 		}
 		MavenXpp3Reader pomReader = new MavenXpp3Reader();
-		Model model = pomReader.read(new FileReader(parentPOM));
+		Model model = pomReader.read(new FileReader(pomFile));
 		InheritanceModel inheritanceModel = new InheritanceModel(model, parent, new File(path));
 		for (String module : model.getModules()) {
 			inheritanceModel.addModule(readPOM(Paths.get(path, module).toString(), inheritanceModel));
