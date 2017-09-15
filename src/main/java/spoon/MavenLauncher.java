@@ -9,6 +9,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,7 @@ public class MavenLauncher extends Launcher {
 	private boolean includeTest = false;
 
 	public MavenLauncher(String pomPatch, boolean includeTest) {
-		this(pomPatch, "/home/thomas/.m2/repository/", includeTest);
+		this(pomPatch, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), includeTest);
 	}
 
 	/**
