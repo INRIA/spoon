@@ -44,6 +44,9 @@ public class MavenLauncher extends Launcher {
 		} catch (Exception e) {
 			throw new SpoonException("Unable to read the pom", e);
 		}
+		if (model == null) {
+			throw new SpoonException(" Unable to create the model, pom not found?");
+		}
 
 		// source
 		List<File> sourceDirectories = model.getSourceDirectories();
@@ -71,7 +74,7 @@ public class MavenLauncher extends Launcher {
 
 
 	private InheritanceModel readPOM(String path, InheritanceModel parent) throws IOException, XmlPullParserException {
-		File parentPOM = new File(path + "/pom.xml");
+		File parentPOM = Paths.get(path, "pom.xml").toFile();
 		if (!parentPOM.exists()) {
 			return null;
 		}
@@ -79,7 +82,7 @@ public class MavenLauncher extends Launcher {
 		Model model = pomReader.read(new FileReader(parentPOM));
 		InheritanceModel inheritanceModel = new InheritanceModel(model, parent, new File(path));
 		for (String module : model.getModules()) {
-			inheritanceModel.addModule(readPOM(path + "/" + module, inheritanceModel));
+			inheritanceModel.addModule(readPOM(Paths.get(path, module).toString(), inheritanceModel));
 		}
 		return inheritanceModel;
 	}
@@ -98,10 +101,6 @@ public class MavenLauncher extends Launcher {
 
 		public void addModule(InheritanceModel module) {
 			modules.add(module);
-		}
-
-		public List<InheritanceModel> getModules() {
-			return modules;
 		}
 
 		public Model getModel() {
@@ -142,7 +141,7 @@ public class MavenLauncher extends Launcher {
 				sourcePath = build.getTestSourceDirectory();
 			}
 			if (sourcePath == null) {
-				sourcePath = directory.getAbsolutePath() + "/src/test/java";
+				sourcePath = Paths.get(directory.getAbsolutePath(), "src", "test", "java").toString();
 			}
 			File source = new File(sourcePath);
 			if (source.exists()) {
