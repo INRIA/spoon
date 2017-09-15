@@ -38,8 +38,11 @@ import java.util.Set;
 public class MavenLauncher extends Launcher {
 	private String m2RepositoryPath;
 	public enum SOURCE_TYPE {
+		// only the main code of the application
 		SOURCE,
+		// only the tests of the application
 		TEST,
+		// all the sources
 		ALL
 	}
 
@@ -149,6 +152,10 @@ public class MavenLauncher extends Launcher {
 			if (source.exists()) {
 				output.add(source);
 			}
+			File generatedSource = Paths.get(directory.getAbsolutePath(), "target", "generated-sources").toFile();
+			if (generatedSource.exists()) {
+				output.add(generatedSource);
+			}
 			for (InheritanceModel module : modules) {
 				output.addAll(module.getSourceDirectories());
 			}
@@ -169,6 +176,10 @@ public class MavenLauncher extends Launcher {
 			File source = new File(sourcePath);
 			if (source.exists()) {
 				output.add(source);
+			}
+			File generatedSource = Paths.get(directory.getAbsolutePath(), "target", "generated-test-sources").toFile();
+			if (generatedSource.exists()) {
+				output.add(generatedSource);
 			}
 			for (InheritanceModel module : modules) {
 				output.addAll(module.getTestDirectories());
