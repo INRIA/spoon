@@ -9,6 +9,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,10 +20,7 @@ import java.util.Set;
  * Create a Spoon launcher from a maven pom file
  */
 public class MavenLauncher extends Launcher {
-
-	private String projectRoot;
 	private String m2RepositoryPath;
-	private boolean includeTest = false;
 
 	public MavenLauncher(String pomPatch, boolean includeTest) {
 		this(pomPatch, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), includeTest);
@@ -34,14 +32,13 @@ public class MavenLauncher extends Launcher {
 	 * @param m2RepositoryPath the path to the m2repository
 	 */
 	public MavenLauncher(String projectRoot, String m2RepositoryPath, boolean includeTest) {
-		this.projectRoot = projectRoot;
 		this.m2RepositoryPath = m2RepositoryPath;
 
 		if (!new File(projectRoot).isDirectory()) {
 			throw new SpoonException(projectRoot + " has to be a folder");
 		}
 
-		InheritanceModel model = null;
+		InheritanceModel model;
 		try {
 			model = readPOM(projectRoot, null);
 		} catch (Exception e) {
@@ -93,7 +90,7 @@ public class MavenLauncher extends Launcher {
 		private InheritanceModel parent;
 		private File directory;
 
-		public InheritanceModel(Model model, InheritanceModel parent, File directory) {
+		InheritanceModel(Model model, InheritanceModel parent, File directory) {
 			this.model = model;
 			this.parent = parent;
 			this.directory = directory;
@@ -124,7 +121,7 @@ public class MavenLauncher extends Launcher {
 				sourcePath = build.getSourceDirectory();
 			}
 			if (sourcePath == null) {
-				sourcePath = directory.getAbsolutePath() + "/src/main/java";
+				sourcePath = Paths.get(directory.getAbsolutePath(), "src", "main", "java").toString();
 			}
 			File source = new File(sourcePath);
 			if (source.exists()) {
@@ -162,20 +159,14 @@ public class MavenLauncher extends Launcher {
 
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
-				String depPath = m2RepositoryPath;
 				String groupId = dependency.getGroupId().replace(".", "/");
-				depPath += groupId + "/";
-				depPath += dependency.getArtifactId() + "/";
 				String version = dependency.getVersion();
 				if (version.startsWith("$")) {
 					version = getProperty(version.substring(2, version.length() - 1));
 				}
-				depPath += version + "/";
-
 				String fileName = dependency.getArtifactId() + "-" + version + ".jar";
-
-				depPath += fileName;
-				File jar = new File(depPath);
+				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version, fileName);
+				File jar = depPath.toFile();
 				if (jar.exists()) {
 					output.add(jar);
 				}
