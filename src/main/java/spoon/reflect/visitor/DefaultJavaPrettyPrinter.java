@@ -111,8 +111,6 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
-import spoon.reflect.visitor.printer.ListPrinter;
-import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
