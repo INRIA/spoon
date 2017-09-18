@@ -40,6 +40,10 @@ import java.util.Set;
  */
 public class MavenLauncher extends Launcher {
 	private String m2RepositoryPath;
+
+	/**
+	 * The type of source to consider in the model
+	 */
 	public enum SOURCE_TYPE {
 		// only the main code of the application
 		SOURCE,
@@ -101,10 +105,17 @@ public class MavenLauncher extends Launcher {
 		this.getModelBuilder().setSourceClasspath(classpath);
 
 		// compliance level
-		this.getEnvironment().setComplianceLevel(model.getJavaVersion());
+		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
 
-
+	/**
+	 * Extract the information from the pom
+	 * @param path the path to the pom
+	 * @param parent the parent pom
+	 * @return the extracted model
+	 * @throws IOException when the file does not exist
+	 * @throws XmlPullParserException when the file is corrupted
+	 */
 	private InheritanceModel readPOM(String path, InheritanceModel parent) throws IOException, XmlPullParserException {
 		File pomFile = Paths.get(path, "pom.xml").toFile();
 		if (!pomFile.exists()) {
@@ -139,10 +150,18 @@ public class MavenLauncher extends Launcher {
 			return model;
 		}
 
+		/**
+		 * Get the parent model
+		 * @return the parent model
+		 */
 		public InheritanceModel getParent() {
 			return parent;
 		}
 
+		/**
+		 * Get the list of source directories of the project
+		 * @return the list of source directories
+		 */
 		public List<File> getSourceDirectories() {
 			List<File> output = new ArrayList<>();
 			String sourcePath = null;
@@ -168,6 +187,10 @@ public class MavenLauncher extends Launcher {
 			return output;
 		}
 
+		/**
+		 * Get the list of test directories of the project
+		 * @return the list of test directories
+		 */
 		public List<File> getTestDirectories() {
 			List<File> output = new ArrayList<>();
 			String sourcePath = null;
@@ -193,12 +216,20 @@ public class MavenLauncher extends Launcher {
 			return output;
 		}
 
+		/**
+		 * Extract the variable from a string
+		 */
 		private String extractVariable(String value) {
 			if (value.startsWith("$")) {
 				value = getProperty(value.substring(2, value.length() - 1));
 			}
 			return value;
 		}
+
+		/**
+		 * Get the list of dependencies available in the local maven repository
+		 * @return the list of  dependencies
+		 */
 		public List<File> getDependencies() {
 			Set<File> output = new HashSet<>();
 
@@ -219,6 +250,7 @@ public class MavenLauncher extends Launcher {
 				String groupId = dependency.getGroupId().replace(".", "/");
 				String version = extractVariable(dependency.getVersion());
 				String fileName = dependency.getArtifactId() + "-" + version + ".jar";
+				// TODO: Check the scope of the dependency (local dependency is not handled)
 				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version, fileName);
 				File jar = depPath.toFile();
 				if (jar.exists()) {
@@ -235,6 +267,11 @@ public class MavenLauncher extends Launcher {
 			return new ArrayList<>(output);
 		}
 
+		/**
+		 * Get the value of a property
+		 * @param key the key of the property
+		 * @return the property value if key exists or null
+		 */
 		private String getProperty(String key) {
 			if ("project.version".equals(key)) {
 				if (model.getVersion() != null) {
@@ -251,7 +288,11 @@ public class MavenLauncher extends Launcher {
 			return value;
 		}
 
-		public int getJavaVersion() {
+		/**
+		 * Get the source version of the project (default 7)
+		 * @return the source version of the project
+		 */
+		public int getSourceVersion() {
 			for (Plugin plugin : model.getBuild().getPlugins()) {
 				if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
 					continue;
