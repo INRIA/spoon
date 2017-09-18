@@ -299,6 +299,7 @@ public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter
 	@Override
 	public void scan(CtElement e) {
 		if (e != null) {
+			enter(e);
 			context.elementStack.push(e);
 			if (env.isPreserveLineNumbers()) {
 				if (!(e instanceof CtNamedElement)) {
@@ -318,6 +319,7 @@ public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter
 				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
 			}
 			context.elementStack.pop();
+			exit(e);
 		}
 	}
 
@@ -342,16 +344,6 @@ public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter
 		} else if (ele instanceof CtReference) {
 			sb.append(":").append(((CtReference) ele).getSimpleName());
 		}
-	}
-
-	/**
-	 * The generic scan method for a reference.
-	 */
-	public DefaultJavaPrettyPrinter scan(CtReference ref) {
-		if (ref != null) {
-			ref.accept(this);
-		}
-		return this;
 	}
 
 	private boolean shouldSetBracket(CtExpression<?> e) {
