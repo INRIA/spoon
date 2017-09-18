@@ -124,7 +124,7 @@ import java.util.Set;
 /**
  * A visitor for generating Java code from the program compile-time model.
  */
-public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
+public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter {
 
 	/**
 	 * Java file extension (.java).
@@ -296,7 +296,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * The generic scan method for an element.
 	 */
-	public DefaultJavaPrettyPrinter scan(CtElement e) {
+	@Override
+	public void scan(CtElement e) {
 		if (e != null) {
 			context.elementStack.push(e);
 			if (env.isPreserveLineNumbers()) {
@@ -318,7 +319,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			context.elementStack.pop();
 		}
-		return this;
 	}
 
 	private static String getPath(CtElement ele) {
