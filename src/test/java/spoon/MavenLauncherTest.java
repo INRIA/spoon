@@ -29,7 +29,7 @@ public class MavenLauncherTest {
 	}
 
 	@Test(expected = SpoonException.class)
-	public void MavenLauncherOnDirectoryWithoutPolTest() {
+	public void MavenLauncherOnDirectoryWithoutPomTest() {
 		new MavenLauncher("./src", MavenLauncher.SOURCE_TYPE.SOURCE);
 	}
 }
