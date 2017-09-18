@@ -67,7 +67,7 @@ public class MainTest {
 				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath,
 				"--compile", // compiling Spoon code itself on the fly
-				"--compliance", "7",
+				"--compliance", "8",
 				"--level", "OFF"
 		});
 
