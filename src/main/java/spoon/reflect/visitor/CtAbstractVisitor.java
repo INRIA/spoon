@@ -97,6 +97,7 @@ import java.lang.annotation.Annotation;
  *  See {@link CtScanner} for a much more powerful implementation of CtVisitor.
  */
 public abstract class CtAbstractVisitor implements CtVisitor {
+
 	@Override
 	public <A extends Annotation> void visitCtAnnotation(
 			CtAnnotation<A> annotation) {

@@ -124,7 +124,7 @@ import java.util.Set;
 /**
  * A visitor for generating Java code from the program compile-time model.
  */
-public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter {
+public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/**
 	 * Java file extension (.java).
@@ -294,10 +294,25 @@ public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter
 	}
 
 	/**
+	 * This method is called by {@link #scan(CtElement)} when entering a scanned element.
+	 * To be overridden to implement specific behavior.
+	 *
+	 * Same KISS design as for {@link CtScanner}.
+	 */
+	protected void enter(CtElement e) {
+	}
+
+	/**
+	 * This method is called by {@link #scan(CtElement)} when entering a scanned element.
+	 * To be overridden to implement specific behavior.
+	 */
+	protected void exit(CtElement e) {
+	}
+
+	/**
 	 * The generic scan method for an element.
 	 */
-	@Override
-	public void scan(CtElement e) {
+	public DefaultJavaPrettyPrinter scan(CtElement e) {
 		if (e != null) {
 			enter(e);
 			context.elementStack.push(e);
@@ -321,6 +336,7 @@ public class DefaultJavaPrettyPrinter extends CtScanner implements PrettyPrinter
 			context.elementStack.pop();
 			exit(e);
 		}
+		return this;
 	}
 
 	private static String getPath(CtElement ele) {
