@@ -16,8 +16,6 @@
  */
 package spoon.reflect.visitor.filter;
 
-import java.util.Collection;
-
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
@@ -26,12 +24,13 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -71,6 +70,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	private boolean isTypeOnTheWay;
 	private final String variableName;
 	private CtQuery query;
+	private boolean isInStaticScope;
 
 	public PotentialVariableDeclarationFunction() {
 		this.variableName = null;
@@ -87,6 +87,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 	@Override
 	public void apply(CtElement input, CtConsumer<Object> outputConsumer) {
 		isTypeOnTheWay = false;
+		isInStaticScope = false;
 		//Search previous siblings for element which may represents the declaration of this local variable
 		CtQuery siblingsQuery = input.getFactory().createQuery()
 				.map(new SiblingsFunction().mode(SiblingsFunction.Mode.PREVIOUS))
@@ -103,12 +104,24 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 			CtElement parent = scopeElement.getParent();
 			if (parent instanceof CtType<?>) {
 				isTypeOnTheWay = true;
-				//TODO replace getAllFields() followed by getFieldDeclaration, by direct visiting of fields of types in super classes.
-				Collection<CtFieldReference<?>> allFields = ((CtType<?>) parent).getAllFields();
-				for (CtFieldReference<?> fieldReference : allFields) {
-					if (sendToOutput(fieldReference.getFieldDeclaration(), outputConsumer)) {
+				//visit each CtField of `parent` CtType
+				CtQuery q = parent.map(new AllTypeMembersFunction(CtField.class));
+				q.forEach((CtField<?> field) -> {
+					if (isInStaticScope && field.hasModifier(ModifierKind.STATIC) == false) {
+						/*
+						 * the variable reference is used in static scope,
+						 * but the field is not static - ignore it
+						 */
 						return;
 					}
+					//else send field as potential variable declaration
+					if (sendToOutput(field, outputConsumer)) {
+						//and terminate the internal query q if outer query is already terminated
+						q.terminate();
+					}
+				});
+				if (query.isTerminated()) {
+					return;
 				}
 			} else if (parent instanceof CtBodyHolder || parent instanceof CtStatementList) {
 				//visit all previous CtVariable siblings of scopeElement element in parent BodyHolder or Statement list
@@ -130,6 +143,9 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 						}
 					}
 				}
+			}
+			if (parent instanceof CtModifiable) {
+				isInStaticScope = isInStaticScope || ((CtModifiable) parent).hasModifier(ModifierKind.STATIC);
 			}
 			scopeElement = parent;
 		}
