@@ -62,7 +62,7 @@ public class MavenLauncher extends Launcher {
 		this.m2RepositoryPath = m2RepositoryPath;
 
 		if (!new File(projectRoot).isDirectory()) {
-			throw new SpoonException(projectRoot + " has to be a folder");
+			throw new SpoonException(projectRoot + " has to be the root folder of the project the folder that contains the pom).");
 		}
 
 		InheritanceModel model;
@@ -217,10 +217,7 @@ public class MavenLauncher extends Launcher {
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
 				String groupId = dependency.getGroupId().replace(".", "/");
-				String version = dependency.getVersion();
-				if (version.startsWith("$")) {
-					version = getProperty(version.substring(2, version.length() - 1));
-				}
+				String version = extractVariable(dependency.getVersion());
 				String fileName = dependency.getArtifactId() + "-" + version + ".jar";
 				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version, fileName);
 				File jar = depPath.toFile();

@@ -22,4 +22,14 @@ public class MavenLauncherTest {
 		// 54 because of the sub folder
 		assertEquals(235, launcher.getModelBuilder().getInputSources().size());
 	}
+
+	@Test(expected = SpoonException.class)
+	public void MavenLauncherOnFileTest() {
+		new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.SOURCE);
+	}
+
+	@Test(expected = SpoonException.class)
+	public void MavenLauncherOnDirectoryWithoutPolTest() {
+		new MavenLauncher("./src", MavenLauncher.SOURCE_TYPE.SOURCE);
+	}
 }
