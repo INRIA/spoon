@@ -19,6 +19,7 @@ package spoon;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -69,7 +70,7 @@ public class MavenLauncher extends Launcher {
 			throw new SpoonException("Unable to read the pom", e);
 		}
 		if (model == null) {
-			throw new SpoonException(" Unable to create the model, pom not found?");
+			throw new SpoonException("Unable to create the model, pom not found?");
 		}
 
 		// source
@@ -190,6 +191,21 @@ public class MavenLauncher extends Launcher {
 		public List<File> getDependencies() {
 			Set<File> output = new HashSet<>();
 
+			// add the parent has a dependency
+			Parent parent = model.getParent();
+			if (parent != null) {
+				String groupId = parent.getGroupId().replace(".", "/");
+				String version = parent.getVersion();
+				if (version.startsWith("$")) {
+					version = getProperty(version.substring(2, version.length() - 1));
+				}
+				String fileName = parent.getArtifactId() + "-" + version + ".jar";
+				Path depPath = Paths.get(m2RepositoryPath, groupId, parent.getArtifactId(), version, fileName);
+				File jar = depPath.toFile();
+				if (jar.exists()) {
+					output.add(jar);
+				}
+			}
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
 				String groupId = dependency.getGroupId().replace(".", "/");
