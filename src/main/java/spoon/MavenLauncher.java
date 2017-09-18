@@ -20,7 +20,9 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -97,6 +99,9 @@ public class MavenLauncher extends Launcher {
 			classpath[i] = file.getAbsolutePath();
 		}
 		this.getModelBuilder().setSourceClasspath(classpath);
+
+		// compliance level
+		this.getEnvironment().setComplianceLevel(model.getJavaVersion());
 	}
 
 
@@ -188,6 +193,12 @@ public class MavenLauncher extends Launcher {
 			return output;
 		}
 
+		private String extractVariable(String value) {
+			if (value.startsWith("$")) {
+				value = getProperty(value.substring(2, value.length() - 1));
+			}
+			return value;
+		}
 		public List<File> getDependencies() {
 			Set<File> output = new HashSet<>();
 
@@ -195,10 +206,7 @@ public class MavenLauncher extends Launcher {
 			Parent parent = model.getParent();
 			if (parent != null) {
 				String groupId = parent.getGroupId().replace(".", "/");
-				String version = parent.getVersion();
-				if (version.startsWith("$")) {
-					version = getProperty(version.substring(2, version.length() - 1));
-				}
+				String version = extractVariable(parent.getVersion());
 				String fileName = parent.getArtifactId() + "-" + version + ".jar";
 				Path depPath = Paths.get(m2RepositoryPath, groupId, parent.getArtifactId(), version, fileName);
 				File jar = depPath.toFile();
@@ -244,6 +252,38 @@ public class MavenLauncher extends Launcher {
 				return parent.getProperty(key);
 			}
 			return value;
+		}
+
+		public int getJavaVersion() {
+			for (Plugin plugin : model.getBuild().getPlugins()) {
+				if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
+					continue;
+				}
+				Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
+				Xpp3Dom source = configuration.getChild("source");
+				if (source != null) {
+					return Integer.parseInt(extractVariable(source.getValue()).substring(2));
+				}
+				break;
+			}
+			String javaVersion = getProperty("java.version");
+			if (javaVersion != null) {
+				return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			}
+			javaVersion = getProperty("java.src.version");
+			if (javaVersion != null) {
+				return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			}
+			javaVersion = getProperty("maven.compiler.source");
+			if (javaVersion != null) {
+				return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			}
+			javaVersion = getProperty("maven.compile.source");
+			if (javaVersion != null) {
+				return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			}
+			// return the default java 7 version
+			return 7;
 		}
 
 		@Override

@@ -9,6 +9,9 @@ public class MavenLauncherTest {
 	public void spoonMavenLauncherTest() {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.SOURCE);
+
+		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
+
 		assertEquals(10, launcher.getEnvironment().getSourceClasspath().length);
 		// 54 because of the sub folder
 		assertEquals(54, launcher.getModelBuilder().getInputSources().size());
