@@ -111,8 +111,6 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.printer.ElementPrinterHelper;
-import spoon.reflect.visitor.printer.ListPrinter;
-import spoon.reflect.visitor.printer.PrinterHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -1115,47 +1113,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		enterCtExpression(literal);
-		if (literal.getValue() == null) {
-			printer.write("null");
-		} else if (literal.getValue() instanceof Long) {
-			printer.write(literal.getValue() + "L");
-		} else if (literal.getValue() instanceof Float) {
-			printer.write(literal.getValue() + "F");
-		} else if (literal.getValue() instanceof Character) {
-			printer.write("'");
-
-			boolean mayContainsSpecialCharacter = true;
-
-			SourcePosition position = literal.getPosition();
-			if (position != null) {
-				// the size of the string in the source code, the -1 is the size of the ' or " in the source code
-				int stringLength = position.getSourceEnd() - position.getSourceStart() - 1;
-				// if the string in the source is not the same as the string in the literal, the string may contains special characters
-				mayContainsSpecialCharacter = stringLength != 1;
-			}
-			printer.writeCharLiteral((Character) literal.getValue(), mayContainsSpecialCharacter);
-
-			printer.write("'");
-		} else if (literal.getValue() instanceof String) {
-			printer.write('\"');
-
-			boolean mayContainsSpecialCharacters = true;
-
-			SourcePosition position = literal.getPosition();
-			if (position != null) {
-				// the size of the string in the source code, the -1 is the size of the ' or " in the source code
-				int stringLength = position.getSourceEnd() - position.getSourceStart() - 1;
-				// if the string in the source is not the same as the string in the literal, the string may contains special characters
-				mayContainsSpecialCharacters = ((String) literal.getValue()).length() != stringLength;
-			}
-			printer.writeStringLiteral((String) literal.getValue(), mayContainsSpecialCharacters);
-
-			printer.write('\"');
-		} else if (literal.getValue() instanceof Class) {
-			printer.write(((Class<?>) literal.getValue()).getName());
-		} else {
-			printer.write(literal.getValue().toString());
-		}
+		printer.write(LiteralHelper.getLiteralToken(literal));
 		exitCtExpression(literal);
 	}
 

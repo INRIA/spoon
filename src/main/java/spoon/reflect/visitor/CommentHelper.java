@@ -19,7 +19,6 @@ package spoon.reflect.visitor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.visitor.printer.PrinterHelper;
 
 import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.JAVADOC_START;
 import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.INLINE_COMMENT_START;

@@ -49,6 +49,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ListPrinter;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.PrintingContext.Writable;
 
 import java.util.ArrayList;
