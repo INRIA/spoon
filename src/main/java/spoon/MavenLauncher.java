@@ -277,7 +277,7 @@ public class MavenLauncher extends Launcher {
 				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
 					continue;
 				}
-				String fileName = dependency.getArtifactId() + "-" + version ;
+				String fileName = dependency.getArtifactId() + "-" + version;
 				// TODO: Check the scope of the dependency (local dependency is not handled)
 				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version);
 				File depFile = depPath.toFile();
