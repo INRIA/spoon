@@ -102,7 +102,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// dependencies
-		List<File> dependencies = model.getDependencies();
+		List<File> dependencies = model.getDependencies(false);
 		String[] classpath = new String[dependencies.size()];
 		for (int i = 0; i < dependencies.size(); i++) {
 			File file = dependencies.get(i);
@@ -241,7 +241,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the list of dependencies available in the local maven repository
 		 * @return the list of  dependencies
 		 */
-		public List<File> getDependencies() {
+		public List<File> getDependencies(boolean isLib) {
 			Set<File> output = new HashSet<>();
 
 			// add the parent has a dependency
@@ -277,6 +277,10 @@ public class MavenLauncher extends Launcher {
 				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
 					continue;
 				}
+				// ignore not transitive dependencies
+				if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
+					continue;
+				}
 				String fileName = dependency.getArtifactId() + "-" + version;
 				// TODO: Check the scope of the dependency (local dependency is not handled)
 				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version);
@@ -285,11 +289,14 @@ public class MavenLauncher extends Launcher {
 					File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
 					if (jarFile.exists()) {
 						output.add(jarFile);
+					} else {
+						// if the a dependency is not found, uses the no classpath mode
+						getEnvironment().setNoClasspath(true);
 					}
 
 					try {
 						InheritanceModel dependencyModel = readPOM(Paths.get(depPath.toString(), fileName + ".pom").toString(), null);
-						output.addAll(dependencyModel.getDependencies());
+						output.addAll(dependencyModel.getDependencies(true));
 					} catch (Exception ignore) {
 						// ignore the dependencies of the dependency
 					}
@@ -300,7 +307,7 @@ public class MavenLauncher extends Launcher {
 			}
 
 			for (InheritanceModel module : modules) {
-				output.addAll(module.getDependencies());
+				output.addAll(module.getDependencies(isLib));
 			}
 			return new ArrayList<>(output);
 		}

@@ -18,7 +18,7 @@ public class MavenLauncherTest {
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
-		assertEquals(21, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(14, launcher.getEnvironment().getSourceClasspath().length);
 		// 235 because of the sub folders of src/main/java and src/test/java
 		assertEquals(235, launcher.getModelBuilder().getInputSources().size());
 
@@ -31,7 +31,6 @@ public class MavenLauncherTest {
 	public void multiModulesProjectTest() {
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
-		assertEquals(112, launcher.getEnvironment().getSourceClasspath().length);
 		assertEquals(0, launcher.getModelBuilder().getInputSources().size());
 	}
 
