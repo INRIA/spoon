@@ -40,6 +40,7 @@ import java.util.Set;
  */
 public class MavenLauncher extends Launcher {
 	private String m2RepositoryPath;
+	private SOURCE_TYPE sourceType;
 
 	/**
 	 * The type of source to consider in the model
@@ -53,25 +54,30 @@ public class MavenLauncher extends Launcher {
 		ALL_SOURCE
 	}
 
-	public MavenLauncher(String projectRoot, SOURCE_TYPE sourceType) {
-		this(projectRoot, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType) {
+		this(mavenProject, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
 	}
 
 	/**
 	 *
-	 * @param projectRoot the path to the root of the project (the folder that contains the pom)
+	 * @param mavenProject the path to the root of the project
 	 * @param m2RepositoryPath the path to the m2repository
 	 */
-	public MavenLauncher(String projectRoot, String m2RepositoryPath, SOURCE_TYPE sourceType) {
+	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType) {
 		this.m2RepositoryPath = m2RepositoryPath;
+		this.sourceType = sourceType;
 
-		if (!new File(projectRoot).isDirectory()) {
-			throw new SpoonException(projectRoot + " has to be the root folder of the project the folder that contains the pom).");
+		File mavenProjectFile = new File(mavenProject);
+		if (!mavenProjectFile.exists()) {
+			throw new SpoonException(mavenProject + " does not exist.");
+		}
+		if (mavenProjectFile.isFile()) {
+			mavenProject = mavenProject.substring(0, mavenProject.length() - mavenProjectFile.getName().length() - 1);
 		}
 
 		InheritanceModel model;
 		try {
-			model = readPOM(projectRoot, null);
+			model = readPOM(mavenProject, null);
 		} catch (Exception e) {
 			throw new SpoonException("Unable to read the pom", e);
 		}
@@ -117,17 +123,22 @@ public class MavenLauncher extends Launcher {
 	 * @throws XmlPullParserException when the file is corrupted
 	 */
 	private InheritanceModel readPOM(String path, InheritanceModel parent) throws IOException, XmlPullParserException {
-		File pomFile = Paths.get(path, "pom.xml").toFile();
+		if (!path.endsWith(".xml") && !path.endsWith(".pom")) {
+			path = Paths.get(path, "pom.xml").toString();
+		}
+		File pomFile = new File(path);
 		if (!pomFile.exists()) {
 			return null;
 		}
 		MavenXpp3Reader pomReader = new MavenXpp3Reader();
-		Model model = pomReader.read(new FileReader(pomFile));
-		InheritanceModel inheritanceModel = new InheritanceModel(model, parent, new File(path));
-		for (String module : model.getModules()) {
-			inheritanceModel.addModule(readPOM(Paths.get(path, module).toString(), inheritanceModel));
+		try (FileReader reader = new FileReader(pomFile)) {
+			Model model = pomReader.read(reader);
+			InheritanceModel inheritanceModel = new InheritanceModel(model, parent, pomFile.getParentFile());
+			for (String module : model.getModules()) {
+				inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel));
+			}
+			return inheritanceModel;
 		}
-		return inheritanceModel;
 	}
 
 	class InheritanceModel {
@@ -238,6 +249,9 @@ public class MavenLauncher extends Launcher {
 			if (parent != null) {
 				String groupId = parent.getGroupId().replace(".", "/");
 				String version = extractVariable(parent.getVersion());
+				if (version.startsWith("[")) {
+					version = version.substring(1, version.indexOf(','));
+				}
 				String fileName = parent.getArtifactId() + "-" + version + ".jar";
 				Path depPath = Paths.get(m2RepositoryPath, groupId, parent.getArtifactId(), version, fileName);
 				File jar = depPath.toFile();
@@ -248,13 +262,37 @@ public class MavenLauncher extends Launcher {
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
 				String groupId = dependency.getGroupId().replace(".", "/");
+				if (dependency.getVersion() == null) {
+					continue;
+				}
+				// TODO: Handle range version
 				String version = extractVariable(dependency.getVersion());
-				String fileName = dependency.getArtifactId() + "-" + version + ".jar";
+				if (version.startsWith("[")) {
+					version = version.substring(1, version.indexOf(','));
+				}
+				if (dependency.isOptional()) {
+					continue;
+				}
+				// ignore test dependencies for app source code
+				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
+					continue;
+				}
+				String fileName = dependency.getArtifactId() + "-" + version ;
 				// TODO: Check the scope of the dependency (local dependency is not handled)
-				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version, fileName);
-				File jar = depPath.toFile();
-				if (jar.exists()) {
-					output.add(jar);
+				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version);
+				File depFile = depPath.toFile();
+				if (depFile.exists()) {
+					File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
+					if (jarFile.exists()) {
+						output.add(jarFile);
+					}
+
+					try {
+						InheritanceModel dependencyModel = readPOM(Paths.get(depPath.toString(), fileName + ".pom").toString(), null);
+						output.addAll(dependencyModel.getDependencies());
+					} catch (Exception ignore) {
+						// ignore the dependencies of the dependency
+					}
 				} else {
 					// if the a dependency is not found, uses the no classpath mode
 					getEnvironment().setNoClasspath(true);
