@@ -38,11 +38,11 @@ Snapshot version:
 
 ## Launcher
 
-The Spoon `Launcher` ([JavaDoc](/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of the project.
+The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of the project.
 
 ### Usage
 
-```Java
+```java
 Launcher launcher = new Launcher();
 launcher.addInputResource("<path_to_source>");
 launcher.getEnvironment().setAutoImports(true); // optional
@@ -56,13 +56,13 @@ CtModel model = launcher.getModel();
 
 ## MavenLauncher
 
-The Spoon `MavenLauncher` ([JavaDoc](/mvnsites/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of the project by inferring automatically the list of source folder and the dependencies from a Maven `pom.xml` file.
+The Spoon `MavenLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of the project by inferring automatically the list of source folder and the dependencies from a Maven `pom.xml` file.
 This Launcher simplify the creation of model on complex multi-module project.
-If you consider to only use `Processors` in your Spoon, consider to use the [Spoon Maven Plugin](/maven.html) which will do a better job to detect the dependencies.
+If you consider to only use `Processors` in your Spoon, consider to use the [Spoon Maven Plugin](http://spoon.gforge.inria.fr/maven.html) which will do a better job to detect the dependencies.
 
 ### Usage
 
-```Java
+```java
 MavenLauncher launcher = new MavenLauncher("<path_to_project>", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 launcher.buildModel();
 CtModel model = launcher.getModel();
