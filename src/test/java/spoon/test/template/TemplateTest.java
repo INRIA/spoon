@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
@@ -44,6 +45,7 @@ import spoon.test.template.testclasses.SimpleTemplate;
 import spoon.test.template.testclasses.SubStringTemplate;
 import spoon.test.template.testclasses.SubstituteLiteralTemplate;
 import spoon.test.template.testclasses.SubstituteRootTemplate;
+import spoon.test.template.testclasses.TypeReferenceClassAccessTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
 import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
@@ -62,6 +64,7 @@ import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
 import spoon.test.template.testclasses.types.AnIfaceModel;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -1013,5 +1016,30 @@ public class TemplateTest {
 
 			assertEquals("java.lang.System.out.println(((x) + (m_x)))", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
 		}
+	}
+
+	@Test
+	public void substituteTypeAccessReference() throws Exception {
+		//contract: the substitution of CtTypeAccess expression ignores actual type arguments if it have to
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/TypeReferenceClassAccessTemplate.java"));
+		String outputDir = "./target/spooned/test/template/testclasses";
+		spoon.setSourceOutputDirectory(outputDir);
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		//contract: String value is substituted in substring of literal, named element and reference
+		CtTypeReference<?> typeRef = factory.Type().createReference(TypeReferenceClassAccessTemplate.Example.class);
+		typeRef.addActualTypeArgument(factory.Type().DATE);
+		
+		final CtClass<?> result = (CtClass<?>) new TypeReferenceClassAccessTemplate(typeRef).apply(factory.Class().create("spoon.test.template.TypeReferenceClassAccess"));
+		spoon.prettyprint();
+		ModelUtils.canBeBuilt(outputDir, 8);
+		CtMethod<?> method = result.getMethodsByName("someMethod").get(0);
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getType().toString());
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getParameters().get(0).getType().toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.out", method.getBody().getStatement(0).toString());
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date> ret = new spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>()", method.getBody().getStatement(1).toString());
 	}
 }
