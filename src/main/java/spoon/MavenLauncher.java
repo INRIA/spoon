@@ -365,8 +365,8 @@ public class MavenLauncher extends Launcher {
 			if (javaVersion != null) {
 				return Integer.parseInt(extractVariable(javaVersion).substring(2));
 			}
-			// return the default java 7 version
-			return 7;
+			// return the current compliance level of spoon
+			return getEnvironment().getComplianceLevel();
 		}
 
 		@Override
