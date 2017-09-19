@@ -20,13 +20,16 @@ import org.apache.log4j.Level;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,6 +41,8 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	Factory factory;
 
 	Set<Class<? extends CtElement>> processedElementTypes = new HashSet<>();
+
+	Map<Class<? extends CtNamedElement>, Set<String>> acceptedElements = new HashMap<>();
 
 	/**
 	 * Empty constructor only for all processors (invoked by Spoon).
@@ -117,7 +122,40 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		this.initProperties(loadProperties());
 	}
 
+	private boolean isAnAcceptedElement(E candidate) {
+		if (candidate instanceof CtNamedElement) {
+			for (Class<? extends CtNamedElement> c : this.acceptedElements.keySet()) {
+				if (c.isAssignableFrom(candidate.getClass())) {
+					for (String s : this.acceptedElements.get(c)) {
+						if (((CtNamedElement) candidate).getSimpleName().contains(s)) {
+							return true;
+						}
+					}
+				} else {
+					CtNamedElement p = (CtNamedElement) candidate;
+
+					do {
+						p = (CtNamedElement) p.getParent(c);
+
+						if (p != null) {
+							for (String s : this.acceptedElements.get(c)) {
+								if (p.getSimpleName().contains(s)) {
+									return true;
+								}
+							}
+						}
+					} while (p != null);
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
 	public boolean isToBeProcessed(E candidate) {
+		if (this.acceptedElements.size() > 0) {
+			return this.isAnAcceptedElement(candidate);
+		}
 		return true;
 	}
 
@@ -153,5 +191,9 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	@Override
 	public void interrupt() {
 		throw new ProcessInterruption();
+	}
+
+	public void setAcceptedElements(Map<Class<? extends CtNamedElement>, Set<String>> acceptedElements) {
+		this.acceptedElements = acceptedElements;
 	}
 }
