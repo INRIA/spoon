@@ -294,10 +294,27 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
+	 * This method is called by {@link #scan(CtElement)} when entering a scanned element.
+	 * To be overridden to implement specific behavior.
+	 *
+	 * Same KISS design as for {@link CtScanner}.
+	 */
+	protected void enter(CtElement e) {
+	}
+
+	/**
+	 * This method is called by {@link #scan(CtElement)} when entering a scanned element.
+	 * To be overridden to implement specific behavior.
+	 */
+	protected void exit(CtElement e) {
+	}
+
+	/**
 	 * The generic scan method for an element.
 	 */
 	public DefaultJavaPrettyPrinter scan(CtElement e) {
 		if (e != null) {
+			enter(e);
 			context.elementStack.push(e);
 			if (env.isPreserveLineNumbers()) {
 				if (!(e instanceof CtNamedElement)) {
@@ -317,6 +334,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
 			}
 			context.elementStack.pop();
+			exit(e);
 		}
 		return this;
 	}
@@ -342,16 +360,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else if (ele instanceof CtReference) {
 			sb.append(":").append(((CtReference) ele).getSimpleName());
 		}
-	}
-
-	/**
-	 * The generic scan method for a reference.
-	 */
-	public DefaultJavaPrettyPrinter scan(CtReference ref) {
-		if (ref != null) {
-			ref.accept(this);
-		}
-		return this;
 	}
 
 	private boolean shouldSetBracket(CtExpression<?> e) {
