@@ -15,15 +15,22 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.test.processing.testclasses.counter.CounterProcessor;
 import spoon.test.processing.testclasses.CtClassProcessor;
 import spoon.test.processing.testclasses.CtInterfaceProcessor;
 import spoon.test.processing.testclasses.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -249,5 +256,72 @@ public class ProcessingTest {
 				assertFalse(interfaceProcessor.elements.contains(type));
 			}
 		}
+	}
+
+	@Test
+	public void testCallProcessorWithAcceptedElementsForClass() {
+		Launcher spoon = new Launcher();
+
+		spoon.addInputResource("./src/test/java/spoon/test/processing/testclasses");
+		CounterProcessor counterProcessor = new CounterProcessor();
+
+		Map<Class<? extends CtNamedElement>, Set<String>> acceptedElements = new HashMap<>();
+
+		Set<String> acceptedNames = new HashSet<>();
+		acceptedNames.add("Processor");
+		acceptedElements.put(CtClass.class, acceptedNames);
+
+		counterProcessor.setAcceptedElements(acceptedElements);
+		spoon.addProcessor(counterProcessor);
+
+		spoon.run();
+
+		assertEquals(5, counterProcessor.nbProcessed); // interface is ignored
+	}
+
+	@Test
+	public void testClassProcessorWithAcceptedElementsForPackage() {
+		Launcher spoon = new Launcher();
+
+		spoon.addInputResource("./src/test/java/spoon/test/processing/testclasses");
+		CounterProcessor counterProcessor = new CounterProcessor();
+
+		Map<Class<? extends CtNamedElement>, Set<String>> acceptedElements = new HashMap<>();
+
+		Set<String> acceptedNames = new HashSet<>();
+		acceptedNames.add("testclasses");
+		acceptedElements.put(CtPackage.class, acceptedNames);
+
+		counterProcessor.setAcceptedElements(acceptedElements);
+		spoon.addProcessor(counterProcessor);
+
+		spoon.run();
+
+		assertEquals(6, counterProcessor.nbProcessed); // everything is taken into account
+	}
+
+	@Test
+	public void testClassProcessorWithAcceptedElementsDifferentTypes() {
+		Launcher spoon = new Launcher();
+
+		spoon.addInputResource("./src/test/java/spoon/test/processing/testclasses");
+		CounterProcessor counterProcessor = new CounterProcessor();
+
+		Map<Class<? extends CtNamedElement>, Set<String>> acceptedElements = new HashMap<>();
+
+		Set<String> acceptedNames = new HashSet<>();
+		acceptedNames.add("Processor");
+		acceptedElements.put(CtInterface.class, acceptedNames);
+
+		acceptedNames = new HashSet<>();
+		acceptedNames.add("Type");
+		acceptedElements.put(CtClass.class, acceptedNames);
+
+		counterProcessor.setAcceptedElements(acceptedElements);
+		spoon.addProcessor(counterProcessor);
+
+		spoon.run();
+
+		assertEquals(3, counterProcessor.nbProcessed);
 	}
 }
