@@ -335,7 +335,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		/**
-		 * Get the source version of the project (default 7)
+		 * Get the source version of the project
 		 * @return the source version of the project
 		 */
 		public int getSourceVersion() {
