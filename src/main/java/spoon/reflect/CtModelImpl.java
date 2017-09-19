@@ -16,7 +16,6 @@
  */
 package spoon.reflect;
 
-import spoon.SpoonException;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
@@ -68,7 +67,7 @@ public class CtModelImpl implements CtModel {
 
 		@Override
 		public <T extends CtNamedElement> T setSimpleName(String name) {
-			if (name == null ) {
+			if (name == null) {
 				return (T) this;
 			}
 
