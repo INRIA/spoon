@@ -18,6 +18,7 @@ package spoon.reflect;
 
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -62,6 +63,19 @@ public class CtModelImpl implements CtModel {
 		@Override
 		public String getSimpleName() {
 			return super.getSimpleName();
+		}
+
+		@Override
+		public <T extends CtNamedElement> T setSimpleName(String name) {
+			if (name == null) {
+				return (T) this;
+			}
+
+			if (name.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
+				return super.setSimpleName(name);
+			}
+
+			return (T) this;
 		}
 
 		@Override

@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
+import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
@@ -12,10 +13,17 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.pkg.name.PackageTestClass;
+import spoon.test.pkg.testclasses.ElementProcessor;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -118,5 +126,95 @@ public class PackageTest {
 		launcher.buildModel();
 		launcher.prettyprint();
 		canBeBuilt("./target/spooned/packageAndTemplate/spoon/test/pkg/package-info.java", 8);
+	}
+
+	@Test
+	public void testRenamePackageAndPrettyPrint() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
+		spoon.buildModel();
+
+		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<CtPackage>(CtPackage.class, "spoon")).get(0);
+		ctPackage.setSimpleName("otherName");
+
+		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<CtClass>(CtClass.class, "Foo")).get(0);
+		assertEquals("otherName.test.pkg.testclasses.Foo", foo.getQualifiedName());
+
+		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
+		prettyPrinter.calculate(spoon.getFactory().CompilationUnit().create("./src/test/java/spoon/test/pkg/testclasses/Foo.java"), Collections.singletonList(foo));
+		String result = prettyPrinter.getResult();
+
+		assertTrue(result.contains("package otherName.test.pkg.testclasses;"));
+	}
+
+	@Test
+	public void testRenamePackageAndPrettyPrintNoclasspath() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<CtPackage>(CtPackage.class, "app")).get(0);
+		ctPackage.setSimpleName("otherName");
+
+		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<CtClass>(CtClass.class, "Test")).get(0);
+		assertEquals("otherName.Test", foo.getQualifiedName());
+
+		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
+		prettyPrinter.calculate(spoon.getFactory().CompilationUnit().create("./src/test/resources/noclasspath/app/Test.java"), Collections.singletonList(foo));
+		String result = prettyPrinter.getResult();
+
+		assertTrue(result.contains("package otherName;"));
+	}
+
+	@Test
+	public void testRenamePackageAndPrettyPrintWithProcessor() throws Exception {
+		String destPath = "./target/spoon-rename-processor";
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.addProcessor(new ElementProcessor());
+		spoon.setSourceOutputDirectory(destPath);
+		spoon.run();
+
+		String fileDir = destPath+"/newtest/Test.java";
+		File f = new File(fileDir);
+		assertTrue(f.exists());
+
+		BufferedReader reader = new BufferedReader(new FileReader(f));
+		assertTrue(reader.lines().anyMatch((s) -> {
+			return s.equals("package newtest;");
+		}));
+	}
+
+	@Test
+	public void testRenameRootPackage() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+		CtPackage rootPackage = spoon.getFactory().Package().getRootPackage();
+		String rootPackageName = rootPackage.getSimpleName();
+		rootPackage.setSimpleName("test");
+		assertEquals(rootPackageName, rootPackage.getSimpleName());
+	}
+
+	@Test
+	public void testRenameRootPackageWithNullOrEmpty() throws Exception {
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+		CtPackage rootPackage = spoon.getFactory().Package().getRootPackage();
+		String rootPackageName = rootPackage.getSimpleName();
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
+
+		rootPackage.setSimpleName("");
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
+
+		rootPackage.setSimpleName(null);
+		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME, rootPackageName);
 	}
 }
