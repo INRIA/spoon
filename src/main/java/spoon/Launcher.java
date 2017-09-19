@@ -60,6 +60,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
+
 /**
  * This class implements an integrated command-line launcher for processing
  * programs at compile-time using the JDT-based builder (Eclipse). It takes
@@ -72,8 +74,6 @@ public class Launcher implements SpoonAPI {
 	public static final String SPOONED_CLASSES = "spooned-classes";
 
 	public static final String OUTPUTDIR = "spooned";
-
-	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
 
 	private final Factory factory;
 
