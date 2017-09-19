@@ -21,15 +21,27 @@ public class MavenLauncherTest {
 		assertEquals(10, launcher.getEnvironment().getSourceClasspath().length);
 		// 235 because of the sub folders of src/main/java and src/test/java
 		assertEquals(235, launcher.getModelBuilder().getInputSources().size());
+
+		// specify the pom.xml
+		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
+	}
+
+	@Test
+	public void multiModulesProjectTest() {
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
+		assertEquals(112, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(0, launcher.getModelBuilder().getInputSources().size());
 	}
 
 	@Test(expected = SpoonException.class)
-	public void MavenLauncherOnFileTest() {
-		new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+	public void mavenLauncherOnANotExistingFileTest() {
+		new MavenLauncher("./pomm.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 	}
 
 	@Test(expected = SpoonException.class)
-	public void MavenLauncherOnDirectoryWithoutPomTest() {
+	public void mavenLauncherOnDirectoryWithoutPomTest() {
 		new MavenLauncher("./src", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 	}
 }
