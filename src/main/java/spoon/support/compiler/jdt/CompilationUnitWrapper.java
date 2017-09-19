@@ -32,7 +32,7 @@ class CompilationUnitWrapper extends CompilationUnit {
 		// char[] contents, String fileName, String encoding, String destinationPath, boolean ignoreOptionalProblems
 		super(null,
 				type.getSimpleName() + ".java",
-				"UTF-8",
+				type.getFactory().getEnvironment().getEncoding().displayName(),
 				type.getFactory().getEnvironment().getBinaryOutputDirectory(),
 				false);
 		this.type = type;
