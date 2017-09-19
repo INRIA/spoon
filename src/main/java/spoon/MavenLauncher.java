@@ -46,11 +46,11 @@ public class MavenLauncher extends Launcher {
 	 */
 	public enum SOURCE_TYPE {
 		// only the main code of the application
-		SOURCE,
+		APP_SOURCE,
 		// only the tests of the application
-		TEST,
+		TEST_SOURCE,
 		// all the sources
-		ALL
+		ALL_SOURCE
 	}
 
 	public MavenLauncher(String pomPatch, SOURCE_TYPE sourceType) {
@@ -79,16 +79,16 @@ public class MavenLauncher extends Launcher {
 			throw new SpoonException("Unable to create the model, pom not found?");
 		}
 
-		// source
-		if (sourceType == SOURCE_TYPE.SOURCE || sourceType == SOURCE_TYPE.ALL) {
+		// app source
+		if (SOURCE_TYPE.APP_SOURCE == sourceType || SOURCE_TYPE.ALL_SOURCE == sourceType) {
 			List<File> sourceDirectories = model.getSourceDirectories();
 			for (File sourceDirectory : sourceDirectories) {
 				this.addInputResource(sourceDirectory.getAbsolutePath());
 			}
 		}
 
-		// test
-		if (sourceType == SOURCE_TYPE.TEST || sourceType == SOURCE_TYPE.ALL) {
+		// test source
+		if (SOURCE_TYPE.TEST_SOURCE == sourceType || SOURCE_TYPE.ALL_SOURCE == sourceType) {
 			List<File> testSourceDirectories = model.getTestDirectories();
 			for (File sourceDirectory : testSourceDirectories) {
 				this.addInputResource(sourceDirectory.getAbsolutePath());
