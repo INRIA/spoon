@@ -73,6 +73,8 @@ public class Launcher implements SpoonAPI {
 
 	public static final String OUTPUTDIR = "spooned";
 
+	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
+
 	private final Factory factory;
 
 	private SpoonModelBuilder modelBuilder;
@@ -237,7 +239,7 @@ public class Launcher implements SpoonAPI {
 			opt2.setLongFlag("compliance");
 			opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6, 7 or 8).");
 			opt2.setStringParser(JSAP.INTEGER_PARSER);
-			opt2.setDefault("8");
+			opt2.setDefault(DEFAULT_CODE_COMPLIANCE_LEVEL+"");
 			jsap.registerParameter(opt2);
 
 			// compiler's encoding
