@@ -53,8 +53,8 @@ public class MavenLauncher extends Launcher {
 		ALL_SOURCE
 	}
 
-	public MavenLauncher(String pomPatch, SOURCE_TYPE sourceType) {
-		this(pomPatch, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
+	public MavenLauncher(String projectRoot, SOURCE_TYPE sourceType) {
+		this(projectRoot, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
 	}
 
 	/**
