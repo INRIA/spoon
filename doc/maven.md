@@ -4,38 +4,6 @@ tags: [usage]
 keywords: maven, central, usage, java, plugin
 ---
 
-## Dependency
-
-Stable version:
-
-```xml
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-core</artifactId>
-    <version>{{site.spoon_release}}</version>
-</dependency>
-```
-
-Snapshot version:
-
-```xml
-<dependencies>
-	<dependency>
-		<groupId>fr.inria.gforge.spoon</groupId>
-		<artifactId>spoon-core</artifactId>
-		<version>{{site.spoon_snapshot}}</version>
-	</dependency>
-</dependencies>
-<repositories>
-	<repository>
-		<id>gforge.inria.fr-snapshot</id>
-		<name>Maven Repository for Spoon Snapshot</name>
-		<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
-		<snapshots />
-	</repository>
-</repositories>
-```
-
 ## Plugin
 
 A Maven plugin allows easily launching Spoon when using Maven. This plugin is available in Maven Central 

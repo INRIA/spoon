@@ -4,14 +4,6 @@ tags: [usage]
 keywords: gradle, usage, java, plugin
 ---
 
-## Dependency
-
-```groovy
-compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
-```
-
-You may also have to add our repository, see below.
-
 
 ## Plugin
 
