@@ -58,6 +58,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
+
 	private FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
@@ -91,6 +93,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
 	private Charset encoding = Charset.defaultCharset();
+
+	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -306,7 +310,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setVerbose(boolean verbose) {
 	}
 
-	int complianceLevel = 7;
+
 
 	public int getComplianceLevel() {
 		return complianceLevel;
