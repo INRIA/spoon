@@ -72,10 +72,7 @@ public class MavenLauncher extends Launcher {
 		if (!mavenProjectFile.exists()) {
 			throw new SpoonException(mavenProject + " does not exist.");
 		}
-		if (mavenProjectFile.isFile()) {
-			mavenProject = mavenProject.substring(0, mavenProject.length() - mavenProjectFile.getName().length() - 1);
-		}
-
+		
 		InheritanceModel model;
 		try {
 			model = readPOM(mavenProject, null);
