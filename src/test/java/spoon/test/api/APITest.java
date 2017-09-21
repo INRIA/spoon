@@ -198,15 +198,16 @@ public class APITest {
 
 	@Test
 	public void testPrintNotAllSourcesWithFilter() throws Exception {
+		// contract: setOutputFilter can take an arbitrary filter
 		final File target = new File("./target/print-not-all/default");
 		final SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/main/java");
+		launcher.addInputResource("./src/main/java/spoon/template/");
 		launcher.setSourceOutputDirectory(target);
 		launcher.setOutputFilter(new AbstractFilter<CtType<?>>(CtType.class) {
 			@Override
 			public boolean matches(CtType<?> element) {
-				return "spoon.Launcher".equals(element.getQualifiedName())
+				return "spoon.template.Parameter".equals(element.getQualifiedName())
 						|| "spoon.template.AbstractTemplate".equals(element.getQualifiedName());
 			}
 		});
@@ -217,17 +218,18 @@ public class APITest {
 
 		assertEquals(2, filesName.size());
 		assertEquals("AbstractTemplate.java", filesName.get(0));
-		assertEquals("Launcher.java", filesName.get(1));
+		assertEquals("Parameter.java", filesName.get(1));
 	}
 
 	@Test
 	public void testPrintNotAllSourcesWithNames() throws Exception {
+		// contract: setOutputFilter can take a list of fully-qualified classes to be pretty-printed
 		final File target = new File("./target/print-not-all/array");
 		final SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/main/java");
+		launcher.addInputResource("./src/main/java/spoon/template/");
 		launcher.setSourceOutputDirectory(target);
-		launcher.setOutputFilter("spoon.Launcher", "spoon.template.AbstractTemplate");
+		launcher.setOutputFilter("spoon.template.Parameter", "spoon.template.AbstractTemplate");
 		launcher.run();
 
 		List<File> list = new ArrayList<>(FileUtils.listFiles(target, new String[] {"java"}, true));
@@ -235,7 +237,7 @@ public class APITest {
 
 		assertEquals(2, filesName.size());
 		assertEquals("AbstractTemplate.java", filesName.get(0));
-		assertEquals("Launcher.java", filesName.get(1));
+		assertEquals("Parameter.java", filesName.get(1));
 	}
 
 	@Test
