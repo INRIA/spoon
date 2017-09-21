@@ -297,7 +297,7 @@ public class PrinterHelper {
 	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
 	 * before printing of each item.
 	 */
-	public ListPrinter createListPrinter(String start, String next, String end) {
+	ListPrinter createListPrinter(String start, String next, String end) {
 		return new ListPrinter(this, start, next, end);
 	}
 
