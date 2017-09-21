@@ -193,14 +193,15 @@ public class CompilationTest {
 			}
 		};
 
-		launcher.addInputResource("./src/test/java");
+		launcher.addInputResource("./src/test/java/spoon/test/imports");
 		launcher.buildModel();
-
+		int n=0;
 		// we indeed only have types declared in a file called *Foo*
 		for (CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
-
+			n++;
 			assertTrue(t.getPosition().getFile().getAbsolutePath().contains("Foo"));
 		}
+		assertTrue(n >= 2);
 
 	}
 
@@ -231,13 +232,16 @@ public class CompilationTest {
 			}
 		};
 
-		launcher.addInputResource("./src/test/java");
+		launcher.addInputResource("./src/test/java/spoon/test");
 		launcher.buildModel();
 
 		// we indeed only have types declared in a file in package reference
+		int n=0;
 		for (CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
+			n++;
 			assertTrue(t.getQualifiedName().contains("reference"));
 		}
+		assertTrue(n >= 2);
 
 	}
 
