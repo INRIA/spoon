@@ -19,7 +19,7 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.visitor.processors.CheckVisitorProcessor;
+import spoon.reflect.visitor.processors.CheckVisitorTestProcessor;
 
 public class CtVisitorTest {
 	@Test
@@ -28,7 +28,7 @@ public class CtVisitorTest {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addProcessor(new CheckVisitorProcessor(CtVisitor.class).withVisitors());
+		launcher.addProcessor(new CheckVisitorTestProcessor(CtVisitor.class).withVisitors());
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
