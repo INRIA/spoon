@@ -25,7 +25,7 @@ import java.io.Closeable;
  * If there is one item in the list then it prints `start`, item and then `end`<br>
  * If there is more then one items in the list then it prints `start`, items separated by `next` and then `end`
  */
-public class ListPrinter implements Closeable {
+class ListPrinter implements Closeable {
 
 	private final PrinterHelper printerHelper;
 	private final String next;
