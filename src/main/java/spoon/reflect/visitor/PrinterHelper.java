@@ -229,6 +229,7 @@ public class PrinterHelper {
 	/**
 	 * Write a pre unary operator.
 	 */
+	@Deprecated
 	public void preWriteUnaryOperator(UnaryOperatorKind o) {
 		if (OperatorHelper.isPrefixOperator(o)) {
 			write(OperatorHelper.getOperatorText(o));
@@ -238,6 +239,7 @@ public class PrinterHelper {
 	/**
 	 * Write a post unary operator.
 	 */
+	@Deprecated
 	public void postWriteUnaryOperator(UnaryOperatorKind o) {
 		if (OperatorHelper.isSufixOperator(o)) {
 			write(OperatorHelper.getOperatorText(o));
@@ -247,17 +249,20 @@ public class PrinterHelper {
 	/**
 	 * Writes a binary operator.
 	 */
+	@Deprecated
 	public PrinterHelper writeOperator(BinaryOperatorKind o) {
 		write(OperatorHelper.getOperatorText(o));
 		return this;
 	}
 
+	@Deprecated
 	public void writeCharLiteral(Character c, boolean mayContainsSpecialCharacter) {
 		StringBuilder sb = new StringBuilder(10);
 		LiteralHelper.appendCharLiteral(sb, c, mayContainsSpecialCharacter);
 		write(sb.toString());
 	}
 
+	@Deprecated
 	public void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
 		write(LiteralHelper.getStringLiteral(value, mayContainsSpecialCharacter));
 	}

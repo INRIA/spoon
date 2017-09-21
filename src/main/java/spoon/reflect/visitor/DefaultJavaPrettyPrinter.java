@@ -72,6 +72,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -478,7 +479,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		enterCtExpression(operator);
 		scan(operator.getLeftHandOperand());
-		printer.write(" ").writeOperator(operator.getKind()).write(" ");
+		printer.write(" ");
+		printer.write(OperatorHelper.getOperatorText(operator.getKind()));
+		printer.write(" ");
 		scan(operator.getRightHandOperand());
 		exitCtExpression(operator);
 	}
@@ -557,11 +560,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" catch (");
 		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
 		if (parameter.getMultiTypes().size() > 0) {
+			try (ListPrinter lp = printer.createListPrinter(null, " | ", null)) {
 			for (int i = 0; i < parameter.getMultiTypes().size(); i++) {
-				CtTypeReference<?> type = parameter.getMultiTypes().get(i);
-				scan(type);
-				if (i < parameter.getMultiTypes().size() - 1) {
-					printer.write(" | ");
+					lp.printSeparatorIfAppropriate();
+					CtTypeReference<?> type = parameter.getMultiTypes().get(i);
+					scan(type);
 				}
 			}
 			printer.write(" " + parameter.getSimpleName());
@@ -1348,7 +1351,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtLambda(CtLambda<T> lambda) {
 		enterCtExpression(lambda);
 
-		try (ListPrinter lp = printer.createListPrinter("(", ",", ") -> ")) {
+		try (ListPrinter lp = printer.createListPrinter("(", ",", ")")) {
 			if (lambda.getParameters().size() > 0) {
 				for (CtParameter<?> parameter : lambda.getParameters()) {
 					lp.printSeparatorIfAppropriate();
@@ -1356,6 +1359,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 		}
+		printer.write(' ');
+		printer.write("->");
+		printer.write(' ');
 
 		if (lambda.getBody() != null) {
 			scan(lambda.getBody());
@@ -1384,7 +1390,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(assignment);
 		scan(assignment.getAssigned());
 		printer.write(" ");
-		printer.writeOperator(assignment.getKind());
+		printer.write(OperatorHelper.getOperatorText(assignment.getKind()));
 		printer.write("= ");
 		scan(assignment.getAssignment());
 		exitCtExpression(assignment);
@@ -1659,9 +1665,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 		enterCtStatement(operator);
 		enterCtExpression(operator);
-		printer.preWriteUnaryOperator(operator.getKind());
+		UnaryOperatorKind op = operator.getKind();
+		if (OperatorHelper.isPrefixOperator(op)) {
+			printer.write(OperatorHelper.getOperatorText(op));
+		}
 		scan(operator.getOperand());
-		printer.postWriteUnaryOperator(operator.getKind());
+		if (OperatorHelper.isSufixOperator(op)) {
+			printer.write(OperatorHelper.getOperatorText(op));
+		}
 		exitCtExpression(operator);
 	}
 
