@@ -6,7 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.ast.IntercessionScanner;
+import spoon.test.intercession.IntercessionScanner;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;

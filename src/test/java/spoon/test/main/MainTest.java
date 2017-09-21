@@ -331,6 +331,11 @@ public class MainTest {
 		});
 
 		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
+
+		// contract: all test classes, as well as template/processors/etc have "test" in their fully qualified names for sake of clarity
+		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
+			assertTrue(t.getQualifiedName() + " is not clearly a test class", t.getQualifiedName().matches("(?i:.*test.*)"));
+		}
 	}
 
 	@Test

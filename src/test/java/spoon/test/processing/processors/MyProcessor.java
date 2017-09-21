@@ -15,7 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package spoon.processing.processors;
+package spoon.test.processing.processors;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtElement;
