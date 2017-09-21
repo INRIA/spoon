@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class LauncherTest {
@@ -90,6 +92,19 @@ public class LauncherTest {
 		} finally {
 			System.setProperty("user.dir", oldUserDir);
 		}
+	}
+
+
+	@Test
+	public void testLLauncherBuildModelReturnAModel() throws Exception {
+		// contract: Launcher#buildModel should return a consistent CtModel
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/spoon/test/api/Foo.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		assertNotNull(model);
+
+		assertEquals(2, model.getAllTypes().size());
 	}
 
 }

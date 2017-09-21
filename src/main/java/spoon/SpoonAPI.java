@@ -103,7 +103,7 @@ public interface SpoonAPI {
 	/**
 	 * Builds the model
 	 */
-	void buildModel();
+	CtModel buildModel();
 
 	/**
 	 * Processes the model with the processors given previously with {@link #addProcessor(String)}

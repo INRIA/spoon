@@ -702,10 +702,11 @@ public class Launcher implements SpoonAPI {
 	};
 
 	@Override
-	public void buildModel() {
+	public CtModel buildModel() {
 		long tstart = System.currentTimeMillis();
 		modelBuilder.build();
 		getEnvironment().debugMessage("model built in " + (System.currentTimeMillis() - tstart));
+		return modelBuilder.getFactory().getModel();
 	}
 
 	@Override
