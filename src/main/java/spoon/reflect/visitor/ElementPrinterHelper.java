@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer;
+package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtBlock;
@@ -48,9 +48,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.ListPrinter;
-import spoon.reflect.visitor.PrinterHelper;
+import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.PrintingContext.Writable;
 
 import java.util.ArrayList;
