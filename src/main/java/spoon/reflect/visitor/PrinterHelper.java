@@ -17,8 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 
@@ -224,47 +222,6 @@ public class PrinterHelper {
 
 	public void putLineNumberMapping(int valueLine) {
 		lineNumberMapping.put(this.line, valueLine);
-	}
-
-	/**
-	 * Write a pre unary operator.
-	 */
-	@Deprecated
-	public void preWriteUnaryOperator(UnaryOperatorKind o) {
-		if (OperatorHelper.isPrefixOperator(o)) {
-			write(OperatorHelper.getOperatorText(o));
-		}
-	}
-
-	/**
-	 * Write a post unary operator.
-	 */
-	@Deprecated
-	public void postWriteUnaryOperator(UnaryOperatorKind o) {
-		if (OperatorHelper.isSufixOperator(o)) {
-			write(OperatorHelper.getOperatorText(o));
-		}
-	}
-
-	/**
-	 * Writes a binary operator.
-	 */
-	@Deprecated
-	public PrinterHelper writeOperator(BinaryOperatorKind o) {
-		write(OperatorHelper.getOperatorText(o));
-		return this;
-	}
-
-	@Deprecated
-	public void writeCharLiteral(Character c, boolean mayContainsSpecialCharacter) {
-		StringBuilder sb = new StringBuilder(10);
-		LiteralHelper.appendCharLiteral(sb, c, mayContainsSpecialCharacter);
-		write(sb.toString());
-	}
-
-	@Deprecated
-	public void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
-		write(LiteralHelper.getStringLiteral(value, mayContainsSpecialCharacter));
 	}
 
 	public Map<Integer, Integer> getLineNumberMapping() {
