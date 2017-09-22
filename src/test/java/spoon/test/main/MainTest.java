@@ -76,6 +76,7 @@ public class MainTest {
 		checkShadow(launcher.getFactory().Package().getRootPackage());
 
 		checkParentConsistency(launcher.getFactory().Package().getRootPackage());
+
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
