@@ -5,6 +5,14 @@ keywords: papers
 
 # Articles 
 
+Long, Fan, Peter Amidon, and Martin Rinard. "[Automatic inference of code transforms for patch generation.](http://people.csail.mit.edu/rinard/paper/fse17.genesis.pdf)" Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering, ESEC/FSE. Vol. 2017. 2017.
+
+Feist, Michael D., et al. "[Visualizing Project Evolution through Abstract Syntax Tree Analysis.](http://softwareprocess.es/pubs/feist2016VISSOFT-syntax-tree.pdf)" Software Visualization (VISSOFT), 2016 IEEE Working Conference on. IEEE, 2016.
+
+Carette, Antonin, et al. "[Investigating the energy impact of android smells.](https://hal.inria.fr/hal-01403485/document)" Software Analysis, Evolution and Reengineering (SANER), 2017 IEEE 24th International Conference on. IEEE, 2017.
+
+Lelli, Valeria, et al. "[Automatic detection of GUI design smells: The case of blob listener.](https://hal-centralesupelec.archives-ouvertes.fr/hal-01308625/document)" Proceedings of the 8th ACM SIGCHI Symposium on Engineering Interactive Computing Systems. ACM, 2016.
+
 [Partitioners Track: Generating Security Vulnerabilities in
 Source Code](https://pdfs.semanticscholar.org/8805/3bf61a22821f25e8ce1f8b446330c6b4f586.pdf) (Felix Schuckert), In Sicherheit 2016. 
 
