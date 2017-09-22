@@ -25,12 +25,10 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.reflect.visitor.processors.CheckScannerProcessor;
+import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 import spoon.test.SpoonTestHelpers;
 
 import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,7 +53,7 @@ public class CtScannerTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 		launcher.buildModel();
 
-		launcher.getModel().processWith(new CheckScannerProcessor());
+		launcher.getModel().processWith(new CheckScannerTestProcessor());
 	}
 
 	class SimpleSignature extends CtScanner {

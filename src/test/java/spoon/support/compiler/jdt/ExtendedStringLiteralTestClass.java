@@ -1,6 +1,6 @@
 package spoon.support.compiler.jdt;
 
-public class ExtendedStringLiteralClass {
+public class ExtendedStringLiteralTestClass {
 
 	final public static String extendedStringLiteral = "hello "+"world!";
 	

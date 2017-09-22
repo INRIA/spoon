@@ -30,7 +30,7 @@ import spoon.reflect.visitor.CtVisitor;
 import java.util.Arrays;
 import java.util.List;
 
-public class CheckScannerProcessor extends AbstractProcessor<CtClass<?>> {
+public class CheckScannerTestProcessor extends AbstractProcessor<CtClass<?>> {
 	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl");
 
 	@Override

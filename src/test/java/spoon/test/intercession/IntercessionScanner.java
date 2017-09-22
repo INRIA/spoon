@@ -1,4 +1,4 @@
-package spoon.reflect.ast;
+package spoon.test.intercession;
 
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtThrow;

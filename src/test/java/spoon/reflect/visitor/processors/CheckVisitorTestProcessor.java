@@ -33,13 +33,13 @@ import java.util.List;
  * @param <T>
  * 		Visitor to analyse.
  */
-public class CheckVisitorProcessor<T extends CtVisitor> extends AbstractProcessor<CtClass<?>> {
+public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProcessor<CtClass<?>> {
 	private Class<T> visitor;
 	private final List<String> excludingClasses = Collections.singletonList("CompilationUnitVirtualImpl");
 	private boolean hasScanners;
 	private boolean hasVisitors;
 
-	public CheckVisitorProcessor(Class<T> visitor) {
+	public CheckVisitorTestProcessor(Class<T> visitor) {
 		this.visitor = visitor;
 	}
 
@@ -67,12 +67,12 @@ public class CheckVisitorProcessor<T extends CtVisitor> extends AbstractProcesso
 		}
 	}
 
-	public CheckVisitorProcessor withScanners() {
+	public CheckVisitorTestProcessor withScanners() {
 		hasScanners = true;
 		return this;
 	}
 
-	public CheckVisitorProcessor withVisitors() {
+	public CheckVisitorTestProcessor withVisitors() {
 		hasVisitors = true;
 		return this;
 	}
