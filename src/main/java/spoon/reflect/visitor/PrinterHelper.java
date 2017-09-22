@@ -17,8 +17,6 @@
 package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 
@@ -226,42 +224,6 @@ public class PrinterHelper {
 		lineNumberMapping.put(this.line, valueLine);
 	}
 
-	/**
-	 * Write a pre unary operator.
-	 */
-	public void preWriteUnaryOperator(UnaryOperatorKind o) {
-		if (OperatorHelper.isPrefixOperator(o)) {
-			write(OperatorHelper.getOperatorText(o));
-		}
-	}
-
-	/**
-	 * Write a post unary operator.
-	 */
-	public void postWriteUnaryOperator(UnaryOperatorKind o) {
-		if (OperatorHelper.isSufixOperator(o)) {
-			write(OperatorHelper.getOperatorText(o));
-		}
-	}
-
-	/**
-	 * Writes a binary operator.
-	 */
-	public PrinterHelper writeOperator(BinaryOperatorKind o) {
-		write(OperatorHelper.getOperatorText(o));
-		return this;
-	}
-
-	public void writeCharLiteral(Character c, boolean mayContainsSpecialCharacter) {
-		StringBuilder sb = new StringBuilder(10);
-		LiteralHelper.appendCharLiteral(sb, c, mayContainsSpecialCharacter);
-		write(sb.toString());
-	}
-
-	public void writeStringLiteral(String value, boolean mayContainsSpecialCharacter) {
-		write(LiteralHelper.getStringLiteral(value, mayContainsSpecialCharacter));
-	}
-
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return Collections.unmodifiableMap(lineNumberMapping);
 	}
@@ -292,7 +254,7 @@ public class PrinterHelper {
 	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
 	 * before printing of each item.
 	 */
-	public ListPrinter createListPrinter(String start, String next, String end) {
+	ListPrinter createListPrinter(String start, String next, String end) {
 		return new ListPrinter(this, start, next, end);
 	}
 
