@@ -5,6 +5,8 @@ keywords: papers
 
 # Articles 
 
+Durieux, Thomas, et al. "[Dynamic patch generation for null pointer exceptions using metaprogramming.](https://hal.archives-ouvertes.fr/hal-01419861/document)" Software Analysis, Evolution and Reengineering (SANER), 2017 IEEE 24th International Conference on. IEEE, 2017.
+
 Long, Fan, Peter Amidon, and Martin Rinard. "[Automatic inference of code transforms for patch generation.](http://people.csail.mit.edu/rinard/paper/fse17.genesis.pdf)" Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering, ESEC/FSE. Vol. 2017. 2017.
 
 Feist, Michael D., et al. "[Visualizing Project Evolution through Abstract Syntax Tree Analysis.](http://softwareprocess.es/pubs/feist2016VISSOFT-syntax-tree.pdf)" Software Visualization (VISSOFT), 2016 IEEE Working Conference on. IEEE, 2016.
