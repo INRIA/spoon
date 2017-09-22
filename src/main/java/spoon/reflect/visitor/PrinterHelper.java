@@ -18,6 +18,7 @@ package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
@@ -180,7 +181,7 @@ public class PrinterHelper {
 	}
 
 	public PrinterHelper adjustStartPosition(CtElement e) {
-		if (e.getPosition() != null && !e.isImplicit()) {
+		if (e.getPosition() != null && !e.isImplicit() && !(e.getPosition() instanceof NoSourcePosition)) {
 			// we should add some lines
 			while (line < e.getPosition().getLine()) {
 				writeln();
