@@ -16,14 +16,14 @@
  */
 package spoon.support.util;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.support.comparator.SignatureComparator;
+
 import java.util.Collection;
 import java.util.TreeSet;
 
-import spoon.reflect.declaration.CtExecutable;
-import spoon.support.comparator.SignatureComparator;
-
 /** maintains unicity with method signatures */
-public class SignatureBasedSortedSet<E extends CtExecutable<?>> extends TreeSet<E> {
+public class SignatureBasedSortedSet<E extends CtElement> extends TreeSet<E> {
 
 	private static final long serialVersionUID = 1L;
 

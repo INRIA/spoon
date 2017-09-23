@@ -18,7 +18,6 @@ package spoon.support.visitor;
 
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -38,6 +37,8 @@ public class SignaturePrinter extends CtScanner {
 
 	private final StringBuffer signature = new StringBuffer();
 
+	public SignaturePrinter() { }
+
 	public String getSignature() {
 		return signature.toString();
 	}
@@ -50,11 +51,16 @@ public class SignaturePrinter extends CtScanner {
 
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-		scan(reference.getDeclaringType());
+		if (reference.getType() != null && !reference.isConstructor()) {
+			reference.getType().accept(this);
+			write(" ");
+		}
+		writeNameAndParameters(reference);
+	}
 
-		write(CtExecutable.EXECUTABLE_SEPARATOR);
+	public <T> void writeNameAndParameters(CtExecutableReference<T> reference) {
 		if (reference.isConstructor()) {
-			write(reference.getDeclaringType().getSimpleName());
+			write(reference.getDeclaringType().getQualifiedName());
 		} else {
 			write(reference.getSimpleName());
 		}
@@ -66,11 +72,10 @@ public class SignaturePrinter extends CtScanner {
 				} else {
 					write(CtExecutableReference.UNKNOWN_TYPE);
 				}
-				write(", ");
+				write(",");
 			}
 			if (reference.getParameters().size() > 0) {
 				clearLast(); // ","
-				clearLast(); // space
 			}
 		}
 		write(")");
@@ -98,9 +103,8 @@ public class SignaturePrinter extends CtScanner {
 	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
 		for (CtTypeReference<?> bound : reference.getBounds()) {
 			scan(bound);
-			write(", ");
+			write(",");
 		}
-		clearLast();
 		clearLast();
 	}
 

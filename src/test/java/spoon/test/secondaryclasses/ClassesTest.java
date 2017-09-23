@@ -93,7 +93,7 @@ public class ClassesTest {
 
 		assertNotNull(y.getType().getDeclaration());
 
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2#2()", y.getExecutable().toString());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2()", y.getExecutable().toString());
 
 		assertEquals(type.getFactory().Type().createReference(I.class), y.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0])[0]);
 

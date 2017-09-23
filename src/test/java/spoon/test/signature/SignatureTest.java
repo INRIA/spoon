@@ -302,10 +302,10 @@ public class SignatureTest {
 				return "addField".equals(reference.getSimpleName()) && super.matches(reference);
 			}
 		});
-		assertEquals("#addField(<unknown>, <unknown>)", references.get(0).getSignature());
-		assertEquals("#addField(<unknown>, org.argouml.uml.ui.UMLComboBoxNavigator)", references.get(1).getSignature());
+		assertEquals("addField(<unknown>,<unknown>)", references.get(0).getSignature());
+		assertEquals("addField(<unknown>,org.argouml.uml.ui.UMLComboBoxNavigator)", references.get(1).getSignature());
 		for (CtExecutableReference reference : references) {
-			assertNotEquals("#addField(null, null)", reference.getSignature());
+			assertNotEquals("addField(null,null)", reference.getSignature());
 		}
 	}
 

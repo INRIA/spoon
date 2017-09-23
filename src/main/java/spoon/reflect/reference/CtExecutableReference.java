@@ -147,7 +147,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	boolean isFinal();
 
 	/**
-	 * Gets the signature of this method or constructor as specified by chapter "8.4.2 Method Signature" of the Java specification
+	 * Gets the signature of this method or constructor, as explained in {@link spoon.reflect.declaration.CtMethod#getSignature()}.
 	 */
 	String getSignature();
 
