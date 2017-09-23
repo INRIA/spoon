@@ -582,38 +582,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.8</version>
-        <configuration>
-          <linkXRef>true</linkXRef>
-          <sourceEncoding>utf-8</sourceEncoding>
-          <minimumTokens>100</minimumTokens>
-          <targetJdk>${java.src.version}</targetJdk>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>pmd</report>
-              <report>cpd</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <tags>
-            <tag>TODO</tag>
-            <tag>FIXME</tag>
-            <tag>@todo</tag>
-            <tag>@deprecated</tag>
-          </tags>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <quiet>true</quiet>
