@@ -4,10 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
@@ -104,5 +106,16 @@ public class LinesTest {
 			assertEquals(e.toString() + " not handled", e.getPosition().getEndLine(), el2.getPosition().getEndLine());
 		}
 		assertTrue(n>20);
+	}
+
+	@Test
+	public void testCompileWhenUsingLinesArgument() {
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--compile", "--with-imports", "--lines"});
+		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/FooCasper.java");
+		launcher.run();
+
+		List<CtType> fooCasperClass = launcher.getModel().getElements(new NamedElementFilter<>(CtType.class, "FooCasper"));
+		assertEquals(1, fooCasperClass.size());
 	}
 }
