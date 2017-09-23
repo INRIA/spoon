@@ -251,4 +251,15 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	public CtTypeParameterReference clone() {
 		return (CtTypeParameterReference) super.clone();
 	}
+
+	@Override
+	public boolean isGeneric() {
+		if (getDeclaration() instanceof CtTypeParameter) {
+			return true;
+		}
+		if (getBoundingType() != null && getBoundingType().isGeneric()) {
+			return true;
+		}
+		return false;
+	}
 }

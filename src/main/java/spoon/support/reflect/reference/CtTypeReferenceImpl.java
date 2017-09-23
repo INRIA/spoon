@@ -824,6 +824,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return null;
 	}
 
+	@Override
+	public boolean isGeneric() {
+		if (getDeclaration() instanceof CtTypeParameter) {
+			return true;
+		}
+		for (CtTypeReference ref : getActualTypeArguments()) {
+			if (ref.isGeneric()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private CtTypeParameter findTypeParamDeclarationByPosition(CtFormalTypeDeclarer type, int position) {
 		return type.getFormalCtTypeParameters().get(position);
 	}

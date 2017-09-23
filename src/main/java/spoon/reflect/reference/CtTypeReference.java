@@ -210,4 +210,11 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@DerivedProperty
 	CtTypeParameter getTypeParameterDeclaration();
 
+	/**
+	 * Returns true if it refers to at least one type parameter (ie not a concrete class). It can refer to it directly (eg T), or indirectly (eg List&lt;T&gt;, or Set&lt;List&lt;T&gt;&gt;).
+	 */
+	@DerivedProperty
+	boolean isGeneric();
+
+
 }
