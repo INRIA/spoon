@@ -17,15 +17,19 @@
 package spoon.reflect.visitor.chain;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CtScannerFunction;
+import spoon.support.util.RtHelper;
 
 /**
  * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
@@ -163,12 +167,16 @@ public class CtQueryImpl implements CtQuery {
 
 	@Override
 	public <R extends CtElement> CtQueryImpl select(final Filter<R> filter) {
-		map(new CtFunction<R, Boolean>() {
+		CtFunction fnc = new CtFunction<R, Boolean>() {
 			@Override
 			public Boolean apply(R input) {
 				return filter.matches(input);
 			}
-		});
+		};
+		FunctionWrapper fw = new FunctionWrapper(fnc);
+		//set the expected type by real filter and not by helper wrapper above
+		fw.onCallbackSet(fnc.getClass().getName(), "apply", filter.getClass(), "matches", 1, 0);
+		addStep(fw);
 		stepFailurePolicy(QueryFailurePolicy.IGNORE);
 		return this;
 	}
@@ -254,22 +262,6 @@ public class CtQueryImpl implements CtQuery {
 		return logging;
 	}
 
-	/**
-	 * Is used to log that invocation was not processed
-	 * @param step the step which thrown CCE
-	 * @param e
-	 * @param parameters
-	 */
-	private void onClassCastException(AbstractStep step, ClassCastException e, Object... parameters) {
-		if (step.isFailOnCCE()) {
-			throw new SpoonException(getStepDescription(step, e.getMessage(), parameters), e);
-		} else if (Launcher.LOGGER.isTraceEnabled()) {
-			//log expected CCE ... there might be some unexpected too!
-			Launcher.LOGGER.trace(e);
-		}
-		log(step, e.getMessage(), parameters);
-	}
-
 	private void log(AbstractStep step, String message, Object... parameters) {
 		if (isLogging() && Launcher.LOGGER.isInfoEnabled()) {
 			Launcher.LOGGER.info(getStepDescription(step, message, parameters));
@@ -298,6 +290,38 @@ public class CtQueryImpl implements CtQuery {
 		String name;
 		QueryFailurePolicy localFailurePolicy = null;
 		CtConsumer<Object> nextStep;
+		Class<?> expectedClass;
+		String cceStacktraceClass;
+		String cceStacktraceMethodName;
+
+		@Override
+		public final void accept(Object input) {
+			if (input == null || isTerminated()) {
+				return;
+			}
+			if (isAcceptableType(input) == false) {
+				return;
+			}
+			Object result;
+			try {
+				result = _accept(input);
+			} catch (ClassCastException e) {
+				onClassCastException(e, getErrorMessage(), input);
+				return;
+			}
+			if (result == null || isTerminated()) {
+				return;
+			}
+			handleResult(result, input);
+		}
+
+		protected abstract Object _accept(Object input);
+		protected void handleResult(Object result, Object input) {
+		}
+
+		protected String getErrorMessage() {
+			return null;
+		}
 
 		/**
 		 * @return name of this Step - for debugging purposes
@@ -325,38 +349,128 @@ public class CtQueryImpl implements CtQuery {
 		private void setLocalFailurePolicy(QueryFailurePolicy localFailurePolicy) {
 			this.localFailurePolicy = localFailurePolicy;
 		}
+
+		/**
+		 * check whether `input` can be used to call a function.
+		 * @param input the to be checked value
+		 * @return true if it can be used or if we do not know that yet
+		 */
+		protected boolean isAcceptableType(Object input) {
+			if (isFailOnCCE()) {
+				//do not check type if it has to fail on cce
+				return true;
+			}
+			if (expectedClass != null && expectedClass.isAssignableFrom(input.getClass()) == false) {
+				log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
+				return false;
+			}
+			return true;
+		}
+
+		/**
+		 * Sets up type checking following the type of input parameter of callback method
+		 * @param stackClass - name of class of method in the stacktrace, if ClassCastException is thrown on the input parameter of lambda expression
+		 * @param stackMethodName - name of method in the stacktrace, if ClassCastException is thrown on the input parameter of lambda expression
+		 * @param callbackClass - the class of callback method
+		 * @param callbackMethod - the name of callback method
+		 * @param nrOfParams - total number of input parameters of callback method
+		 * @param idxOfInputParam - index of input parameter, whose type has to be checked
+		 */
+		protected void onCallbackSet(String stackClass, String stackMethodName, Class<?> callbackClass, String callbackMethod, int nrOfParams, int idxOfInputParam) {
+			this.cceStacktraceClass = stackClass;
+			this.cceStacktraceMethodName = stackMethodName;
+			if (callbackClass.getName().indexOf("$$Lambda$") >= 0) {
+				//lambda expressions does not provide runtime information about type of input parameter
+				//clear it now. We can detect input type from first ClassCastException
+				this.expectedClass = null;
+			} else {
+				Method method = RtHelper.getMethod(callbackClass, callbackMethod, nrOfParams);
+				if (method == null) {
+					throw new SpoonException("The method " + callbackMethod + " with one parameter was not found on the class " + callbackClass.getName());
+				}
+				this.expectedClass = (Class<?>) method.getParameterTypes()[idxOfInputParam];
+			}
+		}
+
+		/**
+		 * Is used to log that invocation was not processed
+		 * @param step the step which thrown CCE
+		 * @param e
+		 * @param parameters
+		 */
+		protected void onClassCastException(ClassCastException e, String exceptionMessage, Object input) {
+			if (isFailOnCCE() || expectedClass != null) {
+				//expected class is known and it was checked, so the CCE must be thrown by something else. Report it
+				throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
+			}
+			StackTraceElement[] stackEles = e.getStackTrace();
+			StackTraceElement stackEle = stackEles[0];
+			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
+				//the CCE exception was thrown in the expected method - OK, it can be ignored
+				detectExpectedClassFromCCE(e, input);
+				log(this, e.getMessage(), input);
+				return;
+			}
+			//Do not ignore this exception in client's code. It is not expected. It cannot be ignored.
+			throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
+		}
+
+		protected void detectExpectedClassFromCCE(ClassCastException e, Object input) {
+			if (canExtractTypeFromCCE == false) {
+				return;
+			}
+			//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
+			String message = e.getMessage();
+			if (message != null) {
+				Matcher m = cceMessagePattern.matcher(message);
+				if (m.matches()) {
+					String objectClassName = m.group(1);
+					String expectedClassName = m.group(2);
+					if (objectClassName.equals(input.getClass().getName())) {
+						try {
+							expectedClass = getClass().getClassLoader().loadClass(expectedClassName);
+							return;
+						} catch (ClassNotFoundException e1) {
+							//the class cast exception message is invalid
+							if (Launcher.LOGGER.isDebugEnabled()) {
+								Launcher.LOGGER.debug("Unexpected ClassCastException message: \"" + message + "\"");
+							}
+						}
+					}
+				}
+			}
+			//extraction of class from CCE failed. Do not try it again - it would be wasting of time = bad performance.
+			canExtractTypeFromCCE = false;
+		}
 	}
+	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
+	private static boolean canExtractTypeFromCCE = true;
 
 	/**
 	 * Wrapper around terminal {@link CtConsumer}, which accepts output of this query
 	 */
 	private class OutputFunctionWrapper extends AbstractStep {
-		@Override
-		public void accept(Object element) {
-			if (element == null || isTerminated()) {
-				return;
-			}
-			try {
-				nextStep.accept(element);
-			} catch (ClassCastException e) {
-				StackTraceElement[] stackEles = e.getStackTrace();
-				if (stackEles.length > 1 && stackEles[0].getClassName().equals(getClass().getName()) && stackEles[0].getMethodName().equals("accept")) {
-					if (Launcher.LOGGER.isTraceEnabled()) {
-						//log expected CCE ... there might be some unexpected too!
-						Launcher.LOGGER.trace(e);
-					}
-				} else {
-					//Do not ignore this exception it is not expected!
-					throw new SpoonException("Execution of query callback failed", e);
-				}
-			}
+		OutputFunctionWrapper() {
+			super();
+			localFailurePolicy = QueryFailurePolicy.IGNORE;
 		}
+		@Override
+		protected Object _accept(Object element) {
+			nextStep.accept(element);
+			return null;
+		}
+
+		protected String getErrorMessage() {
+			return "Execution of query callback failed";
+		}
+
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		<R> void setNext(CtConsumer<R> out) {
 			//we are preparing new query execution.
 			reset();
 			nextStep = (CtConsumer) out;
 			handleListenerSetQuery(nextStep);
+			onCallbackSet(this.getClass().getName(), "_accept", nextStep.getClass(), "accept", 1, 0);
 		}
 	}
 
@@ -375,19 +489,13 @@ public class CtQueryImpl implements CtQuery {
 			super();
 			this.fnc = (CtConsumableFunction<Object>) fnc;
 			handleListenerSetQuery(this.fnc);
+			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 2, 0);
 		}
 
 		@Override
-		public void accept(Object input) {
-			if (input == null || isTerminated()) {
-				return;
-			}
-			try {
-				fnc.apply(input, nextStep);
-			} catch (ClassCastException e) {
-				onClassCastException(this, e, input);
-				return;
-			}
+		protected Object _accept(Object input) {
+			fnc.apply(input, nextStep);
+			return null;
 		}
 	}
 
@@ -395,31 +503,23 @@ public class CtQueryImpl implements CtQuery {
 	 * a step which calls Function. Implements contract of {@link CtQuery#map(CtFunction)}
 	 */
 	private class FunctionWrapper extends AbstractStep {
-		private CtFunction<Object, Object> fnc;
+		private final CtFunction<Object, Object> fnc;
 
 		@SuppressWarnings("unchecked")
 		FunctionWrapper(CtFunction<?, ?> code) {
 			super();
 			fnc = (CtFunction<Object, Object>) code;
 			handleListenerSetQuery(fnc);
+			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 1, 0);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void accept(Object input) {
-			if (input == null || isTerminated()) {
-				return;
-			}
-			Object result;
-			try {
-				result = fnc.apply(input);
-			} catch (ClassCastException e) {
-				onClassCastException(this, e, input);
-				return;
-			}
-			if (result == null || isTerminated()) {
-				return;
-			}
+		protected Object _accept(Object input) {
+			return fnc.apply(input);
+		}
+
+		@Override
+		protected void handleResult(Object result, Object input) {
 			if (result instanceof Boolean) {
 				//the code is a predicate. send the input to output if result is true
 				if ((Boolean) result) {
