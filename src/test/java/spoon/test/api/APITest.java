@@ -317,7 +317,7 @@ public class APITest {
 					return false;
 				}
 
-				CtClass<?> zeClass = (CtClass)method.getParent();
+				CtType<?> zeClass = (CtType)method.getParent();
 				List<CtMethod<?>> getterMethods = zeClass.getMethodsByName(getterName);
 
 				if (getterMethods.size() != 1) {
