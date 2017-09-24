@@ -485,7 +485,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" ");
 		try (Writable _context = context.modify()) {
 			if (operator.getKind() == BinaryOperatorKind.INSTANCEOF) {
-				_context.ignoreGenerics(true);
+				_context.forceWildcardGenerics(true);
 			}
 			scan(operator.getRightHandOperand());
 		}
