@@ -406,4 +406,14 @@ public class APITest {
 			assertEquals("Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(),1, matcher.find(ifCondition).size());
 		}
 	}
+
+	@Test
+	public void testOneLinerIntro() {
+		// contract: spoon can be used with a single line of code with Launcher.parseClass
+		CtClass<?> l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
+		assertEquals("A", l.getSimpleName());
+		assertEquals(1, l.getMethods().size());
+		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
+		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+	}
 }

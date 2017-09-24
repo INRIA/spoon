@@ -6,7 +6,13 @@ keywords: usage, java
 
 ## Basic Launcher
 
-The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of a project.
+The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of a project. It can be as short as:
+
+```java
+CtClass l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
+```
+
+The Launcher is highly configurable:
 
 ```java
 Launcher launcher = new Launcher();

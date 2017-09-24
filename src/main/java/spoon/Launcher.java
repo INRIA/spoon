@@ -34,6 +34,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -47,6 +48,7 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.gui.SpoonModelTree;
 
@@ -798,4 +800,12 @@ public class Launcher implements SpoonAPI {
 		return factory.getModel();
 	}
 
+	/** returns the AST of an inline class */
+	public static CtClass<?> parseClass(String code) {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile(code));
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		return (CtClass<?>) launcher.buildModel().getAllTypes().stream().findFirst().get();
+	}
 }
