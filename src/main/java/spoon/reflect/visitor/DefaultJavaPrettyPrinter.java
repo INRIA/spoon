@@ -18,6 +18,7 @@ package spoon.reflect.visitor;
 
 import spoon.SpoonException;
 import spoon.compiler.Environment;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -482,7 +483,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.write(" ");
 		printer.write(OperatorHelper.getOperatorText(operator.getKind()));
 		printer.write(" ");
-		scan(operator.getRightHandOperand());
+		try (Writable _context = context.modify()) {
+			if (operator.getKind() == BinaryOperatorKind.INSTANCEOF) {
+				_context.ignoreGenerics(true);
+			}
+			scan(operator.getRightHandOperand());
+		}
 		exitCtExpression(operator);
 	}
 
@@ -778,7 +784,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
 		try (Writable _context = context.modify()) {
-			if (f.getVariable().isStatic() && f.getTarget() instanceof CtTypeAccess) {
+			if ((f.getVariable().isStatic() || "class".equals(f.getVariable().getSimpleName())) && f.getTarget() instanceof CtTypeAccess) {
 				_context.ignoreGenerics(true);
 			}
 			CtExpression<?> target = f.getTarget();
@@ -1374,7 +1380,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
 		enterCtExpression(expression);
-		scan(expression.getTarget());
+		try (Writable _context = context.modify()) {
+			if (expression.getExecutable().isStatic()) {
+				_context.ignoreGenerics(true);
+			}
+			scan(expression.getTarget());
+		}
 		printer.write("::");
 		if (expression.getExecutable().isConstructor()) {
 			printer.write("new");
