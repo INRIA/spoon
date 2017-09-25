@@ -178,6 +178,7 @@ public class MainTest {
 					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
 						continue;
 					}
+					//TODO assertions which are checking lambdas. Till then ignore lambdas.
 					if (executableDeclaration instanceof CtLambda) {
 						continue;
 					}
