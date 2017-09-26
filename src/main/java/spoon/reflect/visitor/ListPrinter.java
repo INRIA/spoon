@@ -27,19 +27,28 @@ import java.io.Closeable;
  */
 class ListPrinter implements Closeable {
 
-	private final PrinterHelper printerHelper;
+	private final SnapshotPrinterTokenWriter printerTokenWriter;
+	private final boolean nextPrefixSpace;
 	private final String next;
+	private final boolean nextSuffixSpace;
+	private final boolean endPrefixSpace;
 	private final String end;
 	private boolean isFirst = true;
 
-	ListPrinter(PrinterHelper printerHelper, String start, String next, String end) {
+	ListPrinter(SnapshotPrinterTokenWriter printerHelper, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
 		super();
-		this.printerHelper = printerHelper;
+		this.printerTokenWriter = printerHelper;
+		this.nextPrefixSpace = nextPrefixSpace;
 		this.next = next;
+		this.nextSuffixSpace = nextSuffixSpace;
+		this.endPrefixSpace = endPrefixSpace;
 		this.end = end;
 
 		if (start != null && start.length() > 0) {
-			printerHelper.write(start);
+			printerHelper.writeSeparator(start);
+		}
+		if (startSuffixSpace) {
+			printerHelper.writeSpace();
 		}
 	}
 
@@ -56,16 +65,25 @@ class ListPrinter implements Closeable {
 			/*
 			 * we are starting next item. Print `next` separator now
 			 */
+			if (nextPrefixSpace) {
+				printerTokenWriter.writeSpace();
+			}
 			if (next != null && next.length() > 0) {
-				printerHelper.write(next);
+				printerTokenWriter.writeSeparator(next);
+			}
+			if (nextSuffixSpace) {
+				printerTokenWriter.writeSpace();
 			}
 		}
 	}
 
 	@Override
 	public void close() {
+		if (endPrefixSpace) {
+			printerTokenWriter.writeSpace();
+		}
 		if (end != null && end.length() > 0) {
-			printerHelper.write(end);
+			printerTokenWriter.writeSeparator(end);
 		}
 	}
 }

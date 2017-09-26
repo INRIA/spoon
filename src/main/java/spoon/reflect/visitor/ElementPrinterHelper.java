@@ -57,20 +57,17 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 public class ElementPrinterHelper {
 	private final DefaultJavaPrettyPrinter prettyPrinter;
 	private final Environment env;
-	private PrinterHelper printer;
+	private SnapshotPrinterTokenWriter printer;
 
-	public ElementPrinterHelper(PrinterHelper printerHelper, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
-		this.printer = printerHelper;
+	ElementPrinterHelper(SnapshotPrinterTokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
+		this.printer = printerTokenWriter;
 		this.prettyPrinter = prettyPrinter;
 		this.env = env;
-	}
-
-	public void setPrinter(PrinterHelper printer) {
-		this.printer = printer;
 	}
 
 	/**
@@ -85,27 +82,28 @@ public class ElementPrinterHelper {
 
 	public void writeModifiers(CtModifiable modifiable) {
 		for (ModifierKind modifierKind : modifiable.getModifiers()) {
-			printer.write(modifierKind.toString() + " ");
+			printer.writeKeyword(modifierKind.toString()).writeSpace();
 		}
 	}
 
 	public void visitCtNamedElement(CtNamedElement namedElement, CompilationUnit sourceCompilationUnit) {
 		writeAnnotations(namedElement);
 		if (env.isPreserveLineNumbers()) {
-			printer.adjustStartPosition(namedElement);
+			getPrinterHelper().adjustStartPosition(namedElement);
 		}
 	}
 
 	public void writeExtendsClause(CtType<?> type) {
 		if (type.getSuperclass() != null) {
-			printer.write(" extends ");
+			printer.writeSpace().writeKeyword("extends").writeSpace();
 			prettyPrinter.scan(type.getSuperclass());
 		}
 	}
 
 	public void writeImplementsClause(CtType<?> type) {
 		if (type.getSuperInterfaces().size() > 0) {
-			try (ListPrinter lp = printer.createListPrinter(" implements ", " , ", null)) {
+			printer.writeSpace().writeKeyword("implements").writeSpace();
+			try (ListPrinter lp = createListPrinter(false, null, false, true, ",", true, false, null)) {
 				for (CtTypeReference<?> ref : type.getSuperInterfaces()) {
 					lp.printSeparatorIfAppropriate();
 					prettyPrinter.scan(ref);
@@ -115,7 +113,7 @@ public class ElementPrinterHelper {
 	}
 
 	public void writeExecutableParameters(CtExecutable<?> executable) {
-		try (ListPrinter lp = printer.createListPrinter("(", ", ", ")")) {
+		try (ListPrinter lp = createListPrinter(false, "(", false, false, ",", true, false, ")")) {
 			for (CtParameter<?> p : executable.getParameters()) {
 				lp.printSeparatorIfAppropriate();
 				prettyPrinter.scan(p);
@@ -125,7 +123,8 @@ public class ElementPrinterHelper {
 
 	public void writeThrowsClause(CtExecutable<?> executable) {
 		if (executable.getThrownTypes().size() > 0) {
-			try (ListPrinter lp = printer.createListPrinter(" throws ", ", ", null)) {
+			printer.writeSpace().writeKeyword("throws").writeSpace();
+			try (ListPrinter lp = createListPrinter(false, null, false, false, ",", true, false, null)) {
 				for (CtTypeReference<?> ref : executable.getThrownTypes()) {
 					lp.printSeparatorIfAppropriate();
 					prettyPrinter.scan(ref);
@@ -141,7 +140,7 @@ public class ElementPrinterHelper {
 		prettyPrinter.scan(statement);
 		if (!(statement instanceof CtBlock || statement instanceof CtIf || statement instanceof CtFor || statement instanceof CtForEach || statement instanceof CtWhile || statement instanceof CtTry
 				|| statement instanceof CtSwitch || statement instanceof CtSynchronized || statement instanceof CtClass || statement instanceof CtComment)) {
-			printer.write(";");
+			printer.writeSeparator(";");
 		}
 		writeComment(statement, CommentOffset.AFTER);
 	}
@@ -165,23 +164,23 @@ public class ElementPrinterHelper {
 	public void writeAnnotationElement(Factory factory, Object value) {
 		if (value instanceof CtTypeAccess) {
 			prettyPrinter.scan((CtTypeAccess) value);
-			printer.write(".class");
+			printer.writeSeparator(".").writeKeyword("class");
 		} else if (value instanceof CtFieldReference) {
 			prettyPrinter.scan(((CtFieldReference<?>) value).getDeclaringType());
-			printer.write("." + ((CtFieldReference<?>) value).getSimpleName());
+			printer.writeSeparator(".").writeIdentifier(((CtFieldReference<?>) value).getSimpleName());
 		} else if (value instanceof CtElement) {
 			prettyPrinter.scan((CtElement) value);
 		} else if (value instanceof String) {
-			printer.write("\"" + value.toString() + "\"");
+			printer.writeLiteral("\"" + LiteralHelper.getStringLiteral((String) value, true) + "\"");
 		} else if (value instanceof Collection) {
-			try (ListPrinter lp = printer.createListPrinter("{", " ,", "}")) {
+			try (ListPrinter lp = createListPrinter(false, "{", false, true, ",", false, false, "}")) {
 				for (Object obj : (Collection<?>) value) {
 					lp.printSeparatorIfAppropriate();
 					writeAnnotationElement(factory, obj);
 				}
 			}
 		} else if (value instanceof Object[]) {
-			try (ListPrinter lp = printer.createListPrinter("{", " ,", "}")) {
+			try (ListPrinter lp = createListPrinter(false, "{", false, true, ",", false, false, "}")) {
 				for (Object obj : (Object[]) value) {
 					lp.printSeparatorIfAppropriate();
 					writeAnnotationElement(factory, obj);
@@ -191,10 +190,11 @@ public class ElementPrinterHelper {
 			try (Writable c = prettyPrinter.getContext().modify().ignoreGenerics(true)) {
 				prettyPrinter.scan(factory.Type().createReference(((Enum<?>) value).getDeclaringClass()));
 			}
-			printer.write(".");
-			printer.write(value.toString());
+			printer.writeSeparator(".");
+			printer.writeIdentifier(value.toString());
 		} else {
-			printer.write(value.toString());
+			//it probably prints, boolean, number, ...
+			printer.writeLiteral(value.toString());
 		}
 	}
 
@@ -210,7 +210,7 @@ public class ElementPrinterHelper {
 			return;
 		}
 		if (parameters.size() > 0) {
-			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
+			try (ListPrinter lp = createListPrinter(false, "<", false, false, ",", true, false, ">")) {
 				for (CtTypeParameter parameter : parameters) {
 					lp.printSeparatorIfAppropriate();
 					prettyPrinter.scan(parameter);
@@ -228,12 +228,12 @@ public class ElementPrinterHelper {
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
 		if (arguments != null && arguments.size() > 0) {
-			try (ListPrinter lp = printer.createListPrinter("<", ", ", ">")) {
+			try (ListPrinter lp = createListPrinter(false, "<", false, false, ",", true, false, ">")) {
 				for (CtTypeReference<?> argument : arguments) {
 					if (!argument.isImplicit()) {
 						lp.printSeparatorIfAppropriate();
 						if (prettyPrinter.context.forceWildcardGenerics()) {
-							printer.write('?');
+							printer.writeSeparator("?");
 						} else {
 							prettyPrinter.scan(argument);
 						}
@@ -257,41 +257,53 @@ public class ElementPrinterHelper {
 			}
 			// writing the header package
 			if (!types.get(0).getPackage().isUnnamedPackage()) {
-				printer.write("package " + types.get(0).getPackage().getQualifiedName() + ";");
+				writePackageLine(types.get(0).getPackage().getQualifiedName());
 			}
 			printer.writeln().writeln().writeTabs();
 			Set<String> setImports = new HashSet<>();
+			Set<String> setStaticImports = new HashSet<>();
 			for (CtReference ref : imports) {
-				String importStr = "import";
 				String importTypeStr = "";
 
 				if (ref instanceof CtTypeReference) {
 					CtTypeReference typeRef = (CtTypeReference) ref;
 					importTypeStr = typeRef.getQualifiedName();
+					if (isJavaLangClasses(importTypeStr) == false) {
+						setImports.add(importTypeStr);
+					}
 				} else if (ref instanceof CtExecutableReference) {
-					importStr += " static";
 					CtExecutableReference execRef = (CtExecutableReference) ref;
 					if (execRef.getDeclaringType() != null) {
-						importTypeStr = this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName();
+						setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
 					}
 				} else if (ref instanceof CtFieldReference) {
-					importStr += " static";
 					CtFieldReference fieldRef = (CtFieldReference) ref;
-					importTypeStr = this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName();
-				}
-
-				if (!importTypeStr.equals("") && !isJavaLangClasses(importTypeStr)) {
-					setImports.add(importStr + " " + importTypeStr + ";");
+					setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
 				}
 			}
 
 			List<String> sortedImports = new ArrayList<>(setImports);
 			Collections.sort(sortedImports);
 			for (String importLine : sortedImports) {
-				printer.write(importLine).writeln().writeTabs();
+				printer.writeKeyword("import").writeSpace();
+				writeQualifiedName(importLine).writeSeparator(";").writeln().writeTabs();
+			}
+			if (setStaticImports.size() > 0) {
+				printer.writeln().writeTabs();
+				List<String> sortedStaticImports = new ArrayList<>(setStaticImports);
+				Collections.sort(sortedStaticImports);
+				for (String importLine : sortedStaticImports) {
+					printer.writeKeyword("import").writeSpace().writeKeyword("static").writeSpace();
+					writeQualifiedName(importLine).writeSeparator(";").writeln().writeTabs();
+				}
 			}
 			printer.writeln().writeTabs();
 		}
+	}
+
+	public void writePackageLine(String packageQualifiedName) {
+		printer.writeKeyword("package").writeSpace();
+		writeQualifiedName(packageQualifiedName).writeSeparator(";");
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {
@@ -365,7 +377,7 @@ public class ElementPrinterHelper {
 	public void writeIfOrLoopBlock(CtStatement block) {
 		if (block != null) {
 			if (!block.isImplicit() && (block instanceof CtBlock || block instanceof CtIf)) {
-				printer.write(" ");
+				printer.writeSpace();
 			}
 			if (!(block instanceof CtBlock) && !(block instanceof CtIf)) {
 				printer.incTab();
@@ -377,11 +389,51 @@ public class ElementPrinterHelper {
 			}
 			if (!block.isImplicit()) {
 				if (!block.isParentInitialized() || (!(block.getParent() instanceof CtFor) && !(block.getParent() instanceof CtForEach) && !(block.getParent() instanceof CtIf))) {
-					printer.write(" ");
+					printer.writeSpace();
 				}
 			}
 		} else {
-			printer.write(";");
+			printer.writeSeparator(";");
 		}
+	}
+	/**
+	 * Creates new handler which assures consistent printing of lists
+	 * prefixed with `start`, separated by `next` and suffixed by `end`
+	 * @param startPrefixSpace TODO
+	 * @param start the string which has to be printed at the beginning of the list
+	 * @param startSufficSpace TODO
+	 * @param nextPrefixSpace TODO
+	 * @param next the string which has to be used as separator before each next item
+	 * @param nextSuffixSpace TODO
+	 * @param endPrefixSpace TODO
+	 * @param end the string which has to be printed after the list
+	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
+	 * before printing of each item.
+	 */
+	ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+		return new ListPrinter(printer, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
+	}
+
+	private static final String QALIFIED_NAME_SEPARATORS = ".$";
+
+	/**
+	 * splits qualified name to primitive tokens and sends them to PrinterTokenWriter individually
+	 * @param qualifiedName to be sent qualified name
+	 */
+	public PrinterTokenWriter writeQualifiedName(String qualifiedName) {
+		StringTokenizer st = new StringTokenizer(qualifiedName, QALIFIED_NAME_SEPARATORS, true);
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+			if (token.length() == 1 && QALIFIED_NAME_SEPARATORS.indexOf(token.charAt(0)) >= 0) {
+				printer.writeSeparator(token);
+			} else {
+				printer.writeIdentifier(token);
+			}
+		}
+		return printer;
+	}
+
+	private PrinterHelper getPrinterHelper() {
+		return printer.getPrinterHelper();
 	}
 }
