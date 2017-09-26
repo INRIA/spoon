@@ -232,7 +232,11 @@ public class ElementPrinterHelper {
 				for (CtTypeReference<?> argument : arguments) {
 					if (!argument.isImplicit()) {
 						lp.printSeparatorIfAppropriate();
-						prettyPrinter.scan(argument);
+						if (prettyPrinter.context.forceWildcardGenerics()) {
+							printer.write('?');
+						} else {
+							prettyPrinter.scan(argument);
+						}
 					}
 				}
 			}

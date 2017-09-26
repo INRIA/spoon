@@ -31,6 +31,7 @@ public class PrintingContext {
 	private long SKIP_ARRAY 			= 1 << 2;
 	private long IGNORE_STATIC_ACCESS   = 1 << 3;
 	private long IGNORE_ENCLOSING_CLASS = 1 << 4;
+	private long FORCE_WILDCARD_GENERICS = 1 << 5;
 
 	private long state;
 
@@ -48,6 +49,9 @@ public class PrintingContext {
 	}
 	public boolean ignoreEnclosingClass() {
 		return (state & IGNORE_ENCLOSING_CLASS) != 0L;
+	}
+	public boolean forceWildcardGenerics() {
+		return (state & FORCE_WILDCARD_GENERICS) != 0L;
 	}
 
 	public class Writable implements AutoCloseable {
@@ -79,6 +83,10 @@ public class PrintingContext {
 		}
 		public <T extends Writable> T ignoreEnclosingClass(boolean v) {
 			setState(IGNORE_ENCLOSING_CLASS, v);
+			return (T) this;
+		}
+		public <T extends Writable> T forceWildcardGenerics(boolean v) {
+			setState(FORCE_WILDCARD_GENERICS, v);
 			return (T) this;
 		}
 		private void setState(long mask, boolean v) {

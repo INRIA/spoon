@@ -1,5 +1,7 @@
 package spoon.test.template.testclasses;
 
+import java.util.function.Supplier;
+
 import spoon.reflect.reference.CtTypeReference;
 import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
@@ -11,6 +13,10 @@ public class TypeReferenceClassAccessTemplate extends ExtensionTemplate {
 	$Type$ someMethod($Type$ param) {
 		o = $Type$.out;
 		$Type$ ret = new $Type$();
+		o = $Type$.currentTimeMillis();
+		o = $Type$.class;
+		o = o instanceof $Type$;
+		Supplier<Long> p = $Type$::currentTimeMillis;
 		return ret;
 	}
 	
