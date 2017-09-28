@@ -62,9 +62,9 @@ import java.util.StringTokenizer;
 public class ElementPrinterHelper {
 	private final DefaultJavaPrettyPrinter prettyPrinter;
 	private final Environment env;
-	private SnapshotPrinterTokenWriter printer;
+	private PrinterTokenWriter printer;
 
-	ElementPrinterHelper(SnapshotPrinterTokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
+	ElementPrinterHelper(PrinterTokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
 		this.printer = printerTokenWriter;
 		this.prettyPrinter = prettyPrinter;
 		this.env = env;

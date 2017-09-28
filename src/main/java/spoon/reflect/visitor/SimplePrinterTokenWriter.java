@@ -107,6 +107,12 @@ public class SimplePrinterTokenWriter implements PrinterTokenWriter {
 	}
 
 	@Override
+	public PrinterTokenWriter writeSpace() {
+		printerHelper.write(' ');
+		return this;
+	}
+
+	@Override
 	public PrinterHelper getPrinterHelper() {
 		return printerHelper;
 	}

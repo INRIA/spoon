@@ -138,4 +138,7 @@ public interface PrinterTokenWriter {
 	 * resets to the initial state
 	 */
 	void reset();
+
+	/** writes a single space */
+	PrinterTokenWriter writeSpace();
 }

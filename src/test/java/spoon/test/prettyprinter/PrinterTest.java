@@ -396,7 +396,13 @@ public class PrinterTest {
 				public void reset() {
 					printerHelper.reset();
 				}
-				
+
+				@Override
+				public PrinterTokenWriter writeSpace() {
+					printerHelper.write(' ');
+					return this;
+				}
+
 				//checks that token types are changing. There must be no two tokens of the same type in queue
 				private void checkRepeatingOfTokens(String tokenType) {
 					if("writeln".equals(tokenType) || "writeSeparator".equals(tokenType) || "writeWhitespace".equals(tokenType)) {
