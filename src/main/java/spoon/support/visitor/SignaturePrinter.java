@@ -20,7 +20,6 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -51,10 +50,10 @@ public class SignaturePrinter extends CtScanner {
 
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-		if (reference.getType() != null && !reference.isConstructor()) {
-			reference.getType().accept(this);
-			write(" ");
-		}
+//		if (reference.getType() != null && !reference.isConstructor()) {
+//			reference.getType().accept(this);
+//			write(" ");
+//		}
 		writeNameAndParameters(reference);
 	}
 
@@ -137,22 +136,22 @@ public class SignaturePrinter extends CtScanner {
 	*/
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		if (!m.getFormalCtTypeParameters().isEmpty()) {
-			write("<");
-			for (CtTypeParameter typeParameter : m.getFormalCtTypeParameters()) {
-				scan(typeParameter.getReference());
-				write(",");
-			}
-			if (m.getFormalCtTypeParameters().size() > 0) {
-				clearLast();
-			}
-			write("> ");
-		}
-		// the return type is required, see example in SimilarSignatureMethodes in test code (name and arguments are identical)
-		if (m.getType() != null) {
-			write(m.getType().getQualifiedName());
-		}
-		write(" ");
+//		if (!m.getFormalCtTypeParameters().isEmpty()) {
+//			write("<");
+//			for (CtTypeParameter typeParameter : m.getFormalCtTypeParameters()) {
+//				scan(typeParameter.getReference());
+//				write(",");
+//			}
+//			if (m.getFormalCtTypeParameters().size() > 0) {
+//				clearLast();
+//			}
+//			write("> ");
+//		}
+//		// the return type is required, see example in SimilarSignatureMethodes in test code (name and arguments are identical)
+//		if (m.getType() != null) {
+//			write(m.getType().getQualifiedName());
+//		}
+//		write(" ");
 		write(m.getSimpleName());
 		write("(");
 		for (CtParameter<?> p : m.getParameters()) {
