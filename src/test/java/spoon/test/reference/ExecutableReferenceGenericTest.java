@@ -119,7 +119,7 @@ public class ExecutableReferenceGenericTest {
 
 		//T has more information in the invocation than its declaration because of the argument type
 		//assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
-		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
+		assertEquals(execRefsMethods2.getSignature(), "method1(T extends java.lang.String)");
 		assertEquals(expectedMethod1, refsMethod2.get(1).getDeclaration());
 		assertEquals(expectedMethod5, refsMethod2.get(2).getDeclaration());
 	}
