@@ -366,13 +366,11 @@ public class PrinterTest {
 
 				@Override
 				public TokenWriter incTab() {
-					printerHelper.incTab();
 					return this;
 				}
 
 				@Override
 				public TokenWriter decTab() {
-					printerHelper.decTab();
 					return this;
 				}
 
