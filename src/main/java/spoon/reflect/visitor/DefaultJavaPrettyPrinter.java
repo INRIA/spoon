@@ -819,8 +819,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 					printer.getPrinterHelper().snapshotLength();
 					scan(target);
-					if (printer.getPrinterHelper().hasNewContent())
-					{
+					if (printer.getPrinterHelper().hasNewContent()) {
 						printer.writeSeparator(".");
 					}
 				}
@@ -898,8 +897,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (!lastTypeQualifiedName.equals(targetTypeQualifiedName)) {
 					printer.getPrinterHelper().snapshotLength();
 					visitCtTypeReferenceWithoutGenerics(targetType);
-					if (printer.getPrinterHelper().hasNewContent())
-					{
+					if (printer.getPrinterHelper().hasNewContent()) {
 						printer.writeSeparator(".");
 					}
 					printer.writeKeyword("this");
@@ -1101,8 +1099,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			} else {
 				printer.getPrinterHelper().snapshotLength();
 				scan(invocation.getTarget());
-				if (printer.getPrinterHelper().hasNewContent())
-				{
+				if (printer.getPrinterHelper().hasNewContent()) {
 					printer.writeSeparator(".");
 				}
 				printer.writeKeyword("super");
@@ -1117,8 +1114,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 					scan(invocation.getTarget());
 				}
-				if (printer.getPrinterHelper().hasNewContent())
-				{
+				if (printer.getPrinterHelper().hasNewContent()) {
 					printer.writeSeparator(".");
 				}
 			}
