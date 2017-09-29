@@ -806,6 +806,14 @@ public class Launcher implements SpoonAPI {
 		launcher.addInputResource(new VirtualFile(code));
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setAutoImports(true);
-		return (CtClass<?>) launcher.buildModel().getAllTypes().stream().findFirst().get();
+		Collection<CtType<?>> allTypes = launcher.buildModel().getAllTypes();
+		if (allTypes.size() != 1) {
+			throw new SpoonException("parseClass only consider one class. Please consider using a Launcher object for more advanced usage.");
+		}
+		try {
+			return (CtClass<?>) allTypes.stream().findFirst().get();
+		} catch (ClassCastException e) {
+			throw new SpoonException("parseClass only considers classes (and not interfaces, enums). Please consider using a Launcher object for more advanced usage.");
+		}
 	}
 }
