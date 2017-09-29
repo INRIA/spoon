@@ -12,9 +12,11 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -173,16 +175,32 @@ public class MainTest {
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
 				for (int i = 0; i < reference.getParameters().size(); i++) {
 					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {
-						continue;
+						return;
 					}
 					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
-						continue;
+						return;
 					}
 					//TODO assertions which are checking lambdas. Till then ignore lambdas.
 					if (executableDeclaration instanceof CtLambda) {
-						continue;
+						return;
 					}
 					assertEquals(reference.getParameters().get(i).getQualifiedName(), executableDeclaration.getParameters().get(i).getType().getQualifiedName());
+				}
+
+				// contract: the reference and method signature are the same
+				if (reference.getActualTypeArguments().size() == 0
+						&& executableDeclaration instanceof CtMethod
+						&& ((CtMethod)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						) {
+					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
+				}
+
+				// contract: the reference and constructor signature are the same
+				if (reference.getActualTypeArguments().size() == 0
+						&& executableDeclaration instanceof CtConstructor
+						&& ((CtConstructor)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						) {
+					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
 				}
 
 				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {

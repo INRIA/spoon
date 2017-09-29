@@ -63,7 +63,7 @@ public class ExecutableReferenceTest {
 		assertNotNull(executableOneParameter.getType());
 		assertEquals(1, executableOneParameter.getParameters().size());
 		assertNotEquals(executableZeroParameter, executableOneParameter);
-		assertEquals("Tacos m(int)", executableOneParameter.toString());
+		assertEquals("m(int)", executableOneParameter.toString());
 		assertEquals("bar.m(1)", invocations.get(1).toString());
 
 		// Executable reference with 2 parameters.

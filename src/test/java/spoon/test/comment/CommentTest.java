@@ -686,7 +686,7 @@ public class CommentTest {
 		assertTrue(clazz1==builder.getSnippetCompilationUnit().getDeclaredTypes().get(0));
 
 		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[0];
-		assertEquals("java.io.File foo(java.lang.String)", methodString.getSignature());
+		assertEquals("foo", methodString.getSimpleName());
 		assertEquals(1, methodString.getComments().size());
 		assertEquals("method javadoc comment", methodString.getComments().get(0).getContent());
 

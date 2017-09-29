@@ -393,13 +393,13 @@ public class ReplaceTest {
 		final CtExecutableReference<Object> newExecutable = factory.Executable().createReference("void java.io.PrintStream#print(java.lang.String)");
 
 		assertSame(oldExecutable, inv.getExecutable());
-		assertEquals("void println(java.lang.String)", inv.getExecutable().toString());
 
 		oldExecutable.replace(newExecutable);
 
 		assertSame(newExecutable, inv.getExecutable());
-		assertEquals("void print(java.lang.String)", inv.getExecutable().toString());
-		
+		assertEquals("print(java.lang.String)", inv.getExecutable().toString());
+		assertEquals("java.io.PrintStream", inv.getExecutable().getDeclaringType().toString());
+
 		//contract: replace of single value by multiple values in single value field must fail
 		try {
 			newExecutable.replace(Arrays.asList(oldExecutable, null));
