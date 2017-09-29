@@ -126,7 +126,9 @@ public interface TokenWriter {
 	TokenWriter decTab();
 
 	/**
-	 * @return {@link PrinterHelper} used by this TokenWriter
+	 * @return {@link PrinterHelper} used by this TokenWriter.
+	 *
+	 * Note that in the future, will return an interface eg IPrinterHelper instead.
 	 */
 	PrinterHelper getPrinterHelper();
 
