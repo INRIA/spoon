@@ -108,7 +108,7 @@ public class SimplePrinterTokenWriter implements PrinterTokenWriter {
 
 	@Override
 	public PrinterTokenWriter writeSpace() {
-		printerHelper.write(' ');
+		printerHelper.writeSpace();
 		return this;
 	}
 

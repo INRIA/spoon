@@ -262,4 +262,9 @@ public class PrinterHelper {
 	public void setLineSeparator(String lineSeparator) {
 		this.lineSeparator = lineSeparator;
 	}
+
+	/** writes a space ' ' */
+	public void writeSpace() {
+		this.write(' ');
+	}
 }

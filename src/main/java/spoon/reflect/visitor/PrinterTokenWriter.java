@@ -139,6 +139,9 @@ public interface PrinterTokenWriter {
 	 */
 	void reset();
 
-	/** writes a single space */
+	/** Writes a single space.
+	 *
+	 *  Note that this method is only there for low-level implementation reasons. A default implementation simply calls {@link PrinterHelper#writeSpace()} ()}. This method will be removed in a later refactoring.
+	 * */
 	PrinterTokenWriter writeSpace();
 }
