@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Supports configurable printing of text with indentations and line and column counting
+ */
 public class PrinterHelper {
 	/**
 	 * Line separator which is used by the printer helper.
@@ -68,6 +71,8 @@ public class PrinterHelper {
 	public PrinterHelper(Environment env) {
 		this.env = env;
 	}
+
+	private ArrayDeque<Integer> lengths = new ArrayDeque<>();
 
 	/**
 	 * resets to the initial state
@@ -234,29 +239,14 @@ public class PrinterHelper {
 		return sbf.toString();
 	}
 
-	private ArrayDeque<Integer> lengths = new ArrayDeque<>();
-
 	/** stores the length of the printer */
 	public void snapshotLength() {
 		lengths.addLast(toString().length());
 	}
 
-	/** returns true if something has been written since the last call to snapshotLength() */
+	/** returns true if something has been written since the last call to napshotLength() */
 	public boolean hasNewContent() {
 		return lengths.pollLast() < toString().length();
-	}
-
-	/**
-	 * Creates new handler which assures consistent printing of lists
-	 * prefixed with `start`, separated by `next` and suffixed by `end`
-	 * @param start the string which has to be printed at the beginning of the list
-	 * @param next the string which has to be used as separator before each next item
-	 * @param end the string which has to be printed after the list
-	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
-	 * before printing of each item.
-	 */
-	ListPrinter createListPrinter(String start, String next, String end) {
-		return new ListPrinter(this, start, next, end);
 	}
 
 	/**
@@ -273,5 +263,10 @@ public class PrinterHelper {
 	 */
 	public void setLineSeparator(String lineSeparator) {
 		this.lineSeparator = lineSeparator;
+	}
+
+	/** writes a space ' ' */
+	public void writeSpace() {
+		this.write(' ');
 	}
 }
