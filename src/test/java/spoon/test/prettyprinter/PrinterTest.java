@@ -389,7 +389,6 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeSpace() {
 					checkRepeatingOfTokens("writeWhitespace");
-					allTokens.append(' ');
 					return this;
 				}
 
