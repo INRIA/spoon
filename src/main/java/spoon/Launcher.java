@@ -808,12 +808,12 @@ public class Launcher implements SpoonAPI {
 		launcher.getEnvironment().setAutoImports(true);
 		Collection<CtType<?>> allTypes = launcher.buildModel().getAllTypes();
 		if (allTypes.size() != 1) {
-			throw new SpoonException("parseClass only consider one class. Please consider using a Launcher object for more advanced usage.");
+			throw new SpoonException("parseClass only considers one class. Please consider using a Launcher object for more advanced usage.");
 		}
 		try {
 			return (CtClass<?>) allTypes.stream().findFirst().get();
 		} catch (ClassCastException e) {
-			throw new SpoonException("parseClass only considers classes (and not interfaces, enums). Please consider using a Launcher object for more advanced usage.");
+			throw new SpoonException("parseClass only considers classes (and not interfaces and enums). Please consider using a Launcher object for more advanced usage.");
 		}
 	}
 }
