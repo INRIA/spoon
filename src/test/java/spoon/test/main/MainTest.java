@@ -163,9 +163,9 @@ public class MainTest {
 
 			@Override
 			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+				super.visitCtExecutableReference(reference);
 				assertNotNull(reference);
 				if (isLanguageExecutable(reference)) {
-					super.visitCtExecutableReference(reference);
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
@@ -207,7 +207,6 @@ public class MainTest {
 					assertTrue(((CtShadowable) executableDeclaration).isShadow());
 				}
 
-				super.visitCtExecutableReference(reference);
 			}
 
 			private <T> boolean isLanguageExecutable(CtExecutableReference<T> reference) {
