@@ -185,7 +185,7 @@ public class PrinterHelper {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
 
-	public void adjustStartPosition(CtElement e) {
+	public PrinterHelper adjustStartPosition(CtElement e) {
 		if (e.getPosition() != null && !e.isImplicit() && !(e.getPosition() instanceof NoSourcePosition)) {
 			// we should add some lines
 			while (line < e.getPosition().getLine()) {
@@ -198,15 +198,17 @@ public class PrinterHelper {
 				}
 			}
 		}
+		return this;
 	}
 
-	public void adjustEndPosition(CtElement e) {
+	public PrinterHelper adjustEndPosition(CtElement e) {
 		if (env.isPreserveLineNumbers() && e.getPosition() != null) {
 			// let's add lines if required
 			while (line < e.getPosition().getEndLine()) {
 				writeln();
 			}
 		}
+		return this;
 	}
 
 	public void undefineLine() {

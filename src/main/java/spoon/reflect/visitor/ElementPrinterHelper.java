@@ -410,7 +410,7 @@ public class ElementPrinterHelper {
 	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
 	 * before printing of each item.
 	 */
-	ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+	public ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
 		return new ListPrinter(printer, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
 	}
 
