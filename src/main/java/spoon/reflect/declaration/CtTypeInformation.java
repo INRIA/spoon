@@ -110,8 +110,9 @@ public interface CtTypeInformation {
 	boolean isAnnotationType();
 
 	/**
-	 * Returns true if this element is a generics (eg "T") and false if it is an actual type (eg 'Book" or "String")
+	 * Returns true if it refers to a type parameter (ie not a concrete class, eg "T foo"). It can refer to it directly (eg T), or indirectly (eg List&lt;T&gt;, or Set&lt;List&lt;T&gt;&gt;).
 	 */
+	@DerivedProperty
 	boolean isGenerics();
 
 	/**

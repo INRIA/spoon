@@ -84,11 +84,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public boolean isGenerics() {
-		return true;
-	}
-
-	@Override
 	public boolean isPrimitive() {
 		return false;
 	}
@@ -250,5 +245,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@Override
 	public CtTypeParameterReference clone() {
 		return (CtTypeParameterReference) super.clone();
+	}
+
+	@Override
+	public boolean isGenerics() {
+		if (getDeclaration() instanceof CtTypeParameter) {
+			return true;
+		}
+		if (getBoundingType() != null && getBoundingType().isGenerics()) {
+			return true;
+		}
+		return false;
 	}
 }

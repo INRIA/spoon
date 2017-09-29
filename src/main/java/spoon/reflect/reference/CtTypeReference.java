@@ -210,4 +210,5 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@DerivedProperty
 	CtTypeParameter getTypeParameterDeclaration();
 
+
 }

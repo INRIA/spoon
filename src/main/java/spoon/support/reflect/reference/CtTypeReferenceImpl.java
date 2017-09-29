@@ -623,11 +623,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public boolean isGenerics() {
-		return false;
-	}
-
-	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
 		try {
 			Set<ModifierKind> modifiers = type.getModifiers();
@@ -822,6 +817,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean isGenerics() {
+		if (getDeclaration() instanceof CtTypeParameter) {
+			return true;
+		}
+		for (CtTypeReference ref : getActualTypeArguments()) {
+			if (ref.isGenerics()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private CtTypeParameter findTypeParamDeclarationByPosition(CtFormalTypeDeclarer type, int position) {
