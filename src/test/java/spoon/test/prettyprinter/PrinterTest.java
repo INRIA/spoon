@@ -387,6 +387,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeSpace() {
 					checkRepeatingOfTokens("writeWhitespace");
+					allTokens.append(' ');
 					return this;
 				}
 
@@ -411,6 +412,9 @@ public class PrinterTest {
 			//contract: each printed character is handled by listener. PrinterHelper is not called directly
 			//and because PrinterTokenListener above does not use PrinterHelper, the result must be empty
 			assertEquals(0, withEmptyListenerResult.length());
+			
+			//contract: result built manually from tokens is same like the one made by DefaultTokenWriter
+			assertEquals(standardPrintedResult, allTokens.toString());
 		}
 	}
 
