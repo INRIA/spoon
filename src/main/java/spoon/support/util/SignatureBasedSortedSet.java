@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 /** maintains unicity with method signatures */
-public class SignatureBasedSortedSet<E extends CtExecutable> extends TreeSet<E> {
+public class SignatureBasedSortedSet<E extends CtExecutable<?>> extends TreeSet<E> {
 
 	private static final long serialVersionUID = 1L;
 
