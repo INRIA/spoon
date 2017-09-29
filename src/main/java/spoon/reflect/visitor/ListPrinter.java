@@ -25,7 +25,7 @@ import java.io.Closeable;
  * If there is one item in the list then it prints `start`, item and then `end`<br>
  * If there is more then one items in the list then it prints `start`, items separated by `separator` and then `end`
  */
-class ListPrinter implements Closeable {
+public class ListPrinter implements Closeable {
 
 	private final TokenWriter printerTokenWriter;
 	private final boolean nextPrefixSpace;
@@ -35,7 +35,7 @@ class ListPrinter implements Closeable {
 	private final String end;
 	private boolean isFirst = true;
 
-	ListPrinter(TokenWriter printerHelper, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+	public ListPrinter(TokenWriter printerHelper, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
 		super();
 		this.printerTokenWriter = printerHelper;
 		this.nextPrefixSpace = nextPrefixSpace;

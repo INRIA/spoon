@@ -64,7 +64,7 @@ public class ElementPrinterHelper {
 	private final Environment env;
 	private TokenWriter printer;
 
-	ElementPrinterHelper(TokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
+	public ElementPrinterHelper(TokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
 		this.printer = printerTokenWriter;
 		this.prettyPrinter = prettyPrinter;
 		this.env = env;
