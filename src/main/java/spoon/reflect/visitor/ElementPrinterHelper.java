@@ -62,9 +62,9 @@ import java.util.StringTokenizer;
 public class ElementPrinterHelper {
 	private final DefaultJavaPrettyPrinter prettyPrinter;
 	private final Environment env;
-	private PrinterTokenWriter printer;
+	private TokenWriter printer;
 
-	ElementPrinterHelper(PrinterTokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
+	ElementPrinterHelper(TokenWriter printerTokenWriter, DefaultJavaPrettyPrinter prettyPrinter, Environment env) {
 		this.printer = printerTokenWriter;
 		this.prettyPrinter = prettyPrinter;
 		this.env = env;
@@ -417,10 +417,10 @@ public class ElementPrinterHelper {
 	private static final String QALIFIED_NAME_SEPARATORS = ".$";
 
 	/**
-	 * splits qualified name to primitive tokens and sends them to PrinterTokenWriter individually
+	 * splits qualified name to primitive tokens and sends them to TokenWriter individually
 	 * @param qualifiedName to be sent qualified name
 	 */
-	public PrinterTokenWriter writeQualifiedName(String qualifiedName) {
+	public TokenWriter writeQualifiedName(String qualifiedName) {
 		StringTokenizer st = new StringTokenizer(qualifiedName, QALIFIED_NAME_SEPARATORS, true);
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();

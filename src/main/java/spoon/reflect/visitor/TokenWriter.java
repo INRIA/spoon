@@ -21,18 +21,14 @@ import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtComment;
 
 /**
- * The token based and context aware printer.
+ * Responsible for writing a token while pretty-printing.
+ * Default is {@link DefaultTokenWriter}, can be provided by client too.
  */
-public interface PrinterTokenWriter {
-	/**
-	 * Writes one whitespace token.Token can be one or more spaces.
-	 */
-	PrinterTokenWriter writeWhitespace(String token);
-
+public interface TokenWriter {
 	/**
 	 * Writes one separator. It is -&gt; or :: or one of these characters: (){}[];,.:@=&lt;&gt;?&amp;|
 	 */
-	PrinterTokenWriter writeSeparator(String token);
+	TokenWriter writeSeparator(String token);
 
 	/**
 	 * Writes one operator.
@@ -75,12 +71,12 @@ public interface PrinterTokenWriter {
 	 *		&gt;&gt;&gt;=
 	 *		instanceof
 	 */
-	PrinterTokenWriter writeOperator(String token);
+	TokenWriter writeOperator(String token);
 
 	/**
 	 * writes literal. It can be a String, Character or an number
 	 */
-	PrinterTokenWriter writeLiteral(String token);
+	TokenWriter writeLiteral(String token);
 
 	/**
 	 * writes a keyword
@@ -95,42 +91,42 @@ public interface PrinterTokenWriter {
 	 *		class finally long strictfp volatile
 	 *		const float native super while
 	 */
-	PrinterTokenWriter writeKeyword(String token);
+	TokenWriter writeKeyword(String token);
 
 	/**
 	 * writes a java identifier.
 	 */
-	PrinterTokenWriter writeIdentifier(String token);
+	TokenWriter writeIdentifier(String token);
 
 	/**
 	 * writes a code snippet - represents arbitrary code of {@link CtCodeSnippetExpression} or {@link CtCodeSnippetStatement}
 	 */
-	PrinterTokenWriter writeCodeSnippet(String token);
+	TokenWriter writeCodeSnippet(String token);
 
 	/**
 	 * writes a comment
 	 */
-	PrinterTokenWriter writeComment(CtComment comment);
+	TokenWriter writeComment(CtComment comment);
 
 	/**
 	 * writes new line (EOL)
 	 */
-	PrinterTokenWriter writeln();
+	TokenWriter writeln();
 	/**
 	 * writes indentation
 	 */
-	PrinterTokenWriter writeTabs();
+	TokenWriter writeTabs();
 	/**
 	 * increments indentation
 	 */
-	PrinterTokenWriter incTab();
+	TokenWriter incTab();
 	/**
 	 * decrements indentation
 	 */
-	PrinterTokenWriter decTab();
+	TokenWriter decTab();
 
 	/**
-	 * @return {@link PrinterHelper} used by this PrinterTokenWriter
+	 * @return {@link PrinterHelper} used by this TokenWriter
 	 */
 	PrinterHelper getPrinterHelper();
 
@@ -143,5 +139,5 @@ public interface PrinterTokenWriter {
 	 *
 	 *  Note that this method is only there for low-level implementation reasons. A default implementation simply calls {@link PrinterHelper#writeSpace()} ()}. This method will be removed in a later refactoring.
 	 * */
-	PrinterTokenWriter writeSpace();
+	TokenWriter writeSpace();
 }

@@ -16,8 +16,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
-import spoon.reflect.visitor.PrinterTokenWriter;
-import spoon.reflect.visitor.SimplePrinterTokenWriter;
+import spoon.reflect.visitor.TokenWriter;
+import spoon.reflect.visitor.DefaultTokenWriter;
 import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
 
@@ -256,33 +256,21 @@ public class PrinterTest {
 		
 		assertTrue(factory.Type().getAll().size() > 0);
 		for (CtType<?> t : factory.Type().getAll()) {
-			//create DefaultJavaPrettyPrinter with standard SimplePrinterTokenWriter
+			//create DefaultJavaPrettyPrinter with standard DefaultTokenWriter
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 			pp.calculate(t.getPosition().getCompilationUnit(), Collections.singletonList(t));
-			//result of printing using standard SimplePrinterTokenWriter
+			//result of printing using standard DefaultTokenWriter
 			String standardPrintedResult = pp.getResult();
 			
 			StringBuilder allTokens = new StringBuilder();
 			//print type with custom listener
-			//1) register custom PrinterTokenWriter which checks the PrinterTokenWriter contract
-			pp.setPrinterTokenWriter(new PrinterTokenWriter() {
+			//1) register custom TokenWriter which checks the TokenWriter contract
+			pp.setPrinterTokenWriter(new TokenWriter() {
 				String lastToken;
 				PrinterHelper printerHelper = new PrinterHelper(factory.getEnvironment());
 
 				@Override
-				public PrinterTokenWriter writeWhitespace(String token) {
-					checkRepeatingOfTokens("writeWhitespace");
-					checkTokenWhitespace(token, true);					
-					for (int i = 0; i < token.length(); i++) {
-						char c = token.charAt(i);
-						assertEquals(' ', c);
-					}
-					allTokens.append(token);
-					return this;
-				}
-				
-				@Override
-				public PrinterTokenWriter writeSeparator(String separator) {
+				public TokenWriter writeSeparator(String separator) {
 					System.out.println("="+separator);
 					checkRepeatingOfTokens("writeSeparator");
 					checkTokenWhitespace(separator, false);					
@@ -293,7 +281,7 @@ public class PrinterTest {
 				}
 				
 				@Override
-				public PrinterTokenWriter writeOperator(String operator) {
+				public TokenWriter writeOperator(String operator) {
 					checkRepeatingOfTokens("writeOperator");
 					checkTokenWhitespace(operator, false);					
 					assertTrue("Unexpected operator: "+operator, operators.contains(operator));
@@ -302,7 +290,7 @@ public class PrinterTest {
 				}
 				
 				@Override
-				public PrinterTokenWriter writeLiteral(String literal) {
+				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
 					assertTrue(literal.length() > 0);
 					allTokens.append(literal);
@@ -310,7 +298,7 @@ public class PrinterTest {
 				}
 				
 				@Override
-				public PrinterTokenWriter writeKeyword(String keyword) {
+				public TokenWriter writeKeyword(String keyword) {
 					checkRepeatingOfTokens("writeKeyword");
 					checkTokenWhitespace(keyword, false);					
 					assertTrue("Unexpected java keyword: "+keyword, javaKeywords.contains(keyword));
@@ -319,7 +307,7 @@ public class PrinterTest {
 				}
 				
 				@Override
-				public PrinterTokenWriter writeIdentifier(String identifier) {
+				public TokenWriter writeIdentifier(String identifier) {
 					checkRepeatingOfTokens("writeIdentifier");
 					checkTokenWhitespace(identifier, false);
 					for (int i = 0; i < identifier.length(); i++) {
@@ -336,9 +324,9 @@ public class PrinterTest {
 				}
 				
 				@Override
-				public PrinterTokenWriter writeComment(CtComment comment) {
+				public TokenWriter writeComment(CtComment comment) {
 					checkRepeatingOfTokens("writeComment");
-					SimplePrinterTokenWriter sptw = new SimplePrinterTokenWriter(new PrinterHelper(factory.getEnvironment()));
+					DefaultTokenWriter sptw = new DefaultTokenWriter(new PrinterHelper(factory.getEnvironment()));
 					PrinterHelper ph = sptw.getPrinterHelper();
 					ph.setLineSeparator(getPrinterHelper().getLineSeparator());
 					ph.setTabCount(getPrinterHelper().getTabCount());
@@ -348,14 +336,14 @@ public class PrinterTest {
 				}
 				
 				@Override
-				public PrinterTokenWriter writeln() {
+				public TokenWriter writeln() {
 					checkRepeatingOfTokens("writeln");
 					allTokens.append(getPrinterHelper().getLineSeparator());
 					return this;
 				}
 				
 				@Override
-				public PrinterTokenWriter writeTabs() {
+				public TokenWriter writeTabs() {
 					checkRepeatingOfTokens("writeTabs");
 					for (int i = 0; i < getPrinterHelper().getTabCount(); i++) {
 						if (factory.getEnvironment().isUsingTabulations()) {
@@ -370,7 +358,7 @@ public class PrinterTest {
 				}
 
 				@Override
-				public PrinterTokenWriter writeCodeSnippet(String token) {
+				public TokenWriter writeCodeSnippet(String token) {
 					checkRepeatingOfTokens("writeCodeSnippet");
 					assertTrue(token.length() > 0);
 					allTokens.append(token);
@@ -378,13 +366,13 @@ public class PrinterTest {
 				}
 
 				@Override
-				public PrinterTokenWriter incTab() {
+				public TokenWriter incTab() {
 					printerHelper.incTab();
 					return this;
 				}
 
 				@Override
-				public PrinterTokenWriter decTab() {
+				public TokenWriter decTab() {
 					printerHelper.decTab();
 					return this;
 				}
@@ -400,8 +388,9 @@ public class PrinterTest {
 				}
 
 				@Override
-				public PrinterTokenWriter writeSpace() {
+				public TokenWriter writeSpace() {
 					checkRepeatingOfTokens("writeWhitespace");
+					allTokens.append(' ');
 					return this;
 				}
 

@@ -19,84 +19,78 @@ package spoon.reflect.visitor;
 import spoon.reflect.code.CtComment;
 
 /**
- * Implementation of {@link PrinterTokenWriter}, which writes all tokens to {@link PrinterHelper}
+ * Implementation of {@link TokenWriter}, which writes all tokens to {@link PrinterHelper}
  */
-public class SimplePrinterTokenWriter implements PrinterTokenWriter {
+public class DefaultTokenWriter implements TokenWriter {
 
 	private final PrinterHelper printerHelper;
 
-	public SimplePrinterTokenWriter(PrinterHelper printerHelper) {
+	public DefaultTokenWriter(PrinterHelper printerHelper) {
 		this.printerHelper = printerHelper;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeOperator(String token) {
+	public DefaultTokenWriter writeOperator(String token) {
 		printerHelper.write(token);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeWhitespace(String token) {
+	public DefaultTokenWriter writeSeparator(String token) {
 		printerHelper.write(token);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeSeparator(String token) {
+	public DefaultTokenWriter writeLiteral(String token) {
 		printerHelper.write(token);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeLiteral(String token) {
+	public DefaultTokenWriter writeKeyword(String token) {
 		printerHelper.write(token);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeKeyword(String token) {
+	public DefaultTokenWriter writeIdentifier(String token) {
 		printerHelper.write(token);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeIdentifier(String token) {
+	public DefaultTokenWriter writeCodeSnippet(String token) {
 		printerHelper.write(token);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeCodeSnippet(String token) {
-		printerHelper.write(token);
-		return this;
-	}
-
-	@Override
-	public SimplePrinterTokenWriter writeComment(CtComment comment) {
+	public DefaultTokenWriter writeComment(CtComment comment) {
 		CommentHelper.printComment(printerHelper, comment);
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeln() {
+	public DefaultTokenWriter writeln() {
 		printerHelper.writeln();
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter writeTabs() {
+	public DefaultTokenWriter writeTabs() {
 		printerHelper.writeTabs();
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter incTab() {
+	public DefaultTokenWriter incTab() {
 		printerHelper.incTab();
 		return this;
 	}
 
 	@Override
-	public SimplePrinterTokenWriter decTab() {
+	public DefaultTokenWriter decTab() {
 		printerHelper.decTab();
 		return this;
 	}
@@ -107,7 +101,7 @@ public class SimplePrinterTokenWriter implements PrinterTokenWriter {
 	}
 
 	@Override
-	public PrinterTokenWriter writeSpace() {
+	public TokenWriter writeSpace() {
 		printerHelper.writeSpace();
 		return this;
 	}
