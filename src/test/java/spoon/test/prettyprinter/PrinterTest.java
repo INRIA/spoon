@@ -248,8 +248,8 @@ public class PrinterTest {
 				factory,
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java",
-								"./src/test/java/spoon/test/prettyprinter/Validation.java"))
+								"./src/test/java/spoon/test/annotation/testclasses/",
+								"./src/test/java/spoon/test/prettyprinter/"))
 //this case needs longer, but checks contract on all spoon java sources
 //						.resources("./src/main/java/"))
 				.build();
@@ -312,12 +312,16 @@ public class PrinterTest {
 					for (int i = 0; i < identifier.length(); i++) {
 						char c = identifier.charAt(i);
 						if(i==0) {
-							assertTrue(Character.isJavaIdentifierStart(c));
+							if (!"?".equals(identifier)) { // generic wildcard
+								assertTrue(Character.isJavaIdentifierStart(c));
+							}
 						} else {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					if (!"class".equals(identifier)) { // happens when writing Foo.class
+						assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					}
 					allTokens.append(identifier);
 					return this;
 				}
