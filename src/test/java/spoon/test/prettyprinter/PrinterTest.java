@@ -268,6 +268,7 @@ public class PrinterTest {
 			pp.setPrinterTokenWriter(new PrinterTokenWriter() {
 				String lastToken;
 				PrinterHelper printerHelper = new PrinterHelper(factory.getEnvironment());
+
 				@Override
 				public PrinterTokenWriter writeWhitespace(String token) {
 					checkRepeatingOfTokens("writeWhitespace");
@@ -282,6 +283,7 @@ public class PrinterTest {
 				
 				@Override
 				public PrinterTokenWriter writeSeparator(String separator) {
+					System.out.println("="+separator);
 					checkRepeatingOfTokens("writeSeparator");
 					checkTokenWhitespace(separator, false);					
 					//one of the separators
@@ -318,6 +320,7 @@ public class PrinterTest {
 				
 				@Override
 				public PrinterTokenWriter writeIdentifier(String identifier) {
+					checkRepeatingOfTokens("writeIdentifier");
 					checkTokenWhitespace(identifier, false);
 					for (int i = 0; i < identifier.length(); i++) {
 						char c = identifier.charAt(i);
@@ -398,16 +401,20 @@ public class PrinterTest {
 
 				@Override
 				public PrinterTokenWriter writeSpace() {
+					checkRepeatingOfTokens("writeWhitespace");
 					return this;
 				}
 
 				//checks that token types are changing. There must be no two tokens of the same type in queue
 				private void checkRepeatingOfTokens(String tokenType) {
-					if("writeln".equals(tokenType) || "writeSeparator".equals(tokenType) || "writeWhitespace".equals(tokenType)) {
+					if("writeln".equals(tokenType)
+							|| "writeIdentifier".equals(tokenType)
+							|| "writeSeparator".equals(tokenType)
+							|| "writeWhitespace".equals(tokenType)) {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type " + tokenType, tokenType.equals(this.lastToken)==false);
+						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
 					}
 					this.lastToken = tokenType;
 				}

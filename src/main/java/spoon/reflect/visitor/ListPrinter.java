@@ -20,16 +20,16 @@ import java.io.Closeable;
 
 /**
  * Helper which assures consistent printing of lists
- * prefixed with `start`, separated by `next` and suffixed by `end`.<br>
+ * prefixed with `start`, separated by `separator` and suffixed by `end`.<br>
  * If there is no item in the list then it prints `start` and then `end`<br>
  * If there is one item in the list then it prints `start`, item and then `end`<br>
- * If there is more then one items in the list then it prints `start`, items separated by `next` and then `end`
+ * If there is more then one items in the list then it prints `start`, items separated by `separator` and then `end`
  */
 class ListPrinter implements Closeable {
 
 	private final PrinterTokenWriter printerTokenWriter;
 	private final boolean nextPrefixSpace;
-	private final String next;
+	private final String separator;
 	private final boolean nextSuffixSpace;
 	private final boolean endPrefixSpace;
 	private final String end;
@@ -39,13 +39,13 @@ class ListPrinter implements Closeable {
 		super();
 		this.printerTokenWriter = printerHelper;
 		this.nextPrefixSpace = nextPrefixSpace;
-		this.next = next;
+		this.separator = next;
 		this.nextSuffixSpace = nextSuffixSpace;
 		this.endPrefixSpace = endPrefixSpace;
 		this.end = end;
 
 		if (start != null && start.length() > 0) {
-			printerHelper.writeSeparator(start);
+			printerTokenWriter.writeSeparator(start);
 		}
 		if (startSuffixSpace) {
 			printerHelper.writeSpace();
@@ -58,18 +58,18 @@ class ListPrinter implements Closeable {
 	public void printSeparatorIfAppropriate() {
 		if (isFirst) {
 			/*
-			 * we are starting first item. Do not print `next` separator yet
+			 * we are starting first item. Do not print `separator` separator yet
 			 */
 			isFirst = false;
 		} else {
 			/*
-			 * we are starting next item. Print `next` separator now
+			 * we are starting separator item. Print `separator` separator now
 			 */
 			if (nextPrefixSpace) {
 				printerTokenWriter.writeSpace();
 			}
-			if (next != null && next.length() > 0) {
-				printerTokenWriter.writeSeparator(next);
+			if (separator != null && separator.length() > 0) {
+				printerTokenWriter.writeSeparator(separator);
 			}
 			if (nextSuffixSpace) {
 				printerTokenWriter.writeSpace();
