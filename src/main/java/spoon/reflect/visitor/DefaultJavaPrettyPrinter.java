@@ -203,9 +203,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public DefaultJavaPrettyPrinter(Environment env) {
 		this.env = env;
-		//printer = new SnapshotPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
-		printer = new DefaultTokenWriter(new PrinterHelper(env));
-		elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
+		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
 		} else {
@@ -1810,8 +1808,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Set {@link TokenWriter}, which has to be used to print tokens
 	 */
 	public DefaultJavaPrettyPrinter setPrinterTokenWriter(TokenWriter tokenWriter) {
+		elementPrinterHelper = new ElementPrinterHelper(tokenWriter, this, env);
 		printer = tokenWriter;
 		return this;
+
 	}
 
 	private PrinterHelper getPrinterHelper() {

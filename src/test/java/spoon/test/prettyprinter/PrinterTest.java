@@ -271,7 +271,6 @@ public class PrinterTest {
 
 				@Override
 				public TokenWriter writeSeparator(String separator) {
-					System.out.println("="+separator);
 					checkRepeatingOfTokens("writeSeparator");
 					checkTokenWhitespace(separator, false);					
 					//one of the separators
