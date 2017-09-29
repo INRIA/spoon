@@ -68,6 +68,17 @@ public class PrinterHelper {
 	 */
 	private Map<Integer, Integer> lineNumberMapping = new HashMap<>();
 
+	/*
+	 * each writeln() sets this to true.
+	 * if true then first call of write first writes tabs and then resets this to false
+	 */
+	private boolean shouldWriteTabs = true;
+	/*
+	 * true if last written character was \r
+	 * It helps to detect windows EOL, which is \r\n
+	 */
+	private boolean lastCharWasCR = false;
+
 	public PrinterHelper(Environment env) {
 		this.env = env;
 	}
@@ -82,6 +93,7 @@ public class PrinterHelper {
 		nbTabs = 0;
 		line = 1;
 		column = 1;
+		shouldWriteTabs = true;
 		//create new map, because clients keeps reference to it
 		lineNumberMapping = new HashMap<>();
 	}
@@ -91,8 +103,10 @@ public class PrinterHelper {
 	 */
 	public PrinterHelper write(String s) {
 		if (s != null) {
-			sbf.append(s);
-			column += s.length();
+			int len = s.length();
+			for (int i = 0; i < len; i++) {
+				write(s.charAt(i));
+			}
 		}
 		return this;
 	}
@@ -101,8 +115,35 @@ public class PrinterHelper {
 	 * Outputs a char.
 	 */
 	public PrinterHelper write(char c) {
+		if (c == '\r') {
+			sbf.append(c);
+			line++;
+			// reset the column index
+			column = 1;
+			shouldWriteTabs = true;
+			lastCharWasCR = true;
+			return this;
+		}
+		if (c == '\n') {
+			sbf.append(c);
+			if (lastCharWasCR) {
+				//increment line only once in sequence of \r\n.
+				//last was \r, so nothing to do
+			} else {
+				//increment line only once in sequence of \r\n.
+				//last was NOT \r, so do it now
+				line++;
+				// reset the column index
+				column = 1;
+				shouldWriteTabs = true;
+			}
+			lastCharWasCR = false;
+			return this;
+		}
+		autoWriteTabs();
 		sbf.append(c);
 		column += 1;
+		lastCharWasCR = false;
 		return this;
 	}
 
@@ -111,23 +152,33 @@ public class PrinterHelper {
 	 */
 	public PrinterHelper writeln() {
 		write(lineSeparator);
-		line++;
-		// reset the column index
-		column = 1;
 		return this;
 	}
 
+	@Deprecated
 	public PrinterHelper writeTabs() {
+		return this;
+	}
+
+	private void writeTabsInternal() {
 		for (int i = 0; i < nbTabs; i++) {
 			if (env.isUsingTabulations()) {
-				write('\t');
+				sbf.append('\t');
+				column += 1;
 			} else {
 				for (int j = 0; j < env.getTabulationSize(); j++) {
-					write(' ');
+					sbf.append(' ');
+					column += 1;
 				}
 			}
 		}
-		return this;
+	}
+
+	private void autoWriteTabs() {
+		if (shouldWriteTabs) {
+			writeTabsInternal();
+			shouldWriteTabs = false;
+		}
 	}
 
 	/**
