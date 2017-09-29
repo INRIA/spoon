@@ -161,7 +161,7 @@ public class PrinterHelper {
 		return this;
 	}
 
-	boolean removeLine() {
+	public boolean removeLine() {
 		String ls = lineSeparator;
 		int i = sbf.length() - ls.length();
 		boolean hasWhite = false;
@@ -185,7 +185,7 @@ public class PrinterHelper {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
 
-	void adjustStartPosition(CtElement e) {
+	public void adjustStartPosition(CtElement e) {
 		if (e.getPosition() != null && !e.isImplicit() && !(e.getPosition() instanceof NoSourcePosition)) {
 			// we should add some lines
 			while (line < e.getPosition().getLine()) {
@@ -200,7 +200,7 @@ public class PrinterHelper {
 		}
 	}
 
-	void adjustEndPosition(CtElement e) {
+	public void adjustEndPosition(CtElement e) {
 		if (env.isPreserveLineNumbers() && e.getPosition() != null) {
 			// let's add lines if required
 			while (line < e.getPosition().getEndLine()) {
@@ -209,13 +209,13 @@ public class PrinterHelper {
 		}
 	}
 
-	void undefineLine() {
+	public void undefineLine() {
 		if (lineNumberMapping.get(line) == null) {
 			putLineNumberMapping(0);
 		}
 	}
 
-	void mapLine(CtElement e, CompilationUnit unitExpected) {
+	public void mapLine(CtElement e, CompilationUnit unitExpected) {
 		if ((e.getPosition() != null) && (e.getPosition().getCompilationUnit() == unitExpected)) {
 			// only map elements coming from the source CU
 			putLineNumberMapping(e.getPosition().getLine());
@@ -224,11 +224,11 @@ public class PrinterHelper {
 		}
 	}
 
-	void putLineNumberMapping(int valueLine) {
+	public void putLineNumberMapping(int valueLine) {
 		lineNumberMapping.put(this.line, valueLine);
 	}
 
-	Map<Integer, Integer> getLineNumberMapping() {
+	public Map<Integer, Integer> getLineNumberMapping() {
 		return Collections.unmodifiableMap(lineNumberMapping);
 	}
 
