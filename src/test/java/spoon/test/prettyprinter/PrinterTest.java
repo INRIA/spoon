@@ -312,16 +312,12 @@ public class PrinterTest {
 					for (int i = 0; i < identifier.length(); i++) {
 						char c = identifier.charAt(i);
 						if(i==0) {
-							if (!"?".equals(identifier)) { // generic wildcard
-								assertTrue(Character.isJavaIdentifierStart(c));
-							}
+							assertTrue(Character.isJavaIdentifierStart(c));
 						} else {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					if (!"class".equals(identifier)) { // happens when writing Foo.class
-						assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
-					}
+					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
 					allTokens.append(identifier);
 					return this;
 				}

@@ -987,7 +987,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.writeSeparator(".");
 		}
-		printer.writeIdentifier(reference.getSimpleName());
+		if (reference.getSimpleName().equals("class")) {
+			printer.writeKeyword("class");
+		} else {
+			printer.writeIdentifier(reference.getSimpleName());
+		}
 	}
 
 	@Override
@@ -1407,8 +1411,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(assignment);
 		scan(assignment.getAssigned());
 		printer.writeSpace();
-		printer.writeOperator(OperatorHelper.getOperatorText(assignment.getKind()));
-		printer.writeOperator("=").writeSpace();
+		// the operators like +=, *= are sent as one operator token
+		printer.writeOperator(OperatorHelper.getOperatorText(assignment.getKind()) + "=");
+		printer.writeSpace();
 		scan(assignment.getAssignment());
 		exitCtExpression(assignment);
 	}
@@ -1567,11 +1572,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return;
 		}
 		elementPrinterHelper.writeAnnotations(wildcardReference);
-		if (printQualified(wildcardReference)) {
-			elementPrinterHelper.writeQualifiedName(wildcardReference.getQualifiedName());
-		} else {
-			printer.writeIdentifier(wildcardReference.getSimpleName());
-		}
+		printer.writeSeparator("?");
 		if (wildcardReference.getBoundingType() != null) {
 			if (wildcardReference.isUpper()) {
 				printer.writeSpace().writeKeyword("extends").writeSpace();
