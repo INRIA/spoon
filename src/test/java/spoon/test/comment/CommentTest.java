@@ -686,6 +686,8 @@ public class CommentTest {
 		assertTrue(clazz1==builder.getSnippetCompilationUnit().getDeclaredTypes().get(0));
 
 		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[0];
+		// we don't call getSignature in order to encapsulate a little bit the changes
+		// for the next time we will change the signature :-)
 		assertEquals("foo", methodString.getSimpleName());
 		assertEquals(1, methodString.getComments().size());
 		assertEquals("method javadoc comment", methodString.getComments().get(0).getContent());

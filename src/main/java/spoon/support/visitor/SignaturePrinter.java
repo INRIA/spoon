@@ -34,7 +34,7 @@ import spoon.reflect.visitor.CtScanner;
  */
 public class SignaturePrinter extends CtScanner {
 
-	private final StringBuffer signature = new StringBuffer();
+	private final StringBuilder signature = new StringBuilder();
 
 	public SignaturePrinter() { }
 

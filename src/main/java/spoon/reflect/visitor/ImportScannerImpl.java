@@ -448,13 +448,18 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected boolean isImportedInMethodImports(CtExecutableReference<?> ref) {
 		if (!(ref.isImplicit()) && methodImports.containsKey(ref.getSimpleName())) {
 			CtExecutableReference<?> exist = methodImports.get(ref.getSimpleName());
-			if ((exist.getDeclaringType() != null ? exist.getDeclaringType().getQualifiedName() : "" + "." + exist.getSignature()).equals(
-					ref.getDeclaringType() != null ? ref.getDeclaringType().getQualifiedName() : "" + "." + ref.getSignature())
+			if (getSignature(exist).equals(
+					getSignature(ref))
 					) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private String getSignature(CtExecutableReference<?> exist) {
+		return (exist.getDeclaringType() != null ? exist.getDeclaringType().getQualifiedName() : "")
+				+ "." + exist.getSignature();
 	}
 
 	protected boolean addFieldImport(CtFieldReference ref) {
