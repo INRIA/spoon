@@ -524,6 +524,13 @@
           </analysisConfigurationFiles>
         </configuration>
       </plugin>
+      <plugin>
+          <!-- This plugin enables one to write Spoon analyses in Groovy, which are simple called as follows -->
+          <!-- $ mvn groovy:execute -Dsource=doc/analysis.groovy -Dscope=runtime -->
+          <!-- those scripts can be put in CI or elsewhere -->
+          <groupId>org.codehaus.gmaven</groupId>
+          <artifactId>groovy-maven-plugin</artifactId>
+      </plugin>
     </plugins>
 
 
