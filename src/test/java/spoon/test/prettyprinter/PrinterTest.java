@@ -174,7 +174,7 @@ public class PrinterTest {
 		} //other exceptions are not OK
 	}
 
-	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));
+	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","...", /* fake separator, used for maintaining a correct stream of tokens */""));
 	{
 		"(){}[];,.:@=<>?&|".chars().forEach(c->separators.add(new String(Character.toChars(c))));
 	}
@@ -247,11 +247,11 @@ public class PrinterTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources(
-								"./src/test/java/spoon/test/annotation/testclasses/",
-								"./src/test/java/spoon/test/prettyprinter/"))
+//						.resources(
+//								"./src/test/java/spoon/test/annotation/testclasses/",
+//								"./src/test/java/spoon/test/prettyprinter/"))
 //this case needs longer, but checks contract on all spoon java sources
-//						.resources("./src/main/java/"))
+						.resources("./src/main/java/"))
 				.build();
 		
 		assertTrue(factory.Type().getAll().size() > 0);
@@ -266,7 +266,7 @@ public class PrinterTest {
 			//print type with custom listener
 			//1) register custom TokenWriter which checks the TokenWriter contract
 			pp.setPrinterTokenWriter(new TokenWriter() {
-				String lastToken;
+				String lastTokenType;
 				PrinterHelper printerHelper = new PrinterHelper(factory.getEnvironment());
 
 				@Override
@@ -400,9 +400,12 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
+						assertTrue("Two tokens of same type current\n" + tokenType
+								// debug
+								//+ allTokens.toString()+ "\n"
+								, tokenType.equals(this.lastTokenType)==false);
 					}
-					this.lastToken = tokenType;
+					this.lastTokenType = tokenType;
 				}
 			});
 			
@@ -420,8 +423,6 @@ public class PrinterTest {
 	}
 
 	private void checkTokenWhitespace(String stringToken, boolean isWhitespace) {
-		//contract: there is no empty token
-		assertTrue(stringToken.length() > 0);
 		//contract: only whitespace token contains whitespace
 		for (int i = 0; i < stringToken.length(); i++) {
 			char c = stringToken.charAt(i);
