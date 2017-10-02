@@ -238,7 +238,7 @@ public class ImportTest {
 		CtInvocation invocation = (CtInvocation) invocationStatement;
 		CtExecutableReference executableReference = invocation.getExecutable();
 
-		assertEquals("fr.inria.AnotherMissingImport#doSomething(externallib.SomeType)", executableReference.getSignature());
+		assertEquals("doSomething(externallib.SomeType)", executableReference.getSignature());
 		assertSame(methods.get(0), executableReference.getDeclaration());
 	}
 

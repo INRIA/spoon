@@ -119,7 +119,7 @@ public class ExecutableReferenceGenericTest {
 
 		//T has more information in the invocation than its declaration because of the argument type
 		//assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
-		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
+		assertEquals(execRefsMethods2.getSignature(), "method1(T extends java.lang.String)");
 		assertEquals(expectedMethod1, refsMethod2.get(1).getDeclaration());
 		assertEquals(expectedMethod5, refsMethod2.get(2).getDeclaration());
 	}
@@ -172,7 +172,7 @@ public class ExecutableReferenceGenericTest {
 		CtExecutable execRefsMethods2 = refsMethodA.get(0).getDeclaration();
 		//T has more information in the invocation than its declaration because of the argument type
 		//	assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
-		assertEquals(execRefsMethods2.getSignature(), "<T extends java.lang.String> void method1(T extends java.lang.String)");
+		assertEquals(execRefsMethods2.getSignature(), "method1(T extends java.lang.String)");
 	}
 
 	@Test
@@ -247,7 +247,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(11, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object#Object()")) {
+			if (!ref.toString().equals("java.lang.Object()")) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}
@@ -255,7 +255,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(9, refsExecutableClass2.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass2) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object#Object()")) {
+			if (!ref.toString().equals("java.lang.Object()")) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}

@@ -115,7 +115,17 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);
 
 	/**
-	 * Gets the signature of this method or constructor as specified by chapter "8.4.2 Method Signature" of the Java specification
+	 * Gets the signature of this method or constructor.
+	 * The signature is composed of the method name and the parameter types, all fully-qualified, eg "int foo(java.lang.String)".
+	 * The core contract is that in a type, there cannot be two methods with the same signature.
+	 *
+	 * Note that the concept of method signature in Java is not well defined (see chapter "8.4.2 Method Signature" of the Java specification, which defines what relations between signatures but not what a signature is exactly).
+	 *
+	 * Note also that the signature of a method reference is the same as the signature of the corresponding method if and only if the method parameters does not involve generics in their types. Otherwise, one has eg m(String) (reference) and m(T) (declaration)
+	 *
+	 * Reference: "In the Java programming language, a method signature is the method name and the number and type of its parameters. Return types and thrown exceptions are not considered to be a part of the method signature."
+	 * see https://stackoverflow.com/questions/16149285/does-a-methods-signature-in-java-include-its-return-type
+	 * see https://en.wikipedia.org/wiki/Type_signature
 	 */
 	String getSignature();
 

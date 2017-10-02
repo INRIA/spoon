@@ -18,10 +18,8 @@ package spoon.support.visitor;
 
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -36,7 +34,9 @@ import spoon.reflect.visitor.CtScanner;
  */
 public class SignaturePrinter extends CtScanner {
 
-	private final StringBuffer signature = new StringBuffer();
+	private final StringBuilder signature = new StringBuilder();
+
+	public SignaturePrinter() { }
 
 	public String getSignature() {
 		return signature.toString();
@@ -50,11 +50,12 @@ public class SignaturePrinter extends CtScanner {
 
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-		scan(reference.getDeclaringType());
+		writeNameAndParameters(reference);
+	}
 
-		write(CtExecutable.EXECUTABLE_SEPARATOR);
+	public <T> void writeNameAndParameters(CtExecutableReference<T> reference) {
 		if (reference.isConstructor()) {
-			write(reference.getDeclaringType().getSimpleName());
+			write(reference.getDeclaringType().getQualifiedName());
 		} else {
 			write(reference.getSimpleName());
 		}
@@ -66,11 +67,10 @@ public class SignaturePrinter extends CtScanner {
 				} else {
 					write(CtExecutableReference.UNKNOWN_TYPE);
 				}
-				write(", ");
+				write(",");
 			}
 			if (reference.getParameters().size() > 0) {
 				clearLast(); // ","
-				clearLast(); // space
 			}
 		}
 		write(")");
@@ -98,9 +98,8 @@ public class SignaturePrinter extends CtScanner {
 	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
 		for (CtTypeReference<?> bound : reference.getBounds()) {
 			scan(bound);
-			write(", ");
+			write(",");
 		}
-		clearLast();
 		clearLast();
 	}
 
@@ -133,22 +132,6 @@ public class SignaturePrinter extends CtScanner {
 	*/
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		if (!m.getFormalCtTypeParameters().isEmpty()) {
-			write("<");
-			for (CtTypeParameter typeParameter : m.getFormalCtTypeParameters()) {
-				scan(typeParameter.getReference());
-				write(",");
-			}
-			if (m.getFormalCtTypeParameters().size() > 0) {
-				clearLast();
-			}
-			write("> ");
-		}
-		// the return type is required, see example in SimilarSignatureMethodes in test code (name and arguments are identical)
-		if (m.getType() != null) {
-			write(m.getType().getQualifiedName());
-		}
-		write(" ");
 		write(m.getSimpleName());
 		write("(");
 		for (CtParameter<?> p : m.getParameters()) {

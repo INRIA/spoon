@@ -102,7 +102,7 @@ public class SignatureTest {
 
 		Set<CtMethod<?>> methods = clazz1.getMethods();
 		CtMethod<?> method = (CtMethod<?>) methods.toArray()[0];
-		assertEquals("java.lang.Object foo(java.util.List)", method.getSignature());
+		assertEquals("foo(java.util.List)", method.getSignature());
 
 
 		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
@@ -210,14 +210,14 @@ public class SignatureTest {
 		ts.addAll(clazz1.getMethods());
 		CtMethod[] methodArray = ts.toArray(new CtMethod[0]);
 		CtMethod<?> methodInteger = methodArray[0];
-		assertEquals("java.lang.Object foo(int)", methodInteger.getSignature());
+		assertEquals("foo(int)", methodInteger.getSignature());
 
 		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodInteger.getBody().getStatement(1);
 		CtExpression<?> argumentToInt1 = invoToInt1.getArguments().get(0);
 
 		//----------From the second method we take the Method Inv
 		CtMethod<?> methodString = (CtMethod<?>) methodArray[1];
-		assertEquals("java.lang.Object foo(java.lang.String)", methodString.getSignature());
+		assertEquals("foo(java.lang.String)", methodString.getSignature());
 
 		CtInvocation<?> invoToString = (CtInvocation<?>) methodString.getBody().getStatement(1);
 		CtExpression<?> argumentToString = invoToString.getArguments().get(0);
@@ -276,7 +276,7 @@ public class SignatureTest {
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
 		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[0];
-		assertEquals("java.io.File foo(java.lang.String)", methodString.getSignature());
+		assertEquals("foo(java.lang.String)", methodString.getSignature());
 
 		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getBody().getStatement(0);
 
@@ -302,10 +302,10 @@ public class SignatureTest {
 				return "addField".equals(reference.getSimpleName()) && super.matches(reference);
 			}
 		});
-		assertEquals("#addField(<unknown>, <unknown>)", references.get(0).getSignature());
-		assertEquals("#addField(<unknown>, org.argouml.uml.ui.UMLComboBoxNavigator)", references.get(1).getSignature());
+		assertEquals("addField(<unknown>,<unknown>)", references.get(0).getSignature());
+		assertEquals("addField(<unknown>,org.argouml.uml.ui.UMLComboBoxNavigator)", references.get(1).getSignature());
 		for (CtExecutableReference reference : references) {
-			assertNotEquals("#addField(null, null)", reference.getSignature());
+			assertNotEquals("addField(null,null)", reference.getSignature());
 		}
 	}
 
@@ -323,11 +323,11 @@ public class SignatureTest {
 		assertEquals(2, methods.size());
 		CtMethod<?> method = methods.get(0);
 		assertEquals(
-				"void addInputSource(java.io.File)",
+				"addInputSource(java.io.File)",
 				method.getSignature());
 		CtMethod<?> method2 = methods.get(1);
 		assertEquals(
-				"void addInputSource(spoon.compiler.SpoonResource)",
+				"addInputSource(spoon.compiler.SpoonResource)",
 				method2.getSignature());
 		assertNotEquals(method, method2);
 

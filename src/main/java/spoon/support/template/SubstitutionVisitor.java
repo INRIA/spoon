@@ -53,6 +53,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.visitor.SignaturePrinter;
 import spoon.template.AbstractTemplate;
 import spoon.template.Parameter;
 import spoon.template.Template;
@@ -617,11 +618,11 @@ public class SubstitutionVisitor extends CtScanner {
 		} else if (parameterValue instanceof Class) {
 			return ((Class) parameterValue).getSimpleName();
 		} else if (parameterValue instanceof CtInvocation) {
-			return getShortSignature(((CtInvocation<?>) parameterValue).getExecutable().getSignature());
+			return getShortSignatureForJavadoc(((CtInvocation<?>) parameterValue).getExecutable());
 		} else if (parameterValue instanceof CtExecutableReference) {
-			return getShortSignature(((CtExecutableReference<?>) parameterValue).getSignature());
+			return getShortSignatureForJavadoc((CtExecutableReference<?>) parameterValue);
 		} else if (parameterValue instanceof CtExecutable) {
-			return getShortSignature(((CtExecutable<?>) parameterValue).getSignature());
+			return getShortSignatureForJavadoc(((CtExecutable<?>) parameterValue).getReference());
 		} else if (parameterValue instanceof CtLiteral) {
 			Object val = ((CtLiteral<Object>) parameterValue).getValue();
 			return val == null ? null : val.toString();
@@ -630,10 +631,12 @@ public class SubstitutionVisitor extends CtScanner {
 	}
 
 	/*
-	 * cut the package name. We always convert types to simple names here
+	 * return the typical Javadoc style link Foo#method(). The class name is not fully qualified.
 	 */
-	private static String getShortSignature(String fullSignature) {
-		return fullSignature.substring(fullSignature.lastIndexOf('.') + 1);
+	private static String getShortSignatureForJavadoc(CtExecutableReference<?> ref) {
+		SignaturePrinter sp = new SignaturePrinter();
+		sp.writeNameAndParameters(ref);
+		return ref.getDeclaringType().getSimpleName() + CtExecutable.EXECUTABLE_SEPARATOR + sp.getSignature();
 	}
 
 	/**
