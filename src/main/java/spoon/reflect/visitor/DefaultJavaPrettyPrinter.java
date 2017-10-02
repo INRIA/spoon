@@ -819,6 +819,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					scan(target);
 					if (printer.getPrinterHelper().hasNewContent()) {
 						printer.writeSeparator(".");
+					} else {
+						// fake separator for maintaining contract of TokenWriter
+						printer.writeSeparator("");
 					}
 				}
 				_context.ignoreStaticAccess(true);
@@ -897,6 +900,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					visitCtTypeReferenceWithoutGenerics(targetType);
 					if (printer.getPrinterHelper().hasNewContent()) {
 						printer.writeSeparator(".");
+					} else {
+						// fake separator for maintaining contract of TokenWriter
+						printer.writeSeparator("");
 					}
 					printer.writeKeyword("this");
 					return;
@@ -1103,6 +1109,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(invocation.getTarget());
 				if (printer.getPrinterHelper().hasNewContent()) {
 					printer.writeSeparator(".");
+				} else {
+					// fake separator for maintaining contract of TokenWriter
+					printer.writeSeparator("");
 				}
 				printer.writeKeyword("super");
 			}
