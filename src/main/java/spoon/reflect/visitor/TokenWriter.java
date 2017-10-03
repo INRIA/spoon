@@ -113,10 +113,6 @@ public interface TokenWriter {
 	 */
 	TokenWriter writeln();
 	/**
-	 * writes indentation
-	 */
-	TokenWriter writeTabs();
-	/**
 	 * increments indentation
 	 */
 	TokenWriter incTab();

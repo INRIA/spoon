@@ -58,7 +58,7 @@ class CommentHelper {
 			printer.write(JAVADOC_START).writeln();
 			break;
 		case JAVADOC:
-			printer.write(JAVADOC_START).writeln().writeTabs();
+			printer.write(JAVADOC_START).writeln();
 			break;
 		case INLINE:
 			printer.write(INLINE_COMMENT_START);
@@ -78,18 +78,18 @@ class CommentHelper {
 					if (commentType == CtComment.CommentType.BLOCK) {
 						printer.write(com);
 						if (lines.length > 1) {
-							printer.writeln().writeTabs();
+							printer.writeln();
 						}
 					} else {
 						if (com.length() > 0) {
-							printer.write(COMMENT_STAR + com).writeln().writeTabs();
+							printer.write(COMMENT_STAR + com).writeln();
 						} else {
-							printer.write(" *" /* no trailing space */ + com).writeln().writeTabs();
+							printer.write(" *" /* no trailing space */ + com).writeln();
 						}
 					}
 				}
 				if (javaDocTags != null && javaDocTags.isEmpty() == false) {
-					printer.write(" *").writeln().writeTabs();
+					printer.write(" *").writeln();
 					for (CtJavaDocTag docTag : javaDocTags) {
 						printJavaDocTag(printer, docTag);
 					}
@@ -115,7 +115,7 @@ class CommentHelper {
 		printer.write(docTag.getType().name().toLowerCase());
 		printer.write(" ");
 		if (docTag.getType().hasParam()) {
-			printer.write(docTag.getParam()).writeln().writeTabs();
+			printer.write(docTag.getParam()).writeln();
 		}
 
 		String[] tagLines = LINE_SEPARATORS_RE.split(docTag.getContent());
@@ -127,7 +127,7 @@ class CommentHelper {
 			if (docTag.getType().hasParam()) {
 				printer.write("\t\t");
 			}
-			printer.write(com.trim()).writeln().writeTabs();
+			printer.write(com.trim()).writeln();
 		}
 	}
 }

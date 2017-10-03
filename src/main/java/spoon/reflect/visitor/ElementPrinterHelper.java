@@ -76,7 +76,7 @@ public class ElementPrinterHelper {
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
 			prettyPrinter.scan(annotation);
-			printer.writeln().writeTabs();
+			printer.writeln();
 		}
 	}
 
@@ -150,7 +150,7 @@ public class ElementPrinterHelper {
 			if (element instanceof CtConstructor && element.isImplicit()) {
 				continue;
 			}
-			printer.writeln().writeTabs();
+			printer.writeln();
 			prettyPrinter.scan(element);
 			if (!env.isPreserveLineNumbers()) {
 				printer.writeln();
@@ -259,7 +259,7 @@ public class ElementPrinterHelper {
 			if (!types.get(0).getPackage().isUnnamedPackage()) {
 				writePackageLine(types.get(0).getPackage().getQualifiedName());
 			}
-			printer.writeln().writeln().writeTabs();
+			printer.writeln().writeln();
 			Set<String> setImports = new HashSet<>();
 			Set<String> setStaticImports = new HashSet<>();
 			for (CtReference ref : imports) {
@@ -286,18 +286,18 @@ public class ElementPrinterHelper {
 			Collections.sort(sortedImports);
 			for (String importLine : sortedImports) {
 				printer.writeKeyword("import").writeSpace();
-				writeQualifiedName(importLine).writeSeparator(";").writeln().writeTabs();
+				writeQualifiedName(importLine).writeSeparator(";").writeln();
 			}
 			if (setStaticImports.size() > 0) {
-				printer.writeln().writeTabs();
+				printer.writeln();
 				List<String> sortedStaticImports = new ArrayList<>(setStaticImports);
 				Collections.sort(sortedStaticImports);
 				for (String importLine : sortedStaticImports) {
 					printer.writeKeyword("import").writeSpace().writeKeyword("static").writeSpace();
-					writeQualifiedName(importLine).writeSeparator(";").writeln().writeTabs();
+					writeQualifiedName(importLine).writeSeparator(";").writeln();
 				}
 			}
-			printer.writeln().writeTabs();
+			printer.writeln();
 		}
 	}
 
@@ -315,7 +315,7 @@ public class ElementPrinterHelper {
 			return;
 		}
 		prettyPrinter.scan(comment);
-		printer.writeln().writeTabs();
+		printer.writeln();
 	}
 
 	private void writeComment(List<CtComment> comments) {
@@ -381,11 +381,11 @@ public class ElementPrinterHelper {
 			}
 			if (!(block instanceof CtBlock) && !(block instanceof CtIf)) {
 				printer.incTab();
-				printer.writeln().writeTabs();
+				printer.writeln();
 			}
 			writeStatement(block);
 			if (!(block instanceof CtBlock) && !(block instanceof CtIf)) {
-				printer.decTab().writeln().writeTabs();
+				printer.decTab().writeln();
 			}
 			if (!block.isImplicit()) {
 				if (!block.isParentInitialized() || (!(block.getParent() instanceof CtFor) && !(block.getParent() instanceof CtForEach) && !(block.getParent() instanceof CtIf))) {

@@ -78,12 +78,6 @@ public class DefaultTokenWriter implements TokenWriter {
 	}
 
 	@Override
-	public DefaultTokenWriter writeTabs() {
-		printerHelper.writeTabs();
-		return this;
-	}
-
-	@Override
 	public DefaultTokenWriter incTab() {
 		printerHelper.incTab();
 		return this;

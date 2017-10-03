@@ -415,7 +415,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			.writeSpace().writeSeparator("{").incTab();
 
 		elementPrinterHelper.writeElementList(annotationType.getTypeMembers());
-		printer.decTab().writeTabs().writeSeparator("}");
+		printer.decTab().writeSeparator("}");
 	}
 
 	@Override
@@ -503,7 +503,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.incTab();
 		for (CtStatement statement : block.getStatements()) {
 			if (!statement.isImplicit()) {
-				printer.writeln().writeTabs();
+				printer.writeln();
 				elementPrinterHelper.writeStatement(statement);
 			}
 		}
@@ -511,10 +511,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		getPrinterHelper().adjustEndPosition(block);
 		if (env.isPreserveLineNumbers()) {
 			if (!block.isImplicit()) {
-				printer.writeTabs().writeSeparator("}");
+				printer.writeSeparator("}");
 			}
 		} else {
-			printer.writeln().writeTabs();
+			printer.writeln();
 			if (!block.isImplicit()) {
 				printer.writeSeparator("}");
 			}
@@ -556,7 +556,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeSeparator(":").incTab();
 
 		for (CtStatement statement : caseStatement.getStatements()) {
-			printer.writeln().writeTabs();
+			printer.writeln();
 			elementPrinterHelper.writeStatement(statement);
 		}
 		printer.decTab();
@@ -602,7 +602,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeSeparator("{").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		getPrinterHelper().adjustEndPosition(ctClass);
-		printer.decTab().writeTabs().writeSeparator("}");
+		printer.decTab().writeSeparator("}");
 		context.popCurrentThis();
 	}
 
@@ -713,7 +713,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
 
 		if (ctEnum.getEnumValues().size() == 0) {
-			printer.writeTabs().writeSeparator(";").writeln();
+			printer.writeSeparator(";").writeln();
 		} else {
 			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, false, ",", true, false, ";")) {
 				for (CtEnumValue<?> enumValue : ctEnum.getEnumValues()) {
@@ -724,7 +724,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
-		printer.decTab().writeTabs().writeSeparator("}");
+		printer.decTab().writeSeparator("}");
 		context.popCurrentThis();
 	}
 
@@ -1079,7 +1079,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeSeparator("{").incTab();
 		// Content
 		elementPrinterHelper.writeElementList(intrface.getTypeMembers());
-		printer.decTab().writeTabs().writeSeparator("}");
+		printer.decTab().writeSeparator("}");
 		context.popCurrentThis();
 	}
 
@@ -1485,13 +1485,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(switchStatement.getSelector());
 		printer.writeSeparator(")").writeSpace().writeSeparator("{").incTab();
 		for (CtCase<?> c : switchStatement.getCases()) {
-			printer.writeln().writeTabs();
+			printer.writeln();
 			scan(c);
 		}
 		if (env.isPreserveLineNumbers()) {
 			printer.decTab().writeSeparator("}");
 		} else {
-			printer.decTab().writeln().writeTabs().writeSeparator("}");
+			printer.decTab().writeln().writeSeparator("}");
 		}
 	}
 
@@ -1793,7 +1793,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {
 				// saving lines and chars
-				printer.writeln().writeln().writeTabs();
+				printer.writeln().writeln();
 			} else {
 				getPrinterHelper().adjustEndPosition(t);
 			}
@@ -1812,7 +1812,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper = new ElementPrinterHelper(tokenWriter, this, env);
 		printer = tokenWriter;
 		return this;
-
 	}
 
 	private PrinterHelper getPrinterHelper() {
