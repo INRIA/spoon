@@ -115,6 +115,7 @@ import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -186,7 +187,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Token detector, which delegates tokens to {@link TokenWriter}
 	 */
-	private TokenWriter printer;
+	private final SnapshotTokenWriter printer = new SnapshotTokenWriter();
 
 	/**
 	 * Element printer helper.
@@ -203,6 +204,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	public DefaultJavaPrettyPrinter(Environment env) {
 		this.env = env;
+		this.elementPrinterHelper = new ElementPrinterHelper(printer, this, env);
 		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
@@ -815,9 +817,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 							target.setImplicit(false);
 						}
 					}
-					printer.getPrinterHelper().snapshotLength();
+					printer.snapshotLength();
 					scan(target);
-					if (printer.getPrinterHelper().hasNewContent()) {
+					if (printer.hasNewContent()) {
 						printer.writeSeparator(".");
 					}
 				}
@@ -893,9 +895,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				String targetTypeQualifiedName = targetType.getQualifiedName();
 
 				if (!lastTypeQualifiedName.equals(targetTypeQualifiedName)) {
-					printer.getPrinterHelper().snapshotLength();
+					printer.snapshotLength();
 					visitCtTypeReferenceWithoutGenerics(targetType);
-					if (printer.getPrinterHelper().hasNewContent()) {
+					if (printer.hasNewContent()) {
 						printer.writeSeparator(".");
 					}
 					printer.writeKeyword("this");
@@ -1099,16 +1101,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (parentType != null && parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				printer.writeKeyword("this");
 			} else {
-				printer.getPrinterHelper().snapshotLength();
+				printer.snapshotLength();
 				scan(invocation.getTarget());
-				if (printer.getPrinterHelper().hasNewContent()) {
+				if (printer.hasNewContent()) {
 					printer.writeSeparator(".");
 				}
 				printer.writeKeyword("super");
 			}
 		} else {
 			// It's a method invocation
-			printer.getPrinterHelper().snapshotLength();
+			printer.snapshotLength();
 			if (!this.importsContext.isImported(invocation.getExecutable())) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
@@ -1116,7 +1118,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 					scan(invocation.getTarget());
 				}
-				if (printer.getPrinterHelper().hasNewContent()) {
+				if (printer.hasNewContent()) {
 					printer.writeSeparator(".");
 				}
 			}
@@ -1809,12 +1811,100 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Set {@link TokenWriter}, which has to be used to print tokens
 	 */
 	public DefaultJavaPrettyPrinter setPrinterTokenWriter(TokenWriter tokenWriter) {
-		elementPrinterHelper = new ElementPrinterHelper(tokenWriter, this, env);
-		printer = tokenWriter;
+		printer.setNext(tokenWriter);
 		return this;
 	}
 
 	private PrinterHelper getPrinterHelper() {
 		return printer.getPrinterHelper();
+	}
+
+	/**
+	 * Internal implementation of {@link TokenWriter},
+	 * which counts each token and which is used by DJPP
+	 * to detect whether some token has been written since last call
+	 * of {@link #snapshotLength()}
+	 */
+	private class SnapshotTokenWriter implements TokenWriter {
+		private TokenWriter next;
+
+		private TokenWriter getNext() {
+			return next;
+		}
+
+		private void setNext(TokenWriter next) {
+			this.next = next;
+		}
+
+		public TokenWriter writeSeparator(String token) {
+			tokenCounter++;
+			return next.writeSeparator(token);
+		}
+
+		public TokenWriter writeOperator(String token) {
+			tokenCounter++;
+			return next.writeOperator(token);
+		}
+
+		public TokenWriter writeLiteral(String token) {
+			tokenCounter++;
+			return next.writeLiteral(token);
+		}
+
+		public TokenWriter writeKeyword(String token) {
+			tokenCounter++;
+			return next.writeKeyword(token);
+		}
+
+		public TokenWriter writeIdentifier(String token) {
+			tokenCounter++;
+			return next.writeIdentifier(token);
+		}
+
+		public TokenWriter writeCodeSnippet(String token) {
+			tokenCounter++;
+			return next.writeCodeSnippet(token);
+		}
+
+		public TokenWriter writeComment(CtComment comment) {
+			return next.writeComment(comment);
+		}
+
+		public TokenWriter writeln() {
+			return next.writeln();
+		}
+
+		public TokenWriter incTab() {
+			return next.incTab();
+		}
+
+		public TokenWriter decTab() {
+			return next.decTab();
+		}
+
+		public PrinterHelper getPrinterHelper() {
+			return next.getPrinterHelper();
+		}
+
+		public void reset() {
+			tokenCounter = 0;
+			next.reset();
+		}
+
+		public TokenWriter writeSpace() {
+			return next.writeSpace();
+		}
+
+		private int tokenCounter = 0;
+		private ArrayDeque<Integer> lengths = new ArrayDeque<>();
+		/** stores the length of the printer */
+		private void snapshotLength() {
+			lengths.addLast(tokenCounter);
+		}
+
+		/** returns true if something has been written since the last call to napshotLength() */
+		private boolean hasNewContent() {
+			return lengths.pollLast() < tokenCounter;
+		}
 	}
 }
