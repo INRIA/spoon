@@ -41,6 +41,7 @@ import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
 import spoon.test.imports.testclasses.NotImportExecutableType;
 import spoon.test.imports.testclasses.Pozole;
+import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
@@ -1161,5 +1162,54 @@ public class ImportTest {
 			}
 		}
 		assertTrue(countOfImports>10);
+	}
+
+	@Test
+	public void testSortImportPutStaticImportAfterTypeImport() {
+		//contract: static import should be after import
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setShouldCompile(true);
+		String outputDir = "./target/spoon-sort-import";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/StaticNoOrdered.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+		CtType element = launcher.getFactory().Class().get(StaticNoOrdered.class);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		StringTokenizer st = new StringTokenizer(output, System.getProperty("line.separator"));
+
+		int countImports = 0;
+
+		int nbStaticImports = 2;
+		int nbStandardImports = 4;
+
+		boolean startStatic = false;
+
+		while (st.hasMoreTokens()) {
+			String line = st.nextToken();
+
+			if (line.startsWith("import static")) {
+				if (!startStatic) {
+					assertEquals("Static import should start after exactly "+nbStandardImports+" standard imports", nbStandardImports, countImports);
+				} else {
+					assertTrue("It will normally have only "+nbStaticImports+" static imports", countImports <= nbStandardImports+nbStaticImports);
+				}
+				startStatic = true;
+				assertTrue("Static import should be after normal import", countImports >= nbStandardImports);
+			}
+
+			if (line.startsWith("import")) {
+				countImports++;
+			}
+		}
+
+		assertEquals("Exactly "+nbStandardImports+nbStaticImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
 	}
 }
