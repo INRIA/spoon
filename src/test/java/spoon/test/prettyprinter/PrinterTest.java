@@ -247,11 +247,11 @@ public class PrinterTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources(
-								"./src/test/java/spoon/test/annotation/testclasses/",
-								"./src/test/java/spoon/test/prettyprinter/"))
+				.resources(
+						"./src/test/java/spoon/test/annotation/testclasses/",
+						"./src/test/java/spoon/test/prettyprinter/"))
 //this case needs longer, but checks contract on all spoon java sources
-//						.resources("./src/main/java/"))
+//				.resources("./src/main/java/"))
 				.build();
 		
 		assertTrue(factory.Type().getAll().size() > 0);
@@ -275,6 +275,7 @@ public class PrinterTest {
 					checkTokenWhitespace(separator, false);					
 					//one of the separators
 					assertTrue("Unexpected separator: "+separator, separators.contains(separator));
+					handleTabs();
 					allTokens.append(separator);
 					return this;
 				}
@@ -284,6 +285,7 @@ public class PrinterTest {
 					checkRepeatingOfTokens("writeOperator");
 					checkTokenWhitespace(operator, false);					
 					assertTrue("Unexpected operator: "+operator, operators.contains(operator));
+					handleTabs();
 					allTokens.append(operator);
 					return this;
 				}
@@ -292,6 +294,7 @@ public class PrinterTest {
 				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
 					assertTrue(literal.length() > 0);
+					handleTabs();
 					allTokens.append(literal);
 					return this;
 				}
@@ -301,6 +304,7 @@ public class PrinterTest {
 					checkRepeatingOfTokens("writeKeyword");
 					checkTokenWhitespace(keyword, false);					
 					assertTrue("Unexpected java keyword: "+keyword, javaKeywords.contains(keyword));
+					handleTabs();
 					allTokens.append(keyword);
 					return this;
 				}
@@ -318,6 +322,7 @@ public class PrinterTest {
 						}
 					}
 					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					handleTabs();
 					allTokens.append(identifier);
 					return this;
 				}
@@ -330,6 +335,7 @@ public class PrinterTest {
 					ph.setLineSeparator(getPrinterHelper().getLineSeparator());
 					ph.setTabCount(getPrinterHelper().getTabCount());
 					sptw.writeComment(comment);
+					handleTabs();
 					allTokens.append(sptw.getPrinterHelper().toString());
 					return this;
 				}
@@ -338,20 +344,26 @@ public class PrinterTest {
 				public TokenWriter writeln() {
 					checkRepeatingOfTokens("writeln");
 					allTokens.append(getPrinterHelper().getLineSeparator());
+					lastTokenWasEOL = true;
 					return this;
 				}
 				
-				@Override
-				public TokenWriter writeTabs() {
-					checkRepeatingOfTokens("writeTabs");
-					for (int i = 0; i < getPrinterHelper().getTabCount(); i++) {
-						if (factory.getEnvironment().isUsingTabulations()) {
-							allTokens.append('\t');
-						} else {
-							for (int j = 0; j < factory.getEnvironment().getTabulationSize(); j++) {
-								allTokens.append(' ');
+				private boolean lastTokenWasEOL = true;
+				private int tabCount = 0;
+				
+				public TokenWriter handleTabs() {
+					if(lastTokenWasEOL) {
+						lastTokenWasEOL = false;
+						for (int i = 0; i < tabCount; i++) {
+							if (factory.getEnvironment().isUsingTabulations()) {
+								allTokens.append('\t');
+							} else {
+								for (int j = 0; j < factory.getEnvironment().getTabulationSize(); j++) {
+									allTokens.append(' ');
+								}
 							}
 						}
+						
 					}
 					return this;
 				}
@@ -360,17 +372,20 @@ public class PrinterTest {
 				public TokenWriter writeCodeSnippet(String token) {
 					checkRepeatingOfTokens("writeCodeSnippet");
 					assertTrue(token.length() > 0);
+					handleTabs();
 					allTokens.append(token);
 					return this;
 				}
 
 				@Override
 				public TokenWriter incTab() {
+					tabCount++;
 					return this;
 				}
 
 				@Override
 				public TokenWriter decTab() {
+					tabCount--;
 					return this;
 				}
 

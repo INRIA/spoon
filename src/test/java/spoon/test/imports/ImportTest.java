@@ -422,7 +422,7 @@ public class ImportTest {
 
 		CtClass<Object> aClass = factory.Class().get(A.class);
 		assertEquals("public class A {" + newLine
-				+ "    public class ArrayList extends java.util.ArrayList {    }" + newLine
+				+ "    public class ArrayList extends java.util.ArrayList {}" + newLine
 				+ "}", aClass.toString());
 	}
 	
