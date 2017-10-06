@@ -2,7 +2,8 @@ package spoon.test.prettyprinter.testclasses;
 
 import spoon.test.prettyprinter.testclasses.sub.Constants;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Created by urli on 30/01/2017.

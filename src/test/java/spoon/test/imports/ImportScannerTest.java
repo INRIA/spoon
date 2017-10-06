@@ -68,7 +68,10 @@ public class ImportScannerTest {
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
 
-		Factory aFactory = build(packageName, className).getFactory();
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/spoon/test/imports/testclasses2/");
+		spoon.buildModel();
+		Factory aFactory = spoon.getFactory();
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
