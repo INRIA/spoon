@@ -626,8 +626,7 @@ public class FilterTest {
 		try {
 			launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("step1")
 				.map((CtMethod<?> m)->m).name("invalidStep2") // here it will fail
-				.forEach((CtInterface<?> c)->{
-				});
+				.list(); // forcing the evaluation of the query
 			fail();
 		} catch (ClassCastException e) {
 			// CtCLass cannot be cast to CtMethod
