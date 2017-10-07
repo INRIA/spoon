@@ -625,14 +625,11 @@ public class FilterTest {
 		
 		try {
 			launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("step1")
-				.map((CtMethod<?> m)->m).name("invalidStep2")
-				.map((o)->o).name("step3")
-				.forEach((CtInterface<?> c)->{
-					fail();
-				});
+				.map((CtMethod<?> m)->m).name("invalidStep2") // here it will fail
+				.list(); // forcing the evaluation of the query
 			fail();
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().indexOf("Step invalidStep2) spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod")>=0);
+		} catch (ClassCastException e) {
+			// CtCLass cannot be cast to CtMethod
 		}
 	}
 	@Test
@@ -897,120 +894,8 @@ public class FilterTest {
 					context.count++;
 					throw new ClassCastException("TEST");
 				});
-				fail("It must fail, because body of forEach should be called and thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the for each implementation made by local class throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).forEach(new CtConsumer<CtType>() {
-					@Override
-					public void accept(CtType t) {
-						context.count++;
-						throw new ClassCastException("TEST");
-					}
-				});
-				fail("It must fail, because body of forEach should be called and thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the select implementation made by local class throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).select(new Filter<CtType>(){
-					@Override
-					public boolean matches(CtType element) {
-						context.count++;
-						throw new ClassCastException("TEST");
-					}
-				}).list();
-				fail("It must fail, because body of select thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the select implementation made by lambda throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).select((CtType element) -> {
-					context.count++;
-					throw new ClassCastException("TEST");
-				}).list();
-				fail("It must fail, because body of select thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the map(CtFunction) implementation made by local class throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map(new CtFunction<CtType, Object>(){
-					@Override
-					public Object apply(CtType input) {
-						context.count++;
-						throw new ClassCastException("TEST");
-					}
-				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
-				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the map(CtFunction) implementation made by lambda throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map((CtType input) -> {
-					context.count++;
-					throw new ClassCastException("TEST");
-				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
-				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the map(CtConsumableFunction) implementation made by local class throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map(new CtConsumableFunction<CtType>(){
-					@Override
-					public void apply(CtType input, CtConsumer<Object> outputConsumer) {
-						context.count++;
-						throw new ClassCastException("TEST");
-					}
-				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
-				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
-			}
-		}
-		{
-			Context context = new Context();
-			//contract: if the map(CtConsumableFunction) implementation made by lambda throws CCE then it is reported
-			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map((CtType input, CtConsumer<Object> outputConsumer) -> {
-					context.count++;
-					throw new ClassCastException("TEST");
-				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
-				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
-				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+			} catch (SpoonException | ClassCastException e) {
+				fail();
 			}
 		}
 	}

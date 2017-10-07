@@ -16,20 +16,19 @@
  */
 package spoon.reflect.visitor.chain;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
@@ -399,49 +398,15 @@ public class CtQueryImpl implements CtQuery {
 		 * @param parameters
 		 */
 		protected void onClassCastException(ClassCastException e, String exceptionMessage, Object input) {
-			if (isFailOnCCE() || expectedClass != null) {
+			if (isFailOnCCE()) {
 				//expected class is known and it was checked, so the CCE must be thrown by something else. Report it
-				throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
+				// we want to point to this line of code
+				e.setStackTrace(new Exception().getStackTrace());
+				throw e;
 			}
-			StackTraceElement[] stackEles = e.getStackTrace();
-			StackTraceElement stackEle = stackEles[0];
-			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
-				//the CCE exception was thrown in the expected method - OK, it can be ignored
-				detectExpectedClassFromCCE(e, input);
-				log(this, e.getMessage(), input);
-				return;
-			}
-			//Do not ignore this exception in client's code. It is not expected. It cannot be ignored.
-			throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
+			return;
 		}
 
-		protected void detectExpectedClassFromCCE(ClassCastException e, Object input) {
-			if (canExtractTypeFromCCE == false) {
-				return;
-			}
-			//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
-			String message = e.getMessage();
-			if (message != null) {
-				Matcher m = cceMessagePattern.matcher(message);
-				if (m.matches()) {
-					String objectClassName = m.group(1);
-					String expectedClassName = m.group(2);
-					if (objectClassName.equals(input.getClass().getName())) {
-						try {
-							expectedClass = getClass().getClassLoader().loadClass(expectedClassName);
-							return;
-						} catch (ClassNotFoundException e1) {
-							//the class cast exception message is invalid
-							if (Launcher.LOGGER.isDebugEnabled()) {
-								Launcher.LOGGER.debug("Unexpected ClassCastException message: \"" + message + "\"");
-							}
-						}
-					}
-				}
-			}
-			//extraction of class from CCE failed. Do not try it again - it would be wasting of time = bad performance.
-			canExtractTypeFromCCE = false;
-		}
 	}
 	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
 	private static boolean canExtractTypeFromCCE = true;
