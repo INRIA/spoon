@@ -429,8 +429,7 @@ public class PrinterTest {
 			assertEquals(0, withEmptyListenerResult.length());
 			
 			//contract: result built manually from tokens is same like the one made by DefaultTokenWriter
-			//temporarily disabled until problem of PrinterHelper#hasNewContent() is solved
-//			assertEquals(standardPrintedResult, allTokens.toString());
+			assertEquals(standardPrintedResult, allTokens.toString());
 		}
 	}
 

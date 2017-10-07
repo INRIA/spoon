@@ -21,7 +21,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,8 +81,6 @@ public class PrinterHelper {
 	public PrinterHelper(Environment env) {
 		this.env = env;
 	}
-
-	private ArrayDeque<Integer> lengths = new ArrayDeque<>();
 
 	/**
 	 * resets to the initial state
@@ -288,16 +285,6 @@ public class PrinterHelper {
 	@Override
 	public String toString() {
 		return sbf.toString();
-	}
-
-	/** stores the length of the printer */
-	public void snapshotLength() {
-		lengths.addLast(toString().length());
-	}
-
-	/** returns true if something has been written since the last call to napshotLength() */
-	public boolean hasNewContent() {
-		return lengths.pollLast() < toString().length();
 	}
 
 	/**
