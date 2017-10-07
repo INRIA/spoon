@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.support.util.RtHelper;
@@ -404,7 +405,7 @@ public class CtQueryImpl implements CtQuery {
 				throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
 			}
 			StackTraceElement[] stackEles = e.getStackTrace();
-			StackTraceElement stackEle = stackEles[0];
+			StackTraceElement stackEle = stackEles[getIndexOfCallerInStackOfLambda()];
 			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
 				//the CCE exception was thrown in the expected method - OK, it can be ignored
 				detectExpectedClassFromCCE(e, input);
@@ -551,5 +552,34 @@ public class CtQueryImpl implements CtQuery {
 			}
 			nextStep.accept(result);
 		}
+	}
+
+	private static Integer indexOfCallerInStack = null;
+	/**
+	 * JVM implementations reports exception in call of lambda in different way.
+	 * A) the to be called lambda expression whose input parameters are invalid is on top of stack trace
+	 * B) the to be called lambda expression whose input parameters are invalid is NOT in stack trace at all
+	 *
+	 * This method detects actual behavior of JVM, so the code, which decides whether ClassCastException is expected (part of filtering process)
+	 * or unexpected - thrown by clients wrong code works on all JVM implementations
+	 */
+	private static int getIndexOfCallerInStackOfLambda() {
+		if (indexOfCallerInStack == null) {
+			CtConsumer<CtType<?>> f = (CtType<?> t) -> { };
+			CtConsumer<Object> unchecked = (CtConsumer) f;
+			try {
+				unchecked.accept(new Integer(1));
+			} catch (ClassCastException e) {
+				StackTraceElement[] stack = e.getStackTrace();
+				for (int i = 0; i < stack.length; i++) {
+					if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
+						indexOfCallerInStack = i;
+						return i;
+					}
+				}
+				throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
+			}
+		}
+		return indexOfCallerInStack;
 	}
 }
