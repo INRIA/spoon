@@ -815,9 +815,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 							target.setImplicit(false);
 						}
 					}
-					scan(target);
 					// the implicit drives the separator
 					if (!target.isImplicit()) {
+						scan(target);
 						printer.writeSeparator(".");
 					}
 				}
@@ -893,8 +893,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				String targetTypeQualifiedName = targetType.getQualifiedName();
 
 				if (!lastTypeQualifiedName.equals(targetTypeQualifiedName)) {
-					visitCtTypeReferenceWithoutGenerics(targetType);
 					if (!targetType.isImplicit()) {
+						visitCtTypeReferenceWithoutGenerics(targetType);
 						printer.writeSeparator(".");
 					}
 					printer.writeKeyword("this");
@@ -1111,8 +1111,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);
 					}
-					scan(invocation.getTarget());
 					if (invocation.getTarget() != null && !invocation.getTarget().isImplicit()) {
+						scan(invocation.getTarget());
 						printer.writeSeparator(".");
 					}
 				}
