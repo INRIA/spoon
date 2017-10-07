@@ -307,7 +307,7 @@ public class CtQueryImpl implements CtQuery {
 			try {
 				result = _accept(input);
 			} catch (ClassCastException e) {
-				onClassCastException(e, getErrorMessage(), input);
+				onClassCastException(e, input);
 				return;
 			}
 			if (result == null || isTerminated()) {
@@ -318,10 +318,6 @@ public class CtQueryImpl implements CtQuery {
 
 		protected abstract Object _accept(Object input);
 		protected void handleResult(Object result, Object input) {
-		}
-
-		protected String getErrorMessage() {
-			return null;
 		}
 
 		/**
@@ -395,57 +391,45 @@ public class CtQueryImpl implements CtQuery {
 
 		/**
 		 * Is used to log that invocation was not processed
-		 * @param step the step which thrown CCE
-		 * @param e
-		 * @param parameters
+		 * @param e - the CCE caught during last call of callback
+		 * @param input - the value sent as input to last call of callback
 		 */
-		protected void onClassCastException(ClassCastException e, String exceptionMessage, Object input) {
+		protected void onClassCastException(ClassCastException e, Object input) {
 			if (isFailOnCCE() || expectedClass != null) {
-				//expected class is known and it was checked, so the CCE must be thrown by something else. Report it
-				throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
+				//expected class is known so it was checked before the call, so the CCE must be thrown by something else. Report it directly as it is. It is bug in client's code
+				throw e;
 			}
+			int idx = getIndexOfCallerInStackOfLambda();
+			if (idx < 0) {
+				//this is an exotic JVM, where we cannot detect type of parameter of Lambda expression
+				//Silently ignore this CCE, which was may be expected or may be problem in client's code.
+//				if (Launcher.LOGGER.isDebugEnabled()) {
+//					Launcher.LOGGER.debug("ClassCastException thrown by client's code or Query engine ...", e);
+//				}
+				return;
+			}
+			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
 			StackTraceElement[] stackEles = e.getStackTrace();
-			StackTraceElement stackEle = stackEles[getIndexOfCallerInStackOfLambda()];
+			StackTraceElement stackEle = stackEles[idx];
 			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
-				//the CCE exception was thrown in the expected method - OK, it can be ignored
-				detectExpectedClassFromCCE(e, input);
+				/*
+				 * the CCE exception was thrown in the expected method - OK, it can be ignored
+				 * Detect type of parameter of Lambda expression from the CCE message and store it in expectedClass
+				 * so we can check expected type before next call and to avoid slow throwing of ClassCastException
+				 */
+				expectedClass = detectTargetClassFromCCE(e, input);
+				if (expectedClass == null) {
+					//It wasn't able to detect expected class from the CCE. Fall back to implementation for exotic JVMs
+					indexOfCallerInStack = -1;
+					return;
+				}
 				log(this, e.getMessage(), input);
 				return;
 			}
 			//Do not ignore this exception in client's code. It is not expected. It cannot be ignored.
-			throw new SpoonException(exceptionMessage == null ? getStepDescription(this, e.getMessage(), input) : exceptionMessage, e);
-		}
-
-		protected void detectExpectedClassFromCCE(ClassCastException e, Object input) {
-			if (canExtractTypeFromCCE == false) {
-				return;
-			}
-			//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
-			String message = e.getMessage();
-			if (message != null) {
-				Matcher m = cceMessagePattern.matcher(message);
-				if (m.matches()) {
-					String objectClassName = m.group(1);
-					String expectedClassName = m.group(2);
-					if (objectClassName.equals(input.getClass().getName())) {
-						try {
-							expectedClass = getClass().getClassLoader().loadClass(expectedClassName);
-							return;
-						} catch (ClassNotFoundException e1) {
-							//the class cast exception message is invalid
-							if (Launcher.LOGGER.isDebugEnabled()) {
-								Launcher.LOGGER.debug("Unexpected ClassCastException message: \"" + message + "\"");
-							}
-						}
-					}
-				}
-			}
-			//extraction of class from CCE failed. Do not try it again - it would be wasting of time = bad performance.
-			canExtractTypeFromCCE = false;
+			throw e;
 		}
 	}
-	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
-	private static boolean canExtractTypeFromCCE = true;
 
 	/**
 	 * Wrapper around terminal {@link CtConsumer}, which accepts output of this query
@@ -459,10 +443,6 @@ public class CtQueryImpl implements CtQuery {
 		protected Object _accept(Object element) {
 			nextStep.accept(element);
 			return null;
-		}
-
-		protected String getErrorMessage() {
-			return "Execution of query callback failed";
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -567,19 +547,47 @@ public class CtQueryImpl implements CtQuery {
 		if (indexOfCallerInStack == null) {
 			CtConsumer<CtType<?>> f = (CtType<?> t) -> { };
 			CtConsumer<Object> unchecked = (CtConsumer) f;
+			Object obj = new Integer(1);
 			try {
-				unchecked.accept(new Integer(1));
+				unchecked.accept(obj);
 			} catch (ClassCastException e) {
 				StackTraceElement[] stack = e.getStackTrace();
 				for (int i = 0; i < stack.length; i++) {
 					if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 						indexOfCallerInStack = i;
-						return i;
+						//check whether we can detect type of lambda input parameter from CCE
+						Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
+						if (CtType.class.equals(detectectedClass) == false) {
+							//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
+							//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
+							indexOfCallerInStack = -1;
+						}
+						return indexOfCallerInStack;
 					}
 				}
 				throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
 			}
 		}
 		return indexOfCallerInStack;
+	}
+	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
+	private static Class<?> detectTargetClassFromCCE(ClassCastException e, Object input) {
+		//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
+		String message = e.getMessage();
+		if (message != null) {
+			Matcher m = cceMessagePattern.matcher(message);
+			if (m.matches()) {
+				String objectClassName = m.group(1);
+				String expectedClassName = m.group(2);
+				if (objectClassName.equals(input.getClass().getName())) {
+					try {
+						return Class.forName(expectedClassName);
+					} catch (ClassNotFoundException e1) {
+						throw new SpoonException("The class detected from ClassCastException not found.", e1);
+					}
+				}
+			}
+		}
+		return null;
 	}
 }
