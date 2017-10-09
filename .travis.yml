@@ -7,6 +7,7 @@ group: edge
 
 jdk:
   - oraclejdk8
+  - oraclejdk9
 
 # from https://docs.travis-ci.com/user/customizing-the-build
 # A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
