@@ -399,8 +399,7 @@ public class CtQueryImpl implements CtQuery {
 				//expected class is known so it was checked before the call, so the CCE must be thrown by something else. Report it directly as it is. It is bug in client's code
 				throw e;
 			}
-			int idx = getIndexOfCallerInStackOfLambda();
-			if (idx < 0) {
+			if (indexOfCallerInStack < 0) {
 				//this is an exotic JVM, where we cannot detect type of parameter of Lambda expression
 				//Silently ignore this CCE, which was may be expected or may be problem in client's code.
 //				if (Launcher.LOGGER.isDebugEnabled()) {
@@ -410,7 +409,7 @@ public class CtQueryImpl implements CtQuery {
 			}
 			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
 			StackTraceElement[] stackEles = e.getStackTrace();
-			StackTraceElement stackEle = stackEles[idx];
+			StackTraceElement stackEle = stackEles[indexOfCallerInStack];
 			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
 				/*
 				 * the CCE exception was thrown in the expected method - OK, it can be ignored
@@ -419,9 +418,10 @@ public class CtQueryImpl implements CtQuery {
 				 */
 				expectedClass = detectTargetClassFromCCE(e, input);
 				if (expectedClass == null) {
-					//It wasn't able to detect expected class from the CCE. Fall back to implementation for exotic JVMs
-					indexOfCallerInStack = -1;
-					return;
+					/*
+					 * It wasn't able to detect expected class from the CCE.
+					 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
+					 */
 				}
 				log(this, e.getMessage(), input);
 				return;
@@ -534,7 +534,8 @@ public class CtQueryImpl implements CtQuery {
 		}
 	}
 
-	private static Integer indexOfCallerInStack = null;
+	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
+	private static final int indexOfCallerInStack = getIndexOfCallerInStackOfLambda();
 	/**
 	 * JVM implementations reports exception in call of lambda in different way.
 	 * A) the to be called lambda expression whose input parameters are invalid is on top of stack trace
@@ -544,33 +545,29 @@ public class CtQueryImpl implements CtQuery {
 	 * or unexpected - thrown by clients wrong code works on all JVM implementations
 	 */
 	private static int getIndexOfCallerInStackOfLambda() {
-		if (indexOfCallerInStack == null) {
-			CtConsumer<CtType<?>> f = (CtType<?> t) -> { };
-			CtConsumer<Object> unchecked = (CtConsumer) f;
-			Object obj = new Integer(1);
-			try {
-				unchecked.accept(obj);
-			} catch (ClassCastException e) {
-				StackTraceElement[] stack = e.getStackTrace();
-				for (int i = 0; i < stack.length; i++) {
-					if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
-						indexOfCallerInStack = i;
-						//check whether we can detect type of lambda input parameter from CCE
-						Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
-						if (CtType.class.equals(detectectedClass) == false) {
-							//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
-							//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
-							indexOfCallerInStack = -1;
-						}
-						return indexOfCallerInStack;
+		CtConsumer<CtType<?>> f = (CtType<?> t) -> { };
+		CtConsumer<Object> unchecked = (CtConsumer) f;
+		Object obj = new Integer(1);
+		try {
+			unchecked.accept(obj);
+			throw new SpoonException("The lambda expression with input type CtType must throw ClassCastException when input type is Integer. Basic CtQuery contract is violated by JVM!");
+		} catch (ClassCastException e) {
+			StackTraceElement[] stack = e.getStackTrace();
+			for (int i = 0; i < stack.length; i++) {
+				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
+					//check whether we can detect type of lambda input parameter from CCE
+					Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
+					if (CtType.class.equals(detectectedClass) == false) {
+						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
+						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
+						return -1;
 					}
+					return i;
 				}
-				throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
 			}
+			throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
 		}
-		return indexOfCallerInStack;
 	}
-	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
 	private static Class<?> detectTargetClassFromCCE(ClassCastException e, Object input) {
 		//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
 		String message = e.getMessage();
