@@ -80,14 +80,13 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 * Gets the reference to the type that declares this executable.
 	 */
 	@PropertyGetter(role = CtRole.TYPE)
-	@DerivedProperty
 	CtTypeReference<?> getDeclaringType();
 
 	/**
 	 * For methods, gets the return type of the executable (may be null in noclasspath mode).
 	 * For constructors, gets the constructor class (which is also the return type of the contructor calls).
 	 */
-	@PropertyGetter(role = { CtRole.TYPE , CtRole.TYPE })
+	@PropertyGetter(role = CtRole.TYPE)
 	CtTypeReference<T> getType();
 
 	/**
@@ -149,7 +148,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Sets the type of the variable.
 	 */
-	@PropertySetter(role = { CtRole.TYPE , CtRole.TYPE })
+	@PropertySetter(role = CtRole.TYPE)
 	<C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**

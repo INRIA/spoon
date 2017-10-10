@@ -211,7 +211,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * }
 	 * </pre>
 	 */
-	@PropertyGetter(role = { CtRole.TYPE_PARAMETER , CtRole.TYPE })
 	@DerivedProperty
 	CtTypeParameter getTypeParameterDeclaration();
 
