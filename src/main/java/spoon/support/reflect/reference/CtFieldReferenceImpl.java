@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
@@ -39,10 +41,13 @@ import static spoon.reflect.path.CtRole.TYPE;
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.IS_FINAL)
 	boolean fina = false;
 
+	@MetamodelPropertyField(role = CtRole.IS_STATIC)
 	boolean stat = false;
 
 	public CtFieldReferenceImpl() {

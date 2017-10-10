@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -29,6 +32,7 @@ import static spoon.reflect.path.CtRole.BOUND;
 
 
 public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtIntersectionTypeReference<T> {
+	@MetamodelPropertyField(role = CtRole.BOUND)
 	List<CtTypeReference<?>> bounds = CtElementImpl.emptyList();
 
 	@Override

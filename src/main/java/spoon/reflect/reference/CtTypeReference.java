@@ -16,6 +16,7 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.path.CtRole;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtShadowable;
@@ -83,6 +84,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 *
 	 * @return the type declaration that corresponds to the reference.
 	 */
+	@PropertyGetter(role = CtRole.TYPE)
 	@DerivedProperty
 	CtType<T> getTypeDeclaration();
 
@@ -92,6 +94,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the declaring type if this references an inner class; null in
 	 * other cases
 	 */
+	@PropertyGetter(role = CtRole.TYPE)
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -118,6 +121,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * Sets the reference to the declaring type. Should be set to null if the
 	 * referenced type is not a inner type.
 	 */
+	@PropertySetter(role = CtRole.TYPE)
 	<C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> type);
 
 	/**
@@ -207,6 +211,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * }
 	 * </pre>
 	 */
+	@PropertyGetter(role = { CtRole.TYPE_PARAMETER , CtRole.TYPE })
 	@DerivedProperty
 	CtTypeParameter getTypeParameterDeclaration();
 

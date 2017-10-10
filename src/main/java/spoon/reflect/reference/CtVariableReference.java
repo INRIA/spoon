@@ -16,6 +16,9 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.DerivedProperty;
@@ -32,11 +35,13 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Gets the type of the variable.
 	 */
+	@PropertyGetter(role = CtRole.TYPE)
 	CtTypeReference<T> getType();
 
 	/**
 	 * Sets the type of the variable.
 	 */
+	@PropertySetter(role = CtRole.TYPE)
 	<C extends CtVariableReference<T>> C setType(CtTypeReference<T> type);
 
 	/**

@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtConstructor;
@@ -63,10 +66,13 @@ import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
@@ -778,6 +784,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

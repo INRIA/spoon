@@ -16,6 +16,10 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.Launcher;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtClass;
@@ -53,18 +57,23 @@ import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.IS_STATIC)
 	boolean stat = false;
 
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	/**
 	 * For methods, stores the return type of the method. (not pretty-printed).
 	 * For constructors, stores the type of the target constructor (pretty-printed).
 	 */
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
 
 	public CtExecutableReferenceImpl() {

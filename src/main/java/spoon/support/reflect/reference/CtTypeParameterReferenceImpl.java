@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -40,8 +42,10 @@ import static spoon.reflect.path.CtRole.IS_UPPER;
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
 	CtTypeReference<?> superType;
 
+	@MetamodelPropertyField(role = CtRole.IS_UPPER)
 	boolean upper = true;
 
 	public CtTypeParameterReferenceImpl() {

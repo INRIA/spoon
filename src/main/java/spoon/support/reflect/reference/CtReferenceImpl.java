@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
@@ -32,6 +34,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.NAME)
 	protected String simplename = "";
 
 	public CtReferenceImpl() {
