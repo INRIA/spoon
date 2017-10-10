@@ -71,7 +71,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
+	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
