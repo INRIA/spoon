@@ -79,7 +79,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Gets the reference to the type that declares this executable.
 	 */
-	@PropertyGetter(role = CtRole.TYPE)
+	@PropertyGetter(role = CtRole.DECLARING_TYPE)
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -136,7 +136,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Sets the declaring type.
 	 */
-	@PropertySetter(role = CtRole.TYPE)
+	@PropertySetter(role = CtRole.DECLARING_TYPE)
 	<C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**

@@ -34,14 +34,14 @@ import java.lang.reflect.Member;
 import java.util.Collections;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_FINAL;
 import static spoon.reflect.path.CtRole.IS_STATIC;
-import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
 	@MetamodelPropertyField(role = CtRole.IS_FINAL)
@@ -195,7 +195,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}

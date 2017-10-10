@@ -22,6 +22,7 @@ package spoon.reflect.path;
 public enum CtRole {
 	NAME,
 	TYPE,
+	DECLARING_TYPE,
 	BODY,
 	IS_SHADOW,
 	BOUND, // in reference only
@@ -89,6 +90,7 @@ public enum CtRole {
 				return CtRole.values()[i];
 			}
 		}
+		name = name.toLowerCase();
 		if ("implicit".equals(name)) {
 			return IS_IMPLICIT;
 		}
@@ -139,6 +141,9 @@ public enum CtRole {
 		}
 		if ("throwexpression".equals(name)) {
 			return THROWN;
+		}
+		if ("declaringtype".equals(name)) {
+			return DECLARING_TYPE;
 		}
 		if ("returntype".equals(name)
 				|| "componenttype".equals(name)) {
