@@ -18,7 +18,6 @@ package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;

@@ -17,9 +17,9 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;

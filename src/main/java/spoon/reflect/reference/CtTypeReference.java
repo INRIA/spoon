@@ -16,13 +16,13 @@
  */
 package spoon.reflect.reference;
 
-import spoon.reflect.path.CtRole;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 

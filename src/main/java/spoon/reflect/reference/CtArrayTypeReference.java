@@ -16,9 +16,9 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.annotations.PropertyGetter;
 import spoon.support.DerivedProperty;
 
 

@@ -17,11 +17,11 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;

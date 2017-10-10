@@ -16,11 +16,9 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -31,6 +29,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
