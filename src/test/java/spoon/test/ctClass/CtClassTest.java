@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -19,8 +20,11 @@ import java.util.Set;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -29,6 +33,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
@@ -178,5 +183,43 @@ public class CtClassTest {
 		assertThat(aClass, notNullValue());
 
 		canBeBuilt("./target/issue1306", 8, true);
+	}
+
+	@Test
+	public void testCloneAnonymousClassInvocation() {
+    	// contract: after cloning an anonymous class invocation, we still should be able to print it, when not using autoimport
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java");
+		launcher.getEnvironment().setAutoImports(false);
+		launcher.buildModel();
+
+		CtModel model = launcher.getModel();
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
+
+		assertTrue(newClassInvocation.toString().length() > 0);
+		assertTrue(newClassInvocationCloned.toString().length() > 0);
+
+		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
+	}
+
+	@Test
+	public void testCloneAnonymousClassInvocationWithAutoimports() {
+		// contract: after cloning an anonymous class invocation, we still should be able to print it, when using autoimport
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.buildModel();
+
+		CtModel model = launcher.getModel();
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
+
+		assertTrue(newClassInvocation.toString().length() > 0);
+		assertTrue(newClassInvocationCloned.toString().length() > 0);
+
+		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
 }
