@@ -130,6 +130,7 @@ public class CloneTest {
 			@Override
 			public <T extends CtElement> T clone(T source) {
 				T target = (T) sourceToTarget.get(source);
+				//if the source was already cloned then do not clone it again. Use existing clone
 				if (target == null) {
 					target = super.clone(source);
 				}
