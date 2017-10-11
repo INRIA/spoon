@@ -1215,7 +1215,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportStarredPackageWithNonVisibleClass() {
+	public void testImportStarredPackageWithNonVisibleClass() throws IOException {
 		// contract: when importing starred import, it should not import package-protected classes
 
 		final Launcher launcher = new Launcher();
@@ -1227,7 +1227,7 @@ public class ImportTest {
 		launcher.run();
 
 		File f = new File("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getPath());
+		CompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
 
 		assertNotNull(cu);
 
