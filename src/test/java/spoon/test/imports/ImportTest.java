@@ -14,6 +14,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -1211,5 +1212,25 @@ public class ImportTest {
 		}
 
 		assertEquals("Exactly "+nbStandardImports+nbStaticImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
+	}
+
+	@Test
+	public void testImportStarredPackageWithNonVisibleClass() throws IOException {
+		// contract: when importing starred import, it should not import package-protected classes
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setShouldCompile(true);
+
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
+		launcher.run();
+
+		File f = new File("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
+		CompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
+
+		assertNotNull(cu);
+
+		assertEquals(3, cu.getImports().size());
 	}
 }
