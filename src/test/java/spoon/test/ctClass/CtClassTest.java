@@ -34,6 +34,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
@@ -216,6 +217,15 @@ public class CtClassTest {
 		CtModel model = launcher.getModel();
 		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
+
+		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
+		CtClass anonymousClassCloned = newClassInvocationCloned.getAnonymousClass();
+
+		// The test stops failing if we set the parent below
+		//newClassInvocationCloned.setParent(launcher.getFactory().Class().get(AnonymousClass.class));
+
+		assertEquals(0, anonymousClass.getAllFields().size());
+		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
 		assertTrue(newClassInvocation.toString().length() > 0);
 		assertTrue(newClassInvocationCloned.toString().length() > 0);
