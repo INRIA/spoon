@@ -41,8 +41,6 @@ public class SetParentTest<T extends CtVisitable> {
 
 	private static Factory factory = createFactory();
 
-	private static final List<CtType<? extends CtElement>> allInstantiableMetamodelInterfaces = SpoonTestHelpers.getAllInstantiableMetamodelInterfaces();
-
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {
 		return createReceiverList();
