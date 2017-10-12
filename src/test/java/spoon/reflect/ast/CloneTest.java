@@ -120,81 +120,23 @@ public class CloneTest {
 		CtType<?> cloneSource = factory.Type().get(DefaultJavaPrettyPrinter.class);
 		class CloneListener extends CloneHelper {
 			Map<CtElement, CtElement> sourceToTarget = new IdentityHashMap<>();
-			Map<CtElement, Exception> sourceToStackTrace = new IdentityHashMap<>();
-			CtElement topDuplicateSource;
-			CtElement topDuplicateTarget1;
-			CtElement topDuplicateTarget2;
-			Exception exception1;
-			Exception exception2;
-			PrinterHelper problems = new PrinterHelper(factory.getEnvironment());
 			@Override
 			public <T extends CtElement> T clone(T source) {
-				T target = (T) sourceToTarget.get(source);
-				//if the source was already cloned then do not clone it again. Use existing clone
-				if (target == null) {
-					target = super.clone(source);
+				if (source == null) {
+					return null;
 				}
+				T target = super.clone(source);
 				onCloned(source, target);
 				return target;
 			}
 			private void onCloned(CtElement source, CtElement target) {
-				Exception currentException = new Exception("STACK");
-				Exception previousException = sourceToStackTrace.put(source, currentException);
 				CtElement previousTarget = sourceToTarget.put(source, target);
-				if(previousTarget!=null && previousTarget!=target) {
-					//contract: each source element is cloned only once
-					//detect AST tree which was duplicated
-					topDuplicateSource = source;
-					topDuplicateTarget1 = previousTarget;
-					topDuplicateTarget2 = target;
-					exception1 = previousException;
-					exception2 = currentException;
-				} else {
-					handleReport();
-				}
-			}
-			private void handleReport() {
-				if (topDuplicateTarget1 != null) {
-					//there is no previous target (no duplicity), but there was duplicity in some child. Report it
-					problems.write("The source " + topDuplicateSource.getClass().getSimpleName()).writeln()
-					.incTab().incTab()
-					.write(topDuplicateSource.toString()).writeln()
-					.decTab()
-					.write("has got two targets").writeln()
-					.write("1)--------------------").writeln()
-					.incTab()
-					.write(topDuplicateTarget1.toString()).writeln()
-					.write("produced by:" + getStackTrace(exception1)).writeln()
-					.decTab()
-					.write("2)--------------------").writeln()
-					.incTab()
-					.write(topDuplicateTarget2.toString()).writeln()
-					.write("produced by:" + getStackTrace(exception2)).writeln()
-					.decTab().decTab();
-					topDuplicateSource = null;
-					topDuplicateTarget1 = null;
-					topDuplicateTarget2 = null;
-				}				
-			}
-			private String getReport() {
-				handleReport();
-				return problems.toString();
-			}
-			private String getStackTrace(Exception e) {
-				StringWriter sw = new StringWriter();
-				e.printStackTrace(new PrintWriter(sw));
-				return sw.toString();
+				assertNull(previousTarget);
 			}
 		}
-		
 		
 		CloneListener cl = new CloneListener();
 		CtType<?> cloneTarget = cl.clone(cloneSource);
-		
-		String report = cl.getReport();
-		if(report.length() > 0) {
-			fail(report);
-		}
 		
 		class Context {
 			int counter = 0;
@@ -202,9 +144,12 @@ public class CloneTest {
 		Context context = new Context();
 		cloneSource.filterChildren(null).forEach(sourceElement -> {
 			context.counter++;
-			CtElement targetElement = cl.sourceToTarget.get(sourceElement);
+			//contract: there exists cloned target for each visitable element
+			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
 			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
 			assertEquals("Source and Target are not equal", sourceElement, targetElement);
 		});
+		//contract: each visitable elements was cloned exactly once.  No more no less.
+		assertTrue(cl.sourceToTarget.isEmpty());
 	}
 }
