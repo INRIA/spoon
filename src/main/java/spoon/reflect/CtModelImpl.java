@@ -39,7 +39,7 @@ public class CtModelImpl implements CtModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private static class CtRootPackage extends CtPackageImpl {
+	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
 			this.setParent(new CtElementImpl() {
