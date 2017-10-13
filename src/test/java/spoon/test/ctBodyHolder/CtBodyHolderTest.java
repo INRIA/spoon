@@ -110,12 +110,7 @@ public class CtBodyHolderTest
 		Factory f = body.getFactory();
 		
 		CtStatement newStat = new CWBStatementTemplate("xx").apply(body.getParent(CtType.class));
-		try {
-			newStat.getParent();
-			fail();
-		} catch(ParentNotInitializedException e) {
-			//expected exception
-		}
+
 		//try to set statement and get CtBlock
 		p_bodyHolder.setBody(newStat);
 		CtBlock newBlock = (CtBlock)p_bodyHolder.getBody();
@@ -124,12 +119,7 @@ public class CtBodyHolderTest
 
 		//try to set CtBlock and get the same CtBlock
 		CtStatement newStat2 = newStat.clone();
-		try {
-			newStat2.getParent();
-			fail();
-		} catch(ParentNotInitializedException e) {
-			//expected exception
-		}
+
 		CtBlock newBlock2 = f.Code().createCtBlock(newStat2);
 		assertSame(newBlock2, newStat2.getParent());
 		try {

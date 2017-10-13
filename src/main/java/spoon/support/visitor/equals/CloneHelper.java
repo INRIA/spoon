@@ -37,13 +37,8 @@ public final class CloneHelper {
 		cloneVisitor.scan(element);
 		T clonedElement = cloneVisitor.getClone();
 		// CloneHelper can consume element and change it to null
-		if (element != null && clonedElement != null) {
-			try {
-				clonedElement.setParent(element.getParent());
-			} catch (ParentNotInitializedException e) {
-				// do nothing
-			}
-
+		if (element != null && clonedElement != null && element.isParentInitialized()) {
+			clonedElement.setParent(element.getParent());
 		}
 		return clonedElement;
 	}
