@@ -31,11 +31,14 @@ import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.clone.CloneVisitor;
 
 /**
- * {@link CloneHelper} makes a clone of provided {@link CtElement} node including whole subtree.
- * The same instance of {@link CloneHelper} is used for whole clonning process.
+ * {@link CloneHelper} is responsible for creating clones of {@link CtElement} AST nodes including the whole subtree.
  *
- * By overriding of method {@link #clone(CtElement)} you get a listener,
- * which is called for each pair of `clone source` and `clone target` element.
+ * By default, the same instance of {@link CloneHelper} is used for whole clonning process.
+ *
+ * However, by subclassing this class and overriding method {@link #clone(CtElement)},
+ * one can extend and/or modify the cloning behavior.
+ *
+ * For instance, one can listen to each call to clone and get each pair of `clone source` and `clone target`.
  */
 public class CloneHelper {
 	public static final CloneHelper INSTANCE = new CloneHelper();

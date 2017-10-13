@@ -113,9 +113,10 @@ public class CloneTest {
 
 	@Test
 	public void testCloneListener() throws Exception {
-		//contract: listener of cloning process is called for each node
-		//contract: listener of cloning process gets access to origin node and cloned node
-		//take some complicated class as target of cloning
+		// contract: it is possible to extend the cloning behavior
+
+		// in this example extension, a listener of cloning process gets access to origin node and cloned node
+		// we check the contract with some complicated class as target of cloning
 		Factory factory = ModelUtils.build(new File("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java"));
 		CtType<?> cloneSource = factory.Type().get(DefaultJavaPrettyPrinter.class);
 		class CloneListener extends CloneHelper {
@@ -138,12 +139,7 @@ public class CloneTest {
 		CloneListener cl = new CloneListener();
 		CtType<?> cloneTarget = cl.clone(cloneSource);
 		
-		class Context {
-			int counter = 0;
-		}
-		Context context = new Context();
 		cloneSource.filterChildren(null).forEach(sourceElement -> {
-			context.counter++;
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
 			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
