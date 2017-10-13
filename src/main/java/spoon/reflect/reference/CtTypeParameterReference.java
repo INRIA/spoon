@@ -43,7 +43,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *
 	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
-	@PropertySetter(role = CtRole.SUPER_TYPE)
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
@@ -55,13 +55,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Adds a bound.
 	 */
-	@PropertySetter(role = CtRole.SUPER_TYPE)
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
-	@PropertySetter(role = CtRole.SUPER_TYPE)
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	boolean removeBound(CtTypeReference<?> bound);
 
 	/**
@@ -74,13 +74,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *     T extends Interface1 &amp; Interface2
 	 * </pre>
 	 */
-	@PropertyGetter(role = CtRole.SUPER_TYPE)
+	@PropertyGetter(role = CtRole.BOUNDING_TYPE)
 	CtTypeReference<?> getBoundingType();
 
 	/**
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
-	@PropertySetter(role = CtRole.SUPER_TYPE)
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
 	/**

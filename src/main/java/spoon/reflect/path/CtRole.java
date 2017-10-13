@@ -26,6 +26,7 @@ public enum CtRole {
 	BODY,
 	IS_SHADOW,
 	BOUND, // in reference only
+	BOUNDING_TYPE, // in reference only
 	IS_FINAL, // in reference only
 	IS_STATIC, // in reference only
 	IS_UPPER, // in reference only
@@ -144,6 +145,9 @@ public enum CtRole {
 		}
 		if ("declaringtype".equals(name)) {
 			return DECLARING_TYPE;
+		}
+		if ("boundingtype".equals(name)) {
+			return BOUNDING_TYPE;
 		}
 		if ("returntype".equals(name)
 				|| "componenttype".equals(name)) {

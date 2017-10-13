@@ -37,12 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.IS_UPPER;
-import static spoon.reflect.path.CtRole.SUPER_TYPE;
+import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
+	@MetamodelPropertyField(role = CtRole.BOUNDING_TYPE)
 	CtTypeReference<?> superType;
 
 	@MetamodelPropertyField(role = CtRole.IS_UPPER)
@@ -163,7 +163,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superType, this.superType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BOUNDING_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;
 	}
