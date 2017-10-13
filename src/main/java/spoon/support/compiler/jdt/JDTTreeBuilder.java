@@ -1024,8 +1024,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtInvocation<Object> inv = factory.Core().createInvocation();
 		inv.setImplicit(explicitConstructor.isImplicitSuper());
 		inv.setExecutable(references.getExecutableReference(explicitConstructor.binding));
-		inv.getExecutable().setType((CtTypeReference<Object>) inv.getExecutable().getDeclaringType().clone());
-
+		CtTypeReference<?> declaringType = inv.getExecutable().getDeclaringType();
+		inv.getExecutable().setType(declaringType == null ? null : (CtTypeReference<Object>) declaringType.clone());
 		context.enter(inv, explicitConstructor);
 		return true;
 	}

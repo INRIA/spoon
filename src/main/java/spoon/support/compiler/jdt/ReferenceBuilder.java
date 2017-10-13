@@ -884,7 +884,7 @@ public class ReferenceBuilder {
 		if (varbin.declaringClass != null) {
 			ref.setDeclaringType(getTypeReference(varbin.declaringClass));
 		} else {
-			ref.setDeclaringType(ref.getType());
+			ref.setDeclaringType(ref.getType() == null ? null : ref.getType().clone());
 		}
 		ref.setFinal(varbin.isFinal());
 		ref.setStatic((varbin.modifiers & ClassFileConstants.AccStatic) != 0);
