@@ -16,10 +16,12 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -31,6 +33,7 @@ import static spoon.reflect.path.CtRole.EXECUTABLE;
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXECUTABLE)
 	CtExecutableReference<?> executable;
 
 	public CtParameterReferenceImpl() {

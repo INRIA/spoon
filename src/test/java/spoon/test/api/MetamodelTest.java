@@ -106,7 +106,7 @@ public class MetamodelTest {
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
 				return parent != null
-						&& !(parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtReference.class)))
+//						&& !(parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtReference.class)))
 						&& parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtElement.class));
 			}
 		}).stream().filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());

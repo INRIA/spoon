@@ -18,6 +18,7 @@ package spoon.support.reflect.reference;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -28,6 +29,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -55,18 +57,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
 import static spoon.reflect.path.CtRole.PACKAGE_REF;
-import static spoon.reflect.path.CtRole.TYPE;
 import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
@@ -269,7 +274,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
@@ -778,6 +783,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override

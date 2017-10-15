@@ -16,6 +16,9 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 
 
@@ -29,6 +32,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * e.g., if you have the array <code>int[][][]</code>,
 	 * this method returns a type reference for <code>int[][]</code>.
 	 */
+	@PropertyGetter(role = CtRole.TYPE)
 	CtTypeReference<?> getComponentType();
 
 	/**
@@ -42,6 +46,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	/**
 	 * Sets the type of the elements contained in this array.
 	 */
+	@PropertySetter(role = CtRole.TYPE)
 	<C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType);
 
 	/**
