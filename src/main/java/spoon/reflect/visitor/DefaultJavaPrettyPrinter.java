@@ -1268,7 +1268,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		if (newArray.getDimensionExpressions().size() == 0) {
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "{", true, true, ",", true, true, "}")) {
+			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "{", true, false, ",", true, true, "}")) {
 				for (CtExpression e : newArray.getElements()) {
 					lp.printSeparatorIfAppropriate();
 					scan(e);
