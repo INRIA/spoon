@@ -22,7 +22,7 @@ import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
 import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
 
 /**
  * This code element defines a javadoc tag
@@ -89,21 +89,21 @@ public interface CtJavaDocTag extends CtElement {
 	 * The type of the tag
 	 * @return the type of the tag
 	 */
-	@PropertyGetter(role = TYPE)
+	@PropertyGetter(role = DOCUMENTATION_TYPE)
 	TagType getType();
 
 	/**
 	 * Define the type of the tag
 	 * @param type the type name
 	 */
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = DOCUMENTATION_TYPE)
 	<E extends CtJavaDocTag> E setType(String type);
 
 	/**
 	 * Define the type of the tag
 	 * @param type the new type
 	 */
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = DOCUMENTATION_TYPE)
 	<E extends CtJavaDocTag> E setType(TagType type);
 
 	/**

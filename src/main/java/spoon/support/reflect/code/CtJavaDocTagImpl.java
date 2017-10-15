@@ -24,11 +24,11 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
 import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
 
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = CtRole.DOCUMENTATION_TYPE)
 	private CtJavaDocTag.TagType type;
 	@MetamodelPropertyField(role = CtRole.COMMENT_CONTENT)
 	private String content;
@@ -48,7 +48,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setType(TagType type) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DOCUMENTATION_TYPE, type, this.type);
 		this.type = type;
 		return (E) this;
 	}
