@@ -20,11 +20,12 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.SUB_PACKAGE;
-import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
 
 /**
  * This element defines a package declaration. The packages are represented by a
@@ -86,24 +87,25 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 *
 	 * @return the found type or null
 	 */
+	@PropertyGetter(role = CtRole.CONTAINED_TYPE)
 	<T extends CtType<?>> T getType(String simpleName);
 
 	/**
 	 * Returns the set of the top-level types in this package.
 	 */
-	@PropertyGetter(role = TYPE)
+	@PropertyGetter(role = CtRole.CONTAINED_TYPE)
 	Set<CtType<?>> getTypes();
 
 	/**
 	 * Adds a type to this package.
 	 */
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = CONTAINED_TYPE)
 	<T extends CtPackage> T addType(CtType<?> type);
 
 	/**
 	 * Removes a type from this package.
 	 */
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = CONTAINED_TYPE)
 	void removeType(CtType<?> type);
 
 	/**
@@ -139,7 +141,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @param types
 	 * 		new Set of types
 	 */
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = CONTAINED_TYPE)
 	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
 
 	@Override
