@@ -16,40 +16,44 @@
  */
 package spoon.reflect.path;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by nicolas on 27/08/2015.
  */
 public enum CtRole {
-	NAME,
-	TYPE,
-	DECLARING_TYPE,
-	BODY,
+	NAME("name", "simplename"),
+	TYPE("returntype", "componenttype"),
+	DECLARING_TYPE("declaringtype"),
+	BODY("block"),
 	IS_SHADOW,
 	BOUND, // in reference only
-	BOUNDING_TYPE, // in reference only
+	BOUNDING_TYPE("boundingtype"), // in reference only
 	IS_FINAL, // in reference only
 	IS_STATIC, // in reference only
 	IS_UPPER, // in reference only
-	IS_IMPLICIT,
-	IS_DEFAULT,
-	IS_VARARGS,
+	IS_IMPLICIT("implicit"),
+	IS_DEFAULT("defaultmethod"),
+	IS_VARARGS("varargs"),
 	DEFAULT_EXPRESSION,
-	THEN,
-	ELSE,
+	THEN("thenexpression", "thenstatement"),
+	ELSE("elseexpression", "elsestatement"),
 	PACKAGE_REF,
-	SUB_PACKAGE,
-	CONDITION,
-	RIGHT_OPERAND,
-	LEFT_OPERAND,
+	SUB_PACKAGE("pack", "packs"),
+	CONDITION("asserted"),
+	RIGHT_OPERAND("righthandoperand"),
+	LEFT_OPERAND("lefthandoperand"),
 	LABEL,
-	CASE,
+	CASE("cases", "caseexpression"),
 	OPERATOR_KIND,
-	PARAMETER,
-	EXPRESSION,
+	PARAMETER("param", "parameters"),
+	EXPRESSION("value", "returnedexpression", "expressions"),
 	TARGET,
 	VARIABLE,
 	FINALIZER,
-	THROWN,
+	THROWN("throwntypes", "throwexpression"),
 	ASSIGNMENT,
 	ASSIGNED,
 	MODIFIER,
@@ -59,24 +63,30 @@ public enum CtRole {
 	ANNOTATION,
 	STATEMENT,
 	ARGUMENT,
-	SUPER_TYPE,
+	SUPER_TYPE("superclass"),
 	NESTED_TYPE,
 	CONSTRUCTOR,
 	EXECUTABLE,
-	FIELD,
-	CAST,
-	VALUE,
+	FIELD("typemembers"),
+	CAST("typecasts"),
+	VALUE("enumvalues", "elementvalues"),
 	FOR_UPDATE,
 	FOR_INIT,
 	TRY_RESOURCE,
-	DIMENSION,
+	DIMENSION("dimensionexpressions"),
 	CATCH,
 	TARGET_LABEL,
-	TYPE_PARAMETER,
+	TYPE_PARAMETER("actualtypearguments", "formalcttypeparameters"),
 	COMMENT_TAG,
 	COMMENT_CONTENT,
 	COMMENT_TYPE,
 	POSITION;
+
+	private List<String> names = new ArrayList<>();
+
+	CtRole(String... names) {
+		this.names = Arrays.asList(names);
+	}
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -92,90 +102,10 @@ public enum CtRole {
 			}
 		}
 		name = name.toLowerCase();
-		if ("implicit".equals(name)) {
-			return IS_IMPLICIT;
-		}
-		if ("varargs".equals(name)) {
-			return IS_VARARGS;
-		}
-		if ("defaultmethod".equals(name)) {
-			return IS_DEFAULT;
-		}
-		if ("block".equals(name)) {
-			return BODY;
-		}
-		if ("param".equals(name)) {
-			return PARAMETER;
-		}
-		if ("dimensionexpressions".equals(name)) {
-			return DIMENSION;
-		}
-		if ("actualtypearguments".equals(name)) {
-			return TYPE_PARAMETER;
-		}
-		if ("formalcttypeparameters".equals(name)) {
-			return TYPE_PARAMETER;
-		}
-		if ("typecasts".equals(name)) {
-			return CAST;
-		}
-		if ("cases".equals(name)) {
-			return CASE;
-		}
-		if ("enumvalues".equals(name) || "elementvalues".equals(name)) {
-			return VALUE;
-		}
-		if ("throwntypes".equals(name)) {
-			return THROWN;
-		}
-		if ("value".equals(name) || "returnedexpression".equals(name) || "expressions".equals(name)) {
-			return EXPRESSION;
-		}
-		if ("asserted".equals(name)) {
-			return CONDITION;
-		}
-		if ("parameters".equals(name)) {
-			return PARAMETER;
-		}
-		if ("typemembers".equals(name)) {
-			return FIELD;
-		}
-		if ("throwexpression".equals(name)) {
-			return THROWN;
-		}
-		if ("declaringtype".equals(name)) {
-			return DECLARING_TYPE;
-		}
-		if ("boundingtype".equals(name)) {
-			return BOUNDING_TYPE;
-		}
-		if ("returntype".equals(name)
-				|| "componenttype".equals(name)) {
-			return TYPE;
-		}
-		if ("caseexpression".equals(name)) {
-			return CASE;
-		}
-		if ("elseexpression".equals(name) || "elsestatement".equals(name)) {
-			return ELSE;
-		}
-		if ("thenexpression".equals(name) || "thenstatement".equals(name)) {
-			return THEN;
-		}
-		if ("righthandoperand".equals(name)) {
-			return RIGHT_OPERAND;
-		}
-		if ("lefthandoperand".equals(name)) {
-			return LEFT_OPERAND;
-		}
-		if ("pack".equals(name) || "packs".equals(name)) {
-			return SUB_PACKAGE;
-		}
-		if ("superclass".equals(name)) {
-			return SUPER_TYPE;
-		}
-		if ("name".equals(name) || "simplename".equals(name)) {
-			return NAME;
+		for (CtRole ctrole : CtRole.values()) {
+			if (ctrole.names.contains(name)) {
+				return ctrole;
+			}
 		}
 		return null;
 	}
