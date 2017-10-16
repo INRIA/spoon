@@ -265,8 +265,8 @@ public class ElementPrinterHelper {
 			for (CtReference ref : imports) {
 				String anImport = printImport(ref);
 				if (!"".equals(anImport)) {
-					if (ref instanceof CtFieldReference ||
-							(ref instanceof CtExecutableReference
+					if (ref instanceof CtFieldReference
+							|| (ref instanceof CtExecutableReference
 									&& ((CtExecutableReference) ref).getDeclaringType() != null)) {
 						setStaticImports.add(anImport);
 					}

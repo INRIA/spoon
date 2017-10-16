@@ -81,8 +81,8 @@ public class SniperWriter {
 			realPosition += getPositionNewLine(position);
 		}
 
-		printer.getPrinter().setTabCount(getIndentation(realPosition));
-		printer.getPrinter().writeTabs();
+		printer.getPrinterHelper().setTabCount(getIndentation(realPosition));
+		printer.getPrinterHelper().writeTabs();
 		Collection<CtReference> imports = printer.computeImports(element.getParent(CtType.class));
 		printer.scan(element);
 		String content = printer.getResult().replaceAll("\\s+$", "");
