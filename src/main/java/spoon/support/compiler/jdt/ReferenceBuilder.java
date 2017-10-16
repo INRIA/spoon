@@ -521,11 +521,7 @@ public class ReferenceBuilder {
 		CtTypeReference inner = null;
 		final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
 		String nameParameterized = CharOperation.toString(ref.getParameterizedTypeName());
-
-		// JDT return names with parameters like Target<Object, Object>, we only want to get Target in this example.
-		if (nameParameterized.contains("<")) {
-			nameParameterized = nameParameterized.substring(0, nameParameterized.indexOf("<"));
-		}
+		String typeName = CharOperation.toString(ref.getTypeName());
 
 		int index = namesParameterized.length - 1;
 		for (; index >= 0; index--) {
@@ -552,7 +548,7 @@ public class ReferenceBuilder {
 		}
 		if (!res.toString().replace(", ?", ",?").endsWith(nameParameterized)) {
 			// verify that we did not match a class that have the same name in a different package
-			return this.jdtTreeBuilder.getFactory().Type().createReference(nameParameterized);
+			return this.jdtTreeBuilder.getFactory().Type().createReference(typeName);
 		}
 		return res;
 	}
