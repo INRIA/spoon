@@ -1230,4 +1230,25 @@ public class ImportTest {
 
 		assertEquals(3, cu.getImports().size());
 	}
+
+	@Test
+	public void testImportWithGenerics() throws IOException {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/import-with-generics");
+		launcher.run();
+
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses.TestWithGenerics");
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue(output.contains("import spoon.test.imports.testclasses.withgenerics.Target;"));
+	}
 }
