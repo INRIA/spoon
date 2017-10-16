@@ -1760,7 +1760,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return printer.getPrinterHelper().toString();
 	}
 
-	private void reset() {
+	public void reset() {
 		printer.reset();
 		context = new PrintingContext();
 		if (env.isAutoImports()) {
@@ -1811,7 +1811,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
-	private PrinterHelper getPrinterHelper() {
+	public PrinterHelper getPrinterHelper() {
 		return printer.getPrinterHelper();
 	}
 }

@@ -25,6 +25,9 @@ import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.experimental.modelobs.EmptyModelChangeListener;
+import spoon.experimental.modelobs.ActionBasedChangeListenerImpl;
+import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.experimental.modelobs.action.Action;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -35,7 +38,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 
@@ -45,7 +47,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -95,6 +99,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private Charset encoding = Charset.defaultCharset();
 
 	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
+	private boolean sniperMode;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -521,5 +527,31 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	public boolean isSniperMode() {
+		return sniperMode;
+	}
+
+	Deque<Action> changes = new ArrayDeque<>();
+
+	ActionBasedChangeListenerImpl listener = new ActionBasedChangeListenerImpl() {
+		@Override
+		public void onAction(Action action) {
+			changes.add(action);
+		}
+	};
+
+	public void setSniperMode(boolean sniperMode) {
+		this.sniperMode = sniperMode;
+		if (sniperMode == true) {
+			setModelChangeListener(listener);
+		} else {
+			setModelChangeListener(new EmptyModelChangeListener());
+		}
+	}
+
+	public Deque<Action> getActionChanges() {
+		return changes;
 	}
 }

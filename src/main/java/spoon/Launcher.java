@@ -32,6 +32,8 @@ import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.experimental.modelobs.EmptyModelChangeListener;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
@@ -706,7 +708,10 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public CtModel buildModel() {
 		long tstart = System.currentTimeMillis();
+		FineModelChangeListener buildStackChanges = getEnvironment().getModelChangeListener();
+		getEnvironment().setModelChangeListener(new EmptyModelChangeListener());
 		modelBuilder.build();
+		getEnvironment().setModelChangeListener(buildStackChanges);
 		getEnvironment().debugMessage("model built in " + (System.currentTimeMillis() - tstart));
 		return modelBuilder.getFactory().getModel();
 	}
