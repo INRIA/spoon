@@ -22,8 +22,8 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -31,6 +31,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
@@ -45,6 +46,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.reflect.visitor.filter.AllMethodsSameSignatureFunction;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -583,7 +585,7 @@ public class SniperTest {
 		spoon.setOutputFilter(new TypeFilter<CtType<?>>(CtType.class) {
 			@Override
 			public boolean matches(CtType<?> element) {
-				return !(element instanceof CtReference);
+				return (element instanceof CtReference);
 			}
 		});
 		spoon.getEnvironment().useTabulations(true);
@@ -605,8 +607,11 @@ public class SniperTest {
 				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC) || candidate.hasModifier(ModifierKind.TRANSIENT)) {
 					return false;
 				}
+				if (candidate.getAnnotation(MetamodelPropertyField.class)!=null) {
+					return false;
+				}
 				CtClass parent = candidate.getParent(CtClass.class);
-				return parent != null && !(parent.isSubtypeOf(getFactory().createCtTypeReference(CtReference.class))) && parent.isSubtypeOf(getFactory().createCtTypeReference(CtElement.class));
+				return parent != null && (parent.isSubtypeOf(getFactory().createCtTypeReference(CtReference.class))) && parent.isSubtypeOf(getFactory().createCtTypeReference(CtElement.class));
 			}
 
 			@Override
@@ -692,71 +697,70 @@ public class SniperTest {
 
 		Factory factory = spoon.getFactory();
 
-		Map<CtTypeReference, Set<CtFieldRead>> roleByInterface = new HashMap<>();
+		Set<CtInterface> changedInterfaces = new HashSet<>();
 
 		CtTypeReference annotationReference = factory.createCtTypeReference(MetamodelPropertyField.class);
 
 		List<CtField> elements = spoon.getModel().getElements(new AnnotationFilter<>(CtField.class, MetamodelPropertyField.class));
 		for (CtField<?> element : elements) {
-			CtAnnotation annotation = element.getAnnotation(annotationReference);
-			CtTypeReference roleInterface = ((CtTypeAccess) ((CtFieldRead)annotation.getValue("clazz")).getTarget()).getAccessedType();
-			CtFieldRead role = ((CtFieldRead)annotation.getValue("role"));
-
-			if (!roleByInterface.containsKey(roleInterface)) {
-				roleByInterface.put(roleInterface, new HashSet<>());
+			CtClass<?> parent = element.getParent(CtClass.class);
+			if (!(parent.isSubtypeOf(factory.createCtTypeReference(CtReference.class)))) {
+				continue;
 			}
-			roleByInterface.get(roleInterface).add(role);
-		}
+			CtAnnotation annotation = element.getAnnotation(annotationReference);
+			if (annotation.getValue("role") instanceof CtNewArray) {
+				continue;
+			}
+			CtFieldRead role = ((CtFieldRead)annotation.getValue("role"));
+			String roleName = role.getVariable().getSimpleName();
 
-		for (CtTypeReference roleInterface : roleByInterface.keySet()) {
-			CtType<?> declaration = roleInterface.getTypeDeclaration();
+			CtRole propertyName = CtRole.fromName(roleName);
+			String titleName = propertyName.getCamelCaseName().toLowerCase();
 
-			for (CtFieldRead role : roleByInterface.get(roleInterface)) {
-				String roleName = role.getVariable().getSimpleName();
+			boolean isFound = false;
+			for (CtMethod<?> method : parent.getMethods()) {
+				String methodName = method.getSimpleName().toLowerCase();
 
-				CtRole propertyName = CtRole.fromName(roleName);
-				if (propertyName == null) {
-					System.err.println(roleName);
+				boolean isSetter = false;
+				boolean isGetter = false;
+
+
+				if (isGetter(titleName, methodName) || isGetter(element.getSimpleName().toLowerCase(), methodName)) {
+					isGetter = true;
+				} else if (isSetter(titleName, methodName) || isSetter(element.getSimpleName().toLowerCase(), methodName)) {
+					isSetter = true;
+				} else {
 					continue;
 				}
-				String titleName = propertyName.getCamelCaseName().toLowerCase();
-				boolean isFound = false;
-				for (CtMethod<?> method : declaration.getMethods()) {
-					String methodName = method.getSimpleName().toLowerCase();
-
-					CtAnnotation<Annotation> annotation;
-					if (methodName.startsWith("get" + titleName)
-							|| methodName.startsWith(titleName)) {
-
-						spoon.getEnvironment().setSniperMode(true);
-						factory.Annotation().annotate(method, PropertyGetter.class);
-						spoon.getEnvironment().setSniperMode(false);
-
-						annotation = method.getAnnotation(factory.createCtTypeReference(PropertyGetter.class));
-
-					} else if (methodName.startsWith("set" + titleName)
-							|| methodName.startsWith("add" + titleName)
-							|| methodName.startsWith("remove" + titleName)
-							|| methodName.startsWith("put" + titleName)) {
-						spoon.getEnvironment().setSniperMode(true);
-						factory.Annotation().annotate(method, PropertySetter.class);
-						spoon.getEnvironment().setSniperMode(false);
-
-						annotation = method.getAnnotation(factory.createCtTypeReference(PropertySetter.class));
-					} else {
-						continue;
-					}
-					annotation.addValue("role", role);
-					isFound = true;
+				CtMethod interfaceMethod = method.map(new AllMethodsSameSignatureFunction()).first();
+				if (interfaceMethod == null) {
+					System.out.println(methodName);
+					continue;
 				}
-				if (!isFound) {
-					System.err.println(declaration.getQualifiedName() + "#" + roleName);
+				isFound = true;
+
+				Class<? extends Annotation> annotationType = PropertySetter.class;
+				if (isGetter) {
+					annotationType = PropertyGetter.class;
 				}
+
+				spoon.getEnvironment().setSniperMode(true);
+				CtAnnotation<? extends Annotation> annotate = factory.Annotation().annotate(interfaceMethod, annotationType);
+				spoon.getEnvironment().setSniperMode(false);
+				annotate.addValue("role", propertyName);
+
+				changedInterfaces.add(interfaceMethod.getParent(CtInterface.class));
 			}
 
+			if (!isFound) {
+				System.out.println(element);
+			}
+		}
+
+		for (CtInterface inter : changedInterfaces) {
 			SniperJavaPrettyPrinter sniper = new SniperJavaPrettyPrinter(spoon.getEnvironment());
-			CompilationUnit compilationUnit = declaration.getPosition().getCompilationUnit();
-			sniper.calculate(compilationUnit, Arrays.asList(declaration));
+			CompilationUnit compilationUnit = inter.getPosition().getCompilationUnit();
+			sniper.calculate(compilationUnit, Arrays.asList(inter));
 			try {
 				PrintWriter writer = new PrintWriter(compilationUnit.getFile(), "UTF-8");
 				writer.print(sniper.getResult());
@@ -765,5 +769,18 @@ public class SniperTest {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private boolean isGetter(String titleName, String methodName) {
+		return methodName.startsWith("get" + titleName)
+				|| methodName.startsWith("is" + titleName)
+				|| methodName.startsWith(titleName);
+	}
+
+	private boolean isSetter(String titleName, String methodName) {
+		return methodName.startsWith("set" + titleName)
+				|| methodName.startsWith("add" + titleName)
+				|| methodName.startsWith("remove" + titleName)
+				|| methodName.startsWith("put" + titleName);
 	}
 }
