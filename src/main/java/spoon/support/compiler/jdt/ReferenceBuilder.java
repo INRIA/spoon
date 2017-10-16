@@ -130,7 +130,8 @@ public class ReferenceBuilder {
 		if (type == null) {
 			return null;
 		}
-		return buildTypeReferenceInternal(this.<T>getTypeReference(type.resolvedType, type), type, scope);
+		CtTypeReference<T> typeReference = this.<T>getTypeReference(type.resolvedType, type);
+		return buildTypeReferenceInternal(typeReference, type, scope);
 	}
 
 	/**
@@ -457,7 +458,8 @@ public class ReferenceBuilder {
 			insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
 			return ctRef;
 		}
-		return getTypeReference(ref);
+		CtTypeReference<T> result = getTypeReference(ref);
+		return result;
 	}
 
 	CtTypeReference<Object> getTypeParameterReference(TypeBinding binding, TypeReference ref) {
@@ -542,7 +544,9 @@ public class ReferenceBuilder {
 		}
 		if (!res.toString().replace(", ?", ",?").endsWith(CharOperation.toString(ref.getParameterizedTypeName()))) {
 			// verify that we did not match a class that have the same name in a different package
-			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			CtTypeReference result = this.jdtTreeBuilder.getFactory().Type().createReference(res.getQualifiedName());
+			result.setActualTypeArguments(res.getActualTypeArguments());
+			return result;
 		}
 		return res;
 	}
