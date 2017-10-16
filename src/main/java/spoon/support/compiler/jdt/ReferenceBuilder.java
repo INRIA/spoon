@@ -537,17 +537,9 @@ public class ReferenceBuilder {
 		if (res == null) {
 			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
 		}
-		if (inner.getPackage() == null) {
-			PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
-			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
-			inner.setPackage(packageReference);
-		}
-		if (!res.toString().replace(", ?", ",?").endsWith(CharOperation.toString(ref.getParameterizedTypeName()))) {
-			// verify that we did not match a class that have the same name in a different package
-			CtTypeReference result = this.jdtTreeBuilder.getFactory().Type().createReference(res.getQualifiedName());
-			result.setActualTypeArguments(res.getActualTypeArguments());
-			return result;
-		}
+		PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
+		CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
+		inner.setPackage(packageReference);
 		return res;
 	}
 
