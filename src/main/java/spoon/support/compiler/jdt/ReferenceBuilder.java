@@ -520,6 +520,13 @@ public class ReferenceBuilder {
 		CtTypeReference<T> res = null;
 		CtTypeReference inner = null;
 		final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
+		String nameParameterized = CharOperation.toString(ref.getParameterizedTypeName());
+
+		// JDT return names with parameters like Target<Object, Object>, we only want to get Target in this example.
+		if (nameParameterized.contains("<")) {
+			nameParameterized = nameParameterized.substring(0, nameParameterized.indexOf("<"));
+		}
+
 		int index = namesParameterized.length - 1;
 		for (; index >= 0; index--) {
 			// Start at the end to get the class name first.
@@ -535,11 +542,18 @@ public class ReferenceBuilder {
 			inner = main;
 		}
 		if (res == null) {
-			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			return this.jdtTreeBuilder.getFactory().Type().createReference(nameParameterized);
 		}
-		PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
-		CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
-		inner.setPackage(packageReference);
+
+		if (inner.getPackage() == null) {
+			PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
+			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
+			inner.setPackage(packageReference);
+		}
+		if (!res.toString().replace(", ?", ",?").endsWith(nameParameterized)) {
+			// verify that we did not match a class that have the same name in a different package
+			return this.jdtTreeBuilder.getFactory().Type().createReference(nameParameterized);
+		}
 		return res;
 	}
 
