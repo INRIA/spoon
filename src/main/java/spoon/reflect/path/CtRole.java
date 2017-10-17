@@ -17,12 +17,13 @@
 package spoon.reflect.path;
 
 /**
- * Created by nicolas on 27/08/2015.
+ * Identifies the roles of attributes of spoon model.
  */
 public enum CtRole {
 	NAME,
 	TYPE,
 	DECLARING_TYPE,
+	CONTAINED_TYPE,
 	BODY,
 	IS_SHADOW,
 	BOUND, // in reference only
