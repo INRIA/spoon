@@ -17,10 +17,17 @@ install:
   - mvn dependency:resolve
   - pip install --user CommonMark requests pygithub
   - sudo apt-get install xmlstarlet
-  
+
+matrix:
+  include:
+    - env: JDK_VERSION=1.9
+      jdk: oraclejdk9
+    - env: JDK_VERSION=1.8
+      jdk: oraclejdk8
+
 script: |
   # compiles and install
-  mvn install -DskipTests &&
+  mvn -Djava.src.version=JDK_VERSION install -DskipTests &&
 
   # checks that it works with spoon-maven-pluging
   git clone https://github.com/square/javawriter.git &&
@@ -31,13 +38,13 @@ script: |
   rm -rf javawriter &&
 
   # checkstyle, license, javadoc, animal sniffer.
-  mvn verify site -DskipTests &&
+  mvn -Djava.src.version=JDK_VERSION verify site -DskipTests &&
 
   # the unit tests
-  mvn test jacoco:report  &&
+  mvn -Djava.src.version=JDK_VERSION test jacoco:report  &&
 
   # uploading coverage, but not failing
-  mvn coveralls:report -Pcoveralls --fail-never &&
+  mvn -Djava.src.version=JDK_VERSION coveralls:report -Pcoveralls --fail-never &&
 
   # documentation
   python chore/check-links-in-doc.py
