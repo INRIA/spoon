@@ -251,7 +251,7 @@ public class ElementPrinterHelper {
 		Set<String> setImports = new HashSet<>();
 		Set<String> setStaticImports = new HashSet<>();
 		for (CtReference ref : imports) {
-			String importTypeStr = "";
+			String importTypeStr;
 
 			if (ref instanceof CtTypeReference) {
 				CtTypeReference typeRef = (CtTypeReference) ref;
@@ -310,12 +310,13 @@ public class ElementPrinterHelper {
 			}
 			this.writeImports(imports);
 			printer.writeln();
+			printer.writeln();
 		}
 	}
 
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
-		writeQualifiedName(packageQualifiedName).writeSeparator(";");
+		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {
