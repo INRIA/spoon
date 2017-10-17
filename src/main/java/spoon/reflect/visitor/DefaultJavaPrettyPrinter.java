@@ -1747,11 +1747,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public String printPackageInfo(CtPackage pack) {
 		reset();
 		elementPrinterHelper.writeComment(pack);
+
+		// we need to compute imports only for annotations
+		// we don't want to get all imports coming from content of package
+		for (CtAnnotation annotation : pack.getAnnotations()) {
+			this.importsContext.computeImports(annotation);
+		}
 		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(pack.getQualifiedName());
 		}
+		elementPrinterHelper.writeImports(this.importsContext.getAllImports());
 		return printer.getPrinterHelper().toString();
 	}
 
