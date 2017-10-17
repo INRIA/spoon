@@ -626,6 +626,7 @@ public class TypeReferenceTest {
 
 	@Test
 	public void testTypeReferenceWithGenerics() throws Exception {
+		// contract: in noclasspath, a generic type name should not contain generic information
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
 		launcher.getEnvironment().setAutoImports(true);
