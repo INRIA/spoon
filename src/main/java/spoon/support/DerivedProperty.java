@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  *
  * For instance {@link CtType#getFields()}  is derived from {@link CtType#getTypeMembers()}
  *
- * It can be put on getter ond setters.
+ * It can be put on getter and setters.
  *
  * Contracts:
  * - A setter with @DerivedProperty never triggers a model intercession event.
