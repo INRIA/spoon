@@ -24,7 +24,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
-import static spoon.reflect.path.CtRole.VARIABLE;
+import static spoon.reflect.path.CtRole.FOREACH_VARIABLE;
 
 public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	private static final long serialVersionUID = 1L;
@@ -32,7 +32,7 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<?> expression;
 
-	@MetamodelPropertyField(role = CtRole.VARIABLE)
+	@MetamodelPropertyField(role = FOREACH_VARIABLE)
 	CtLocalVariable<?> variable;
 
 	@Override
@@ -65,7 +65,7 @@ public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 		if (variable != null) {
 			variable.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, VARIABLE, variable, this.variable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, FOREACH_VARIABLE, variable, this.variable);
 		this.variable = variable;
 		return (T) this;
 	}
