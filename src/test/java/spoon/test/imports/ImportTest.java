@@ -1233,6 +1233,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportWithGenerics() throws IOException {
+		// contract: in noclasspath autoimport, we should be able to use generic type
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
 		launcher.getEnvironment().setAutoImports(true);
