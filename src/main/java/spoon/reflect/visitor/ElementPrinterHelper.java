@@ -272,11 +272,20 @@ public class ElementPrinterHelper {
 
 		List<String> sortedImports = new ArrayList<>(setImports);
 		Collections.sort(sortedImports);
+		boolean isFirst = true;
 		for (String importLine : sortedImports) {
+			if (isFirst) {
+				printer.writeln();
+				printer.writeln();
+				isFirst = false;
+			}
 			printer.writeKeyword("import").writeSpace();
 			writeQualifiedName(importLine).writeSeparator(";").writeln();
 		}
 		if (setStaticImports.size() > 0) {
+			if (isFirst) {
+				printer.writeln();
+			}
 			printer.writeln();
 			List<String> sortedStaticImports = new ArrayList<>(setStaticImports);
 			Collections.sort(sortedStaticImports);
@@ -307,7 +316,6 @@ public class ElementPrinterHelper {
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";");
-		printer.writeln().writeln();
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {
