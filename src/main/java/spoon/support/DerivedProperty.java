@@ -23,10 +23,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** Tells that a metamodel property is derived, ie computed from the value of another property.
+/**
+ * Tells that a metamodel property is derived, ie computed from the value of another property.
+ *
  * For instance {@link CtType#getFields()}  is derived from {@link CtType#getTypeMembers()}
  *
- * This annotation is used for specifying CtScanner: derived properties are never scanned.
+ * It can be put on getter ond setters.
+ *
+ * Contracts:
+ * - A setter with @DerivedProperty never triggers a model intercession event.
+ * - A getter with @DerivedProperty is never called in CtScanner and derived classes (clone, replace)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
