@@ -19,7 +19,7 @@ matrix:
     - env: JDK_VERSION=1.9
       jdk: oraclejdk9
     - env: JDK_VERSION=1.8
-          jdk: oraclejdk9
+      jdk: oraclejdk9
     - env: JDK_VERSION=1.8
       jdk: oraclejdk8
 
