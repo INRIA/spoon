@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +49,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	List<File> printedFiles = new ArrayList<>();
 
-	public JavaOutputProcessor(PrettyPrinter printer) {
+	OutputDestination output;
+
+	public JavaOutputProcessor(PrettyPrinter printer, OutputDestination output) {
 		this.printer = printer;
+		this.output = output;
 	}
 
 	/**
@@ -56,13 +61,14 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 *
 	 * @param outputDirectory the root output directory
 	 * @param printer the PrettyPrinter to use for written the files
+	 * @param output the output destination
 	 *
 	 * @deprecated The outputDirectory should be get from the environment given to the pretty printer
 	 * (see {@link Environment#setSourceOutputDirectory(File)}. You should use the constructor with only one parameter.
 	 */
 	@Deprecated
-	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
-		this(printer);
+	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer, OutputDestination output) {
+		this(printer, output);
 		this.setOutputDirectory(outputDirectory);
 	}
 
@@ -116,8 +122,8 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 * original sources).
 	 */
 	public void createJavaFile(CtType<?> element) {
-
-		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + getOutputDirectory());
+		Path typePath = getElementPath(element);
+		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + typePath);
 
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
@@ -130,13 +136,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 		printer.calculate(cu, toBePrinted);
 
-		CtPackage pack = element.getPackage();
-
 		PrintStream stream = null;
 
 		// print type
 		try {
-			File file = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			File file = typePath.toFile();
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
@@ -178,7 +182,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	private void createPackageFile(CtPackage pack) {
 		// Create package annotation file
-		File packageAnnot = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+		File packageAnnot = getElementPath(pack).toFile();
 		if (!printedFiles.contains(packageAnnot)) {
 			printedFiles.add(packageAnnot);
 		}
@@ -239,16 +243,57 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			packageDir = this.getModuleFile(pack.getDeclaringModule());
 		} else {
 			// Create current package dir
-			packageDir = new File(this.getModuleFile(pack.getDeclaringModule()).getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
-		}
-		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
+			packageDir = new File(this.getModuleFile(pack.getDeclaringModule())
+					.getAbsolutePath() + File.separatorChar + pack
+					.getQualifiedName().replace('.', File.separatorChar));
 		}
 		return packageDir;
 	}
 
+	private Path getElementPath(CtModule type) {
+		File moduleDir;
+		if (type == null || type.isUnnamedModule() || getEnvironment().getComplianceLevel() <= 8) {
+			moduleDir = new File(getOutputDirectory().getAbsolutePath());
+		} else {
+			// Create current package dir
+			moduleDir = new File(getOutputDirectory().getAbsolutePath() + File.separatorChar + type.getSimpleName());
+		}
+		if (!moduleDir.exists()) {
+			if (!moduleDir.mkdirs()) {
+				throw new RuntimeException("Error creating output directory");
+			}
+		}
+		return createFolders(this.output.getOutputPath(type.getParent(CtModule.class), null, null, Paths.get("./"), type.getSimpleName()));
+	}
+
+	private Path getElementPath(CtPackage type) {
+		String filename = DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION;
+		Path packagePath = Paths.get("./");
+		if (!type.isUnnamedPackage()) {
+			packagePath = Paths.get(type.getQualifiedName().replace('.', File.separatorChar));
+		}
+		return createFolders(this.output.getOutputPath(type.getParent(CtModule.class), type, null, packagePath, filename));
+	}
+
+	private Path getElementPath(CtType type) {
+		String filename = type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
+		Path packagePath = Paths.get("./");
+		if (!type.getPackage().isUnnamedPackage()) {
+			packagePath = Paths.get(type.getPackage().getQualifiedName().replace('.', File.separatorChar));
+		}
+		return createFolders(this.output.getOutputPath(type.getParent(CtModule.class), type.getPackage(), type, packagePath, filename));
+	}
+
+	private Path createFolders(Path outputPath) {
+		if (!outputPath.getParent().toFile().exists()) {
+			if (!outputPath.getParent().toFile().mkdirs()) {
+				throw new RuntimeException("Error creating output directory");
+			}
+		}
+		return outputPath;
+	}
+
+	@Override
 	public void setOutputDirectory(File directory) {
 		this.getEnvironment().setSourceOutputDirectory(directory);
 	}

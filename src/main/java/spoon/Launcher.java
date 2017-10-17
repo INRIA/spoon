@@ -22,12 +22,10 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -44,7 +42,9 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.DefaultOutputDestination;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.OutputDestination;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
@@ -94,6 +94,8 @@ public class Launcher implements SpoonAPI {
 
 	private List<String> processorTypes = new ArrayList<>();
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
+
+	private OutputDestination outputDirectory = new DefaultOutputDestination();
 
 	/**
 	 * A default program entry point (instantiates a launcher with the given
@@ -635,7 +637,7 @@ public class Launcher implements SpoonAPI {
 	}
 
 	public JavaOutputProcessor createOutputWriter() {
-		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter(), outputDirectory);
 		outputProcessor.setFactory(this.getFactory());
 		return outputProcessor;
 	}
@@ -829,5 +831,13 @@ public class Launcher implements SpoonAPI {
 		} catch (ClassCastException e) {
 			throw new SpoonException("parseClass only considers classes (and not interfaces and enums). Please consider using a Launcher object for more advanced usage.");
 		}
+	}
+
+	public OutputDestination getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public void setOutputDirectory(OutputDestination outputDirectory) {
+		this.outputDirectory = outputDirectory;
 	}
 }
