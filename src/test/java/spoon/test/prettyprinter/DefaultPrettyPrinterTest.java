@@ -18,6 +18,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultOutputDestination;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
 
