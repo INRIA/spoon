@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -16,6 +18,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
 import spoon.support.UnsettableProperty;
@@ -32,8 +35,10 @@ import java.util.Queue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.test.SpoonTestHelpers.getAllSetters;
 import static spoon.test.parent.ParentContractTest.createCompatibleObject;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -80,11 +85,31 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			if (CtFieldAccess.class.isAssignableFrom(o.getClass())&& setter.getName().equals("setVariable")) {
 				argument = factory.Core().createFieldReference();
 			}
+
+			assertNotNull(argument);
+
 			// we create a fresh object
 			CtElement receiver = ((CtElement) o).clone();
 
 			// we invoke the setter
 			setter.invoke(receiver, new Object[]{argument});
+
+			// contract: a property setter sets properties that are visitable by a scanner
+			if (ctsetter.getAnnotation(PropertySetter.class) != null) {
+				CtElement finalArgument = argument;
+				try {
+					receiver.accept(new CtScanner() {
+						@Override
+						public void scan(CtElement e) {
+							super.scan(e);
+							if (e == finalArgument) {
+								throw new SpoonException();
+							}
+						}
+					});
+					fail(ctsetter.getSignature());
+				} catch (SpoonException expected) {}
+			}
 
 			final CtElement argument2 = argument.clone();
 			assertNotSame(argument, argument2);
