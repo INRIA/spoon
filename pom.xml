@@ -165,8 +165,8 @@
   </scm>
 
   <properties>
-    <java.src.version>1.8</java.src.version>
-    <java.test.version>1.8</java.test.version>
+    <java.src.version>1.9</java.src.version>
+    <java.test.version>1.9</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -205,12 +205,12 @@
     <dependency>
       <groupId>org.eclipse.tycho</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.13.0.v20170516-1929</version>
+      <version>3.13.50.v20171007-0855</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -277,7 +277,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
+        <version>2.20.1</version>
         <configuration>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
@@ -428,7 +428,7 @@
       <plugin>
 	<groupId>org.jacoco</groupId>
 	<artifactId>jacoco-maven-plugin</artifactId>
-	<version>0.7.5.201505241946</version>
+	<version>0.7.9</version>
 	<executions>
 	  <execution>
 	    <goals>
