@@ -326,7 +326,7 @@ public class ReferenceBuilder {
 						if (packageBinding == null) {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-							packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment);
+							packageBinding = new PackageBinding(chars[0], this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment, null);
 						}
 						return getPackageReference(packageBinding);
 					}

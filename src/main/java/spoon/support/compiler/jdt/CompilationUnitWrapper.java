@@ -34,7 +34,7 @@ class CompilationUnitWrapper extends CompilationUnit {
 				type.getSimpleName() + ".java",
 				type.getFactory().getEnvironment().getEncoding().displayName(),
 				type.getFactory().getEnvironment().getBinaryOutputDirectory(),
-				false);
+				false, null);
 		this.type = type;
 	}
 
