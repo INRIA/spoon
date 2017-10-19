@@ -24,7 +24,7 @@ import spoon.reflect.annotations.PropertySetter;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.NAME;
@@ -219,7 +219,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * @return null if does not exit
 	 */
-	@PropertyGetter(role = EXECUTABLE)
+	@PropertyGetter(role = METHOD)
 	<R> CtMethod<R> getMethod(CtTypeReference<R> returnType, String name, CtTypeReference<?>... parameterTypes);
 
 	/**
@@ -227,7 +227,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * @return null if does not exit
 	 */
-	@PropertyGetter(role = EXECUTABLE)
+	@PropertyGetter(role = METHOD)
 	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
 
 	/**
@@ -238,21 +238,21 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 */
 	@DerivedProperty
-	@PropertyGetter(role = EXECUTABLE)
+	@PropertyGetter(role = METHOD)
 	Set<CtMethod<?>> getMethods();
 
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface and annotated with one of the given annotations.
 	 */
-	@PropertyGetter(role = EXECUTABLE)
+	@PropertyGetter(role = METHOD)
 	Set<CtMethod<?>> getMethodsAnnotatedWith(CtTypeReference<?>... annotationTypes);
 
 	/**
 	 * Returns the methods that are directly declared by this class or
 	 * interface and that have the given name.
 	 */
-	@PropertyGetter(role = EXECUTABLE)
+	@PropertyGetter(role = METHOD)
 	List<CtMethod<?>> getMethodsByName(String name);
 
 	/**
@@ -267,19 +267,19 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Sets the methods of this type.
 	 */
-	@PropertySetter(role = EXECUTABLE)
+	@PropertySetter(role = METHOD)
 	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);
 
 	/**
 	 * Adds a method to this type.
 	 */
-	@PropertySetter(role = EXECUTABLE)
+	@PropertySetter(role = METHOD)
 	<M, C extends CtType<T>> C addMethod(CtMethod<M> method);
 
 	/**
 	 * Removes a method from this type.
 	 */
-	@PropertySetter(role = EXECUTABLE)
+	@PropertySetter(role = METHOD)
 	<M> boolean removeMethod(CtMethod<M> method);
 
 	/**

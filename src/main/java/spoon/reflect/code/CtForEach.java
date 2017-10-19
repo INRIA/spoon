@@ -20,7 +20,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
-import static spoon.reflect.path.CtRole.VARIABLE;
+import static spoon.reflect.path.CtRole.FOREACH_VARIABLE;
 
 
 /**
@@ -43,7 +43,7 @@ public interface CtForEach extends CtLoop {
 	/**
 	 * Gets the variable that references the currently iterated element.
 	 */
-	@PropertyGetter(role = VARIABLE)
+	@PropertyGetter(role = FOREACH_VARIABLE)
 	CtLocalVariable<?> getVariable();
 
 	/**
@@ -55,7 +55,7 @@ public interface CtForEach extends CtLoop {
 	/**
 	 * Sets the variable that references the currently iterated element.
 	 */
-	@PropertySetter(role = VARIABLE)
+	@PropertySetter(role = FOREACH_VARIABLE)
 	<T extends CtForEach> T setVariable(CtLocalVariable<?> variable);
 
 	@Override

@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.CONSTRUCTOR;
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
@@ -117,13 +117,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 			return (C) this;
 		}
 		e.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, EXECUTABLE, typeMembers, e);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ANNONYMOUS_EXECUTABLE, typeMembers, e);
 		return addTypeMember(e);
 	}
 
 	@Override
 	public boolean removeAnonymousExecutable(CtAnonymousExecutable e) {
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXECUTABLE, typeMembers, typeMembers.indexOf(e), e);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, ANNONYMOUS_EXECUTABLE, typeMembers, typeMembers.indexOf(e), e);
 		return removeTypeMember(e);
 	}
 
@@ -134,7 +134,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXECUTABLE, typeMembers, new ArrayList<>(getAnonymousExecutables()));
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, ANNONYMOUS_EXECUTABLE, typeMembers, new ArrayList<>(getAnonymousExecutables()));
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
 			this.typeMembers.removeAll(getAnonymousExecutables());
 			return (C) this;
