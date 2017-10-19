@@ -26,7 +26,7 @@ import spoon.reflect.annotations.PropertySetter;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.TYPE;
-import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 
 /**
  * This code element defines a concrete invocation.
@@ -49,7 +49,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 */
 	@Override
 	@DerivedProperty
-	@PropertyGetter(role = TYPE_PARAMETER)
+	@PropertyGetter(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
@@ -58,7 +58,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
-	@PropertySetter(role = TYPE_PARAMETER)
+	@PropertySetter(role = TYPE_ARGUMENT)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
@@ -67,7 +67,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 * @see CtExecutableReference#getActualTypeArguments()
 	 */
 	@Override
-	@PropertySetter(role = TYPE_PARAMETER)
+	@PropertySetter(role = TYPE_ARGUMENT)
 	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
