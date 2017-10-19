@@ -20,12 +20,11 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtCodeSnippet;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SnippetCompilationHelper;
 
-import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.SNIPPET;
 
 public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCodeSnippetStatement {
 
@@ -35,15 +34,17 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 		visitor.visitCtCodeSnippetStatement(this);
 	}
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = SNIPPET)
 	String value;
 
+	@Override
 	public String getValue() {
 		return value;
 	}
 
+	@Override
 	public <C extends CtCodeSnippet> C setValue(String value) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SNIPPET, value, this.value);
 		this.value = value;
 		return (C) this;
 	}
