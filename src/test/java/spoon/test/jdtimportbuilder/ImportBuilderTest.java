@@ -58,11 +58,11 @@ public class ImportBuilderTest {
         assertEquals(1, imports.size());
 
         CtReference ref = imports.iterator().next();
-        assertEquals("TypeAnnotation", ref.getSimpleName());
+        assertEquals("GlobalAnnotation", ref.getSimpleName());
         assertTrue(ref instanceof CtTypeReference);
 
         CtTypeReference refType = (CtTypeReference)ref;
-        assertEquals("sun.reflect.annotation.TypeAnnotation", refType.getQualifiedName());
+        assertEquals("spoon.test.annotation.testclasses.GlobalAnnotation", refType.getQualifiedName());
     }
 
     @Test
