@@ -268,9 +268,6 @@ public class MavenLauncher extends Launcher {
 				if (version.startsWith("[")) {
 					version = version.substring(1, version.indexOf(','));
 				}
-				if (dependency.isOptional()) {
-					continue;
-				}
 				// ignore test dependencies for app source code
 				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
 					continue;
