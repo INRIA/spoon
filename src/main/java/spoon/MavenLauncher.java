@@ -237,6 +237,8 @@ public class MavenLauncher extends Launcher {
 
 		/**
 		 * Get the list of dependencies available in the local maven repository
+		 *
+		 * @param isLib: If false take dependency of the main project; if true, take dependencies of a library of the project
 		 * @return the list of  dependencies
 		 */
 		public List<File> getDependencies(boolean isLib) {
@@ -268,6 +270,11 @@ public class MavenLauncher extends Launcher {
 				if (version.startsWith("[")) {
 					version = version.substring(1, version.indexOf(','));
 				}
+				// pass only the optional dependency if it's in a library dependency
+				if (isLib && dependency.isOptional()) {
+					continue;
+				}
+
 				// ignore test dependencies for app source code
 				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
 					continue;
