@@ -103,7 +103,7 @@ class JDTImportBuilder {
 					// or all fields and methods if it concerns an interface
 					if (methodOrFieldName.equals("*")) {
 						Collection<CtFieldReference<?>> fields = klass.getAllFields();
-						Set<CtMethod> methods = klass.getAllMethods();
+						Set<CtMethod> methods = klass.getMethods();
 
 						for (CtFieldReference fieldReference : fields) {
 							if (fieldReference.isStatic() && fieldReference.getFieldDeclaration().hasModifier(ModifierKind.PUBLIC) || klass.isInterface()) {
