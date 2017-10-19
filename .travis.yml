@@ -28,7 +28,7 @@ script: |
   mvn -Djava.src.version=$JDK_VERSION install -DskipTests &&
 
   # checkstyle, license, javadoc, animal sniffer.
-  mvn -Djava.src.version=$JDK_VERSION verify site -DskipTests &&
+  mvn -Djava.src.version=$JDK_VERSION verify -DskipTests &&
 
   # the unit tests
   mvn -Djava.src.version=$JDK_VERSION test jacoco:report  &&
