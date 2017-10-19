@@ -27,14 +27,6 @@ script: |
   # compiles and install
   mvn -Djava.src.version=$JDK_VERSION install -DskipTests &&
 
-  # checks that it works with spoon-maven-pluging
-  git clone https://github.com/square/javawriter.git &&
-  cd javawriter &&  
-  git checkout d39761f9ec25ca5bf3b7bf15d34fa2b831fed9c1 &&
-  bash ../doc/jenkins/build.sh &&
-  cd .. &&
-  rm -rf javawriter &&
-
   # checkstyle, license, javadoc, animal sniffer.
   mvn -Djava.src.version=$JDK_VERSION verify site -DskipTests &&
 
