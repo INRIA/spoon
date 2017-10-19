@@ -48,9 +48,11 @@ import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.IntersectionTypeBinding18;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
@@ -287,8 +289,11 @@ public class ReferenceBuilder {
 	 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
 	 */
 	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
-		if (this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration != null && this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports != null) {
-			for (ImportReference anImport : this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports) {
+		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
+		LookupEnvironment environment = cuDeclaration.scope.environment;
+
+		if (cuDeclaration != null && cuDeclaration.imports != null) {
+			for (ImportReference anImport : cuDeclaration.imports) {
 				if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
 					if (anImport.isStatic()) {
 						int indexDeclaring = 2;
@@ -300,11 +305,11 @@ public class ReferenceBuilder {
 						char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
 						PackageBinding aPackage;
 						if (packageName.length != 0) {
-							aPackage = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
+							aPackage = environment.createPackage(packageName);
 						} else {
 							aPackage = null;
 						}
-						final MissingTypeBinding declaringType = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+						final MissingTypeBinding declaringType = environment.createMissingType(aPackage, className);
 						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
 						final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
 						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
@@ -316,17 +321,21 @@ public class ReferenceBuilder {
 						// an array with a minimum length of 1 and throw an
 						// ArrayIndexOutOfBoundsException if `chars.length == 0`. Fixes #759.
 						if (chars.length > 0) {
-							Binding someBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.findImport(chars, false, false);
+							Binding someBinding = cuDeclaration.scope.findImport(chars, false, false);
 							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
 								packageBinding = (PackageBinding) someBinding;
 							} else {
-								packageBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(chars);
+								try {
+									packageBinding = environment.createPackage(chars);
+								} catch (NullPointerException e) {
+									packageBinding = null;
+								}
 							}
 						}
 						if (packageBinding == null) {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-							packageBinding = new PackageBinding(chars[0], this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment, null);
+							packageBinding = new PackageBinding(chars, null, environment, environment.module);
 						}
 						return getPackageReference(packageBinding);
 					}
