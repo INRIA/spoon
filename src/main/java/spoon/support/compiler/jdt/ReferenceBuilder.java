@@ -309,11 +309,16 @@ public class ReferenceBuilder {
 						} else {
 							aPackage = null;
 						}
-						final MissingTypeBinding declaringType = environment.createMissingType(aPackage, className);
-						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
-						final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
-						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
-						return typeReference;
+						try {
+							final MissingTypeBinding declaringType = environment.createMissingType(aPackage, className);
+							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
+							final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
+							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
+							return typeReference;
+						} catch (NullPointerException e) {
+							return null;
+						}
+
 					} else {
 						PackageBinding packageBinding = null;
 						char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
