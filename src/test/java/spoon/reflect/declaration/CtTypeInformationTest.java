@@ -9,6 +9,10 @@ import java.lang.reflect.Field;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.RandomAccess;
 import java.util.Set;
 
@@ -129,21 +133,18 @@ public class CtTypeInformationTest {
 
 	@Test
 	public void testGetSuperclass() throws Exception {
-
 		final CtType<?> extendObject = this.factory.Type().get(ExtendsObject.class);
 
 		// only 1 method directly in this class
 		Assert.assertEquals(1, extendObject.getMethods().size());
 
-		// + 48 of ArrayList (in library)
-		// + 12 of java.lang.Object
-		Assert.assertEquals(1+12+48, extendObject.getAllMethods().size());
+		Assert.assertEquals(81, extendObject.getAllMethods().size());
 
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		assertEquals(2, subClass.getMethods().size());
 
 		// the abstract method from Comparable which is overridden should not be present in the model
-		assertEquals(61+2, subClass.getAllMethods().size());
+		assertEquals(81+2, subClass.getAllMethods().size());
 
 		CtTypeReference<?> superclass = subClass.getSuperclass();
 		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());

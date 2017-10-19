@@ -57,6 +57,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemPackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -336,7 +337,7 @@ public class ReferenceBuilder {
 								}
 							}
 						}
-						if (packageBinding == null) {
+						if (packageBinding == null || packageBinding instanceof ProblemPackageBinding) {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
 							packageBinding = new PackageBinding(chars, null, environment, environment.module);
