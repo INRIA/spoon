@@ -5,10 +5,12 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
+import spoon.generating.CtRoleScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
+import spoon.reflect.visitor.CtRoleScanner;
 import spoon.reflect.visitor.Filter;
 
 import java.io.File;
@@ -50,6 +52,33 @@ public class CtGenerationTest {
 		} catch (AssertionError e) {
 			throw new ComparisonFailure("ReplacementVisitor different", expected.toString(), actual.toString());
 		}
+	}
+
+	@Test
+	public void testGenerateCtRoleScanner() throws Exception {
+		// contract: generates the biscanner that is used for equality checking
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
+		System.setProperty("line.separator", "\n");
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().useTabulations(true);
+		launcher.setSourceOutputDirectory("./target/generated/");
+		// interfaces.
+		launcher.addInputResource("./src/main/java/spoon/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
+		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
+		// Utils.
+		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
+//		launcher.addInputResource("./src/main/java/spoon/generating/scanner/");
+		launcher.addProcessor(new CtRoleScannerGenerator());
+		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtRoleScanner"));
+		launcher.run();
+
+		assertThat(build(new File("./src/main/java/spoon/reflect/visitor/CtRoleScanner.java")).Class().get(CtRoleScanner.class))
+				.isEqualTo(build(new File("./target/generated/spoon/reflect/visitor/CtRoleScanner.java")).Class().get(CtRoleScanner.class));
 	}
 
 	@Test
