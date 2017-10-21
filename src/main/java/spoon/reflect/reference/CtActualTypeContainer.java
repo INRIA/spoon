@@ -30,13 +30,13 @@ public interface CtActualTypeContainer {
 	/**
 	 * Gets the type arguments.
 	 */
-	@PropertyGetter(role = CtRole.TYPE_PARAMETER)
+	@PropertyGetter(role = CtRole.TYPE_ARGUMENT)
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
 	 * Sets the type arguments.
 	 */
-	@PropertySetter(role = CtRole.TYPE_PARAMETER)
+	@PropertySetter(role = CtRole.TYPE_ARGUMENT)
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**

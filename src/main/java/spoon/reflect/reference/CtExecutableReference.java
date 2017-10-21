@@ -92,13 +92,13 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	/**
 	 * Gets parameters of the executable.
 	 */
-	@PropertyGetter(role = CtRole.PARAMETER)
+	@PropertyGetter(role = CtRole.ARGUMENT_TYPE)
 	List<CtTypeReference<?>> getParameters();
 
 	/**
 	 * Sets parameters of the executable.
 	 */
-	@PropertySetter(role = CtRole.PARAMETER)
+	@PropertySetter(role = CtRole.ARGUMENT_TYPE)
 	<C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters);
 
 	/**
