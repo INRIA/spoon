@@ -236,11 +236,42 @@ public class MethodTypingContext extends AbstractTypingContext {
 
 	private boolean isSameMethodFormalTypeParameter(CtTypeParameter scopeParam, CtTypeParameter superParam) {
 		CtTypeReference<?> scopeBound = getBound(scopeParam);
-		CtTypeReference<?> superBoundAdapted = adaptType(getBound(superParam));
+		CtTypeReference<?> superBound = getBound(superParam);
+		int idxOfScopeBoundTypeParam = getIndexOfTypeParam(scopeParam.getTypeParameterDeclarer(), scopeBound);
+		if (idxOfScopeBoundTypeParam >= 0) {
+			int idxOfSuperBoundTypeParam = getIndexOfTypeParam(superParam.getTypeParameterDeclarer(), superBound);
+			if (idxOfScopeBoundTypeParam >= 0) {
+				/*
+				 * Both type parameters have bound defined as sibling type parameter.
+				 * Do not try to adaptType, because it would end with StackOverflowError
+				 * They are same formal type parameters if index is same
+				 */
+				return idxOfScopeBoundTypeParam == idxOfSuperBoundTypeParam;
+			}
+		}
+		CtTypeReference<?> superBoundAdapted = adaptType(superBound);
 		if (superBoundAdapted == null) {
 			return false;
 		}
 		return scopeBound.getQualifiedName().equals(superBoundAdapted.getQualifiedName());
+	}
+
+	/*
+	 * @param declared
+	 * @param typeRef
+	 * @return index of type parameter in formal type parameters of `declarer` if typeRef is reference refers type parameter of that declarer.
+	 *  Returns -1 if it is not.
+	 */
+	private int getIndexOfTypeParam(CtFormalTypeDeclarer declarer, CtTypeReference<?> typeRef) {
+		if (typeRef instanceof CtTypeParameterReference) {
+			CtTypeParameter typeParam = ((CtTypeParameterReference) typeRef).getDeclaration();
+			if (typeParam != null) {
+				if (declarer == typeParam.getTypeParameterDeclarer()) {
+					return declarer.getFormalCtTypeParameters().indexOf(typeParam);
+				}
+			}
+		}
+		return -1;
 	}
 
 	private static CtTypeReference<?> getBound(CtTypeParameter typeParam) {
