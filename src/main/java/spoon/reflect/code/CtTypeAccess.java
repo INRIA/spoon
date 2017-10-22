@@ -23,7 +23,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
-import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.TYPE_ACCESS;
 
 /**
  * This code element represents a type reference usable as an expression.
@@ -59,7 +59,7 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 	 *
 	 * @return CtTypeReference.
 	 */
-	@PropertyGetter(role = TYPE)
+	@PropertyGetter(role = TYPE_ACCESS)
 	CtTypeReference<A> getAccessedType();
 
 	/**
@@ -68,7 +68,7 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 	 * @param accessedType
 	 * 		CtTypeReference.
 	 */
-	@PropertySetter(role = TYPE)
+	@PropertySetter(role = TYPE_ACCESS)
 	<C extends CtTypeAccess<A>> C setAccessedType(CtTypeReference<A> accessedType);
 
 	/**

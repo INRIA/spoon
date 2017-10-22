@@ -86,7 +86,8 @@ public enum CtRole {
 	DOCUMENTATION_TYPE,
 	JAVADOC_TAG_VALUE,
 	POSITION,
-	SNIPPET;
+	SNIPPET,
+	TYPE_ACCESS;
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
