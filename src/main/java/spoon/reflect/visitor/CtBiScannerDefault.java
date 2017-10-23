@@ -34,7 +34,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (this.stack.peek()));
 		enter(annotation);
 		biScan(annotation.getType(), other.getType());
-		biScan(annotation.getTypeCasts(), other.getTypeCasts());
 		biScan(annotation.getComments(), other.getComments());
 		biScan(annotation.getAnnotationType(), other.getAnnotationType());
 		biScan(annotation.getAnnotations(), other.getAnnotations());
@@ -705,6 +704,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(reference);
 		biScan(reference.getPackage(), other.getPackage());
 		biScan(reference.getDeclaringType(), other.getDeclaringType());
+		// TypeReferenceTest fails if actual type arguments are really not set-able on CtIntersectionTypeReference
+		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(reference.getAnnotations(), other.getAnnotations());
 		biScan(reference.getBounds(), other.getBounds());
 		exit(reference);
