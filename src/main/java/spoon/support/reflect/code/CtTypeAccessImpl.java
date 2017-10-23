@@ -23,11 +23,11 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 
-import static spoon.reflect.path.CtRole.TYPE_ACCESS;
+import static spoon.reflect.path.CtRole.ACCESSED_TYPE;
 
 public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTypeAccess<A> {
 
-	@MetamodelPropertyField(role = TYPE_ACCESS)
+	@MetamodelPropertyField(role = ACCESSED_TYPE)
 	private CtTypeReference<A> type;
 
 	@Override
@@ -45,7 +45,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 		if (accessedType != null) {
 			accessedType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE_ACCESS, accessedType, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ACCESSED_TYPE, accessedType, this.type);
 		type = accessedType;
 		return (C) this;
 	}
