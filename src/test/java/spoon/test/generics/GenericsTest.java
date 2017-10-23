@@ -46,6 +46,7 @@ import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
 import spoon.test.generics.testclasses2.SameSignature2;
+import spoon.test.generics.testclasses2.SameSignature3;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -1337,5 +1338,26 @@ public class GenericsTest {
 
 		decl = invocation.getExecutable().getExecutableDeclaration();
 		assertEquals(rightOfMethod, decl);
+	}
+	
+	@Test
+	public void testIsSameSignatureWithReferencedGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/SameSignature3.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature3.class);
+		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
+
+		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature3");
+		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+
+		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
 	}
 }
