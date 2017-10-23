@@ -29,6 +29,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -177,6 +178,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
+	@DerivedProperty
 	public CtExpression<T> getAssignment() {
 		return getDefaultExpression();
 	}

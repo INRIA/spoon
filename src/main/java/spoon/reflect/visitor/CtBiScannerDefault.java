@@ -34,6 +34,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (this.stack.peek()));
 		enter(annotation);
 		biScan(annotation.getType(), other.getType());
+		biScan(annotation.getTypeCasts(), other.getTypeCasts());
 		biScan(annotation.getComments(), other.getComments());
 		biScan(annotation.getAnnotationType(), other.getAnnotationType());
 		biScan(annotation.getAnnotations(), other.getAnnotations());
@@ -320,7 +321,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(annotationFieldAccess.getAnnotations(), other.getAnnotations());
 		biScan(annotationFieldAccess.getTypeCasts(), other.getTypeCasts());
 		biScan(annotationFieldAccess.getTarget(), other.getTarget());
-		biScan(annotationFieldAccess.getType(), other.getType());
 		biScan(annotationFieldAccess.getVariable(), other.getVariable());
 		exit(annotationFieldAccess);
 	}
@@ -434,7 +434,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(catchVariable);
 		biScan(catchVariable.getComments(), other.getComments());
 		biScan(catchVariable.getAnnotations(), other.getAnnotations());
-		biScan(catchVariable.getDefaultExpression(), other.getDefaultExpression());
 		biScan(catchVariable.getMultiTypes(), other.getMultiTypes());
 		exit(catchVariable);
 	}
@@ -841,7 +840,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess other = ((spoon.reflect.code.CtSuperAccess) (this.stack.peek()));
 		enter(f);
-		biScan(f.getType(), other.getType());
 		biScan(f.getComments(), other.getComments());
 		biScan(f.getAnnotations(), other.getAnnotations());
 		biScan(f.getTypeCasts(), other.getTypeCasts());

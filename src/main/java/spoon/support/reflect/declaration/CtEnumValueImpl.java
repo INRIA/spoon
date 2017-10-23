@@ -16,8 +16,10 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 
 public class CtEnumValueImpl<T> extends CtFieldImpl<T> implements CtEnumValue<T> {
 	@Override
@@ -28,5 +30,11 @@ public class CtEnumValueImpl<T> extends CtFieldImpl<T> implements CtEnumValue<T>
 	@Override
 	public CtEnumValue clone() {
 		return (CtEnumValue) super.clone();
+	}
+
+	@DerivedProperty
+	@Override
+	public CtExpression<T> getAssignment() {
+		return null;
 	}
 }

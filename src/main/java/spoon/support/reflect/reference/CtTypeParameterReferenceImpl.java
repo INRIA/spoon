@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
@@ -102,6 +103,12 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
 		return null;
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeReference<?>> getActualTypeArguments() {
+		return emptyList();
 	}
 
 	@Override

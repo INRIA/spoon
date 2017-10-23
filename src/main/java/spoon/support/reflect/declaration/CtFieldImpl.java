@@ -31,6 +31,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
@@ -186,6 +187,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
+	@DerivedProperty
 	public CtExpression<T> getAssignment() {
 		return getDefaultExpression();
 	}
