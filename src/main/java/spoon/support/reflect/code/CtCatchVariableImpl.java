@@ -34,6 +34,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -49,9 +50,6 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@MetamodelPropertyField(role = CtRole.NAME)
 	String name = "";
-
-	@MetamodelPropertyField(role = CtRole.TYPE)
-	CtTypeReference<T> type;
 
 	@MetamodelPropertyField(role = CtRole.TYPE)
 	List<CtTypeReference<?>> types = emptyList();
@@ -80,9 +78,14 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		return name;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
+	@DerivedProperty
 	public CtTypeReference<T> getType() {
-		return type;
+		if (types.isEmpty()) {
+			return null;
+		}
+		return (CtTypeReference<T>) types.get(0);
 	}
 
 	@Override
@@ -101,11 +104,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
-		if (type != null) {
-			type.setParent(this);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
-		this.type = type;
+		setMultiTypes(Collections.singletonList(type));
 		return (C) this;
 	}
 
