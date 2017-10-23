@@ -37,7 +37,7 @@ import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.ARGUMENT;
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 import static spoon.reflect.path.CtRole.LABEL;
 
 public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
@@ -49,7 +49,7 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	@MetamodelPropertyField(role = CtRole.ARGUMENT)
 	List<CtExpression<?>> arguments = emptyList();
 
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE)
+	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
 	CtExecutableReference<T> executable;
 
 	@Override
@@ -144,7 +144,7 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		if (executable != null) {
 			executable.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE_REF, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

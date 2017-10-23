@@ -78,7 +78,9 @@ class JDTImportBuilder {
 
 					if (ctPackage != null) {
 						for (CtType type : ctPackage.getTypes()) {
-							this.imports.add(type.getReference());
+							if (type.getVisibility() == ModifierKind.PUBLIC) {
+								this.imports.add(type.getReference());
+							}
 						}
 					}
 

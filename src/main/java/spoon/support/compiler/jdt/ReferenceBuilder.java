@@ -132,7 +132,8 @@ public class ReferenceBuilder {
 		if (type == null) {
 			return null;
 		}
-		return buildTypeReferenceInternal(this.<T>getTypeReference(type.resolvedType, type), type, scope);
+		CtTypeReference<T> typeReference = this.<T>getTypeReference(type.resolvedType, type);
+		return buildTypeReferenceInternal(typeReference, type, scope);
 	}
 
 	/**
@@ -471,7 +472,8 @@ public class ReferenceBuilder {
 			insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
 			return ctRef;
 		}
-		return getTypeReference(ref);
+		CtTypeReference<T> result = getTypeReference(ref);
+		return result;
 	}
 
 	CtTypeReference<Object> getTypeParameterReference(TypeBinding binding, TypeReference ref) {
@@ -532,6 +534,9 @@ public class ReferenceBuilder {
 		CtTypeReference<T> res = null;
 		CtTypeReference inner = null;
 		final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
+		String nameParameterized = CharOperation.toString(ref.getParameterizedTypeName());
+		String typeName = CharOperation.toString(ref.getTypeName());
+
 		int index = namesParameterized.length - 1;
 		for (; index >= 0; index--) {
 			// Start at the end to get the class name first.
@@ -547,16 +552,17 @@ public class ReferenceBuilder {
 			inner = main;
 		}
 		if (res == null) {
-			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			return this.jdtTreeBuilder.getFactory().Type().createReference(nameParameterized);
 		}
+
 		if (inner.getPackage() == null) {
 			PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
 			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
 			inner.setPackage(packageReference);
 		}
-		if (!res.toString().replace(", ?", ",?").endsWith(CharOperation.toString(ref.getParameterizedTypeName()))) {
+		if (!res.toString().replace(", ?", ",?").endsWith(nameParameterized)) {
 			// verify that we did not match a class that have the same name in a different package
-			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			return this.jdtTreeBuilder.getFactory().Type().createReference(typeName);
 		}
 		return res;
 	}
@@ -898,7 +904,7 @@ public class ReferenceBuilder {
 		if (varbin.declaringClass != null) {
 			ref.setDeclaringType(getTypeReference(varbin.declaringClass));
 		} else {
-			ref.setDeclaringType(ref.getType());
+			ref.setDeclaringType(ref.getType() == null ? null : ref.getType().clone());
 		}
 		ref.setFinal(varbin.isFinal());
 		ref.setStatic((varbin.modifiers & ClassFileConstants.AccStatic) != 0);

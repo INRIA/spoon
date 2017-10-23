@@ -45,6 +45,10 @@ public class ParentContractTest<T extends CtVisitable> {
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {
+		return createReceiverList();
+	}
+
+	public static Collection<Object[]> createReceiverList() throws Exception {
 		List<Object[]> values = new ArrayList<>();
 		for (CtType t : allInstantiableMetamodelInterfaces) {
 			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {

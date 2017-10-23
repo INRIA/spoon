@@ -626,13 +626,12 @@ public class FilterTest {
 		try {
 			launcher.getFactory().Package().getRootPackage().filterChildren((CtClass<?> c)->{return true;}).name("step1")
 				.map((CtMethod<?> m)->m).name("invalidStep2")
-				.map((o)->o).name("step3")
 				.forEach((CtInterface<?> c)->{
 					fail();
 				});
 			fail();
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().indexOf("Step invalidStep2) spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod")>=0);
+		} catch (ClassCastException e) {
+			assertTrue(e.getMessage().indexOf("spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod")>=0);
 		}
 	}
 	@Test
@@ -898,9 +897,9 @@ public class FilterTest {
 					throw new ClassCastException("TEST");
 				});
 				fail("It must fail, because body of forEach should be called and thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -915,9 +914,9 @@ public class FilterTest {
 					}
 				});
 				fail("It must fail, because body of forEach should be called and thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -932,9 +931,9 @@ public class FilterTest {
 					}
 				}).list();
 				fail("It must fail, because body of select thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -946,9 +945,9 @@ public class FilterTest {
 					throw new ClassCastException("TEST");
 				}).list();
 				fail("It must fail, because body of select thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -963,9 +962,9 @@ public class FilterTest {
 					}
 				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
 				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -977,9 +976,9 @@ public class FilterTest {
 					throw new ClassCastException("TEST");
 				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
 				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -994,9 +993,9 @@ public class FilterTest {
 					}
 				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
 				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 		{
@@ -1008,9 +1007,9 @@ public class FilterTest {
 					throw new ClassCastException("TEST");
 				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
 				fail("It must fail, because body of map thrown CCE");
-			} catch (SpoonException e) {
+			} catch (ClassCastException e) {
 				assertTrue(context.count>0);
-				assertEquals("TEST", e.getCause().getMessage());
+				assertEquals("TEST", e.getMessage());
 			}
 		}
 	}

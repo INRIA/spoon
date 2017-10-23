@@ -476,6 +476,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public CtElement clone() {
-		return CloneHelper.clone(this);
+		return CloneHelper.INSTANCE.clone(this);
 	}
 }

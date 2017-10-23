@@ -14,6 +14,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -45,9 +46,6 @@ import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
-import spoon.test.imports.testclasses2.apachetestsuite.staticcollision.AllLangTestSuite;
-import spoon.test.imports.testclasses2.apachetestsuite.staticjava3.AllLangTestJava3;
-import spoon.test.imports.testclasses2.apachetestsuite.staticmethod.AllLangTestSuiteStaticMethod;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -557,7 +555,7 @@ public class ImportTest {
 	public void testNestedAccessPathWithTypedParameter() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -580,7 +578,7 @@ public class ImportTest {
 	public void testNestedAccessPathWithTypedParameterWithImports() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -604,7 +602,7 @@ public class ImportTest {
 	public void testNestedStaticPathWithTypedParameter() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses2/Interners.java"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -622,7 +620,7 @@ public class ImportTest {
 	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -640,7 +638,7 @@ public class ImportTest {
 	public void testDeepNestedStaticPathWithTypedParameter() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses2/StaticWithNested.java"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/StaticWithNested.java"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -657,7 +655,7 @@ public class ImportTest {
 	public void testDeepNestedStaticPathWithTypedParameterWithImports() throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses2/StaticWithNested.java", "--with-imports"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/StaticWithNested.java", "--with-imports"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -961,7 +959,7 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(false);
 		String outputDir = "./target/spooned-javalang";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/JavaLangConflict.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/JavaLangConflict.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 
@@ -1040,16 +1038,16 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-staticmethod";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticmethod/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/staticmethod/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.getEnvironment().setComplianceLevel(7);
 		launcher.run();
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 
-		CtType element = launcher.getFactory().Class().get(AllLangTestSuiteStaticMethod.class);
+		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.apachetestsuite.staticmethod.AllLangTestSuiteStaticMethod");
 		List<CtType<?>> toPrint = new ArrayList<>();
 		toPrint.add(element);
 
@@ -1070,16 +1068,16 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-staticjava3";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticjava3/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/staticjava3/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.getEnvironment().setComplianceLevel(3);
 		launcher.run();
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 
-		CtType element = launcher.getFactory().Class().get(AllLangTestJava3.class);
+		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.apachetestsuite.staticjava3.AllLangTestJava3");
 		List<CtType<?>> toPrint = new ArrayList<>();
 		toPrint.add(element);
 
@@ -1100,16 +1098,16 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-apache";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/staticcollision/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enums/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/staticcollision/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enums/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/enum2/");
+		launcher.addInputResource("./src/test/resources/spoon/test/imports/testclasses2/apachetestsuite/LangTestSuite.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.getEnvironment().setComplianceLevel(3);
 		launcher.run();
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 
-		CtType element = launcher.getFactory().Class().get(AllLangTestSuite.class);
+		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.apachetestsuite.staticcollision.AllLangTestSuite");
 		List<CtType<?>> toPrint = new ArrayList<>();
 		toPrint.add(element);
 
@@ -1211,5 +1209,47 @@ public class ImportTest {
 		}
 
 		assertEquals("Exactly "+nbStandardImports+nbStaticImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
+	}
+
+	@Test
+	public void testImportStarredPackageWithNonVisibleClass() throws IOException {
+		// contract: when importing starred import, it should not import package-protected classes
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setShouldCompile(true);
+
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/");
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
+		launcher.run();
+
+		File f = new File("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
+		CompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
+
+		assertNotNull(cu);
+
+		assertEquals(3, cu.getImports().size());
+	}
+
+	@Test
+	public void testImportWithGenerics() throws IOException {
+		// contract: in noclasspath autoimport, we should be able to use generic type
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/import-with-generics");
+		launcher.run();
+
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+		CtType element = launcher.getFactory().Class().get("spoon.test.imports.testclasses.TestWithGenerics");
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue(output.contains("import spoon.test.imports.testclasses.withgenerics.Target;"));
 	}
 }

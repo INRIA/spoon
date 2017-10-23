@@ -17,11 +17,13 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -32,17 +34,20 @@ import java.lang.reflect.Member;
 import java.util.Collections;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_FINAL;
 import static spoon.reflect.path.CtRole.IS_STATIC;
-import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.IS_FINAL)
 	boolean fina = false;
 
+	@MetamodelPropertyField(role = CtRole.IS_STATIC)
 	boolean stat = false;
 
 	public CtFieldReferenceImpl() {
@@ -190,7 +195,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}

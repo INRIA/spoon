@@ -21,6 +21,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -68,7 +69,8 @@ import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.CONSTRUCTOR;
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.METHOD;
+import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -92,7 +94,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	Set<ModifierKind> modifiers = emptySet();
 
-	@MetamodelPropertyField(role = {CtRole.FIELD, CtRole.EXECUTABLE, CtRole.NESTED_TYPE})
+	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
@@ -124,11 +126,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			member.setParent(this);
 			CtRole role;
 			if (member instanceof CtMethod) {
-				role = EXECUTABLE;
+				role = METHOD;
 			} else if (member instanceof CtConstructor) {
 				role = CONSTRUCTOR;
 			} else if (member instanceof CtField) {
 				role = FIELD;
+			} else if (member instanceof CtAnonymousExecutable) {
+				role = ANNONYMOUS_EXECUTABLE;
 			} else {
 				role = NESTED_TYPE;
 			}
@@ -142,11 +146,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public boolean removeTypeMember(CtTypeMember member) {
 		CtRole role;
 		if (member instanceof CtMethod) {
-			role = EXECUTABLE;
+			role = METHOD;
 		} else if (member instanceof CtConstructor) {
 			role = CONSTRUCTOR;
 		} else if (member instanceof CtField) {
 			role = FIELD;
+		} else if (member instanceof CtAnonymousExecutable) {
+			role = ANNONYMOUS_EXECUTABLE;
 		} else {
 			role = NESTED_TYPE;
 		}
@@ -900,7 +906,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
 		Set<CtMethod<?>> allMethods = getMethods();
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, EXECUTABLE, this.typeMembers, new ArrayList(allMethods));
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, METHOD, this.typeMembers, new ArrayList(allMethods));
 		typeMembers.removeAll(allMethods);
 		if (methods == null || methods.isEmpty()) {
 			return (C) this;

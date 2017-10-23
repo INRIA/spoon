@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertTrue;
 
 public class MetamodelTest {
 	@Test
@@ -91,6 +92,7 @@ public class MetamodelTest {
 
 		CtTypeReference metamodelPropertyField = factory.Type().get(MetamodelPropertyField.class).getReference();
 
+		final List<String> result = new ArrayList();
 		List<CtField> fieldWithoutAnnotation = (List<CtField>) implementations.getModel().getElements(new TypeFilter<CtField>(CtField.class) {
 			@Override
 			public boolean matches(CtField candidate) {
@@ -106,12 +108,17 @@ public class MetamodelTest {
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
 				return parent != null
-						&& !(parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtReference.class)))
-						&& parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtElement.class));
+						// code and reference element fields must be annotated
+						&&
+						(parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtReference.class))
+						|| parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtElement.class))
+						);
 			}
-		}).stream().filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
+		}).stream().map(x -> {result.add(x.toString()); return x;}).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
 
-
+		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)\nboolean isShadow;"));
+		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)\nspoon.reflect.reference.CtTypeReference<T> type;"));
+		assertTrue(result.size()>100);
 		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
 
 
@@ -150,8 +157,8 @@ public class MetamodelTest {
 				}
 			}
 
-			Assert.assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
-			Assert.assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
+			assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
+			assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
 		}
 
 	}

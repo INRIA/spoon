@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -25,6 +26,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -45,26 +47,32 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_STATIC;
-import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.ARGUMENT_TYPE;
 import static spoon.reflect.path.CtRole.TYPE;
-import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.IS_STATIC)
 	boolean stat = false;
 
+	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	/**
 	 * For methods, stores the return type of the method. (not pretty-printed).
 	 * For constructors, stores the type of the target constructor (pretty-printed).
 	 */
 	CtTypeReference<T> type;
 
+	@MetamodelPropertyField(role = ARGUMENT_TYPE)
 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
 
 	public CtExecutableReferenceImpl() {
@@ -206,7 +214,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.parameters = new ArrayList<>();
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, PARAMETER, this.parameters, new ArrayList<>(this.parameters));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ARGUMENT_TYPE, this.parameters, new ArrayList<>(this.parameters));
 		this.parameters.clear();
 		for (CtTypeReference<?> parameter : parameters) {
 			addParameter(parameter);
@@ -219,7 +227,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			return false;
 		}
 		parameter.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT_TYPE, this.parameters, parameter);
 		return this.parameters.add(parameter);
 	}
 
@@ -277,7 +285,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>();
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_PARAMETER, this.actualTypeArguments, new ArrayList<>(this.actualTypeArguments));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_ARGUMENT, this.actualTypeArguments, new ArrayList<>(this.actualTypeArguments));
 		this.actualTypeArguments.clear();
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
@@ -290,7 +298,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
@@ -450,7 +458,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_PARAMETER, this.actualTypeArguments, actualTypeArgument);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_ARGUMENT, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}
@@ -460,7 +468,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			return false;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_PARAMETER, actualTypeArguments, actualTypeArguments.indexOf(actualTypeArgument), actualTypeArgument);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_ARGUMENT, actualTypeArguments, actualTypeArguments.indexOf(actualTypeArgument), actualTypeArgument);
 		return actualTypeArguments.remove(actualTypeArgument);
 	}
 
