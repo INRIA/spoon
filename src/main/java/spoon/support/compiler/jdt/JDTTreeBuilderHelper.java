@@ -25,6 +25,7 @@ import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
@@ -112,10 +113,17 @@ public class JDTTreeBuilderHelper {
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
 		final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
-		return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
-				jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType), //
-				CharOperation.charToString(jdtCatch.name), //
-				modifiers.toArray(new ModifierKind[modifiers.size()]));
+		if (typeReference instanceof UnionTypeReference) {
+			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
+					null, //do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
+					CharOperation.charToString(jdtCatch.name), //
+					modifiers.toArray(new ModifierKind[modifiers.size()]));
+		} else {
+			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
+					jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType), //
+					CharOperation.charToString(jdtCatch.name), //
+					modifiers.toArray(new ModifierKind[modifiers.size()]));
+		}
 	}
 
 	/**
