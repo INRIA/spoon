@@ -18,16 +18,20 @@ package spoon.support.visitor;
 
 import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -54,19 +58,61 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return scopeMethod;
 	}
 
-	public MethodTypingContext setMethod(CtMethod<?> scopeMethod) {
+	public MethodTypingContext setMethod(CtMethod<?> method) {
+		actualTypeArguments = getTypeReferences(method.getFormalCtTypeParameters());
 		if (classTypingContext != null) {
-			//assure that scopeMethod fits to required classTypingContext
-			scopeMethod = classTypingContext.adaptMethod(scopeMethod);
+			CtType<?> declType = method.getDeclaringType();
+			if (declType == null) {
+				throw new SpoonException("Cannot use method without declaring type as scope of method typing context");
+			}
+			if (classTypingContext.getAdaptationScope() != declType) {
+				//the method is declared in different type. We have to adapt it to required classTypingContext
+				if (classTypingContext.isSubtypeOf(declType.getReference()) == false) {
+					throw new SpoonException("Cannot create MethodTypingContext for method declared in different ClassTypingContext");
+				}
+				/*
+				 * The method is declared in an supertype of classTypingContext.
+				 * Create virtual scope method by adapting generic types of supertype method to required scope
+				 */
+				Factory factory = method.getFactory();
+				//create new scopeMethod, which is directly used during adaptation of it's parameters
+				CtMethod<?> adaptedMethod = factory.Core().createMethod();
+				adaptedMethod.setParent(classTypingContext.getAdaptationScope());
+				adaptedMethod.setModifiers(method.getModifiers());
+				adaptedMethod.setSimpleName(method.getSimpleName());
+
+				for (CtTypeParameter typeParam : method.getFormalCtTypeParameters()) {
+					CtTypeParameter newTypeParam = typeParam.clone();
+					newTypeParam.setSuperclass(adaptTypeForNewMethod(typeParam.getSuperclass()));
+					adaptedMethod.addFormalCtTypeParameter(newTypeParam);
+				}
+				//now the formal type parameters of the scopeMethod are defined, so we can use adaptType of this MethodTypingContext
+				scopeMethod = adaptedMethod;
+				for (CtTypeReference<? extends Throwable> thrownType : method.getThrownTypes()) {
+					adaptedMethod.addThrownType((CtTypeReference<Throwable>) adaptType(thrownType.clone()));
+				}
+				//adapt return type
+				adaptedMethod.setType((CtTypeReference) adaptType(method.getType()));
+				//adapt parameters
+				List<CtParameter<?>> adaptedParams = new ArrayList<>(method.getParameters().size());
+				for (CtParameter<?> parameter : method.getParameters()) {
+					adaptedParams.add(factory.Executable().createParameter(null,
+							adaptType(parameter.getType()),
+							parameter.getSimpleName()));
+				}
+				adaptedMethod.setParameters(adaptedParams);
+				method = adaptedMethod;
+			}
 		}
-		setScopeMethod(scopeMethod);
-		actualTypeArguments = getTypeReferences(scopeMethod.getFormalCtTypeParameters());
+		scopeMethod = method;
 		return this;
 	}
 
-	public MethodTypingContext setConstructor(CtConstructor<?> scopeConstructor) {
-		setScopeMethod(scopeConstructor);
-		actualTypeArguments = getTypeReferences(scopeConstructor.getFormalCtTypeParameters());
+	public MethodTypingContext setConstructor(CtConstructor<?> constructor) {
+		actualTypeArguments = getTypeReferences(constructor.getFormalCtTypeParameters());
+		//TODO may be the constructors have to be adapted too, same like in setScopeMethod??
+		checkSameTypingContext(classTypingContext, constructor);
+		scopeMethod = constructor;
 		return this;
 	}
 
@@ -99,14 +145,24 @@ public class MethodTypingContext extends AbstractTypingContext {
 	}
 
 	public MethodTypingContext setExecutableReference(CtExecutableReference<?> execRef) {
-		this.actualTypeArguments = execRef.getActualTypeArguments();
-		setScopeMethod((CtFormalTypeDeclarer) execRef.getExecutableDeclaration());
 		if (classTypingContext == null) {
 			CtTypeReference<?> declaringTypeRef = execRef.getDeclaringType();
 			if (declaringTypeRef != null) {
 				classTypingContext = new ClassTypingContext(declaringTypeRef);
 			}
 		}
+		CtExecutable<?> exec = execRef.getExecutableDeclaration();
+		if (exec == null) {
+			throw new SpoonException("Cannot create MethodTypingContext from CtExecutable of CtExecutableReference is null");
+		}
+		if (exec instanceof CtMethod<?>) {
+			setMethod((CtMethod<?>) exec);
+		} else if (exec instanceof CtConstructor<?>) {
+			setConstructor((CtConstructor<?>) exec);
+		} else {
+			throw new SpoonException("Cannot create MethodTypingContext from " + exec.getClass().getName());
+		}
+		this.actualTypeArguments = execRef.getActualTypeArguments();
 		return this;
 	}
 
@@ -202,9 +258,24 @@ public class MethodTypingContext extends AbstractTypingContext {
 		throw new SpoonException("scopeMethod is not assigned");
 	}
 
-	private void setScopeMethod(CtFormalTypeDeclarer executable) {
-		checkSameTypingContext(classTypingContext, executable);
-		scopeMethod = executable;
+	private CtTypeReference<?> adaptTypeForNewMethod(CtTypeReference<?> typeRef) {
+		if (typeRef == null) {
+			return null;
+		}
+		if (typeRef instanceof CtTypeParameterReference) {
+			CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
+			CtTypeParameter typeParam = typeParamRef.getDeclaration();
+			if (typeParam == null) {
+				throw new SpoonException("Declaration of the CtTypeParameter should not be null.");
+			}
+
+			if (typeParam.getTypeParameterDeclarer() instanceof CtExecutable) {
+				//the parameter is declared in scope of Method or Constructor
+				return typeRef.clone();
+			}
+		}
+		//it is not type reference of scopeMethod. Adapt it using classTypingContext
+		return classTypingContext.adaptType(typeRef);
 	}
 
 	private void checkSameTypingContext(ClassTypingContext ctc, CtFormalTypeDeclarer executable) {
