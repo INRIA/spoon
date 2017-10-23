@@ -31,7 +31,8 @@ import java.lang.annotation.Target;
  * It can be put on getter and setters.
  *
  * Contracts:
- * - A setter with @DerivedProperty never triggers a model intercession event.
+ * - A setter with @DerivedProperty only triggers one single model intercession event,
+ *   on the element primarily responsible for handling the state from which this dervied property is computed.
  * - A getter with @DerivedProperty is never called in CtScanner and derived classes (clone, replace)
  */
 @Retention(RetentionPolicy.RUNTIME)
