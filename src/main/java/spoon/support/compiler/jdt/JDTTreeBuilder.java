@@ -726,7 +726,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
 		context.compilationunitdeclaration = scope.referenceContext;
-		context.compilationUnitSpoon = getFactory().CompilationUnit().create(new String(context.compilationunitdeclaration.getFileName()));
+		context.compilationUnitSpoon = getFactory().CompilationUnit().getOrCreate(new String(context.compilationunitdeclaration.getFileName()));
 		context.compilationUnitSpoon.setDeclaredPackage(getFactory().Package().getOrCreate(CharOperation.toString(scope.currentPackageName)));
 		return true;
 	}

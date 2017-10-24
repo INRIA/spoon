@@ -57,7 +57,7 @@ public class CompilationUnitFactory extends SubFactory {
 	/**
 	 * Creates or gets a compilation unit for a given file path.
 	 */
-	public CompilationUnit create(String filePath) {
+	public CompilationUnit getOrCreate(String filePath) {
 		CompilationUnit cu = cachedCompilationUnits.get(filePath);
 		if (cu == null) {
 			if (filePath.startsWith(JDTSnippetCompiler.SNIPPET_FILENAME_PREFIX)) {

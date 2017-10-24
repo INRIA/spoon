@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
-import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
@@ -13,7 +12,6 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -148,7 +146,7 @@ public class PackageTest {
 		assertEquals("otherName.test.pkg.testclasses.Foo", foo.getQualifiedName());
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
-		prettyPrinter.calculate(spoon.getFactory().CompilationUnit().create("./src/test/java/spoon/test/pkg/testclasses/Foo.java"), Collections.singletonList(foo));
+		prettyPrinter.calculate(spoon.getFactory().CompilationUnit().getOrCreate("./src/test/java/spoon/test/pkg/testclasses/Foo.java"), Collections.singletonList(foo));
 		String result = prettyPrinter.getResult();
 
 		assertTrue(result.contains("package otherName.test.pkg.testclasses;"));
@@ -168,7 +166,7 @@ public class PackageTest {
 		assertEquals("otherName.Test", foo.getQualifiedName());
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
-		prettyPrinter.calculate(spoon.getFactory().CompilationUnit().create("./src/test/resources/noclasspath/app/Test.java"), Collections.singletonList(foo));
+		prettyPrinter.calculate(spoon.getFactory().CompilationUnit().getOrCreate("./src/test/resources/noclasspath/app/Test.java"), Collections.singletonList(foo));
 		String result = prettyPrinter.getResult();
 
 		assertTrue(result.contains("package otherName;"));
