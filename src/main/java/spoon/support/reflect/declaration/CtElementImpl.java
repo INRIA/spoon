@@ -26,6 +26,8 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.meta.impl.RoleHandlerProvider;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -495,5 +497,42 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public CtElement clone() {
 		return CloneHelper.INSTANCE.clone(this);
+	}
+
+	@Override
+	public <T> T getValueByRole(CtRole role) {
+		RoleHandler rh = RoleHandlerProvider.getRoleHandler(this.getClass(), role);
+		return rh.getValue(this);
+	}
+
+	@Override
+	public <T> Collection<T> getValueByRoleAsCollection(CtRole role) {
+		RoleHandler rh = RoleHandlerProvider.getRoleHandler(this.getClass(), role);
+		return rh.asCollection(this);
+	}
+
+	@Override
+	public <T> List<T> getValueByRoleAsList(CtRole role) {
+		RoleHandler rh = RoleHandlerProvider.getRoleHandler(this.getClass(), role);
+		return rh.asList(this);
+	}
+
+	@Override
+	public <T> Set<T> getValueByRoleAsSet(CtRole role) {
+		RoleHandler rh = RoleHandlerProvider.getRoleHandler(this.getClass(), role);
+		return rh.asSet(this);
+	}
+
+	@Override
+	public <T> Map<String, T> getValueByRoleAsMap(CtRole role) {
+		RoleHandler rh = RoleHandlerProvider.getRoleHandler(this.getClass(), role);
+		return rh.asMap(this);
+	}
+
+	@Override
+	public <E extends CtElement, T> E setValueByRole(CtRole role, T value) {
+		RoleHandler rh = RoleHandlerProvider.getRoleHandler(this.getClass(), role);
+		rh.setValue(this, value);
+		return (E) this;
 	}
 }

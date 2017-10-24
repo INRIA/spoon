@@ -32,6 +32,7 @@ import spoon.reflect.annotations.PropertySetter;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.ANNOTATION;
@@ -314,4 +315,39 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Clone the element which calls this method in a new object.
 	 */
 	CtElement clone();
+
+	/**
+	 * @param role defines, which attribute has to be returned
+	 * @return a value of the `role` attribute of this model node.
+	 * It can return a single value, List, Set or Map depending on this `element` and `role`.
+	 * In all cases the returned value is READ ONLY
+	 */
+	<T> T getValueByRole(CtRole role);
+
+	/**
+	 * @param role defines, which attribute has to be returned
+	 * @return a value of the `role` attribute of this model node adapted to modifiable Collection
+	 */
+	<T> Collection<T> getValueByRoleAsCollection(CtRole role);
+	/**
+	 * @param role defines, which attribute has to be returned
+	 * @return a value of the `role` attribute of this model node adapted to modifiable List
+	 */
+	<T> List<T> getValueByRoleAsList(CtRole role);
+	/**
+	 * @param role defines, which attribute has to be returned
+	 * @return a value of the `role` attribute of this model node adapted to modifiable Set
+	 */
+	<T> Set<T> getValueByRoleAsSet(CtRole role);
+	/**
+	 * @param role defines, which attribute has to be returned
+	 * @return a value of the `role` attribute of this model node adapted to modifiable Map
+	 */
+	<T> Map<String, T> getValueByRoleAsMap(CtRole role);
+
+	/**
+	 * @param role defines, which attribute has to be returned
+	 * @param value to be assigned value
+	 */
+	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
 }
