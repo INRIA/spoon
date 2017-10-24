@@ -206,8 +206,10 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Return all the accessible methods (concrete and abstract) for this type.
 	 * It recursively collects all methods from super-classes and super-interfaces.
 	 *
-	 * Really all methods (incl. those of library super-classes)
-	 * and Object are returned, thanks to runtime reflection
+	 * It includes the methods of types whose source code is in the Spoon model,
+	 * the methods of types from the JDK and from libraries present in the classpath,
+	 * the methods of java.lang.Object (for all CtClass objects).
+	 * However, in noclasspath mode, it does not include methods from unknown types.
 	 */
 	@DerivedProperty
 	Set<CtMethod<?>> getAllMethods();
