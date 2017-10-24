@@ -11,5 +11,5 @@ public interface DumbItf {
         return 12;
     }
 
-    String STATIC_STRING = "bla";
+    String MYSTRING = "bla";
 }

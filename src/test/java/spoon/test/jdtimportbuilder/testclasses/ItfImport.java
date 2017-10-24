@@ -4,6 +4,6 @@ import static spoon.test.jdtimportbuilder.testclasses.itf.DumbItf.*;
 
 public class ItfImport {
 
-    String s = STATIC_STRING;
+    String s = MYSTRING;
     int i = staticMethod();
 }

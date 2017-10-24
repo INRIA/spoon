@@ -225,7 +225,7 @@ public class ImportBuilderTest {
             }
         }
 
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.itf.DumbItf#STATIC_STRING", importNames.get(0));
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.itf.DumbItf#MYSTRING", importNames.get(0));
         assertEquals("spoon.test.jdtimportbuilder.testclasses.itf.DumbItf#staticMethod", importNames.get(1));
     }
 
