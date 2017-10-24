@@ -84,6 +84,7 @@ public enum CtRole {
 	TARGET_LABEL,
 	TYPE_PARAMETER("actualtypearguments", "formalcttypeparameters"),
 	TYPE_ARGUMENT,
+	CONTAINED_TYPE,
 	COMMENT_TAG,
 	COMMENT_CONTENT,
 	COMMENT_TYPE,
