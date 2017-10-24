@@ -35,8 +35,9 @@ This article is a short summary of the [official documentation of sonatype](http
     	- News section in `doc/doc_homepage.md`
     	- Maven version in `doc/_config.yml`
     - Updates main `README.md`
-- Add changelog on release page on GitHub 
-- Announces release on the mailing list (give credits to the contributors)
+- Add changelog on release page on GitHub
+- Update version information and date on [INRIA's BIL](http://bil.inria.fr/)
+- For major releases, announce on appropriate mailing lists (gdr-gpl, OW2)
 - If necessary, removes all methods deprecated after the release!
 
 

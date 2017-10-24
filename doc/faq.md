@@ -5,10 +5,6 @@ keywords: frequently asked questions, FAQ, question and answer, collapsible sect
 
 ## Practical Information
 
-### How to subscribe to Spoon's mailing list?
-
-Go [here](http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss) and fill the form. 
-
 ### How to access Spoon's source code repository?
 
 See <https://github.com/INRIA/spoon/>.
