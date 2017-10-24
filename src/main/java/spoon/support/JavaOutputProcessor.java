@@ -124,7 +124,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			// this is a top level type (see check above)
 			// if the compilation unit is not set, we use a default one
 			if (cu == null) {
-				cu = element.getFactory().CompilationUnit().create(element.getQualifiedName());
+				cu = element.getFactory().CompilationUnit().getOrCreate(element.getQualifiedName());
 				cu.setDeclaredPackage(element.getPackage());
 			}
 		}
