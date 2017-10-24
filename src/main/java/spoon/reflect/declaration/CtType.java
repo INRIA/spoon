@@ -206,11 +206,8 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Return all the accessible methods (concrete and abstract) for this type.
 	 * It recursively collects all methods from super-classes and super-interfaces.
 	 *
-	 * As of 5.3: Really all methods (incl. those of library super-classes
-	 * and Object are returned, thanks to runtime reflection)
-	 *
-	 * Up to 5.2: The recursion stops when the super-type/super-interface is not in the model,
-	 * which means that no method of library super-classes, or of Object are present.
+	 * Really all methods (incl. those of library super-classes)
+	 * and Object are returned, thanks to runtime reflection
 	 */
 	@DerivedProperty
 	Set<CtMethod<?>> getAllMethods();
