@@ -23,10 +23,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 
 public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> extends CtTargetedExpressionImpl<T, E> implements CtExecutableReferenceExpression<T, E> {
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE)
+	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
 	CtExecutableReference<T> executable;
 
 	@Override
@@ -44,7 +44,7 @@ public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> e
 		if (executable != null) {
 			executable.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE_REF, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

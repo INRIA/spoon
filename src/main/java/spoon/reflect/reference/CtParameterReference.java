@@ -32,13 +32,13 @@ public interface CtParameterReference<T> extends CtVariableReference<T> {
 	/**
 	 * Gets the declaring executable of the referenced parameter.
 	 */
-	@PropertyGetter(role = CtRole.EXECUTABLE)
+	@PropertyGetter(role = CtRole.EXECUTABLE_REF)
 	CtExecutableReference<?> getDeclaringExecutable();
 
 	/**
 	 * Sets the declaring executable of the referenced parameter.
 	 */
-	@PropertySetter(role = CtRole.EXECUTABLE)
+	@PropertySetter(role = CtRole.EXECUTABLE_REF)
 	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
 
 	@Override

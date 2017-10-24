@@ -623,4 +623,20 @@ public class TypeReferenceTest {
 
 		assertEquals(parameterRef1, parameterRef2);
 	}
+
+	@Test
+	public void testTypeReferenceWithGenerics() throws Exception {
+		// contract: in noclasspath, a generic type name should not contain generic information
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtField field = launcher.getModel().getElements(new TypeFilter<CtField>(CtField.class)).get(0);
+		CtTypeReference fieldTypeRef = field.getType();
+
+		assertEquals("spoon.test.imports.testclasses.withgenerics.Target", fieldTypeRef.getQualifiedName());
+		assertEquals(2, fieldTypeRef.getActualTypeArguments().size());
+	}
 }

@@ -25,7 +25,7 @@ public class TemplateArrayAccessTest {
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtStatement result = new SubstituteArrayAccessTemplate(new String[]{"a",null,"b"}).apply(resultKlass);
-		assertEquals("new java.lang.String[]{ \"a\" , null , \"b\" }.toString()", result.toString());
+		assertEquals("new java.lang.String[]{ \"a\", null, \"b\" }.toString()", result.toString());
 	}
 
 	@Test

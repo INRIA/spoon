@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by nicolas on 27/08/2015.
+ * Identifies the roles of attributes of spoon model.
  */
 public enum CtRole {
 	NAME("name", "simplename"),
@@ -50,6 +50,7 @@ public enum CtRole {
 	OPERATOR_KIND,
 	PARAMETER("param", "parameters"),
 	EXPRESSION("value", "returnedexpression", "expressions"),
+	ARGUMENT_TYPE,
 	TARGET,
 	VARIABLE,
 	FINALIZER,
@@ -70,17 +71,27 @@ public enum CtRole {
 	FIELD("typemembers"),
 	CAST("typecasts"),
 	VALUE("enumvalues", "elementvalues"),
+	EXECUTABLE_REF,
+	METHOD,
+	ANNONYMOUS_EXECUTABLE,
+	TYPE_MEMBER,
 	FOR_UPDATE,
 	FOR_INIT,
+	FOREACH_VARIABLE,
 	TRY_RESOURCE,
 	DIMENSION("dimensionexpressions"),
 	CATCH,
 	TARGET_LABEL,
 	TYPE_PARAMETER("actualtypearguments", "formalcttypeparameters"),
+	TYPE_ARGUMENT,
 	COMMENT_TAG,
 	COMMENT_CONTENT,
 	COMMENT_TYPE,
-	POSITION;
+	DOCUMENTATION_TYPE,
+	JAVADOC_TAG_VALUE,
+	POSITION,
+	SNIPPET,
+	ACCESSED_TYPE;
 
 	private List<String> names = new ArrayList<>();
 

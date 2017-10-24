@@ -58,7 +58,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	CtBlock<?> body;
 	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
-	@MetamodelPropertyField(role = CtRole.THROWN)
+	@MetamodelPropertyField(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	@Override
