@@ -35,15 +35,6 @@
     <url>https://github.com/INRIA/spoon/issues</url>
   </issueManagement>
 
-  <mailingLists>
-    <mailingList>
-      <name>spoon-discuss</name>
-      <subscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</subscribe>
-      <unsubscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</unsubscribe>
-      <archive>http://lists.gforge.inria.fr/pipermail/spoon-discuss/</archive>
-    </mailingList>
-  </mailingLists>
-
   <!-- to generate the list for the README -->
   <!-- xmlstarlet sel -t -m "//_:developer/_:name" -o "* " -v . -n  pom.xml -->
   <developers>
