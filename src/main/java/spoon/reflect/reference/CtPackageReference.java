@@ -48,4 +48,9 @@ public interface CtPackageReference extends CtReference {
 
 	@Override
 	CtPackageReference clone();
+
+	/**
+	 * @return the fully qualified name of a package, based on its declaration
+	 */
+	String getQualifiedName();
 }
