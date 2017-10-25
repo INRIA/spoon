@@ -3,7 +3,10 @@ package toto;
 public interface DumbItf {
     int CONSTANT_INT = 12; // this should be static and public
 
-    default int bla();
+    // this should be only public
+    default int bla() {
+        return 42;
+    }
 
     void machin(); // this should be public
 
