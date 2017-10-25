@@ -938,7 +938,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(CharOperation.charToString(methodDeclaration.selector));
-		m.setModifiers(getModifiers(methodDeclaration.modifiers));
+		int modifiers = (methodDeclaration.binding == null) ? methodDeclaration.modifiers : methodDeclaration.binding.modifiers;
+		m.setModifiers(getModifiers(modifiers));
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 
 		context.enter(m, methodDeclaration);
@@ -1054,7 +1055,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
-		field.setModifiers(getModifiers(fieldDeclaration.modifiers));
+
+		int modifiers = (fieldDeclaration.binding == null) ? fieldDeclaration.modifiers : fieldDeclaration.binding.modifiers;
+		field.setModifiers(getModifiers(modifiers));
 		context.enter(field, fieldDeclaration);
 		return true;
 	}
