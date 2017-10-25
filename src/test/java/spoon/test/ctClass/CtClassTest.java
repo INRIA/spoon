@@ -179,4 +179,16 @@ public class CtClassTest {
 
 		canBeBuilt("./target/issue1306", 8, true);
 	}
+
+	@Test
+	public void testGetResourceAsStream() {
+    	// contract: ClassLoader#getResourceAsStream should be available
+
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/issue1626/Test.java");
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setCommentEnabled(true);
+		spoon.getEnvironment().setComplianceLevel(7);
+		spoon.run();
+	}
 }
