@@ -210,6 +210,8 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * the methods of types from the JDK and from libraries present in the classpath,
 	 * the methods of java.lang.Object (for all CtClass objects).
 	 * However, in noclasspath mode, it does not include methods from unknown types.
+	 * If methods are overridden somewhere in the type hierarchy, it returns only top methods (ie method definitions).
+	 * Each method signature is returned only once
 	 */
 	@DerivedProperty
 	Set<CtMethod<?>> getAllMethods();
