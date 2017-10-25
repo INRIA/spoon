@@ -4,8 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
@@ -108,5 +110,38 @@ public class InterfaceTest {
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
 		assertFalse("Method in the sub interface mustn't be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
 		assertEquals("Interface of the static method must be the sub interface", RedefinesStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
+	}
+
+	@Test
+	public void testModifierFromInterfaceFieldAndMethod() {
+		// contract: methods defined in interface are all public and fields are all public and static
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/spoon/test/itf/DumbItf.java");
+		spoon.getEnvironment().setNoClasspath(false);
+		spoon.buildModel();
+
+		CtType dumbType = spoon.getFactory().Type().get("toto.DumbItf");
+
+		assertEquals(1, dumbType.getFields().size());
+
+		CtField field = (CtField)dumbType.getFields().get(0);
+
+		assertTrue(field.hasModifier(ModifierKind.STATIC));
+		assertTrue(field.hasModifier(ModifierKind.PUBLIC));
+
+		assertEquals(3, dumbType.getMethods().size());
+
+		CtMethod staticMethod = (CtMethod) dumbType.getMethodsByName("foo").get(0);
+		assertTrue(staticMethod.hasModifier(ModifierKind.PUBLIC));
+		assertTrue(staticMethod.hasModifier(ModifierKind.STATIC));
+
+		CtMethod publicMethod = (CtMethod) dumbType.getMethodsByName("machin").get(0);
+		assertTrue(publicMethod.hasModifier(ModifierKind.PUBLIC));
+		assertFalse(publicMethod.hasModifier(ModifierKind.STATIC));
+
+		CtMethod defaultMethod = (CtMethod) dumbType.getMethodsByName("bla").get(0);
+		assertTrue(defaultMethod.hasModifier(ModifierKind.PUBLIC));
+		assertTrue(defaultMethod.isDefaultMethod());
+		assertFalse(defaultMethod.hasModifier(ModifierKind.STATIC));
 	}
 }
