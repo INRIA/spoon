@@ -5,7 +5,6 @@ import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
@@ -13,18 +12,14 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClassWithInvocation;
-import spoon.test.imports.testclasses.Tacos;
-import spoon.test.jdtimportbuilder.testclasses.ItfImport;
 import spoon.test.jdtimportbuilder.testclasses.StarredImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -198,13 +193,13 @@ public class ImportBuilderTest {
     public void testWithImportFromItf() {
         // contract: static field or methods can be inherited
         Launcher spoon = new Launcher();
-        spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/ItfImport.java");
+        spoon.addInputResource("./src/test/resources/jdtimportbuilder/");
         spoon.getEnvironment().setAutoImports(true);
         spoon.getEnvironment().setShouldCompile(true);
         spoon.setSourceOutputDirectory("./target/spoon-jdtimport-itfimport");
         spoon.run();
 
-        CtClass classStatic = spoon.getFactory().Class().get(ItfImport.class);
+        CtClass classStatic = spoon.getFactory().Class().get("jdtimportbuilder.ItfImport");
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
         Collection<CtReference> imports = unitStatic.getImports();
 
@@ -226,7 +221,7 @@ public class ImportBuilderTest {
         }
 
         assertEquals("spoon.test.jdtimportbuilder.testclasses.itf.DumbItf#MYSTRING", importNames.get(0));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.itf.DumbItf#staticMethod", importNames.get(1));
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.itf.DumbItf#anotherStaticMethod", importNames.get(1));
     }
 
 }

@@ -1,13 +1,13 @@
-package spoon.test.jdtimportbuilder.testclasses.itf;
+package jdtimportbuilder.itf;
 
 public interface DumbItf {
     int uneMethod();
 
-    default int defaultMethod() {
+    default int anotherDefaultMethod() {
         return 42;
     }
 
-    static int staticMethod() {
+    static int anotherStaticMethod() {
         return 12;
     }
 
