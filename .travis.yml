@@ -28,3 +28,10 @@ jobs:
     - env: JDK_VERSION=1.9
       jdk: oraclejdk9
       script: ./chore/travis-run-verify.sh
+
+cache:
+  directories:
+  - $HOME/.m2
+
+before_cache:
+  - rm -rf $HOME/.m2/fr/inria/ # delete all to be sure we always get last snapshot of spoon
