@@ -61,16 +61,7 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 
 	@Override
 	public String getQualifiedName() {
-		if (this.isUnnamedPackage()) {
-			return this.getSimpleName();
-		}
-
-		CtPackage ctPackage = this.getDeclaration();
-		if (ctPackage != null) {
-			return ctPackage.getQualifiedName();
-		} else {
-			return this.getSimpleName();
-		}
+		return this.getSimpleName();
 	}
 
 	@Override

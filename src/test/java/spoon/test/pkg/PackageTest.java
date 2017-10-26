@@ -269,7 +269,7 @@ public class PackageTest {
 
 	@Test
 	public void testGetFQNSimple() {
-		// contract: Spoon get the right pkg reference FQN name in simple case
+		// contract: CtPackageReference simple name is also the fully qualified name of its referenced package
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
 		spoon.buildModel();
@@ -278,13 +278,13 @@ public class PackageTest {
 		CtField field = fooClass.getField("fieldList");
 		CtPackageReference fieldPkg = field.getType().getPackage();
 
-		assertEquals("util", fieldPkg.getSimpleName());
+		assertEquals("java.util", fieldPkg.getSimpleName());
 		assertEquals("java.util", fieldPkg.getQualifiedName());
 	}
 
 	@Test
 	public void testGetFQNInNoClassPath() {
-		// contract: Spoon get the right pkg FQN name in noclasspath
+		// contract: CtPackageReference simple name is also the fully qualified name of its referenced package, even in noclasspath
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
 		spoon.getEnvironment().setNoClasspath(true);
@@ -295,7 +295,7 @@ public class PackageTest {
 		CtField field = torClass.getField("orbotHelper");
 		CtPackageReference fieldPkg = field.getType().getPackage();
 
-		assertEquals("ui", fieldPkg.getSimpleName());
+		assertEquals("info.guardianproject.onionkit.ui", fieldPkg.getSimpleName());
 		assertEquals("info.guardianproject.onionkit.ui", fieldPkg.getQualifiedName());
 	}
 }
