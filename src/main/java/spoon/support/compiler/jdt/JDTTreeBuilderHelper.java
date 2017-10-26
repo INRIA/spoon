@@ -502,10 +502,14 @@ public class JDTTreeBuilderHelper {
 			char[][] packageName = CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1);
 			char[][] className = CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length);
 			if (packageName.length > 0) {
-				final PackageBinding aPackage = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
-				final MissingTypeBinding declaringType = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
+				try {
+					final PackageBinding aPackage = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
+					final MissingTypeBinding declaringType = jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
 
-				typeReference = jdtTreeBuilder.getReferencesBuilder().getTypeReference(declaringType);
+					typeReference = jdtTreeBuilder.getReferencesBuilder().getTypeReference(declaringType);
+				} catch (NullPointerException e) {
+					typeReference = jdtTreeBuilder.getFactory().Type().createReference(qualifiedNameReference.toString());
+				}
 			} else {
 				typeReference = jdtTreeBuilder.getFactory().Type().createReference(qualifiedNameReference.toString());
 			}

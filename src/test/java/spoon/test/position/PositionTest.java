@@ -84,10 +84,10 @@ public class PositionTest {
 		assertEquals(7, position.getLine());
 		assertEquals(9, position.getEndLine());
 
-		assertEquals(77, position.getSourceStart());
-		assertEquals(152, position.getSourceEnd());
+		assertEquals(96, position.getSourceStart());
+		assertEquals(169, position.getSourceEnd());
 		assertEquals("@Deprecated\n"
-				+ "@Resource(description=\"fake\")\n"
+				+ "@InnerAnnot(value=\"machin\")\n"
 				+ "public interface FooInterface {\n"
 				+ "\n"
 				+ "}", contentAtPosition(classContent, position));
@@ -103,7 +103,7 @@ public class PositionTest {
 		}
 		{
 			SourcePosition annPosition = foo.getAnnotations().get(1).getPosition();
-			assertEquals("@Resource(description=\"fake\")", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
+			assertEquals("@InnerAnnot(value=\"machin\")", contentAtPosition(classContent, annPosition.getSourceStart(), annPosition.getSourceEnd()));
 		}
 	}
 

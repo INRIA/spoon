@@ -5,9 +5,6 @@ dist: trusty
 
 group: edge
 
-jdk:
-  - oraclejdk8
-
 # from https://docs.travis-ci.com/user/customizing-the-build
 # A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
 
@@ -16,27 +13,28 @@ install:
   - mvn dependency:resolve
   - pip install --user CommonMark requests pygithub
   - sudo apt-get install xmlstarlet
-  
+
+matrix:
+  include:
+    - env: JDK_VERSION=1.9
+      jdk: oraclejdk9
+    - env: JDK_VERSION=1.8
+      jdk: oraclejdk9
+    - env: JDK_VERSION=1.8
+      jdk: oraclejdk8
+
 script: |
   # compiles and install
-  mvn install -DskipTests &&
-
-  # checks that it works with spoon-maven-pluging
-  git clone https://github.com/square/javawriter.git &&
-  cd javawriter &&  
-  git checkout d39761f9ec25ca5bf3b7bf15d34fa2b831fed9c1 &&
-  bash ../doc/jenkins/build.sh &&
-  cd .. &&
-  rm -rf javawriter &&
+  mvn -Djava.src.version=$JDK_VERSION install -DskipTests &&
 
   # checkstyle, license, javadoc, animal sniffer.
-  mvn verify site -DskipTests &&
+  mvn -Djava.src.version=$JDK_VERSION verify site -DskipTests &&
 
   # the unit tests
-  mvn test jacoco:report  &&
+  mvn -Djava.src.version=$JDK_VERSION test jacoco:report  &&
 
   # uploading coverage, but not failing
-  mvn coveralls:report -Pcoveralls --fail-never &&
+  mvn -Djava.src.version=$JDK_VERSION coveralls:report -Pcoveralls --fail-never &&
 
   # documentation
   python chore/check-links-in-doc.py
