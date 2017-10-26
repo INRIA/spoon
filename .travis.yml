@@ -18,13 +18,13 @@ jobs:
   include:
     - env: JDK_VERSION=1.9
       jdk: oraclejdk9
-      script: ./chore/travis-run-tests-and-coverage.sh
+      script: ./chore/travis-run-tests.sh
     - env: JDK_VERSION=1.8
       jdk: oraclejdk9
       script: ./chore/travis-run-tests.sh
     - env: JDK_VERSION=1.8
       jdk: oraclejdk8
-      script: ./chore/travis-run-tests.sh
+      script: ./chore/travis-run-tests-and-coverage.sh # coveralls is not yet available for JDK9
     - env: JDK_VERSION=1.9
       jdk: oraclejdk9
       script: ./chore/travis-run-verify.sh
