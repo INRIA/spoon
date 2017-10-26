@@ -11,8 +11,10 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -20,6 +22,7 @@ import spoon.support.JavaOutputProcessor;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
 import spoon.test.pkg.testclasses.ElementProcessor;
+import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
@@ -260,5 +263,37 @@ public class PackageTest {
 				assertEquals("@GlobalAnnotation", s.trim());
 			}
 		}
+	}
+
+	@Test
+	public void testGetFQNSimple() {
+		// contract: CtPackageReference simple name is also the fully qualified name of its referenced package
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
+		spoon.buildModel();
+
+		CtClass fooClass = spoon.getFactory().Class().get(Foo.class);
+		CtField field = fooClass.getField("fieldList");
+		CtPackageReference fieldPkg = field.getType().getPackage();
+
+		assertEquals("java.util", fieldPkg.getSimpleName());
+		assertEquals("java.util", fieldPkg.getQualifiedName());
+	}
+
+	@Test
+	public void testGetFQNInNoClassPath() {
+		// contract: CtPackageReference simple name is also the fully qualified name of its referenced package, even in noclasspath
+		final Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.buildModel();
+
+		CtClass torClass = spoon.getFactory().Class().get("com.duckduckgo.mobile.android.util.TorIntegration");
+
+		CtField field = torClass.getField("orbotHelper");
+		CtPackageReference fieldPkg = field.getType().getPackage();
+
+		assertEquals("info.guardianproject.onionkit.ui", fieldPkg.getSimpleName());
+		assertEquals("info.guardianproject.onionkit.ui", fieldPkg.getQualifiedName());
 	}
 }
