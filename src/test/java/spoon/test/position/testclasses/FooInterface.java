@@ -1,9 +1,9 @@
 package spoon.test.position.testclasses;
 
-import javax.annotation.Resource;
+import spoon.test.annotation.testclasses.InnerAnnot;
 
 @Deprecated
-@Resource(description="fake")
+@InnerAnnot(value="machin")
 public interface FooInterface {
 
 }
