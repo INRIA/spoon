@@ -14,28 +14,22 @@ install:
   - pip install --user CommonMark requests pygithub
   - sudo apt-get install xmlstarlet
 
-matrix:
+jobs:
   include:
     - env: JDK_VERSION=1.9
       jdk: oraclejdk9
+      script: ./chore/travis-run-tests.sh
     - env: JDK_VERSION=1.8
       jdk: oraclejdk9
+      script: ./chore/travis-run-tests.sh
     - env: JDK_VERSION=1.8
       jdk: oraclejdk8
+      script: ./chore/travis-run-tests.sh
+    - stage: verify
+      env: JDK_VERSION=1.9
+      jdk: oraclejdk9
+      script: ./chore/travis-run-verify.sh
 
-script: |
-  # compiles and install
-  mvn -Djava.src.version=$JDK_VERSION install -DskipTests &&
-
-  # checkstyle, license, javadoc, animal sniffer.
-  mvn -Djava.src.version=$JDK_VERSION verify site -DskipTests &&
-
-  # the unit tests
-  mvn -Djava.src.version=$JDK_VERSION test jacoco:report  &&
-
-  # uploading coverage, but not failing
-  mvn -Djava.src.version=$JDK_VERSION coveralls:report -Pcoveralls --fail-never &&
-
-  # documentation
-  python chore/check-links-in-doc.py
-
+stages:
+  - test
+  - verify
