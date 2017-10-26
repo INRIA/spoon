@@ -25,11 +25,15 @@ jobs:
     - env: JDK_VERSION=1.8
       jdk: oraclejdk8
       script: ./chore/travis-run-tests.sh
-    - stage: verify
+    - stage: post-test
       env: JDK_VERSION=1.9
       jdk: oraclejdk9
       script: ./chore/travis-run-verify.sh
+    - stage: post-test
+      env: JDK_VERSION=1.9
+      jdk: oraclejdk9
+      script: ./chore/travis-run-coverage.sh
 
 stages:
   - test
-  - verify
+  - post-test
