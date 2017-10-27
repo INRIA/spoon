@@ -155,6 +155,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public CtTypeReference<?> getBoundingType() {
+		if (superType != null) {
+			/*
+			 * Spoon expects that superType is null on many places.
+			 * But sometime  there is Object in it, which has same meaning like null in this case
+			 * But EqualsVisitor returns false that it is not equal
+			 */
+			if (Object.class.getName().equals(superType.getQualifiedName())) {
+				return null;
+			}
+		}
 		return superType;
 	}
 
