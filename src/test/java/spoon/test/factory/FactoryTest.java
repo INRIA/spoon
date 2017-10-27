@@ -44,8 +44,8 @@ public class FactoryTest {
 		m = m.clone();
 
 		assertEquals(i, m.getBody().getStatements().size());
-		// cloned elements must have an initialized parent
-		assertTrue(m.isParentInitialized());
+		// cloned elements must not have an initialized parent, except CtNewClass
+		assertFalse(m.isParentInitialized());
 	}
 
 	@Test

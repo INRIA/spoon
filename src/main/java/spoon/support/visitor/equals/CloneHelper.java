@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.SpoonException;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.util.EmptyClearableList;
@@ -49,7 +51,7 @@ public class CloneHelper {
 		cloneVisitor.scan(element);
 		T clonedElement = cloneVisitor.getClone();
 		// CloneHelper can consume element and change it to null
-		if (element != null && clonedElement != null && element.isParentInitialized()) {
+		if (element != null && clonedElement != null && element instanceof CtNewClass && element.isParentInitialized()) {
 			clonedElement.setParent(element.getParent());
 		}
 		return clonedElement;
