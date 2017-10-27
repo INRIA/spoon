@@ -26,9 +26,7 @@ import java.util.TreeSet;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.clone.CloneVisitor;
