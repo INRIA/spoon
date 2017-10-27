@@ -119,6 +119,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -1054,5 +1055,110 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtQuery createQuery(Object input) {
 		return Query().createQuery(input);
+	}
+
+	@Override
+	public CtAnnotationType createAnnotationType(String qualifiedName) {
+		return Annotation().create(qualifiedName);
+	}
+
+	@Override
+	public CtAnnotationType createAnnotationType(CtPackage owner, String simpleName) {
+		return Annotation().create(owner, simpleName);
+	}
+
+	@Override
+	public CtClass createClass(String qualifiedName) {
+		return Class().create(qualifiedName);
+	}
+
+	@Override
+	public CtClass createClass(CtClass<?> declaringClass, String simpleName) {
+		return Class().create(declaringClass, simpleName);
+	}
+
+	@Override
+	public CtClass createClass(CtPackage owner, String simpleName) {
+		return Class().create(owner, simpleName);
+	}
+
+	@Override
+	public CtConstructor createConstructor(CtClass target, CtConstructor<?> source) {
+		return Constructor().create(target, source);
+	}
+
+	@Override
+	public CtConstructor createConstructor(CtClass target, CtMethod<?> source) {
+		return Constructor().create(target, source);
+	}
+
+	@Override
+	public CtConstructor createConstructor(CtClass target, Set<ModifierKind> modifiers, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+		return Constructor().create(target, modifiers, parameters, thrownTypes);
+	}
+
+	@Override
+	public CtConstructor createConstructor(CtClass target, Set<ModifierKind> modifiers, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes, CtBlock body) {
+		return Constructor().create(target, modifiers, parameters, thrownTypes, body);
+	}
+
+	@Override
+	public CtEnum<?> createEnum(String qualifiedName) {
+		return Enum().create(qualifiedName);
+	}
+
+	@Override
+	public CtEnum<?> createEnum(CtPackage owner, String simpleName) {
+		return Enum().create(owner, simpleName);
+	}
+
+	@Override
+	public CtField createField(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference type, String name) {
+		return Field().create(target, modifiers, type, name);
+	}
+
+	@Override
+	public CtField createField(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference type, String name, CtExpression defaultExpression) {
+		return Field().create(target, modifiers, type, name, defaultExpression);
+	}
+
+	@Override
+	public CtField createField(CtType<?> target, CtField source) {
+		return Field().create(target, source);
+	}
+
+	@Override
+	public CtInterface createInterface(CtPackage owner, String simpleName) {
+		return Interface().create(owner, simpleName);
+	}
+
+	@Override
+	public CtInterface createInterface(CtType owner, String simpleName) {
+		return Interface().create(owner, simpleName);
+	}
+
+	@Override
+	public CtInterface createInterface(String qualifiedName) {
+		return Interface().create(qualifiedName);
+	}
+
+	@Override
+	public CtMethod createMethod(CtClass<?> target, Set<ModifierKind> modifiers, CtTypeReference returnType, String name, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes, CtBlock body) {
+		return Method().create(target, modifiers, returnType, name, parameters, thrownTypes, body);
+	}
+
+	@Override
+	public CtMethod createMethod(CtType<?> target, CtMethod source, boolean redirectReferences) {
+		return Method().create(target, source, redirectReferences);
+	}
+
+	@Override
+	public CtMethod createMethod(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference returnType, String name, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+		return Method().create(target, modifiers, returnType, name, parameters, thrownTypes);
+	}
+
+	@Override
+	public CtPackage createPackage(CtPackage parent, String simpleName) {
+		return Package().create(parent, simpleName);
 	}
 }
