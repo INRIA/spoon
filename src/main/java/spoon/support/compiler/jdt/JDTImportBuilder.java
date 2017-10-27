@@ -54,7 +54,7 @@ class JDTImportBuilder {
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
 		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
-		this.spoonUnit = factory.CompilationUnit().create(filePath);
+		this.spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
 		this.imports = new HashSet<>();
 	}
 
@@ -78,7 +78,9 @@ class JDTImportBuilder {
 
 					if (ctPackage != null) {
 						for (CtType type : ctPackage.getTypes()) {
-							this.imports.add(type.getReference());
+							if (type.getVisibility() == ModifierKind.PUBLIC) {
+								this.imports.add(type.getReference());
+							}
 						}
 					}
 

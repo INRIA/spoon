@@ -92,7 +92,7 @@ class JDTCommentBuilder {
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.contents = sourceUnit.getContents();
 		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
-		this.spoonUnit = factory.CompilationUnit().create(filePath);
+		this.spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
 	}
 
 	/**

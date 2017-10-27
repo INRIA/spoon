@@ -24,7 +24,7 @@ import spoon.reflect.annotations.PropertySetter;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.ARGUMENT;
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 
 /**
  * This code element defines an abstract invocation on a
@@ -63,12 +63,12 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	/**
 	 * Returns the invoked executable.
 	 */
-	@PropertyGetter(role = EXECUTABLE)
+	@PropertyGetter(role = EXECUTABLE_REF)
 	CtExecutableReference<T> getExecutable();
 
 	/**
 	 * Sets the invoked executable.
 	 */
-	@PropertySetter(role = EXECUTABLE)
+	@PropertySetter(role = EXECUTABLE_REF)
 	<C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable);
 }

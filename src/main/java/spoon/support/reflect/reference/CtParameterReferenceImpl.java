@@ -16,21 +16,24 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.EXECUTABLE;
+import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
 	CtExecutableReference<?> executable;
 
 	public CtParameterReferenceImpl() {
@@ -99,7 +102,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 		if (executable != null) {
 			executable.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE, executable, this.executable);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE_REF, executable, this.executable);
 		this.executable = executable;
 		return (C) this;
 	}

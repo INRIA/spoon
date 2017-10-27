@@ -48,6 +48,7 @@ import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.IntersectionTypeBinding18;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
@@ -56,6 +57,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemPackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -130,7 +132,8 @@ public class ReferenceBuilder {
 		if (type == null) {
 			return null;
 		}
-		return buildTypeReferenceInternal(this.<T>getTypeReference(type.resolvedType, type), type, scope);
+		CtTypeReference<T> typeReference = this.<T>getTypeReference(type.resolvedType, type);
+		return buildTypeReferenceInternal(typeReference, type, scope);
 	}
 
 	/**
@@ -287,8 +290,11 @@ public class ReferenceBuilder {
 	 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
 	 */
 	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
-		if (this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration != null && this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports != null) {
-			for (ImportReference anImport : this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports) {
+		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
+		LookupEnvironment environment = cuDeclaration.scope.environment;
+
+		if (cuDeclaration != null && cuDeclaration.imports != null) {
+			for (ImportReference anImport : cuDeclaration.imports) {
 				if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
 					if (anImport.isStatic()) {
 						int indexDeclaring = 2;
@@ -300,15 +306,20 @@ public class ReferenceBuilder {
 						char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
 						PackageBinding aPackage;
 						if (packageName.length != 0) {
-							aPackage = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
+							aPackage = environment.createPackage(packageName);
 						} else {
 							aPackage = null;
 						}
-						final MissingTypeBinding declaringType = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
-						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
-						final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
-						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
-						return typeReference;
+						try {
+							final MissingTypeBinding declaringType = environment.createMissingType(aPackage, className);
+							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
+							final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
+							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
+							return typeReference;
+						} catch (NullPointerException e) {
+							return null;
+						}
+
 					} else {
 						PackageBinding packageBinding = null;
 						char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
@@ -316,17 +327,21 @@ public class ReferenceBuilder {
 						// an array with a minimum length of 1 and throw an
 						// ArrayIndexOutOfBoundsException if `chars.length == 0`. Fixes #759.
 						if (chars.length > 0) {
-							Binding someBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.findImport(chars, false, false);
+							Binding someBinding = cuDeclaration.scope.findImport(chars, false, false);
 							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
 								packageBinding = (PackageBinding) someBinding;
 							} else {
-								packageBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(chars);
+								try {
+									packageBinding = environment.createPackage(chars);
+								} catch (NullPointerException e) {
+									packageBinding = null;
+								}
 							}
 						}
-						if (packageBinding == null) {
+						if (packageBinding == null || packageBinding instanceof ProblemPackageBinding) {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-							packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment);
+							packageBinding = new PackageBinding(chars, null, environment, environment.module);
 						}
 						return getPackageReference(packageBinding);
 					}
@@ -457,7 +472,8 @@ public class ReferenceBuilder {
 			insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
 			return ctRef;
 		}
-		return getTypeReference(ref);
+		CtTypeReference<T> result = getTypeReference(ref);
+		return result;
 	}
 
 	CtTypeReference<Object> getTypeParameterReference(TypeBinding binding, TypeReference ref) {
@@ -518,6 +534,9 @@ public class ReferenceBuilder {
 		CtTypeReference<T> res = null;
 		CtTypeReference inner = null;
 		final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
+		String nameParameterized = CharOperation.toString(ref.getParameterizedTypeName());
+		String typeName = CharOperation.toString(ref.getTypeName());
+
 		int index = namesParameterized.length - 1;
 		for (; index >= 0; index--) {
 			// Start at the end to get the class name first.
@@ -533,16 +552,17 @@ public class ReferenceBuilder {
 			inner = main;
 		}
 		if (res == null) {
-			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			return this.jdtTreeBuilder.getFactory().Type().createReference(nameParameterized);
 		}
+
 		if (inner.getPackage() == null) {
 			PackageFactory packageFactory = this.jdtTreeBuilder.getFactory().Package();
 			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
 			inner.setPackage(packageReference);
 		}
-		if (!res.toString().replace(", ?", ",?").endsWith(CharOperation.toString(ref.getParameterizedTypeName()))) {
+		if (!res.toString().replace(", ?", ",?").endsWith(nameParameterized)) {
 			// verify that we did not match a class that have the same name in a different package
-			return this.jdtTreeBuilder.getFactory().Type().createReference(CharOperation.toString(ref.getParameterizedTypeName()));
+			return this.jdtTreeBuilder.getFactory().Type().createReference(typeName);
 		}
 		return res;
 	}
@@ -884,7 +904,7 @@ public class ReferenceBuilder {
 		if (varbin.declaringClass != null) {
 			ref.setDeclaringType(getTypeReference(varbin.declaringClass));
 		} else {
-			ref.setDeclaringType(ref.getType());
+			ref.setDeclaringType(ref.getType() == null ? null : ref.getType().clone());
 		}
 		ref.setFinal(varbin.isFinal());
 		ref.setStatic((varbin.modifiers & ClassFileConstants.AccStatic) != 0);

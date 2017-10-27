@@ -54,7 +54,7 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Gets the type in which the field is declared.
 	 */
-	@DerivedProperty
+	@PropertyGetter(role = CtRole.DECLARING_TYPE)
 	CtTypeReference<?> getDeclaringType();
 
 	/**
@@ -77,6 +77,7 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	/**
 	 * Sets the type in which the field is declared.
 	 */
+	@PropertySetter(role = CtRole.DECLARING_TYPE)
 	<C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**

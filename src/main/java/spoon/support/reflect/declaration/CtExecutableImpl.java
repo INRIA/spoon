@@ -23,7 +23,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.QualifiedNameBasedSortedSet;
@@ -48,13 +47,13 @@ import static spoon.reflect.path.CtRole.THROWN;
 public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements CtExecutable<R> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.BODY)
+	@MetamodelPropertyField(role = BODY)
 	CtBlock<?> body;
 
-	@MetamodelPropertyField(role = CtRole.PARAMETER)
+	@MetamodelPropertyField(role = PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
 
-	@MetamodelPropertyField(role = CtRole.THROWN)
+	@MetamodelPropertyField(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	public CtExecutableImpl() {

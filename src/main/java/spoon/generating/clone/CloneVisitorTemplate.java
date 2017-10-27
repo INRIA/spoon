@@ -19,6 +19,7 @@ package spoon.generating.clone;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.visitor.clone.CloneBuilder;
+import spoon.support.visitor.equals.CloneHelper;
 
 /**
  * Used to clone a given element.
@@ -26,8 +27,13 @@ import spoon.support.visitor.clone.CloneBuilder;
  * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
  */
 class CloneVisitorTemplate extends CtScanner {
+	private final CloneHelper cloneHelper;
 	private final CloneBuilder builder = new CloneBuilder();
 	private CtElement other;
+
+	CloneVisitorTemplate(CloneHelper cloneHelper) {
+		this.cloneHelper = cloneHelper;
+	}
 
 	public <T extends CtElement> T getClone() {
 		return (T) other;

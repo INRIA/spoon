@@ -534,6 +534,7 @@ public class CtQueryImpl implements CtQuery {
 		}
 	}
 
+	private static final String JDK9_BASE_PREFIX = "java.base/";
 	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
 	private static final int indexOfCallerInStack = getIndexOfCallerInStackOfLambda();
 	/**
@@ -576,6 +577,11 @@ public class CtQueryImpl implements CtQuery {
 			if (m.matches()) {
 				String objectClassName = m.group(1);
 				String expectedClassName = m.group(2);
+
+
+				if (objectClassName.startsWith(JDK9_BASE_PREFIX)) {
+					objectClassName = objectClassName.substring(JDK9_BASE_PREFIX.length());
+				}
 				if (objectClassName.equals(input.getClass().getName())) {
 					try {
 						return Class.forName(expectedClassName);

@@ -77,6 +77,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		final CtTypeReference<Object> cloneBuilder = factory.Type().createReference("spoon.support.visitor.clone.CloneBuilder");
 		final CtTypeAccess<Object> cloneBuilderType = factory.Code().createTypeAccess(cloneBuilder);
 		final CtVariableAccess<Object> builderFieldAccess = factory.Code().createVariableRead(factory.Field().createReference(target.getReference(), cloneBuilder, "builder"), false);
+		final CtVariableAccess<Object> cloneHelperFieldAccess = factory.Code().createVariableRead(factory.Field().createReference(target.getReference(), cloneBuilder, "cloneHelper"), false);
 		final CtFieldReference<Object> other = factory.Field().createReference((CtField) target.getField("other"));
 		final CtVariableAccess<Object> otherRead = factory.Code().createVariableRead(other, true);
 
@@ -138,7 +139,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				final CtExecutableReference<Object> setterRef = factory.Executable().createReference("void CtElement#set" + getterName.substring(3, getterName.length()) + "()");
 				final CtExecutableReference<Object> cloneRef = factory.Executable().createReference("CtElement spoon.support.visitor.equals.CloneHelper#clone()");
 				final CtInvocation<Object> cloneInv = factory.Code().createInvocation(null, cloneRef, getter);
-				cloneInv.setTarget(factory.Code().createTypeAccess(factory.Type().createReference("spoon.support.visitor.equals.CloneHelper")));
+				cloneInv.setTarget(cloneHelperFieldAccess);
 				return factory.Code().createInvocation(elementVarRead, setterRef, cloneInv);
 			}
 
@@ -515,6 +516,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			reference.setSimpleName(TARGET_CLONE_TYPE);
 			reference.setPackage(aPackage.getReference());
 		}
+		target.getConstructors().forEach(c -> c.addModifier(ModifierKind.PUBLIC));
 		return target;
 	}
 

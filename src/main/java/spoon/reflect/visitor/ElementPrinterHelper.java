@@ -247,6 +247,55 @@ public class ElementPrinterHelper {
 		return importType.matches("^(java\\.lang\\.)[^.]*$");
 	}
 
+	public void writeImports(Collection<CtReference> imports) {
+		Set<String> setImports = new HashSet<>();
+		Set<String> setStaticImports = new HashSet<>();
+		for (CtReference ref : imports) {
+			String importTypeStr;
+
+			if (ref instanceof CtTypeReference) {
+				CtTypeReference typeRef = (CtTypeReference) ref;
+				importTypeStr = typeRef.getQualifiedName();
+				if (isJavaLangClasses(importTypeStr) == false) {
+					setImports.add(importTypeStr);
+				}
+			} else if (ref instanceof CtExecutableReference) {
+				CtExecutableReference execRef = (CtExecutableReference) ref;
+				if (execRef.getDeclaringType() != null) {
+					setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
+				}
+			} else if (ref instanceof CtFieldReference) {
+				CtFieldReference fieldRef = (CtFieldReference) ref;
+				setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
+			}
+		}
+
+		List<String> sortedImports = new ArrayList<>(setImports);
+		Collections.sort(sortedImports);
+		boolean isFirst = true;
+		for (String importLine : sortedImports) {
+			if (isFirst) {
+				printer.writeln();
+				printer.writeln();
+				isFirst = false;
+			}
+			printer.writeKeyword("import").writeSpace();
+			writeQualifiedName(importLine).writeSeparator(";").writeln();
+		}
+		if (setStaticImports.size() > 0) {
+			if (isFirst) {
+				printer.writeln();
+			}
+			printer.writeln();
+			List<String> sortedStaticImports = new ArrayList<>(setStaticImports);
+			Collections.sort(sortedStaticImports);
+			for (String importLine : sortedStaticImports) {
+				printer.writeKeyword("import").writeSpace().writeKeyword("static").writeSpace();
+				writeQualifiedName(importLine).writeSeparator(";").writeln();
+			}
+		}
+	}
+
 	/**
 	 * Write the compilation unit header.
 	 */
@@ -259,51 +308,15 @@ public class ElementPrinterHelper {
 			if (!types.get(0).getPackage().isUnnamedPackage()) {
 				writePackageLine(types.get(0).getPackage().getQualifiedName());
 			}
-			printer.writeln().writeln();
-			Set<String> setImports = new HashSet<>();
-			Set<String> setStaticImports = new HashSet<>();
-			for (CtReference ref : imports) {
-				String importTypeStr = "";
-
-				if (ref instanceof CtTypeReference) {
-					CtTypeReference typeRef = (CtTypeReference) ref;
-					importTypeStr = typeRef.getQualifiedName();
-					if (isJavaLangClasses(importTypeStr) == false) {
-						setImports.add(importTypeStr);
-					}
-				} else if (ref instanceof CtExecutableReference) {
-					CtExecutableReference execRef = (CtExecutableReference) ref;
-					if (execRef.getDeclaringType() != null) {
-						setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
-					}
-				} else if (ref instanceof CtFieldReference) {
-					CtFieldReference fieldRef = (CtFieldReference) ref;
-					setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
-				}
-			}
-
-			List<String> sortedImports = new ArrayList<>(setImports);
-			Collections.sort(sortedImports);
-			for (String importLine : sortedImports) {
-				printer.writeKeyword("import").writeSpace();
-				writeQualifiedName(importLine).writeSeparator(";").writeln();
-			}
-			if (setStaticImports.size() > 0) {
-				printer.writeln();
-				List<String> sortedStaticImports = new ArrayList<>(setStaticImports);
-				Collections.sort(sortedStaticImports);
-				for (String importLine : sortedStaticImports) {
-					printer.writeKeyword("import").writeSpace().writeKeyword("static").writeSpace();
-					writeQualifiedName(importLine).writeSeparator(";").writeln();
-				}
-			}
+			this.writeImports(imports);
+			printer.writeln();
 			printer.writeln();
 		}
 	}
 
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
-		writeQualifiedName(packageQualifiedName).writeSeparator(";");
+		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {

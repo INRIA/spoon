@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.CONSTRUCTOR;
+import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
 
 /**
  * This element represents a class declaration.
@@ -44,6 +45,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Derived from {@link #getTypeMembers()}
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = ANNONYMOUS_EXECUTABLE)
 	List<CtAnonymousExecutable> getAnonymousExecutables();
 
 	/**
@@ -68,6 +70,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Sets the anonymous blocks of this class.
 	 */
+	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)
 	<C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> e);
 
 	/**
@@ -76,6 +79,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * @param e
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)
 	<C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e);
 
 	/**
@@ -84,6 +88,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * @param e
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)
 	boolean removeAnonymousExecutable(CtAnonymousExecutable e);
 
 	/**

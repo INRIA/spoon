@@ -112,6 +112,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * @param throwType
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
+	@PropertySetter(role = THROWN)
 	boolean removeThrownType(CtTypeReference<? extends Throwable> throwType);
 
 	/**

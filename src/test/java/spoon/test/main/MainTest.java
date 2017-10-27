@@ -29,15 +29,20 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -80,6 +85,7 @@ public class MainTest {
 
 		checkParentConsistency(launcher.getFactory().Package().getRootPackage());
 
+		checkModelIsTree(launcher.getFactory().Package().getRootPackage());
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
@@ -340,6 +346,51 @@ public class MainTest {
 		}.visitCtPackage(pack);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
+	
+	
+	
+	/*
+	 * contract: each element is used only once
+	 * For example this is always true: field.getType() != field.getDeclaringType()
+	 */
+	private void checkModelIsTree(CtPackage rootPackage) {
+		Exception dummyException = new Exception("STACK");
+		PrinterHelper problems = new PrinterHelper(rootPackage.getFactory().getEnvironment());
+		Map<CtElement, Exception> allElements = new IdentityHashMap<>();
+		rootPackage.filterChildren(null).forEach((CtElement ele) -> {
+			//uncomment this line to get stacktrace of real problem. The dummyException is used to avoid OutOfMemoryException
+//			Exception secondStack = new Exception("STACK");
+			Exception secondStack = dummyException;
+			Exception firstStack = allElements.put(ele, secondStack);
+			if (firstStack != null) {
+				if(firstStack == dummyException) {
+					Assert.fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+				}
+				//the element ele was already visited. It means it used on more places
+				//report the stacktrace of first and second usage, so that place can be found easily
+				problems.write("The element " + ele.getClass().getSimpleName()).writeln()
+				.incTab()
+				.write(ele.toString()).writeln()
+				.write("Is linked by these stacktraces").writeln()
+				.write("1) " + getStackTrace(firstStack)).writeln()
+				.write("2) " + getStackTrace(secondStack)).writeln()
+				.decTab();
+			}
+		});
+		
+		String report = problems.toString();
+		if (report.length() > 0) {
+			Assert.fail(report);
+		}
+	}
+
+	private String getStackTrace(Exception e) {
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		return sw.toString();
+	}
+
+	
 
 	@Test
 	public void testTest() throws Exception {

@@ -196,7 +196,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T extends CtElement> T clone(T object) {
-		return CloneHelper.clone(object);
+		return CloneHelper.INSTANCE.clone(object);
 	}
 
 	public <A extends Annotation> CtAnnotation<A> createAnnotation() {

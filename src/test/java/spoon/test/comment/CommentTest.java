@@ -106,7 +106,7 @@ public class CommentTest {
 				" * Comment3"+EOL+
 				" */"+EOL+
 				"@java.lang.Deprecated"+EOL+
-				"package spoon.test.comment.testclasses;",l_content);
+				"package spoon.test.comment.testclasses;"+EOL,l_content);
 	}
 
 

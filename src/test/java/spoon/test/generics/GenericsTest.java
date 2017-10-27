@@ -45,6 +45,8 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses2.SameSignature2;
+import spoon.test.generics.testclasses2.SameSignature3;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -60,9 +62,7 @@ import spoon.testing.utils.ModelUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1067,7 +1067,9 @@ public class GenericsTest {
 		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
 		// we all analyze new methods
 		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(ctcWeddingLunch);
-		CtMethod<?> adaptedLunchEatMe = ctcWeddingLunch.adaptMethod(trLunch_eatMe);
+		//contract: method can be adapted only using MethodTypingContext
+		methodSTH.setMethod(trLunch_eatMe);
+		CtMethod<?> adaptedLunchEatMe = (CtMethod<?>) methodSTH.getAdaptationScope();
 
 		//contract: adapting of method declared in different scope, returns new method
 		assertTrue(adaptedLunchEatMe != trLunch_eatMe);
@@ -1096,13 +1098,8 @@ public class GenericsTest {
 		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
 
 		//contract: adapting of adapted method returns input method
-		assertSame(adaptedLunchEatMe, ctcWeddingLunch.adaptMethod(adaptedLunchEatMe));
-
-		//contract: method typing context creates adapted method automatically
-		methodSTH.setMethod(trLunch_eatMe);
-		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
-		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
-		
+		methodSTH.setMethod(adaptedLunchEatMe);
+		assertSame(adaptedLunchEatMe, methodSTH.getAdaptationScope());
 	}
 	
 	@Test
@@ -1293,6 +1290,28 @@ public class GenericsTest {
 		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
 		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
 	}
+
+	@Test
+	public void testIsSameSignatureWithMethodGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/SameSignature2.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature2.class);
+		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
+
+		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature");
+		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+
+		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
+	}
+	
 	@Test
 	public void testGetExecDeclarationOfEnumSetOf() {
 		Launcher launcher = new Launcher();
@@ -1319,5 +1338,26 @@ public class GenericsTest {
 
 		decl = invocation.getExecutable().getExecutableDeclaration();
 		assertEquals(rightOfMethod, decl);
+	}
+	
+	@Test
+	public void testIsSameSignatureWithReferencedGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/SameSignature3.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature3.class);
+		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
+
+		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature3");
+		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+
+		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
 	}
 }

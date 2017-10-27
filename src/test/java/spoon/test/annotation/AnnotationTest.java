@@ -117,7 +117,7 @@ public class AnnotationTest {
 	@Test
 	public void testWritingAnnotParamArray() throws Exception {
 		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
-		assertEquals("@java.lang.SuppressWarnings({ \"unused\" , \"rawtypes\" })",
+		assertEquals("@java.lang.SuppressWarnings({ \"unused\", \"rawtypes\" })",
 				type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
 	}
 
