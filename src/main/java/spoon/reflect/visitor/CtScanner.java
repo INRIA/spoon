@@ -16,6 +16,11 @@
  */
 package spoon.reflect.visitor;
 
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -80,6 +85,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -93,10 +99,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * This visitor implements a deep-search scan on the model.
@@ -131,34 +133,40 @@ public abstract class CtScanner implements CtVisitor {
 	/**
 	 * Generically scans a collection of meta-model elements.
 	 */
-	public void scan(Collection<? extends CtElement> elements) {
-		if ((elements != null)) {
+	public void scan(CtRole role, Collection<? extends CtElement> elements) {
+		if (elements != null) {
 			// we use defensive copy so as to be able to change the class while scanning
 			// otherwise one gets a ConcurrentModificationException
 			for (CtElement e : new ArrayList<>(elements)) {
-				scan(e);
+				scan(role, e);
 			}
 		}
+	}
 
+	public void scan(Collection<? extends CtElement> elements) {
+		scan(null, elements);
 	}
 
 	/**
 	 * Generically scans a meta-model element.
 	 */
+	public void scan(CtRole role, CtElement element) {
+		scan(element);
+	}
+
 	public void scan(CtElement element) {
-		if ((element != null)) {
+		if (element != null) {
 			element.accept(this);
 		}
 	}
 
-	public <A extends Annotation> void visitCtAnnotation(
-			final CtAnnotation<A> annotation) {
+	public <A extends Annotation> void visitCtAnnotation(final CtAnnotation<A> annotation) {
 		enter(annotation);
-		scan(annotation.getType());
-		scan(annotation.getComments());
-		scan(annotation.getAnnotationType());
-		scan(annotation.getAnnotations());
-		scan(annotation.getValues());
+		scan(CtRole.TYPE, annotation.getType());
+		scan(CtRole.COMMENT, annotation.getComments());
+		scan(CtRole.ANNOTATION_TYPE, annotation.getAnnotationType());
+		scan(CtRole.ANNOTATION, annotation.getAnnotations());
+		scan(CtRole.VALUE, annotation.getValues());
 		exit(annotation);
 	}
 
@@ -166,721 +174,714 @@ public abstract class CtScanner implements CtVisitor {
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
 	 */
-	public void scan(Object o) {
+	public void scan(CtRole role, Object o) {
 		if (o instanceof CtElement) {
-			scan((CtElement) o);
+			scan(role, ((CtElement) (o)));
 		}
 		if (o instanceof Collection<?>) {
-			for (Object obj : (Collection<?>) o) {
-				scan(obj);
+			for (Object obj : ((Collection<?>) (o))) {
+				scan(role, obj);
 			}
 		}
 		if (o instanceof Map<?, ?>) {
-			for (Object obj : ((Map) o).values()) {
-				scan(obj);
+			for (Object obj : ((Map) (o)).values()) {
+				scan(role, obj);
 			}
 		}
 	}
 
-	public <A extends Annotation> void visitCtAnnotationType(
-			final CtAnnotationType<A> annotationType) {
+	public <A extends Annotation> void visitCtAnnotationType(final CtAnnotationType<A> annotationType) {
 		enter(annotationType);
-		scan(annotationType.getAnnotations());
-		scan(annotationType.getTypeMembers());
-		scan(annotationType.getComments());
+		scan(CtRole.ANNOTATION, annotationType.getAnnotations());
+		scan(CtRole.TYPE_MEMBER, annotationType.getTypeMembers());
+		scan(CtRole.COMMENT, annotationType.getComments());
 		exit(annotationType);
 	}
 
 	public void visitCtAnonymousExecutable(final CtAnonymousExecutable anonymousExec) {
 		enter(anonymousExec);
-		scan(anonymousExec.getAnnotations());
-		scan(anonymousExec.getBody());
-		scan(anonymousExec.getComments());
+		scan(CtRole.ANNOTATION, anonymousExec.getAnnotations());
+		scan(CtRole.BODY, anonymousExec.getBody());
+		scan(CtRole.COMMENT, anonymousExec.getComments());
 		exit(anonymousExec);
 	}
 
 	@Override
 	public <T> void visitCtArrayRead(final CtArrayRead<T> arrayRead) {
 		enter(arrayRead);
-		scan(arrayRead.getAnnotations());
-		scan(arrayRead.getType());
-		scan(arrayRead.getTypeCasts());
-		scan(arrayRead.getTarget());
-		scan(arrayRead.getIndexExpression());
-		scan(arrayRead.getComments());
+		scan(CtRole.ANNOTATION, arrayRead.getAnnotations());
+		scan(CtRole.TYPE, arrayRead.getType());
+		scan(CtRole.CAST, arrayRead.getTypeCasts());
+		scan(CtRole.TARGET, arrayRead.getTarget());
+		scan(CtRole.EXPRESSION, arrayRead.getIndexExpression());
+		scan(CtRole.COMMENT, arrayRead.getComments());
 		exit(arrayRead);
 	}
 
 	@Override
 	public <T> void visitCtArrayWrite(final CtArrayWrite<T> arrayWrite) {
 		enter(arrayWrite);
-		scan(arrayWrite.getAnnotations());
-		scan(arrayWrite.getType());
-		scan(arrayWrite.getTypeCasts());
-		scan(arrayWrite.getTarget());
-		scan(arrayWrite.getIndexExpression());
-		scan(arrayWrite.getComments());
+		scan(CtRole.ANNOTATION, arrayWrite.getAnnotations());
+		scan(CtRole.TYPE, arrayWrite.getType());
+		scan(CtRole.CAST, arrayWrite.getTypeCasts());
+		scan(CtRole.TARGET, arrayWrite.getTarget());
+		scan(CtRole.EXPRESSION, arrayWrite.getIndexExpression());
+		scan(CtRole.COMMENT, arrayWrite.getComments());
 		exit(arrayWrite);
 	}
 
 	public <T> void visitCtArrayTypeReference(final CtArrayTypeReference<T> reference) {
 		enter(reference);
-		scan(reference.getComments());
-		scan(reference.getPackage());
-		scan(reference.getDeclaringType());
-		scan(reference.getComponentType());
-		scan(reference.getActualTypeArguments());
-		scan(reference.getAnnotations());
+		scan(CtRole.COMMENT, reference.getComments());
+		scan(CtRole.PACKAGE_REF, reference.getPackage());
+		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+		scan(CtRole.TYPE, reference.getComponentType());
+		scan(CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
 	}
 
 	public <T> void visitCtAssert(final CtAssert<T> asserted) {
 		enter(asserted);
-		scan(asserted.getAnnotations());
-		scan(asserted.getAssertExpression());
-		scan(asserted.getExpression());
-		scan(asserted.getComments());
+		scan(CtRole.ANNOTATION, asserted.getAnnotations());
+		scan(CtRole.CONDITION, asserted.getAssertExpression());
+		scan(CtRole.EXPRESSION, asserted.getExpression());
+		scan(CtRole.COMMENT, asserted.getComments());
 		exit(asserted);
 	}
 
-	public <T, A extends T> void visitCtAssignment(
-			final CtAssignment<T, A> assignement) {
+	public <T, A extends T> void visitCtAssignment(final CtAssignment<T, A> assignement) {
 		enter(assignement);
-		scan(assignement.getAnnotations());
-		scan(assignement.getType());
-		scan(assignement.getTypeCasts());
-		scan(assignement.getAssigned());
-		scan(assignement.getAssignment());
-		scan(assignement.getComments());
+		scan(CtRole.ANNOTATION, assignement.getAnnotations());
+		scan(CtRole.TYPE, assignement.getType());
+		scan(CtRole.CAST, assignement.getTypeCasts());
+		scan(CtRole.ASSIGNED, assignement.getAssigned());
+		scan(CtRole.ASSIGNMENT, assignement.getAssignment());
+		scan(CtRole.COMMENT, assignement.getComments());
 		exit(assignement);
 	}
 
 	public <T> void visitCtBinaryOperator(final CtBinaryOperator<T> operator) {
 		enter(operator);
-		scan(operator.getAnnotations());
-		scan(operator.getType());
-		scan(operator.getTypeCasts());
-		scan(operator.getLeftHandOperand());
-		scan(operator.getRightHandOperand());
-		scan(operator.getComments());
+		scan(CtRole.ANNOTATION, operator.getAnnotations());
+		scan(CtRole.TYPE, operator.getType());
+		scan(CtRole.CAST, operator.getTypeCasts());
+		scan(CtRole.LEFT_OPERAND, operator.getLeftHandOperand());
+		scan(CtRole.RIGHT_OPERAND, operator.getRightHandOperand());
+		scan(CtRole.COMMENT, operator.getComments());
 		exit(operator);
 	}
 
 	public <R> void visitCtBlock(final CtBlock<R> block) {
 		enter(block);
-		scan(block.getAnnotations());
-		scan(block.getStatements());
-		scan(block.getComments());
+		scan(CtRole.ANNOTATION, block.getAnnotations());
+		scan(CtRole.STATEMENT, block.getStatements());
+		scan(CtRole.COMMENT, block.getComments());
 		exit(block);
 	}
 
 	public void visitCtBreak(final CtBreak breakStatement) {
 		enter(breakStatement);
-		scan(breakStatement.getAnnotations());
-		scan(breakStatement.getComments());
+		scan(CtRole.ANNOTATION, breakStatement.getAnnotations());
+		scan(CtRole.COMMENT, breakStatement.getComments());
 		exit(breakStatement);
 	}
 
 	public <S> void visitCtCase(final CtCase<S> caseStatement) {
 		enter(caseStatement);
-		scan(caseStatement.getAnnotations());
-		scan(caseStatement.getCaseExpression());
-		scan(caseStatement.getStatements());
-		scan(caseStatement.getComments());
+		scan(CtRole.ANNOTATION, caseStatement.getAnnotations());
+		scan(CtRole.EXPRESSION, caseStatement.getCaseExpression());
+		scan(CtRole.STATEMENT, caseStatement.getStatements());
+		scan(CtRole.COMMENT, caseStatement.getComments());
 		exit(caseStatement);
 	}
 
 	public void visitCtCatch(final CtCatch catchBlock) {
 		enter(catchBlock);
-		scan(catchBlock.getAnnotations());
-		scan(catchBlock.getParameter());
-		scan(catchBlock.getBody());
-		scan(catchBlock.getComments());
+		scan(CtRole.ANNOTATION, catchBlock.getAnnotations());
+		scan(CtRole.PARAMETER, catchBlock.getParameter());
+		scan(CtRole.BODY, catchBlock.getBody());
+		scan(CtRole.COMMENT, catchBlock.getComments());
 		exit(catchBlock);
 	}
 
 	public <T> void visitCtClass(final CtClass<T> ctClass) {
 		enter(ctClass);
-		scan(ctClass.getAnnotations());
-		scan(ctClass.getSuperclass());
-		scan(ctClass.getSuperInterfaces());
-		scan(ctClass.getFormalCtTypeParameters());
-		scan(ctClass.getTypeMembers());
-		scan(ctClass.getComments());
+		scan(CtRole.ANNOTATION, ctClass.getAnnotations());
+		scan(CtRole.SUPER_TYPE, ctClass.getSuperclass());
+		scan(CtRole.INTERFACE, ctClass.getSuperInterfaces());
+		scan(CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters());
+		scan(CtRole.TYPE_MEMBER, ctClass.getTypeMembers());
+		scan(CtRole.COMMENT, ctClass.getComments());
 		exit(ctClass);
 	}
 
 	@Override
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 		enter(typeParameter);
-		scan(typeParameter.getAnnotations());
-		scan(typeParameter.getSuperclass());
-		scan(typeParameter.getComments());
+		scan(CtRole.ANNOTATION, typeParameter.getAnnotations());
+		scan(CtRole.SUPER_TYPE, typeParameter.getSuperclass());
+		scan(CtRole.COMMENT, typeParameter.getComments());
 		exit(typeParameter);
 	}
 
 	public <T> void visitCtConditional(final CtConditional<T> conditional) {
 		enter(conditional);
-		scan(conditional.getType());
-		scan(conditional.getAnnotations());
-		scan(conditional.getCondition());
-		scan(conditional.getThenExpression());
-		scan(conditional.getElseExpression());
-		scan(conditional.getComments());
-		scan(conditional.getTypeCasts());
+		scan(CtRole.TYPE, conditional.getType());
+		scan(CtRole.ANNOTATION, conditional.getAnnotations());
+		scan(CtRole.CONDITION, conditional.getCondition());
+		scan(CtRole.THEN, conditional.getThenExpression());
+		scan(CtRole.ELSE, conditional.getElseExpression());
+		scan(CtRole.COMMENT, conditional.getComments());
+		scan(CtRole.CAST, conditional.getTypeCasts());
 		exit(conditional);
 	}
 
 	public <T> void visitCtConstructor(final CtConstructor<T> c) {
 		enter(c);
-		scan(c.getAnnotations());
-		scan(c.getParameters());
-		scan(c.getThrownTypes());
-		scan(c.getFormalCtTypeParameters());
-		scan(c.getBody());
-		scan(c.getComments());
+		scan(CtRole.ANNOTATION, c.getAnnotations());
+		scan(CtRole.PARAMETER, c.getParameters());
+		scan(CtRole.THROWN, c.getThrownTypes());
+		scan(CtRole.TYPE_PARAMETER, c.getFormalCtTypeParameters());
+		scan(CtRole.BODY, c.getBody());
+		scan(CtRole.COMMENT, c.getComments());
 		exit(c);
 	}
 
 	public void visitCtContinue(final CtContinue continueStatement) {
 		enter(continueStatement);
-		scan(continueStatement.getAnnotations());
-		scan(continueStatement.getComments());
+		scan(CtRole.ANNOTATION, continueStatement.getAnnotations());
+		scan(CtRole.COMMENT, continueStatement.getComments());
 		exit(continueStatement);
 	}
 
 	public void visitCtDo(final CtDo doLoop) {
 		enter(doLoop);
-		scan(doLoop.getAnnotations());
-		scan(doLoop.getLoopingExpression());
-		scan(doLoop.getBody());
-		scan(doLoop.getComments());
+		scan(CtRole.ANNOTATION, doLoop.getAnnotations());
+		scan(CtRole.EXPRESSION, doLoop.getLoopingExpression());
+		scan(CtRole.BODY, doLoop.getBody());
+		scan(CtRole.COMMENT, doLoop.getComments());
 		exit(doLoop);
 	}
 
 	public <T extends Enum<?>> void visitCtEnum(final CtEnum<T> ctEnum) {
 		enter(ctEnum);
-		scan(ctEnum.getAnnotations());
-		scan(ctEnum.getSuperInterfaces());
-		scan(ctEnum.getTypeMembers());
-		scan(ctEnum.getEnumValues());
-		scan(ctEnum.getComments());
+		scan(CtRole.ANNOTATION, ctEnum.getAnnotations());
+		scan(CtRole.INTERFACE, ctEnum.getSuperInterfaces());
+		scan(CtRole.TYPE_MEMBER, ctEnum.getTypeMembers());
+		scan(CtRole.VALUE, ctEnum.getEnumValues());
+		scan(CtRole.COMMENT, ctEnum.getComments());
 		exit(ctEnum);
 	}
 
-	public <T> void visitCtExecutableReference(
-			final CtExecutableReference<T> reference) {
+	public <T> void visitCtExecutableReference(final CtExecutableReference<T> reference) {
 		enter(reference);
-		scan(reference.getDeclaringType());
-		scan(reference.getType());
-		scan(reference.getParameters());
-		scan(reference.getActualTypeArguments());
-		scan(reference.getAnnotations());
-		scan(reference.getComments());
+		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+		scan(CtRole.TYPE, reference.getType());
+		scan(CtRole.ARGUMENT_TYPE, reference.getParameters());
+		scan(CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
+		scan(CtRole.COMMENT, reference.getComments());
 		exit(reference);
 	}
 
 	public <T> void visitCtField(final CtField<T> f) {
 		enter(f);
-		scan(f.getAnnotations());
-		scan(f.getType());
-		scan(f.getDefaultExpression());
-		scan(f.getComments());
+		scan(CtRole.ANNOTATION, f.getAnnotations());
+		scan(CtRole.TYPE, f.getType());
+		scan(CtRole.DEFAULT_EXPRESSION, f.getDefaultExpression());
+		scan(CtRole.COMMENT, f.getComments());
 		exit(f);
 	}
 
 	@Override
 	public <T> void visitCtEnumValue(final CtEnumValue<T> enumValue) {
 		enter(enumValue);
-		scan(enumValue.getAnnotations());
-		scan(enumValue.getType());
-		scan(enumValue.getDefaultExpression());
-		scan(enumValue.getComments());
+		scan(CtRole.ANNOTATION, enumValue.getAnnotations());
+		scan(CtRole.TYPE, enumValue.getType());
+		scan(CtRole.DEFAULT_EXPRESSION, enumValue.getDefaultExpression());
+		scan(CtRole.COMMENT, enumValue.getComments());
 		exit(enumValue);
 	}
 
 	@Override
 	public <T> void visitCtThisAccess(final CtThisAccess<T> thisAccess) {
 		enter(thisAccess);
-		scan(thisAccess.getComments());
-		scan(thisAccess.getAnnotations());
-		scan(thisAccess.getType());
-		scan(thisAccess.getTypeCasts());
-		scan(thisAccess.getTarget());
+		scan(CtRole.COMMENT, thisAccess.getComments());
+		scan(CtRole.ANNOTATION, thisAccess.getAnnotations());
+		scan(CtRole.TYPE, thisAccess.getType());
+		scan(CtRole.CAST, thisAccess.getTypeCasts());
+		scan(CtRole.TARGET, thisAccess.getTarget());
 		exit(thisAccess);
 	}
 
-	public <T> void visitCtAnnotationFieldAccess(
-			final CtAnnotationFieldAccess<T> annotationFieldAccess) {
+	public <T> void visitCtAnnotationFieldAccess(final CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		enter(annotationFieldAccess);
-		scan(annotationFieldAccess.getComments());
-		scan(annotationFieldAccess.getAnnotations());
-		scan(annotationFieldAccess.getTypeCasts());
-		scan(annotationFieldAccess.getTarget());
-		scan(annotationFieldAccess.getVariable());
+		scan(CtRole.COMMENT, annotationFieldAccess.getComments());
+		scan(CtRole.ANNOTATION, annotationFieldAccess.getAnnotations());
+		scan(CtRole.CAST, annotationFieldAccess.getTypeCasts());
+		scan(CtRole.TARGET, annotationFieldAccess.getTarget());
+		scan(CtRole.VARIABLE, annotationFieldAccess.getVariable());
 		exit(annotationFieldAccess);
 	}
 
 	public <T> void visitCtFieldReference(final CtFieldReference<T> reference) {
 		enter(reference);
-		scan(reference.getDeclaringType());
-		scan(reference.getType());
-		scan(reference.getAnnotations());
+		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+		scan(CtRole.TYPE, reference.getType());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
 	}
 
 	public void visitCtFor(final CtFor forLoop) {
 		enter(forLoop);
-		scan(forLoop.getAnnotations());
-		scan(forLoop.getForInit());
-		scan(forLoop.getExpression());
-		scan(forLoop.getForUpdate());
-		scan(forLoop.getBody());
-		scan(forLoop.getComments());
+		scan(CtRole.ANNOTATION, forLoop.getAnnotations());
+		scan(CtRole.FOR_INIT, forLoop.getForInit());
+		scan(CtRole.EXPRESSION, forLoop.getExpression());
+		scan(CtRole.FOR_UPDATE, forLoop.getForUpdate());
+		scan(CtRole.BODY, forLoop.getBody());
+		scan(CtRole.COMMENT, forLoop.getComments());
 		exit(forLoop);
 	}
 
 	public void visitCtForEach(final CtForEach foreach) {
 		enter(foreach);
-		scan(foreach.getAnnotations());
-		scan(foreach.getVariable());
-		scan(foreach.getExpression());
-		scan(foreach.getBody());
-		scan(foreach.getComments());
+		scan(CtRole.ANNOTATION, foreach.getAnnotations());
+		scan(CtRole.FOREACH_VARIABLE, foreach.getVariable());
+		scan(CtRole.EXPRESSION, foreach.getExpression());
+		scan(CtRole.BODY, foreach.getBody());
+		scan(CtRole.COMMENT, foreach.getComments());
 		exit(foreach);
 	}
 
 	public void visitCtIf(final CtIf ifElement) {
 		enter(ifElement);
-		scan(ifElement.getAnnotations());
-		scan(ifElement.getCondition());
-		scan((CtStatement) ifElement.getThenStatement());
-		scan((CtStatement) ifElement.getElseStatement());
-		scan(ifElement.getComments());
+		scan(CtRole.ANNOTATION, ifElement.getAnnotations());
+		scan(CtRole.CONDITION, ifElement.getCondition());
+		scan(CtRole.THEN, ((CtStatement) (ifElement.getThenStatement())));
+		scan(CtRole.ELSE, ((CtStatement) (ifElement.getElseStatement())));
+		scan(CtRole.COMMENT, ifElement.getComments());
 		exit(ifElement);
 	}
 
 	public <T> void visitCtInterface(final CtInterface<T> intrface) {
 		enter(intrface);
-		scan(intrface.getAnnotations());
-		scan(intrface.getSuperInterfaces());
-		scan(intrface.getFormalCtTypeParameters());
-		scan(intrface.getTypeMembers());
-		scan(intrface.getComments());
+		scan(CtRole.ANNOTATION, intrface.getAnnotations());
+		scan(CtRole.INTERFACE, intrface.getSuperInterfaces());
+		scan(CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters());
+		scan(CtRole.TYPE_MEMBER, intrface.getTypeMembers());
+		scan(CtRole.COMMENT, intrface.getComments());
 		exit(intrface);
 	}
 
 	public <T> void visitCtInvocation(final CtInvocation<T> invocation) {
 		enter(invocation);
-		scan(invocation.getAnnotations());
-		scan(invocation.getTypeCasts());
-		scan(invocation.getTarget());
-		scan(invocation.getExecutable());
-		scan(invocation.getArguments());
-		scan(invocation.getComments());
+		scan(CtRole.ANNOTATION, invocation.getAnnotations());
+		scan(CtRole.CAST, invocation.getTypeCasts());
+		scan(CtRole.TARGET, invocation.getTarget());
+		scan(CtRole.EXECUTABLE_REF, invocation.getExecutable());
+		scan(CtRole.ARGUMENT, invocation.getArguments());
+		scan(CtRole.COMMENT, invocation.getComments());
 		exit(invocation);
 	}
 
 	public <T> void visitCtLiteral(final CtLiteral<T> literal) {
 		enter(literal);
-		scan(literal.getAnnotations());
-		scan(literal.getType());
-		scan(literal.getTypeCasts());
-		scan(literal.getComments());
+		scan(CtRole.ANNOTATION, literal.getAnnotations());
+		scan(CtRole.TYPE, literal.getType());
+		scan(CtRole.CAST, literal.getTypeCasts());
+		scan(CtRole.COMMENT, literal.getComments());
 		exit(literal);
 	}
 
 	public <T> void visitCtLocalVariable(final CtLocalVariable<T> localVariable) {
 		enter(localVariable);
-		scan(localVariable.getAnnotations());
-		scan(localVariable.getType());
-		scan(localVariable.getDefaultExpression());
-		scan(localVariable.getComments());
+		scan(CtRole.ANNOTATION, localVariable.getAnnotations());
+		scan(CtRole.TYPE, localVariable.getType());
+		scan(CtRole.DEFAULT_EXPRESSION, localVariable.getDefaultExpression());
+		scan(CtRole.COMMENT, localVariable.getComments());
 		exit(localVariable);
 	}
 
-	public <T> void visitCtLocalVariableReference(
-			final CtLocalVariableReference<T> reference) {
+	public <T> void visitCtLocalVariableReference(final CtLocalVariableReference<T> reference) {
 		enter(reference);
-		scan(reference.getType());
-		scan(reference.getAnnotations());
+		scan(CtRole.TYPE, reference.getType());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
 	}
 
 	public <T> void visitCtCatchVariable(final CtCatchVariable<T> catchVariable) {
 		enter(catchVariable);
-		scan(catchVariable.getComments());
-		scan(catchVariable.getAnnotations());
-		scan(catchVariable.getMultiTypes());
+		scan(CtRole.COMMENT, catchVariable.getComments());
+		scan(CtRole.ANNOTATION, catchVariable.getAnnotations());
+		scan(CtRole.TYPE, catchVariable.getMultiTypes());
 		exit(catchVariable);
 	}
 
 	public <T> void visitCtCatchVariableReference(final CtCatchVariableReference<T> reference) {
 		enter(reference);
-		scan(reference.getComments());
-		scan(reference.getType());
-		scan(reference.getAnnotations());
+		scan(CtRole.COMMENT, reference.getComments());
+		scan(CtRole.TYPE, reference.getType());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
 	}
 
 	public <T> void visitCtMethod(final CtMethod<T> m) {
 		enter(m);
-		scan(m.getAnnotations());
-		scan(m.getFormalCtTypeParameters());
-		scan(m.getType());
-		scan(m.getParameters());
-		scan(m.getThrownTypes());
-		scan(m.getBody());
-		scan(m.getComments());
+		scan(CtRole.ANNOTATION, m.getAnnotations());
+		scan(CtRole.TYPE_PARAMETER, m.getFormalCtTypeParameters());
+		scan(CtRole.TYPE, m.getType());
+		scan(CtRole.PARAMETER, m.getParameters());
+		scan(CtRole.THROWN, m.getThrownTypes());
+		scan(CtRole.BODY, m.getBody());
+		scan(CtRole.COMMENT, m.getComments());
 		exit(m);
 	}
 
 	@Override
 	public <T> void visitCtAnnotationMethod(CtAnnotationMethod<T> annotationMethod) {
 		enter(annotationMethod);
-		scan(annotationMethod.getAnnotations());
-		scan(annotationMethod.getType());
-		scan(annotationMethod.getDefaultExpression());
-		scan(annotationMethod.getComments());
+		scan(CtRole.ANNOTATION, annotationMethod.getAnnotations());
+		scan(CtRole.TYPE, annotationMethod.getType());
+		scan(CtRole.DEFAULT_EXPRESSION, annotationMethod.getDefaultExpression());
+		scan(CtRole.COMMENT, annotationMethod.getComments());
 		exit(annotationMethod);
 	}
 
 	public <T> void visitCtNewArray(final CtNewArray<T> newArray) {
 		enter(newArray);
-		scan(newArray.getAnnotations());
-		scan(newArray.getType());
-		scan(newArray.getTypeCasts());
-		scan(newArray.getElements());
-		scan(newArray.getDimensionExpressions());
-		scan(newArray.getComments());
+		scan(CtRole.ANNOTATION, newArray.getAnnotations());
+		scan(CtRole.TYPE, newArray.getType());
+		scan(CtRole.CAST, newArray.getTypeCasts());
+		scan(CtRole.EXPRESSION, newArray.getElements());
+		scan(CtRole.DIMENSION, newArray.getDimensionExpressions());
+		scan(CtRole.COMMENT, newArray.getComments());
 		exit(newArray);
 	}
 
 	@Override
 	public <T> void visitCtConstructorCall(final CtConstructorCall<T> ctConstructorCall) {
 		enter(ctConstructorCall);
-		scan(ctConstructorCall.getAnnotations());
-		scan(ctConstructorCall.getTypeCasts());
-		scan(ctConstructorCall.getExecutable());
-		scan(ctConstructorCall.getTarget());
-		scan(ctConstructorCall.getArguments());
-		scan(ctConstructorCall.getComments());
+		scan(CtRole.ANNOTATION, ctConstructorCall.getAnnotations());
+		scan(CtRole.CAST, ctConstructorCall.getTypeCasts());
+		scan(CtRole.EXECUTABLE_REF, ctConstructorCall.getExecutable());
+		scan(CtRole.TARGET, ctConstructorCall.getTarget());
+		scan(CtRole.ARGUMENT, ctConstructorCall.getArguments());
+		scan(CtRole.COMMENT, ctConstructorCall.getComments());
 		exit(ctConstructorCall);
 	}
 
 	public <T> void visitCtNewClass(final CtNewClass<T> newClass) {
 		enter(newClass);
-		scan(newClass.getAnnotations());
-		scan(newClass.getTypeCasts());
-		scan(newClass.getExecutable());
-		scan(newClass.getTarget());
-		scan(newClass.getArguments());
-		scan(newClass.getAnonymousClass());
-		scan(newClass.getComments());
+		scan(CtRole.ANNOTATION, newClass.getAnnotations());
+		scan(CtRole.CAST, newClass.getTypeCasts());
+		scan(CtRole.EXECUTABLE_REF, newClass.getExecutable());
+		scan(CtRole.TARGET, newClass.getTarget());
+		scan(CtRole.ARGUMENT, newClass.getArguments());
+		scan(CtRole.NESTED_TYPE, newClass.getAnonymousClass());
+		scan(CtRole.COMMENT, newClass.getComments());
 		exit(newClass);
 	}
 
 	@Override
 	public <T> void visitCtLambda(final CtLambda<T> lambda) {
 		enter(lambda);
-		scan(lambda.getAnnotations());
-		scan(lambda.getType());
-		scan(lambda.getTypeCasts());
-		scan(lambda.getParameters());
-		scan(lambda.getThrownTypes());
-		scan(lambda.getBody());
-		scan(lambda.getExpression());
-		scan(lambda.getComments());
+		scan(CtRole.ANNOTATION, lambda.getAnnotations());
+		scan(CtRole.TYPE, lambda.getType());
+		scan(CtRole.CAST, lambda.getTypeCasts());
+		scan(CtRole.PARAMETER, lambda.getParameters());
+		scan(CtRole.THROWN, lambda.getThrownTypes());
+		scan(CtRole.BODY, lambda.getBody());
+		scan(CtRole.EXPRESSION, lambda.getExpression());
+		scan(CtRole.COMMENT, lambda.getComments());
 		exit(lambda);
 	}
 
 	@Override
-	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
-			final CtExecutableReferenceExpression<T, E> expression) {
+	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(final CtExecutableReferenceExpression<T, E> expression) {
 		enter(expression);
-		scan(expression.getComments());
-		scan(expression.getAnnotations());
-		scan(expression.getType());
-		scan(expression.getTypeCasts());
-		scan(expression.getExecutable());
-		scan(expression.getTarget());
+		scan(CtRole.COMMENT, expression.getComments());
+		scan(CtRole.ANNOTATION, expression.getAnnotations());
+		scan(CtRole.TYPE, expression.getType());
+		scan(CtRole.CAST, expression.getTypeCasts());
+		scan(CtRole.EXECUTABLE_REF, expression.getExecutable());
+		scan(CtRole.TARGET, expression.getTarget());
 		exit(expression);
 	}
 
-	public <T, A extends T> void visitCtOperatorAssignment(
-			final CtOperatorAssignment<T, A> assignment) {
+	public <T, A extends T> void visitCtOperatorAssignment(final CtOperatorAssignment<T, A> assignment) {
 		enter(assignment);
-		scan(assignment.getAnnotations());
-		scan(assignment.getType());
-		scan(assignment.getTypeCasts());
-		scan(assignment.getAssigned());
-		scan(assignment.getAssignment());
-		scan(assignment.getComments());
+		scan(CtRole.ANNOTATION, assignment.getAnnotations());
+		scan(CtRole.TYPE, assignment.getType());
+		scan(CtRole.CAST, assignment.getTypeCasts());
+		scan(CtRole.ASSIGNED, assignment.getAssigned());
+		scan(CtRole.ASSIGNMENT, assignment.getAssignment());
+		scan(CtRole.COMMENT, assignment.getComments());
 		exit(assignment);
 	}
 
 	public void visitCtPackage(final CtPackage ctPackage) {
 		enter(ctPackage);
-		scan(ctPackage.getAnnotations());
-		scan(ctPackage.getPackages());
-		scan(ctPackage.getTypes());
-		scan(ctPackage.getComments());
+		scan(CtRole.ANNOTATION, ctPackage.getAnnotations());
+		scan(CtRole.SUB_PACKAGE, ctPackage.getPackages());
+		scan(CtRole.CONTAINED_TYPE, ctPackage.getTypes());
+		scan(CtRole.COMMENT, ctPackage.getComments());
 		exit(ctPackage);
 	}
 
 	public void visitCtPackageReference(final CtPackageReference reference) {
 		enter(reference);
-		scan(reference.getAnnotations());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
 	}
 
 	public <T> void visitCtParameter(final CtParameter<T> parameter) {
 		enter(parameter);
-		scan(parameter.getAnnotations());
-		scan(parameter.getType());
-		scan(parameter.getComments());
+		scan(CtRole.ANNOTATION, parameter.getAnnotations());
+		scan(CtRole.TYPE, parameter.getType());
+		scan(CtRole.COMMENT, parameter.getComments());
 		exit(parameter);
 	}
 
 	public <T> void visitCtParameterReference(final CtParameterReference<T> reference) {
 		enter(reference);
-		scan(reference.getType());
-		scan(reference.getAnnotations());
-		scan(reference.getDeclaringExecutable());
+		scan(CtRole.TYPE, reference.getType());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
+		scan(CtRole.EXECUTABLE_REF, reference.getDeclaringExecutable());
 		exit(reference);
 	}
 
 	public <R> void visitCtReturn(final CtReturn<R> returnStatement) {
 		enter(returnStatement);
-		scan(returnStatement.getAnnotations());
-		scan(returnStatement.getReturnedExpression());
-		scan(returnStatement.getComments());
+		scan(CtRole.ANNOTATION, returnStatement.getAnnotations());
+		scan(CtRole.EXPRESSION, returnStatement.getReturnedExpression());
+		scan(CtRole.COMMENT, returnStatement.getComments());
 		exit(returnStatement);
 	}
 
 	public <R> void visitCtStatementList(final CtStatementList statements) {
 		enter(statements);
-		scan(statements.getAnnotations());
-		scan(statements.getStatements());
-		scan(statements.getComments());
+		scan(CtRole.ANNOTATION, statements.getAnnotations());
+		scan(CtRole.STATEMENT, statements.getStatements());
+		scan(CtRole.COMMENT, statements.getComments());
 		exit(statements);
 	}
 
 	public <S> void visitCtSwitch(final CtSwitch<S> switchStatement) {
 		enter(switchStatement);
-		scan(switchStatement.getAnnotations());
-		scan(switchStatement.getSelector());
-		scan(switchStatement.getCases());
-		scan(switchStatement.getComments());
+		scan(CtRole.ANNOTATION, switchStatement.getAnnotations());
+		scan(CtRole.EXPRESSION, switchStatement.getSelector());
+		scan(CtRole.CASE, switchStatement.getCases());
+		scan(CtRole.COMMENT, switchStatement.getComments());
 		exit(switchStatement);
 	}
 
 	public void visitCtSynchronized(final CtSynchronized synchro) {
 		enter(synchro);
-		scan(synchro.getAnnotations());
-		scan(synchro.getExpression());
-		scan(synchro.getBlock());
-		scan(synchro.getComments());
+		scan(CtRole.ANNOTATION, synchro.getAnnotations());
+		scan(CtRole.EXPRESSION, synchro.getExpression());
+		scan(CtRole.BODY, synchro.getBlock());
+		scan(CtRole.COMMENT, synchro.getComments());
 		exit(synchro);
 	}
 
 	public void visitCtThrow(final CtThrow throwStatement) {
 		enter(throwStatement);
-		scan(throwStatement.getAnnotations());
-		scan(throwStatement.getThrownExpression());
-		scan(throwStatement.getComments());
+		scan(CtRole.ANNOTATION, throwStatement.getAnnotations());
+		scan(CtRole.EXPRESSION, throwStatement.getThrownExpression());
+		scan(CtRole.COMMENT, throwStatement.getComments());
 		exit(throwStatement);
 	}
 
 	public void visitCtTry(final CtTry tryBlock) {
 		enter(tryBlock);
-		scan(tryBlock.getAnnotations());
-		scan(tryBlock.getBody());
-		scan(tryBlock.getCatchers());
-		scan(tryBlock.getFinalizer());
-		scan(tryBlock.getComments());
+		scan(CtRole.ANNOTATION, tryBlock.getAnnotations());
+		scan(CtRole.BODY, tryBlock.getBody());
+		scan(CtRole.CATCH, tryBlock.getCatchers());
+		scan(CtRole.FINALIZER, tryBlock.getFinalizer());
+		scan(CtRole.COMMENT, tryBlock.getComments());
 		exit(tryBlock);
 	}
 
 	@Override
 	public void visitCtTryWithResource(final CtTryWithResource tryWithResource) {
 		enter(tryWithResource);
-		scan(tryWithResource.getAnnotations());
-		scan(tryWithResource.getResources());
-		scan(tryWithResource.getBody());
-		scan(tryWithResource.getCatchers());
-		scan(tryWithResource.getFinalizer());
-		scan(tryWithResource.getComments());
+		scan(CtRole.ANNOTATION, tryWithResource.getAnnotations());
+		scan(CtRole.TRY_RESOURCE, tryWithResource.getResources());
+		scan(CtRole.BODY, tryWithResource.getBody());
+		scan(CtRole.CATCH, tryWithResource.getCatchers());
+		scan(CtRole.FINALIZER, tryWithResource.getFinalizer());
+		scan(CtRole.COMMENT, tryWithResource.getComments());
 		exit(tryWithResource);
 	}
 
 	public void visitCtTypeParameterReference(final CtTypeParameterReference ref) {
 		enter(ref);
-		scan(ref.getPackage());
-		scan(ref.getDeclaringType());
-		scan(ref.getAnnotations());
-		scan(ref.getBoundingType());
+		scan(CtRole.PACKAGE_REF, ref.getPackage());
+		scan(CtRole.DECLARING_TYPE, ref.getDeclaringType());
+		scan(CtRole.ANNOTATION, ref.getAnnotations());
+		scan(CtRole.BOUNDING_TYPE, ref.getBoundingType());
 		exit(ref);
 	}
 
 	@Override
 	public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
 		enter(wildcardReference);
-		scan(wildcardReference.getPackage());
-		scan(wildcardReference.getDeclaringType());
-		scan(wildcardReference.getAnnotations());
-		scan(wildcardReference.getBoundingType());
+		scan(CtRole.PACKAGE_REF, wildcardReference.getPackage());
+		scan(CtRole.DECLARING_TYPE, wildcardReference.getDeclaringType());
+		scan(CtRole.ANNOTATION, wildcardReference.getAnnotations());
+		scan(CtRole.BOUNDING_TYPE, wildcardReference.getBoundingType());
 		exit(wildcardReference);
 	}
 
 	@Override
 	public <T> void visitCtIntersectionTypeReference(final CtIntersectionTypeReference<T> reference) {
 		enter(reference);
-		scan(reference.getPackage());
-		scan(reference.getDeclaringType());
-		//TypeReferenceTest fails if actual type arguments are really not set-able on CtIntersectionTypeReference
-		scan(reference.getActualTypeArguments());
-		scan(reference.getAnnotations());
-		scan(reference.getBounds());
+		scan(CtRole.PACKAGE_REF, reference.getPackage());
+		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+		// TypeReferenceTest fails if actual type arguments are really not set-able on CtIntersectionTypeReference
+		scan(CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
+		scan(CtRole.BOUND, reference.getBounds());
 		exit(reference);
 	}
 
 	public <T> void visitCtTypeReference(final CtTypeReference<T> reference) {
 		enter(reference);
-		scan(reference.getPackage());
-		scan(reference.getDeclaringType());
-		scan(reference.getActualTypeArguments());
-		scan(reference.getAnnotations());
-		scan(reference.getComments());
+		scan(CtRole.PACKAGE_REF, reference.getPackage());
+		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+		scan(CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments());
+		scan(CtRole.ANNOTATION, reference.getAnnotations());
+		scan(CtRole.COMMENT, reference.getComments());
 		exit(reference);
 	}
 
 	@Override
 	public <T> void visitCtTypeAccess(final CtTypeAccess<T> typeAccess) {
 		enter(typeAccess);
-		scan(typeAccess.getAnnotations());
-		scan(typeAccess.getTypeCasts());
-		scan(typeAccess.getAccessedType());
-		scan(typeAccess.getComments());
+		scan(CtRole.ANNOTATION, typeAccess.getAnnotations());
+		scan(CtRole.CAST, typeAccess.getTypeCasts());
+		scan(CtRole.ACCESSED_TYPE, typeAccess.getAccessedType());
+		scan(CtRole.COMMENT, typeAccess.getComments());
 		exit(typeAccess);
 	}
 
 	public <T> void visitCtUnaryOperator(final CtUnaryOperator<T> operator) {
 		enter(operator);
-		scan(operator.getAnnotations());
-		scan(operator.getType());
-		scan(operator.getTypeCasts());
-		scan(operator.getOperand());
-		scan(operator.getComments());
+		scan(CtRole.ANNOTATION, operator.getAnnotations());
+		scan(CtRole.TYPE, operator.getType());
+		scan(CtRole.CAST, operator.getTypeCasts());
+		scan(CtRole.EXPRESSION, operator.getOperand());
+		scan(CtRole.COMMENT, operator.getComments());
 		exit(operator);
 	}
 
 	@Override
 	public <T> void visitCtVariableRead(final CtVariableRead<T> variableRead) {
 		enter(variableRead);
-		scan(variableRead.getAnnotations());
-		scan(variableRead.getTypeCasts());
-		scan(variableRead.getVariable());
-		scan(variableRead.getComments());
+		scan(CtRole.ANNOTATION, variableRead.getAnnotations());
+		scan(CtRole.CAST, variableRead.getTypeCasts());
+		scan(CtRole.VARIABLE, variableRead.getVariable());
+		scan(CtRole.COMMENT, variableRead.getComments());
 		exit(variableRead);
 	}
 
 	@Override
 	public <T> void visitCtVariableWrite(final CtVariableWrite<T> variableWrite) {
 		enter(variableWrite);
-		scan(variableWrite.getAnnotations());
-		scan(variableWrite.getTypeCasts());
-		scan(variableWrite.getVariable());
-		scan(variableWrite.getComments());
+		scan(CtRole.ANNOTATION, variableWrite.getAnnotations());
+		scan(CtRole.CAST, variableWrite.getTypeCasts());
+		scan(CtRole.VARIABLE, variableWrite.getVariable());
+		scan(CtRole.COMMENT, variableWrite.getComments());
 		exit(variableWrite);
 	}
 
 	public void visitCtWhile(final CtWhile whileLoop) {
 		enter(whileLoop);
-		scan(whileLoop.getAnnotations());
-		scan(whileLoop.getLoopingExpression());
-		scan(whileLoop.getBody());
-		scan(whileLoop.getComments());
+		scan(CtRole.ANNOTATION, whileLoop.getAnnotations());
+		scan(CtRole.EXPRESSION, whileLoop.getLoopingExpression());
+		scan(CtRole.BODY, whileLoop.getBody());
+		scan(CtRole.COMMENT, whileLoop.getComments());
 		exit(whileLoop);
 	}
 
 	public <T> void visitCtCodeSnippetExpression(final CtCodeSnippetExpression<T> expression) {
 		enter(expression);
-		scan(expression.getType());
-		scan(expression.getComments());
-		scan(expression.getAnnotations());
-		scan(expression.getTypeCasts());
+		scan(CtRole.TYPE, expression.getType());
+		scan(CtRole.COMMENT, expression.getComments());
+		scan(CtRole.ANNOTATION, expression.getAnnotations());
+		scan(CtRole.CAST, expression.getTypeCasts());
 		exit(expression);
 	}
 
 	public void visitCtCodeSnippetStatement(final CtCodeSnippetStatement statement) {
 		enter(statement);
-		scan(statement.getComments());
-		scan(statement.getAnnotations());
+		scan(CtRole.COMMENT, statement.getComments());
+		scan(CtRole.ANNOTATION, statement.getAnnotations());
 		exit(statement);
 	}
 
 	public <T> void visitCtUnboundVariableReference(final CtUnboundVariableReference<T> reference) {
 		enter(reference);
-		scan(reference.getType());
+		scan(CtRole.TYPE, reference.getType());
 		exit(reference);
 	}
 
 	@Override
 	public <T> void visitCtFieldRead(final CtFieldRead<T> fieldRead) {
 		enter(fieldRead);
-		scan(fieldRead.getAnnotations());
-		scan(fieldRead.getTypeCasts());
-		scan(fieldRead.getTarget());
-		scan(fieldRead.getVariable());
-		scan(fieldRead.getComments());
+		scan(CtRole.ANNOTATION, fieldRead.getAnnotations());
+		scan(CtRole.CAST, fieldRead.getTypeCasts());
+		scan(CtRole.TARGET, fieldRead.getTarget());
+		scan(CtRole.VARIABLE, fieldRead.getVariable());
+		scan(CtRole.COMMENT, fieldRead.getComments());
 		exit(fieldRead);
 	}
 
 	@Override
 	public <T> void visitCtFieldWrite(final CtFieldWrite<T> fieldWrite) {
 		enter(fieldWrite);
-		scan(fieldWrite.getAnnotations());
-		scan(fieldWrite.getTypeCasts());
-		scan(fieldWrite.getTarget());
-		scan(fieldWrite.getVariable());
-		scan(fieldWrite.getComments());
+		scan(CtRole.ANNOTATION, fieldWrite.getAnnotations());
+		scan(CtRole.CAST, fieldWrite.getTypeCasts());
+		scan(CtRole.TARGET, fieldWrite.getTarget());
+		scan(CtRole.VARIABLE, fieldWrite.getVariable());
+		scan(CtRole.COMMENT, fieldWrite.getComments());
 		exit(fieldWrite);
 	}
 
 	@Override
 	public <T> void visitCtSuperAccess(final CtSuperAccess<T> f) {
 		enter(f);
-		scan(f.getComments());
-		scan(f.getAnnotations());
-		scan(f.getTypeCasts());
-		scan(f.getTarget());
-		scan(f.getVariable());
+		scan(CtRole.COMMENT, f.getComments());
+		scan(CtRole.ANNOTATION, f.getAnnotations());
+		scan(CtRole.CAST, f.getTypeCasts());
+		scan(CtRole.TARGET, f.getTarget());
+		scan(CtRole.VARIABLE, f.getVariable());
 		exit(f);
 	}
 
 	@Override
 	public void visitCtComment(final CtComment comment) {
 		enter(comment);
-		scan(comment.getComments());
-		scan(comment.getAnnotations());
+		scan(CtRole.COMMENT, comment.getComments());
+		scan(CtRole.ANNOTATION, comment.getAnnotations());
 		exit(comment);
 	}
 
 	@Override
 	public void visitCtJavaDoc(final CtJavaDoc javaDoc) {
 		enter(javaDoc);
-		scan(javaDoc.getComments());
-		scan(javaDoc.getAnnotations());
-		scan(javaDoc.getTags());
+		scan(CtRole.COMMENT, javaDoc.getComments());
+		scan(CtRole.ANNOTATION, javaDoc.getAnnotations());
+		scan(CtRole.COMMENT_TAG, javaDoc.getTags());
 		exit(javaDoc);
 	}
 
 	@Override
 	public void visitCtJavaDocTag(final CtJavaDocTag docTag) {
 		enter(docTag);
-		scan(docTag.getComments());
-		scan(docTag.getAnnotations());
+		scan(CtRole.COMMENT, docTag.getComments());
+		scan(CtRole.ANNOTATION, docTag.getAnnotations());
 		exit(docTag);
 	}
 }

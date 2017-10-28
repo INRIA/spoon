@@ -19,11 +19,14 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
@@ -100,7 +103,7 @@ public class CtScannerTest {
 
 	@Test
 	public void testScannerCallsAllProperties() throws Exception {
-		// contract: CtScanner must visit all metamodel properties
+		// contract: CtScanner must visit all metamodel properties and use correct CtRole
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.run();
@@ -176,7 +179,13 @@ public class CtScannerTest {
 					c.nbChecks++;
 					//System.out.println(invocation.toString());
 				}
-
+				//check that method is called next to expected CtRole
+				CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>)invocation.getExecutable().getDeclaration());
+				CtInvocation<?> scanInvocation = invocation.getParent(CtInvocation.class);
+				String realRoleName = ((CtFieldRead<?>) scanInvocation.getArguments().get(0)).getVariable().getSimpleName();
+				if(expectedRole.name().equals(realRoleName) == false) {
+					problems.add("Wrong role " + realRoleName + " used in " + scanInvocation.getPosition());
+				}
 			});
 			calledMethods.removeAll(checkedMethods);
 

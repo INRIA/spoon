@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -38,6 +39,9 @@ public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
 	protected boolean isNotEqual = false;
 
 	public boolean biScan(Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+		return biScan(null,  elements, others);
+	}
+	public boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 		if (isNotEqual) {
 			return isNotEqual;
 		}
@@ -53,11 +57,14 @@ public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
 			return fail();
 		}
 		for (Iterator<? extends CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
-			biScan(firstIt.next(), secondIt.next());
+			biScan(role, firstIt.next(), secondIt.next());
 		}
 		return isNotEqual;
 	}
 
+	public boolean biScan(CtRole role, CtElement element, CtElement other) {
+		return biScan(element, other);
+	}
 	public boolean biScan(CtElement element, CtElement other) {
 		if (isNotEqual) {
 			return isNotEqual;

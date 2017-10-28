@@ -99,7 +99,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 
 				// Changes body of the cloned method.
 				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
-					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
+					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(1);
 					if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
 						clone.getBody().getStatement(i--).delete();
 						continue;
@@ -134,7 +134,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * @param elementVarRead <code>anElement</code>.
 			 */
 			private CtInvocation<?> createSetter(CtInvocation scanInvocation, CtVariableAccess<CtElement> elementVarRead) {
-				final CtInvocation<?> getter = (CtInvocation<?>) scanInvocation.getArguments().get(0);
+				final CtInvocation<?> getter = (CtInvocation<?>) scanInvocation.getArguments().get(1);
 				final String getterName = getter.getExecutable().getSimpleName();
 				final CtExecutableReference<Object> setterRef = factory.Executable().createReference("void CtElement#set" + getterName.substring(3, getterName.length()) + "()");
 				final CtExecutableReference<Object> cloneRef = factory.Executable().createReference("CtElement spoon.support.visitor.equals.CloneHelper#clone()");

@@ -18,7 +18,13 @@ public class SpoonTestHelpers {
 	private SpoonTestHelpers(){
 	}
 
+	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelClasses() {
+		return getAllInstantiableMetamodelTypes(false, true);
+	}
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
+		return getAllInstantiableMetamodelTypes(true, false);
+	}
+	private static List<CtType<? extends CtElement>> getAllInstantiableMetamodelTypes(boolean addInterfaces, boolean addClasses) {
 		List<CtType<? extends CtElement>> result = new ArrayList<>();
 		SpoonAPI interfaces = new Launcher();
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
@@ -36,7 +42,12 @@ public class SpoonTestHelpers {
 			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect")+"Impl";
 			CtType implClass = implementations.getFactory().Type().get(impl);
 			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
-				result.add((CtType<? extends CtElement>) itf);
+				if (addClasses) {
+					result.add((CtType<? extends CtElement>) implClass);
+				}
+				if (addInterfaces) {
+					result.add((CtType<? extends CtElement>) itf);
+				}
 			}
 		}
 		return result;
@@ -86,8 +97,16 @@ public class SpoonTestHelpers {
 				result.add(m);
 			}
 		}
+		CtTypeReference<?> superClass = baseType.getSuperclass();
+		if (superClass != null) {
+			for (CtMethod<?> up : getAllMetamodelMethods(superClass.getTypeDeclaration())) {
+				if (!containsMethodBasedOnName(result, up)) {
+					result.add(up);
+				}
+			}
+		}
 		for (CtTypeReference<?> itf : baseType.getSuperInterfaces()) {
-			for (CtMethod<?> up : getAllSetters(itf.getTypeDeclaration())) {
+			for (CtMethod<?> up : getAllMetamodelMethods(itf.getTypeDeclaration())) {
 				if (!containsMethodBasedOnName(result, up)) {
 					result.add(up);
 				}
@@ -143,6 +162,7 @@ public class SpoonTestHelpers {
 	public static boolean isMetamodelProperty(CtType<?> baseType, CtMethod<?> m) {
 		return
 				m.getSimpleName().startsWith("get")
+						&& m.getSimpleName().equals("getParent") == false
 						&& m.getParameters().size() == 0 // a getter has no parameter
 						&& m.getAnnotation(DerivedProperty.class) == null
 						&&
