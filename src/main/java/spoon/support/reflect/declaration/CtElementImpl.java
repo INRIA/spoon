@@ -321,10 +321,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public <E extends CtElement> E setParent(E parent) {
-		if (getFactory() == null) {
-			this.parent = parent;
-			return (E) this;
-		}
 		this.parent = parent;
 		return (E) this;
 	}
