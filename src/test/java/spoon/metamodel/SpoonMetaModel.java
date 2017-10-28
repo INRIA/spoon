@@ -48,7 +48,7 @@ import spoon.support.compiler.FileSystemFolder;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
- * Represents a Spoon meta model
+ * Represents a Spoon meta model of the AST nodes.
  */
 public class SpoonMetaModel {
 	public static final String CLASS_SUFFIX = "Impl";
@@ -60,16 +60,12 @@ public class SpoonMetaModel {
 			"spoon.reflect.declaration",
 			"spoon.reflect.reference"));
 
-	private PrinterHelper problems;
-
+	private final Factory factory;
+	
 	/**
 	 * {@link MMType}s by name
 	 */
 	private final Map<String, MMType> name2mmType = new HashMap<>();
-
-	private final CtTypeReference<?> statementRef;
-	private final CtTypeReference<?> iterableRef;
-	private final CtTypeReference<?> mapRef;
 
 	/**
 	 * Parses spoon sources and creates factory with spoon model.
@@ -85,17 +81,56 @@ public class SpoonMetaModel {
 	 * @param factory already loaded factory with all Spoon model types
 	 */
 	public SpoonMetaModel(Factory factory) {
-		statementRef = factory.createCtTypeReference(CtStatement.class);
-		iterableRef = factory.createCtTypeReference(Iterable.class);
-		mapRef = factory.createCtTypeReference(Map.class);
-		problems = new PrinterHelper(factory.getEnvironment());
-
+		this.factory =  factory;
+		//search for all interfaces of spoon model and create MMTypes for them
 		factory.getModel().getRootPackage().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
 				if (MODEL_IFACE_PACKAGES.contains(iface.getPackage().getQualifiedName())) {
 					getOrCreateMMType(iface);
 				}
 			});
+	}
+
+	/**
+	 * @return all {@link MMType}s of spoon meta model
+	 */
+	public Collection<MMType> getMMTypes() {
+		return Collections.unmodifiableCollection(name2mmType.values());
+	}
+	
+	/**
+	 * @param type a spoon model type
+	 * @return name of {@link MMType}, which represents Spoon model {@link CtType}
+	 */
+	public static String getMMTypeIntefaceName(CtType<?> type) {
+		String name = type.getSimpleName();
+		if (name.endsWith(CLASS_SUFFIX)) {
+			name = name.substring(0, name.length() - CLASS_SUFFIX.length());
+		}
+		return name;
+	}
+
+	/**
+	 * @param iface the interface of spoon model element
+	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
+	 */
+	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
+		String impl = iface.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect") + CLASS_SUFFIX;
+		return (CtClass<?>) iface.getFactory().Type().get(impl);
+	}
+
+	/**
+	 * @param impl the implementation of spoon model element
+	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
+	 */
+	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
+		String iface = impl.getQualifiedName();
+		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
+			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
+		}
+		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
+		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
+		return (CtInterface<?>) impl.getFactory().Type().get(iface);
 	}
 
 	private static Factory createFactory(File spoonJavaSourcesDirectory) {
@@ -115,240 +150,62 @@ public class SpoonMetaModel {
 		return launcher.getFactory();
 	}
 
+	/**
+	 * @param type can be class or interface of Spoon model element
+	 * @return existing or creates and initializes new {@link MMType} which represents `type`, which 
+	 */
 	private MMType getOrCreateMMType(CtType<?> type) {
 		String mmTypeName = getMMTypeIntefaceName(type);
 		MMType mmType = getOrCreate(name2mmType, mmTypeName, () -> new MMType());
 		if (mmType.name == null) {
-			//it is not initialized yet. Do it now
 			mmType.name = mmTypeName;
-			if (type instanceof CtInterface<?>) {
-				CtInterface<?> iface = (CtInterface<?>) type;
-				mmType.setModelClass(getImplementationOfInterface(iface));
-				mmType.setModelInteface(iface);
-			} else if (type instanceof CtClass<?>) {
-				CtClass<?> clazz = (CtClass<?>) type;
-				mmType.setModelClass(clazz);
-				mmType.setModelInteface(getInterfaceOfImplementation(clazz));
-			} else {
-				throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
-			}
-
-			if (mmType.getModelClass() != null) {
-				addFieldsOfType(mmType, mmType.getModelClass());
-			}
-			if (mmType.getModelInteface() != null) {
-				//add fields of interface too. They are not added by above call of addFieldsOfType, because the MMType already exists in name2mmType
-				addFieldsOfType(mmType, mmType.getModelInteface());
-			}
-//			detectMethodKinds(mmType);
-			mmType.getRole2field().forEach((role, mmField) -> {
-				mmField.groupMethodsByKind();
-				mmField.sortByBestMatch();
-				mmField.setValueType(mmField.detectValueType());
-			});
-
-
+			initializeMMType(type, mmType);
 		}
 		return mmType;
 	}
-/*
-	private void detectMethodKinds(MMType mmType) {
-		// collect getters, setters, ...
-		for (MMField mmField : mmType.role2field.values()) {
-
-			Set<String> unhandledSignatures = new HashSet<>(mmField.getAllRoleMethodsBySignature().keySet());
-			// look for getter
-			forEachValueWithKeyPrefix(mmField.getAllRoleMethodsBySignature(), new String[] { "get", "is" }, (k, v) -> {
-				if (v.get(0).getParameters().isEmpty() == false) {
-					// ignore getters with some parameters
-					return;
-				}
-				createFieldHandler(unhandledSignatures, mmField, null, -1, () -> mmField.get, (m) -> mmField.get = m, "get()")
-						.accept(k, v);
-			});
-
-			if (mmField.get != null) {
-				mmField.setValueType(mmField.get.getType());
-			}
-			// look for setter
-			forEachValueWithKeyPrefix(mmField.getAllRoleMethodsBySignature(), "set", (k, v) -> {
-				if (v.get(0).getParameters().size() == 1) {
-					// setters with 1 parameter equal to getter return value
-					createFieldHandler(unhandledSignatures, mmField, mmField.getValueType(), 0, () -> mmField.set,
-							(m) -> mmField.set = m, "set(value)").accept(k, v);
-					return;
-				}
-			});
-
-			if (mmField.getValueContainerType() != MMContainerType.SINGLE) {
-				forEachValueWithKeyPrefix(mmField.getAllRoleMethodsBySignature(), new String[] { "add", "insert" },
-						(k, v) -> {
-							if (v.get(0).getParameters().size() == 1) {
-								if (v.get(0).getSimpleName().endsWith("AtTop")
-										|| v.get(0).getSimpleName().endsWith("Begin")) {
-									// adders with 1 parameter and fitting
-									// value type
-									createFieldHandler(unhandledSignatures, mmField, mmField.getItemValueType(), 0,
-											() -> mmField.addFirst, (m) -> mmField.addFirst = m, "addFirst(value)")
-													.accept(k, v);
-									return;
-								} else if (v.get(0).getSimpleName().endsWith("AtBottom")
-										|| v.get(0).getSimpleName().endsWith("End")) {
-									// adders with 1 parameter and fitting
-									// value type
-									createFieldHandler(unhandledSignatures, mmField, mmField.getItemValueType(), 0,
-											() -> mmField.addLast, (m) -> mmField.addLast = m, "addLast(value)").accept(k,
-													v);
-									return;
-								} else {
-									// adders with 1 parameter and fitting
-									// value type
-									createFieldHandler(unhandledSignatures, mmField, mmField.getItemValueType(), 0,
-											() -> mmField.add, (m) -> mmField.add = m, "add(value)").accept(k, v);
-									return;
-								}
-							}
-							if (v.get(0).getParameters().size() == 2) {
-								// adders with 2 parameters. First int
-								if (v.get(0).getParameters().get(0).getType().getSimpleName().equals("int")) {
-									createFieldHandler(unhandledSignatures, mmField, mmField.getItemValueType(), 1,
-											() -> mmField.addOn, (m) -> mmField.addOn = m, "addOn(int, value)").accept(k,
-													v);
-								}
-								return;
-							}
-						});
-				forEachValueWithKeyPrefix(mmField.getAllRoleMethodsBySignature(), "remove", (k, v) -> {
-					if (v.get(0).getParameters().size() == 1) {
-						createFieldHandler(unhandledSignatures, mmField, mmField.getItemValueType(), 0, () -> mmField.remove,
-								(m) -> mmField.remove = m, "remove(value)").accept(k, v);
-					}
-				});
-			}
-			unhandledSignatures.forEach(key -> {
-				CtMethod<?> representant = mmField.getAllRoleMethodsBySignature(key).get(0);
-				getOrCreate(allUnhandledMethodSignatures, getDeclaringTypeSignature(representant),
-						() -> representant);
-			});
+	
+	/**
+	 * is called once for each MMType, to initialize it.
+	 * @param type a class or inteface of the spoon model element
+	 * @param mmType to be initialize MMType
+	 */
+	private void initializeMMType(CtType<?> type, MMType mmType) {
+		//it is not initialized yet. Do it now
+		if (type instanceof CtInterface<?>) {
+			CtInterface<?> iface = (CtInterface<?>) type;
+			mmType.setModelClass(getImplementationOfInterface(iface));
+			mmType.setModelInteface(iface);
+		} else if (type instanceof CtClass<?>) {
+			CtClass<?> clazz = (CtClass<?>) type;
+			mmType.setModelClass(clazz);
+			mmType.setModelInteface(getInterfaceOfImplementation(clazz));
+		} else {
+			throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
 		}
-	}*/
+
+		//add fields of class
+		if (mmType.getModelClass() != null) {
+			addFieldsOfType(mmType, mmType.getModelClass());
+		}
+		//add fields of interface
+		if (mmType.getModelInteface() != null) {
+			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MMType already exists in name2mmType
+			addFieldsOfType(mmType, mmType.getModelInteface());
+		}
+		//initialize all fields
+		mmType.getRole2field().forEach((role, mmField) -> {
+			//if there are more methods for the same field then choose the one which best matches the field type
+			mmField.sortByBestMatch();
+			//finally initialize value type of this field
+			mmField.setValueType(mmField.detectValueType());
+		});
+	}
 
 	/**
-	 * @return all the problems found in spoon meta model
+	 * adds all {@link MMField}s of `ctType`
+	 * @param mmType the owner of to be created fields
+	 * @param ctType to be scanned {@link CtType}
 	 */
-	public String getProblems() {
-		return problems.toString();
-	}
-
-	private <V> void forEachValueWithKeyPrefix(Map<String, V> map, String prefix, BiConsumer<String, V> consumer) {
-		forEachValueWithKeyPrefix(map, new String[] { prefix }, consumer);
-	}
-
-	private <V> void forEachValueWithKeyPrefix(Map<String, V> map, String[] prefixes, BiConsumer<String, V> consumer) {
-		for (Map.Entry<String, V> e : map.entrySet()) {
-			for (String prefix : prefixes) {
-				if (e.getKey().startsWith(prefix)) {
-					consumer.accept(e.getKey(), e.getValue());
-				}
-			}
-		}
-	}
-//
-//	private BiConsumer<String, List<CtMethod<?>>> createFieldHandler(Set<String> unhandledSignatures,
-//			MMField mmField, CtTypeReference valueType, int valueParamIdx, Supplier<CtMethod<?>> fieldGetter,
-//			Consumer<CtMethod<?>> fieldSetter, String fieldName) {
-//		return (k, v) -> {
-//			//Look for first method which has a body
-//			CtMethod<?> method = getConcreteMethod(v);
-//			// use getTypeErasure() comparison, because some getters and setters
-//			// does not fit exactly
-//			List<CtParameter<?>> params = method.getParameters();
-//			boolean checkParameterType = params.size() > 0 || valueType != null;
-//			CtTypeReference<?> newValueType = typeMatches(valueType,
-//					checkParameterType ? params.get(valueParamIdx).getType() : null);
-//			if (newValueType != null || checkParameterType == false) {
-//				// the method parameter matches with expected valueType
-//				if (newValueType != valueType) {
-//					// there is new value type, we have to update it in mmField
-//					if (mmField.getValueType() == valueType) {
-//						mmField.setValueType(newValueType);
-//					} else if (mmField.getItemValueType() == valueType) {
-//						mmField.setItemValueType(newValueType);
-//					} else {
-//						throw new SpoonException("Cannot update valueType");
-//					}
-//				}
-//				unhandledSignatures.remove(k);
-//				if (fieldGetter.get() == null) {
-//					// we do not have method yet for this field
-//					fieldSetter.accept(method);
-//				} else {
-//					// there is already a method for this field
-//					if (valueType != null) {
-//						// 1) choose the method with more fitting valueType
-//						boolean oldMatches = valueType
-//								.equals(fieldGetter.get().getParameters().get(valueParamIdx).getType());
-//						boolean newMatches = valueType.equals(method.getParameters().get(valueParamIdx).getType());
-//						if (oldMatches != newMatches) {
-//							if (oldMatches) {
-//								// old is matching
-//								// add new as unhandled signature
-//								unhandledSignatures.add(k);
-//							} else {
-//								// new is matching
-//								// add old as unhandled signature
-//								unhandledSignatures.add(fieldGetter.get().getSignature());
-//								// and set new is current field value
-//								fieldSetter.accept(method);
-//							}
-//							// do report problem. The conflict was resolved
-//							return;
-//						}
-//					} else if (params.isEmpty()) {
-//						// the value type is not known yet and there is no input
-//						// parameter. We are resolving getter field.
-//						// choose the getter whose return value is a collection
-//						// of second one
-//						CtTypeReference<?> oldReturnType = fieldGetter.get().getType();
-//						CtTypeReference<?> newReturnType = method.getType();
-//						boolean isOldIterable = oldReturnType.isSubtypeOf(iterableRef);
-//						boolean isNewIterable = newReturnType.isSubtypeOf(iterableRef);
-//						if (isOldIterable != isNewIterable) {
-//							// they are not some. Only one of them is iterable
-//							if (isOldIterable) {
-//								if (isIterableOf(oldReturnType, newReturnType)) {
-//									// use old method, which is multivalue
-//									// represantation of new method
-//									// OK - no conflict. Finish
-//									return;
-//								}
-//							} else {
-//								if (isIterableOf(newReturnType, oldReturnType)) {
-//									// use new method, which is multivalue
-//									// represantation of old method
-//									fieldSetter.accept(method);
-//									// OK - no conflict. Finish
-//									return;
-//								}
-//							}
-//							// else report ambiguity
-//						}
-//					}
-//
-//					problems.write(mmField.getOwnerType().getName() + " has ambiguous " + fieldName + " :").writeln().incTab()
-//							.write(fieldGetter.get().getType() + "#" + getDeclaringTypeSignature(fieldGetter.get()))
-//							.writeln().write(method.getType() + "#" + getDeclaringTypeSignature(method)).writeln()
-//							.decTab();
-//				}
-//			}
-//		};
-//	}
-
-
-
-	private Set<String> propertyGetterAndSetter = new HashSet<>(
-			Arrays.asList(PropertyGetter.class.getName(), PropertySetter.class.getName()));
-
 	private void addFieldsOfType(MMType mmType, CtType<?> ctType) {
 		ctType.getTypeMembers().forEach(typeMember -> {
 			if (typeMember instanceof CtMethod<?>) {
@@ -372,7 +229,8 @@ public class SpoonMetaModel {
 			"spoon.reflect.visitor.CtVisitable",
 			"spoon.reflect.visitor.chain.CtQueryable",
 			"spoon.template.TemplateParameter",
-			"java.lang.Iterable"));
+			"java.lang.Iterable",
+			"java.io.Serializable"));
 
 
 	/**
@@ -387,26 +245,15 @@ public class SpoonMetaModel {
 		CtType<?> superType = superTypeRef.getDeclaration();
 		if (superType == null) {
 			if (EXPECTED_TYPES_NOT_IN_CLASSPATH.contains(superTypeRef.getQualifiedName()) == false) {
-				problems.write("Type not in model: " + superTypeRef.getQualifiedName()).writeln();
+				throw new SpoonException("Cannot create spoon meta model. The class " + superTypeRef.getQualifiedName() + " is missing class path");
 			}
 			return;
 		}
+		//call getOrCreateMMType recursively for super types
 		MMType superMMType = getOrCreateMMType(superType);
 		if (superMMType != mmType) {
 			mmType.addSuperType(superMMType);
 		}
-	}
-
-	/**
-	 * @param type
-	 * @return name of {@link MMType}, which represents Spoon model {@link CtType}
-	 */
-	public static String getMMTypeIntefaceName(CtType<?> type) {
-		String name = type.getSimpleName();
-		if (name.endsWith(CLASS_SUFFIX)) {
-			name = name.substring(0, name.length() - CLASS_SUFFIX.length());
-		}
-		return name;
 	}
 
 	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
@@ -434,29 +281,6 @@ public class SpoonMetaModel {
 	}
 
 	/**
-	 * @param iface the interface of spoon model element
-	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
-	 */
-	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
-		String impl = iface.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect") + CLASS_SUFFIX;
-		return (CtClass<?>) iface.getFactory().Type().get(impl);
-	}
-
-	/**
-	 * @param impl the implementation of spoon model element
-	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
-	 */
-	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
-		String iface = impl.getQualifiedName();
-		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
-			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
-		}
-		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
-		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
-		return (CtInterface<?>) impl.getFactory().Type().get(iface);
-	}
-
-	/**
 	 * @param method to be checked method
 	 * @return {@link CtRole} of spoon model method. Looking into all super class/interface implementations of this method
 	 */
@@ -474,10 +298,9 @@ public class SpoonMetaModel {
 	}
 
 	/**
-	 * Looks for method in superClass and superInterface hierarchy for the method with required annotationType
-	 * @param method
-	 * @param annotationType
-	 * @return
+	 * @param method a start method
+	 * @param annotationType a searched annotation type
+	 * @return annotation from the first method in superClass and superInterface hierarchy for the method with required annotationType
 	 */
 	private static <A extends Annotation> CtAnnotation<A> getInheritedAnnotation(CtMethod<?> method, CtTypeReference<A> annotationType) {
 		CtAnnotation<A> annotation = method.getAnnotation(annotationType);
@@ -500,7 +323,7 @@ public class SpoonMetaModel {
 		return annotation;
 	}
 
-	public Collection<MMType> getMMTypes() {
-		return Collections.unmodifiableCollection(name2mmType.values());
+	public Factory getFactory() {
+		return factory;
 	}
 }

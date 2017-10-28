@@ -17,6 +17,7 @@
 package spoon.metamodel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ import spoon.support.visitor.ClassTypingContext;
 import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
 
 /**
- * Represents a type of Spoon model class
+ * Represents a type of Spoon model AST node
  */
 public class MMType {
 	/**
@@ -52,6 +53,9 @@ public class MMType {
 	 * List of super types of this type
 	 */
 	private final List<MMType> superTypes = new ArrayList<>();
+	/**
+	 * List of sub types of this type
+	 */
 	private final List<MMType> subTypes = new ArrayList<>();
 
 	/**
@@ -63,6 +67,9 @@ public class MMType {
 	 */
 	private CtInterface<?> modelInteface;
 
+	/**
+	 * {@link ClassTypingContext} of this type used to adapt methods from super type implementations to this {@link MMType}
+	 */
 	private ClassTypingContext typeContext;
 
 	/**
@@ -74,10 +81,22 @@ public class MMType {
 		super();
 	}
 
+	/**
+	 * @return interface name of {@link MMType}. For example CtClass, CtForEach, ...
+	 * It is never followed by xxxImpl
+	 */
+	public String getName() {
+		return name;
+	}
+
+
 	MMField getOrCreateMMField(CtRole role) {
 		return SpoonMetaModel.getOrCreate(role2field, role, () -> new MMField(role.getCamelCaseName(), role, this));
 	}
 
+	/**
+	 * @return kind of this {@link MMType}. Is it helper type or type of real AST node?
+	 */
 	public MMTypeKind getKind() {
 		if (kind == null) {
 			if (modelClass != null && modelClass.hasModifier(ModifierKind.ABSTRACT) == false) {
@@ -89,14 +108,16 @@ public class MMType {
 		return kind;
 	}
 
-	public String getName() {
-		return name;
-	}
-
+	/**
+	 * @return map of {@link MMField}s by their {@link CtRole}
+	 */
 	public Map<CtRole, MMField> getRole2field() {
-		return role2field;
+		return Collections.unmodifiableMap(role2field);
 	}
 
+	/**
+	 * @return super types
+	 */
 	public List<MMType> getSuperTypes() {
 		return superTypes;
 	}
@@ -114,6 +135,9 @@ public class MMType {
 		}
 	}
 
+	/**
+	 * @return {@link CtClass} which represents this {@link MMType}
+	 */
 	public CtClass<?> getModelClass() {
 		return modelClass;
 	}
@@ -122,6 +146,9 @@ public class MMType {
 		this.modelClass = modelClass;
 	}
 
+	/**
+	 * @return {@link CtInterface} which represents this {@link MMType}
+	 */
 	public CtInterface<?> getModelInteface() {
 		return modelInteface;
 	}
@@ -130,15 +157,18 @@ public class MMType {
 		this.modelInteface = modelInteface;
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
+	/**
+	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MMType}
+	 */
 	public ClassTypingContext getTypeContext() {
 		if (typeContext == null) {
 			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInteface);
 		}
 		return typeContext;
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 }

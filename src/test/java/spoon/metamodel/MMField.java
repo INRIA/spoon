@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
@@ -67,25 +68,24 @@ public class MMField {
 
 	private Boolean derived;
 
-	private Map<MMMethodKind, List<MMethod>> methodsByKind;
+	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new HashMap<>();
 
 	/**
 	 * methods of this field defined directly on ownerType.
 	 * There is PropertyGetter or PropertySetter annotation with `role` of this {@link MMField}
 	 */
-	private final List<MMethod> roleMethods = new ArrayList<>();
+	private final List<MMMethod> roleMethods = new ArrayList<>();
 	/**
 	 * methods of this field grouped by signature defined directly on ownerType.
 	 * There is PropertyGetter or PropertySetter annotation with `role` of this {@link MMField}
 	 * note: There can be up to 2 methods in this list. 1) declaration from interface, 2) implementation from class
 	 */
-	private final Map<String, MMethod> roleMethodsBySignature = new HashMap<>();
+	private final Map<String, MMMethod> roleMethodsBySignature = new HashMap<>();
 	/**
 	 * List of fields with same `role`, from super type of `ownerType` {@link MMType}
 	 */
 	private final List<MMField> superFields = new ArrayList<>();
 
-	private Set<String> unhandledSignatures;
 	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
 
@@ -97,20 +97,26 @@ public class MMField {
 	}
 
 	void addMethod(CtMethod<?> method) {
-		MMethod mmMethod = getOwnMethod(method, true);
-		mmMethod.ownMethods.add(method);
+		MMMethod mmMethod = getOwnMethod(method, true);
+		mmMethod.addOwnMethod(method);
 	}
 
-	MMethod getOwnMethod(CtMethod<?> method, boolean createIfNotExist) {
-		for (MMethod mmMethod : roleMethods) {
+	/**
+	 * @param method
+	 * @param createIfNotExist
+	 * @return existing {@link MMMethod}, which overrides `method` or creates and registers new one if `createIfNotExist`==true
+	 */
+	MMMethod getOwnMethod(CtMethod<?> method, boolean createIfNotExist) {
+		for (MMMethod mmMethod : roleMethods) {
 			if (mmMethod.overrides(method)) {
 				return mmMethod;
 			}
 		}
 		if (createIfNotExist) {
-			MMethod mmMethod = new MMethod(this, method);
+			MMMethod mmMethod = new MMMethod(this, method);
 			roleMethods.add(mmMethod);
-			MMethod conflict = roleMethodsBySignature.put(mmMethod.getSignature(), mmMethod);
+			getOrCreate(methodsByKind, mmMethod.getMethodKind(), () -> new ArrayList<>()).add(mmMethod);
+			MMMethod conflict = roleMethodsBySignature.put(mmMethod.getSignature(), mmMethod);
 			if (conflict != null) {
 				throw new SpoonException("Conflict on " + getOwnerType().getName() + "." + name + " method signature: " + mmMethod.getSignature());
 			}
@@ -121,8 +127,8 @@ public class MMField {
 
 	void addSuperField(MMField superMMField) {
 		if (addUniqueObject(superFields, superMMField)) {
-			for (MMethod superMethod : superMMField.getRoleMethods()) {
-				getOwnMethod(superMethod.getMethodOf(getOwnerType()), true).addSuperMethod(superMethod);
+			for (MMMethod superMethod : superMMField.getRoleMethods()) {
+				getOwnMethod(superMethod.getFirstOwnMethod(getOwnerType()), true).addSuperMethod(superMethod);
 			}
 		}
 	}
@@ -151,25 +157,25 @@ public class MMField {
 	}
 
 	CtTypeReference<?> detectValueType() {
-		MMethod mmGetMethod = getMethod(MMMethodKind.GET);
+		MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
 		if (mmGetMethod == null) {
 			throw new SpoonException("No getter exists for " + getOwnerType().getName() + "." + getName());
 		}
-		MMethod mmSetMethod = getMethod(MMMethodKind.SET);
+		MMMethod mmSetMethod = getMethod(MMMethodKind.SET);
 		if (mmSetMethod == null) {
-			return mmGetMethod.getType();
+			return mmGetMethod.getReturnType();
 		}
-		CtTypeReference<?> getterValueType = mmGetMethod.getType();
+		CtTypeReference<?> getterValueType = mmGetMethod.getReturnType();
 		CtTypeReference<?> setterValueType = mmSetMethod.getValueType();
 		if (getterValueType.equals(setterValueType)) {
-			return mmGetMethod.getType();
+			return mmGetMethod.getReturnType();
 		}
 		if (MMContainerType.valueOf(getterValueType.getActualClass()) != MMContainerType.SINGLE) {
 			getterValueType = getItemValueType(getterValueType);
 			setterValueType = getItemValueType(setterValueType);
 		}
 		if (getterValueType.equals(setterValueType)) {
-			return mmGetMethod.getType();
+			return mmGetMethod.getReturnType();
 		}
 		if (getterValueType.isSubtypeOf(setterValueType)) {
 			/*
@@ -213,38 +219,29 @@ public class MMField {
 		this.itemValueType = itemValueType;
 	}
 
-	public MMethod getMethod(MMMethodKind kind) {
-		List<MMethod> ms = getMethods(kind);
+	public MMMethod getMethod(MMMethodKind kind) {
+		List<MMMethod> ms = getMethods(kind);
 		return ms.size() > 0 ? ms.get(0) : null;
 	}
 
-	public List<MMethod> getMethods(MMMethodKind kind) {
-		if (methodsByKind == null) {
-			throw new SpoonException("Metamodel is not initialized yet");
-		}
-		List<MMethod> ms = methodsByKind.get(kind);
+	public List<MMMethod> getMethods(MMMethodKind kind) {
+		List<MMMethod> ms = methodsByKind.get(kind);
 		return ms == null ? Collections.emptyList() : Collections.unmodifiableList(ms);
 	}
-
-	public Set<String> getUnhandledSignatures() {
-		if (unhandledSignatures == null) {
-			throw new SpoonException("Model is not initialized yet");
-		}
-		return unhandledSignatures;
-	}
-
-	void groupMethodsByKind() {
-		methodsByKind = new HashMap<>();
-		unhandledSignatures = new HashSet<>();
-
-		for (MMethod mmMethod : roleMethods) {
-			MMMethodKind k = MMMethodKind.valueOf(mmMethod.getMethod());
-			if (k == MMMethodKind.OTHER) {
-				unhandledSignatures.add(mmMethod.getSignature());
-				continue;
+	
+	/**
+	 * @param consumer is called for each CtMethod of this field which is not covered by this meta model
+	 */
+	public void forEachUnhandledMethod(Consumer<CtMethod<?>> consumer) {
+		methodsByKind.forEach((kind, mmMethods) -> {
+			if(kind == MMMethodKind.OTHER) {
+				mmMethods.forEach(mmMethod -> mmMethod.getOwnMethods().forEach(consumer));
+			} else {
+				if (mmMethods.size() > 1) {
+					mmMethods.subList(1, mmMethods.size()).forEach(mmMethod -> mmMethod.getOwnMethods().forEach(consumer));
+				}
 			}
-			getOrCreate(methodsByKind, k, () -> new ArrayList<>()).add(mmMethod);
-		}
+		});
 	}
 
 	void sortByBestMatch() {
@@ -256,7 +253,7 @@ public class MMField {
 	}
 
 	void sortByBestMatch(MMMethodKind key) {
-		List<MMethod> methods = methodsByKind.get(key);
+		List<MMMethod> methods = methodsByKind.get(key);
 		if (methods != null && methods.size() > 1) {
 			int idx = getIdxOfBestMatch(methods, key);
 			if (idx >= 0) {
@@ -264,8 +261,6 @@ public class MMField {
 					//move the matching to the beginning
 					methods.add(0, methods.remove(idx));
 				}
-				//add next items as unhandled
-				methods.subList(1, methods.size()).forEach(mmMethod -> unhandledSignatures.add(mmMethod.getSignature()));
 			} else {
 				//add all methods as ambiguous
 				ambiguousMethodKinds.add(key);
@@ -279,21 +274,21 @@ public class MMField {
 	 * @return index of the method which best matches the `key` accessor of this field
 	 *  -1 if it cannot be resolved
 	 */
-	private int getIdxOfBestMatch(List<MMethod> methods, MMMethodKind key) {
-		MMethod mmMethod = methods.get(0);
+	private int getIdxOfBestMatch(List<MMMethod> methods, MMMethodKind key) {
+		MMMethod mmMethod = methods.get(0);
 		if (mmMethod.getMethod().getParameters().size() == 0) {
 			return getIdxOfBestMatchByReturnType(methods, key);
 		} else {
-			MMethod mmGetMethod = getMethod(MMMethodKind.GET);
+			MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
 			if (mmGetMethod == null) {
 				//we have no getter so we do not know the expected value type. Setters are ambiguous
 				return -1;
 			}
-			return getIdxOfBestMatchByInputParameter(methods, key, mmGetMethod.getType());
+			return getIdxOfBestMatchByInputParameter(methods, key, mmGetMethod.getReturnType());
 		}
 	}
 
-	private int getIdxOfBestMatchByReturnType(List<MMethod> methods, MMMethodKind key) {
+	private int getIdxOfBestMatchByReturnType(List<MMMethod> methods, MMMethodKind key) {
 		if (methods.size() > 2) {
 			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods.toString());
 		}
@@ -336,7 +331,7 @@ public class MMField {
 		return false;
 	}
 
-	private int getIdxOfBestMatchByInputParameter(List<MMethod> methods, MMMethodKind key, CtTypeReference<?> expectedValueType)  {
+	private int getIdxOfBestMatchByInputParameter(List<MMMethod> methods, MMMethodKind key, CtTypeReference<?> expectedValueType)  {
 		int idx = -1;
 		MatchLevel maxMatchLevel = null;
 		CtTypeReference<?> newValueType = null;
@@ -345,7 +340,7 @@ public class MMField {
 		}
 
 		for (int i = 0; i < methods.size(); i++) {
-			MMethod mMethod = methods.get(i);
+			MMMethod mMethod = methods.get(i);
 			MatchLevel matchLevel = getMatchLevel(expectedValueType, mMethod.getValueType());
 			if (matchLevel != null) {
 				//it is matching
@@ -442,7 +437,7 @@ public class MMField {
 	public boolean isDerived() {
 		if (derived == null) {
 			//if DerivedProperty is found on any getter of this type, then this field is derived
-			MMethod getter = getMethod(MMMethodKind.GET);
+			MMMethod getter = getMethod(MMMethodKind.GET);
 			if (getter == null) {
 				throw new SpoonException("No getter defined for " + this);
 			}
@@ -475,11 +470,11 @@ public class MMField {
 		return derived;
 	}
 
-	public List<MMethod> getRoleMethods() {
+	public List<MMMethod> getRoleMethods() {
 		return Collections.unmodifiableList(roleMethods);
 	}
 
-	public Map<String, MMethod> getRoleMethodsBySignature() {
+	public Map<String, MMMethod> getRoleMethodsBySignature() {
 		return Collections.unmodifiableMap(roleMethodsBySignature);
 	}
 

@@ -29,16 +29,16 @@ public enum MMMethodKind {
 	 * Getter.
 	 * T get()
 	 */
-	GET(false, 1, m -> m.getParameters().size() == 0  && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
+	GET(-1, false, 1, m -> m.getParameters().size() == 0  && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
 	/**
 	 * Setter
 	 * void set(T)
 	 */
-	SET(false, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("set")),
+	SET(0, false, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("set")),
 	/**
 	 * void addFirst(T)
 	 */
-	ADD_FIRST(true, 10, m -> {
+	ADD_FIRST(0, true, 10, m -> {
 		if (m.getParameters().size() == 1) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
 				if (m.getSimpleName().endsWith("AtTop") || m.getSimpleName().endsWith("Begin")) {
@@ -51,7 +51,7 @@ public enum MMMethodKind {
 	/**
 	 * void add(T)
 	 */
-	ADD_LAST(true, 1,  m -> {
+	ADD_LAST(0, true,  1, m -> {
 		if (m.getParameters().size() == 1) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
 				return true;
@@ -62,7 +62,7 @@ public enum MMMethodKind {
 	/**
 	 * void addOn(int, T)
 	 */
-	ADD_ON(true, 1, m -> {
+	ADD_ON(1, true, 1, m -> {
 		if (m.getParameters().size() == 2 && m.getParameters().get(0).getType().getSimpleName().equals("int")) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
 				return true;
@@ -73,18 +73,30 @@ public enum MMMethodKind {
 	/**
 	 * void remove(T)
 	 */
-	REMOVE(true, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("remove")),
+	REMOVE(0, true, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("remove")),
 
-	OTHER(false, 0, m -> true);
+	/**
+	 * Return element by its name
+	 * T get(String)
+	 */
+	GET_BY(-1, true, 1, m -> m.getSimpleName().startsWith("get")
+			&& m.getParameters().size() == 1  && m.getParameters().get(0).getType().getQualifiedName().equals(String.class.getName())),
+
+	/**
+	 * The not matching method
+	 */
+	OTHER(-2, false, 0, m -> true);
 
 	private final Predicate<CtMethod<?>> detector;
 	private final int level;
 	private final boolean multi;
+	private final int valueParameterIndex;
 
-	MMMethodKind(boolean multi, int level, Predicate<CtMethod<?>> detector) {
+	MMMethodKind(int valueParameterIndex, boolean multi, int level, Predicate<CtMethod<?>> detector) {
 		this.multi = multi;
 		this.level = level;
 		this.detector = detector;
+		this.valueParameterIndex = valueParameterIndex;
 	}
 
 	/**
@@ -93,6 +105,16 @@ public enum MMMethodKind {
 	 */
 	public boolean isMulti() {
 		return multi;
+	}
+
+	/**
+	 * @return index of parameter, which contains the field value. 
+	 * idx >= 0 - for method parameters 
+	 * idx = -1 - for return value of the method
+	 * idx = -2 - unknown
+	 */
+	public int getValueParameterIndex() {
+		return valueParameterIndex;
 	}
 
 	/**
