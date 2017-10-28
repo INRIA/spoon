@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
@@ -57,10 +58,11 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 				CtElement parent = result.getParent();
 				result = result.clone();
 				result.setParent(parent);
-				List<CtTypeReference<?>> actTypeArgs = result.getActualTypeArguments();
+				List<CtTypeReference<?>> actTypeArgs = new ArrayList<>(result.getActualTypeArguments());
 				for (int i = 0; i < actTypeArgs.size(); i++) {
-					actTypeArgs.set(i, adaptType(actTypeArgs.get(i)));
+					actTypeArgs.set(i, adaptType(actTypeArgs.get(i)).clone());
 				}
+				result.setActualTypeArguments(actTypeArgs);
 			}
 		}
 		return result;
