@@ -310,7 +310,7 @@ public class MainTest {
 
 	}
 
-	private void checkParentConsistency(CtPackage pack) {
+	public static void checkParentConsistency(CtElement ele) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
@@ -343,7 +343,7 @@ public class MainTest {
 				}
 				super.exit(e);
 			}
-		}.visitCtPackage(pack);
+		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
 	
