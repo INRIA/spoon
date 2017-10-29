@@ -49,6 +49,7 @@ import spoon.test.generics.testclasses2.LikeCtClass;
 import spoon.test.generics.testclasses2.LikeCtClassImpl;
 import spoon.test.generics.testclasses2.SameSignature2;
 import spoon.test.generics.testclasses2.SameSignature3;
+import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -1397,6 +1398,9 @@ public class GenericsTest {
 		 */
 		assertEquals(adaptedMethod.getParameters().get(0).getType(), classGetter.getType());
 		assertEquals(adaptedMethod.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
+		
+		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
+		MainTest.checkParentConsistency(adaptedMethod);
 	}
 	
 }
