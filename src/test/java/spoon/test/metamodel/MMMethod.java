@@ -14,7 +14,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.metamodel;
+package spoon.test.metamodel;
+
+import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +26,6 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.MethodTypingContext;
-
-import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
 
 /**
  * Represents a method of a {@link MMField} of a {@link MMType}.

@@ -14,7 +14,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.metamodel;
+package spoon.test.metamodel;
+
+import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +31,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.support.visitor.ClassTypingContext;
-
-import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
 
 /**
  * Represents a type of Spoon model AST node
