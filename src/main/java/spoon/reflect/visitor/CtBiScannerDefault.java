@@ -14,8 +14,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
-
 package spoon.reflect.visitor;
 
 
@@ -437,7 +435,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(catchVariable.getComments(), other.getComments());
 		biScan(catchVariable.getAnnotations(), other.getAnnotations());
 		biScan(catchVariable.getDefaultExpression(), other.getDefaultExpression());
-		biScan(catchVariable.getType(), other.getType());
 		biScan(catchVariable.getMultiTypes(), other.getMultiTypes());
 		exit(catchVariable);
 	}

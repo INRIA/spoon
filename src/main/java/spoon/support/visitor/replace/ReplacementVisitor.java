@@ -23,6 +23,12 @@ package spoon.support.visitor.replace;
  * This class is generated automatically by the processor {@link spoon.generating.ReplacementVisitorGenerator}.
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
+	private spoon.reflect.declaration.CtElement original;
+
+	private spoon.reflect.declaration.CtElement[] replace;
+
+	private static final spoon.reflect.declaration.CtElement[] EMPTY = new spoon.reflect.declaration.CtElement[0];
+
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
 		try {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
@@ -40,12 +46,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		} catch (spoon.SpoonException ignore) {
 		}
 	}
-
-	private spoon.reflect.declaration.CtElement original;
-
-	private spoon.reflect.declaration.CtElement[] replace;
-
-	private static final spoon.reflect.declaration.CtElement[] EMPTY = new spoon.reflect.declaration.CtElement[0];
 
 	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement... replace) {
 		this.original = original;
@@ -1234,7 +1234,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(catchVariable.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(catchVariable));
 		replaceInListIfExist(catchVariable.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(catchVariable));
 		replaceElementIfExist(catchVariable.getDefaultExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtVariableDefaultExpressionReplaceListener(catchVariable));
-		replaceElementIfExist(catchVariable.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(catchVariable));
 		replaceInListIfExist(catchVariable.getMultiTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtMultiTypedElementMultiTypesReplaceListener(catchVariable));
 	}
 

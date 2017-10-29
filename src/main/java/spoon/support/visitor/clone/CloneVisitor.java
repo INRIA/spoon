@@ -408,7 +408,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtCatchVariable.setComments(this.cloneHelper.clone(catchVariable.getComments()));
 		aCtCatchVariable.setAnnotations(this.cloneHelper.clone(catchVariable.getAnnotations()));
 		aCtCatchVariable.setDefaultExpression(this.cloneHelper.clone(catchVariable.getDefaultExpression()));
-		aCtCatchVariable.setType(this.cloneHelper.clone(catchVariable.getType()));
 		aCtCatchVariable.setMultiTypes(this.cloneHelper.clone(catchVariable.getMultiTypes()));
 		this.other = aCtCatchVariable;
 	}
