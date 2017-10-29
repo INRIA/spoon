@@ -156,8 +156,6 @@
   </scm>
 
   <properties>
-    <java.src.version>1.8</java.src.version>
-    <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -282,10 +280,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>${java.src.version}</source>
-          <target>${java.src.version}</target>
-          <testSource>${java.test.version}</testSource>
-          <testTarget>${java.test.version}</testTarget>
+          <release>8</release>
           <showWarnings>true</showWarnings>
           <compilerArgs>
               <arg>-Xlint:deprecation</arg>
