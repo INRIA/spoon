@@ -46,8 +46,7 @@ public class CloneHelper {
 	public <T extends CtElement> T clone(T element) {
 		final CloneVisitor cloneVisitor = new CloneVisitor(this);
 		cloneVisitor.scan(element);
-		T clonedElement = cloneVisitor.getClone();
-		return clonedElement;
+		return cloneVisitor.getClone();
 	}
 
 	public <T extends CtElement> Collection<T> clone(Collection<T> elements) {
