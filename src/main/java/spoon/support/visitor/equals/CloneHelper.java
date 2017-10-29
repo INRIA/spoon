@@ -48,10 +48,6 @@ public class CloneHelper {
 		final CloneVisitor cloneVisitor = new CloneVisitor(this);
 		cloneVisitor.scan(element);
 		T clonedElement = cloneVisitor.getClone();
-		// CloneHelper can consume element and change it to null
-		if (element != null && clonedElement != null && element instanceof CtNewClass && element.isParentInitialized()) {
-			clonedElement.setParent(element.getParent());
-		}
 		return clonedElement;
 	}
 
