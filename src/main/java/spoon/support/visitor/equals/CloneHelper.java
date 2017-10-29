@@ -16,6 +16,12 @@
  */
 package spoon.support.visitor.equals;
 
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
+import spoon.support.util.EmptyClearableList;
+import spoon.support.util.EmptyClearableSet;
+import spoon.support.visitor.clone.CloneVisitor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,13 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import spoon.SpoonException;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.support.util.EmptyClearableList;
-import spoon.support.util.EmptyClearableSet;
-import spoon.support.visitor.clone.CloneVisitor;
 
 /**
  * {@link CloneHelper} is responsible for creating clones of {@link CtElement} AST nodes including the whole subtree.
