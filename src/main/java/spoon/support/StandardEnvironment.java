@@ -64,8 +64,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private int errorCount = 0;
 
-	private transient Factory factory;
-
 	ProcessingManager manager;
 
 	private boolean processingStopped = false;
@@ -122,11 +120,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public FileGenerator<? extends CtElement> getDefaultFileGenerator() {
 		return defaultFileGenerator;
-	}
-
-	@Override
-	public Factory getFactory() {
-		return factory;
 	}
 
 	@Override
@@ -296,7 +289,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public void setDefaultFileGenerator(FileGenerator<? extends CtElement> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
-		defaultFileGenerator.setFactory(getFactory());
 	}
 
 	public void setManager(ProcessingManager manager) {

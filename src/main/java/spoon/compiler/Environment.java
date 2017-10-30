@@ -290,11 +290,6 @@ public interface Environment {
 	void setCommentEnabled(boolean commentEnabled);
 
 	/**
-	 * Gets the factory of the environment.
-	 */
-	Factory getFactory();
-
-	/**
 	 * Gets the level of loggers asked by the user.
 	 */
 	Level getLevel();
