@@ -50,6 +50,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	public CtTypeParameterReferenceImpl() {
 		super();
+		this.setBoundingType(getFactory().Type().objectType()); // by default set bounding type to object
 	}
 
 	@Override
@@ -127,7 +128,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (bound == null) {
 			return (T) this;
 		}
-		if (getBoundingType() == null) {
+		if (getBoundingType().equals(getFactory().Type().OBJECT)) {
 			setBoundingType(bound);
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
@@ -142,7 +143,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || getBoundingType() == null) {
+		if (bound == null || getBoundingType().equals(getFactory().Type().OBJECT)) {
 			return false;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
@@ -155,16 +156,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public CtTypeReference<?> getBoundingType() {
-		if (superType != null) {
-			/*
-			 * Spoon expects that superType is null on many places.
-			 * But sometime  there is Object in it, which has same meaning like null in this case
-			 * But EqualsVisitor returns false that it is not equal
-			 */
-			if (Object.class.getName().equals(superType.getQualifiedName())) {
-				return null;
-			}
-		}
 		return superType;
 	}
 
@@ -173,6 +164,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
+
+		// ugly but else make testSetterInNodes failed
+		if (superType == null) { // if null, set bounding type to object
+			superType = getFactory().Type().objectType();
+			superType.setParent(this);
+		}
+
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BOUNDING_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;
