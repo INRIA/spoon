@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CtScannerTest {
@@ -106,7 +107,7 @@ public class CtScannerTest {
 		
 		CtTypeReference<?> ctElementRef = launcher.getFactory().createCtTypeReference(CtElement.class);
 		
-		CtClass<?> scanner = (CtClass<?>)launcher.getFactory().Type().get(CtScanner.class);
+		CtClass<?> scannerCtClass = (CtClass<?>)launcher.getFactory().Type().get(CtScanner.class);
 		
 		List<String> problems = new ArrayList<>();
 		Set<String> ignoredInvocations = new HashSet(Arrays.asList("scan", "enter", "exit"));
@@ -115,33 +116,44 @@ public class CtScannerTest {
 		
 		//collect all scanner visit methods, to check if all were checked
 		Map<String, CtMethod<?>> scannerVisitMethodsByName = new HashMap<>();
-		scanner.getAllMethods().forEach(m -> {
+		scannerCtClass.getAllMethods().forEach(m -> {
 			if(m.getSimpleName().startsWith("visit")) {
 				scannerVisitMethodsByName.put(m.getSimpleName(), m);
 			}
 		});
-		
-		for (MMType mmType : metaModel.getMMTypes()) {
-			if (mmType.getKind() != MMTypeKind.LEAF) {
+
+		class Counter  { int nbChecks = 0; }
+		Counter c = new Counter();
+		for (MMType leafMmType : metaModel.getMMTypes()) {
+
+			// we only consider leaf, actual classes of the metamodel (eg CtInvocation) and not abstract ones (eg CtModifiable)
+			if (leafMmType.getKind() != MMTypeKind.LEAF) {
 				continue;
 			}
-			//check only LEAF Classes
-			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+mmType.getName());
-			assertNotNull("CtScanner#" + "visit"+mmType.getName() + "(...) not found", visitMethod);
+
+			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafMmType.getName());
+			assertNotNull("CtScanner#" + "visit"+leafMmType.getName() + "(...) not found", visitMethod);
 			Set<String> calledMethods = new HashSet<>();
 			Set<String> checkedMethods = new HashSet<>();
-			mmType.getRole2field().forEach((role, mmField) -> {
+
+			// go over the roles and the corresponding fields of this type
+			leafMmType.getRole2field().forEach((role, mmField) -> {
+
 				if (mmField.isDerived()) {
 					//ignore derived fields
-					return;
+					return; // return of the lambda
 				}
+
+				// ignore fields, which doesn't return CtElement
 				if (mmField.getItemValueType().isSubtypeOf(ctElementRef) == false) {
-					//ignore fields, which doesn't return CtElement
-					return;
+					return; // return of the lambda
 				}
-				MMMethod m = mmField.getMethod(MMMethodKind.GET);
-				checkedMethods.add(m.getSignature());
+
+				MMMethod getter = mmField.getMethod(MMMethodKind.GET);
+				checkedMethods.add(getter.getSignature());
 				//System.out.println("checking "+m.getSignature() +" in "+visitMethod.getSignature());
+
+				// now, we collect at least one invocation to this getter in the visit method
 				CtInvocation invocation = visitMethod.filterChildren(new TypeFilter<CtInvocation>(CtInvocation.class) {
 					@Override
 					public boolean matches(CtInvocation element) {
@@ -149,29 +161,38 @@ public class CtScannerTest {
 							return false;
 						}
 						calledMethods.add(element.getExecutable().getSignature());
-						return super.matches(element) && element.getExecutable().getSimpleName().equals(m.getName());
+						return super.matches(element) && element.getExecutable().getSimpleName().equals(getter.getName());
 					}
 				}).first();
-				if(m.getName().equals("getComments")) {
-					//ignore missing getComments ... until discussion about how to do it is finished
+				if(getter.getName().equals("getComments")) {
+					//ignore missing getComments ... until discussion about its contracts is finished
 					return;
 				}
-				//check the invocation of that method is there
+
+				// contract: there ia at least one invocation to all non-derived, role-based getters in the visit method of the Scanner
 				if (invocation == null) {
-					problems.add("no "+m.getSignature() +" in "+visitMethod);
+					problems.add("no "+getter.getSignature() +" in "+visitMethod);
+				} else {
+					c.nbChecks++;
+					//System.out.println(invocation.toString());
 				}
+
 			});
 			calledMethods.removeAll(checkedMethods);
+
+			// contract: CtScanner only calls methods that have a role and the associated getter
 			if (calledMethods.size() > 0) {
 				problems.add("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: "+calledMethods);
 			}
 		}
-		//check that test processed all visit methods
+
+		// contract: all visit* methods in CtScanner have been checked
 		if(scannerVisitMethodsByName.isEmpty() == false) {
 			problems.add("These CtScanner visit methods were not checked: " + scannerVisitMethodsByName.keySet());
 		}
 		if(problems.size()>0) {
 			fail(String.join("\n", problems));
 		}
+		assertTrue("not enough checks", c.nbChecks >= 200);
 	}
 }
