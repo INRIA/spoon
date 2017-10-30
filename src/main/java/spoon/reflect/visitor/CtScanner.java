@@ -513,7 +513,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(catchVariable.getComments());
 		scan(catchVariable.getAnnotations());
 		scan(catchVariable.getDefaultExpression());
-		scan(catchVariable.getType());
 		scan(catchVariable.getMultiTypes());
 		exit(catchVariable);
 	}
