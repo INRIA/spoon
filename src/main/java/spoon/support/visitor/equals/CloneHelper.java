@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.SpoonException;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -46,7 +47,12 @@ public class CloneHelper {
 	public <T extends CtElement> T clone(T element) {
 		final CloneVisitor cloneVisitor = new CloneVisitor(this);
 		cloneVisitor.scan(element);
-		return cloneVisitor.getClone();
+		T clonedElement = cloneVisitor.getClone();
+		// CloneHelper can consume element and change it to null
+		if (element != null && clonedElement != null && element instanceof CtNewClass && element.isParentInitialized()) {
+			clonedElement.setParent(element.getParent());
+		}
+		return clonedElement;
 	}
 
 	public <T extends CtElement> Collection<T> clone(Collection<T> elements) {
