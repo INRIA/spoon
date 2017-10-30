@@ -25,6 +25,7 @@ import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.experimental.modelobs.EmptyModelChangeListener;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -35,8 +36,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 
 import java.io.File;

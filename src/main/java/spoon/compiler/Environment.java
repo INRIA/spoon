@@ -25,7 +25,6 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.reflect.factory.Factory;
 
 import java.nio.charset.Charset;
 
