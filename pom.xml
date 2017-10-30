@@ -448,7 +448,7 @@
         <artifactId>revapi-maven-plugin</artifactId>
         <!-- Lock down plugin version for build reproducibility -->
         <!-- requires OracleJDK 1.8? -->
-        <version>0.9.3</version>
+        <version>0.9.4</version>
         <dependencies>
           <dependency>
             <groupId>org.revapi</groupId>
