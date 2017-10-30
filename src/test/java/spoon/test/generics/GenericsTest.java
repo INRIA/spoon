@@ -2,6 +2,7 @@ package spoon.test.generics;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.MavenLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -1206,7 +1207,7 @@ public class GenericsTest {
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
 				assertTrue(actualTA instanceof CtWildcardReference);
 				assertEquals("?", actualTA.getSimpleName());
-				assertTrue( ((CtWildcardReference)actualTA).getBoundingType() == null );
+				assertTrue( ((CtWildcardReference)actualTA).getBoundingType().equals(launcher.getFactory().Type().OBJECT) );
 				invocationDetected = true;
 			}
 		}
@@ -1402,5 +1403,4 @@ public class GenericsTest {
 		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
 		MainTest.checkParentConsistency(adaptedMethod);
 	}
-	
 }

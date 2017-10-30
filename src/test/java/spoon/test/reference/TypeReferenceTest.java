@@ -510,7 +510,7 @@ public class TypeReferenceTest {
 
 		reference.setBounds(null);
 
-		assertNull(reference.getBoundingType());
+		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
 
 		reference.addBound(factory.Type().createReference(String.class));
 
@@ -518,7 +518,7 @@ public class TypeReferenceTest {
 
 		reference.setBounds(new ArrayList<>());
 
-		assertNull(reference.getBoundingType());
+		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
 	}
 
 	@Test
