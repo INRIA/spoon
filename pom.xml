@@ -428,7 +428,7 @@
 	<version>0.7.9</version>
 	<executions>
 	  <execution>
-	    <goals>
+              <goals><!--ss -->
 	      <goal>prepare-agent</goal>
 	    </goals>
 	  </execution>
