@@ -201,4 +201,11 @@ public class FactoryTest {
 		}
 	}
 
+	@Test
+	public void testEnvGetFactoryIsNotNull() {
+		// contract: env.getFactory() should not return null
+
+		Launcher launcher = new Launcher();
+		assertNotNull(launcher.getEnvironment().getFactory());
+	}
 }
