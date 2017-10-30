@@ -97,7 +97,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
-			if (getBoundingType() == null) {
+			if (getBoundingType().equals(getFactory().Type().OBJECT)) {
 				return (Class<Object>) getTypeErasure().getActualClass();
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
