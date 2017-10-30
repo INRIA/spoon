@@ -295,6 +295,11 @@ public interface Environment {
 	Factory getFactory();
 
 	/**
+	 * Sets the factory of the environment
+	 */
+	void setFactory(Factory factory);
+
+	/**
 	 * Gets the level of loggers asked by the user.
 	 */
 	Level getLevel();

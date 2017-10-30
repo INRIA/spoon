@@ -130,6 +130,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
+	public void setFactory(Factory factory) {
+		this.factory = factory;
+	}
+
+	@Override
 	public Level getLevel() {
 		return this.level;
 	}
