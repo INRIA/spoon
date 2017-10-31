@@ -20,11 +20,16 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
@@ -122,6 +127,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
+	@DerivedProperty
 	public List<CtField<?>> getFields() {
 		List<CtField<?>> result = new ArrayList<>();
 		result.addAll(getEnumValues());
@@ -144,8 +150,15 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<?> getSuperclass() {
 		return getFactory().Type().createReference(Enum.class);
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+		return (C) this;
 	}
 
 	private CtMethod valuesMethod() {
@@ -212,5 +225,17 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	@Override
 	public boolean isEnum() {
 		return true;
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeParameter> getFormalCtTypeParameters() {
+		return emptyList();
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		return (C) this;
 	}
 }

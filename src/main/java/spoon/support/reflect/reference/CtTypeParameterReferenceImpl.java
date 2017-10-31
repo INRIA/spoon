@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
@@ -105,6 +106,12 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@DerivedProperty
+	public List<CtTypeReference<?>> getActualTypeArguments() {
+		return emptyList();
+	}
+
+	@Override
 	@UnsettableProperty
 	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		return (C) this;
@@ -155,6 +162,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public CtTypeReference<?> getBoundingType() {
+		if (superType != null) {
+			/*
+			 * Spoon expects that superType is null on many places.
+			 * But sometime  there is Object in it, which has same meaning like null in this case
+			 * But EqualsVisitor returns false that it is not equal
+			 */
+			if (Object.class.getName().equals(superType.getQualifiedName())) {
+				return null;
+			}
+		}
 		return superType;
 	}
 

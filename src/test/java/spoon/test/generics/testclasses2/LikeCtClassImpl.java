@@ -14,27 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.declaration;
+package spoon.test.generics.testclasses2;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.DerivedProperty;
+import java.util.Set;
 
-public class CtEnumValueImpl<T> extends CtFieldImpl<T> implements CtEnumValue<T> {
-	@Override
-	public void accept(CtVisitor v) {
-		v.visitCtEnumValue(this);
-	}
-
-	@Override
-	public CtEnumValue clone() {
-		return (CtEnumValue) super.clone();
-	}
-
-	@DerivedProperty
-	@Override
-	public CtExpression<T> getAssignment() {
+public class LikeCtClassImpl<T extends Object> implements LikeCtClass<T> {
+	public Set<AnType<T>> getConstructors() {
 		return null;
+	}
+	public <C extends LikeCtClass<T>> C setConstructors(Set<AnType<T>> constructors) {
+		return (C)this;
 	}
 }

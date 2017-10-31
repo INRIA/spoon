@@ -105,7 +105,7 @@ public class ContextBuilder {
 		}
 
 		try {
-			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && node instanceof Expression) {
+			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && !(e instanceof CtCatchVariable) && node instanceof Expression) {
 				if (((CtTypedElement<?>) e).getType() == null) {
 					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferencesBuilder().getTypeReference(((Expression) node).resolvedType));
 				}

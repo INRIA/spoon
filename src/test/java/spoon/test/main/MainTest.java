@@ -310,7 +310,7 @@ public class MainTest {
 
 	}
 
-	private void checkParentConsistency(CtPackage pack) {
+	public static void checkParentConsistency(CtElement ele) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
@@ -343,7 +343,7 @@ public class MainTest {
 				}
 				super.exit(e);
 			}
-		}.visitCtPackage(pack);
+		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
 	
@@ -410,7 +410,11 @@ public class MainTest {
 		// if one analyzes src/main/java and src/test/java at the same time
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
-			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)") || t.getQualifiedName().matches("(?i:.*generating.*)"));
+			if (t.getPackage().getQualifiedName().equals("spoon.metamodel")
+					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
+				//Meta model classes doesn't have to follow test class naming conventions
+				continue;
+			}
 		}
 	}
 

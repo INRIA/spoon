@@ -303,7 +303,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtAnnotationFieldAccess.setAnnotations(this.cloneHelper.clone(annotationFieldAccess.getAnnotations()));
 		aCtAnnotationFieldAccess.setTypeCasts(this.cloneHelper.clone(annotationFieldAccess.getTypeCasts()));
 		aCtAnnotationFieldAccess.setTarget(this.cloneHelper.clone(annotationFieldAccess.getTarget()));
-		aCtAnnotationFieldAccess.setType(this.cloneHelper.clone(annotationFieldAccess.getType()));
 		aCtAnnotationFieldAccess.setVariable(this.cloneHelper.clone(annotationFieldAccess.getVariable()));
 		this.other = aCtAnnotationFieldAccess;
 	}
@@ -407,8 +406,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtCatchVariable<T> aCtCatchVariable = spoon.support.visitor.clone.CloneBuilder.build(this.builder, catchVariable, catchVariable.getFactory().Core().createCatchVariable());
 		aCtCatchVariable.setComments(this.cloneHelper.clone(catchVariable.getComments()));
 		aCtCatchVariable.setAnnotations(this.cloneHelper.clone(catchVariable.getAnnotations()));
-		aCtCatchVariable.setDefaultExpression(this.cloneHelper.clone(catchVariable.getDefaultExpression()));
-		aCtCatchVariable.setType(this.cloneHelper.clone(catchVariable.getType()));
 		aCtCatchVariable.setMultiTypes(this.cloneHelper.clone(catchVariable.getMultiTypes()));
 		this.other = aCtCatchVariable;
 	}
@@ -657,6 +654,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.reference.CtIntersectionTypeReference<T> aCtIntersectionTypeReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createIntersectionTypeReference());
 		aCtIntersectionTypeReference.setPackage(this.cloneHelper.clone(reference.getPackage()));
 		aCtIntersectionTypeReference.setDeclaringType(this.cloneHelper.clone(reference.getDeclaringType()));
+		aCtIntersectionTypeReference.setActualTypeArguments(this.cloneHelper.clone(reference.getActualTypeArguments()));
 		aCtIntersectionTypeReference.setAnnotations(this.cloneHelper.clone(reference.getAnnotations()));
 		aCtIntersectionTypeReference.setBounds(this.cloneHelper.clone(reference.getBounds()));
 		this.other = aCtIntersectionTypeReference;
@@ -780,7 +778,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess<T> aCtSuperAccess = spoon.support.visitor.clone.CloneBuilder.build(this.builder, f, f.getFactory().Core().createSuperAccess());
-		aCtSuperAccess.setType(this.cloneHelper.clone(f.getType()));
 		aCtSuperAccess.setComments(this.cloneHelper.clone(f.getComments()));
 		aCtSuperAccess.setAnnotations(this.cloneHelper.clone(f.getAnnotations()));
 		aCtSuperAccess.setTypeCasts(this.cloneHelper.clone(f.getTypeCasts()));

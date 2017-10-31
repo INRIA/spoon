@@ -226,7 +226,7 @@ public class Launcher implements SpoonAPI {
 			opt2.setLongFlag("level");
 			opt2.setHelp("Level of the ouput messages about what spoon is doing.");
 			opt2.setStringParser(JSAP.STRING_PARSER);
-			opt2.setDefault(Level.OFF.toString());
+			opt2.setDefault(Level.ERROR.toString());
 			jsap.registerParameter(opt2);
 
 			// Auto-import

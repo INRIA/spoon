@@ -23,6 +23,12 @@ package spoon.support.visitor.replace;
  * This class is generated automatically by the processor.
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
+	private spoon.reflect.declaration.CtElement original;
+
+	private spoon.reflect.declaration.CtElement[] replace;
+
+	private static final spoon.reflect.declaration.CtElement[] EMPTY = new spoon.reflect.declaration.CtElement[0];
+
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
 		try {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
@@ -40,12 +46,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		} catch (spoon.SpoonException ignore) {
 		}
 	}
-
-	private spoon.reflect.declaration.CtElement original;
-
-	private spoon.reflect.declaration.CtElement[] replace;
-
-	private static final spoon.reflect.declaration.CtElement[] EMPTY = new spoon.reflect.declaration.CtElement[0];
 
 	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement... replace) {
 		this.original = original;
@@ -957,7 +957,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(annotationFieldAccess.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(annotationFieldAccess));
 		replaceInListIfExist(annotationFieldAccess.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtExpressionTypeCastsReplaceListener(annotationFieldAccess));
 		replaceElementIfExist(annotationFieldAccess.getTarget(), new spoon.support.visitor.replace.ReplacementVisitor.CtTargetedExpressionTargetReplaceListener(annotationFieldAccess));
-		replaceElementIfExist(annotationFieldAccess.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtVariableAccessTypeReplaceListener(annotationFieldAccess));
 		replaceElementIfExist(annotationFieldAccess.getVariable(), new spoon.support.visitor.replace.ReplacementVisitor.CtAnnotationFieldAccessVariableReplaceListener(annotationFieldAccess));
 	}
 
@@ -1233,8 +1232,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtCatchVariable(final spoon.reflect.code.CtCatchVariable<T> catchVariable) {
 		replaceInListIfExist(catchVariable.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(catchVariable));
 		replaceInListIfExist(catchVariable.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(catchVariable));
-		replaceElementIfExist(catchVariable.getDefaultExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtVariableDefaultExpressionReplaceListener(catchVariable));
-		replaceElementIfExist(catchVariable.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(catchVariable));
 		replaceInListIfExist(catchVariable.getMultiTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtMultiTypedElementMultiTypesReplaceListener(catchVariable));
 	}
 
@@ -1747,6 +1744,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		replaceElementIfExist(reference.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(reference));
 		replaceElementIfExist(reference.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(reference));
+		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(reference));
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
 		replaceInListIfExist(reference.getBounds(), new spoon.support.visitor.replace.ReplacementVisitor.CtIntersectionTypeReferenceBoundsReplaceListener(reference));
 	}
@@ -1936,7 +1934,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
-		replaceElementIfExist(f.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtSuperAccessTypeReplaceListener(f));
 		replaceInListIfExist(f.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(f));
 		replaceInListIfExist(f.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(f));
 		replaceInListIfExist(f.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtExpressionTypeCastsReplaceListener(f));

@@ -14,27 +14,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.declaration;
+package spoon.test.metamodel;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.DerivedProperty;
-
-public class CtEnumValueImpl<T> extends CtFieldImpl<T> implements CtEnumValue<T> {
-	@Override
-	public void accept(CtVisitor v) {
-		v.visitCtEnumValue(this);
-	}
-
-	@Override
-	public CtEnumValue clone() {
-		return (CtEnumValue) super.clone();
-	}
-
-	@DerivedProperty
-	@Override
-	public CtExpression<T> getAssignment() {
-		return null;
-	}
+/**
+ * Represents type of Spoon model class
+ */
+public enum MMTypeKind {
+	/**
+	 * Kind of type which represents leaf of Spoon model.
+	 * Examples: CtClass, CtField, CtThrow
+	 */
+	LEAF,
+	/**
+	 * Kind of type which represents some abstract concept of Spoon model
+	 * Examples: CtExecutable, CtReference, CtBodyHolder, ...
+	 */
+	ABSTRACT;
 }

@@ -25,7 +25,6 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.reflect.factory.Factory;
 
 import java.nio.charset.Charset;
 
@@ -288,11 +287,6 @@ public interface Environment {
 	 * Sets the option enable-comments to parse comments of the target project.
 	 */
 	void setCommentEnabled(boolean commentEnabled);
-
-	/**
-	 * Gets the factory of the environment.
-	 */
-	Factory getFactory();
 
 	/**
 	 * Gets the level of loggers asked by the user.
