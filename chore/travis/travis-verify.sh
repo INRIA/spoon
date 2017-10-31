@@ -4,6 +4,8 @@
 # it runs verify and site maven goals
 # and to check documentation links
 
-jdk_switcher use oraclejdk9
+source ~/.jdk_switcher_rc
+source /opt/jdk_switcher/jdk_switcher.sh
 pip install --user CommonMark requests pygithub
-mvn -Djava.src.version=1.9 verify site install -DskipTests && python ./chore/check-links-in-doc.py
+
+jdk_switcher use oraclejdk9 && mvn -Djava.src.version=1.9 verify site install -DskipTests && python ./chore/check-links-in-doc.py
