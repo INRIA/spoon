@@ -359,7 +359,6 @@ public class FactoryImpl implements Factory, Serializable {
 	 */
 	public FactoryImpl(CoreFactory coreFactory, Environment environment, Factory parentFactory) {
 		this.environment = environment;
-		this.environment.setFactory(this);
 		this.core = coreFactory;
 		this.core.setMainFactory(this);
 		this.parentFactory = parentFactory;

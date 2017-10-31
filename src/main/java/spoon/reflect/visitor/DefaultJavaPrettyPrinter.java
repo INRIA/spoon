@@ -618,7 +618,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.writeIdentifier(ref.getSimpleName());
 		}
-		if (ref.getBoundingType() != null && !ref.getBoundingType().equals(this.env.getFactory().Type().OBJECT)) { // we ignore printing "extends Object"
+		if (ref.getBoundingType() != null && !ref.getBoundingType().equals(ref.getFactory().Type().OBJECT)) { // we ignore printing "extends Object"
 			if (ref.isUpper()) {
 				printer.writeSpace().writeKeyword("extends").writeSpace();
 			} else {
@@ -1570,7 +1570,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		elementPrinterHelper.writeAnnotations(wildcardReference);
 		printer.writeSeparator("?");
-		if (wildcardReference.getBoundingType() != null && !wildcardReference.getBoundingType().equals(this.env.getFactory().Type().OBJECT)) { // we ignore printing "extends Object"
+		if (wildcardReference.getBoundingType() != null && !wildcardReference.getBoundingType().equals(wildcardReference.getFactory().Type().OBJECT)) { // we ignore printing "extends Object"
 			if (wildcardReference.isUpper()) {
 				printer.writeSpace().writeKeyword("extends").writeSpace();
 			} else {

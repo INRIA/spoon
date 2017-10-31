@@ -200,12 +200,4 @@ public class FactoryTest {
 			assertTrue(itf.getActualClass().isInstance(o));
 		}
 	}
-
-	@Test
-	public void testEnvGetFactoryIsNotNull() {
-		// contract: env.getFactory() should not return null
-
-		Launcher launcher = new Launcher();
-		assertNotNull(launcher.getEnvironment().getFactory());
-	}
 }
