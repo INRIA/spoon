@@ -410,7 +410,7 @@ public class MainTest {
 		// if one analyzes src/main/java and src/test/java at the same time
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
-			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)"));
+			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)") || t.getQualifiedName().matches("(?i:.*generating.*)"));
 		}
 	}
 
