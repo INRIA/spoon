@@ -1,6 +1,7 @@
 package spoon.test.position;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -15,6 +16,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooAbstractMethod;
 import spoon.test.position.testclasses.FooAnnotation;
@@ -37,6 +39,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -498,4 +502,38 @@ public class PositionTest {
 		assertEquals(SourcePosition.NOPOSITION, implicitSuperCall.getPosition());
 	}
 
+	@Test
+	public void getPositionOfImplicitBlock() {
+		// contract: position of implicit block in if (cond) [implicit block] else [implicit block] should be the source position of implicit block content.
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/position/testclasses/ImplicitBlock.java");
+		launcher.buildModel();
+
+		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtStatement thenStatement = ifElement.getThenStatement();
+
+		assertTrue(thenStatement instanceof CtBlock);
+
+		CtBlock thenBlock = (CtBlock) thenStatement;
+		SourcePosition positionThen = thenBlock.getPosition();
+		CtStatement returnStatement = thenBlock.getStatement(0);
+		assertEquals(returnStatement.getPosition(), positionThen);
+		assertEquals("ImplicitBlock.java", positionThen.getFile().getName());
+		assertEquals(7, positionThen.getLine());
+
+		CtStatement elseStatement = ifElement.getElseStatement();
+
+		assertTrue(elseStatement instanceof CtBlock);
+
+		CtBlock elseBlock = (CtBlock) elseStatement;
+		SourcePosition positionElse = elseBlock.getPosition();
+		CtStatement otherReturnStatement = elseBlock.getStatement(0);
+		assertEquals(otherReturnStatement.getPosition(), positionElse);
+		assertEquals("ImplicitBlock.java", positionThen.getFile().getName());
+		assertEquals(8, positionElse.getLine());
+
+		assertNotEquals(returnStatement, otherReturnStatement);
+
+
+	}
 }

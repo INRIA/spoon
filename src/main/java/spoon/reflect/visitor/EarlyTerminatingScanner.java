@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 
@@ -78,14 +79,14 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	}
 
 	@Override
-	public void scan(Collection<? extends CtElement> elements) {
+	public void scan(CtRole role, Collection<? extends CtElement> elements) {
 		if (isTerminated() || elements == null) {
 			return;
 		}
 		// we use defensive copy so as to be able to change the class while scanning
 		// otherwise one gets a ConcurrentModificationException
 		for (CtElement e : new ArrayList<>(elements)) {
-			scan(e);
+			scan(role, e);
 			if (isTerminated()) {
 				return;
 			}
@@ -122,17 +123,17 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	}
 
 	@Override
-	public void scan(Object o) {
+	public void scan(CtRole role, Object o) {
 		if (isTerminated() || o == null) {
 			return;
 		}
 		if (o instanceof CtElement) {
-			scan((CtElement) o);
+			scan(role, (CtElement) o);
 		} else if (o instanceof Collection<?>) {
-			scan((Collection<? extends CtElement>) o);
+			scan(role, (Collection<? extends CtElement>) o);
 		} else if (o instanceof Map<?, ?>) {
 			for (Object obj : ((Map) o).values()) {
-				scan(obj);
+				scan(role, obj);
 				if (isTerminated()) {
 					return;
 				}
