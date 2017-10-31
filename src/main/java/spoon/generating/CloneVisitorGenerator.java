@@ -51,6 +51,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtModifierHandler;
 import spoon.support.visitor.clone.CloneBuilder;
 
 import java.util.ArrayList;
@@ -405,6 +406,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Query to get the setter of given field.
 			 */
 			private <T> CtMethod<?> getSetterOf(final CtField<T> ctField) {
+				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
+					return ctField.getDeclaringType().getMethodsByName("setModifiers").get(0);
+				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
 					if (ctMethod.getSimpleName().startsWith("set") && ctMethod.getSimpleName().toLowerCase().contains(ctField.getSimpleName().toLowerCase())) {
@@ -449,6 +453,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Query to get the getter of the given field.
 			 */
 			private <T> CtMethod<?> getGetterOf(CtField<T> ctField) {
+				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
+					return ctField.getDeclaringType().getMethod("getModifiers");
+				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
 					if ((ctMethod.getSimpleName().startsWith("get") || ctMethod.getSimpleName().startsWith("is")) //

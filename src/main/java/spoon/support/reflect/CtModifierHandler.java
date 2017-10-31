@@ -16,7 +16,6 @@
  */
 package spoon.support.reflect;
 
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -32,7 +31,6 @@ import static spoon.reflect.path.CtRole.MODIFIER;
 public class CtModifierHandler implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = MODIFIER)
 	private Set<ModifierKind> modifiers = CtElementImpl.emptySet();
 
 	private CtElement element;
@@ -124,5 +122,31 @@ public class CtModifierHandler implements Serializable {
 
 	public boolean isPrivate() {
 		return getModifiers().contains(ModifierKind.PRIVATE);
+	}
+
+	@Override
+	public int hashCode() {
+		return getModifiers().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof CtModifierHandler)) {
+			return false;
+		}
+		final CtModifierHandler other = (CtModifierHandler) obj;
+		if (getVisibility() == null) {
+			if (other.getVisibility() != null) {
+				return false;
+			}
+		} else if (other.getVisibility() == null) {
+			return false;
+		} else  if (!getVisibility().equals(other.getVisibility())) {
+			return false;
+		}
+		if (getModifiers().size() != other.getModifiers().size()) {
+			return false;
+		}
+		return getModifiers().containsAll(other.getModifiers());
 	}
 }
