@@ -274,7 +274,7 @@
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
           <useSystemClassLoader>true</useSystemClassLoader>
           <useManifestOnlyJar>false</useManifestOnlyJar>
-          <forkCount>4</forkCount>
+          <forkCount>1C</forkCount>
           <reuseForks>true</reuseForks>
         </configuration>
       </plugin>
