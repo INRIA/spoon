@@ -3,4 +3,5 @@
 # This script intends to be run on TravisCI
 # It executes compile and test goals
 
-mvn -Djava.src.version=$JDK_VERSION test
+jdk_switcher use oraclejdk8
+mvn -Djava.src.version=1.8 test

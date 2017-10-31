@@ -5,24 +5,13 @@ dist: trusty
 
 group: edge
 
-# from https://docs.travis-ci.com/user/customizing-the-build
-# A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
+env:
+  - SCRIPT=travis-jdk9.sh
+  - SCRIPT=travis-jdk8.sh
+  - SCRIPT=travis-coverage.sh
+  - SCRIPT=travis-verify.sh
 
-jobs:
-  include:
-    - env: JDK_VERSION=1.9
-      jdk: oraclejdk9
-      script: ./chore/travis-run-tests.sh
-    - env: JDK_VERSION=1.8
-      jdk: oraclejdk9
-      script: ./chore/travis-run-tests.sh
-    - env: JDK_VERSION=1.8
-      jdk: oraclejdk8
-      script: ./chore/travis-run-tests-and-coverage.sh # coveralls is not yet available for JDK9
-    - env: JDK_VERSION=1.9
-      jdk: oraclejdk9
-      install: pip install --user CommonMark requests pygithub
-      script: ./chore/travis-run-verify.sh
+script: ./chore/travis/$SCRIPT
 
 cache:
   directories:
