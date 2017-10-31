@@ -103,7 +103,7 @@ public class CtScannerTest {
 
 	@Test
 	public void testScannerCallsAllProperties() throws Exception {
-		// contract: CtScanner must visit all metamodel properties and use correct CtRole
+		// contract: CtScanner must visit all metamodel properties and use correct CtRole!
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.run();
