@@ -4,7 +4,6 @@
 # it runs verify and site maven goals
 # and to check documentation links
 
-source ~/.jdk_switcher_rc
 source /opt/jdk_switcher/jdk_switcher.sh
 pip install --user CommonMark requests pygithub
 
