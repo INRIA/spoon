@@ -143,6 +143,9 @@ public abstract class CtScanner implements CtVisitor {
 		}
 	}
 
+	/**
+	 * Generically scans a collection of meta-model elements.
+	 */
 	public void scan(Collection<? extends CtElement> elements) {
 		scan(null, elements);
 	}
@@ -154,6 +157,9 @@ public abstract class CtScanner implements CtVisitor {
 		scan(element);
 	}
 
+	/**
+	 * Generically scans a meta-model element.
+	 */
 	public void scan(CtElement element) {
 		if (element != null) {
 			element.accept(this);
@@ -170,6 +176,13 @@ public abstract class CtScanner implements CtVisitor {
 		exit(annotation);
 	}
 
+	/**
+	 * Generically scans an object that can be an element, a reference, or a
+	 * collection of those.
+	 */
+	public void scan(Object o) {
+		scan(null, o);
+	}
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
