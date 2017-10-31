@@ -518,6 +518,8 @@ public class PositionTest {
 		SourcePosition positionThen = thenBlock.getPosition();
 		CtStatement returnStatement = thenBlock.getStatement(0);
 		assertEquals(returnStatement.getPosition(), positionThen);
+		assertEquals("ImplicitBlock.java", positionThen.getFile().getName());
+		assertEquals(7, positionThen.getLine());
 
 		CtStatement elseStatement = ifElement.getElseStatement();
 
@@ -527,7 +529,11 @@ public class PositionTest {
 		SourcePosition positionElse = elseBlock.getPosition();
 		CtStatement otherReturnStatement = elseBlock.getStatement(0);
 		assertEquals(otherReturnStatement.getPosition(), positionElse);
+		assertEquals("ImplicitBlock.java", positionThen.getFile().getName());
+		assertEquals(8, positionElse.getLine());
+
 		assertNotEquals(returnStatement, otherReturnStatement);
+
 
 	}
 }
