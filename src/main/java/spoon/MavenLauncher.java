@@ -16,6 +16,8 @@
  */
 package spoon;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -281,10 +283,10 @@ public class MavenLauncher extends Launcher {
 				}
 				// ignore not transitive dependencies
 				if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
+					LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test): "+dependency.toString());
 					continue;
 				}
 				String fileName = dependency.getArtifactId() + "-" + version;
-				// TODO: Check the scope of the dependency (local dependency is not handled)
 				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version);
 				File depFile = depPath.toFile();
 				if (depFile.exists()) {
