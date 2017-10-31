@@ -11,7 +11,7 @@ env:
   - SCRIPT=travis-coverage.sh
   - SCRIPT=travis-verify.sh
 
-script: echo `which jdk_switcher` && ./chore/travis/`echo $SCRIPT`
+script: echo "$(which jdk_switcher)" && ./chore/travis/$SCRIPT
 
 cache:
   directories:
