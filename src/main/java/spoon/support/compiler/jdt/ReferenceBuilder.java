@@ -765,8 +765,9 @@ public class ReferenceBuilder {
 				bounds = false;
 				bindingCache.put(binding, ref);
 				List<CtTypeReference<?>> bounds = new ArrayList<>();
-				if (!((CtTypeParameterReference) ref).getBoundingType().equals(ref.getFactory().Type().OBJECT)) { // if it's object we can ignore it
-					bounds.add(((CtTypeParameterReference) ref).getBoundingType());
+				CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) ref;
+				if (!(typeParameterReference.isDefaultBoundingType(typeParameterReference.getBoundingType()))) { // if it's object we can ignore it
+					bounds.add(typeParameterReference.getBoundingType());
 				}
 				for (ReferenceBinding superInterface : b.superInterfaces) {
 					bounds.add(getTypeReference(superInterface));

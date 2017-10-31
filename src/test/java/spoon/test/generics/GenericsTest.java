@@ -503,7 +503,7 @@ public class GenericsTest {
 
 		final CtMethod<?> apply = panini.getMethodsByName("apply").get(0);
 		assertEquals(1, apply.getType().getActualTypeArguments().size());
-		assertEquals("?", apply.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("? super java.lang.Object", apply.getType().getActualTypeArguments().get(0).toString());
 
 		assertEquals(1, apply.getParameters().get(0).getType().getActualTypeArguments().size());
 		assertEquals("? extends java.lang.Long", apply.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
@@ -1207,7 +1207,7 @@ public class GenericsTest {
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
 				assertTrue(actualTA instanceof CtWildcardReference);
 				assertEquals("?", actualTA.getSimpleName());
-				assertTrue( ((CtWildcardReference)actualTA).getBoundingType().equals(launcher.getFactory().Type().OBJECT) );
+				assertTrue( ((CtWildcardReference)actualTA).isDefaultBoundingType(((CtWildcardReference)actualTA).getBoundingType()) );
 				invocationDetected = true;
 			}
 		}

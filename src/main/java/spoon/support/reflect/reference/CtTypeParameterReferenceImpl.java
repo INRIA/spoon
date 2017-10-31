@@ -51,7 +51,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	public CtTypeParameterReferenceImpl() {
 		super();
-		this.setBoundingType(getFactory().Type().objectType()); // by default set bounding type to object
+		// calling null will set the default value of boudingType
+		this.setBoundingType(null);
+	}
+
+	@Override
+	public boolean isDefaultBoundingType(CtTypeReference typeReference) {
+		return (typeReference.equals(getFactory().Type().OBJECT));
 	}
 
 	@Override
@@ -98,7 +104,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
-			if (getBoundingType().equals(getFactory().Type().OBJECT)) {
+			if (isDefaultBoundingType(getBoundingType())) {
 				return (Class<Object>) getTypeErasure().getActualClass();
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
@@ -135,7 +141,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (bound == null) {
 			return (T) this;
 		}
-		if (getBoundingType().equals(getFactory().Type().OBJECT)) {
+		if (isDefaultBoundingType(getBoundingType())) {
 			setBoundingType(bound);
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
@@ -150,7 +156,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || getBoundingType().equals(getFactory().Type().OBJECT)) {
+		if (bound == null || isDefaultBoundingType(getBoundingType())) {
 			return false;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
@@ -175,6 +181,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		// ugly but else make testSetterInNodes failed
 		if (superType == null) { // if null, set bounding type to object
 			superType = getFactory().Type().objectType();
+			superType.setImplicit(true);
 			superType.setParent(this);
 		}
 
