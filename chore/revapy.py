@@ -65,6 +65,9 @@ if (action in accepted_actions):
         repo = gh.get_repo(repo_name,True)
 
         pr = repo.get_pull(pr_id)
+        for comments in pr.get_comments():
+            if comments.user == gh.get_user():
+                comments.delete()
         pr.create_issue_comment(file_content)
     except GithubException as e:
         print "Error while creating the PR comment."
