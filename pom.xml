@@ -452,7 +452,7 @@
           <dependency>
             <groupId>org.revapi</groupId>
             <artifactId>revapi-java</artifactId>
-            <version>0.14.2</version>
+            <version>0.14.4</version>
           </dependency>
           <dependency>
             <groupId>org.revapi</groupId>
