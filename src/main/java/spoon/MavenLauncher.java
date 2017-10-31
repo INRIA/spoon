@@ -282,7 +282,7 @@ public class MavenLauncher extends Launcher {
 				}
 				// ignore not transitive dependencies
 				if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
-					LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test): "+dependency.toString());
+					LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test): " + dependency.toString());
 					continue;
 				}
 				String fileName = dependency.getArtifactId() + "-" + version;
