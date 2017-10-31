@@ -497,24 +497,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
-		CtType<T> t = getDeclaration();
-		if (t != null) {
-			return t.getSuperclass();
-		} else {
-			try {
-				Class<T> c = getActualClass();
-				Class<?> sc = c.getSuperclass();
-				if (sc == null) {
-					return null;
-				}
-				return getFactory().Type().createReference(sc);
-			} catch (final SpoonClassNotFoundException e) {
-				if (getFactory().getEnvironment().getNoClasspath()) {
-					return null;
-				}
-				throw e;
+		try {
+			CtType<T> t = getTypeDeclaration();
+			if (t != null) {
+				return t.getSuperclass();
 			}
+		} catch (SpoonClassNotFoundException e) {
+			return null;
 		}
+		return null;
 	}
 
 	@Override

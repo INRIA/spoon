@@ -127,7 +127,7 @@ public interface CtTypeInformation {
 	 * getSuperClass().getDeclaration()/getTypeDeclaration() returns the corresponding CtType (if in the source folder of Spoon).
 	 *
 	 * @return the class type directly extended by this class, or null if there
-	 *         is none
+	 *         is none or if the super class is not in the classpath (in noclasspath mode)
 	 */
 	@PropertyGetter(role = SUPER_TYPE)
 	CtTypeReference<?> getSuperclass();

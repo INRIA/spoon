@@ -29,6 +29,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
@@ -67,6 +68,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
+	@DerivedProperty
 	public CtExpression<T> getDefaultExpression() {
 		return null;
 	}
