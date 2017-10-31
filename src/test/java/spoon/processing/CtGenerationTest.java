@@ -37,7 +37,8 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/generating/replace/");
+		launcher.addInputResource("./src/main/java/spoon/support/visitor/replace/");
+		launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
@@ -69,7 +70,7 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/generating/scanner/");
+		launcher.addInputResource("./src/test/java/spoon/generating/scanner/");
 		launcher.addProcessor(new CtBiScannerGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.reflect.visitor.CtBiScannerDefault"));
 		launcher.run();
@@ -107,7 +108,7 @@ public class CtGenerationTest {
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtInheritanceScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/generating/clone/");
+		launcher.addInputResource("./src/test/java/spoon/generating/clone/");
 		launcher.addProcessor(new CloneVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.clone.*"));
 		launcher.run();

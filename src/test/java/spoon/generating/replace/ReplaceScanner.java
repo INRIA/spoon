@@ -169,19 +169,19 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
-		listener = factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener").clone();
+		listener = factory.Class().get(TARGET_REPLACE_PACKAGE + ".CtListener").clone();
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return (GENERATING_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
+				return (TARGET_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {
 			reference.setPackage(listener.getPackage().getReference());
 		}
-		final CtTypeReference<Object> theInterface = factory.Class().createReference(GENERATING_REPLACE_PACKAGE + "." + type.name);
+		final CtTypeReference<Object> theInterface = factory.Class().createReference(TARGET_REPLACE_PACKAGE + "." + type.name);
 		theInterface.addActualTypeArgument(getterType);
 		final Set<CtTypeReference<?>> interfaces = new HashSet<>();
 		interfaces.add(theInterface);
