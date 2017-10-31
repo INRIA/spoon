@@ -17,7 +17,6 @@
 package spoon;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
