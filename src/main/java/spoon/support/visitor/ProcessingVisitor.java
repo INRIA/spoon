@@ -16,9 +16,6 @@
  */
 package spoon.support.visitor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import spoon.processing.Processor;
 import spoon.processing.TraversalStrategy;
 import spoon.reflect.declaration.CtElement;
@@ -56,15 +53,6 @@ public class ProcessingVisitor extends CtScanner {
 
 	public Processor<?> getProcessor() {
 		return processor;
-	}
-
-	@Override
-	public void scan(Collection<? extends CtElement> elements) {
-		if ((elements != null)) {
-			for (CtElement e : new ArrayList<>(elements)) {
-				scan(e);
-			}
-		}
 	}
 
 	/**

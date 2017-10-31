@@ -33,11 +33,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
 		spoon.reflect.declaration.CtAnnotation other = ((spoon.reflect.declaration.CtAnnotation) (this.stack.peek()));
 		enter(annotation);
-		biScan(annotation.getType(), other.getType());
-		biScan(annotation.getComments(), other.getComments());
-		biScan(annotation.getAnnotationType(), other.getAnnotationType());
-		biScan(annotation.getAnnotations(), other.getAnnotations());
-		biScan(annotation.getValues().values(), other.getValues().values());
+		biScan(spoon.reflect.path.CtRole.TYPE, annotation.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.COMMENT, annotation.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION_TYPE, annotation.getAnnotationType(), other.getAnnotationType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, annotation.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.VALUE, annotation.getValues().values(), other.getValues().values());
 		exit(annotation);
 	}
 
@@ -45,9 +45,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotationType(final spoon.reflect.declaration.CtAnnotationType<A> annotationType) {
 		spoon.reflect.declaration.CtAnnotationType other = ((spoon.reflect.declaration.CtAnnotationType) (this.stack.peek()));
 		enter(annotationType);
-		biScan(annotationType.getAnnotations(), other.getAnnotations());
-		biScan(annotationType.getTypeMembers(), other.getTypeMembers());
-		biScan(annotationType.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, annotationType.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, annotationType.getTypeMembers(), other.getTypeMembers());
+		biScan(spoon.reflect.path.CtRole.COMMENT, annotationType.getComments(), other.getComments());
 		exit(annotationType);
 	}
 
@@ -55,9 +55,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtAnonymousExecutable(final spoon.reflect.declaration.CtAnonymousExecutable anonymousExec) {
 		spoon.reflect.declaration.CtAnonymousExecutable other = ((spoon.reflect.declaration.CtAnonymousExecutable) (this.stack.peek()));
 		enter(anonymousExec);
-		biScan(anonymousExec.getAnnotations(), other.getAnnotations());
-		biScan(anonymousExec.getBody(), other.getBody());
-		biScan(anonymousExec.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, anonymousExec.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.BODY, anonymousExec.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, anonymousExec.getComments(), other.getComments());
 		exit(anonymousExec);
 	}
 
@@ -66,12 +66,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtArrayRead(final spoon.reflect.code.CtArrayRead<T> arrayRead) {
 		spoon.reflect.code.CtArrayRead other = ((spoon.reflect.code.CtArrayRead) (this.stack.peek()));
 		enter(arrayRead);
-		biScan(arrayRead.getAnnotations(), other.getAnnotations());
-		biScan(arrayRead.getType(), other.getType());
-		biScan(arrayRead.getTypeCasts(), other.getTypeCasts());
-		biScan(arrayRead.getTarget(), other.getTarget());
-		biScan(arrayRead.getIndexExpression(), other.getIndexExpression());
-		biScan(arrayRead.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, arrayRead.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, arrayRead.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, arrayRead.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, arrayRead.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, arrayRead.getIndexExpression(), other.getIndexExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, arrayRead.getComments(), other.getComments());
 		exit(arrayRead);
 	}
 
@@ -80,12 +80,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtArrayWrite(final spoon.reflect.code.CtArrayWrite<T> arrayWrite) {
 		spoon.reflect.code.CtArrayWrite other = ((spoon.reflect.code.CtArrayWrite) (this.stack.peek()));
 		enter(arrayWrite);
-		biScan(arrayWrite.getAnnotations(), other.getAnnotations());
-		biScan(arrayWrite.getType(), other.getType());
-		biScan(arrayWrite.getTypeCasts(), other.getTypeCasts());
-		biScan(arrayWrite.getTarget(), other.getTarget());
-		biScan(arrayWrite.getIndexExpression(), other.getIndexExpression());
-		biScan(arrayWrite.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, arrayWrite.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, arrayWrite.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, arrayWrite.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, arrayWrite.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, arrayWrite.getIndexExpression(), other.getIndexExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, arrayWrite.getComments(), other.getComments());
 		exit(arrayWrite);
 	}
 
@@ -93,12 +93,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
 		spoon.reflect.reference.CtArrayTypeReference other = ((spoon.reflect.reference.CtArrayTypeReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getComments(), other.getComments());
-		biScan(reference.getPackage(), other.getPackage());
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-		biScan(reference.getComponentType(), other.getComponentType());
-		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
-		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, reference.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, reference.getPackage(), other.getPackage());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, reference.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getComponentType(), other.getComponentType());
+		biScan(spoon.reflect.path.CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments(), other.getActualTypeArguments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
 	}
 
@@ -106,10 +106,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtAssert(final spoon.reflect.code.CtAssert<T> asserted) {
 		spoon.reflect.code.CtAssert other = ((spoon.reflect.code.CtAssert) (this.stack.peek()));
 		enter(asserted);
-		biScan(asserted.getAnnotations(), other.getAnnotations());
-		biScan(asserted.getAssertExpression(), other.getAssertExpression());
-		biScan(asserted.getExpression(), other.getExpression());
-		biScan(asserted.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, asserted.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CONDITION, asserted.getAssertExpression(), other.getAssertExpression());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, asserted.getExpression(), other.getExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, asserted.getComments(), other.getComments());
 		exit(asserted);
 	}
 
@@ -117,12 +117,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T, A extends T> void visitCtAssignment(final spoon.reflect.code.CtAssignment<T, A> assignement) {
 		spoon.reflect.code.CtAssignment other = ((spoon.reflect.code.CtAssignment) (this.stack.peek()));
 		enter(assignement);
-		biScan(assignement.getAnnotations(), other.getAnnotations());
-		biScan(assignement.getType(), other.getType());
-		biScan(assignement.getTypeCasts(), other.getTypeCasts());
-		biScan(assignement.getAssigned(), other.getAssigned());
-		biScan(assignement.getAssignment(), other.getAssignment());
-		biScan(assignement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, assignement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, assignement.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, assignement.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.ASSIGNED, assignement.getAssigned(), other.getAssigned());
+		biScan(spoon.reflect.path.CtRole.ASSIGNMENT, assignement.getAssignment(), other.getAssignment());
+		biScan(spoon.reflect.path.CtRole.COMMENT, assignement.getComments(), other.getComments());
 		exit(assignement);
 	}
 
@@ -130,12 +130,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtBinaryOperator(final spoon.reflect.code.CtBinaryOperator<T> operator) {
 		spoon.reflect.code.CtBinaryOperator other = ((spoon.reflect.code.CtBinaryOperator) (this.stack.peek()));
 		enter(operator);
-		biScan(operator.getAnnotations(), other.getAnnotations());
-		biScan(operator.getType(), other.getType());
-		biScan(operator.getTypeCasts(), other.getTypeCasts());
-		biScan(operator.getLeftHandOperand(), other.getLeftHandOperand());
-		biScan(operator.getRightHandOperand(), other.getRightHandOperand());
-		biScan(operator.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, operator.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, operator.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, operator.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.LEFT_OPERAND, operator.getLeftHandOperand(), other.getLeftHandOperand());
+		biScan(spoon.reflect.path.CtRole.RIGHT_OPERAND, operator.getRightHandOperand(), other.getRightHandOperand());
+		biScan(spoon.reflect.path.CtRole.COMMENT, operator.getComments(), other.getComments());
 		exit(operator);
 	}
 
@@ -143,9 +143,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <R> void visitCtBlock(final spoon.reflect.code.CtBlock<R> block) {
 		spoon.reflect.code.CtBlock other = ((spoon.reflect.code.CtBlock) (this.stack.peek()));
 		enter(block);
-		biScan(block.getAnnotations(), other.getAnnotations());
-		biScan(block.getStatements(), other.getStatements());
-		biScan(block.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, block.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.STATEMENT, block.getStatements(), other.getStatements());
+		biScan(spoon.reflect.path.CtRole.COMMENT, block.getComments(), other.getComments());
 		exit(block);
 	}
 
@@ -153,8 +153,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtBreak(final spoon.reflect.code.CtBreak breakStatement) {
 		spoon.reflect.code.CtBreak other = ((spoon.reflect.code.CtBreak) (this.stack.peek()));
 		enter(breakStatement);
-		biScan(breakStatement.getAnnotations(), other.getAnnotations());
-		biScan(breakStatement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, breakStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, breakStatement.getComments(), other.getComments());
 		exit(breakStatement);
 	}
 
@@ -162,10 +162,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <S> void visitCtCase(final spoon.reflect.code.CtCase<S> caseStatement) {
 		spoon.reflect.code.CtCase other = ((spoon.reflect.code.CtCase) (this.stack.peek()));
 		enter(caseStatement);
-		biScan(caseStatement.getAnnotations(), other.getAnnotations());
-		biScan(caseStatement.getCaseExpression(), other.getCaseExpression());
-		biScan(caseStatement.getStatements(), other.getStatements());
-		biScan(caseStatement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, caseStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, caseStatement.getCaseExpression(), other.getCaseExpression());
+		biScan(spoon.reflect.path.CtRole.STATEMENT, caseStatement.getStatements(), other.getStatements());
+		biScan(spoon.reflect.path.CtRole.COMMENT, caseStatement.getComments(), other.getComments());
 		exit(caseStatement);
 	}
 
@@ -173,10 +173,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtCatch(final spoon.reflect.code.CtCatch catchBlock) {
 		spoon.reflect.code.CtCatch other = ((spoon.reflect.code.CtCatch) (this.stack.peek()));
 		enter(catchBlock);
-		biScan(catchBlock.getAnnotations(), other.getAnnotations());
-		biScan(catchBlock.getParameter(), other.getParameter());
-		biScan(catchBlock.getBody(), other.getBody());
-		biScan(catchBlock.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, catchBlock.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.PARAMETER, catchBlock.getParameter(), other.getParameter());
+		biScan(spoon.reflect.path.CtRole.BODY, catchBlock.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, catchBlock.getComments(), other.getComments());
 		exit(catchBlock);
 	}
 
@@ -184,12 +184,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtClass(final spoon.reflect.declaration.CtClass<T> ctClass) {
 		spoon.reflect.declaration.CtClass other = ((spoon.reflect.declaration.CtClass) (this.stack.peek()));
 		enter(ctClass);
-		biScan(ctClass.getAnnotations(), other.getAnnotations());
-		biScan(ctClass.getSuperclass(), other.getSuperclass());
-		biScan(ctClass.getSuperInterfaces(), other.getSuperInterfaces());
-		biScan(ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(ctClass.getTypeMembers(), other.getTypeMembers());
-		biScan(ctClass.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, ctClass.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.SUPER_TYPE, ctClass.getSuperclass(), other.getSuperclass());
+		biScan(spoon.reflect.path.CtRole.INTERFACE, ctClass.getSuperInterfaces(), other.getSuperInterfaces());
+		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
+		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, ctClass.getTypeMembers(), other.getTypeMembers());
+		biScan(spoon.reflect.path.CtRole.COMMENT, ctClass.getComments(), other.getComments());
 		exit(ctClass);
 	}
 
@@ -198,9 +198,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtTypeParameter(spoon.reflect.declaration.CtTypeParameter typeParameter) {
 		spoon.reflect.declaration.CtTypeParameter other = ((spoon.reflect.declaration.CtTypeParameter) (this.stack.peek()));
 		enter(typeParameter);
-		biScan(typeParameter.getAnnotations(), other.getAnnotations());
-		biScan(typeParameter.getSuperclass(), other.getSuperclass());
-		biScan(typeParameter.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, typeParameter.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.SUPER_TYPE, typeParameter.getSuperclass(), other.getSuperclass());
+		biScan(spoon.reflect.path.CtRole.COMMENT, typeParameter.getComments(), other.getComments());
 		exit(typeParameter);
 	}
 
@@ -208,13 +208,13 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtConditional(final spoon.reflect.code.CtConditional<T> conditional) {
 		spoon.reflect.code.CtConditional other = ((spoon.reflect.code.CtConditional) (this.stack.peek()));
 		enter(conditional);
-		biScan(conditional.getType(), other.getType());
-		biScan(conditional.getAnnotations(), other.getAnnotations());
-		biScan(conditional.getCondition(), other.getCondition());
-		biScan(conditional.getThenExpression(), other.getThenExpression());
-		biScan(conditional.getElseExpression(), other.getElseExpression());
-		biScan(conditional.getComments(), other.getComments());
-		biScan(conditional.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TYPE, conditional.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, conditional.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CONDITION, conditional.getCondition(), other.getCondition());
+		biScan(spoon.reflect.path.CtRole.THEN, conditional.getThenExpression(), other.getThenExpression());
+		biScan(spoon.reflect.path.CtRole.ELSE, conditional.getElseExpression(), other.getElseExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, conditional.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.CAST, conditional.getTypeCasts(), other.getTypeCasts());
 		exit(conditional);
 	}
 
@@ -222,12 +222,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtConstructor(final spoon.reflect.declaration.CtConstructor<T> c) {
 		spoon.reflect.declaration.CtConstructor other = ((spoon.reflect.declaration.CtConstructor) (this.stack.peek()));
 		enter(c);
-		biScan(c.getAnnotations(), other.getAnnotations());
-		biScan(c.getParameters(), other.getParameters());
-		biScan(c.getThrownTypes(), other.getThrownTypes());
-		biScan(c.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(c.getBody(), other.getBody());
-		biScan(c.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, c.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.PARAMETER, c.getParameters(), other.getParameters());
+		biScan(spoon.reflect.path.CtRole.THROWN, c.getThrownTypes(), other.getThrownTypes());
+		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, c.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
+		biScan(spoon.reflect.path.CtRole.BODY, c.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, c.getComments(), other.getComments());
 		exit(c);
 	}
 
@@ -235,8 +235,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtContinue(final spoon.reflect.code.CtContinue continueStatement) {
 		spoon.reflect.code.CtContinue other = ((spoon.reflect.code.CtContinue) (this.stack.peek()));
 		enter(continueStatement);
-		biScan(continueStatement.getAnnotations(), other.getAnnotations());
-		biScan(continueStatement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, continueStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, continueStatement.getComments(), other.getComments());
 		exit(continueStatement);
 	}
 
@@ -244,10 +244,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtDo(final spoon.reflect.code.CtDo doLoop) {
 		spoon.reflect.code.CtDo other = ((spoon.reflect.code.CtDo) (this.stack.peek()));
 		enter(doLoop);
-		biScan(doLoop.getAnnotations(), other.getAnnotations());
-		biScan(doLoop.getLoopingExpression(), other.getLoopingExpression());
-		biScan(doLoop.getBody(), other.getBody());
-		biScan(doLoop.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, doLoop.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, doLoop.getLoopingExpression(), other.getLoopingExpression());
+		biScan(spoon.reflect.path.CtRole.BODY, doLoop.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, doLoop.getComments(), other.getComments());
 		exit(doLoop);
 	}
 
@@ -255,11 +255,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T extends java.lang.Enum<?>> void visitCtEnum(final spoon.reflect.declaration.CtEnum<T> ctEnum) {
 		spoon.reflect.declaration.CtEnum other = ((spoon.reflect.declaration.CtEnum) (this.stack.peek()));
 		enter(ctEnum);
-		biScan(ctEnum.getAnnotations(), other.getAnnotations());
-		biScan(ctEnum.getSuperInterfaces(), other.getSuperInterfaces());
-		biScan(ctEnum.getTypeMembers(), other.getTypeMembers());
-		biScan(ctEnum.getEnumValues(), other.getEnumValues());
-		biScan(ctEnum.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, ctEnum.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.INTERFACE, ctEnum.getSuperInterfaces(), other.getSuperInterfaces());
+		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, ctEnum.getTypeMembers(), other.getTypeMembers());
+		biScan(spoon.reflect.path.CtRole.VALUE, ctEnum.getEnumValues(), other.getEnumValues());
+		biScan(spoon.reflect.path.CtRole.COMMENT, ctEnum.getComments(), other.getComments());
 		exit(ctEnum);
 	}
 
@@ -267,12 +267,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtExecutableReference(final spoon.reflect.reference.CtExecutableReference<T> reference) {
 		spoon.reflect.reference.CtExecutableReference other = ((spoon.reflect.reference.CtExecutableReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-		biScan(reference.getType(), other.getType());
-		biScan(reference.getParameters(), other.getParameters());
-		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		biScan(reference.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, reference.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.ARGUMENT_TYPE, reference.getParameters(), other.getParameters());
+		biScan(spoon.reflect.path.CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments(), other.getActualTypeArguments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, reference.getComments(), other.getComments());
 		exit(reference);
 	}
 
@@ -280,10 +280,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtField(final spoon.reflect.declaration.CtField<T> f) {
 		spoon.reflect.declaration.CtField other = ((spoon.reflect.declaration.CtField) (this.stack.peek()));
 		enter(f);
-		biScan(f.getAnnotations(), other.getAnnotations());
-		biScan(f.getType(), other.getType());
-		biScan(f.getDefaultExpression(), other.getDefaultExpression());
-		biScan(f.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, f.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, f.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.DEFAULT_EXPRESSION, f.getDefaultExpression(), other.getDefaultExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, f.getComments(), other.getComments());
 		exit(f);
 	}
 
@@ -292,10 +292,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtEnumValue(final spoon.reflect.declaration.CtEnumValue<T> enumValue) {
 		spoon.reflect.declaration.CtEnumValue other = ((spoon.reflect.declaration.CtEnumValue) (this.stack.peek()));
 		enter(enumValue);
-		biScan(enumValue.getAnnotations(), other.getAnnotations());
-		biScan(enumValue.getType(), other.getType());
-		biScan(enumValue.getDefaultExpression(), other.getDefaultExpression());
-		biScan(enumValue.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, enumValue.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, enumValue.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.DEFAULT_EXPRESSION, enumValue.getDefaultExpression(), other.getDefaultExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, enumValue.getComments(), other.getComments());
 		exit(enumValue);
 	}
 
@@ -304,11 +304,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtThisAccess(final spoon.reflect.code.CtThisAccess<T> thisAccess) {
 		spoon.reflect.code.CtThisAccess other = ((spoon.reflect.code.CtThisAccess) (this.stack.peek()));
 		enter(thisAccess);
-		biScan(thisAccess.getComments(), other.getComments());
-		biScan(thisAccess.getAnnotations(), other.getAnnotations());
-		biScan(thisAccess.getType(), other.getType());
-		biScan(thisAccess.getTypeCasts(), other.getTypeCasts());
-		biScan(thisAccess.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.COMMENT, thisAccess.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, thisAccess.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, thisAccess.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, thisAccess.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, thisAccess.getTarget(), other.getTarget());
 		exit(thisAccess);
 	}
 
@@ -316,11 +316,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtAnnotationFieldAccess(final spoon.reflect.code.CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		spoon.reflect.code.CtAnnotationFieldAccess other = ((spoon.reflect.code.CtAnnotationFieldAccess) (this.stack.peek()));
 		enter(annotationFieldAccess);
-		biScan(annotationFieldAccess.getComments(), other.getComments());
-		biScan(annotationFieldAccess.getAnnotations(), other.getAnnotations());
-		biScan(annotationFieldAccess.getTypeCasts(), other.getTypeCasts());
-		biScan(annotationFieldAccess.getTarget(), other.getTarget());
-		biScan(annotationFieldAccess.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.COMMENT, annotationFieldAccess.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, annotationFieldAccess.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, annotationFieldAccess.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, annotationFieldAccess.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, annotationFieldAccess.getVariable(), other.getVariable());
 		exit(annotationFieldAccess);
 	}
 
@@ -328,9 +328,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtFieldReference(final spoon.reflect.reference.CtFieldReference<T> reference) {
 		spoon.reflect.reference.CtFieldReference other = ((spoon.reflect.reference.CtFieldReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-		biScan(reference.getType(), other.getType());
-		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, reference.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
 	}
 
@@ -338,12 +338,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtFor(final spoon.reflect.code.CtFor forLoop) {
 		spoon.reflect.code.CtFor other = ((spoon.reflect.code.CtFor) (this.stack.peek()));
 		enter(forLoop);
-		biScan(forLoop.getAnnotations(), other.getAnnotations());
-		biScan(forLoop.getForInit(), other.getForInit());
-		biScan(forLoop.getExpression(), other.getExpression());
-		biScan(forLoop.getForUpdate(), other.getForUpdate());
-		biScan(forLoop.getBody(), other.getBody());
-		biScan(forLoop.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, forLoop.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.FOR_INIT, forLoop.getForInit(), other.getForInit());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, forLoop.getExpression(), other.getExpression());
+		biScan(spoon.reflect.path.CtRole.FOR_UPDATE, forLoop.getForUpdate(), other.getForUpdate());
+		biScan(spoon.reflect.path.CtRole.BODY, forLoop.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, forLoop.getComments(), other.getComments());
 		exit(forLoop);
 	}
 
@@ -351,11 +351,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtForEach(final spoon.reflect.code.CtForEach foreach) {
 		spoon.reflect.code.CtForEach other = ((spoon.reflect.code.CtForEach) (this.stack.peek()));
 		enter(foreach);
-		biScan(foreach.getAnnotations(), other.getAnnotations());
-		biScan(foreach.getVariable(), other.getVariable());
-		biScan(foreach.getExpression(), other.getExpression());
-		biScan(foreach.getBody(), other.getBody());
-		biScan(foreach.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, foreach.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.FOREACH_VARIABLE, foreach.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, foreach.getExpression(), other.getExpression());
+		biScan(spoon.reflect.path.CtRole.BODY, foreach.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, foreach.getComments(), other.getComments());
 		exit(foreach);
 	}
 
@@ -363,11 +363,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtIf(final spoon.reflect.code.CtIf ifElement) {
 		spoon.reflect.code.CtIf other = ((spoon.reflect.code.CtIf) (this.stack.peek()));
 		enter(ifElement);
-		biScan(ifElement.getAnnotations(), other.getAnnotations());
-		biScan(ifElement.getCondition(), other.getCondition());
-		biScan(((spoon.reflect.code.CtStatement) (ifElement.getThenStatement())), other.getThenStatement());
-		biScan(((spoon.reflect.code.CtStatement) (ifElement.getElseStatement())), other.getElseStatement());
-		biScan(ifElement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, ifElement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CONDITION, ifElement.getCondition(), other.getCondition());
+		biScan(spoon.reflect.path.CtRole.THEN, ((spoon.reflect.code.CtStatement) (ifElement.getThenStatement())), other.getThenStatement());
+		biScan(spoon.reflect.path.CtRole.ELSE, ((spoon.reflect.code.CtStatement) (ifElement.getElseStatement())), other.getElseStatement());
+		biScan(spoon.reflect.path.CtRole.COMMENT, ifElement.getComments(), other.getComments());
 		exit(ifElement);
 	}
 
@@ -375,11 +375,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtInterface(final spoon.reflect.declaration.CtInterface<T> intrface) {
 		spoon.reflect.declaration.CtInterface other = ((spoon.reflect.declaration.CtInterface) (this.stack.peek()));
 		enter(intrface);
-		biScan(intrface.getAnnotations(), other.getAnnotations());
-		biScan(intrface.getSuperInterfaces(), other.getSuperInterfaces());
-		biScan(intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(intrface.getTypeMembers(), other.getTypeMembers());
-		biScan(intrface.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, intrface.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.INTERFACE, intrface.getSuperInterfaces(), other.getSuperInterfaces());
+		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
+		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, intrface.getTypeMembers(), other.getTypeMembers());
+		biScan(spoon.reflect.path.CtRole.COMMENT, intrface.getComments(), other.getComments());
 		exit(intrface);
 	}
 
@@ -387,12 +387,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtInvocation(final spoon.reflect.code.CtInvocation<T> invocation) {
 		spoon.reflect.code.CtInvocation other = ((spoon.reflect.code.CtInvocation) (this.stack.peek()));
 		enter(invocation);
-		biScan(invocation.getAnnotations(), other.getAnnotations());
-		biScan(invocation.getTypeCasts(), other.getTypeCasts());
-		biScan(invocation.getTarget(), other.getTarget());
-		biScan(invocation.getExecutable(), other.getExecutable());
-		biScan(invocation.getArguments(), other.getArguments());
-		biScan(invocation.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, invocation.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, invocation.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, invocation.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.EXECUTABLE_REF, invocation.getExecutable(), other.getExecutable());
+		biScan(spoon.reflect.path.CtRole.ARGUMENT, invocation.getArguments(), other.getArguments());
+		biScan(spoon.reflect.path.CtRole.COMMENT, invocation.getComments(), other.getComments());
 		exit(invocation);
 	}
 
@@ -400,10 +400,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtLiteral(final spoon.reflect.code.CtLiteral<T> literal) {
 		spoon.reflect.code.CtLiteral other = ((spoon.reflect.code.CtLiteral) (this.stack.peek()));
 		enter(literal);
-		biScan(literal.getAnnotations(), other.getAnnotations());
-		biScan(literal.getType(), other.getType());
-		biScan(literal.getTypeCasts(), other.getTypeCasts());
-		biScan(literal.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, literal.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, literal.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, literal.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.COMMENT, literal.getComments(), other.getComments());
 		exit(literal);
 	}
 
@@ -411,10 +411,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtLocalVariable(final spoon.reflect.code.CtLocalVariable<T> localVariable) {
 		spoon.reflect.code.CtLocalVariable other = ((spoon.reflect.code.CtLocalVariable) (this.stack.peek()));
 		enter(localVariable);
-		biScan(localVariable.getAnnotations(), other.getAnnotations());
-		biScan(localVariable.getType(), other.getType());
-		biScan(localVariable.getDefaultExpression(), other.getDefaultExpression());
-		biScan(localVariable.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, localVariable.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, localVariable.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.DEFAULT_EXPRESSION, localVariable.getDefaultExpression(), other.getDefaultExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, localVariable.getComments(), other.getComments());
 		exit(localVariable);
 	}
 
@@ -422,8 +422,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtLocalVariableReference(final spoon.reflect.reference.CtLocalVariableReference<T> reference) {
 		spoon.reflect.reference.CtLocalVariableReference other = ((spoon.reflect.reference.CtLocalVariableReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getType(), other.getType());
-		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
 	}
 
@@ -431,9 +431,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtCatchVariable(final spoon.reflect.code.CtCatchVariable<T> catchVariable) {
 		spoon.reflect.code.CtCatchVariable other = ((spoon.reflect.code.CtCatchVariable) (this.stack.peek()));
 		enter(catchVariable);
-		biScan(catchVariable.getComments(), other.getComments());
-		biScan(catchVariable.getAnnotations(), other.getAnnotations());
-		biScan(catchVariable.getMultiTypes(), other.getMultiTypes());
+		biScan(spoon.reflect.path.CtRole.COMMENT, catchVariable.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, catchVariable.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, catchVariable.getMultiTypes(), other.getMultiTypes());
 		exit(catchVariable);
 	}
 
@@ -441,9 +441,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtCatchVariableReference(final spoon.reflect.reference.CtCatchVariableReference<T> reference) {
 		spoon.reflect.reference.CtCatchVariableReference other = ((spoon.reflect.reference.CtCatchVariableReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getComments(), other.getComments());
-		biScan(reference.getType(), other.getType());
-		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, reference.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
 	}
 
@@ -451,13 +451,13 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtMethod(final spoon.reflect.declaration.CtMethod<T> m) {
 		spoon.reflect.declaration.CtMethod other = ((spoon.reflect.declaration.CtMethod) (this.stack.peek()));
 		enter(m);
-		biScan(m.getAnnotations(), other.getAnnotations());
-		biScan(m.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
-		biScan(m.getType(), other.getType());
-		biScan(m.getParameters(), other.getParameters());
-		biScan(m.getThrownTypes(), other.getThrownTypes());
-		biScan(m.getBody(), other.getBody());
-		biScan(m.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, m.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, m.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
+		biScan(spoon.reflect.path.CtRole.TYPE, m.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.PARAMETER, m.getParameters(), other.getParameters());
+		biScan(spoon.reflect.path.CtRole.THROWN, m.getThrownTypes(), other.getThrownTypes());
+		biScan(spoon.reflect.path.CtRole.BODY, m.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, m.getComments(), other.getComments());
 		exit(m);
 	}
 
@@ -466,10 +466,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtAnnotationMethod(spoon.reflect.declaration.CtAnnotationMethod<T> annotationMethod) {
 		spoon.reflect.declaration.CtAnnotationMethod other = ((spoon.reflect.declaration.CtAnnotationMethod) (this.stack.peek()));
 		enter(annotationMethod);
-		biScan(annotationMethod.getAnnotations(), other.getAnnotations());
-		biScan(annotationMethod.getType(), other.getType());
-		biScan(annotationMethod.getDefaultExpression(), other.getDefaultExpression());
-		biScan(annotationMethod.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, annotationMethod.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, annotationMethod.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.DEFAULT_EXPRESSION, annotationMethod.getDefaultExpression(), other.getDefaultExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, annotationMethod.getComments(), other.getComments());
 		exit(annotationMethod);
 	}
 
@@ -477,12 +477,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtNewArray(final spoon.reflect.code.CtNewArray<T> newArray) {
 		spoon.reflect.code.CtNewArray other = ((spoon.reflect.code.CtNewArray) (this.stack.peek()));
 		enter(newArray);
-		biScan(newArray.getAnnotations(), other.getAnnotations());
-		biScan(newArray.getType(), other.getType());
-		biScan(newArray.getTypeCasts(), other.getTypeCasts());
-		biScan(newArray.getElements(), other.getElements());
-		biScan(newArray.getDimensionExpressions(), other.getDimensionExpressions());
-		biScan(newArray.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, newArray.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, newArray.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, newArray.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, newArray.getElements(), other.getElements());
+		biScan(spoon.reflect.path.CtRole.DIMENSION, newArray.getDimensionExpressions(), other.getDimensionExpressions());
+		biScan(spoon.reflect.path.CtRole.COMMENT, newArray.getComments(), other.getComments());
 		exit(newArray);
 	}
 
@@ -491,12 +491,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtConstructorCall(final spoon.reflect.code.CtConstructorCall<T> ctConstructorCall) {
 		spoon.reflect.code.CtConstructorCall other = ((spoon.reflect.code.CtConstructorCall) (this.stack.peek()));
 		enter(ctConstructorCall);
-		biScan(ctConstructorCall.getAnnotations(), other.getAnnotations());
-		biScan(ctConstructorCall.getTypeCasts(), other.getTypeCasts());
-		biScan(ctConstructorCall.getExecutable(), other.getExecutable());
-		biScan(ctConstructorCall.getTarget(), other.getTarget());
-		biScan(ctConstructorCall.getArguments(), other.getArguments());
-		biScan(ctConstructorCall.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, ctConstructorCall.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, ctConstructorCall.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.EXECUTABLE_REF, ctConstructorCall.getExecutable(), other.getExecutable());
+		biScan(spoon.reflect.path.CtRole.TARGET, ctConstructorCall.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.ARGUMENT, ctConstructorCall.getArguments(), other.getArguments());
+		biScan(spoon.reflect.path.CtRole.COMMENT, ctConstructorCall.getComments(), other.getComments());
 		exit(ctConstructorCall);
 	}
 
@@ -504,13 +504,13 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtNewClass(final spoon.reflect.code.CtNewClass<T> newClass) {
 		spoon.reflect.code.CtNewClass other = ((spoon.reflect.code.CtNewClass) (this.stack.peek()));
 		enter(newClass);
-		biScan(newClass.getAnnotations(), other.getAnnotations());
-		biScan(newClass.getTypeCasts(), other.getTypeCasts());
-		biScan(newClass.getExecutable(), other.getExecutable());
-		biScan(newClass.getTarget(), other.getTarget());
-		biScan(newClass.getArguments(), other.getArguments());
-		biScan(newClass.getAnonymousClass(), other.getAnonymousClass());
-		biScan(newClass.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, newClass.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, newClass.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.EXECUTABLE_REF, newClass.getExecutable(), other.getExecutable());
+		biScan(spoon.reflect.path.CtRole.TARGET, newClass.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.ARGUMENT, newClass.getArguments(), other.getArguments());
+		biScan(spoon.reflect.path.CtRole.NESTED_TYPE, newClass.getAnonymousClass(), other.getAnonymousClass());
+		biScan(spoon.reflect.path.CtRole.COMMENT, newClass.getComments(), other.getComments());
 		exit(newClass);
 	}
 
@@ -519,14 +519,14 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtLambda(final spoon.reflect.code.CtLambda<T> lambda) {
 		spoon.reflect.code.CtLambda other = ((spoon.reflect.code.CtLambda) (this.stack.peek()));
 		enter(lambda);
-		biScan(lambda.getAnnotations(), other.getAnnotations());
-		biScan(lambda.getType(), other.getType());
-		biScan(lambda.getTypeCasts(), other.getTypeCasts());
-		biScan(lambda.getParameters(), other.getParameters());
-		biScan(lambda.getThrownTypes(), other.getThrownTypes());
-		biScan(lambda.getBody(), other.getBody());
-		biScan(lambda.getExpression(), other.getExpression());
-		biScan(lambda.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, lambda.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, lambda.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, lambda.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.PARAMETER, lambda.getParameters(), other.getParameters());
+		biScan(spoon.reflect.path.CtRole.THROWN, lambda.getThrownTypes(), other.getThrownTypes());
+		biScan(spoon.reflect.path.CtRole.BODY, lambda.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, lambda.getExpression(), other.getExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, lambda.getComments(), other.getComments());
 		exit(lambda);
 	}
 
@@ -535,12 +535,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T, E extends spoon.reflect.code.CtExpression<?>> void visitCtExecutableReferenceExpression(final spoon.reflect.code.CtExecutableReferenceExpression<T, E> expression) {
 		spoon.reflect.code.CtExecutableReferenceExpression other = ((spoon.reflect.code.CtExecutableReferenceExpression) (this.stack.peek()));
 		enter(expression);
-		biScan(expression.getComments(), other.getComments());
-		biScan(expression.getAnnotations(), other.getAnnotations());
-		biScan(expression.getType(), other.getType());
-		biScan(expression.getTypeCasts(), other.getTypeCasts());
-		biScan(expression.getExecutable(), other.getExecutable());
-		biScan(expression.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.COMMENT, expression.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, expression.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, expression.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, expression.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.EXECUTABLE_REF, expression.getExecutable(), other.getExecutable());
+		biScan(spoon.reflect.path.CtRole.TARGET, expression.getTarget(), other.getTarget());
 		exit(expression);
 	}
 
@@ -548,12 +548,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T, A extends T> void visitCtOperatorAssignment(final spoon.reflect.code.CtOperatorAssignment<T, A> assignment) {
 		spoon.reflect.code.CtOperatorAssignment other = ((spoon.reflect.code.CtOperatorAssignment) (this.stack.peek()));
 		enter(assignment);
-		biScan(assignment.getAnnotations(), other.getAnnotations());
-		biScan(assignment.getType(), other.getType());
-		biScan(assignment.getTypeCasts(), other.getTypeCasts());
-		biScan(assignment.getAssigned(), other.getAssigned());
-		biScan(assignment.getAssignment(), other.getAssignment());
-		biScan(assignment.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, assignment.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, assignment.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, assignment.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.ASSIGNED, assignment.getAssigned(), other.getAssigned());
+		biScan(spoon.reflect.path.CtRole.ASSIGNMENT, assignment.getAssignment(), other.getAssignment());
+		biScan(spoon.reflect.path.CtRole.COMMENT, assignment.getComments(), other.getComments());
 		exit(assignment);
 	}
 
@@ -561,10 +561,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtPackage(final spoon.reflect.declaration.CtPackage ctPackage) {
 		spoon.reflect.declaration.CtPackage other = ((spoon.reflect.declaration.CtPackage) (this.stack.peek()));
 		enter(ctPackage);
-		biScan(ctPackage.getAnnotations(), other.getAnnotations());
-		biScan(ctPackage.getPackages(), other.getPackages());
-		biScan(ctPackage.getTypes(), other.getTypes());
-		biScan(ctPackage.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, ctPackage.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.SUB_PACKAGE, ctPackage.getPackages(), other.getPackages());
+		biScan(spoon.reflect.path.CtRole.CONTAINED_TYPE, ctPackage.getTypes(), other.getTypes());
+		biScan(spoon.reflect.path.CtRole.COMMENT, ctPackage.getComments(), other.getComments());
 		exit(ctPackage);
 	}
 
@@ -572,7 +572,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtPackageReference(final spoon.reflect.reference.CtPackageReference reference) {
 		spoon.reflect.reference.CtPackageReference other = ((spoon.reflect.reference.CtPackageReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
 	}
 
@@ -580,9 +580,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtParameter(final spoon.reflect.declaration.CtParameter<T> parameter) {
 		spoon.reflect.declaration.CtParameter other = ((spoon.reflect.declaration.CtParameter) (this.stack.peek()));
 		enter(parameter);
-		biScan(parameter.getAnnotations(), other.getAnnotations());
-		biScan(parameter.getType(), other.getType());
-		biScan(parameter.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, parameter.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, parameter.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.COMMENT, parameter.getComments(), other.getComments());
 		exit(parameter);
 	}
 
@@ -590,9 +590,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtParameterReference(final spoon.reflect.reference.CtParameterReference<T> reference) {
 		spoon.reflect.reference.CtParameterReference other = ((spoon.reflect.reference.CtParameterReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getType(), other.getType());
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		biScan(reference.getDeclaringExecutable(), other.getDeclaringExecutable());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXECUTABLE_REF, reference.getDeclaringExecutable(), other.getDeclaringExecutable());
 		exit(reference);
 	}
 
@@ -600,9 +600,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <R> void visitCtReturn(final spoon.reflect.code.CtReturn<R> returnStatement) {
 		spoon.reflect.code.CtReturn other = ((spoon.reflect.code.CtReturn) (this.stack.peek()));
 		enter(returnStatement);
-		biScan(returnStatement.getAnnotations(), other.getAnnotations());
-		biScan(returnStatement.getReturnedExpression(), other.getReturnedExpression());
-		biScan(returnStatement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, returnStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, returnStatement.getReturnedExpression(), other.getReturnedExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, returnStatement.getComments(), other.getComments());
 		exit(returnStatement);
 	}
 
@@ -610,9 +610,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <R> void visitCtStatementList(final spoon.reflect.code.CtStatementList statements) {
 		spoon.reflect.code.CtStatementList other = ((spoon.reflect.code.CtStatementList) (this.stack.peek()));
 		enter(statements);
-		biScan(statements.getAnnotations(), other.getAnnotations());
-		biScan(statements.getStatements(), other.getStatements());
-		biScan(statements.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, statements.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.STATEMENT, statements.getStatements(), other.getStatements());
+		biScan(spoon.reflect.path.CtRole.COMMENT, statements.getComments(), other.getComments());
 		exit(statements);
 	}
 
@@ -620,10 +620,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <S> void visitCtSwitch(final spoon.reflect.code.CtSwitch<S> switchStatement) {
 		spoon.reflect.code.CtSwitch other = ((spoon.reflect.code.CtSwitch) (this.stack.peek()));
 		enter(switchStatement);
-		biScan(switchStatement.getAnnotations(), other.getAnnotations());
-		biScan(switchStatement.getSelector(), other.getSelector());
-		biScan(switchStatement.getCases(), other.getCases());
-		biScan(switchStatement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, switchStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, switchStatement.getSelector(), other.getSelector());
+		biScan(spoon.reflect.path.CtRole.CASE, switchStatement.getCases(), other.getCases());
+		biScan(spoon.reflect.path.CtRole.COMMENT, switchStatement.getComments(), other.getComments());
 		exit(switchStatement);
 	}
 
@@ -631,10 +631,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtSynchronized(final spoon.reflect.code.CtSynchronized synchro) {
 		spoon.reflect.code.CtSynchronized other = ((spoon.reflect.code.CtSynchronized) (this.stack.peek()));
 		enter(synchro);
-		biScan(synchro.getAnnotations(), other.getAnnotations());
-		biScan(synchro.getExpression(), other.getExpression());
-		biScan(synchro.getBlock(), other.getBlock());
-		biScan(synchro.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, synchro.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, synchro.getExpression(), other.getExpression());
+		biScan(spoon.reflect.path.CtRole.BODY, synchro.getBlock(), other.getBlock());
+		biScan(spoon.reflect.path.CtRole.COMMENT, synchro.getComments(), other.getComments());
 		exit(synchro);
 	}
 
@@ -642,9 +642,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtThrow(final spoon.reflect.code.CtThrow throwStatement) {
 		spoon.reflect.code.CtThrow other = ((spoon.reflect.code.CtThrow) (this.stack.peek()));
 		enter(throwStatement);
-		biScan(throwStatement.getAnnotations(), other.getAnnotations());
-		biScan(throwStatement.getThrownExpression(), other.getThrownExpression());
-		biScan(throwStatement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, throwStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, throwStatement.getThrownExpression(), other.getThrownExpression());
+		biScan(spoon.reflect.path.CtRole.COMMENT, throwStatement.getComments(), other.getComments());
 		exit(throwStatement);
 	}
 
@@ -652,11 +652,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtTry(final spoon.reflect.code.CtTry tryBlock) {
 		spoon.reflect.code.CtTry other = ((spoon.reflect.code.CtTry) (this.stack.peek()));
 		enter(tryBlock);
-		biScan(tryBlock.getAnnotations(), other.getAnnotations());
-		biScan(tryBlock.getBody(), other.getBody());
-		biScan(tryBlock.getCatchers(), other.getCatchers());
-		biScan(tryBlock.getFinalizer(), other.getFinalizer());
-		biScan(tryBlock.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, tryBlock.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.BODY, tryBlock.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.CATCH, tryBlock.getCatchers(), other.getCatchers());
+		biScan(spoon.reflect.path.CtRole.FINALIZER, tryBlock.getFinalizer(), other.getFinalizer());
+		biScan(spoon.reflect.path.CtRole.COMMENT, tryBlock.getComments(), other.getComments());
 		exit(tryBlock);
 	}
 
@@ -665,12 +665,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtTryWithResource(final spoon.reflect.code.CtTryWithResource tryWithResource) {
 		spoon.reflect.code.CtTryWithResource other = ((spoon.reflect.code.CtTryWithResource) (this.stack.peek()));
 		enter(tryWithResource);
-		biScan(tryWithResource.getAnnotations(), other.getAnnotations());
-		biScan(tryWithResource.getResources(), other.getResources());
-		biScan(tryWithResource.getBody(), other.getBody());
-		biScan(tryWithResource.getCatchers(), other.getCatchers());
-		biScan(tryWithResource.getFinalizer(), other.getFinalizer());
-		biScan(tryWithResource.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, tryWithResource.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TRY_RESOURCE, tryWithResource.getResources(), other.getResources());
+		biScan(spoon.reflect.path.CtRole.BODY, tryWithResource.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.CATCH, tryWithResource.getCatchers(), other.getCatchers());
+		biScan(spoon.reflect.path.CtRole.FINALIZER, tryWithResource.getFinalizer(), other.getFinalizer());
+		biScan(spoon.reflect.path.CtRole.COMMENT, tryWithResource.getComments(), other.getComments());
 		exit(tryWithResource);
 	}
 
@@ -678,10 +678,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtTypeParameterReference(final spoon.reflect.reference.CtTypeParameterReference ref) {
 		spoon.reflect.reference.CtTypeParameterReference other = ((spoon.reflect.reference.CtTypeParameterReference) (this.stack.peek()));
 		enter(ref);
-		biScan(ref.getPackage(), other.getPackage());
-		biScan(ref.getDeclaringType(), other.getDeclaringType());
-		biScan(ref.getAnnotations(), other.getAnnotations());
-		biScan(ref.getBoundingType(), other.getBoundingType());
+		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, ref.getPackage(), other.getPackage());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, ref.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, ref.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.BOUNDING_TYPE, ref.getBoundingType(), other.getBoundingType());
 		exit(ref);
 	}
 
@@ -690,10 +690,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
 		spoon.reflect.reference.CtWildcardReference other = ((spoon.reflect.reference.CtWildcardReference) (this.stack.peek()));
 		enter(wildcardReference);
-		biScan(wildcardReference.getPackage(), other.getPackage());
-		biScan(wildcardReference.getDeclaringType(), other.getDeclaringType());
-		biScan(wildcardReference.getAnnotations(), other.getAnnotations());
-		biScan(wildcardReference.getBoundingType(), other.getBoundingType());
+		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, wildcardReference.getPackage(), other.getPackage());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, wildcardReference.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, wildcardReference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.BOUNDING_TYPE, wildcardReference.getBoundingType(), other.getBoundingType());
 		exit(wildcardReference);
 	}
 
@@ -702,12 +702,12 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtIntersectionTypeReference(final spoon.reflect.reference.CtIntersectionTypeReference<T> reference) {
 		spoon.reflect.reference.CtIntersectionTypeReference other = ((spoon.reflect.reference.CtIntersectionTypeReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getPackage(), other.getPackage());
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, reference.getPackage(), other.getPackage());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, reference.getDeclaringType(), other.getDeclaringType());
 		// TypeReferenceTest fails if actual type arguments are really not set-able on CtIntersectionTypeReference
-		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		biScan(reference.getBounds(), other.getBounds());
+		biScan(spoon.reflect.path.CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments(), other.getActualTypeArguments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.BOUND, reference.getBounds(), other.getBounds());
 		exit(reference);
 	}
 
@@ -715,11 +715,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtTypeReference(final spoon.reflect.reference.CtTypeReference<T> reference) {
 		spoon.reflect.reference.CtTypeReference other = ((spoon.reflect.reference.CtTypeReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getPackage(), other.getPackage());
-		biScan(reference.getDeclaringType(), other.getDeclaringType());
-		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
-		biScan(reference.getAnnotations(), other.getAnnotations());
-		biScan(reference.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, reference.getPackage(), other.getPackage());
+		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, reference.getDeclaringType(), other.getDeclaringType());
+		biScan(spoon.reflect.path.CtRole.TYPE_ARGUMENT, reference.getActualTypeArguments(), other.getActualTypeArguments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, reference.getComments(), other.getComments());
 		exit(reference);
 	}
 
@@ -728,10 +728,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtTypeAccess(final spoon.reflect.code.CtTypeAccess<T> typeAccess) {
 		spoon.reflect.code.CtTypeAccess other = ((spoon.reflect.code.CtTypeAccess) (this.stack.peek()));
 		enter(typeAccess);
-		biScan(typeAccess.getAnnotations(), other.getAnnotations());
-		biScan(typeAccess.getTypeCasts(), other.getTypeCasts());
-		biScan(typeAccess.getAccessedType(), other.getAccessedType());
-		biScan(typeAccess.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, typeAccess.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, typeAccess.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.ACCESSED_TYPE, typeAccess.getAccessedType(), other.getAccessedType());
+		biScan(spoon.reflect.path.CtRole.COMMENT, typeAccess.getComments(), other.getComments());
 		exit(typeAccess);
 	}
 
@@ -739,11 +739,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtUnaryOperator(final spoon.reflect.code.CtUnaryOperator<T> operator) {
 		spoon.reflect.code.CtUnaryOperator other = ((spoon.reflect.code.CtUnaryOperator) (this.stack.peek()));
 		enter(operator);
-		biScan(operator.getAnnotations(), other.getAnnotations());
-		biScan(operator.getType(), other.getType());
-		biScan(operator.getTypeCasts(), other.getTypeCasts());
-		biScan(operator.getOperand(), other.getOperand());
-		biScan(operator.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, operator.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, operator.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.CAST, operator.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, operator.getOperand(), other.getOperand());
+		biScan(spoon.reflect.path.CtRole.COMMENT, operator.getComments(), other.getComments());
 		exit(operator);
 	}
 
@@ -752,10 +752,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtVariableRead(final spoon.reflect.code.CtVariableRead<T> variableRead) {
 		spoon.reflect.code.CtVariableRead other = ((spoon.reflect.code.CtVariableRead) (this.stack.peek()));
 		enter(variableRead);
-		biScan(variableRead.getAnnotations(), other.getAnnotations());
-		biScan(variableRead.getTypeCasts(), other.getTypeCasts());
-		biScan(variableRead.getVariable(), other.getVariable());
-		biScan(variableRead.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, variableRead.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, variableRead.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, variableRead.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.COMMENT, variableRead.getComments(), other.getComments());
 		exit(variableRead);
 	}
 
@@ -764,10 +764,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtVariableWrite(final spoon.reflect.code.CtVariableWrite<T> variableWrite) {
 		spoon.reflect.code.CtVariableWrite other = ((spoon.reflect.code.CtVariableWrite) (this.stack.peek()));
 		enter(variableWrite);
-		biScan(variableWrite.getAnnotations(), other.getAnnotations());
-		biScan(variableWrite.getTypeCasts(), other.getTypeCasts());
-		biScan(variableWrite.getVariable(), other.getVariable());
-		biScan(variableWrite.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, variableWrite.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, variableWrite.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, variableWrite.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.COMMENT, variableWrite.getComments(), other.getComments());
 		exit(variableWrite);
 	}
 
@@ -775,10 +775,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtWhile(final spoon.reflect.code.CtWhile whileLoop) {
 		spoon.reflect.code.CtWhile other = ((spoon.reflect.code.CtWhile) (this.stack.peek()));
 		enter(whileLoop);
-		biScan(whileLoop.getAnnotations(), other.getAnnotations());
-		biScan(whileLoop.getLoopingExpression(), other.getLoopingExpression());
-		biScan(whileLoop.getBody(), other.getBody());
-		biScan(whileLoop.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, whileLoop.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, whileLoop.getLoopingExpression(), other.getLoopingExpression());
+		biScan(spoon.reflect.path.CtRole.BODY, whileLoop.getBody(), other.getBody());
+		biScan(spoon.reflect.path.CtRole.COMMENT, whileLoop.getComments(), other.getComments());
 		exit(whileLoop);
 	}
 
@@ -786,10 +786,10 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtCodeSnippetExpression(final spoon.reflect.code.CtCodeSnippetExpression<T> expression) {
 		spoon.reflect.code.CtCodeSnippetExpression other = ((spoon.reflect.code.CtCodeSnippetExpression) (this.stack.peek()));
 		enter(expression);
-		biScan(expression.getType(), other.getType());
-		biScan(expression.getComments(), other.getComments());
-		biScan(expression.getAnnotations(), other.getAnnotations());
-		biScan(expression.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TYPE, expression.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.COMMENT, expression.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, expression.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, expression.getTypeCasts(), other.getTypeCasts());
 		exit(expression);
 	}
 
@@ -797,8 +797,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtCodeSnippetStatement(final spoon.reflect.code.CtCodeSnippetStatement statement) {
 		spoon.reflect.code.CtCodeSnippetStatement other = ((spoon.reflect.code.CtCodeSnippetStatement) (this.stack.peek()));
 		enter(statement);
-		biScan(statement.getComments(), other.getComments());
-		biScan(statement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, statement.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, statement.getAnnotations(), other.getAnnotations());
 		exit(statement);
 	}
 
@@ -806,7 +806,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtUnboundVariableReference(final spoon.reflect.reference.CtUnboundVariableReference<T> reference) {
 		spoon.reflect.reference.CtUnboundVariableReference other = ((spoon.reflect.reference.CtUnboundVariableReference) (this.stack.peek()));
 		enter(reference);
-		biScan(reference.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
 		exit(reference);
 	}
 
@@ -815,11 +815,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtFieldRead(final spoon.reflect.code.CtFieldRead<T> fieldRead) {
 		spoon.reflect.code.CtFieldRead other = ((spoon.reflect.code.CtFieldRead) (this.stack.peek()));
 		enter(fieldRead);
-		biScan(fieldRead.getAnnotations(), other.getAnnotations());
-		biScan(fieldRead.getTypeCasts(), other.getTypeCasts());
-		biScan(fieldRead.getTarget(), other.getTarget());
-		biScan(fieldRead.getVariable(), other.getVariable());
-		biScan(fieldRead.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, fieldRead.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, fieldRead.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, fieldRead.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, fieldRead.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.COMMENT, fieldRead.getComments(), other.getComments());
 		exit(fieldRead);
 	}
 
@@ -828,11 +828,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtFieldWrite(final spoon.reflect.code.CtFieldWrite<T> fieldWrite) {
 		spoon.reflect.code.CtFieldWrite other = ((spoon.reflect.code.CtFieldWrite) (this.stack.peek()));
 		enter(fieldWrite);
-		biScan(fieldWrite.getAnnotations(), other.getAnnotations());
-		biScan(fieldWrite.getTypeCasts(), other.getTypeCasts());
-		biScan(fieldWrite.getTarget(), other.getTarget());
-		biScan(fieldWrite.getVariable(), other.getVariable());
-		biScan(fieldWrite.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, fieldWrite.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, fieldWrite.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, fieldWrite.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, fieldWrite.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.COMMENT, fieldWrite.getComments(), other.getComments());
 		exit(fieldWrite);
 	}
 
@@ -841,11 +841,11 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess other = ((spoon.reflect.code.CtSuperAccess) (this.stack.peek()));
 		enter(f);
-		biScan(f.getComments(), other.getComments());
-		biScan(f.getAnnotations(), other.getAnnotations());
-		biScan(f.getTypeCasts(), other.getTypeCasts());
-		biScan(f.getTarget(), other.getTarget());
-		biScan(f.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.COMMENT, f.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, f.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.CAST, f.getTypeCasts(), other.getTypeCasts());
+		biScan(spoon.reflect.path.CtRole.TARGET, f.getTarget(), other.getTarget());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, f.getVariable(), other.getVariable());
 		exit(f);
 	}
 
@@ -854,8 +854,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtComment(final spoon.reflect.code.CtComment comment) {
 		spoon.reflect.code.CtComment other = ((spoon.reflect.code.CtComment) (this.stack.peek()));
 		enter(comment);
-		biScan(comment.getComments(), other.getComments());
-		biScan(comment.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, comment.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, comment.getAnnotations(), other.getAnnotations());
 		exit(comment);
 	}
 
@@ -864,9 +864,9 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtJavaDoc(final spoon.reflect.code.CtJavaDoc javaDoc) {
 		spoon.reflect.code.CtJavaDoc other = ((spoon.reflect.code.CtJavaDoc) (this.stack.peek()));
 		enter(javaDoc);
-		biScan(javaDoc.getComments(), other.getComments());
-		biScan(javaDoc.getAnnotations(), other.getAnnotations());
-		biScan(javaDoc.getTags(), other.getTags());
+		biScan(spoon.reflect.path.CtRole.COMMENT, javaDoc.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, javaDoc.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT_TAG, javaDoc.getTags(), other.getTags());
 		exit(javaDoc);
 	}
 
@@ -875,8 +875,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtJavaDocTag(final spoon.reflect.code.CtJavaDocTag docTag) {
 		spoon.reflect.code.CtJavaDocTag other = ((spoon.reflect.code.CtJavaDocTag) (this.stack.peek()));
 		enter(docTag);
-		biScan(docTag.getComments(), other.getComments());
-		biScan(docTag.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.COMMENT, docTag.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, docTag.getAnnotations(), other.getAnnotations());
 		exit(docTag);
 	}
 }

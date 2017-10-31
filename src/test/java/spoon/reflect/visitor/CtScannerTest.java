@@ -19,11 +19,14 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
@@ -43,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -100,7 +105,7 @@ public class CtScannerTest {
 
 	@Test
 	public void testScannerCallsAllProperties() throws Exception {
-		// contract: CtScanner must visit all metamodel properties
+		// contract: CtScanner must visit all metamodel properties and use correct CtRole!
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.run();
@@ -177,6 +182,13 @@ public class CtScannerTest {
 					//System.out.println(invocation.toString());
 				}
 
+				// contract: the scan method is called with the same role as the one set on field / property
+				CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>)invocation.getExecutable().getDeclaration());
+				CtInvocation<?> scanInvocation = invocation.getParent(CtInvocation.class);
+				String realRoleName = ((CtFieldRead<?>) scanInvocation.getArguments().get(0)).getVariable().getSimpleName();
+				if(expectedRole.name().equals(realRoleName) == false) {
+					problems.add("Wrong role " + realRoleName + " used in " + scanInvocation.getPosition());
+				}
 			});
 			calledMethods.removeAll(checkedMethods);
 
@@ -194,5 +206,51 @@ public class CtScannerTest {
 			fail(String.join("\n", problems));
 		}
 		assertTrue("not enough checks", c.nbChecks >= 200);
+	}
+
+	@Test
+	public void testScan() throws Exception {
+		// contract: all AST nodes are visisted through method "scan"
+		Launcher launcher;
+		launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("src/test/resources/noclasspath/draw2d");
+		launcher.buildModel();
+		class Counter {
+			int nEnter=0;
+			int nExit=0;
+			int nObject=0;
+			int nElement=0;
+		};
+		Counter counter = new Counter();
+		launcher.getModel().getRootPackage().accept(new CtScanner() {
+			@Override
+			public void scan(Object o) {
+				counter.nObject++;
+				super.scan(o);
+			}
+			@Override
+			public void scan(CtElement o) {
+				counter.nElement++;
+				super.scan(o);
+			}
+			@Override
+			public void enter(CtElement o) {
+				counter.nEnter++;
+				super.enter(o);
+			}
+			@Override
+			public void exit(CtElement o) {
+				counter.nExit++;
+				super.exit(o);
+			}
+		});
+		// interesting, this is never called because of covariance, only CtElement or Collection is called
+		assertEquals(0, counter.nObject);
+		// this is a coarse-grain check to see if the scanner changes
+		assertEquals(3968, counter.nElement);
+		assertEquals(2595, counter.nEnter);
+		assertEquals(2595, counter.nExit);
+
 	}
 }
