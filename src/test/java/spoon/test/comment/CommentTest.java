@@ -121,14 +121,28 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testJavaDocComment() {
+	public void testJavaDocCommentOnUnix() {
 		//the EOL is taken from JavaDocComment.java, which is committed in git with linux \n
 		//that is true on Windows too.
 		String EOL = "\n";
-
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
+		this.testJavaDocComment(type, EOL);
+	}
 
+	@Test
+	public void testJavaDocCommentOnMac() {
+		String EOL = "\n";
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/comment/JavaDocComment.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.run();
+
+		CtClass<?> type = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.comment.testclasses.JavaDocComment");
+		this.testJavaDocComment(type, EOL);
+	}
+
+	private void testJavaDocComment(CtClass type, String EOL) {
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
 		//contract: test that java doc is printed correctly
 		String str = classJavaDoc.toString();
