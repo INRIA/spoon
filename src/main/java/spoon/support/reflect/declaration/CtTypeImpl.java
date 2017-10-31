@@ -49,6 +49,7 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
@@ -538,6 +539,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<?> getSuperclass() {
 		// overridden in subclasses.
 		return null;

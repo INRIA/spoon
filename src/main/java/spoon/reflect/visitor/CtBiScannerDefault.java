@@ -320,7 +320,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(annotationFieldAccess.getAnnotations(), other.getAnnotations());
 		biScan(annotationFieldAccess.getTypeCasts(), other.getTypeCasts());
 		biScan(annotationFieldAccess.getTarget(), other.getTarget());
-		biScan(annotationFieldAccess.getType(), other.getType());
 		biScan(annotationFieldAccess.getVariable(), other.getVariable());
 		exit(annotationFieldAccess);
 	}
@@ -434,7 +433,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(catchVariable);
 		biScan(catchVariable.getComments(), other.getComments());
 		biScan(catchVariable.getAnnotations(), other.getAnnotations());
-		biScan(catchVariable.getDefaultExpression(), other.getDefaultExpression());
 		biScan(catchVariable.getMultiTypes(), other.getMultiTypes());
 		exit(catchVariable);
 	}
@@ -706,6 +704,8 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(reference);
 		biScan(reference.getPackage(), other.getPackage());
 		biScan(reference.getDeclaringType(), other.getDeclaringType());
+		// TypeReferenceTest fails if actual type arguments are really not set-able on CtIntersectionTypeReference
+		biScan(reference.getActualTypeArguments(), other.getActualTypeArguments());
 		biScan(reference.getAnnotations(), other.getAnnotations());
 		biScan(reference.getBounds(), other.getBounds());
 		exit(reference);
@@ -841,7 +841,6 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public <T> void visitCtSuperAccess(final spoon.reflect.code.CtSuperAccess<T> f) {
 		spoon.reflect.code.CtSuperAccess other = ((spoon.reflect.code.CtSuperAccess) (this.stack.peek()));
 		enter(f);
-		biScan(f.getType(), other.getType());
 		biScan(f.getComments(), other.getComments());
 		biScan(f.getAnnotations(), other.getAnnotations());
 		biScan(f.getTypeCasts(), other.getTypeCasts());

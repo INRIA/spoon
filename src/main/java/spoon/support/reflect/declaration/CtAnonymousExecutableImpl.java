@@ -27,6 +27,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.util.EnumSet;
@@ -115,6 +116,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@DerivedProperty
 	public List<CtParameter<?>> getParameters() {
 		return emptyList();
 	}
@@ -140,6 +142,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@DerivedProperty
 	public Set<CtTypeReference<? extends Throwable>> getThrownTypes() {
 		return emptySet();
 	}
@@ -178,6 +181,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<Void> getType() {
 		return factory.Type().VOID_PRIMITIVE;
 	}

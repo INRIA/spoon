@@ -417,7 +417,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(annotationFieldAccess.getAnnotations());
 		scan(annotationFieldAccess.getTypeCasts());
 		scan(annotationFieldAccess.getTarget());
-		scan(annotationFieldAccess.getType());
 		scan(annotationFieldAccess.getVariable());
 		exit(annotationFieldAccess);
 	}
@@ -512,7 +511,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(catchVariable);
 		scan(catchVariable.getComments());
 		scan(catchVariable.getAnnotations());
-		scan(catchVariable.getDefaultExpression());
 		scan(catchVariable.getMultiTypes());
 		exit(catchVariable);
 	}
@@ -740,6 +738,8 @@ public abstract class CtScanner implements CtVisitor {
 		enter(reference);
 		scan(reference.getPackage());
 		scan(reference.getDeclaringType());
+		//TypeReferenceTest fails if actual type arguments are really not set-able on CtIntersectionTypeReference
+		scan(reference.getActualTypeArguments());
 		scan(reference.getAnnotations());
 		scan(reference.getBounds());
 		exit(reference);
@@ -851,7 +851,6 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public <T> void visitCtSuperAccess(final CtSuperAccess<T> f) {
 		enter(f);
-		scan(f.getType());
 		scan(f.getComments());
 		scan(f.getAnnotations());
 		scan(f.getTypeCasts());
@@ -867,7 +866,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(comment.getAnnotations());
 		exit(comment);
 	}
-
 
 	@Override
 	public void visitCtJavaDoc(final CtJavaDoc javaDoc) {
@@ -886,3 +884,4 @@ public abstract class CtScanner implements CtVisitor {
 		exit(docTag);
 	}
 }
+

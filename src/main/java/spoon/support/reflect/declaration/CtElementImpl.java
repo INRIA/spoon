@@ -39,6 +39,7 @@ import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -274,6 +275,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
+	@DerivedProperty
 	public Set<CtTypeReference<?>> getReferencedTypes() {
 		TypeReferenceScanner s = new TypeReferenceScanner();
 		s.scan(this);
