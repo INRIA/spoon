@@ -257,8 +257,8 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	void updateAllParentsBelow();
 
 	/**
-	 * @return {@link CtRole} of the parent's attribute where this element is used.
-	 * returns null if parent doesn't links this element or if isParentInitialized()==false.
+	 * @return the {@link CtRole} of the parent's attribute where this element is used.
+	 * Returns null if parent doesn't contain this element as direct children or if this element has no parent.
 	 */
 	CtRole getRoleInParent();
 
