@@ -257,6 +257,7 @@ public class VariableAccessTest {
 	
 	@Test
 	public void testSuperAccess() throws Exception {
+		// contract: the type of "super" variable is set and correct		
 		CtClass<?> type = build("spoon.test.reference.testclasses", "SuperAccess");
 		CtMethod<?> method = type.getMethodsByName("method").get(0);
 		CtInvocation<?> invocation = method.getBody().getStatement(0);
