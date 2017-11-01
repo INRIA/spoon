@@ -248,9 +248,9 @@ public class CtScannerTest {
 		// interesting, this is never called because of covariance, only CtElement or Collection is called
 		assertEquals(0, counter.nObject);
 		// this is a coarse-grain check to see if the scanner changes
-		assertEquals(3968, counter.nElement);
-		assertEquals(2595, counter.nEnter);
-		assertEquals(2595, counter.nExit);
+		assertEquals(3972, counter.nElement);
+		assertEquals(2599, counter.nEnter);
+		assertEquals(2599, counter.nExit);
 
 	}
 }
