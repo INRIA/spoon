@@ -31,6 +31,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
@@ -373,6 +374,25 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public CtRole getRoleInParent() {
+		if (isParentInitialized()) {
+			EarlyTerminatingScanner<CtRole> ets = new EarlyTerminatingScanner<CtRole>() {
+				@Override
+				public void scan(CtRole role, CtElement element) {
+					if (element == CtElementImpl.this) {
+						setResult(role);
+						terminate();
+					}
+					//do not call super.scan, because we do not want scan children
+				}
+			};
+			getParent().accept(ets);
+			return ets.getResult();
+		}
+		return null;
 	}
 
 	@Override

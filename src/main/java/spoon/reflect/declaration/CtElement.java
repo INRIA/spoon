@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
@@ -254,6 +255,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * be called to check and fix parents after manipulating the model.
 	 */
 	void updateAllParentsBelow();
+
+	/**
+	 * @return the {@link CtRole} of the parent's attribute where this element is used.
+	 * Returns null if parent doesn't contain this element as direct children or if this element has no parent.
+	 */
+	CtRole getRoleInParent();
 
 	/*
 	 * Deletes the element. For instance, delete a statement from its containing block. Warning: it may result in an incorrect AST, use at your own risk.
