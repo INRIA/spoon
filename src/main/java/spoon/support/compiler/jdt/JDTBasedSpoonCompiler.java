@@ -368,7 +368,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
 
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		List<SpoonFile> sourceFiles = Collections.unmodifiableList(sourcesFolder.getAllJavaFiles());
+		List<SpoonFile> sourceFiles = sourcesFolder.getAllJavaFiles();
 		if (sourceFiles.isEmpty()) {
 			return EMPTY_RESULT;
 		}
