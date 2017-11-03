@@ -12,7 +12,7 @@ public class IncrementalBuildTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.createCompiler();
-		launcher.setSourceOutputDirectory("./src/test/resources/incremental/spooned");
+		launcher.setSourceOutputDirectory("./src/test/resources/incremental/out");
 		launcher.getModelBuilder().setBuildOnlyOutdatedFiles(true);
 		launcher.buildModel();
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.COMPILATION_UNITS);
