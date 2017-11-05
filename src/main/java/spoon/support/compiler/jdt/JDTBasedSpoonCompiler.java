@@ -527,8 +527,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			for (String s : relativeOutputPaths) {
 				if (f.getAbsolutePath().endsWith(s)) {
 					if (f.lastModified() <= new File(outputDirectory, s).lastModified()) {
-						//System.out.println(f.lastModified() + " " + new File(outputDirectory, s).lastModified());
-						System.out.println(f + " to remove");
 						files.remove(sf);
 					}
 				}
