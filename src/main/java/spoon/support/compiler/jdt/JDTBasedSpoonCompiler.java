@@ -373,6 +373,11 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			return EMPTY_RESULT;
 		}
 
+		if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
+			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
+			keepOutdatedFiles(sourceFiles, outputFiles);
+		}
+		
 		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourceFiles));
 
 		String[] args;
@@ -389,11 +394,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
-
-		if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
-			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
-			keepOutdatedFiles(sourceFiles, outputFiles);
-		}
 
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
 
@@ -527,6 +527,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			for (String s : relativeOutputPaths) {
 				if (f.getAbsolutePath().endsWith(s)) {
 					if (f.lastModified() <= new File(outputDirectory, s).lastModified()) {
+						//System.out.println(f.lastModified() + " " + new File(outputDirectory, s).lastModified());
+						System.out.println(f + " to remove");
 						files.remove(sf);
 					}
 				}
