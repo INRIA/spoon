@@ -21,16 +21,18 @@ public class IncrementalBuildTest {
 	private static final String OUT_DIR = "./src/test/resources/incremental/out";
 	
 	@Test
-	public void testIncrementalBuild() throws IOException, InterruptedException
-	{
+	public void testIncrementalBuild() throws IOException, InterruptedException {
 		int expectedNumOfTypes = firstBuild();
 		int n = secondBuild();
 		assertEquals(expectedNumOfTypes, n); // And here test fails 3 != 1
 	}
 	
 	public int firstBuild() throws IOException {
-		// Clean OUT_DIR before the first build
-		FileUtils.cleanDirectory(new File(OUT_DIR));
+		File out = new File(OUT_DIR);
+		if (out.exists()) {
+			// Clean OUT_DIR before the first build
+			FileUtils.cleanDirectory(out);
+		}
 		
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(IN_DIR);

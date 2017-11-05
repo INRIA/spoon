@@ -377,7 +377,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
 			keepOutdatedFiles(sourceFiles, outputFiles);
 		}
-		
+
 		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourceFiles));
 
 		String[] args;
