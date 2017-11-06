@@ -415,6 +415,7 @@ public class MainTest {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;
 			}
+			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)"));
 		}
 	}
 
