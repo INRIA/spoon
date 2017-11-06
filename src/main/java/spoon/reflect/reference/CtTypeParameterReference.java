@@ -104,5 +104,5 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Returns true if the given typeReference is the default bounding type (i.e. java.lang.Object)
 	 */
 	@DerivedProperty
-	boolean isDefaultBoundingType(CtTypeReference typeReference);
+	boolean isDefaultBoundingType();
 }

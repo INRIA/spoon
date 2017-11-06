@@ -1207,7 +1207,7 @@ public class GenericsTest {
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
 				assertTrue(actualTA instanceof CtWildcardReference);
 				assertEquals("?", actualTA.getSimpleName());
-				assertTrue( ((CtWildcardReference)actualTA).isDefaultBoundingType(((CtWildcardReference)actualTA).getBoundingType()) );
+				assertTrue( ((CtWildcardReference)actualTA).isDefaultBoundingType() );
 				invocationDetected = true;
 			}
 		}

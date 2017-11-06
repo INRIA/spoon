@@ -51,13 +51,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	public CtTypeParameterReferenceImpl() {
 		super();
-		// calling null will set the default value of boudingType
+		// calling null will set the default value of boundingType
 		this.setBoundingType(null);
 	}
 
 	@Override
-	public boolean isDefaultBoundingType(CtTypeReference typeReference) {
-		return (typeReference.equals(getFactory().Type().OBJECT));
+	public boolean isDefaultBoundingType() {
+		return (getBoundingType().equals(getFactory().Type().getDefaultBoundingType()));
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
-			if (isDefaultBoundingType(getBoundingType())) {
+			if (isDefaultBoundingType()) {
 				return (Class<Object>) getTypeErasure().getActualClass();
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
@@ -141,7 +141,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (bound == null) {
 			return (T) this;
 		}
-		if (isDefaultBoundingType(getBoundingType())) {
+		if (isDefaultBoundingType()) {
 			setBoundingType(bound);
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
@@ -156,7 +156,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || isDefaultBoundingType(getBoundingType())) {
+		if (bound == null || isDefaultBoundingType()) {
 			return false;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
