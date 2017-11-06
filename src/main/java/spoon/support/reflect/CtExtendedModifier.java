@@ -18,7 +18,9 @@ package spoon.support.reflect;
 
 import spoon.reflect.declaration.ModifierKind;
 
-public class CtExtendedModifier {
+import java.io.Serializable;
+
+public class CtExtendedModifier implements Serializable {
     private boolean implicit;
     private ModifierKind kind;
 
@@ -45,5 +47,22 @@ public class CtExtendedModifier {
 
     public void setKind(ModifierKind kind) {
         this.kind = kind;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CtExtendedModifier that = (CtExtendedModifier) o;
+
+        return (implicit == that.implicit && kind == that.kind);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (implicit ? 1 : 0);
+        result = 31 * result + (kind != null ? kind.hashCode() : 0);
+        return result;
     }
 }

@@ -81,7 +81,7 @@ public class SpoonArchitectureEnforcerTest {
 							CtMethod method = m.clone();
 
 							method.setSimpleName("create"+simpleNameType);
-							assertTrue(method.getSignature() + " is not present in the main factory", factoryImpl.hasMethod(method));
+							assertTrue(method.getSignature() + " (from "+t.getQualifiedName()+") is not present in the main factory", factoryImpl.hasMethod(method));
 							continue;
 						}
 

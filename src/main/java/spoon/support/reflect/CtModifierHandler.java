@@ -48,8 +48,20 @@ public class CtModifierHandler implements Serializable {
 		return this.modifiers;
 	}
 
-	public void setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
-		this.modifiers = extendedModifiers;
+	public CtModifierHandler setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		if (extendedModifiers != null && extendedModifiers.size() > 0) {
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
+				this.modifiers = new HashSet<>();
+			} else {
+				this.modifiers.clear();
+			}
+			for (CtExtendedModifier extendedModifier : extendedModifiers) {
+				getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, extendedModifier.getKind());
+				this.modifiers.add(extendedModifier);
+			}
+		}
+		return this;
 	}
 
 	public Set<ModifierKind> getModifiers() {
@@ -61,7 +73,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
+		if (modifiers != null && modifiers.size() > 0) {
 			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
@@ -72,6 +84,9 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler addModifier(ModifierKind modifier) {
+		if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
+			this.modifiers = new HashSet<>();
+		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
 		modifiers.add(new CtExtendedModifier(modifier));
 		return this;

@@ -79,6 +79,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
@@ -107,6 +108,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtQuery;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.GenericTypeAdapter;
 
 import java.lang.annotation.Annotation;
@@ -186,6 +188,11 @@ public interface Factory {
 	 *  @see CodeFactory#createCatchVariable(CtTypeReference,String, ModifierKind[])
 	 */
 	<T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind... modifierKinds);
+
+	/**
+	 *  @see CodeFactory#createCatchVariable(CtTypeReference,String, Set<CtExtendedModifier>)
+	 */
+	<T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, Set<CtExtendedModifier> extendedModifiers);
 
 	/**
 	 *  @see CodeFactory#createCodeSnippetExpression(String)
@@ -909,4 +916,9 @@ public interface Factory {
 	 * @see PackageFactory#create(CtPackage, String)
 	 */
 	CtPackage createPackage(CtPackage parent, String simpleName);
+
+	/**
+	 * @see CoreFactory#create(Class<? extends CtElement>)
+	 */
+	CtElement createElement(Class<? extends CtElement> klass);
 }

@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
@@ -110,6 +111,7 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.GenericTypeAdapter;
 
 import java.io.IOException;
@@ -459,6 +461,11 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind... modifierKinds) {
 		return Code().createCatchVariable(type, name, modifierKinds);
+	}
+
+	@Override
+	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, Set<CtExtendedModifier> extendedModifiers) {
+		return Code().createCatchVariable(type, name, extendedModifiers);
 	}
 
 	@Override
@@ -1160,5 +1167,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtPackage createPackage(CtPackage parent, String simpleName) {
 		return Package().create(parent, simpleName);
+	}
+
+	@Override
+	public CtElement createElement(Class<? extends CtElement> klass) {
+		return Core().create(klass);
 	}
 }

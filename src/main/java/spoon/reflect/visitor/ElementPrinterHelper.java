@@ -50,6 +50,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.PrintingContext.Writable;
+import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,8 +82,33 @@ public class ElementPrinterHelper {
 	}
 
 	public void writeModifiers(CtModifiable modifiable) {
-		for (ModifierKind modifierKind : modifiable.getModifiers()) {
-			printer.writeKeyword(modifierKind.toString()).writeSpace();
+		List<String> firstPosition = new ArrayList<>(); // visibility: public, private, protected
+		List<String> secondPosition = new ArrayList<>(); // keywords: static, abstract
+		List<String> thirdPosition = new ArrayList<>(); // all other things
+
+		for (CtExtendedModifier extendedModifier : modifiable.getExtendedModifiers()) {
+			if (!extendedModifier.isImplicit()) {
+				ModifierKind modifierKind = extendedModifier.getKind();
+				if (modifierKind == ModifierKind.PUBLIC || modifierKind == ModifierKind.PRIVATE || modifierKind == ModifierKind.PROTECTED) {
+					firstPosition.add(modifierKind.toString());
+				} else if (modifierKind == ModifierKind.ABSTRACT || modifierKind == ModifierKind.STATIC) {
+					secondPosition.add(modifierKind.toString());
+				} else {
+					thirdPosition.add(modifierKind.toString());
+				}
+			}
+		}
+
+		for (String s : firstPosition) {
+			printer.writeKeyword(s).writeSpace();
+		}
+
+		for (String s : secondPosition) {
+			printer.writeKeyword(s).writeSpace();
+		}
+
+		for (String s : thirdPosition) {
+			printer.writeKeyword(s).writeSpace();
 		}
 	}
 
