@@ -227,8 +227,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
-	public void setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+	public <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return (C) this;
 	}
 
 	@Override

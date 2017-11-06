@@ -60,8 +60,10 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -112,17 +114,17 @@ public class JDTTreeBuilderHelper {
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
-		final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
+		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false);
 		if (typeReference instanceof UnionTypeReference) {
 			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
 					null, //do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
 					CharOperation.charToString(jdtCatch.name), //
-					modifiers.toArray(new ModifierKind[modifiers.size()]));
+					modifiers);
 		} else {
 			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
 					jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType), //
 					CharOperation.charToString(jdtCatch.name), //
-					modifiers.toArray(new ModifierKind[modifiers.size()]));
+					modifiers);
 		}
 	}
 
@@ -582,7 +584,7 @@ public class JDTTreeBuilderHelper {
 		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
 		p.setSimpleName(CharOperation.charToString(argument.name));
 		p.setVarArgs(argument.isVarArgs());
-		p.setModifiers(getModifiers(argument.modifiers));
+		p.setExtendedModifiers(getModifiers(argument.modifiers));
 		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
 			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
 			p.getType().setImplicit(argument.type == null);
@@ -654,7 +656,7 @@ public class JDTTreeBuilderHelper {
 		}
 
 		// Setting modifiers
-		type.setModifiers(getModifiers(typeDeclaration.modifiers));
+		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers));
 
 		return type;
 	}

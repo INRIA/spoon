@@ -154,6 +154,10 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.support.reflect.CtExtendedModifier;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -938,8 +942,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(CharOperation.charToString(methodDeclaration.selector));
-		int modifiers = (methodDeclaration.binding == null) ? methodDeclaration.modifiers : methodDeclaration.binding.modifiers;
-		m.setModifiers(getModifiers(modifiers));
+		Set<CtExtendedModifier> modifierSet = new HashSet<>();
+		if (methodDeclaration.binding != null) {
+			modifierSet.addAll(getModifiers(methodDeclaration.binding.modifiers, true));
+		}
+		modifierSet.addAll(getModifiers(methodDeclaration.modifiers, false));
+
+		m.setExtendedModifiers(modifierSet);
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 
 		context.enter(m, methodDeclaration);
@@ -962,7 +971,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
-		c.setModifiers(getModifiers(constructorDeclaration.modifiers));
+		Set<CtExtendedModifier> modifierSet = new HashSet<>();
+		if (constructorDeclaration.binding != null) {
+			modifierSet.addAll(getModifiers(constructorDeclaration.binding.modifiers, true));
+		}
+		modifierSet.addAll(getModifiers(constructorDeclaration.modifiers, false));
+
+		c.setExtendedModifiers(modifierSet);
 		context.enter(c, constructorDeclaration);
 
 		// Create block
@@ -1056,8 +1071,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
 
-		int modifiers = (fieldDeclaration.binding == null) ? fieldDeclaration.modifiers : fieldDeclaration.binding.modifiers;
-		field.setModifiers(getModifiers(modifiers));
+		Set<CtExtendedModifier> modifierSet = new HashSet<>();
+		if (fieldDeclaration.binding != null) {
+			modifierSet.addAll(getModifiers(fieldDeclaration.binding.modifiers, true));
+		}
+		modifierSet.addAll(getModifiers(fieldDeclaration.modifiers, false));
+
+		field.setExtendedModifiers(modifierSet);
 		context.enter(field, fieldDeclaration);
 		return true;
 	}
@@ -1129,7 +1149,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
-		v.setModifiers(getModifiers(localDeclaration.modifiers));
+		Set<CtExtendedModifier> modifierSet = new HashSet<>();
+		if (localDeclaration.binding != null) {
+			modifierSet.addAll(getModifiers(localDeclaration.binding.modifiers, true));
+		}
+		modifierSet.addAll(getModifiers(localDeclaration.modifiers, false));
+
+		v.setExtendedModifiers(modifierSet);
 		context.enter(v, localDeclaration);
 		return true;
 	}
