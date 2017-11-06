@@ -101,7 +101,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
-	 * Returns true if the given typeReference is the default bounding type (i.e. java.lang.Object)
+	 * Returns true if this has the default bounding type that is java.lang.Object (which basically means that there is no bound)
 	 */
 	@DerivedProperty
 	boolean isDefaultBoundingType();
