@@ -34,15 +34,11 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 
 	@Override
 	public CtVariableReference<T> getVariable() {
-		if (variable != null) {
-			return (CtVariableReference<T>) variable;
+		if (variable == null && getFactory() != null) {
+			variable = getFactory().Core().createLocalVariableReference();
+			variable.setParent(this);
 		}
-		if (getFactory() != null) {
-			CtVariableReference<Object> ref = getFactory().Core().createLocalVariableReference();
-			ref.setParent(this);
-			return (CtVariableReference<T>) ref;
-		}
-		return null;
+		return (CtVariableReference<T>) variable;
 	}
 
 	@Override

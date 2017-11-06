@@ -655,4 +655,11 @@ public class TypeFactory extends SubFactory {
 		return intersectionRef;
 	}
 
+	/**
+	 * Returns the default bounding type value
+	 */
+	public CtTypeReference getDefaultBoundingType() {
+		return OBJECT;
+	}
+
 }
