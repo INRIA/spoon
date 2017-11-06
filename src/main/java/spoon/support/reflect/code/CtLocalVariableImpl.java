@@ -31,6 +31,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
 import java.util.Set;
@@ -151,6 +152,17 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 			return ModifierKind.PRIVATE;
 		}
 		return null;
+	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return (T) this;
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
 import java.util.List;
@@ -91,6 +92,17 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 		modifierHandler.setVisibility(visibility);
 		return (T) this;
 	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return (T) this;
+ 	}
 
 	@Override
 	@DerivedProperty

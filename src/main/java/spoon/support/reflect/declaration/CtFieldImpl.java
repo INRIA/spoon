@@ -33,6 +33,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
 import java.util.Set;
@@ -138,6 +139,18 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	public boolean removeModifier(ModifierKind modifier) {
 		return modifierHandler.removeModifier(modifier);
 	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return (C) this;
+	}
+
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
