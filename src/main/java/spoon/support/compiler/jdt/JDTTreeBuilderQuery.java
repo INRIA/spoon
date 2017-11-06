@@ -37,7 +37,6 @@ import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -22,7 +22,6 @@ import spoon.reflect.factory.Factory;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.Serializable;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

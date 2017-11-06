@@ -102,7 +102,7 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
 		return (T) this;
- 	}
+	}
 
 	@Override
 	@DerivedProperty

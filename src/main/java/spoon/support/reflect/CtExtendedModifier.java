@@ -21,48 +21,51 @@ import spoon.reflect.declaration.ModifierKind;
 import java.io.Serializable;
 
 public class CtExtendedModifier implements Serializable {
-    private boolean implicit;
-    private ModifierKind kind;
+	private boolean implicit;
+	private ModifierKind kind;
 
-    public CtExtendedModifier(ModifierKind kind) {
-        this.kind = kind;
-    }
+	public CtExtendedModifier(ModifierKind kind) {
+		this.kind = kind;
+	}
 
-    public CtExtendedModifier(ModifierKind kind, boolean implicit) {
-        this(kind);
-        this.implicit = implicit;
-    }
+	public CtExtendedModifier(ModifierKind kind, boolean implicit) {
+		this(kind);
+		this.implicit = implicit;
+	}
 
-    public boolean isImplicit() {
-        return implicit;
-    }
+	public boolean isImplicit() {
+		return implicit;
+	}
 
-    public void setImplicit(boolean implicit) {
-        this.implicit = implicit;
-    }
+	public void setImplicit(boolean implicit) {
+		this.implicit = implicit;
+	}
 
-    public ModifierKind getKind() {
-        return kind;
-    }
+	public ModifierKind getKind() {
+		return kind;
+	}
 
-    public void setKind(ModifierKind kind) {
-        this.kind = kind;
-    }
+	public void setKind(ModifierKind kind) {
+		this.kind = kind;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        CtExtendedModifier that = (CtExtendedModifier) o;
+		CtExtendedModifier that = (CtExtendedModifier) o;
+		return (implicit == that.implicit && kind == that.kind);
+	}
 
-        return (implicit == that.implicit && kind == that.kind);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (implicit ? 1 : 0);
-        result = 31 * result + (kind != null ? kind.hashCode() : 0);
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result = (implicit ? 1 : 0);
+		result = 31 * result + (kind != null ? kind.hashCode() : 0);
+		return result;
+	}
 }

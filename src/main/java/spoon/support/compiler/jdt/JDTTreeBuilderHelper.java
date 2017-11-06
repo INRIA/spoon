@@ -49,7 +49,6 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.factory.TypeFactory;
@@ -63,7 +62,6 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
