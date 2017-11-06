@@ -3,12 +3,14 @@ package spoon.test.trycatch;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -248,5 +250,22 @@ public class TryCatchTest {
 		
 		//contract setMultiTypes influences types, which contains common super class of all multi types
 		assertEquals(RuntimeException.class,catchVariable.getType().getActualClass());
+	}
+
+	@Test
+	public void testCatchWithExplicitFinalVariable() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/trycatch/testclasses/Bar.java");
+		launcher.setSourceOutputDirectory("./target/spoon-trycatch");
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setComplianceLevel(5);
+		launcher.run();
+
+		CtTry tryStmt = launcher.getModel().getElements(new TypeFilter<>(CtTry.class)).get(0);
+		List<CtCatch> catchers = tryStmt.getCatchers();
+		assertEquals(1, catchers.size());
+
+		CtCatchVariable<?> catchVariable = catchers.get(0).getParameter();
+		assertTrue(catchVariable.hasModifier(ModifierKind.FINAL));
 	}
 }
