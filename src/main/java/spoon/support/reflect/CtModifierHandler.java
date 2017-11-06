@@ -25,13 +25,14 @@ import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static spoon.reflect.path.CtRole.MODIFIER;
 
 public class CtModifierHandler implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Set<ModifierKind> modifiers = CtElementImpl.emptySet();
+	private Set<CtExtendedModifier> modifiers = CtElementImpl.emptySet();
 
 	private CtElement element;
 
@@ -43,8 +44,16 @@ public class CtModifierHandler implements Serializable {
 		return element.getFactory();
 	}
 
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifiers;
+	}
+
+	public void setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifiers = extendedModifiers;
+	}
+
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifiers.stream().map(CtExtendedModifier::getKind).collect(Collectors.toSet());
 	}
 
 	public boolean hasModifier(ModifierKind modifier) {
@@ -63,26 +72,20 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		modifiers.add(new CtExtendedModifier(modifier));
 		return this;
 	}
 
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
+		if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
 			return false;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(element, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		return modifiers.remove(new CtExtendedModifier(modifier));
 	}
 
 	public CtModifierHandler setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
 		if (hasModifier(visibility)) {
 			return this;
 		}
