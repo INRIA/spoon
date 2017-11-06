@@ -305,12 +305,12 @@ public class ReferenceBuilder {
 						char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - indexDeclaring);
 						char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
 						PackageBinding aPackage;
-						if (packageName.length != 0) {
-							aPackage = environment.createPackage(packageName);
-						} else {
-							aPackage = null;
-						}
 						try {
+							if (packageName.length != 0) {
+								aPackage = environment.createPackage(packageName);
+							} else {
+								aPackage = null;
+							}
 							final MissingTypeBinding declaringType = environment.createMissingType(aPackage, className);
 							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
 							final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
@@ -765,8 +765,9 @@ public class ReferenceBuilder {
 				bounds = false;
 				bindingCache.put(binding, ref);
 				List<CtTypeReference<?>> bounds = new ArrayList<>();
-				if (((CtTypeParameterReference) ref).getBoundingType() != null) {
-					bounds.add(((CtTypeParameterReference) ref).getBoundingType());
+				CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) ref;
+				if (!(typeParameterReference.isDefaultBoundingType())) { // if it's object we can ignore it
+					bounds.add(typeParameterReference.getBoundingType());
 				}
 				for (ReferenceBinding superInterface : b.superInterfaces) {
 					bounds.add(getTypeReference(superInterface));

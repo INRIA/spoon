@@ -200,5 +200,4 @@ public class FactoryTest {
 			assertTrue(itf.getActualClass().isInstance(o));
 		}
 	}
-
 }
