@@ -60,6 +60,11 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 	}
 
 	@Override
+	public String getQualifiedName() {
+		return this.getSimpleName();
+	}
+
+	@Override
 	public boolean isUnnamedPackage() {
 		return getSimpleName().isEmpty();
 	}

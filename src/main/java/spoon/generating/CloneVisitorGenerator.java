@@ -51,6 +51,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtModifierHandler;
 import spoon.support.visitor.clone.CloneBuilder;
 
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 
 				// Changes body of the cloned method.
 				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
-					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
+					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(1);
 					if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
 						clone.getBody().getStatement(i--).delete();
 						continue;
@@ -134,7 +135,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * @param elementVarRead <code>anElement</code>.
 			 */
 			private CtInvocation<?> createSetter(CtInvocation scanInvocation, CtVariableAccess<CtElement> elementVarRead) {
-				final CtInvocation<?> getter = (CtInvocation<?>) scanInvocation.getArguments().get(0);
+				final CtInvocation<?> getter = (CtInvocation<?>) scanInvocation.getArguments().get(1);
 				final String getterName = getter.getExecutable().getSimpleName();
 				final CtExecutableReference<Object> setterRef = factory.Executable().createReference("void CtElement#set" + getterName.substring(3, getterName.length()) + "()");
 				final CtExecutableReference<Object> cloneRef = factory.Executable().createReference("CtElement spoon.support.visitor.equals.CloneHelper#clone()");
@@ -405,6 +406,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Query to get the setter of given field.
 			 */
 			private <T> CtMethod<?> getSetterOf(final CtField<T> ctField) {
+				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
+					return ctField.getDeclaringType().getMethodsByName("setModifiers").get(0);
+				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
 					if (ctMethod.getSimpleName().startsWith("set") && ctMethod.getSimpleName().toLowerCase().contains(ctField.getSimpleName().toLowerCase())) {
@@ -449,6 +453,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Query to get the getter of the given field.
 			 */
 			private <T> CtMethod<?> getGetterOf(CtField<T> ctField) {
+				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
+					return ctField.getDeclaringType().getMethod("getModifiers");
+				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
 					if ((ctMethod.getSimpleName().startsWith("get") || ctMethod.getSimpleName().startsWith("is")) //

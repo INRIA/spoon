@@ -29,15 +29,14 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtModifierHandler;
 
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.IS_SHADOW;
 import static spoon.reflect.path.CtRole.IS_VARARGS;
-import static spoon.reflect.path.CtRole.MODIFIER;
 import static spoon.reflect.path.CtRole.TYPE;
 
 /**
@@ -55,7 +54,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	boolean varArgs = false;
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
+	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtParameterImpl() {
 		super();
@@ -67,6 +66,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
+	@DerivedProperty
 	public CtExpression<T> getDefaultExpression() {
 		return null;
 	}
@@ -112,7 +112,7 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifierHandler.getModifiers();
 	}
 
 	@Override
@@ -122,58 +122,30 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
-			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-			this.modifiers.clear();
-			for (ModifierKind modifier : modifiers) {
-				addModifier(modifier);
-			}
-		}
+		modifierHandler.setModifiers(modifiers);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		modifierHandler.addModifier(modifier);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			return false;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		return modifierHandler.removeModifier(modifier);
 	}
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		removeModifier(ModifierKind.PUBLIC);
-		removeModifier(ModifierKind.PROTECTED);
-		removeModifier(ModifierKind.PRIVATE);
-		addModifier(visibility);
+		modifierHandler.setVisibility(visibility);
 		return (C) this;
 	}
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC)) {
-			return ModifierKind.PUBLIC;
-		}
-		if (getModifiers().contains(ModifierKind.PROTECTED)) {
-			return ModifierKind.PROTECTED;
-		}
-		if (getModifiers().contains(ModifierKind.PRIVATE)) {
-			return ModifierKind.PRIVATE;
-		}
+		modifierHandler.getVisibility();
 		return null;
 	}
 

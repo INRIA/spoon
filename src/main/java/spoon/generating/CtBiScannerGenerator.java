@@ -69,7 +69,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 			clone.getBody().insertBegin(peek);
 
 			for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
-				final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(0);
+				final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(1);
 				if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
 					clone.getBody().getStatement(i--).delete();
 					continue;
@@ -81,12 +81,12 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 
 				// Creates other inv.
 				final CtVariableAccess<?> otherRead = factory.Code().createVariableRead(peek.getReference(), false);
-				replace.addArgument(factory.Code().createInvocation(otherRead, ((CtInvocation) replace.getArguments().get(0)).getExecutable()));
+				replace.addArgument(factory.Code().createInvocation(otherRead, ((CtInvocation) replace.getArguments().get(1)).getExecutable()));
 
 				if ("Map".equals(targetInvocation.getExecutable().getType().getSimpleName())) {
-					((CtExpression) replace.getArguments().get(0)).replace(factory.Code().createInvocation(targetInvocation, factory.Executable().createReference("List Map#values()")));
-					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(1).clone(), factory.Executable().createReference("List Map#values()"));
-					replace.getArguments().get(1).replace(invocation);
+					((CtExpression) replace.getArguments().get(1)).replace(factory.Code().createInvocation(targetInvocation, factory.Executable().createReference("List Map#values()")));
+					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(2).clone(), factory.Executable().createReference("List Map#values()"));
+					replace.getArguments().get(2).replace(invocation);
 				}
 
 				clone.getBody().getStatement(i).replace(replace);

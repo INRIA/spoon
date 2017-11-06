@@ -45,6 +45,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtExpressionImpl;
 
@@ -510,5 +512,17 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@Override
 	public CtAnnotation<A> clone() {
 		return (CtAnnotation<A>) super.clone();
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeReference<?>> getTypeCasts() {
+		return emptyList();
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+		return (C) this;
 	}
 }

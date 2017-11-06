@@ -3,8 +3,10 @@ package spoon.test.reference;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
@@ -251,5 +253,16 @@ public class VariableAccessTest {
 				return "f1".equals(element.getSimpleName()) && super.matches(element);
 			}
 		}).get(0);
+	}
+	
+	@Test
+	public void testSuperAccess() throws Exception {
+		// contract: the type of "super" variable is set and correct		
+		CtClass<?> type = build("spoon.test.reference.testclasses", "SuperAccess");
+		CtMethod<?> method = type.getMethodsByName("method").get(0);
+		CtInvocation<?> invocation = method.getBody().getStatement(0);
+		CtSuperAccess<?> superAccess = (CtSuperAccess<?>) invocation.getTarget();
+		assertNotNull(superAccess.getType());
+		assertEquals("spoon.test.reference.testclasses.Parent", superAccess.getType().getQualifiedName());
 	}
 }

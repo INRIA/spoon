@@ -2,6 +2,7 @@ package spoon.test.generics;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.MavenLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -45,8 +46,11 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses2.LikeCtClass;
+import spoon.test.generics.testclasses2.LikeCtClassImpl;
 import spoon.test.generics.testclasses2.SameSignature2;
 import spoon.test.generics.testclasses2.SameSignature3;
+import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -1203,7 +1207,7 @@ public class GenericsTest {
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
 				assertTrue(actualTA instanceof CtWildcardReference);
 				assertEquals("?", actualTA.getSimpleName());
-				assertTrue( ((CtWildcardReference)actualTA).getBoundingType() == null );
+				assertTrue( ((CtWildcardReference)actualTA).isDefaultBoundingType() );
 				invocationDetected = true;
 			}
 		}
@@ -1359,5 +1363,44 @@ public class GenericsTest {
 		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
 		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
 		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
+	}
+	
+	@Test
+	public void testIsGenericTypeEqual() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/LikeCtClass.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/LikeCtClassImpl.java");
+		launcher.buildModel();
+
+		CtType<?> ctIFace = launcher.getFactory().Interface().get(LikeCtClass.class);
+		CtMethod<?> ifaceGetter = (CtMethod)ctIFace.getMethodsByName("getConstructors").get(0);
+		CtMethod<?> ifaceSetter = (CtMethod)ctIFace.getMethodsByName("setConstructors").get(0);
+		assertEquals(ifaceGetter.getType().toString(), ifaceSetter.getParameters().get(0).getType().toString());
+		assertEquals(ifaceGetter.getType(), ifaceSetter.getParameters().get(0).getType());
+		
+		CtType<?> ctClass = launcher.getFactory().Class().get(LikeCtClassImpl.class);
+		CtMethod<?> classGetter = (CtMethod)ctClass.getMethodsByName("getConstructors").get(0);
+		CtMethod<?> classSetter = (CtMethod)ctClass.getMethodsByName("setConstructors").get(0);
+		assertEquals(classGetter.getType().toString(), classSetter.getParameters().get(0).getType().toString());
+		assertEquals(classGetter.getType(), classSetter.getParameters().get(0).getType());
+		
+		assertEquals(ifaceGetter.getType().toString(), classGetter.getType().toString());
+		assertEquals(ifaceGetter.getType(), classGetter.getType());
+		assertEquals(ifaceSetter.getParameters().get(0).getType().toString(), classSetter.getParameters().get(0).getType().toString());
+		assertEquals(ifaceSetter.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
+		
+		assertEquals(ifaceSetter.getParameters().get(0).getType(), classGetter.getType());
+		
+		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClass)).setMethod(ifaceSetter);
+		CtMethod<?> adaptedMethod = (CtMethod<?>) mtc.getAdaptationScope();
+		/*
+		 * after adaptation of `Set<AnType<T>>` from scope of interface to scope of class there is Set<AnType<T extends Object>>
+		 * Which is semantically equivalent, but Equals check does not know that
+		 */
+		assertEquals(adaptedMethod.getParameters().get(0).getType(), classGetter.getType());
+		assertEquals(adaptedMethod.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
+		
+		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
+		MainTest.checkParentConsistency(adaptedMethod);
 	}
 }

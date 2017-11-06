@@ -99,4 +99,10 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	@Override
 	@UnsettableProperty
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Returns true if this has the default bounding type that is java.lang.Object (which basically means that there is no bound)
+	 */
+	@DerivedProperty
+	boolean isDefaultBoundingType();
 }

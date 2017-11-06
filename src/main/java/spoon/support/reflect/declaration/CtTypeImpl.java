@@ -49,9 +49,11 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.reflect.CtModifierHandler;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
 import spoon.support.util.SortedList;
@@ -62,19 +64,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.CONSTRUCTOR;
-import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
+import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
-import static spoon.reflect.path.CtRole.MODIFIER;
+import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.NESTED_TYPE;
 import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
@@ -92,7 +92,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	Set<ModifierKind> modifiers = emptySet();
+	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
@@ -457,7 +457,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifierHandler.getModifiers();
 	}
 
 	@Override
@@ -467,59 +467,30 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
-			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-			this.modifiers.clear();
-			for (ModifierKind modifier : modifiers) {
-				addModifier(modifier);
-			}
-		}
+		modifierHandler.setModifiers(modifiers);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.of(modifier);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		modifierHandler.addModifier(modifier);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			return false;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		return modifierHandler.removeModifier(modifier);
 	}
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		removeModifier(ModifierKind.PUBLIC);
-		removeModifier(ModifierKind.PROTECTED);
-		removeModifier(ModifierKind.PRIVATE);
-		addModifier(visibility);
+		modifierHandler.setVisibility(visibility);
 		return (C) this;
 	}
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC)) {
-			return ModifierKind.PUBLIC;
-		}
-		if (getModifiers().contains(ModifierKind.PROTECTED)) {
-			return ModifierKind.PROTECTED;
-		}
-		if (getModifiers().contains(ModifierKind.PRIVATE)) {
-			return ModifierKind.PRIVATE;
-		}
-		return null;
+		return modifierHandler.getVisibility();
 	}
 
 	@Override
@@ -538,6 +509,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<?> getSuperclass() {
 		// overridden in subclasses.
 		return null;

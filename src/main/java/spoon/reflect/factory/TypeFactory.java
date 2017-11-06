@@ -45,6 +45,7 @@ import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,6 +89,11 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Short> SHORT_PRIMITIVE = createReference(short.class);
 	public final CtTypeReference<Date> DATE = createReference(Date.class);
 	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
+	public final CtTypeReference<Iterable> ITERABLE = createReference(Iterable.class);
+	public final CtTypeReference<Collection> COLLECTION = createReference(Collection.class);
+	public final CtTypeReference<List> LIST = createReference(List.class);
+	public final CtTypeReference<Set> SET = createReference(Set.class);
+	public final CtTypeReference<Map> MAP = createReference(Map.class);
 
 	private final Map<Class<?>, CtType<?>> shadowCache = new HashMap<>();
 
@@ -647,6 +653,13 @@ public class TypeFactory extends SubFactory {
 		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
 		intersectionRef.setBounds(bounds);
 		return intersectionRef;
+	}
+
+	/**
+	 * Returns the default bounding type value
+	 */
+	public CtTypeReference getDefaultBoundingType() {
+		return OBJECT;
 	}
 
 }

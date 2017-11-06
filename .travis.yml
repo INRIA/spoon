@@ -1,41 +1,20 @@
 language: java
 
-sudo: required
 dist: trusty
 
 group: edge
 
-# from https://docs.travis-ci.com/user/customizing-the-build
-# A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
+env:
+  - SCRIPT=travis-jdk9.sh
+  - SCRIPT=travis-jdk8.sh
+  - SCRIPT=travis-coverage.sh
+  - SCRIPT=travis-verify.sh
 
-install:
-  - # download deps with maven
-  - mvn dependency:resolve
-  - pip install --user CommonMark requests pygithub
-  - sudo apt-get install xmlstarlet
+script: ./chore/travis/$SCRIPT
 
-matrix:
-  include:
-    - env: JDK_VERSION=1.9
-      jdk: oraclejdk9
-    - env: JDK_VERSION=1.8
-      jdk: oraclejdk9
-    - env: JDK_VERSION=1.8
-      jdk: oraclejdk8
+cache:
+  directories:
+  - $HOME/.m2
 
-script: |
-  # compiles and install
-  mvn -Djava.src.version=$JDK_VERSION install -DskipTests &&
-
-  # checkstyle, license, javadoc, animal sniffer.
-  mvn -Djava.src.version=$JDK_VERSION verify site -DskipTests &&
-
-  # the unit tests
-  mvn -Djava.src.version=$JDK_VERSION test jacoco:report  &&
-
-  # uploading coverage, but not failing
-  mvn -Djava.src.version=$JDK_VERSION coveralls:report -Pcoveralls --fail-never &&
-
-  # documentation
-  python chore/check-links-in-doc.py
-
+before_cache:
+  - rm -rf $HOME/.m2/fr/inria/ # delete all to be sure we always get last snapshot of spoon

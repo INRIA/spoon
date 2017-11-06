@@ -44,6 +44,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 	/**
 	 * Creates a reference to an existing package.
+	 * The simple name of the reference will be the FQN of the given package
 	 */
 	public CtPackageReference createReference(CtPackage pack) {
 		if (pack == null) {
@@ -54,7 +55,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 
 	/**
 	 * Creates a reference to a package by using its Java runtime
-	 * representation.
+	 * representation. The simple name of the reference will be the FQN of the given package
 	 *
 	 * @param pack
 	 * 		a runtime package
@@ -72,7 +73,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	}
 
 	/**
-	 * Creates a reference to a package.
+	 * Creates a reference to a package. The given name has to be a fully qualified name.
 	 *
 	 * @param name
 	 * 		full name of the package to reference
