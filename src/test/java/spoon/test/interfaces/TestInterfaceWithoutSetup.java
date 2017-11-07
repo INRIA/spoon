@@ -115,7 +115,7 @@ public class TestInterfaceWithoutSetup {
 
     @Test
     public void testInterfacePrettyPrinting() throws IOException {
-        // contract: only explicit modifiers are pretty printing
+        // contract: only explicit modifiers are pretty printed
         String originalFilePath = "./src/test/resources/spoon/test/itf/DumbItf.java";
         String targetDir = "./target/spoon-dumbitf";
 
@@ -126,8 +126,6 @@ public class TestInterfaceWithoutSetup {
         spoon.getEnvironment().setAutoImports(true);
         spoon.setSourceOutputDirectory(targetDir);
         spoon.run();
-
-
 
         String originalFile =  StringUtils.join(Files.readAllLines(new File(originalFilePath).toPath()), "\n").replaceAll("\\s","");
         String prettyPrintedFile = StringUtils.join(Files.readAllLines(new File(targetDir+"/toto/DumbItf.java").toPath()),"\n").replaceAll("\\s","");
