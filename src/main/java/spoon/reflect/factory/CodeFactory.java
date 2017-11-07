@@ -56,7 +56,6 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.support.reflect.CtExtendedModifier;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -351,23 +350,6 @@ public class CodeFactory extends SubFactory {
 	 */
 	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind...modifierKinds) {
 		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).<CtCatchVariable<T>>setType(type).setModifiers(new HashSet<>(Arrays.asList(modifierKinds)));
-	}
-
-	/**
-	 * Creates a catch variable declaration.
-	 *
-	 * @param <T>
-	 * 		the catch variable type
-	 * @param type
-	 * 		the reference to the type
-	 * @param name
-	 * 		the name of the variable
-	 * @param extendedModifiers
-	 * 		The extended modifiers of the variable
-	 * @return a new catch variable declaration
-	 */
-	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, Set<CtExtendedModifier> extendedModifiers) {
-		return factory.Core().<T>createCatchVariable().<CtCatchVariable<T>>setSimpleName(name).<CtCatchVariable<T>>setType(type).setExtendedModifiers(extendedModifiers);
 	}
 
 	/**

@@ -113,16 +113,15 @@ public class JDTTreeBuilderHelper {
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
 		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false);
+
+		CtCatchVariable<Throwable> result = jdtTreeBuilder.getFactory().Core().createCatchVariable();
+		result.<CtCatchVariable>setSimpleName(CharOperation.charToString(jdtCatch.name)).setExtendedModifiers(modifiers);
 		if (typeReference instanceof UnionTypeReference) {
-			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
-					null, //do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
-					CharOperation.charToString(jdtCatch.name), //
-					modifiers);
+			//do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
+			return result;
 		} else {
-			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
-					jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType), //
-					CharOperation.charToString(jdtCatch.name), //
-					modifiers);
+			CtTypeReference ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
+			return result.<CtCatchVariable>setType(ctTypeReference);
 		}
 	}
 

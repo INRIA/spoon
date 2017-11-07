@@ -111,7 +111,6 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.GenericTypeAdapter;
 
 import java.io.IOException;
@@ -461,11 +460,6 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind... modifierKinds) {
 		return Code().createCatchVariable(type, name, modifierKinds);
-	}
-
-	@Override
-	public <T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, Set<CtExtendedModifier> extendedModifiers) {
-		return Code().createCatchVariable(type, name, extendedModifiers);
 	}
 
 	@Override

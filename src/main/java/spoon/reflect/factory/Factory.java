@@ -108,7 +108,6 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.chain.CtQuery;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.GenericTypeAdapter;
 
 import java.lang.annotation.Annotation;
@@ -188,11 +187,6 @@ public interface Factory {
 	 *  @see CodeFactory#createCatchVariable(CtTypeReference,String, ModifierKind[])
 	 */
 	<T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, ModifierKind... modifierKinds);
-
-	/**
-	 *  @see CodeFactory#createCatchVariable(CtTypeReference,String, Set<CtExtendedModifier>)
-	 */
-	<T> CtCatchVariable<T> createCatchVariable(CtTypeReference<T> type, String name, Set<CtExtendedModifier> extendedModifiers);
 
 	/**
 	 *  @see CodeFactory#createCodeSnippetExpression(String)
