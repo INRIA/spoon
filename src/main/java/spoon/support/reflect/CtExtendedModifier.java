@@ -20,6 +20,10 @@ import spoon.reflect.declaration.ModifierKind;
 
 import java.io.Serializable;
 
+/** Represents a modifier (eg "public").
+ * When a modifier is "implicit", it does not appear in the source code (eg public for interface methods)
+ * ModifierKind in kept for sake of full backward-compatibility.
+ */
 public class CtExtendedModifier implements Serializable {
 	private boolean implicit;
 	private ModifierKind kind;
