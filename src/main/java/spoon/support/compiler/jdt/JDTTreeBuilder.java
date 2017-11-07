@@ -942,13 +942,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(MethodDeclaration methodDeclaration, ClassScope scope) {
 		CtMethod<Object> m = factory.Core().createMethod();
 		m.setSimpleName(CharOperation.charToString(methodDeclaration.selector));
-		Set<CtExtendedModifier> modifierSet = new HashSet<>();
-		if (methodDeclaration.binding != null) {
-			modifierSet.addAll(getModifiers(methodDeclaration.binding.modifiers, true));
-		}
-		modifierSet.addAll(getModifiers(methodDeclaration.modifiers, false));
 
-		m.setExtendedModifiers(modifierSet);
+		if (methodDeclaration.binding != null) {
+			m.setExtendedModifiers(getModifiers(methodDeclaration.binding.modifiers, true));
+		}
+
+		for (CtExtendedModifier extendedModifier : getModifiers(methodDeclaration.modifiers, false)) {
+			m.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
 
 		context.enter(m, methodDeclaration);
@@ -971,13 +972,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
-		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (constructorDeclaration.binding != null) {
-			modifierSet.addAll(getModifiers(constructorDeclaration.binding.modifiers, true));
+			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true));
 		}
-		modifierSet.addAll(getModifiers(constructorDeclaration.modifiers, false));
-
-		c.setExtendedModifiers(modifierSet);
+		for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false)) {
+			c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
 		context.enter(c, constructorDeclaration);
 
 		// Create block
@@ -1073,11 +1073,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (fieldDeclaration.binding != null) {
-			modifierSet.addAll(getModifiers(fieldDeclaration.binding.modifiers, true));
+			field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true));
 		}
-		modifierSet.addAll(getModifiers(fieldDeclaration.modifiers, false));
+		for (CtExtendedModifier extendedModifier : getModifiers(fieldDeclaration.modifiers, false)) {
+			field.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
 
-		field.setExtendedModifiers(modifierSet);
 		context.enter(field, fieldDeclaration);
 		return true;
 	}
@@ -1149,13 +1150,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
 		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
-		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (localDeclaration.binding != null) {
-			modifierSet.addAll(getModifiers(localDeclaration.binding.modifiers, true));
+			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true));
 		}
-		modifierSet.addAll(getModifiers(localDeclaration.modifiers, false));
+		for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false)) {
+			v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
 
-		v.setExtendedModifiers(modifierSet);
 		context.enter(v, localDeclaration);
 		return true;
 	}

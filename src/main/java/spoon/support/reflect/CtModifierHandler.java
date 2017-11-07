@@ -87,6 +87,8 @@ public class CtModifierHandler implements Serializable {
 			this.modifiers = new HashSet<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
+		// we always add explicit modifiers, then we have to remove first implicit one
+		modifiers.remove(new CtExtendedModifier(modifier, true));
 		modifiers.add(new CtExtendedModifier(modifier));
 		return this;
 	}

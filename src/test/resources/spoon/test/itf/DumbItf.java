@@ -1,7 +1,9 @@
 package toto;
 
 public interface DumbItf {
-    int CONSTANT_INT = 12; // this should be static and public
+    public static int ANOTHER_INT = 42; // this should be explicitely static and public, and implicitely final
+
+    int CONSTANT_INT = 12; // this should be static public and final
 
     // this should be only public
     default int bla() {
@@ -14,4 +16,7 @@ public interface DumbItf {
     static String foo() {
         return "bla";
     }
+
+    // this should be public too
+    public void anotherOne();
 }
