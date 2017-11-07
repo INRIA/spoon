@@ -1,5 +1,6 @@
 package spoon.test.interfaces;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
@@ -8,11 +9,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class TestInterfaceWithoutSetup {
@@ -36,6 +40,10 @@ public class TestInterfaceWithoutSetup {
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.STATIC, true)));
 
+        for (CtExtendedModifier extendedModifier : extendedModifierSet) {
+            assertTrue(extendedModifier.isImplicit());
+        }
+
         assertEquals(ModifierKind.PUBLIC, fieldImplicit.getVisibility());
         assertTrue(fieldImplicit.hasModifier(ModifierKind.STATIC));
         assertTrue(fieldImplicit.hasModifier(ModifierKind.PUBLIC));
@@ -48,6 +56,19 @@ public class TestInterfaceWithoutSetup {
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.FINAL, true)));
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, false)));
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.STATIC, false)));
+
+        int counter = 0;
+        for (CtExtendedModifier extendedModifier : extendedModifierSet) {
+            if (extendedModifier.getKind() == ModifierKind.FINAL) {
+                assertTrue(extendedModifier.isImplicit());
+                counter++;
+            } else {
+                assertFalse(extendedModifier.isImplicit());
+                counter++;
+            }
+        }
+
+        assertEquals(3, counter);
 
         assertEquals(ModifierKind.PUBLIC, fieldExplicit.getVisibility());
         assertTrue(fieldExplicit.hasModifier(ModifierKind.STATIC));
@@ -90,5 +111,27 @@ public class TestInterfaceWithoutSetup {
         assertEquals(2, extendedModifierSet.size());
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.PUBLIC, false)));
         assertTrue(extendedModifierSet.contains(new CtExtendedModifier(ModifierKind.ABSTRACT, true)));
+    }
+
+    @Test
+    public void testInterfacePrettyPrinting() throws IOException {
+        // contract: only explicit modifiers are pretty printing
+        String originalFilePath = "./src/test/resources/spoon/test/itf/DumbItf.java";
+        String targetDir = "./target/spoon-dumbitf";
+
+        Launcher spoon = new Launcher();
+        spoon.addInputResource(originalFilePath);
+        spoon.getEnvironment().setCommentEnabled(true);
+        spoon.getEnvironment().setShouldCompile(true);
+        spoon.getEnvironment().setAutoImports(true);
+        spoon.setSourceOutputDirectory(targetDir);
+        spoon.run();
+
+
+
+        String originalFile =  StringUtils.join(Files.readAllLines(new File(originalFilePath).toPath()), "\n").replaceAll("\\s","");
+        String prettyPrintedFile = StringUtils.join(Files.readAllLines(new File(targetDir+"/toto/DumbItf.java").toPath()),"\n").replaceAll("\\s","");
+
+        assertEquals(originalFile, prettyPrintedFile);
     }
 }
