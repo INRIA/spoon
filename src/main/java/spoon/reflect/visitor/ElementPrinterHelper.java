@@ -82,6 +82,7 @@ public class ElementPrinterHelper {
 	}
 
 	public void writeModifiers(CtModifiable modifiable) {
+		// write the modifiers according to the convention on order
 		List<String> firstPosition = new ArrayList<>(); // visibility: public, private, protected
 		List<String> secondPosition = new ArrayList<>(); // keywords: static, abstract
 		List<String> thirdPosition = new ArrayList<>(); // all other things
