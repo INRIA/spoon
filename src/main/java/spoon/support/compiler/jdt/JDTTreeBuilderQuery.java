@@ -40,7 +40,7 @@ import spoon.support.reflect.CtExtendedModifier;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Helper class for JDTTreeBuilder */
+/** Helper class for JDTTreeBuilder. Package visible to reduce API surface. */
 class JDTTreeBuilderQuery {
 	private JDTTreeBuilderQuery() { }
 	/**
