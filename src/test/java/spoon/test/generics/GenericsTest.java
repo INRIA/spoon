@@ -2,6 +2,7 @@ package spoon.test.generics;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.MavenLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -502,7 +503,7 @@ public class GenericsTest {
 
 		final CtMethod<?> apply = panini.getMethodsByName("apply").get(0);
 		assertEquals(1, apply.getType().getActualTypeArguments().size());
-		assertEquals("?", apply.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("? super java.lang.Object", apply.getType().getActualTypeArguments().get(0).toString());
 
 		assertEquals(1, apply.getParameters().get(0).getType().getActualTypeArguments().size());
 		assertEquals("? extends java.lang.Long", apply.getParameters().get(0).getType().getActualTypeArguments().get(0).toString());
@@ -1206,7 +1207,7 @@ public class GenericsTest {
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
 				assertTrue(actualTA instanceof CtWildcardReference);
 				assertEquals("?", actualTA.getSimpleName());
-				assertTrue( ((CtWildcardReference)actualTA).getBoundingType() == null );
+				assertTrue( ((CtWildcardReference)actualTA).isDefaultBoundingType() );
 				invocationDetected = true;
 			}
 		}
@@ -1402,5 +1403,4 @@ public class GenericsTest {
 		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
 		MainTest.checkParentConsistency(adaptedMethod);
 	}
-	
 }

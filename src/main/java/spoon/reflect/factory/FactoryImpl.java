@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
@@ -1160,5 +1161,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtPackage createPackage(CtPackage parent, String simpleName) {
 		return Package().create(parent, simpleName);
+	}
+
+	@Override
+	public CtElement createElement(Class<? extends CtElement> klass) {
+		return Core().create(klass);
 	}
 }

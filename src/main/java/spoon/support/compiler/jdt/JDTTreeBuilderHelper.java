@@ -49,7 +49,6 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.factory.TypeFactory;
@@ -60,6 +59,7 @@ import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,17 +112,16 @@ public class JDTTreeBuilderHelper {
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
-		final Set<ModifierKind> modifiers = getModifiers(jdtCatch.modifiers);
+		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false);
+
+		CtCatchVariable<Throwable> result = jdtTreeBuilder.getFactory().Core().createCatchVariable();
+		result.<CtCatchVariable>setSimpleName(CharOperation.charToString(jdtCatch.name)).setExtendedModifiers(modifiers);
 		if (typeReference instanceof UnionTypeReference) {
-			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
-					null, //do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
-					CharOperation.charToString(jdtCatch.name), //
-					modifiers.toArray(new ModifierKind[modifiers.size()]));
+			//do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
+			return result;
 		} else {
-			return jdtTreeBuilder.getFactory().Code().createCatchVariable(//
-					jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType), //
-					CharOperation.charToString(jdtCatch.name), //
-					modifiers.toArray(new ModifierKind[modifiers.size()]));
+			CtTypeReference ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
+			return result.<CtCatchVariable>setType(ctTypeReference);
 		}
 	}
 
@@ -582,7 +581,7 @@ public class JDTTreeBuilderHelper {
 		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
 		p.setSimpleName(CharOperation.charToString(argument.name));
 		p.setVarArgs(argument.isVarArgs());
-		p.setModifiers(getModifiers(argument.modifiers));
+		p.setExtendedModifiers(getModifiers(argument.modifiers));
 		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
 			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
 			p.getType().setImplicit(argument.type == null);
@@ -654,7 +653,7 @@ public class JDTTreeBuilderHelper {
 		}
 
 		// Setting modifiers
-		type.setModifiers(getModifiers(typeDeclaration.modifiers));
+		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers));
 
 		return type;
 	}

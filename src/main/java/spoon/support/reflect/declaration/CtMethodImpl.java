@@ -28,18 +28,17 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.CtModifierHandler;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.IS_DEFAULT;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
-import static spoon.reflect.path.CtRole.MODIFIER;
 import static spoon.reflect.path.CtRole.TYPE;
 import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
 
@@ -61,7 +60,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
+	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtMethodImpl() {
 		super();
@@ -146,7 +145,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifierHandler.getModifiers();
 	}
 
 	@Override
@@ -156,59 +155,41 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
-			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-			this.modifiers.clear();
-			for (ModifierKind modifier : modifiers) {
-				addModifier(modifier);
-			}
-		}
+		modifierHandler.setModifiers(modifiers);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		modifierHandler.addModifier(modifier);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			return false;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		return modifierHandler.removeModifier(modifier);
 	}
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		removeModifier(ModifierKind.PUBLIC);
-		removeModifier(ModifierKind.PROTECTED);
-		removeModifier(ModifierKind.PRIVATE);
-		addModifier(visibility);
+		modifierHandler.setVisibility(visibility);
 		return (C) this;
 	}
 
 	@Override
 	public ModifierKind getVisibility() {
-		if (getModifiers().contains(ModifierKind.PUBLIC)) {
-			return ModifierKind.PUBLIC;
-		}
-		if (getModifiers().contains(ModifierKind.PROTECTED)) {
-			return ModifierKind.PROTECTED;
-		}
-		if (getModifiers().contains(ModifierKind.PRIVATE)) {
-			return ModifierKind.PRIVATE;
-		}
-		return null;
+		return modifierHandler.getVisibility();
+	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return  (C) this;
 	}
 
 	@Override

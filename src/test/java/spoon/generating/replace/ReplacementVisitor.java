@@ -20,6 +20,10 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.visitor.replace.InvalidReplaceException;
+import spoon.support.visitor.replace.ReplaceListListener;
+import spoon.support.visitor.replace.ReplaceListener;
+import spoon.support.visitor.replace.ReplaceMapListener;
+import spoon.support.visitor.replace.ReplaceSetListener;
 
 import java.util.ArrayList;
 import java.util.Collection;

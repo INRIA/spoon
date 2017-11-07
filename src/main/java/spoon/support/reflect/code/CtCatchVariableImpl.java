@@ -32,17 +32,16 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.CtModifierHandler;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.MODIFIER;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.TYPE;
 
@@ -56,7 +55,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	List<CtTypeReference<?>> types = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	Set<ModifierKind> modifiers = CtElementImpl.emptySet();
+	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -177,7 +176,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifierHandler.getModifiers();
 	}
 
 	@Override
@@ -187,44 +186,24 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
-			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-			this.modifiers.clear();
-			for (ModifierKind modifier : modifiers) {
-				addModifier(modifier);
-			}
-		}
+		modifierHandler.setModifiers(modifiers);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		modifierHandler.addModifier(modifier);
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			return false;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		return modifierHandler.removeModifier(modifier);
 	}
 
 	@Override
 	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		removeModifier(ModifierKind.PUBLIC);
-		removeModifier(ModifierKind.PROTECTED);
-		removeModifier(ModifierKind.PRIVATE);
-		addModifier(visibility);
+		modifierHandler.setVisibility(visibility);
 		return (C) this;
 	}
 
@@ -240,6 +219,17 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			return ModifierKind.PRIVATE;
 		}
 		return null;
+	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return (C) this;
 	}
 
 	@Override

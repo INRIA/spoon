@@ -29,19 +29,17 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.CtModifierHandler;
 
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static spoon.reflect.path.CtRole.MODIFIER;
 
 public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
-	Set<ModifierKind> modifiers = emptySet();
+	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -50,26 +48,18 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public <T extends CtModifiable> T addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		modifierHandler.addModifier(modifier);
 		return (T) this;
 	}
 
 	@Override
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			return false;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		return modifierHandler.removeModifier(modifier);
 	}
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifierHandler.getModifiers();
 	}
 
 	@Override
@@ -88,30 +78,29 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	public boolean hasModifier(ModifierKind modifier) {
-		return modifiers.contains(modifier);
+		return modifierHandler.hasModifier(modifier);
 	}
 
 	@Override
 	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
-			getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-			this.modifiers.clear();
-			for (ModifierKind modifier : modifiers) {
-				addModifier(modifier);
-			}
-		}
+		modifierHandler.setModifiers(modifiers);
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtModifiable> T setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
-		removeModifier(ModifierKind.PUBLIC);
-		removeModifier(ModifierKind.PROTECTED);
-		removeModifier(ModifierKind.PRIVATE);
-		addModifier(visibility);
+		modifierHandler.setVisibility(visibility);
+		return (T) this;
+	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
 		return (T) this;
 	}
 

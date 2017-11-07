@@ -79,6 +79,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
@@ -909,4 +910,9 @@ public interface Factory {
 	 * @see PackageFactory#create(CtPackage, String)
 	 */
 	CtPackage createPackage(CtPackage parent, String simpleName);
+
+	/**
+	 * @see CoreFactory#create(Class<? extends CtElement>)
+	 */
+	CtElement createElement(Class<? extends CtElement> klass);
 }
