@@ -22,16 +22,16 @@ import spoon.reflect.factory.Factory;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.Serializable;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static spoon.reflect.path.CtRole.MODIFIER;
 
 public class CtModifierHandler implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Set<ModifierKind> modifiers = CtElementImpl.emptySet();
+	private Set<CtExtendedModifier> modifiers = CtElementImpl.emptySet();
 
 	private CtElement element;
 
@@ -43,8 +43,28 @@ public class CtModifierHandler implements Serializable {
 		return element.getFactory();
 	}
 
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifiers;
+	}
+
+	public CtModifierHandler setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		if (extendedModifiers != null && extendedModifiers.size() > 0) {
+			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+			if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
+				this.modifiers = new HashSet<>();
+			} else {
+				this.modifiers.clear();
+			}
+			for (CtExtendedModifier extendedModifier : extendedModifiers) {
+				getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, extendedModifier.getKind());
+				this.modifiers.add(extendedModifier);
+			}
+		}
+		return this;
+	}
+
 	public Set<ModifierKind> getModifiers() {
-		return modifiers;
+		return modifiers.stream().map(CtExtendedModifier::getKind).collect(Collectors.toSet());
 	}
 
 	public boolean hasModifier(ModifierKind modifier) {
@@ -52,7 +72,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers.size() > 0) {
+		if (modifiers != null && modifiers.size() > 0) {
 			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
@@ -63,26 +83,27 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler addModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
+		if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
+			this.modifiers = new HashSet<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
-		modifiers.add(modifier);
+		// we always add explicit modifiers, then we have to remove first implicit one
+		modifiers.remove(new CtExtendedModifier(modifier, true));
+		modifiers.add(new CtExtendedModifier(modifier));
 		return this;
 	}
 
 	public boolean removeModifier(ModifierKind modifier) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
+		if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
 			return false;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(element, MODIFIER, modifiers, modifier);
-		return modifiers.remove(modifier);
+		// we want to remove implicit OR explicit modifier
+		boolean b = modifiers.remove(new CtExtendedModifier(modifier));
+		return b || modifiers.remove(new CtExtendedModifier(modifier, true));
 	}
 
 	public CtModifierHandler setVisibility(ModifierKind visibility) {
-		if (modifiers == CtElementImpl.<ModifierKind>emptySet()) {
-			this.modifiers = EnumSet.noneOf(ModifierKind.class);
-		}
 		if (hasModifier(visibility)) {
 			return this;
 		}

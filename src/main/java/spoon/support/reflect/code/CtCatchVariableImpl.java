@@ -32,6 +32,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -218,6 +219,17 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			return ModifierKind.PRIVATE;
 		}
 		return null;
+	}
+
+	@Override
+	public Set<CtExtendedModifier> getExtendedModifiers() {
+		return this.modifierHandler.getExtendedModifiers();
+	}
+
+	@Override
+	public <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+		this.modifierHandler.setExtendedModifiers(extendedModifiers);
+		return (C) this;
 	}
 
 	@Override
