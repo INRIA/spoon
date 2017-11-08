@@ -153,7 +153,7 @@ public class ImportBuilderTest {
 
     @Test
     public void testWithStaticInheritedImport() {
-        // contract: static field or methods can be inherited
+        // contract: static field or methods can be inherited, JDTImportBuilder must retrieve the imported type from the right class
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImportWithInheritance.java");
         spoon.getEnvironment().setAutoImports(true);
@@ -191,7 +191,7 @@ public class ImportBuilderTest {
 
     @Test
     public void testWithImportFromItf() {
-        // contract: static field or methods can be inherited
+        // contract: When using static import of an interface, only static method and fields should be imported
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/resources/jdtimportbuilder/");
         spoon.getEnvironment().setAutoImports(true);
