@@ -28,8 +28,8 @@ import spoon.reflect.path.CtRole;
  * Provides a {@link RoleHandler} implementation for the pair of {@link CtElement} implementation and {@link CtRole}
  * The returned {@link RoleHandler} can be then used to manipulate value of attribute represented by {@link CtRole} on the {@link CtElement} instance
  */
-public class RoleHandlerProvider {
-	private RoleHandlerProvider() {
+public class RoleHandlerHelper {
+	private RoleHandlerHelper() {
 	}
 
 	@SuppressWarnings("unchecked")

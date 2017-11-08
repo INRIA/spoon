@@ -10,7 +10,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
-import spoon.reflect.meta.impl.RoleHandlerProvider;
+import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.template.Parameter;
@@ -73,7 +73,7 @@ public class MetaModelTest {
 		CtAnnotation<?> annotation = factory.Annotation().annotate(type, Parameter.class, "value", "abc");
 		
 		//check contract of low level RoleHandler
-		RoleHandler roleHandler = RoleHandlerProvider.getRoleHandler(type.getClass(), CtRole.ANNOTATION);
+		RoleHandler roleHandler = RoleHandlerHelper.getRoleHandler(type.getClass(), CtRole.ANNOTATION);
 		assertNotNull(roleHandler);
 		assertEquals(CtElement.class, roleHandler.getTargetType());
 		assertSame(CtRole.ANNOTATION, roleHandler.getRole());
