@@ -96,14 +96,17 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 		return valueClass;
 	}
 
+	@Override
 	public <W, X> List<X> asList(W element) {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to List for " + element.getClass().getSimpleName());
 	};
 
+	@Override
 	public <W, X> Set<X> asSet(W element) {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to Set for " + element.getClass().getSimpleName());
 	};
 
+	@Override
 	public <W, X> Map<String, X> asMap(W element) {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to Map for " + element.getClass().getSimpleName());
 	};
@@ -159,10 +162,12 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 			return list;
 		}
 
+		@Override
 		public <W, X> java.util.Collection<X> asCollection(W element) {
 			return asList(element);
 		};
 
+		@Override
 		public <W, X> java.util.List<X> asList(W e) {
 			return new AbstractList<X>() {
 				T element = castTarget(e);
@@ -243,6 +248,7 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 			return set;
 		}
 
+		@Override
 		public <W, X> Collection<X> asCollection(W element) {
 			return asSet(element);
 		};
@@ -330,6 +336,7 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 			return map;
 		}
 
+		@Override
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public <W, X> java.util.Collection<X> asCollection(W element) {
 			return (Collection) asMap(element).values();
