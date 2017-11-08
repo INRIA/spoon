@@ -24,17 +24,10 @@ import java.util.Set;
 import spoon.reflect.path.CtRole;
 
 /**
- * Has all knowledge about a role of an target type
+ * Enables the user to get and set a field based on a rol for a CtElement
  */
 public interface RoleHandler {
-	/**
-	 * @return a role of this handler
-	 */
-	CtRole getRole();
-	/**
-	 * @return a type of the class, which this handler can be applied to
-	 */
-	Class<?> getTargetType();
+	// the main methods, responsible to get and set the field corresponding to this role
 	/**
 	 * @param element a element whose value will be get
 	 * @return a value of the element on the role defined by {@link #getRole()}
@@ -45,6 +38,8 @@ public interface RoleHandler {
 	 * @param value new value, which will be assigned to the element's attribute defined by role defined by {@link #getRole()}
 	 */
 	<T, U> void setValue(T element, U value);
+	
+	// introspection methods
 	/**
 	 * @return a Class of value of the attribute of {@link #getTargetType()} defined by {@link #getRole()}
 	 */
@@ -55,6 +50,7 @@ public interface RoleHandler {
 	 */
 	ContainerKind getContainerKind();
 
+	// utility methods
 	<T, U> Collection<U> asCollection(T element);
 	<T, U> Set<U> asSet(T element);
 	<T, U> List<U> asList(T element);
