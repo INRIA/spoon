@@ -106,13 +106,13 @@ class JDTImportBuilder {
 						Set<CtMethod> methods = klass.getAllMethods();
 
 						for (CtFieldReference fieldReference : fields) {
-							if (fieldReference.isStatic() && fieldReference.getFieldDeclaration().hasModifier(ModifierKind.PUBLIC) || klass.isInterface()) {
+							if (fieldReference.isStatic() && fieldReference.getFieldDeclaration().hasModifier(ModifierKind.PUBLIC)) {
 								this.imports.add(fieldReference.clone());
 							}
 						}
 
 						for (CtMethod method : methods) {
-							if (method.hasModifier(ModifierKind.STATIC) && method.hasModifier(ModifierKind.PUBLIC) || klass.isInterface()) {
+							if (method.hasModifier(ModifierKind.STATIC) && method.hasModifier(ModifierKind.PUBLIC)) {
 								this.imports.add(method.getReference());
 							}
 						}
