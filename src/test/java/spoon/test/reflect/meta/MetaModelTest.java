@@ -7,6 +7,7 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
@@ -157,7 +158,7 @@ public class MetaModelTest {
 		CtAnnotation<?> annotation = factory.Annotation().annotate(type, Parameter.class, "value", "abc");
 		
 		//check adaptation of attribute to modifiable List
-		List<CtAnnotation<?>> value = type.getValueByRoleAsList(CtRole.ANNOTATION);
+		List<CtAnnotation<?>> value = RoleHandlerHelper.getRoleHandler(CtType.class, CtRole.ANNOTATION).asList(type);
 		assertEquals(1, value.size());
 		assertSame(annotation, value.get(0));
 		
