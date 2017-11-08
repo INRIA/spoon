@@ -506,30 +506,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <T> Collection<T> getValueByRoleAsCollection(CtRole role) {
-		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
-		return rh.asCollection(this);
-	}
-
-	@Override
-	public <T> List<T> getValueByRoleAsList(CtRole role) {
-		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
-		return rh.asList(this);
-	}
-
-	@Override
-	public <T> Set<T> getValueByRoleAsSet(CtRole role) {
-		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
-		return rh.asSet(this);
-	}
-
-	@Override
-	public <T> Map<String, T> getValueByRoleAsMap(CtRole role) {
-		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
-		return rh.asMap(this);
-	}
-
-	@Override
 	public <E extends CtElement, T> E setValueByRole(CtRole role, T value) {
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
 		rh.setValue(this, value);

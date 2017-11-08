@@ -24,45 +24,64 @@ import java.util.Set;
 import spoon.reflect.path.CtRole;
 
 /**
- * Enables the user to get and set a field based on a rol for a CtElement
+ * Enables client code to get and set a field based on a role for a CtElement.
+ *
+ * One obtains instances of {@link RoleHandler} using the methods of {@link spoon.reflect.meta.impl.RoleHandlerHelper}.
+ *
+ * There is one role handler per role of {@link CtRole}, they are set by {@link spoon.reflect.meta.impl.RoleHandlerHelper}.
  */
 public interface RoleHandler {
 	// the main methods, responsible to get and set the field corresponding to this role
 	/**
-	 * @param element a element whose value will be get
+	 * @param element a element from which the value will be get for this role
 	 * @return a value of the element on the role defined by {@link #getRole()}
 	 */
 	<T, U> U getValue(T element);
 	/**
-	 * @param element a element whose value will be set
+	 * @param element a element whose value will be set for this role
 	 * @param value new value, which will be assigned to the element's attribute defined by role defined by {@link #getRole()}
 	 */
 	<T, U> void setValue(T element, U value);
 
 	// introspection methods
 	/**
-	 * @return a role of this handler
+	 * @return the role handled by this handler
 	 */
 	CtRole getRole();
 
 	/**
-	 * @return a type of the class, which this handler can be applied to
+	 * @return the type of the class, which this handler can be applied to (eg CtMethod)
 	 */
 	Class<?> getTargetType();
 
 	/**
-	 * @return a Class of value of the attribute of {@link #getTargetType()} defined by {@link #getRole()}
+	 * @return the type of returned value defined by {@link #getRole()}
 	 */
 	Class<?> getValueClass();
 
 	/**
-	 * @return true if value can contain only one element. It is not a collection or map
+	 * @return the container kind, to know whether an element, a list, a map, etc is returned.
 	 */
 	ContainerKind getContainerKind();
 
 	// utility methods
+	/**
+	 * @return a value for this role adapted as a modifiable Collection
+	 */
 	<T, U> Collection<U> asCollection(T element);
+
+	/**
+	 * @return a value for this role adapted as a modifiable Set
+	 */
 	<T, U> Set<U> asSet(T element);
+
+	/**
+	 * @return a value for this role adapted as a modifiable List
+	 */
 	<T, U> List<U> asList(T element);
+
+	/**
+	 * @return a value for this role adapted as a modifiable Map
+	 */
 	<T, U> Map<String, U> asMap(T element);
 }

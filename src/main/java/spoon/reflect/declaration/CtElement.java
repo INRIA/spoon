@@ -317,37 +317,19 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	CtElement clone();
 
 	/**
-	 * @param role defines, which attribute has to be returned
-	 * @return a value of the `role` attribute of this model node.
-	 * It can return a single value, List, Set or Map depending on this `element` and `role`.
-	 * In all cases the returned value is READ ONLY
+	 * @return a a single value (eg a CtElement), List, Set or Map depending on this `element` and `role`. Returned collections are read-only.
+	 * @param the role of the returned attribute with respect to this element.
+	 *
+	 * For instance, "klass.getValueByRole(CtRole.METHOD)" returns a list of methods.
+	 *
+	 * See {@link spoon.reflect.meta.impl.RoleHandlerHelper} for more advanced methods.
 	 */
 	<T> T getValueByRole(CtRole role);
 
 	/**
-	 * @param role defines, which attribute has to be returned
-	 * @return a value of the `role` attribute of this model node adapted to modifiable Collection
-	 */
-	<T> Collection<T> getValueByRoleAsCollection(CtRole role);
-	/**
-	 * @param role defines, which attribute has to be returned
-	 * @return a value of the `role` attribute of this model node adapted to modifiable List
-	 */
-	<T> List<T> getValueByRoleAsList(CtRole role);
-	/**
-	 * @param role defines, which attribute has to be returned
-	 * @return a value of the `role` attribute of this model node adapted to modifiable Set
-	 */
-	<T> Set<T> getValueByRoleAsSet(CtRole role);
-	/**
-	 * @param role defines, which attribute has to be returned
-	 * @return a value of the `role` attribute of this model node adapted to modifiable Map
-	 */
-	<T> Map<String, T> getValueByRoleAsMap(CtRole role);
-
-	/**
-	 * @param role defines, which attribute has to be returned
-	 * @param value to be assigned value
+	 * Sets a field according to a role.
+	 * @param the role of the field to be set
+	 * @param value to be assigned to this field.
 	 */
 	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
 }
