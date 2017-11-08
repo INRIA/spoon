@@ -258,6 +258,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testCatchWithExplicitFinalVariable() throws IOException {
+		// contract: explicit final modifier are possible in catch variables and should be kept when pretty-printing
 		String inputResource = "./src/test/java/spoon/test/trycatch/testclasses/Bar.java";
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(inputResource);
