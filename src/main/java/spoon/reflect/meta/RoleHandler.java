@@ -41,6 +41,16 @@ public interface RoleHandler {
 	
 	// introspection methods
 	/**
+	 * @return a role of this handler
+	 */
+	CtRole getRole();
+	
+	/**
+	 * @return a type of the class, which this handler can be applied to
+	 */
+	Class<?> getTargetType();
+	
+	/**
 	 * @return a Class of value of the attribute of {@link #getTargetType()} defined by {@link #getRole()}
 	 */
 	Class<?> getValueClass();
