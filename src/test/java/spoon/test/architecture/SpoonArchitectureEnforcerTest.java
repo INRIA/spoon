@@ -211,9 +211,8 @@ public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void testSpecPackage() throws Exception {
-		// contract: when a pull-request introduces a new package, this test fails
-		// and one has to explicitly declare the new package here
-		// so that one catch the new package during code review
+		// contract: when a pull-request introduces a new package, it is made explicit during code review
+		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
 
 		Set<String> officialPackages = new TreeSet<>();
 		officialPackages.add("spoon.compiler.builder");
