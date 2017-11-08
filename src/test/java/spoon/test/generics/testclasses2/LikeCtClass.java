@@ -14,10 +14,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.replace;
+package spoon.test.generics.testclasses2;
 
-import java.util.List;
+import java.util.Set;
 
-public interface ReplaceListListener<T extends List> {
-	void set(T replace);
+public interface LikeCtClass<T extends Object> {
+	Set<AnType<T>> getConstructors();
+	<C extends LikeCtClass<T>> C setConstructors(Set<AnType<T>> constructors);
 }
+
+interface AnType<U> {}

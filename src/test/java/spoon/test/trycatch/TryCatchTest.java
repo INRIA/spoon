@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
@@ -16,6 +17,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.trycatch.testclasses.Foo;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -196,5 +199,54 @@ public class TryCatchTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	@Test
+	public void testTryCatchVariableGetType() throws Exception {
+		Factory factory = createFactory();
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X {" + "public void foo() {"
+								+ " try{}catch(RuntimeException e){System.exit(0);}" + "}"
+								+ "};").compile();
+		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+		List<CtCatch> catchers = tryStmt.getCatchers();
+		assertEquals(1, catchers.size());
+		
+		CtCatchVariable<?> catchVariable = catchers.get(0).getParameter();
+
+		assertEquals(
+				RuntimeException.class,
+				catchVariable.getType().getActualClass());
+
+		assertEquals(1, catchVariable.getMultiTypes().size());
+
+		assertEquals(
+				RuntimeException.class,
+				catchVariable.getMultiTypes().get(0).getActualClass());
+		
+		//contract: the manipulation with catch variable type is possible
+		catchVariable.setType((CtTypeReference)factory.Type().createReference(IllegalArgumentException.class));
+		assertEquals(IllegalArgumentException.class,catchVariable.getType().getActualClass());
+		//contract setType influences multitypes
+		assertEquals(1, catchVariable.getMultiTypes().size());
+		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		
+		catchVariable.setMultiTypes(Collections.singletonList((CtTypeReference)factory.Type().createReference(UnsupportedOperationException.class)));
+		assertEquals(UnsupportedOperationException.class,catchVariable.getType().getActualClass());
+		//contract setType influences multitypes
+		assertEquals(1, catchVariable.getMultiTypes().size());
+		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		
+		catchVariable.setMultiTypes(Arrays.asList(
+				factory.Type().createReference(UnsupportedOperationException.class),
+				factory.Type().createReference(IllegalArgumentException.class)
+				));
+		assertEquals(2, catchVariable.getMultiTypes().size());
+		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(1).getActualClass());
+		
+		//contract setMultiTypes influences types, which contains common super class of all multi types
+		assertEquals(RuntimeException.class,catchVariable.getType().getActualClass());
 	}
 }

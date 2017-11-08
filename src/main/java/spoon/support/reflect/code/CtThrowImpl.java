@@ -21,15 +21,14 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
-import static spoon.reflect.path.CtRole.THROWN;
+import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.THROWN)
+	@MetamodelPropertyField(role = EXPRESSION)
 	CtExpression<? extends Throwable> throwExpression;
 
 	@Override
@@ -47,7 +46,7 @@ public class CtThrowImpl extends CtStatementImpl implements CtThrow {
 		if (expression != null) {
 			expression.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THROWN, expression, this.throwExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.throwExpression);
 		this.throwExpression = expression;
 		return (T) this;
 	}

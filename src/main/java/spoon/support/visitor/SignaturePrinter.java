@@ -84,7 +84,7 @@ public class SignaturePrinter extends CtScanner {
 	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
 		write(ref.getQualifiedName());
-		if (ref.getBoundingType() != null) {
+		if (!ref.isDefaultBoundingType() || !ref.getBoundingType().isImplicit()) {
 			if (ref.isUpper()) {
 				write(" extends ");
 			} else {

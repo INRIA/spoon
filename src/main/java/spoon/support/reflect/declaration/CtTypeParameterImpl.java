@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -137,6 +138,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@DerivedProperty
 	public List<CtField<?>> getFields() {
 		return Collections.emptyList();
 	}
@@ -168,11 +170,13 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@DerivedProperty
 	public Set<CtType<?>> getNestedTypes() {
 		return Collections.emptySet();
 	}
 
 	@Override
+	@DerivedProperty
 	public CtPackage getPackage() {
 		return null;
 	}
@@ -348,6 +352,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@DerivedProperty
 	public Set<CtMethod<?>> getMethods() {
 		return Collections.emptySet();
 	}
@@ -363,6 +368,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@DerivedProperty
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
 		return Collections.emptySet();
 	}
@@ -382,17 +388,44 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
+	@DerivedProperty
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@DerivedProperty
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@DerivedProperty
 	public Set<CtMethod<?>> getAllMethods() {
 		return Collections.emptySet();
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeParameter> getFormalCtTypeParameters() {
+		return emptyList();
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		return (C) this;
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeMember> getTypeMembers() {
+		return emptyList();
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members) {
+		return (C) this;
 	}
 }

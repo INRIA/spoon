@@ -26,7 +26,6 @@ exclude:
   - _site
 
 # same for all
-feedback_email: spoon-discuss@lists.gforge.inria.fr
 sidebar_accordion: true
 markdown: redcarpet
 theme_file: theme-mauve.css

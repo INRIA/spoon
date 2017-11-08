@@ -35,11 +35,12 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.support.reflect.CtExtendedModifier;
 
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
-/** Helper class for JDTTreeBuilder */
+/** Helper class for JDTTreeBuilder. Package visible to reduce API surface. */
 class JDTTreeBuilderQuery {
 	private JDTTreeBuilderQuery() { }
 	/**
@@ -292,46 +293,57 @@ class JDTTreeBuilderQuery {
 	}
 
 	/**
+	 * Converts the modifier from JDT to Spoon and consider all modifiers as explicit.
+	 *
+	 * @param modifier Identifier of the modifier.
+	 * @return Set of enum value of {@link CtExtendedModifier}.
+	 */
+	static Set<CtExtendedModifier> getModifiers(int modifier) {
+		return getModifiers(modifier, false);
+	}
+
+	/**
 	 * Converts the modifier from JDT to Spoon.
 	 *
 	 * @param modifier
 	 * 		Identifier of the modifier.
-	 * @return Set of enum value of {@link ModifierKind}.
+	 * @param implicit True if the modifier is not explicit in the source code (e.g. a missing 'public' in an interface)
+	 * @return Set of enum value of {@link CtExtendedModifier}.
 	 */
-	static Set<ModifierKind> getModifiers(int modifier) {
-		Set<ModifierKind> modifiers = EnumSet.noneOf(ModifierKind.class);
+	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit) {
+		Set<CtExtendedModifier> modifiers = new HashSet<>();
 		if ((modifier & ClassFileConstants.AccPublic) != 0) {
-			modifiers.add(ModifierKind.PUBLIC);
+			modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccPrivate) != 0) {
-			modifiers.add(ModifierKind.PRIVATE);
+			modifiers.add(new CtExtendedModifier(ModifierKind.PRIVATE, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccProtected) != 0) {
-			modifiers.add(ModifierKind.PROTECTED);
+			modifiers.add(new CtExtendedModifier(ModifierKind.PROTECTED, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccStatic) != 0) {
-			modifiers.add(ModifierKind.STATIC);
+			modifiers.add(new CtExtendedModifier(ModifierKind.STATIC, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccFinal) != 0) {
-			modifiers.add(ModifierKind.FINAL);
+			modifiers.add(new CtExtendedModifier(ModifierKind.FINAL, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccSynchronized) != 0) {
-			modifiers.add(ModifierKind.SYNCHRONIZED);
+			modifiers.add(new CtExtendedModifier(ModifierKind.SYNCHRONIZED, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccVolatile) != 0) {
-			modifiers.add(ModifierKind.VOLATILE);
+			modifiers.add(new CtExtendedModifier(ModifierKind.VOLATILE, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccTransient) != 0) {
-			modifiers.add(ModifierKind.TRANSIENT);
+			modifiers.add(new CtExtendedModifier(ModifierKind.TRANSIENT, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccAbstract) != 0) {
-			modifiers.add(ModifierKind.ABSTRACT);
+			modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccStrictfp) != 0) {
-			modifiers.add(ModifierKind.STRICTFP);
+			modifiers.add(new CtExtendedModifier(ModifierKind.STRICTFP, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccNative) != 0) {
-			modifiers.add(ModifierKind.NATIVE);
+			modifiers.add(new CtExtendedModifier(ModifierKind.NATIVE, implicit));
 		}
 		return modifiers;
 	}

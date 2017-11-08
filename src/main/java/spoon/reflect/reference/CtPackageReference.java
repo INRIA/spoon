@@ -48,4 +48,17 @@ public interface CtPackageReference extends CtReference {
 
 	@Override
 	CtPackageReference clone();
+
+	/**
+	 * The simple name of a CtPackageReference is always the fully qualified name of its referenced package. (see {@link spoon.reflect.factory.PackageFactory})
+	 * @return The fully qualified name of its referenced package
+	 */
+	@Override
+	String getSimpleName();
+
+	/**
+	 * The qualified name of a CtPackageReference is directly given by its simple name (see {@link CtPackageReference#getSimpleName})
+	 * @return the fully qualified name of its referenced package
+	 */
+	String getQualifiedName();
 }

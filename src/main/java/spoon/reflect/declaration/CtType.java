@@ -30,6 +30,7 @@ import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.NESTED_TYPE;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
+import static spoon.reflect.path.CtRole.TYPE_MEMBER;
 
 /**
  * This abstract element defines a super-type for classes and interfaces, which
@@ -205,11 +206,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Return all the accessible methods (concrete and abstract) for this type.
 	 * It recursively collects all methods from super-classes and super-interfaces.
 	 *
-	 * As of 5.3: Really all methods (incl. those of library super-classes
-	 * and Object are returned, thanks to runtime reflection)
-	 *
-	 * Up to 5.2: The recursion stops when the super-type/super-interface is not in the model,
-	 * which means that no method of library super-classes, or of Object are present.
+	 * It includes the methods of types whose source code is in the Spoon model,
+	 * the methods of types from the JDK and from libraries present in the classpath,
+	 * the methods of java.lang.Object (for all CtClass objects).
+	 * However, in noclasspath mode, it does not include methods from unknown types.
+	 * If methods are overridden somewhere in the type hierarchy, it returns only top methods (ie method definitions).
+	 * Each method signature is returned only once
 	 */
 	@DerivedProperty
 	Set<CtMethod<?>> getAllMethods();
@@ -311,27 +313,32 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Gets all type members of the type like fields, methods, anonymous block, etc.
 	 */
+	@PropertyGetter(role = TYPE_MEMBER)
 	List<CtTypeMember> getTypeMembers();
 
 	/**
 	 * Adds a type member at the end of all type member of the type.
 	 */
+	@PropertySetter(role = TYPE_MEMBER)
 	<C extends CtType<T>> C addTypeMember(CtTypeMember member);
 
 	/**
 	 * Adds a type member at a given position. Think to use this method if the order is
 	 * important for you.
 	 */
+	@PropertySetter(role = TYPE_MEMBER)
 	<C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member);
 
 	/**
 	 * Removes the type member.
 	 */
+	@PropertySetter(role = TYPE_MEMBER)
 	boolean removeTypeMember(CtTypeMember member);
 
 	/**
 	 * Removes all types members with these new members.
 	 */
+	@PropertySetter(role = TYPE_MEMBER)
 	<C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members);
 
 	@Override

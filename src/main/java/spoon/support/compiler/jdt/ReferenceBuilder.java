@@ -48,6 +48,7 @@ import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.IntersectionTypeBinding18;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
@@ -56,6 +57,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemPackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.RawTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -81,6 +83,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -248,7 +251,8 @@ public class ReferenceBuilder {
 	 * @return a type reference.
 	 */
 	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
-		if (enclosingType != null && Collections.disjoint(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.PROTECTED), JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers))) {
+		final List<CtExtendedModifier> listPublicProtected = Arrays.asList(new CtExtendedModifier(ModifierKind.PUBLIC), new CtExtendedModifier(ModifierKind.PROTECTED));
+		if (enclosingType != null && Collections.disjoint(listPublicProtected, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers))) {
 			String access = "";
 			int i = 0;
 			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
@@ -288,8 +292,11 @@ public class ReferenceBuilder {
 	 * @return CtReference which can be a CtTypeReference, a CtPackageReference or null.
 	 */
 	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
-		if (this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration != null && this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports != null) {
-			for (ImportReference anImport : this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports) {
+		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
+		LookupEnvironment environment = cuDeclaration.scope.environment;
+
+		if (cuDeclaration != null && cuDeclaration.imports != null) {
+			for (ImportReference anImport : cuDeclaration.imports) {
 				if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
 					if (anImport.isStatic()) {
 						int indexDeclaring = 2;
@@ -300,16 +307,21 @@ public class ReferenceBuilder {
 						char[][] packageName = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - indexDeclaring);
 						char[][] className = CharOperation.subarray(anImport.getImportName(), anImport.getImportName().length - indexDeclaring, anImport.getImportName().length - (indexDeclaring - 1));
 						PackageBinding aPackage;
-						if (packageName.length != 0) {
-							aPackage = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(packageName);
-						} else {
-							aPackage = null;
+						try {
+							if (packageName.length != 0) {
+								aPackage = environment.createPackage(packageName);
+							} else {
+								aPackage = null;
+							}
+							final MissingTypeBinding declaringType = environment.createMissingType(aPackage, className);
+							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
+							final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
+							this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
+							return typeReference;
+						} catch (NullPointerException e) {
+							return null;
 						}
-						final MissingTypeBinding declaringType = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createMissingType(aPackage, className);
-						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = true;
-						final CtTypeReference<Object> typeReference = getTypeReference(declaringType);
-						this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports = false;
-						return typeReference;
+
 					} else {
 						PackageBinding packageBinding = null;
 						char[][] chars = CharOperation.subarray(anImport.getImportName(), 0, anImport.getImportName().length - 1);
@@ -317,17 +329,21 @@ public class ReferenceBuilder {
 						// an array with a minimum length of 1 and throw an
 						// ArrayIndexOutOfBoundsException if `chars.length == 0`. Fixes #759.
 						if (chars.length > 0) {
-							Binding someBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.findImport(chars, false, false);
+							Binding someBinding = cuDeclaration.scope.findImport(chars, false, false);
 							if (someBinding != null && someBinding.isValidBinding() && someBinding instanceof PackageBinding) {
 								packageBinding = (PackageBinding) someBinding;
 							} else {
-								packageBinding = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.createPackage(chars);
+								try {
+									packageBinding = environment.createPackage(chars);
+								} catch (NullPointerException e) {
+									packageBinding = null;
+								}
 							}
 						}
-						if (packageBinding == null) {
+						if (packageBinding == null || packageBinding instanceof ProblemPackageBinding) {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-							packageBinding = new PackageBinding(chars, null, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment);
+							packageBinding = new PackageBinding(chars, null, environment, environment.module);
 						}
 						return getPackageReference(packageBinding);
 					}
@@ -751,8 +767,9 @@ public class ReferenceBuilder {
 				bounds = false;
 				bindingCache.put(binding, ref);
 				List<CtTypeReference<?>> bounds = new ArrayList<>();
-				if (((CtTypeParameterReference) ref).getBoundingType() != null) {
-					bounds.add(((CtTypeParameterReference) ref).getBoundingType());
+				CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) ref;
+				if (!(typeParameterReference.isDefaultBoundingType())) { // if it's object we can ignore it
+					bounds.add(typeParameterReference.getBoundingType());
 				}
 				for (ReferenceBinding superInterface : b.superInterfaces) {
 					bounds.add(getTypeReference(superInterface));

@@ -16,6 +16,7 @@
  */
 package spoon;
 
+import org.apache.log4j.Level;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -237,6 +238,8 @@ public class MavenLauncher extends Launcher {
 
 		/**
 		 * Get the list of dependencies available in the local maven repository
+		 *
+		 * @param isLib: If false take dependency of the main project; if true, take dependencies of a library of the project
 		 * @return the list of  dependencies
 		 */
 		public List<File> getDependencies(boolean isLib) {
@@ -268,19 +271,21 @@ public class MavenLauncher extends Launcher {
 				if (version.startsWith("[")) {
 					version = version.substring(1, version.indexOf(','));
 				}
-				if (dependency.isOptional()) {
+				// pass only the optional dependency if it's in a library dependency
+				if (isLib && dependency.isOptional()) {
 					continue;
 				}
+
 				// ignore test dependencies for app source code
 				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
 					continue;
 				}
 				// ignore not transitive dependencies
 				if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
+					LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test): " + dependency.toString());
 					continue;
 				}
 				String fileName = dependency.getArtifactId() + "-" + version;
-				// TODO: Check the scope of the dependency (local dependency is not handled)
 				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version);
 				File depFile = depPath.toFile();
 				if (depFile.exists()) {

@@ -47,7 +47,7 @@ import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.THROWN_TYPE;
+import static spoon.reflect.path.CtRole.THROWN;
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
 	@MetamodelPropertyField(role = CtRole.NAME)
@@ -58,7 +58,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	CtBlock<?> body;
 	@MetamodelPropertyField(role = CtRole.PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
-	@MetamodelPropertyField(role = CtRole.THROWN_TYPE)
+	@MetamodelPropertyField(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	@Override
@@ -198,7 +198,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN_TYPE, this.thrownTypes, new HashSet<>(this.thrownTypes));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<>(this.thrownTypes));
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
 			addThrownType(thrownType);
@@ -215,7 +215,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN_TYPE, this.thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
 		return (C) this;
 	}
@@ -225,7 +225,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			return false;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, THROWN_TYPE, thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, THROWN, thrownTypes, throwType);
 		return thrownTypes.remove(throwType);
 	}
 

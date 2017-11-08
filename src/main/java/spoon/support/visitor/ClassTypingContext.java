@@ -35,7 +35,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
@@ -251,53 +250,6 @@ public class ClassTypingContext extends AbstractTypingContext {
 			lastResolvedSuperclass = null;
 		}
 		return listener.foundArguments;
-	}
-
-	/**
-	 * @param method to be adapted to this context
-	 * @return new method whose parameters are adapted to `this context` or the same`method` if there is no need to adapt it
-	 */
-	public <T> CtMethod<T> adaptMethod(CtMethod<T> method) {
-		CtType<?> declType = method.getDeclaringType();
-		if (declType == null) {
-			throw new SpoonException("Cannot adapt method, which has no declaringType");
-		}
-		if (getAdaptationScope() == declType) {
-			return method;
-		}
-		//the scope method is declared in different type then scope of assigned classTypingContext
-		if (isSubtypeOf(declType.getReference()) == false) {
-			throw new SpoonException("Cannot create MethodTypingContext for method declared in different ClassTypingContext");
-		}
-		/*
-		 * The method is declared in an supertype of classTypingContext.
-		 * Create virtual scope method by adapting generic types of supertype method to required scope
-		 */
-		Factory factory = method.getFactory();
-		//create new method
-		CtMethod<T> adaptedMethod = factory.Core().createMethod();
-		adaptedMethod.setParent(getAdaptationScope());
-		adaptedMethod.setModifiers(method.getModifiers());
-		adaptedMethod.setSimpleName(method.getSimpleName());
-		for (CtTypeReference<? extends Throwable> thrownType : method.getThrownTypes()) {
-			adaptedMethod.addThrownType(thrownType.clone());
-		}
-		for (CtTypeParameter typeParam : method.getFormalCtTypeParameters()) {
-			CtTypeParameter newTypeParam = typeParam.clone();
-			newTypeParam.setSuperclass(adaptTypeForNewMethod(typeParam.getSuperclass()));
-			adaptedMethod.addFormalCtTypeParameter(newTypeParam);
-		}
-		//adapt return type
-		adaptedMethod.setType((CtTypeReference) adaptTypeForNewMethod(method.getType()));
-		//adapt parameters
-		List<CtParameter<?>> adaptedParams = new ArrayList<>(method.getParameters().size());
-		for (CtParameter<?> parameter : method.getParameters()) {
-			adaptedParams.add(factory.Executable().createParameter(null,
-					adaptTypeForNewMethod(parameter.getType()),
-					parameter.getSimpleName()));
-		}
-		adaptedMethod.setParameters(adaptedParams);
-		return adaptedMethod;
 	}
 
 	/**
@@ -620,14 +572,14 @@ public class ClassTypingContext extends AbstractTypingContext {
 		if (superArg instanceof CtWildcardReference) {
 			CtWildcardReference wr = (CtWildcardReference) superArg;
 			CtTypeReference<?> superBound = wr.getBoundingType();
-			if (superBound == null) {
+			if (superBound.equals(wr.getFactory().Type().OBJECT)) {
 				//everything extends from object, nothing is super of Object
 				return wr.isUpper();
 			}
 			if (subArg instanceof CtWildcardReference) {
 				CtWildcardReference subWr = (CtWildcardReference) subArg;
 				CtTypeReference<?> subBound = subWr.getBoundingType();
-				if (subBound == null) {
+				if (subBound.equals(wr.getFactory().Type().OBJECT)) {
 					//nothing is super of object
 					return false;
 				}
@@ -650,25 +602,6 @@ public class ClassTypingContext extends AbstractTypingContext {
 		}
 		//superArg is not a wildcard. Only same type is matching
 		return subArg.equals(superArg);
-	}
-
-	private CtTypeReference<?> adaptTypeForNewMethod(CtTypeReference<?> typeRef) {
-		if (typeRef == null) {
-			return null;
-		}
-		if (typeRef instanceof CtTypeParameterReference) {
-			CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
-			CtTypeParameter typeParam = typeParamRef.getDeclaration();
-			if (typeParam == null) {
-				throw new SpoonException("Declaration of the CtTypeParameter should not be null.");
-			}
-
-			if (typeParam.getTypeParameterDeclarer() instanceof CtExecutable) {
-				//the parameter is declared in scope of Method or Constructor
-				return typeRef.clone();
-			}
-		}
-		return adaptType(typeRef);
 	}
 
 	private boolean isSameSignature(CtExecutable<?> thisMethod, CtExecutable<?> thatMethod, boolean canTypeErasure) {
@@ -757,7 +690,8 @@ public class ClassTypingContext extends AbstractTypingContext {
 				if (thisType.getActualTypeArguments().isEmpty() && thatType.getActualTypeArguments().size() == 1) {
 					CtTypeReference actualTA = thatType.getActualTypeArguments().get(0);
 					if (actualTA instanceof CtWildcardReference) {
-						if (((CtWildcardReference) actualTA).getBoundingType() == null) {
+						CtWildcardReference wildcardReference = (CtWildcardReference) actualTA;
+						if (wildcardReference.isDefaultBoundingType()) {
 							thatType.setActualTypeArguments(Collections.EMPTY_LIST);
 						}
 					}

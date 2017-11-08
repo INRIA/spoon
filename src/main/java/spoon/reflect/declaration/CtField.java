@@ -16,6 +16,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.support.DerivedProperty;
@@ -37,6 +38,13 @@ public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T
 	 */
 	@DerivedProperty
 	CtFieldReference<T> getReference();
+
+	/**
+	 * Useful proxy to {@link #getDefaultExpression()}.
+	 */
+	@Override
+	@DerivedProperty
+	CtExpression<T> getAssignment();
 
 	/**
 	 * Replaces this element by another one.

@@ -76,7 +76,14 @@ public class SpoonArchitectureEnforcerTest {
 						if (!m.getSimpleName().startsWith("create")) continue;
 
 						// too generic, what should we create??
-						if (m.getSimpleName().equals("create")) continue;
+						if (m.getSimpleName().equals("create")) {
+							String simpleNameType = m.getType().getSimpleName().replace("Ct", "");
+							CtMethod method = m.clone();
+
+							method.setSimpleName("create"+simpleNameType);
+							assertTrue(method.getSignature() + " (from "+t.getQualifiedName()+") is not present in the main factory", factoryImpl.hasMethod(method));
+							continue;
+						}
 
 						// too generic, is it a fieldref? an execref? etc
 						if (m.getSimpleName().equals("createReference"))

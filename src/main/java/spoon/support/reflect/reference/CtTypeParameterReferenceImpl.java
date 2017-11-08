@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
@@ -50,6 +51,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	public CtTypeParameterReferenceImpl() {
 		super();
+		// calling null will set the default value of boundingType
+		this.setBoundingType(null);
+	}
+
+	@Override
+	public boolean isDefaultBoundingType() {
+		return (getBoundingType().equals(getFactory().Type().getDefaultBoundingType()));
 	}
 
 	@Override
@@ -96,12 +104,18 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
-			if (getBoundingType() == null) {
+			if (isDefaultBoundingType()) {
 				return (Class<Object>) getTypeErasure().getActualClass();
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
 		return null;
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeReference<?>> getActualTypeArguments() {
+		return emptyList();
 	}
 
 	@Override
@@ -127,7 +141,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (bound == null) {
 			return (T) this;
 		}
-		if (getBoundingType() == null) {
+		if (isDefaultBoundingType()) {
 			setBoundingType(bound);
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
@@ -142,7 +156,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || getBoundingType() == null) {
+		if (bound == null || isDefaultBoundingType()) {
 			return false;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
@@ -163,6 +177,14 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
+
+		// ugly but else make testSetterInNodes failed
+		if (superType == null) { // if null, set bounding type to object
+			superType = getFactory().Type().objectType();
+			superType.setImplicit(true);
+			superType.setParent(this);
+		}
+
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BOUNDING_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;

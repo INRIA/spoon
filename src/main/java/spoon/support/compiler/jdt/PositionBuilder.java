@@ -57,7 +57,7 @@ public class PositionBuilder {
 
 	SourcePosition buildPositionCtElement(CtElement e, ASTNode node) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
-		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().create(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
 		char[] contents = cr.compilationUnit.getContents();
@@ -185,7 +185,7 @@ public class PositionBuilder {
 				modifiersSourceEnd = typeParameters[0].declarationSourceStart - 3;
 			}
 
-			if (getModifiers(methodDeclaration.modifiers).isEmpty()) {
+			if (getModifiers(methodDeclaration.modifiers, false).isEmpty()) {
 				modifiersSourceStart = modifiersSourceEnd + 1;
 			}
 

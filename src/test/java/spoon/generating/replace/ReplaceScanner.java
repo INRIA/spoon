@@ -42,6 +42,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,7 +82,10 @@ public class ReplaceScanner extends CtScanner {
 		clone.getBody().getStatements().clear();
 		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
 			CtInvocation inv = element.getBody().getStatement(i);
-			CtInvocation getter = (CtInvocation) inv.getArguments().get(0);
+			List<CtExpression<?>> invArgs = new ArrayList<>(inv.getArguments());
+			//remove role argument
+			invArgs.remove(0);
+			CtInvocation getter = (CtInvocation) invArgs.get(0);
 
 			if (clone.getComments().size() == 0) {
 				// Add auto-generated comment.
@@ -91,26 +95,26 @@ public class ReplaceScanner extends CtScanner {
 				clone.addComment(comment);
 			}
 			Class actualClass = getter.getType().getActualClass();
-			CtInvocation<?> invocation = createInvocation(factory, element, inv, getter, actualClass);
+			CtInvocation<?> invocation = createInvocation(factory, element, invArgs, getter, actualClass);
 			clone.getBody().addStatement(invocation);
 		}
 		target.addMethod(clone);
 	}
 
-	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, CtInvocation current, CtInvocation getter, Class getterTypeClass) {
+	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, List<CtExpression<?>> invArgs, CtInvocation getter, Class getterTypeClass) {
 		CtInvocation<?> invocation;
 		Type type;
 		if (getterTypeClass.equals(Collection.class) || getterTypeClass.equals(List.class)) {
-			invocation = factory.Code().createInvocation(null, this.list, current.getArguments());
+			invocation = factory.Code().createInvocation(null, this.list, invArgs);
 			type = Type.LIST;
 		} else if (getterTypeClass.equals(Map.class)) {
-			invocation = factory.Code().createInvocation(null, this.map, current.getArguments());
+			invocation = factory.Code().createInvocation(null, this.map, invArgs);
 			type = Type.MAP;
 		} else if (getterTypeClass.equals(Set.class)) {
-			invocation = factory.Code().createInvocation(null, this.set, current.getArguments());
+			invocation = factory.Code().createInvocation(null, this.set, invArgs);
 			type = Type.SET;
 		} else {
-			invocation = factory.Code().createInvocation(null, this.element, current.getArguments());
+			invocation = factory.Code().createInvocation(null, this.element, invArgs);
 			type = Type.ELEMENT;
 		}
 		// Listener
@@ -169,19 +173,19 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
-		listener = factory.Class().get(GENERATING_REPLACE_PACKAGE + ".CtListener").clone();
+		listener = factory.Class().get(TARGET_REPLACE_PACKAGE + ".CtListener").clone();
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return (GENERATING_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
+				return (TARGET_REPLACE_PACKAGE + ".CtListener").equals(reference.getQualifiedName());
 			}
 		});
 		for (CtTypeReference reference : references) {
 			reference.setPackage(listener.getPackage().getReference());
 		}
-		final CtTypeReference<Object> theInterface = factory.Class().createReference(GENERATING_REPLACE_PACKAGE + "." + type.name);
+		final CtTypeReference<Object> theInterface = factory.Class().createReference(TARGET_REPLACE_PACKAGE + "." + type.name);
 		theInterface.addActualTypeArgument(getterType);
 		final Set<CtTypeReference<?>> interfaces = new HashSet<>();
 		interfaces.add(theInterface);

@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import spoon.Launcher;
@@ -315,11 +316,9 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 						final DefaultMutableTreeNode n = q.poll();
 						expand(n);
 						@SuppressWarnings("unchecked")
-						Enumeration<DefaultMutableTreeNode> children = n
-								.children();
+						Enumeration<TreeNode> children = n.children();
 						while (children.hasMoreElements()) {
-							DefaultMutableTreeNode child = children
-									.nextElement();
+							DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
 							if (!child.isLeaf() && child.getChildCount() > 0) {
 								q.offer(child);
 							}

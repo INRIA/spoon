@@ -1,16 +1,12 @@
-# Revapi Analysis results
+Detected changes by [Revapi](https://github.com/revapi/revapi/): ${reports?size}.
 
 Old API: **<#list analysis.oldApi.archives as archive>${archive.name}<#sep>, </#list>**
 
 New API: **<#list analysis.newApi.archives as archive>${archive.name}<#sep>, </#list>**
 
-Detected changes: ${reports?size}.
-
 <#list reports as report>
 <#list report.differences as diff>
-## Change ${report?index+1}
-
-| Name | Element |
+| Name | Change ${report?index+1} |
 | :---: | :---: |
 | Old | ${report.oldElement!"none"} |
 | New | ${report.newElement!"none"} |

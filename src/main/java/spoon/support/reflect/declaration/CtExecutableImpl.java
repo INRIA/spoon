@@ -36,7 +36,7 @@ import java.util.Set;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.THROWN_TYPE;
+import static spoon.reflect.path.CtRole.THROWN;
 
 
 /**
@@ -53,7 +53,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	@MetamodelPropertyField(role = PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
 
-	@MetamodelPropertyField(role = THROWN_TYPE)
+	@MetamodelPropertyField(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	public CtExecutableImpl() {
@@ -149,7 +149,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN_TYPE, this.thrownTypes, new HashSet<Object>(this.thrownTypes));
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<Object>(this.thrownTypes));
 		this.thrownTypes.clear();
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
 			addThrownType(thrownType);
@@ -166,7 +166,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
 		}
 		throwType.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN_TYPE, this.thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
 		return (T) this;
 	}
@@ -176,7 +176,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			return false;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, THROWN_TYPE, thrownTypes, throwType);
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, THROWN, thrownTypes, throwType);
 		return thrownTypes.remove(throwType);
 	}
 

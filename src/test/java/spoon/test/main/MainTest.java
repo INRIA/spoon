@@ -1,6 +1,7 @@
 package spoon.test.main;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
@@ -22,6 +23,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -48,13 +50,19 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class MainTest {
-
-	@Test
-	public void testMain() throws Exception {
-
+	
+	static Launcher launcher;
+	static CtPackage rootPackage;
+	
+	/**
+	 * load model once into static variable and use it for more read-only tests
+	 */
+	@BeforeClass
+	public static void loadModel() {
 		// we have to remove the test-classes folder
 		// so that the precondition of --source-classpath is not violated
 		// (target/test-classes contains src/test/resources which itself contains Java files)
@@ -67,7 +75,7 @@ public class MainTest {
 		}
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
-		Launcher launcher = new Launcher();
+		launcher = new Launcher();
 
 		launcher.run(new String[] {
 				"-i", "src/main/java",
@@ -78,14 +86,23 @@ public class MainTest {
 				"--compliance", "8",
 				"--level", "OFF"
 		});
+		
+		rootPackage = launcher.getFactory().Package().getRootPackage();
+	}
+	
+	@Test
+	public void testMain_checkGenericContracts() {
+		checkGenericContracts(rootPackage);
+	}
+	
+	@Test
+	public void testMain_checkShadow() {
+		checkShadow(rootPackage);
+	}
 
-		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
-
-		checkShadow(launcher.getFactory().Package().getRootPackage());
-
-		checkParentConsistency(launcher.getFactory().Package().getRootPackage());
-
-		checkModelIsTree(launcher.getFactory().Package().getRootPackage());
+	@Test
+	public void testMain_checkParentConsistency() {
+		checkParentConsistency(rootPackage);
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
@@ -310,7 +327,7 @@ public class MainTest {
 
 	}
 
-	private void checkParentConsistency(CtPackage pack) {
+	public static void checkParentConsistency(CtElement ele) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
@@ -343,17 +360,16 @@ public class MainTest {
 				}
 				super.exit(e);
 			}
-		}.visitCtPackage(pack);
+		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
-	
-	
 	
 	/*
 	 * contract: each element is used only once
 	 * For example this is always true: field.getType() != field.getDeclaringType()
 	 */
-	private void checkModelIsTree(CtPackage rootPackage) {
+	@Test
+	public void checkModelIsTree() {
 		Exception dummyException = new Exception("STACK");
 		PrinterHelper problems = new PrinterHelper(rootPackage.getFactory().getEnvironment());
 		Map<CtElement, Exception> allElements = new IdentityHashMap<>();
@@ -390,7 +406,19 @@ public class MainTest {
 		return sw.toString();
 	}
 
-	
+	@Test
+	public void testMyRoleInParent() {
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtRole role, CtElement element) {
+				if (element != null) {
+					//contract: getMyRoleInParent returns the expected parent
+					assertSame(role, element.getRoleInParent());
+				}
+				super.scan(role, element);
+			}
+		});
+	}
 
 	@Test
 	public void testTest() throws Exception {
@@ -410,6 +438,11 @@ public class MainTest {
 		// if one analyzes src/main/java and src/test/java at the same time
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
+			if (t.getPackage().getQualifiedName().equals("spoon.metamodel")
+					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
+				//Meta model classes doesn't have to follow test class naming conventions
+				continue;
+			}
 			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)"));
 		}
 	}

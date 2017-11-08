@@ -17,7 +17,6 @@
 package spoon.support.template;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -380,15 +379,6 @@ public class SubstitutionVisitor extends CtScanner {
 		return this;
 	}
 
-
-	/**
-	 * Override to scan on collection copies and avoid potential concurrent
-	 * modification exceptions.
-	 */
-	@Override
-	public void scan(Collection<? extends CtElement> elements) {
-		super.scan(new ArrayList<>(elements));
-	}
 
 	@Override
 	public void scan(CtElement element) {

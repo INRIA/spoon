@@ -14,10 +14,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.generating.replace;
+package spoon.support.visitor.replace;
 
-import java.util.Set;
+import spoon.reflect.declaration.CtElement;
 
-public interface ReplaceSetListener<T extends Set> {
+public interface ReplaceListener<T extends CtElement> {
 	void set(T replace);
 }
