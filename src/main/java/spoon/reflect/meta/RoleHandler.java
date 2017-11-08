@@ -38,18 +38,18 @@ public interface RoleHandler {
 	 * @param value new value, which will be assigned to the element's attribute defined by role defined by {@link #getRole()}
 	 */
 	<T, U> void setValue(T element, U value);
-	
+
 	// introspection methods
 	/**
 	 * @return a role of this handler
 	 */
 	CtRole getRole();
-	
+
 	/**
 	 * @return a type of the class, which this handler can be applied to
 	 */
 	Class<?> getTargetType();
-	
+
 	/**
 	 * @return a Class of value of the attribute of {@link #getTargetType()} defined by {@link #getRole()}
 	 */
