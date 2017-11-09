@@ -230,7 +230,7 @@ public class SpoonArchitectureEnforcerTest {
 
 		List<String> missingMethods = new ArrayList<>();
 		for (CtType type : allTypes) {
-			if (type.getSuperInterfaces().contains(ctElement.getReference())) {
+			if (type.isSubtypeOf(ctElement.getReference())) {
 				String methodName = "scan"+type.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);
