@@ -24,7 +24,6 @@ import spoon.reflect.reference.CtReference;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
