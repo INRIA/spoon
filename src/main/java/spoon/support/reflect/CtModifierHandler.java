@@ -106,7 +106,7 @@ public class CtModifierHandler implements Serializable {
 
 	public CtModifierHandler setVisibility(ModifierKind visibility) {
 		if (visibility != ModifierKind.PUBLIC && visibility != ModifierKind.PROTECTED && visibility != ModifierKind.PRIVATE) {
-			throw new SpoonException("setVisibility could only be called with a private, public or protected argument value. Given argument: "+visibility);
+			throw new SpoonException("setVisibility could only be called with a private, public or protected argument value. Given argument: " + visibility);
 		}
 		if (hasModifier(visibility)) {
 			return this;
