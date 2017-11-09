@@ -112,7 +112,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
-		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false);
+		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, false);
 
 		CtCatchVariable<Throwable> result = jdtTreeBuilder.getFactory().Core().createCatchVariable();
 		result.<CtCatchVariable>setSimpleName(CharOperation.charToString(jdtCatch.name)).setExtendedModifiers(modifiers);
@@ -581,7 +581,7 @@ public class JDTTreeBuilderHelper {
 		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
 		p.setSimpleName(CharOperation.charToString(argument.name));
 		p.setVarArgs(argument.isVarArgs());
-		p.setExtendedModifiers(getModifiers(argument.modifiers));
+		p.setExtendedModifiers(getModifiers(argument.modifiers, false, false));
 		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
 			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
 			p.getType().setImplicit(argument.type == null);
@@ -653,7 +653,7 @@ public class JDTTreeBuilderHelper {
 		}
 
 		// Setting modifiers
-		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers));
+		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
 
 		return type;
 	}
