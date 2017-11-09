@@ -252,7 +252,7 @@ public class ReferenceBuilder {
 	 */
 	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
 		final List<CtExtendedModifier> listPublicProtected = Arrays.asList(new CtExtendedModifier(ModifierKind.PUBLIC), new CtExtendedModifier(ModifierKind.PROTECTED));
-		if (enclosingType != null && Collections.disjoint(listPublicProtected, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers))) {
+		if (enclosingType != null && Collections.disjoint(listPublicProtected, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, false))) {
 			String access = "";
 			int i = 0;
 			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
