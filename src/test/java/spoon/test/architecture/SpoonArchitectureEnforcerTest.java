@@ -1,5 +1,6 @@
 package spoon.test.architecture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -7,6 +8,7 @@ import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -15,9 +17,12 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -205,5 +210,33 @@ public class SpoonArchitectureEnforcerTest {
 		})) {
 			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
 		}
+	}
+
+	@Test
+	public void testInterfacesAreCtScannable() {
+		// contract: all interface inherited from CtElement should be visited in CtScanner
+		Launcher interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/reflect/visitor/CtScanner.java");
+		interfaces.buildModel();
+
+		Collection<CtType<?>> allTypes = interfaces.getModel().getAllTypes();
+
+		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtScanner.class);
+		CtType<?> ctElement = interfaces.getFactory().Type().get(CtElement.class);
+
+		List<String> missingMethods = new ArrayList<>();
+		for (CtType type : allTypes) {
+			if (type.getSuperInterfaces().contains(ctElement.getReference())) {
+				String methodName = "visit"+type.getSimpleName();
+				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
+					missingMethods.add(methodName);
+				}
+			}
+		}
+
+		assertTrue("The following methods are missing in CtScanner: \n"+ StringUtils.join(missingMethods, "\n"),missingMethods.isEmpty());
 	}
 }
