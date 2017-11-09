@@ -17,10 +17,15 @@ import spoon.reflect.visitor.ElementPrinterHelper;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.MinimalImportScanner;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.support.JavaOutputProcessor;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,42 +45,40 @@ import static spoon.testing.utils.ModelUtils.build;
 public class ImportScannerTest {
 
 	@Test
-	public void testImportOnSpoon() {
+	public void testImportOnSpoon() throws IOException {
+
+		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/main/java/spoon/");
 		spoon.getEnvironment().setAutoImports(true);
 		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.buildModel();
 
-		PrinterHelper printer = new PrinterHelper(spoon.getEnvironment());
-		DefaultJavaPrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
-		ElementPrinterHelper printerHelper = new ElementPrinterHelper(new DefaultTokenWriter(printer), prettyPrinter, spoon.getEnvironment());
+		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
 
 		Map<CtType, List<String>> missingImports = new HashMap<>();
 		Map<CtType, List<String>> unusedImports = new HashMap<>();
+
+		JavaOutputProcessor outputProcessor;
 
 		for (CtType<?> ctType : spoon.getModel().getAllTypes()) {
 			if (!ctType.isTopLevel()) {
 				continue;
 			}
 
-			CompilationUnit unit = spoon.getFactory().CompilationUnit().getMap().get(ctType.getPosition().getFile().getPath());
-
-			Collection<CtReference> computedRefImports = unit.getImports();
-
-			ImportScanner importContext = new ImportScannerImpl();
-			importContext.computeImports(ctType);
-
-			computedRefImports.addAll(importContext.getAllImports());
+			outputProcessor = new JavaOutputProcessor(targetDir, prettyPrinter);
+			outputProcessor.setFactory(spoon.getFactory());
+			outputProcessor.init();
 
 			Set<String> computedTypeImports = new HashSet<>();
 			Set<String> computedStaticImports = new HashSet<>();
 
-			prettyPrinter.reset();
-			printerHelper.writeImports(computedRefImports);
-			String imports = printerHelper.toString();
+			outputProcessor.createJavaFile(ctType);
+			assertEquals(1, outputProcessor.getCreatedFiles().size());
 
-			for (String computedImport : imports.split("\\n")) {
+			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath());
+
+			for (String computedImport : content) {
 				if (computedImport.startsWith("import")) {
 					String computedImportStr = computedImport.replace("import ", "").replace(";", "").trim();
 
