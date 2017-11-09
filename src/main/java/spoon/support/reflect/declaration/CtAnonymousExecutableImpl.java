@@ -53,8 +53,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
-	public boolean removeModifier(ModifierKind modifier) {
-		return modifierHandler.removeModifier(modifier);
+	public <T extends CtModifiable> T removeModifier(ModifierKind modifier) {
+		modifierHandler.removeModifier(modifier);
+		return (T) this;
 	}
 
 	@Override

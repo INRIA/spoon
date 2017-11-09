@@ -67,10 +67,9 @@ public interface CtModifiable extends CtElement {
 	 * remove a modifier
 	 *
 	 * @param modifier
-	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = MODIFIER)
-	boolean removeModifier(ModifierKind modifier);
+	<T extends CtModifiable> T removeModifier(ModifierKind modifier);
 
 	/**
 	 * Sets the visibility of this modifiable element (replaces old visibility).

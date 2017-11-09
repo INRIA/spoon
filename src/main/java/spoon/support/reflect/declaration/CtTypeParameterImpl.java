@@ -212,9 +212,9 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public boolean removeModifier(ModifierKind modifier) {
+	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
 		// unsettable property
-		return true;
+		return (C) this;
 	}
 
 	@Override

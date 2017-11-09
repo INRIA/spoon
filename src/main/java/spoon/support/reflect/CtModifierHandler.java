@@ -93,14 +93,15 @@ public class CtModifierHandler implements Serializable {
 		return this;
 	}
 
-	public boolean removeModifier(ModifierKind modifier) {
+	public CtModifierHandler removeModifier(ModifierKind modifier) {
 		if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
-			return false;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(element, MODIFIER, modifiers, modifier);
 		// we want to remove implicit OR explicit modifier
-		boolean b = modifiers.remove(new CtExtendedModifier(modifier));
-		return b || modifiers.remove(new CtExtendedModifier(modifier, true));
+		modifiers.remove(new CtExtendedModifier(modifier));
+		modifiers.remove(new CtExtendedModifier(modifier, true));
+		return this;
 	}
 
 	public CtModifierHandler setVisibility(ModifierKind visibility) {
