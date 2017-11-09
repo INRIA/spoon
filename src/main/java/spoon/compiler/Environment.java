@@ -25,7 +25,8 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.reflect.factory.Factory;
+
+import java.nio.charset.Charset;
 
 /**
  * This interface represents the environment in which Spoon is launched -
@@ -288,11 +289,6 @@ public interface Environment {
 	void setCommentEnabled(boolean commentEnabled);
 
 	/**
-	 * Gets the factory of the environment.
-	 */
-	Factory getFactory();
-
-	/**
 	 * Gets the level of loggers asked by the user.
 	 */
 	Level getLevel();
@@ -341,4 +337,14 @@ public interface Environment {
 	 * set the model change listener
 	 */
 	void setModelChangeListener(FineModelChangeListener modelChangeListener);
+
+	/**
+	 * Get the encoding used inside the project
+	 */
+	Charset getEncoding();
+
+	/**
+	 * Set the encoding to use for parsing source code
+	 */
+	void setEncoding(Charset encoding);
 }

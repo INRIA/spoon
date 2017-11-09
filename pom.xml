@@ -10,7 +10,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>5.9.0-SNAPSHOT</version>
+  <version>6.0.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -34,15 +34,6 @@
     <system>GitHub</system>
     <url>https://github.com/INRIA/spoon/issues</url>
   </issueManagement>
-
-  <mailingLists>
-    <mailingList>
-      <name>spoon-discuss</name>
-      <subscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</subscribe>
-      <unsubscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</unsubscribe>
-      <archive>http://lists.gforge.inria.fr/pipermail/spoon-discuss/</archive>
-    </mailingList>
-  </mailingLists>
 
   <!-- to generate the list for the README -->
   <!-- xmlstarlet sel -t -m "//_:developer/_:name" -o "* " -v . -n  pom.xml -->
@@ -165,7 +156,7 @@
   </scm>
 
   <properties>
-    <java.src.version>1.7</java.src.version>
+    <java.src.version>1.8</java.src.version>
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -205,12 +196,12 @@
     <dependency>
       <groupId>org.eclipse.tycho</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.12.0.v20160516-2131</version>
+      <version>3.13.50.v20171007-0855</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -231,12 +222,6 @@
       <version>2.1</version>
     </dependency>
     <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.6.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
@@ -244,7 +229,12 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.4</version>
+      <version>2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -278,7 +268,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
+        <version>2.20.1</version>
         <configuration>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
@@ -290,7 +280,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.7.0</version>
         <configuration>
           <source>${java.src.version}</source>
           <target>${java.src.version}</target>
@@ -305,49 +295,33 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-bytecode-version</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <rules>
-            <enforceBytecodeVersion>
-              <maxJdkVersion>${java.src.version}</maxJdkVersion>
-            </enforceBytecodeVersion>
-          </rules>
-          <fail>true</fail>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.0-beta-4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.1</version>
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
+      </plugin>
+
+      <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.8</version>
         <extensions>true</extensions>
         <configuration>
           <serverId>ossrh</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
+        <dependencies>
+          <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-ssh</artifactId>
+            <version>2.12</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>
@@ -362,29 +336,6 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <dependencies>
-          <dependency>
-            <groupId>sun.jdk</groupId>
-            <artifactId>tools</artifactId>
-            <version>${java.src.version}.0</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <phase>test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -474,7 +425,7 @@
       <plugin>
 	<groupId>org.jacoco</groupId>
 	<artifactId>jacoco-maven-plugin</artifactId>
-	<version>0.7.5.201505241946</version>
+	<version>0.7.9</version>
 	<executions>
 	  <execution>
 	    <goals>
@@ -496,17 +447,17 @@
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
         <!-- Lock down plugin version for build reproducibility -->
-        <version>0.8.1</version>
+        <version>0.9.5</version>
         <dependencies>
           <dependency>
             <groupId>org.revapi</groupId>
             <artifactId>revapi-java</artifactId>
-            <version>0.13.1</version>
+            <version>0.14.4</version>
           </dependency>
           <dependency>
             <groupId>org.revapi</groupId>
             <artifactId>revapi-reporter-text</artifactId>
-            <version>0.7.0</version>
+            <version>0.8.1</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -572,115 +523,29 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <linkXRef>true</linkXRef>
-          <sourceEncoding>utf-8</sourceEncoding>
-          <minimumTokens>100</minimumTokens>
-          <targetJdk>${java.src.version}</targetJdk>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>pmd</report>
-              <report>cpd</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <tags>
-            <tag>TODO</tag>
-            <tag>FIXME</tag>
-            <tag>@todo</tag>
-            <tag>@deprecated</tag>
-          </tags>
-        </configuration>
+        <version>2.9</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0-M1</version>
         <configuration>
           <quiet>true</quiet>
+          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
+        <reportSets>
+          <reportSet>
+            <id>html</id>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
     </plugins>
   </reporting>
 
   <profiles>
-    <profile>
-      <id>animal-sniffer</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-maven-plugin</artifactId>
-            <version>1.14</version>
-            <configuration>
-              <signature>
-                <groupId>org.codehaus.mojo.signature</groupId>
-                <artifactId>java17</artifactId>
-                <version>1.0</version>
-              </signature>
-            </configuration>
-            <executions>
-              <execution>
-                <id>ensure-java-1.7-class-library</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>com.mycila</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <version>2.11</version>
-            <configuration>
-              <header>LICENSE-short.txt</header>
-              <excludes>
-                <exclude>**/README</exclude>
-                <exclude>**/*.yml</exclude>
-                <exclude>*.xml</exclude>
-                <exclude>*.txt</exclude>
-                <exclude>*.md</exclude>
-		<exclude>chore/**</exclude>
-		<exclude>doc/**</exclude>
-                <exclude>spooned/**</exclude>
-                <exclude>src/main/resources/**</exclude>
-                <exclude>src/main/assembly/**</exclude>
-                <exclude>src/test/**</exclude>
-                <exclude>src/changes/**</exclude>
-                <exclude>src/site/**</exclude>
-                <exclude>target/**</exclude>
-                <exclude>bin/**</exclude>
-                <exclude>build/**</exclude>
-              </excludes>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>coveralls</id>
       <build>
@@ -714,7 +579,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9.1</version>
+            <version>3.0.0-M1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>

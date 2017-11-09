@@ -86,7 +86,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected boolean buildOnlyOutdatedFiles = false;
 	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
 	protected List<SpoonResource> forceBuildList = new ArrayList<>();
-	protected String encoding;
 	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
 
 	/**
@@ -144,7 +143,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 
 		final String[] args = new JDTBuilderImpl() //
-				.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
+				.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
 				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
 				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
@@ -329,16 +328,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	@Override
-	public String getEncoding() {
-		return encoding;
-	}
-
-	@Override
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
-	@Override
 	public Factory getFactory() {
 		return factory;
 	}
@@ -389,7 +378,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		String[] args;
 		if (jdtBuilder == null) {
 			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.encoding).classpath(classpath)) //
+					.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(classpath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
 					.sources(new SourceOptions().sources(sourceFiles)) // no sources, handled by the JDTBatchCompiler
@@ -508,10 +497,11 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				file.createNewFile();
 
 				// the path must be given relatively to to the working directory
-				InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
+				try (InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
+					FileOutputStream outFile = new FileOutputStream(file);) {
 
-				IOUtils.copy(is, new FileOutputStream(file));
-
+					IOUtils.copy(is, outFile);
+				}
 
 				if (!printedFiles.contains(file)) {
 					printedFiles.add(file);

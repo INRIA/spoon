@@ -14,10 +14,11 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
@@ -90,7 +91,7 @@ public class InsertMethodsTest {
 
 	@Test
 	public void testInsertBeforeWithoutBrace() throws Exception {
-		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NameFilter<CtMethod<?>>("ifWithoutBraces")).get(0);
+		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
@@ -107,7 +108,7 @@ public class InsertMethodsTest {
 
 	@Test
 	public void testInsertBeforeWithBrace() throws Exception {
-		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NameFilter<CtMethod<?>>("ifWithBraces")).get(0);
+		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
@@ -123,7 +124,7 @@ public class InsertMethodsTest {
 
 	@Test
 	public void testInsertAfterWithoutBrace() throws Exception {
-		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NameFilter<CtMethod<?>>("ifWithoutBraces")).get(0);
+		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
@@ -140,7 +141,7 @@ public class InsertMethodsTest {
 
 	@Test
 	public void testInsertAfterWithBrace() throws Exception {
-		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NameFilter<CtMethod<?>>("ifWithBraces")).get(0);
+		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
@@ -156,7 +157,7 @@ public class InsertMethodsTest {
 
 	@Test
 	public void testInsertBeforeSwitchCase() throws Exception {
-		CtMethod<?> sm = insertExampleClass.getElements(new NameFilter<CtMethod<?>>("switchMethod")).get(0);
+		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
 		CtSwitch<?> sw = sm.getElements(new TypeFilter<CtSwitch<?>>(CtSwitch.class)).get(0);
@@ -192,7 +193,7 @@ public class InsertMethodsTest {
 
 	@Test
 	public void testInsertAfterSwitchCase() throws Exception {
-		CtMethod<?> sm = insertExampleClass.getElements(new NameFilter<CtMethod<?>>("switchMethod")).get(0);
+		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
 		CtSwitch<?> sw = sm.getElements(new TypeFilter<CtSwitch<?>>(CtSwitch.class)).get(0);

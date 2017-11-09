@@ -19,7 +19,7 @@ package spoon.processing;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.processing.processors.MyProcessor;
+import spoon.test.processing.processors.MyProcessor;
 
 import java.io.File;
 

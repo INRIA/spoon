@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -75,7 +76,14 @@ public class SpoonArchitectureEnforcerTest {
 						if (!m.getSimpleName().startsWith("create")) continue;
 
 						// too generic, what should we create??
-						if (m.getSimpleName().equals("create")) continue;
+						if (m.getSimpleName().equals("create")) {
+							String simpleNameType = m.getType().getSimpleName().replace("Ct", "");
+							CtMethod method = m.clone();
+
+							method.setSimpleName("create"+simpleNameType);
+							assertTrue(method.getSignature() + " (from "+t.getQualifiedName()+") is not present in the main factory", factoryImpl.hasMethod(method));
+							continue;
+						}
 
 						// too generic, is it a fieldref? an execref? etc
 						if (m.getSimpleName().equals("createReference"))
@@ -155,6 +163,17 @@ public class SpoonArchitectureEnforcerTest {
 		})) {
 			assertTrue("naming contract violated for "+meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
 		}
+
+		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
+		// otherwise, intellij automatically selects the junit3 runner, finds nothing
+		// and crashes with a dirty exception
+		assertEquals(0, spoon.getModel().getRootPackage().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class){
+			@Override
+			public boolean matches(CtTypeReference element) {
+				CtMethod parent = element.getParent(CtMethod.class);
+				return "junit.framework.TestCase".equals(element.getQualifiedName());
+			}
+		}).size());
 	}
 
 	@Test

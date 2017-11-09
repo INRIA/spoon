@@ -29,7 +29,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
@@ -510,7 +510,8 @@ public class TypeReferenceTest {
 
 		reference.setBounds(null);
 
-		assertNull(reference.getBoundingType());
+		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
+		assertTrue(reference.isDefaultBoundingType());
 
 		reference.addBound(factory.Type().createReference(String.class));
 
@@ -518,7 +519,8 @@ public class TypeReferenceTest {
 
 		reference.setBounds(new ArrayList<>());
 
-		assertNull(reference.getBoundingType());
+		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
+		assertTrue(reference.isDefaultBoundingType());
 	}
 
 	@Test
@@ -614,7 +616,7 @@ public class TypeReferenceTest {
 	@Test
 	public void testEqualityTypeReference() throws Exception {
 		CtClass<ParamRefs> aClass = (CtClass) buildClass(ParamRefs.class);
-		CtParameter<?> parameter = aClass.getElements(new NameFilter<CtParameter<?>>("param")).get(0);
+		CtParameter<?> parameter = aClass.getElements(new NamedElementFilter<>(CtParameter.class,"param")).get(0);
 		CtParameterReference<?> parameterRef1 = parameter.getReference();
 		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)->ref.getSimpleName().equals("param")).get(0);
 
@@ -622,5 +624,21 @@ public class TypeReferenceTest {
 		assertEquals(aClass.getReference(), parameterRef2.getDeclaringExecutable().getType());
 
 		assertEquals(parameterRef1, parameterRef2);
+	}
+
+	@Test
+	public void testTypeReferenceWithGenerics() throws Exception {
+		// contract: in noclasspath, a generic type name should not contain generic information
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtField field = launcher.getModel().getElements(new TypeFilter<CtField>(CtField.class)).get(0);
+		CtTypeReference fieldTypeRef = field.getType();
+
+		assertEquals("spoon.test.imports.testclasses.withgenerics.Target", fieldTypeRef.getQualifiedName());
+		assertEquals(2, fieldTypeRef.getActualTypeArguments().size());
 	}
 }

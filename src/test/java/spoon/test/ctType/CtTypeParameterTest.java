@@ -17,7 +17,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.testing.utils.ModelUtils;
 
@@ -69,7 +69,7 @@ public class CtTypeParameterTest {
 
 	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws NoSuchFieldException, SecurityException {
 		CtExecutable<?> exec = (CtExecutable<?>) typeParam.getParent();
-		CtParameter<?> param = exec.filterChildren(new NameFilter<>("param"+typeParam.getSimpleName())).first();
+		CtParameter<?> param = exec.filterChildren(new NamedElementFilter<>(CtParameter.class,"param"+typeParam.getSimpleName())).first();
 		assertNotNull("Missing param"+typeParam.getSimpleName() + " in "+ exec.getSignature(), param);
 		int paramIdx = exec.getParameters().indexOf(param);
 		Class declClass = exec.getParent(CtType.class).getActualClass();
@@ -140,7 +140,7 @@ public class CtTypeParameterTest {
 		CtMethod<?> ctModelMethod = ctModel.getMethodsByName("method").get(0);
 		CtMethod<?> ctModelMethod2 = ctModel.getMethodsByName("method2").get(0);
 		
-		CtClass<?> ctModelB = ctModel.filterChildren(new NameFilter<>("ModelB")).first();
+		CtClass<?> ctModelB = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelB")).first();
 		CtTypeParameter tpA2 = ctModelB.getFormalCtTypeParameters().get(0);
 		CtTypeParameter tpB2 = ctModelB.getFormalCtTypeParameters().get(1);
 		CtTypeParameter tpC2 = ctModelB.getFormalCtTypeParameters().get(2);
@@ -164,7 +164,7 @@ public class CtTypeParameterTest {
 		//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
 		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelMethod2.getFormalCtTypeParameters(), true);
 		
-		CtClass<?> ctModelC = ctModel.filterChildren(new NameFilter<>("ModelC")).first();
+		CtClass<?> ctModelC = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelC")).first();
 	}
 
 	/**

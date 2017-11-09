@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class LauncherTest {
@@ -40,7 +42,7 @@ public class LauncherTest {
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
 		assertEquals(new File("spooned"), builder.getSourceOutputDirectory());
 		assertEquals(0, builder.getInputSources().size());
-		assertEquals("UTF-8", builder.getEncoding());
+		assertEquals("UTF-8", environment.getEncoding().displayName());
 	}
 
 	@Test
@@ -67,7 +69,7 @@ public class LauncherTest {
 		// the input directories
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());
 		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
-		assertEquals("UTF-16", builder.getEncoding());
+		assertEquals("UTF-16", environment.getEncoding().displayName());
 
 	}
 
@@ -90,6 +92,19 @@ public class LauncherTest {
 		} finally {
 			System.setProperty("user.dir", oldUserDir);
 		}
+	}
+
+
+	@Test
+	public void testLLauncherBuildModelReturnAModel() throws Exception {
+		// contract: Launcher#buildModel should return a consistent CtModel
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/spoon/test/api/Foo.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		assertNotNull(model);
+
+		assertEquals(2, model.getAllTypes().size());
 	}
 
 }

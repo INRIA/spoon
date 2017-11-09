@@ -27,7 +27,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.visitor.replace.InvalidReplaceException;
@@ -93,7 +93,7 @@ public class ReplaceTest {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 		CtMethod<?> m = foo.getElements(
-				new NameFilter<CtMethod<?>>("foo")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"foo")).get(0);
 		assertEquals("foo", m.getSimpleName());
 
 		final CtStatement parent = m.getBody().getStatements().get(2);
@@ -125,11 +125,11 @@ public class ReplaceTest {
 				.getType("Foo");
 
 		CtMethod<?> fooMethod = foo.getElements(
-				new NameFilter<CtMethod<?>>("foo")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"foo")).get(0);
 		assertEquals("foo", fooMethod.getSimpleName());
 
 		CtMethod<?> barMethod = foo.getElements(
-				new NameFilter<CtMethod<?>>("bar")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"bar")).get(0);
 		assertEquals("bar", barMethod.getSimpleName());
 
 		CtLocalVariable<?> assignment = (CtLocalVariable<?>) fooMethod.getBody()
@@ -393,13 +393,13 @@ public class ReplaceTest {
 		final CtExecutableReference<Object> newExecutable = factory.Executable().createReference("void java.io.PrintStream#print(java.lang.String)");
 
 		assertSame(oldExecutable, inv.getExecutable());
-		assertEquals("java.io.PrintStream#println(java.lang.String)", inv.getExecutable().toString());
 
 		oldExecutable.replace(newExecutable);
 
 		assertSame(newExecutable, inv.getExecutable());
-		assertEquals("java.io.PrintStream#print(java.lang.String)", inv.getExecutable().toString());
-		
+		assertEquals("print(java.lang.String)", inv.getExecutable().toString());
+		assertEquals("java.io.PrintStream", inv.getExecutable().getDeclaringType().toString());
+
 		//contract: replace of single value by multiple values in single value field must fail
 		try {
 			newExecutable.replace(Arrays.asList(oldExecutable, null));

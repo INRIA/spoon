@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.support.DerivedProperty;
+import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.Set;
 
@@ -83,4 +84,7 @@ public interface CtModifiable extends CtElement {
 	 */
 	@DerivedProperty
 	ModifierKind getVisibility();
+
+	Set<CtExtendedModifier> getExtendedModifiers();
+	<T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers);
 }

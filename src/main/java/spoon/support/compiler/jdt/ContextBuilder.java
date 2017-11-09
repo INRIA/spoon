@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.ClassFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.FieldFactory;
@@ -51,6 +52,7 @@ import spoon.support.SpoonClassNotFoundException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.EnumSet;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
@@ -105,7 +107,7 @@ public class ContextBuilder {
 		}
 
 		try {
-			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && node instanceof Expression) {
+			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && !(e instanceof CtCatchVariable) && node instanceof Expression) {
 				if (((CtTypedElement<?>) e).getType() == null) {
 					((CtTypedElement<Object>) e).setType(this.jdtTreeBuilder.getReferencesBuilder().getTypeReference(((Expression) node).resolvedType));
 				}
@@ -221,10 +223,11 @@ public class ContextBuilder {
 							final CtType parentOfField = referenceBinding.isClass()
 									? classFactory.create(qualifiedNameOfParent)
 									: interfaceFactory.create(qualifiedNameOfParent);
-							return (U) fieldFactory.create(parentOfField,
-									JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers),
+							U field = (U) fieldFactory.create(parentOfField,
+									EnumSet.noneOf(ModifierKind.class),
 									referenceBuilder.getTypeReference(fieldBinding.type),
 									name);
+							return field.setExtendedModifiers(JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers, true, false));
 						}
 					}
 					// add super class if any

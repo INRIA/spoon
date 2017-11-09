@@ -5,24 +5,25 @@ import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.DefaultTokenWriter;
+import spoon.reflect.visitor.ElementPrinterHelper;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.MinimalImportScanner;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.NameFilter;
-import spoon.reflect.visitor.printer.ElementPrinterHelper;
-import spoon.reflect.visitor.printer.PrinterHelper;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +48,8 @@ public class ImportScannerTest {
 		spoon.buildModel();
 
 		PrinterHelper printer = new PrinterHelper(spoon.getEnvironment());
-		ElementPrinterHelper printerHelper = new ElementPrinterHelper(printer, new DefaultJavaPrettyPrinter(spoon.getEnvironment()), spoon.getEnvironment());
+		DefaultJavaPrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
+		ElementPrinterHelper printerHelper = new ElementPrinterHelper(new DefaultTokenWriter(printer), prettyPrinter, spoon.getEnvironment());
 
 		Map<CtType, List<String>> missingImports = new HashMap<>();
 		Map<CtType, List<String>> unusedImports = new HashMap<>();
@@ -58,6 +60,7 @@ public class ImportScannerTest {
 			}
 
 			CompilationUnit unit = spoon.getFactory().CompilationUnit().getMap().get(ctType.getPosition().getFile().getPath());
+
 			Collection<CtReference> computedRefImports = unit.getImports();
 
 			ImportScanner importContext = new ImportScannerImpl();
@@ -68,13 +71,19 @@ public class ImportScannerTest {
 			Set<String> computedTypeImports = new HashSet<>();
 			Set<String> computedStaticImports = new HashSet<>();
 
-			for (CtReference computedImport : computedRefImports) {
-				String computedImportStr = printerHelper.printImport(computedImport).replace("import ", "").replace(";", "").trim();
+			prettyPrinter.reset();
+			printerHelper.writeImports(computedRefImports);
+			String imports = printerHelper.toString();
 
-				if (computedImportStr.contains("static ")) {
-					computedStaticImports.add(computedImportStr.replace("static ", "").trim());
-				} else if (!"".equals(computedImportStr)) {
-					computedTypeImports.add(computedImportStr);
+			for (String computedImport : imports.split("\\n")) {
+				if (computedImport.startsWith("import")) {
+					String computedImportStr = computedImport.replace("import ", "").replace(";", "").trim();
+
+					if (computedImportStr.contains("static ")) {
+						computedStaticImports.add(computedImportStr.replace("static ", "").trim());
+					} else if (!"".equals(computedImportStr)) {
+						computedTypeImports.add(computedImportStr);
+					}
 				}
 			}
 
@@ -229,7 +238,10 @@ public class ImportScannerTest {
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
 
-		Factory aFactory = build(packageName, className).getFactory();
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/spoon/test/imports/testclasses2/");
+		spoon.buildModel();
+		Factory aFactory = spoon.getFactory();
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
 		ImportScanner importContext = new ImportScannerImpl();
@@ -252,7 +264,7 @@ public class ImportScannerTest {
 
 		compiler.build();
 
-		final List<CtClass<?>> classes = Query.getElements(factory, new NameFilter<CtClass<?>>("MultiCatch"));
+		final List<CtClass> classes = Query.getElements(factory, new NamedElementFilter<>(CtClass.class,"MultiCatch"));
 
 		ImportScanner importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classes.get(0));

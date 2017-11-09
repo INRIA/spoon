@@ -79,6 +79,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
@@ -111,6 +112,7 @@ import spoon.support.visitor.GenericTypeAdapter;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides the sub-factories required by Spoon.
@@ -782,4 +784,135 @@ public interface Factory {
 	 *  @see QueryFactory#createQuery(Object)
 	 */
 	CtQuery createQuery(Object input);
+
+	/**
+	 *
+	 * @see AnnotationFactory#create(String)
+	 */
+	CtAnnotationType createAnnotationType(String qualifiedName);
+
+	/**
+	 *
+	 * @see AnnotationFactory#create(CtPackage, String)
+	 */
+	CtAnnotationType createAnnotationType(CtPackage owner, String simpleName);
+
+	/**
+	 *
+	 * @see ClassFactory#create(String)
+	 */
+	CtClass createClass(String qualifiedName);
+
+	/**
+	 *
+	 * @see ClassFactory#create(CtClass, String)
+	 */
+	CtClass createClass(CtClass<?> declaringClass, String simpleName);
+
+	/**
+	 *
+	 * @see ClassFactory#create(CtPackage, String)
+	 */
+	CtClass createClass(CtPackage owner, String simpleName);
+
+	/**
+	 *
+	 * @see ConstructorFactory#create(CtClass, CtConstructor)
+	 */
+	CtConstructor createConstructor(CtClass target, CtConstructor<?> source);
+
+	/**
+	 *
+	 * @see ConstructorFactory#create(CtClass, CtMethod)
+	 */
+	CtConstructor createConstructor(CtClass target, CtMethod<?> source);
+
+	/**
+	 *
+	 * @see ConstructorFactory#create(CtClass, Set, List, Set)
+	 */
+	CtConstructor createConstructor(CtClass target, Set<ModifierKind> modifiers, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	/**
+	 *
+	 * @see ConstructorFactory#create(CtClass, Set, List, Set, CtBlock)
+	 */
+	CtConstructor createConstructor(CtClass target, Set<ModifierKind> modifiers, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes, CtBlock body);
+
+	/**
+	 *
+	 * @see EnumFactory#create(String)
+	 */
+	CtEnum<?> createEnum(String qualifiedName);
+
+	/**
+	 *
+	 * @see EnumFactory#create(CtPackage, String)
+	 */
+	CtEnum<?> createEnum(CtPackage owner, String simpleName);
+
+	/**
+	 *
+	 * @see FieldFactory#create(CtType, Set, CtTypeReference, String)
+	 */
+	CtField createField(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference type, String name);
+
+	/**
+	 *
+	 * @see FieldFactory#create(CtType, Set, CtTypeReference, String, CtExpression)
+	 */
+	CtField createField(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference type, String name, CtExpression defaultExpression);
+
+	/**
+	 *
+	 * @see FieldFactory#create(CtType, CtField)
+	 */
+	CtField createField(CtType<?> target, CtField source);
+
+	/**
+	 *
+	 * @see InterfaceFactory#create(CtPackage, String)
+	 */
+	CtInterface createInterface(CtPackage owner, String simpleName);
+
+	/**
+	 *
+	 * @see InterfaceFactory#create(CtType, String)
+	 */
+	CtInterface createInterface(CtType owner, String simpleName);
+
+	/**
+	 *
+	 * @see InterfaceFactory#create(String)
+	 */
+	CtInterface createInterface(String qualifiedName);
+
+	/**
+	 *
+	 * @see MethodFactory#create(CtClass, Set, CtTypeReference, String, List, Set, CtBlock)
+	 */
+	CtMethod createMethod(CtClass<?> target, Set<ModifierKind> modifiers, CtTypeReference returnType, String name, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes, CtBlock body);
+
+	/**
+	 *
+	 * @see MethodFactory#create(CtType, CtMethod, boolean)
+	 */
+	CtMethod createMethod(CtType<?> target, CtMethod source, boolean redirectReferences);
+
+	/**
+	 *
+	 * @see MethodFactory#create(CtType, Set, CtTypeReference, String, List, Set)
+	 */
+	CtMethod createMethod(CtType<?> target, Set<ModifierKind> modifiers, CtTypeReference returnType, String name, List<CtParameter<?>> parameters, Set<CtTypeReference<? extends Throwable>> thrownTypes);
+
+	/**
+	 *
+	 * @see PackageFactory#create(CtPackage, String)
+	 */
+	CtPackage createPackage(CtPackage parent, String simpleName);
+
+	/**
+	 * @see CoreFactory#create(Class<? extends CtElement>)
+	 */
+	CtElement createElement(Class<? extends CtElement> klass);
 }

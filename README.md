@@ -7,6 +7,11 @@
 # Spoon
 
 Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. It parses source files to build a well-designed AST with powerful analysis and transformation API. It fully supports Java 8.
+
+```java
+CtClass l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
+```
+
 External contributions as pull requests are welcome.
 The official website is available at <http://spoon.gforge.inria.fr/>.
 Spoon is an official Inria open-source project, and member of the [OW2](https://www.ow2.org/) open-source consortium.
@@ -74,7 +79,7 @@ Stable version:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <version>5.8.0</version>
+    <version>5.9.0</version>
 </dependency>
 ```
 
@@ -85,7 +90,7 @@ Snapshot version:
 	<dependency>
 		<groupId>fr.inria.gforge.spoon</groupId>
 		<artifactId>spoon-core</artifactId>
-		<version>5.9.0-SNAPSHOT</version>
+		<version>6.0.0-SNAPSHOT</version>
 	</dependency>
 </dependencies>
 <repositories>

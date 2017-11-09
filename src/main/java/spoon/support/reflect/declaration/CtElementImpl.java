@@ -31,6 +31,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.Query;
@@ -39,6 +40,7 @@ import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.DefaultCoreFactory;
+import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -274,6 +276,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
+	@DerivedProperty
 	public Set<CtTypeReference<?>> getReferencedTypes() {
 		TypeReferenceScanner s = new TypeReferenceScanner();
 		s.scan(this);
@@ -321,10 +324,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public <E extends CtElement> E setParent(E parent) {
-		if (getFactory() == null) {
-			this.parent = parent;
-			return (E) this;
-		}
 		this.parent = parent;
 		return (E) this;
 	}
@@ -375,6 +374,25 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public CtRole getRoleInParent() {
+		if (isParentInitialized()) {
+			EarlyTerminatingScanner<CtRole> ets = new EarlyTerminatingScanner<CtRole>() {
+				@Override
+				public void scan(CtRole role, CtElement element) {
+					if (element == CtElementImpl.this) {
+						setResult(role);
+						terminate();
+					}
+					//do not call super.scan, because we do not want scan children
+				}
+			};
+			getParent().accept(ets);
+			return ets.getResult();
+		}
+		return null;
 	}
 
 	@Override
@@ -476,6 +494,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public CtElement clone() {
-		return CloneHelper.clone(this);
+		return CloneHelper.INSTANCE.clone(this);
 	}
 }

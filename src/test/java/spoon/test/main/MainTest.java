@@ -1,6 +1,7 @@
 package spoon.test.main;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
@@ -10,15 +11,19 @@ import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -26,27 +31,38 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.parent.ParentTest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class MainTest {
-
-	@Test
-	public void testMain() throws Exception {
-
+	
+	static Launcher launcher;
+	static CtPackage rootPackage;
+	
+	/**
+	 * load model once into static variable and use it for more read-only tests
+	 */
+	@BeforeClass
+	public static void loadModel() {
 		// we have to remove the test-classes folder
 		// so that the precondition of --source-classpath is not violated
 		// (target/test-classes contains src/test/resources which itself contains Java files)
@@ -59,7 +75,7 @@ public class MainTest {
 		}
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
-		Launcher launcher = new Launcher();
+		launcher = new Launcher();
 
 		launcher.run(new String[] {
 				"-i", "src/main/java",
@@ -67,15 +83,26 @@ public class MainTest {
 				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath,
 				"--compile", // compiling Spoon code itself on the fly
-				"--compliance", "7",
+				"--compliance", "8",
 				"--level", "OFF"
 		});
+		
+		rootPackage = launcher.getFactory().Package().getRootPackage();
+	}
+	
+	@Test
+	public void testMain_checkGenericContracts() {
+		checkGenericContracts(rootPackage);
+	}
+	
+	@Test
+	public void testMain_checkShadow() {
+		checkShadow(rootPackage);
+	}
 
-		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
-
-		checkShadow(launcher.getFactory().Package().getRootPackage());
-
-		checkParentConsistency(launcher.getFactory().Package().getRootPackage());
+	@Test
+	public void testMain_checkParentConsistency() {
+		checkParentConsistency(rootPackage);
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
@@ -159,9 +186,9 @@ public class MainTest {
 
 			@Override
 			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+				super.visitCtExecutableReference(reference);
 				assertNotNull(reference);
 				if (isLanguageExecutable(reference)) {
-					super.visitCtExecutableReference(reference);
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
@@ -171,19 +198,38 @@ public class MainTest {
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
 				for (int i = 0; i < reference.getParameters().size(); i++) {
 					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {
-						continue;
+						return;
 					}
 					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
-						continue;
+						return;
+					}
+					//TODO assertions which are checking lambdas. Till then ignore lambdas.
+					if (executableDeclaration instanceof CtLambda) {
+						return;
 					}
 					assertEquals(reference.getParameters().get(i).getQualifiedName(), executableDeclaration.getParameters().get(i).getType().getQualifiedName());
+				}
+
+				// contract: the reference and method signature are the same
+				if (reference.getActualTypeArguments().size() == 0
+						&& executableDeclaration instanceof CtMethod
+						&& ((CtMethod)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						) {
+					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
+				}
+
+				// contract: the reference and constructor signature are the same
+				if (reference.getActualTypeArguments().size() == 0
+						&& executableDeclaration instanceof CtConstructor
+						&& ((CtConstructor)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						) {
+					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
 				}
 
 				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {
 					assertTrue(((CtShadowable) executableDeclaration).isShadow());
 				}
 
-				super.visitCtExecutableReference(reference);
 			}
 
 			private <T> boolean isLanguageExecutable(CtExecutableReference<T> reference) {
@@ -281,7 +327,7 @@ public class MainTest {
 
 	}
 
-	private void checkParentConsistency(CtPackage pack) {
+	public static void checkParentConsistency(CtElement ele) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
@@ -314,8 +360,64 @@ public class MainTest {
 				}
 				super.exit(e);
 			}
-		}.visitCtPackage(pack);
+		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
+	}
+	
+	/*
+	 * contract: each element is used only once
+	 * For example this is always true: field.getType() != field.getDeclaringType()
+	 */
+	@Test
+	public void checkModelIsTree() {
+		Exception dummyException = new Exception("STACK");
+		PrinterHelper problems = new PrinterHelper(rootPackage.getFactory().getEnvironment());
+		Map<CtElement, Exception> allElements = new IdentityHashMap<>();
+		rootPackage.filterChildren(null).forEach((CtElement ele) -> {
+			//uncomment this line to get stacktrace of real problem. The dummyException is used to avoid OutOfMemoryException
+//			Exception secondStack = new Exception("STACK");
+			Exception secondStack = dummyException;
+			Exception firstStack = allElements.put(ele, secondStack);
+			if (firstStack != null) {
+				if(firstStack == dummyException) {
+					Assert.fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+				}
+				//the element ele was already visited. It means it used on more places
+				//report the stacktrace of first and second usage, so that place can be found easily
+				problems.write("The element " + ele.getClass().getSimpleName()).writeln()
+				.incTab()
+				.write(ele.toString()).writeln()
+				.write("Is linked by these stacktraces").writeln()
+				.write("1) " + getStackTrace(firstStack)).writeln()
+				.write("2) " + getStackTrace(secondStack)).writeln()
+				.decTab();
+			}
+		});
+		
+		String report = problems.toString();
+		if (report.length() > 0) {
+			Assert.fail(report);
+		}
+	}
+
+	private String getStackTrace(Exception e) {
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		return sw.toString();
+	}
+
+	@Test
+	public void testMyRoleInParent() {
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtRole role, CtElement element) {
+				if (element != null) {
+					//contract: getMyRoleInParent returns the expected parent
+					assertSame(role, element.getRoleInParent());
+				}
+				super.scan(role, element);
+			}
+		});
 	}
 
 	@Test
@@ -331,6 +433,18 @@ public class MainTest {
 		});
 
 		checkGenericContracts(launcher.getFactory().Package().getRootPackage());
+
+		// contract: all test classes, as well as template/processors/etc used in tests have "test" in their fully qualified name
+		// if one analyzes src/main/java and src/test/java at the same time
+		// this helps a lot to easily automatically differentiate app classes and test classes
+		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
+			if (t.getPackage().getQualifiedName().equals("spoon.metamodel")
+					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
+				//Meta model classes doesn't have to follow test class naming conventions
+				continue;
+			}
+			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)"));
+		}
 	}
 
 	@Test

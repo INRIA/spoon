@@ -14,7 +14,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
@@ -24,12 +23,14 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
+
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ import java.util.Set;
 /**
  * Created by urli on 08/08/2017.
  */
-public class JDTImportBuilder {
+class JDTImportBuilder {
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private String filePath;
@@ -53,7 +54,8 @@ public class JDTImportBuilder {
 		this.factory = factory;
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
-		this.spoonUnit = factory.CompilationUnit().create(filePath);
+		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
+		this.spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
 		this.imports = new HashSet<>();
 	}
 
@@ -65,9 +67,29 @@ public class JDTImportBuilder {
 		for (ImportReference importRef : declarationUnit.imports) {
 			String importName = importRef.toString();
 			if (!importRef.isStatic()) {
-				CtType klass = this.getOrLoadClass(importName);
-				if (klass != null) {
-					this.imports.add(klass.getReference());
+				// Starred import are only managed by importing types of the model for now
+				// as it can cost a lot to retrieve all classes of a package by reflection
+				if (importName.endsWith("*")) {
+					int lastDot = importName.lastIndexOf(".");
+					String packageName = importName.substring(0, lastDot);
+
+					// only get package from the model by traversing from rootPackage the model
+					// it does not use reflection to achieve that
+					CtPackage ctPackage = this.factory.Package().get(packageName);
+
+					if (ctPackage != null) {
+						for (CtType type : ctPackage.getTypes()) {
+							if (type.getVisibility() == ModifierKind.PUBLIC) {
+								this.imports.add(type.getReference());
+							}
+						}
+					}
+
+				} else {
+					CtType klass = this.getOrLoadClass(importName);
+					if (klass != null) {
+						this.imports.add(klass.getReference());
+					}
 				}
 			} else {
 				int lastDot = importName.lastIndexOf(".");
@@ -85,18 +107,18 @@ public class JDTImportBuilder {
 						Set<CtMethod> methods = klass.getAllMethods();
 
 						for (CtFieldReference fieldReference : fields) {
-							if (fieldReference.isStatic() || klass.isInterface()) {
+							if (fieldReference.isStatic() && fieldReference.getFieldDeclaration().hasModifier(ModifierKind.PUBLIC)) {
 								this.imports.add(fieldReference.clone());
 							}
 						}
 
 						for (CtMethod method : methods) {
-							if (method.hasModifier(ModifierKind.STATIC) || klass.isInterface()) {
+							if (method.hasModifier(ModifierKind.STATIC) && method.hasModifier(ModifierKind.PUBLIC)) {
 								this.imports.add(method.getReference());
 							}
 						}
 					} else {
-						List<CtNamedElement> methodOrFields = klass.getElements(new NameFilter<>(methodOrFieldName));
+						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
 							this.imports.add(methodOrFields.get(0).getReference());
@@ -118,8 +140,7 @@ public class JDTImportBuilder {
 			if (klass == null) {
 				try {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
-
-					klass = this.factory.Class().get(zeClass);
+					klass = this.factory.Type().get(zeClass);
 					return klass;
 				} catch (ClassNotFoundException e) {
 					return null;

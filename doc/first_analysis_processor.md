@@ -41,7 +41,8 @@ any elements of the AST (all classes in the Spoon meta model which extends `CtEl
 A first implementation of the empty catch processor is:
 
 ```java
-package fr.inria.gforge.spoon.processors;
+// file processors/CatchProcessor.java
+package processors;
 
 import org.apache.log4j.Level;
 import spoon.processing.AbstractProcessor;
@@ -69,25 +70,20 @@ all concepts are designed to be instinctive for Java developers.
 
 ## Apply the processor
 
-In this "Getting Started", we'll see how we can apply the processor in command line.
+First, compile your processor. You can use javac in command line to generate the `.class` file.
 
-First, compile your processor. You can use javac in command line to generate the `.class` file 
-or Maven to generate the `.jar` file with all of your processors and their dependencies.
+    javac -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar processors/CatchProcessor.java
 
-You have a processor compiled, you'll apply it on our project. If you are in a Maven or
-Gradle project, there are a plugin for these technologies ([here](https://github.com/SpoonLabs/spoon-maven-plugin) 
-for Maven and [here](https://github.com/SpoonLabs/spoon-gradle-plugin) for Gradle).
+You have a processor compiled, you'll apply it on our project.
 
-Second, you must download the latest jar file of Spoon. This archive is available at this [link](https://gforge.inria.fr/frs/download.php/latestzip/86/Spoon-latest.zip). 
-
-Execute the archive of Spoon:
+Then execute Spoon as follows to analyze all catch blocks in Java files that are in `/path/to/src/of/your/project`:
 
 ```bash
-$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p fr.inria.gforge.spoon.processors.CatchProcessor
+$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p processors.CatchProcessor
 ```
 
 {{site.data.alerts.important}} 
 1. Specify all dependencies in your classpath. If your processor has dependencies, don't forget to package your processor.jar with all dependencies!
-2. Specify spoon in the classpath because we use spoon concepts in our processor.
-3. Specify your processors in fully qualified name.
+2. Specify your processors in fully qualified name (here `processors.CatchProcessor`).
 {{site.data.alerts.end}}
+

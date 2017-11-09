@@ -20,13 +20,14 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.test.secondaryclasses.AnonymousClass.I;
@@ -52,7 +53,7 @@ public class ClassesTest {
 		assertEquals(
 				1,
 				type.getElements(
-						new NameFilter<CtNamedElement>("InternalInterf"))
+						new NamedElementFilter<>(CtNamedElement.class,"InternalInterf"))
 						.size());
 	}
 
@@ -92,7 +93,7 @@ public class ClassesTest {
 
 		assertNotNull(y.getType().getDeclaration());
 
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2#2()", y.getExecutable().toString());
+		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2()", y.getExecutable().toString());
 
 		assertEquals(type.getFactory().Type().createReference(I.class), y.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0])[0]);
 
@@ -127,7 +128,7 @@ public class ClassesTest {
 		assertEquals("TopLevel", type.getSimpleName());
 
 		CtClass<?> x = type.getElements(
-				new NameFilter<CtClass<?>>("InnerClass")).get(0);
+				new NamedElementFilter<>(CtClass.class,"InnerClass")).get(0);
 		List<CtField<?>> fields = x.getFields();
 		assertEquals(1, fields.size());
 		assertEquals(1, fields.get(0).getType().getActualTypeArguments().size());

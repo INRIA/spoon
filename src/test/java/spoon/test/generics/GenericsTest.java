@@ -2,6 +2,7 @@ package spoon.test.generics;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.MavenLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -24,6 +25,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -31,7 +33,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
@@ -44,6 +46,11 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
+import spoon.test.generics.testclasses2.LikeCtClass;
+import spoon.test.generics.testclasses2.LikeCtClassImpl;
+import spoon.test.generics.testclasses2.SameSignature2;
+import spoon.test.generics.testclasses2.SameSignature3;
+import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -63,7 +70,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -104,7 +110,7 @@ public class GenericsTest {
 		assertEquals("[java.io.Serializable, java.lang.Comparable<V>]", typeParameter.getSuperclass().asCtIntersectionTypeReference().getBounds().toString());
 
 		CtMethod<?> node5 = type.getElements(
-				new NameFilter<CtMethod<?>>("node5")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"node5")).get(0);
 		assertEquals(
 				"this.<java.lang.Class<? extends java.lang.Throwable>>foo()",
 				node5.getBody().getStatement(0).toString());
@@ -152,7 +158,7 @@ public class GenericsTest {
 	@Test
 	public void testModelBuildingSimilarSignatureMethods() throws Exception {
 		CtClass<?> type = build("spoon.test.generics", "SimilarSignatureMethodes");
-		List<CtNamedElement> methods = type.getElements(new NameFilter<CtNamedElement>("methode"));
+		List<CtNamedElement> methods = type.getElements(new NamedElementFilter<>(CtNamedElement.class,"methode"));
 		assertEquals(2, methods.size());
 		CtTypeParameter typeParameter = ((CtMethod<?>) methods.get(0)).getFormalCtTypeParameters().get(0);
 		assertEquals("E", typeParameter.getSimpleName());
@@ -230,7 +236,7 @@ public class GenericsTest {
 			CtClass<?> type = build("spoon.test.generics", "BugCollection");
 
 			CtField<?> INSTANCE = type.getElements(
-					new NameFilter<CtField<?>>("INSTANCE")).get(0);
+					new NamedElementFilter<>(CtField.class,"INSTANCE")).get(0);
 			// assertTrue(INSTANCE.getDefaultExpression().getType().getActualTypeArguments().get(0)
 			// instanceof CtAnnonTypeParameterReference);
 			assertEquals(
@@ -238,7 +244,7 @@ public class GenericsTest {
 					INSTANCE.toString());
 
 			CtField<?> INSTANCE2 = type.getElements(
-					new NameFilter<CtField<?>>("INSTANCE2")).get(0);
+					new NamedElementFilter<>(CtField.class,"INSTANCE2")).get(0);
 			INSTANCE2.setAnnotations(new ArrayList<CtAnnotation<?>>());
 			assertEquals(
 					"public static final spoon.test.generics.ACLass<?> INSTANCE2 = new spoon.test.generics.ACLass();",
@@ -247,14 +253,14 @@ public class GenericsTest {
 			CtClass<?> ComparableComparator = type
 					.getPackage()
 					.getElements(
-							new NameFilter<CtClass<?>>("ComparableComparator"))
+							new NamedElementFilter<>(CtClass.class,"ComparableComparator"))
 					.get(0);
 			assertTrue(ComparableComparator
 					.toString()
 					.startsWith(
 							"class ComparableComparator<E extends java.lang.Comparable<? super E>>"));
 
-			CtField<?> x = type.getElements(new NameFilter<CtField<?>>("x"))
+			CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x"))
 					.get(0);
 			CtTypeReference<?> ref = x.getType();
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
@@ -273,11 +279,11 @@ public class GenericsTest {
 
 			assertEquals("java.util.Map.Entry", pp.getResult().toString());
 
-			CtField<?> y = type.getElements(new NameFilter<CtField<?>>("y"))
+			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);
 			assertEquals("java.util.Map.Entry<?, ?> y;", y.toString());
 
-			CtField<?> z = type.getElements(new NameFilter<CtField<?>>("z"))
+			CtField<?> z = type.getElements(new NamedElementFilter<>(CtField.class,"z"))
 					.get(0);
 			assertEquals(
 					"java.util.Map.Entry<java.lang.String, java.lang.Integer> z;",
@@ -285,21 +291,21 @@ public class GenericsTest {
 
 			// now as local variables
 			CtLocalVariable<?> lx = type.getElements(
-					new NameFilter<CtLocalVariable<?>>("lx")).get(0);
+					new NamedElementFilter<>(CtLocalVariable.class,"lx")).get(0);
 			assertEquals("java.util.Map.Entry lx", lx.toString());
 
 			CtLocalVariable<?> ly = type.getElements(
-					new NameFilter<CtLocalVariable<?>>("ly")).get(0);
+					new NamedElementFilter<>(CtLocalVariable.class,"ly")).get(0);
 			assertEquals("java.util.Map.Entry<?, ?> ly", ly.toString());
 
 			CtLocalVariable<?> lz = type.getElements(
-					new NameFilter<CtLocalVariable<?>>("lz")).get(0);
+					new NamedElementFilter<>(CtLocalVariable.class,"lz")).get(0);
 			assertEquals(
 					"java.util.Map.Entry<java.lang.String, java.lang.Integer> lz",
 					lz.toString());
 
 			CtLocalVariable<?> it = type.getElements(
-					new NameFilter<CtLocalVariable<?>>("it")).get(0);
+					new NamedElementFilter<>(CtLocalVariable.class,"it")).get(0);
 			assertEquals("java.util.Iterator<java.util.Map.Entry<?, ?>> it",
 					it.toString());
 
@@ -600,7 +606,10 @@ public class GenericsTest {
 
 		CtTypeReference ctTypeReference = aTacos.getSuperInterfaces().toArray(new CtTypeReference[aTacos.getSuperInterfaces().size()])[0];
 		assertFalse(aTacos.isGenerics());
-		assertFalse(ctTypeReference.isGenerics());
+
+		// this is a generic type reference spoon.test.generics.testclasses.ITacos<V>
+		assertEquals("spoon.test.generics.testclasses.ITacos<V>", ctTypeReference.toString());
+		assertTrue(ctTypeReference.isGenerics());
 	}
 	@Test
 	public void testTypeParameterReferenceAsActualTypeArgument() throws Exception {
@@ -656,10 +665,177 @@ public class GenericsTest {
 		}
 	}
 	@Test
+	public void testisGeneric() throws Exception {
+		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
+
+		/*
+		// this code has been used to generate the list of assertEquals below,
+		// and then each assertEquals was verified
+
+		Set<String> s = new HashSet<>();
+		factory.getModel().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
+			@Override
+			public boolean matches(CtTypeReference element) {
+				return super.matches(element) && element.getParent() instanceof CtVariable;
+			}
+		}).forEach(x -> {
+				String simpleName = ((CtVariable) x.getParent()).getSimpleName();
+				if (!s.contains(simpleName)) {
+					System.out.println("\t\t// "+x.toString());
+					System.out.println("\t\tCtTypeReference<?> "+simpleName+"Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, \"" + simpleName+ "\")).first(CtVariable.class).getType();");
+					System.out.println("\t\tassertEquals("+x.isGeneric() + ", " + simpleName + "Ref.isGeneric());");
+					System.out.println();
+				}
+				s.add(simpleName);
+		});
+		 */
+
+		// T
+		CtTypeReference<?> var1Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "var1")).first(CtVariable.class).getType();
+		assertEquals(true, var1Ref.isGenerics());
+
+		// spoon.test.generics.testclasses.rxjava.Subscriber<? super T>
+		CtTypeReference<?> sRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "s")).first(CtVariable.class).getType();
+		assertEquals(true, sRef.isGenerics());
+
+		// spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>
+		CtTypeReference<?> notificationRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "notification")).first(CtVariable.class).getType();
+		assertEquals(false, notificationRef.isGenerics());
+
+		// java.util.function.Function<? super spoon.test.generics.testclasses.rxjava.Observable<spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>>, ? extends spoon.test.generics.testclasses.rxjava.Publisher<?>>
+		CtTypeReference<?> managerRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "manager")).first(CtVariable.class).getType();
+		assertEquals(false, managerRef.isGenerics());
+
+		// spoon.test.generics.testclasses.rxjava.BehaviorSubject<spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>>
+		CtTypeReference<?> subjectRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "subject")).first(CtVariable.class).getType();
+		assertEquals(false, subjectRef.isGenerics());
+
+		// spoon.test.generics.testclasses.rxjava.PublisherRedo.RedoSubscriber<T>
+		CtTypeReference<?> parentRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "parent")).first(CtVariable.class).getType();
+		assertEquals(true, parentRef.isGenerics());
+
+		// spoon.test.generics.testclasses.rxjava.Publisher<?>
+		CtTypeReference<?> actionRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "action")).first(CtVariable.class).getType();
+		assertEquals(false, actionRef.isGenerics());
+
+		// spoon.test.generics.testclasses.rxjava.ToNotificationSubscriber
+		CtTypeReference<?> trucRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "truc")).first(CtVariable.class).getType();
+		assertEquals(false, trucRef.isGenerics());
+
+		// java.util.function.Consumer<? super spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>>
+		CtTypeReference<?> consumerRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "consumer")).first(CtVariable.class).getType();
+		assertEquals(false, consumerRef.isGenerics());
+
+		// S
+		CtTypeReference<?> sectionRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "section")).first(CtVariable.class).getType();
+		assertEquals(true, sectionRef.isGenerics());
+
+		// X
+		CtTypeReference<?> paramARef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "paramA")).first(CtVariable.class).getType();
+		assertEquals(true, paramARef.isGenerics());
+
+		// spoon.test.generics.testclasses.Tacos
+		CtTypeReference<?> paramBRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "paramB")).first(CtVariable.class).getType();
+		assertEquals(false, paramBRef.isGenerics());
+
+		// C
+		CtTypeReference<?> paramCRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "paramC")).first(CtVariable.class).getType();
+		assertEquals(true, paramCRef.isGenerics());
+
+		// R
+		CtTypeReference<?> cookRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "cook")).first(CtVariable.class).getType();
+		assertEquals(true, cookRef.isGenerics());
+
+		// spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>
+		CtTypeReference<?> clRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "cl")).first(CtVariable.class).getType();
+		assertEquals(false, clRef.isGenerics());
+
+		// spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>.WeddingLunch<spoon.test.generics.testclasses.Mole>
+		CtTypeReference<?> disgustRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "disgust")).first(CtVariable.class).getType();
+		assertEquals(false, disgustRef.isGenerics());
+
+		// L
+		CtTypeReference<?> paramRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "param")).first(CtVariable.class).getType();
+		assertEquals(true, paramRef.isGenerics());
+
+		// spoon.reflect.declaration.CtType<? extends spoon.reflect.declaration.CtNamedElement>
+		CtTypeReference<?> targetTypeRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "targetType")).first(CtVariable.class).getType();
+		assertEquals(false, targetTypeRef.isGenerics());
+
+		// spoon.reflect.declaration.CtType<?>
+		CtTypeReference<?> somethingRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "something")).first(CtVariable.class).getType();
+		assertEquals(false, somethingRef.isGenerics());
+
+		// int
+		CtTypeReference<?> iRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "i")).first(CtVariable.class).getType();
+		assertEquals(false, iRef.isGenerics());
+
+		// T
+		CtTypeReference<?> biduleRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "bidule")).first(CtVariable.class).getType();
+		assertEquals(true, biduleRef.isGenerics());
+
+		// Cook<java.lang.String>
+		CtTypeReference<?> aClassRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "aClass")).first(CtVariable.class).getType();
+		assertEquals(false, aClassRef.isGenerics());
+
+		// java.util.List<java.util.List<M>>
+		CtTypeReference<?> list2mRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "list2m")).first(CtVariable.class).getType();
+		assertEquals(true, list2mRef.isGenerics());
+
+		// spoon.test.generics.testclasses.Panini.Subscriber<? extends java.lang.Long>
+		CtTypeReference<?> tRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "t")).first(CtVariable.class).getType();
+		assertEquals(false, tRef.isGenerics());
+
+		// spoon.test.generics.testclasses.Spaghetti<B>.Tester
+		CtTypeReference<?> testerRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "tester")).first(CtVariable.class).getType();
+		assertEquals(false, testerRef.isGenerics());
+
+		// spoon.test.generics.testclasses.Spaghetti<B>.Tester
+		CtTypeReference<?> tester1Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "tester1")).first(CtVariable.class).getType();
+		assertEquals(false, tester1Ref.isGenerics());
+
+		// spoon.test.generics.testclasses.Spaghetti<B>.That<java.lang.String, java.lang.String>
+		CtTypeReference<?> fieldRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "field")).first(CtVariable.class).getType();
+		assertEquals(false, fieldRef.isGenerics());
+
+		// spoon.test.generics.testclasses.Spaghetti<java.lang.String>.That<java.lang.String, java.lang.String>
+		CtTypeReference<?> field1Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "field1")).first(CtVariable.class).getType();
+		assertEquals(false, field1Ref.isGenerics());
+
+		// spoon.test.generics.testclasses.Spaghetti<java.lang.Number>.That<java.lang.String, java.lang.String>
+		CtTypeReference<?> field2Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "field2")).first(CtVariable.class).getType();
+		assertEquals(false, field2Ref.isGenerics());
+
+		// spoon.test.generics.testclasses.Tacos<K, java.lang.String>.Burritos<K, V>
+		CtTypeReference<?> burritosRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "burritos")).first(CtVariable.class).getType();
+		assertEquals(true, burritosRef.isGenerics());
+
+		// int
+		CtTypeReference<?> nbTacosRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "nbTacos")).first(CtVariable.class).getType();
+		assertEquals(false, nbTacosRef.isGenerics());
+
+		// java.util.List<java.lang.String>
+		CtTypeReference<?> lRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "l")).first(CtVariable.class).getType();
+		assertEquals(false, lRef.isGenerics());
+
+		// java.util.List
+		CtTypeReference<?> l2Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "l2")).first(CtVariable.class).getType();
+		assertEquals(false, l2Ref.isGenerics());
+
+		// java.util.List<?>
+		CtTypeReference<?> l3Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "l3")).first(CtVariable.class).getType();
+		assertEquals(false, l3Ref.isGenerics());
+
+		// T
+		CtTypeReference<?> anObjectRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "anObject")).first(CtVariable.class).getType();
+		assertEquals(true, anObjectRef.isGenerics());
+
+	}
+	@Test
 	public void testCtTypeReference_getSuperclass() throws Exception {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
-		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NameFilter<>("disgust")).map((CtTypedElement te)->{
+		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NamedElementFilter<>(CtNamedElement.class,"disgust")).map((CtTypedElement te)->{
 			return te.getType();
 		}).first();
 		
@@ -700,7 +876,7 @@ public class GenericsTest {
 		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
 		CtTypeParameter tpD = ctModel.getFormalCtTypeParameters().get(3);
 
-		CtClass<?> ctModelB = ctModel.filterChildren(new NameFilter<>("ModelB")).first();
+		CtClass<?> ctModelB = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelB")).first();
 		ClassTypingContext sth = new ClassTypingContext(ctModelB);
 		// in ModelB, "A" is "A2"
 		assertEquals("A2", sth.adaptType(tpA).getQualifiedName());
@@ -710,7 +886,7 @@ public class GenericsTest {
 		assertEquals("C2", sth.adaptType(tpC).getQualifiedName());
 		assertEquals("D2", sth.adaptType(tpD).getQualifiedName());
 
-		CtClass<?> ctModelC = ctModel.filterChildren(new NameFilter<>("ModelC")).first();
+		CtClass<?> ctModelC = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelC")).first();
 		ClassTypingContext sthC = new ClassTypingContext(ctModelC);
 		assertEquals("java.lang.Integer", sthC.adaptType(tpA).getQualifiedName());
 		assertEquals("java.lang.RuntimeException", sthC.adaptType(tpB).getQualifiedName());
@@ -724,7 +900,7 @@ public class GenericsTest {
 		// contract: a ClassTypingContext enables one to perform type resolution of generic types
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
-		CtTypeReference<?> typeReferenceOfDisgust = ctClassCelebrationLunch.filterChildren(new NameFilter<>("disgust")).map((CtTypedElement te)->{
+		CtTypeReference<?> typeReferenceOfDisgust = ctClassCelebrationLunch.filterChildren(new NamedElementFilter<>(CtNamedElement.class,"disgust")).map((CtTypedElement te)->{
 			return te.getType();
 		}).first();
 		
@@ -821,7 +997,7 @@ public class GenericsTest {
 	public void testMethodTypingContext() throws Exception {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
-		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 
 		MethodTypingContext methodSTH = new MethodTypingContext().setMethod(trWeddingLunch_eatMe);
 
@@ -829,7 +1005,7 @@ public class GenericsTest {
 		assertSame(trWeddingLunch_eatMe, methodSTH.getAdaptationScope());
 
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
-		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 		
 		CtInvocation<?> invokeReserve = factory.Class().get(CelebrationLunch.class)
 				.filterChildren(new TypeFilter<>(CtInvocation.class))
@@ -889,13 +1065,15 @@ public class GenericsTest {
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
 
 		// represents <C> void eatMe(A paramA, B paramB, C paramC){}
-		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
 
 		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
 		// we all analyze new methods
 		final MethodTypingContext methodSTH = new MethodTypingContext().setClassTypingContext(ctcWeddingLunch);
-		CtMethod<?> adaptedLunchEatMe = ctcWeddingLunch.adaptMethod(trLunch_eatMe);
+		//contract: method can be adapted only using MethodTypingContext
+		methodSTH.setMethod(trLunch_eatMe);
+		CtMethod<?> adaptedLunchEatMe = (CtMethod<?>) methodSTH.getAdaptationScope();
 
 		//contract: adapting of method declared in different scope, returns new method
 		assertTrue(adaptedLunchEatMe != trLunch_eatMe);
@@ -924,13 +1102,8 @@ public class GenericsTest {
 		assertEquals("C", adaptedLunchEatMe.getParameters().get(2).getType().getQualifiedName());
 
 		//contract: adapting of adapted method returns input method
-		assertSame(adaptedLunchEatMe, ctcWeddingLunch.adaptMethod(adaptedLunchEatMe));
-
-		//contract: method typing context creates adapted method automatically
-		methodSTH.setMethod(trLunch_eatMe);
-		//contract: method typing context creates adapted method automatically, which is equal to manually adapted one
-		assertEquals(adaptedLunchEatMe, methodSTH.getAdaptationScope());
-		
+		methodSTH.setMethod(adaptedLunchEatMe);
+		assertSame(adaptedLunchEatMe, methodSTH.getAdaptationScope());
 	}
 	
 	@Test
@@ -941,10 +1114,10 @@ public class GenericsTest {
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
 
 		// represents <C> void eatMe(A paramA, B paramB, C paramC){}
-		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtMethod<?> trLunch_eatMe = ctClassLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 		
 		// represents <C> void eatMe(M paramA, K paramB, C paramC)
-		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NameFilter<>("eatMe")).first();
+		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
 		
 		ClassTypingContext ctcWeddingLunch = new ClassTypingContext(ctClassWeddingLunch);
 		
@@ -1034,7 +1207,7 @@ public class GenericsTest {
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
 				assertTrue(actualTA instanceof CtWildcardReference);
 				assertEquals("?", actualTA.getSimpleName());
-				assertTrue( ((CtWildcardReference)actualTA).getBoundingType() == null );
+				assertTrue( ((CtWildcardReference)actualTA).isDefaultBoundingType() );
 				invocationDetected = true;
 			}
 		}
@@ -1053,12 +1226,12 @@ public class GenericsTest {
 
 		Factory factory = launcher.getFactory();
 
-		CtClass extendedPaella = factory.getModel().getElements(new NameFilter<CtClass>("ExtendedPaella")).get(0);
+		CtClass extendedPaella = factory.getModel().getElements(new NamedElementFilter<>(CtClass.class,"ExtendedPaella")).get(0);
 		List<CtTypeParameter> typeParameterList = extendedPaella.getFormalCtTypeParameters();
 
 		assertEquals(1, typeParameterList.size());
 
-		CtMethod totoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("toto")).get(0);
+		CtMethod totoMethod = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"toto")).get(0);
 		CtTypeReference returnTypeToto = totoMethod.getType();
 		CtTypeReference paramToto = ((CtParameter)totoMethod.getParameters().get(0)).getType();
 
@@ -1067,7 +1240,7 @@ public class GenericsTest {
 		assertSame(typeParameterList.get(0), declaration);
 		assertSame(typeParameterList.get(0), paramToto.getDeclaration());
 
-		CtMethod machinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("machin")).get(0);
+		CtMethod machinMethod = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"machin")).get(0);
 		CtTypeReference returnTypeMachin = machinMethod.getType();
 		List<CtTypeParameter> formalCtTypeParameters = machinMethod.getFormalCtTypeParameters();
 
@@ -1078,12 +1251,12 @@ public class GenericsTest {
 		assertNotSame(typeParameterList.get(0), declarationMachin);
 		assertSame(formalCtTypeParameters.get(0), declarationMachin);
 
-		CtClass innerPaella = factory.getModel().getElements(new NameFilter<CtClass>("InnerPaella")).get(0);
+		CtClass innerPaella = factory.getModel().getElements(new NamedElementFilter<>(CtClass.class,"InnerPaella")).get(0);
 		List<CtTypeParameter> innerTypeParametersList = innerPaella.getFormalCtTypeParameters();
 
 		assertEquals(typeParameterList.get(0), innerTypeParametersList.get(0).getSuperclass().getDeclaration());
 
-		CtMethod innerMachinMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerMachin")).get(0);
+		CtMethod innerMachinMethod = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"innerMachin")).get(0);
 		CtTypeReference returnTypeInnerMachin = innerMachinMethod.getType();
 		CtTypeReference paramInnerMachinType = ((CtParameter)innerMachinMethod.getParameters().get(0)).getType();
 		List<CtTypeParameter> innerMachinFormalCtType = innerMachinMethod.getFormalCtTypeParameters();
@@ -1091,7 +1264,7 @@ public class GenericsTest {
 		assertSame(typeParameterList.get(0), returnTypeInnerMachin.getDeclaration());
 		assertSame(innerMachinFormalCtType.get(0), paramInnerMachinType.getDeclaration());
 
-		CtMethod innerTotoMethod = factory.getModel().getElements(new NameFilter<CtMethod>("innerToto")).get(0);
+		CtMethod innerTotoMethod = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class,"innerToto")).get(0);
 		CtTypeReference returnInnerToto = innerTotoMethod.getType();
 		CtTypeReference paramInnerToto = ((CtParameter)innerTotoMethod.getParameters().get(0)).getType();
 		List<CtTypeParameter> innerTotoFormatCtType = innerTotoMethod.getFormalCtTypeParameters();
@@ -1121,6 +1294,28 @@ public class GenericsTest {
 		assertTrue(ctc.isSubSignature(methods.get(0), methodsItf.get(0)));
 		assertTrue(ctc.isSameSignature(methods.get(0), methodsItf.get(0)));
 	}
+
+	@Test
+	public void testIsSameSignatureWithMethodGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/SameSignature2.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature2.class);
+		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
+
+		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature");
+		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+
+		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
+	}
+	
 	@Test
 	public void testGetExecDeclarationOfEnumSetOf() {
 		Launcher launcher = new Launcher();
@@ -1147,5 +1342,65 @@ public class GenericsTest {
 
 		decl = invocation.getExecutable().getExecutableDeclaration();
 		assertEquals(rightOfMethod, decl);
+	}
+	
+	@Test
+	public void testIsSameSignatureWithReferencedGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/SameSignature3.java");
+		launcher.buildModel();
+
+		CtClass ctClass = launcher.getFactory().Class().get(SameSignature3.class);
+		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
+
+		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature3");
+		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+
+		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
+		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSubSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSubSignature(ifaceMethod, classMethod));
+		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
+		assertTrue(ctcSub.isSameSignature(ifaceMethod, classMethod));
+	}
+	
+	@Test
+	public void testIsGenericTypeEqual() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/LikeCtClass.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses2/LikeCtClassImpl.java");
+		launcher.buildModel();
+
+		CtType<?> ctIFace = launcher.getFactory().Interface().get(LikeCtClass.class);
+		CtMethod<?> ifaceGetter = (CtMethod)ctIFace.getMethodsByName("getConstructors").get(0);
+		CtMethod<?> ifaceSetter = (CtMethod)ctIFace.getMethodsByName("setConstructors").get(0);
+		assertEquals(ifaceGetter.getType().toString(), ifaceSetter.getParameters().get(0).getType().toString());
+		assertEquals(ifaceGetter.getType(), ifaceSetter.getParameters().get(0).getType());
+		
+		CtType<?> ctClass = launcher.getFactory().Class().get(LikeCtClassImpl.class);
+		CtMethod<?> classGetter = (CtMethod)ctClass.getMethodsByName("getConstructors").get(0);
+		CtMethod<?> classSetter = (CtMethod)ctClass.getMethodsByName("setConstructors").get(0);
+		assertEquals(classGetter.getType().toString(), classSetter.getParameters().get(0).getType().toString());
+		assertEquals(classGetter.getType(), classSetter.getParameters().get(0).getType());
+		
+		assertEquals(ifaceGetter.getType().toString(), classGetter.getType().toString());
+		assertEquals(ifaceGetter.getType(), classGetter.getType());
+		assertEquals(ifaceSetter.getParameters().get(0).getType().toString(), classSetter.getParameters().get(0).getType().toString());
+		assertEquals(ifaceSetter.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
+		
+		assertEquals(ifaceSetter.getParameters().get(0).getType(), classGetter.getType());
+		
+		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(new ClassTypingContext(ctClass)).setMethod(ifaceSetter);
+		CtMethod<?> adaptedMethod = (CtMethod<?>) mtc.getAdaptationScope();
+		/*
+		 * after adaptation of `Set<AnType<T>>` from scope of interface to scope of class there is Set<AnType<T extends Object>>
+		 * Which is semantically equivalent, but Equals check does not know that
+		 */
+		assertEquals(adaptedMethod.getParameters().get(0).getType(), classGetter.getType());
+		assertEquals(adaptedMethod.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
+		
+		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
+		MainTest.checkParentConsistency(adaptedMethod);
 	}
 }

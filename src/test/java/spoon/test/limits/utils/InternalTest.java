@@ -2,8 +2,9 @@ package spoon.test.limits.utils;
 
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class InternalTest {
 				CtClass.class));
 		CtClass<?> c3 = classes.get(3);
 		List<CtNamedElement> fields = c3
-				.getElements(new NameFilter<CtNamedElement>("serialVersionUID"));
+				.getElements(new NamedElementFilter<>(CtNamedElement.class,"serialVersionUID"));
 		assertEquals(1, fields.size());
 
 	}

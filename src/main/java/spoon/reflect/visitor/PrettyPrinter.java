@@ -29,12 +29,8 @@ import java.util.Map;
 public interface PrettyPrinter {
 
 	/**
-	 * Gets the package declaration contents.
-	 */
-	String getPackageDeclaration();
-
-	/**
 	 * Prints the package info.
+	 * It always resets the printing context at the beginning of this process.
 	 */
 	String printPackageInfo(CtPackage pack);
 
@@ -44,13 +40,9 @@ public interface PrettyPrinter {
 	String getResult();
 
 	/**
-	 * Resets the buffering of results
-	 */
-	void reset();
-
-	/**
 	 * Calculates the resulting source file for a list of types. The source
 	 * compilation unit is required for calculating the line numbers mapping.
+	 * It always resets the printing context at the beginning of this process.
 	 */
 	void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types);
 

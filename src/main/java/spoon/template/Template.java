@@ -26,9 +26,10 @@ import spoon.reflect.declaration.CtType;
  * {@link TemplateParameter#S()} method.
  *
  * <p>
- * When the template parameter is a String or a primitive type (or a boxing
+ * When the template parameter is a String it is used to rename element of the code such as fields or methods.
+ * When it is another primitive type (or a boxing
  * type) representing a literal, or a Class, the template parameter can be
- * directly accessed.
+ * directly accessed. To use a standard parameter containing a String type, use a CtLiteral&lt;String&gt;
  *
  * <pre>
  *       import spoon.template.Template;
@@ -38,15 +39,19 @@ import spoon.reflect.declaration.CtType;
  *           // template parameter fields
  *            \@Parameter String _parameter_;
  *
+ *            \@Parameter CtLiteral&lt;String&gt; _anotherParameter;
+ *
+ *
  *           // parameters binding
  *            \@Local
- *           public SimpleTemplate(String parameter) {
+ *           public SimpleTemplate(String parameter, CtLiteral&lt;String&gt; anotherParameter) {
  *               _parameter_ = parameter;
+ *               _anotherParameter = anotherParameter;
  *           }
  *
  *           // template method
- *           public void simpleTemplateMethod() {
- *               System.out.println(_parameter_);
+ *           public void methodwith_parameter_() {
+ *               System.out.println(_anotherParameter);
  *           }
  *       }
  * </pre>
@@ -60,7 +65,10 @@ import spoon.reflect.declaration.CtType;
  *
  * <pre>
  *       spoon.reflect.CtClass target=...;
- *       Template template=new SimpleTemplate(&quot;hello templated world&quot;);
+ *       CtLiteral&lt;String&gt; anotherParameter = factory.createLiteral();
+ *       anotherParameter.setValue(&quot;hello templated world&quot;);
+ *
+ *       Template template=new SimpleTemplate(&quot;ParameterizedName&quot;, anotherParameter);
  *       Substitution.insertAll(target,template);
  * </pre>
  *
@@ -70,7 +78,7 @@ import spoon.reflect.declaration.CtType;
  *
  * <pre>
  * public class A {
- * 	public void insertedMethod() {
+ * 	public void methodwithParameterizedName() {
  * 		System.out.println(&quot;hello templated world&quot;);
  *    }
  * }

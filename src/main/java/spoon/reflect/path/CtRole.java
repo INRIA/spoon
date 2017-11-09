@@ -17,14 +17,17 @@
 package spoon.reflect.path;
 
 /**
- * Created by nicolas on 27/08/2015.
+ * Identifies the roles of attributes of spoon model.
  */
 public enum CtRole {
 	NAME,
 	TYPE,
+	DECLARING_TYPE,
+	CONTAINED_TYPE,
 	BODY,
 	IS_SHADOW,
 	BOUND, // in reference only
+	BOUNDING_TYPE, // in reference only
 	IS_FINAL, // in reference only
 	IS_STATIC, // in reference only
 	IS_UPPER, // in reference only
@@ -43,6 +46,7 @@ public enum CtRole {
 	CASE,
 	OPERATOR_KIND,
 	PARAMETER,
+	ARGUMENT_TYPE,
 	EXPRESSION,
 	TARGET,
 	VARIABLE,
@@ -60,21 +64,30 @@ public enum CtRole {
 	SUPER_TYPE,
 	NESTED_TYPE,
 	CONSTRUCTOR,
-	EXECUTABLE,
+	EXECUTABLE_REF,
+	METHOD,
+	ANNONYMOUS_EXECUTABLE,
 	FIELD,
+	TYPE_MEMBER,
 	CAST,
 	VALUE,
 	FOR_UPDATE,
 	FOR_INIT,
+	FOREACH_VARIABLE,
 	TRY_RESOURCE,
 	DIMENSION,
 	CATCH,
 	TARGET_LABEL,
 	TYPE_PARAMETER,
+	TYPE_ARGUMENT,
 	COMMENT_TAG,
 	COMMENT_CONTENT,
 	COMMENT_TYPE,
-	POSITION;
+	DOCUMENTATION_TYPE,
+	JAVADOC_TAG_VALUE,
+	POSITION,
+	SNIPPET,
+	ACCESSED_TYPE;
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -89,6 +102,7 @@ public enum CtRole {
 				return CtRole.values()[i];
 			}
 		}
+		name = name.toLowerCase();
 		if ("implicit".equals(name)) {
 			return IS_IMPLICIT;
 		}
@@ -139,6 +153,12 @@ public enum CtRole {
 		}
 		if ("throwexpression".equals(name)) {
 			return THROWN;
+		}
+		if ("declaringtype".equals(name)) {
+			return DECLARING_TYPE;
+		}
+		if ("boundingtype".equals(name)) {
+			return BOUNDING_TYPE;
 		}
 		if ("returntype".equals(name)
 				|| "componenttype".equals(name)) {

@@ -55,12 +55,12 @@ public class ExtendedStringLiteralTest {
 		};
 		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources(
-				"./src/test/java/spoon/support/compiler/jdt/ExtendedStringLiteralClass.java"));
+				"./src/test/java/"+ExtendedStringLiteralTestClass.class.getCanonicalName().replace('.', '/')+".java"));
 		comp.build();
 
 		CtClass<?> cl =
 			comp.getFactory().Package().get("spoon.support.compiler.jdt").
-			getType("ExtendedStringLiteralClass");
+			getType("ExtendedStringLiteralTestClass");
 		CtField<?> f = cl.getField("extendedStringLiteral");
 		CtExpression<?> de = f.getDefaultExpression();
 		assertEquals("\"hello world!\"", de.toString());

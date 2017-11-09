@@ -10,11 +10,11 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -24,7 +24,7 @@ import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.LambdaFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
@@ -257,7 +257,7 @@ public class LambdaTest {
 		assertParameterIsNamedBy("p", parameter);
 		assertHasExpressionBody(lambda);
 
-		final CtMethod<?> method = foo.getElements(new NameFilter<CtMethod<?>>("m8")).get(0);
+		final CtMethod<?> method = foo.getElements(new NamedElementFilter<>(CtMethod.class,"m8")).get(0);
 		final CtIf condition = method.getElements(new AbstractFilter<CtIf>(CtIf.class) {
 			@Override
 			public boolean matches(CtIf element) {

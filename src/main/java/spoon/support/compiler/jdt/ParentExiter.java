@@ -585,6 +585,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			if (!(this.child instanceof CtBlock)) {
 				child = jdtTreeBuilder.getFactory().Code().createCtBlock(child);
 				child.setImplicit(true);
+				child.setPosition(this.child.getPosition());
 			}
 			if (ifElement.getThenStatement() == null) {
 				ifElement.setThenStatement(child);

@@ -1,43 +1,20 @@
 language: java
 
-sudo: required
 dist: trusty
 
 group: edge
 
-jdk:
-  - oraclejdk8
+env:
+  - SCRIPT=travis-jdk9.sh
+  - SCRIPT=travis-jdk8.sh
+  - SCRIPT=travis-coverage.sh
+  - SCRIPT=travis-verify.sh
 
-# from https://docs.travis-ci.com/user/customizing-the-build
-# A build on Travis CI is made up of two steps: install: (install any dependencies required), script: (run the build script)
+script: ./chore/travis/$SCRIPT
 
-install:
-  - # download deps with maven
-  - mvn dependency:resolve
-  - pip install --user CommonMark requests pygithub
-  - sudo apt-get install xmlstarlet
-  
-script: |
-  # compiles and install
-  mvn install -DskipTests &&
+cache:
+  directories:
+  - $HOME/.m2
 
-  # checks that it works with spoon-maven-pluging
-  git clone https://github.com/square/javawriter.git &&
-  cd javawriter &&  
-  git checkout d39761f9ec25ca5bf3b7bf15d34fa2b831fed9c1 &&
-  bash ../doc/jenkins/build.sh &&
-  cd .. &&
-  rm -rf javawriter &&
-
-  # checkstyle, license, javadoc, animal sniffer.
-  mvn verify site -DskipTests &&
-
-  # the unit tests
-  mvn test jacoco:report  &&
-
-  # uploading coverage, but not failing
-  mvn coveralls:report -Pcoveralls --fail-never &&
-
-  # documentation
-  python chore/check-links-in-doc.py
-
+before_cache:
+  - rm -rf $HOME/.m2/fr/inria/ # delete all to be sure we always get last snapshot of spoon

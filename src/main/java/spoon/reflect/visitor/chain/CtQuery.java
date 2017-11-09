@@ -68,11 +68,11 @@ public interface CtQuery extends CtQueryable {
 	/**
 	 * Query elements based on a function, the behavior depends on the return type of the function.
 	 * <table summary="">
-	 * <tr><td><b>Return type of `function`</b><td><b>Behavior</b>
-	 * <tr><td>{@link Boolean}<td>Select elements if the returned value of `function` is true (as for {@link Filter}).
-	 * <tr><td>? extends {@link Object}<td>Send the returned value of `function` to the next step
-	 * <tr><td>{@link Iterable}<td>Send each item of the collection to the next step
-	 * <tr><td>{@link Object[]}<td>Send each item of the array to the next step
+	 * <tr><td>Return type of `function`</td><td>Behavior</td></tr>
+	 * <tr><td>{@link Boolean}</td><td>Select elements if the returned value of `function` is true (as for {@link Filter}).</td></tr>
+	 * <tr><td>? extends {@link Object}</td><td>Send the returned value of `function` to the next step</td></tr>
+	 * <tr><td>{@link Iterable}</td><td>Send each item of the collection to the next step</td></tr>
+	 * <tr><td>{@link Object}[]</td><td>Send each item of the array to the next step</td></tr>
 	 * </table><br>
 	 *
 	 * @param function a Function with one parameter of type I returning a value of type R

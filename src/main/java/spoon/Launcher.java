@@ -34,6 +34,7 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -47,17 +48,21 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.gui.SpoonModelTree;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
 
 /**
  * This class implements an integrated command-line launcher for processing
@@ -221,7 +226,7 @@ public class Launcher implements SpoonAPI {
 			opt2.setLongFlag("level");
 			opt2.setHelp("Level of the ouput messages about what spoon is doing.");
 			opt2.setStringParser(JSAP.STRING_PARSER);
-			opt2.setDefault(Level.OFF.toString());
+			opt2.setDefault(Level.ERROR.toString());
 			jsap.registerParameter(opt2);
 
 			// Auto-import
@@ -236,7 +241,7 @@ public class Launcher implements SpoonAPI {
 			opt2.setLongFlag("compliance");
 			opt2.setHelp("Java source code compliance level (1,2,3,4,5, 6, 7 or 8).");
 			opt2.setStringParser(JSAP.INTEGER_PARSER);
-			opt2.setDefault("8");
+			opt2.setDefault(DEFAULT_CODE_COMPLIANCE_LEVEL + "");
 			jsap.registerParameter(opt2);
 
 			// compiler's encoding
@@ -437,6 +442,13 @@ public class Launcher implements SpoonAPI {
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
 
+		try {
+			Charset charset = Charset.forName(jsapActualArgs.getString("encoding"));
+			environment.setEncoding(charset);
+		} catch (Exception e) {
+			throw new SpoonException(e);
+		}
+
 		if (getArguments().getString("generate-files") != null) {
 			setOutputFilter(getArguments().getString("generate-files").split(":"));
 		}
@@ -544,11 +556,9 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setEncoding(getArguments().getString("encoding"));
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
-		comp.setEncoding(jsapActualArgs.getString("encoding"));
 
 		// backward compatibility
 		// we don't have to set the source classpath
@@ -694,10 +704,11 @@ public class Launcher implements SpoonAPI {
 	};
 
 	@Override
-	public void buildModel() {
+	public CtModel buildModel() {
 		long tstart = System.currentTimeMillis();
 		modelBuilder.build();
 		getEnvironment().debugMessage("model built in " + (System.currentTimeMillis() - tstart));
+		return modelBuilder.getFactory().getModel();
 	}
 
 	@Override
@@ -789,4 +800,20 @@ public class Launcher implements SpoonAPI {
 		return factory.getModel();
 	}
 
+	/** returns the AST of an inline class */
+	public static CtClass<?> parseClass(String code) {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile(code));
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		Collection<CtType<?>> allTypes = launcher.buildModel().getAllTypes();
+		if (allTypes.size() != 1) {
+			throw new SpoonException("parseClass only considers one class. Please consider using a Launcher object for more advanced usage.");
+		}
+		try {
+			return (CtClass<?>) allTypes.stream().findFirst().get();
+		} catch (ClassCastException e) {
+			throw new SpoonException("parseClass only considers classes (and not interfaces and enums). Please consider using a Launcher object for more advanced usage.");
+		}
+	}
 }

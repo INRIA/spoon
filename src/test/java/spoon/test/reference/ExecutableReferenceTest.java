@@ -54,7 +54,7 @@ public class ExecutableReferenceTest {
 		assertNotNull(executableZeroParameter.getDeclaringType());
 		assertNull(executableZeroParameter.getType());
 		assertEquals(0, executableZeroParameter.getParameters().size());
-		assertEquals("Bar#m()", executableZeroParameter.toString());
+		assertEquals("m()", executableZeroParameter.toString());
 		assertEquals("new Bar().m()", invocations.get(0).toString());
 
 		// Executable reference with 1 parameter and return type.
@@ -63,7 +63,7 @@ public class ExecutableReferenceTest {
 		assertNotNull(executableOneParameter.getType());
 		assertEquals(1, executableOneParameter.getParameters().size());
 		assertNotEquals(executableZeroParameter, executableOneParameter);
-		assertEquals("Bar#m(int)", executableOneParameter.toString());
+		assertEquals("m(int)", executableOneParameter.toString());
 		assertEquals("bar.m(1)", invocations.get(1).toString());
 
 		// Executable reference with 2 parameters.
@@ -73,7 +73,7 @@ public class ExecutableReferenceTest {
 		assertEquals(2, executableTwoParameters.getParameters().size());
 		assertNotEquals(executableTwoParameters, executableZeroParameter);
 		assertNotEquals(executableTwoParameters, executableOneParameter);
-		assertEquals("Bar#m(int, java.lang.String)", executableTwoParameters.toString());
+		assertEquals("m(int,java.lang.String)", executableTwoParameters.toString());
 		assertEquals("new Bar().m(1, \"5\")", invocations.get(2).toString());
 
 		// Static Executable reference.
@@ -83,7 +83,7 @@ public class ExecutableReferenceTest {
 		assertEquals(1, staticExecutable.getParameters().size());
 		assertNotEquals(staticExecutable, executableZeroParameter);
 		assertNotEquals(staticExecutable, executableOneParameter);
-		assertEquals("Bar#m(java.lang.String)", staticExecutable.toString());
+		assertEquals("m(java.lang.String)", staticExecutable.toString());
 		assertEquals("Bar.m(\"42\")", invocations.get(3).toString());
 	}
 

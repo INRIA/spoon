@@ -120,7 +120,7 @@ public class NoClasspathTest {
 		pr.scan(ref);
 		String s = pr.getSignature();
 
-		assertEquals("#foo()", s);
+		assertEquals("foo()", s);
 	}
 
 	@Test

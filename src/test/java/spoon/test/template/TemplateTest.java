@@ -21,8 +21,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ModelConsistencyChecker;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
@@ -30,7 +31,10 @@ import spoon.support.template.SubstitutionVisitor;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
+import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
+import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
+import spoon.test.template.testclasses.FieldAccessTemplate;
 import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.LoggerModel;
@@ -41,6 +45,7 @@ import spoon.test.template.testclasses.SimpleTemplate;
 import spoon.test.template.testclasses.SubStringTemplate;
 import spoon.test.template.testclasses.SubstituteLiteralTemplate;
 import spoon.test.template.testclasses.SubstituteRootTemplate;
+import spoon.test.template.testclasses.TypeReferenceClassAccessTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
 import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
@@ -48,6 +53,7 @@ import spoon.test.template.testclasses.bounds.FooBound;
 import spoon.test.template.testclasses.constructors.C1;
 import spoon.test.template.testclasses.constructors.TemplateWithConstructor;
 import spoon.test.template.testclasses.constructors.TemplateWithFieldsAndMethods;
+import spoon.test.template.testclasses.constructors.TemplateWithFieldsAndMethods_Wrong;
 import spoon.test.template.testclasses.inheritance.InterfaceTemplate;
 import spoon.test.template.testclasses.inheritance.SubClass;
 import spoon.test.template.testclasses.inheritance.SubTemplate;
@@ -58,6 +64,7 @@ import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
 import spoon.test.template.testclasses.types.AnIfaceModel;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -108,7 +115,7 @@ public class TemplateTest {
 		new SuperTemplate().addGeneratedBy(true).apply(superc);
 
 		CtMethod<?> addedMethod = superc.getElements(
-				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod.getSimpleName());
 		elementToGeneratedByMember.put(addedMethod, "#toBeOverriden");
 
@@ -133,7 +140,7 @@ public class TemplateTest {
 		template.apply(subc);
 
 		CtMethod<?> addedMethod2 = subc.getElements(
-				new NameFilter<CtMethod<?>>("toBeOverriden")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod2.getSimpleName());
 		assertEquals("super.toBeOverriden()", addedMethod2.getBody()
 				.getStatements().get(0).toString());
@@ -141,7 +148,7 @@ public class TemplateTest {
 
 		// contract; method parameter templates are handled
 		CtMethod<?> methodWithTemplatedParameters = subc.getElements(
-				new NameFilter<CtMethod<?>>("methodWithTemplatedParameters")).get(0);
+				new NamedElementFilter<>(CtMethod.class,"methodWithTemplatedParameters")).get(0);
 		assertEquals("methodWithTemplatedParameters", methodWithTemplatedParameters.getSimpleName());
 		assertEquals("x", methodWithTemplatedParameters.getParameters().get(0).getSimpleName());
 		assertEquals("int x", methodWithTemplatedParameters.getParameters().get(0).toString());
@@ -189,6 +196,25 @@ public class TemplateTest {
 		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(10).toString());
 		//contract: for each whose expression is not a template parameter is not inlined
 		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
+
+		// contract: local variable write are replaced by local variable write with modified local variable name
+		assertEquals("newVarName = o", methodWithTemplatedParameters.getBody().getStatement(12).toString());
+
+		// contract: local variable read are replaced by local variable read with modified local variable name
+		assertEquals("l = ((java.util.LinkedList) (newVarName))", methodWithTemplatedParameters.getBody().getStatement(13).toString());
+		
+		// contract; field access is handled same like local variable access
+		CtMethod<?> methodWithFieldAccess = subc.getElements(
+				new NamedElementFilter<>(CtMethod.class, "methodWithFieldAccess")).get(0);
+		elementToGeneratedByMember.put(methodWithFieldAccess, "#methodWithFieldAccess");
+		elementToGeneratedByMember.put(subc.getField("newVarName"), "#var");
+
+		// contract: field write are replaced by field write with modified field name
+		assertEquals("newVarName = o", methodWithFieldAccess.getBody().getStatement(2).toString());
+
+		// contract: field read are replaced by field read with modified field name
+		assertEquals("l = ((java.util.LinkedList) (newVarName))", methodWithFieldAccess.getBody().getStatement(3).toString());
+		
 
 		class Context {
 			int nrTypeMembers = 0;
@@ -291,7 +317,7 @@ public class TemplateTest {
 		assertEquals(3, c1.getConstructors().size());
 
 		CtField<?> toBeInserted = c1.getElements(
-				new NameFilter<CtField<?>>("toBeInserted")).get(0);
+				new NamedElementFilter<>(CtField.class,"toBeInserted")).get(0);
 		assertEquals(Date.class, toBeInserted.getType()
 				.getActualTypeArguments().get(0).getActualClass());
 		assertEquals(
@@ -318,7 +344,34 @@ public class TemplateTest {
 
 		assertEquals(0, factory.getEnvironment().getErrorCount());
 		assertEquals(0, factory.getEnvironment().getWarningCount());
+	}
 
+	@Test
+	public void testTemplateWithWrongUsedStringParam() throws Exception {
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.createFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper
+						.resources("./src/test/java/spoon/test/template/testclasses/constructors/C1.java"),
+				SpoonResourceHelper
+						.resources(
+								"./src/test/java/spoon/test/template/testclasses/constructors/TemplateWithFieldsAndMethods_Wrong.java"))
+				.build();
+
+		CtClass<?> c1 = factory.Class().get(C1.class);
+
+		new TemplateWithFieldsAndMethods_Wrong(
+				"testparam").apply(c1);
+
+		CtMethod<?> m = c1.getMethod("methodToBeInserted");
+		assertNotNull(m);
+		//contract: printing of code which contains invalid field reference, fails with nice exception
+		try {
+			m.getBody().getStatement(0).toString();
+		} catch (SpoonException e) {
+			assertTrue("The error description doesn't contain name of invalid field. There is:\n" + e.getMessage(), e.getMessage().indexOf("testparam") >= 0);
+		}
 	}
 
 	@Test
@@ -378,7 +431,7 @@ public class TemplateTest {
 		{// testing matcher1
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -387,7 +440,7 @@ public class TemplateTest {
 		{// testing matcher2
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher2")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
 			assertThat(asList("bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -396,7 +449,7 @@ public class TemplateTest {
 		{// testing matcher3
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -405,7 +458,7 @@ public class TemplateTest {
 		{// testing matcher4
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher4")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -414,7 +467,7 @@ public class TemplateTest {
 		{// testing matcher5
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -423,7 +476,7 @@ public class TemplateTest {
 		{// testing matcher6
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NameFilter("matcher6")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("baz","bou"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
@@ -434,7 +487,7 @@ public class TemplateTest {
 		{
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher3")).get(0);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0);
 
 			// exact match
 			meth.setSimpleName("foo");
@@ -448,7 +501,7 @@ public class TemplateTest {
 			// contract: the name to be matched does not have to be an exact match
 			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtMethod meth = (CtMethod) templateKlass.getElements(new NameFilter("matcher5")).get(0);
+			CtMethod meth = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0);
 
 			// together with the appropriate @Parameter _w_, this means
 			// we match all methods with name f*, because parameter _w_ acts as a wildcard
@@ -505,8 +558,8 @@ public class TemplateTest {
 
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("_classname_", aTargetType.getSimpleName()) ;
-		params.put("_methodName_", toBeLoggedMethod.getSimpleName());
+		params.put("_classname_", factory.Code().createLiteral(aTargetType.getSimpleName()));
+		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
 		params.put("_block_", toBeLoggedMethod.getBody());
 		final List<CtMethod<?>> aMethods = new SubstitutionVisitor(factory, params).substitute(aTemplateModel.clone());
 		assertEquals(1, aMethods.size());
@@ -556,7 +609,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
-		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
@@ -599,7 +652,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
-		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NameFilter("matcher1")).get(0);
+		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
@@ -634,7 +687,7 @@ public class TemplateTest {
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		new InvocationTemplate(factory.Type().OBJECT, "hashCode").apply(resultKlass);
-		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NameFilter("invoke")).get(0);
+		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NamedElementFilter<>(CtMethod.class,"invoke")).get(0);
 		CtStatement templateRoot = (CtStatement) templateMethod.getBody().getStatement(0);
 		//iface.$method$() becomes iface.hashCode()
 		assertEquals("iface.hashCode()", templateRoot.toString());
@@ -907,5 +960,90 @@ public class TemplateTest {
 		final CtClass<?> result = (CtClass<?>) new ObjectIsNotParamTemplate().apply(factory.createClass());
 		assertEquals(0, result.getMethodsByName("methXXXd").size());
 		assertEquals(1, result.getMethodsByName("method").size());
+	}
+
+	@Test
+	public void testFieldAccessNameSubstitution() throws Exception {
+		//contract: the substitution of name of whole field is possible
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new FieldAccessTemplate("value").apply(factory.Class().create("x.X"));
+			assertEquals("int value;", result.getField("value").toString());
+			
+			assertEquals("value = 7", result.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void testFieldAccessNameSubstitutionInInnerClass() throws Exception {
+		//contract: the substitution of name of whole field is possible in inner class too
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessOfInnerClassTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new FieldAccessOfInnerClassTemplate("value").apply(factory.Class().create("x.X"));
+			final CtClass<?> innerClass = result.getNestedType("Inner");
+			assertEquals("int value;", innerClass.getField("value").toString());
+			
+			assertEquals("value = 7", innerClass.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void testAnotherFieldAccessNameSubstitution() throws Exception {
+		//contract: the substitution of name of whole field is possible
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/AnotherFieldAccessTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		{
+			//contract: String value is substituted in String literal
+			final CtClass<?> result = (CtClass<?>) new AnotherFieldAccessTemplate().apply(factory.Class().create("x.X"));
+			assertEquals("int x;", result.getField("x").toString());
+			assertEquals("int m_x;", result.getField("m_x").toString());
+
+			assertEquals("java.lang.System.out.println(((x) + (m_x)))", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
+		}
+	}
+
+	@Test
+	public void substituteTypeAccessReference() throws Exception {
+		//contract: the substitution of CtTypeAccess expression ignores actual type arguments if it have to
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/TypeReferenceClassAccessTemplate.java"));
+		String outputDir = "./target/spooned/test/template/testclasses";
+		spoon.setSourceOutputDirectory(outputDir);
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		//contract: String value is substituted in substring of literal, named element and reference
+		CtTypeReference<?> typeRef = factory.Type().createReference(TypeReferenceClassAccessTemplate.Example.class);
+		typeRef.addActualTypeArgument(factory.Type().DATE);
+		
+		final CtClass<?> result = (CtClass<?>) new TypeReferenceClassAccessTemplate(typeRef).apply(factory.Class().create("spoon.test.template.TypeReferenceClassAccess"));
+		spoon.prettyprint();
+		ModelUtils.canBeBuilt(outputDir, 8);
+		CtMethod<?> method = result.getMethodsByName("someMethod").get(0);
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getType().toString());
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getParameters().get(0).getType().toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.out", method.getBody().getStatement(0).toString());
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date> ret = new spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>()", method.getBody().getStatement(1).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.currentTimeMillis()", method.getBody().getStatement(2).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.class", method.getBody().getStatement(3).toString());
+		assertEquals("o = (o) instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
+		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
 	}
 }

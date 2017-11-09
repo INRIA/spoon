@@ -17,35 +17,47 @@
 package spoon.support.reflect.reference;
 
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.SUPER_TYPE;
 import static spoon.reflect.path.CtRole.IS_UPPER;
+import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.BOUNDING_TYPE)
 	CtTypeReference<?> superType;
 
+	@MetamodelPropertyField(role = CtRole.IS_UPPER)
 	boolean upper = true;
 
 	public CtTypeParameterReferenceImpl() {
 		super();
+		// calling null will set the default value of boundingType
+		this.setBoundingType(null);
+	}
+
+	@Override
+	public boolean isDefaultBoundingType() {
+		return (getBoundingType().equals(getFactory().Type().getDefaultBoundingType()));
 	}
 
 	@Override
@@ -84,11 +96,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public boolean isGenerics() {
-		return true;
-	}
-
-	@Override
 	public boolean isPrimitive() {
 		return false;
 	}
@@ -97,12 +104,18 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
 		if (isUpper()) {
-			if (getBoundingType() == null) {
+			if (isDefaultBoundingType()) {
 				return (Class<Object>) getTypeErasure().getActualClass();
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
 		return null;
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtTypeReference<?>> getActualTypeArguments() {
+		return emptyList();
 	}
 
 	@Override
@@ -128,7 +141,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (bound == null) {
 			return (T) this;
 		}
-		if (getBoundingType() == null) {
+		if (isDefaultBoundingType()) {
 			setBoundingType(bound);
 		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
@@ -143,7 +156,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || getBoundingType() == null) {
+		if (bound == null || isDefaultBoundingType()) {
 			return false;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
@@ -164,7 +177,15 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (superType != null) {
 			superType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superType, this.superType);
+
+		// ugly but else make testSetterInNodes failed
+		if (superType == null) { // if null, set bounding type to object
+			superType = getFactory().Type().objectType();
+			superType.setImplicit(true);
+			superType.setParent(this);
+		}
+
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BOUNDING_TYPE, superType, this.superType);
 		this.superType = superType;
 		return (T) this;
 	}
@@ -190,12 +211,18 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			parent = parent.getParent();
 		}
 		if (parent instanceof CtExecutableReference) {
-			CtElement parent2 = ((CtExecutableReference) parent).getExecutableDeclaration();
-			if (parent2 instanceof CtMethod) {
-				e = parent2;
+			CtExecutableReference parentExec = (CtExecutableReference) parent;
+			if (!parentExec.getDeclaringType().equals(e)) {
+				CtElement parent2 = parentExec.getExecutableDeclaration();
+				if (parent2 instanceof CtMethod) {
+					e = parent2;
+				} else {
+					e = e.getParent(CtFormalTypeDeclarer.class);
+				}
 			} else {
 				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
+
 		} else {
 			e = e.getParent(CtFormalTypeDeclarer.class);
 		}
@@ -244,5 +271,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@Override
 	public CtTypeParameterReference clone() {
 		return (CtTypeParameterReference) super.clone();
+	}
+
+	@Override
+	public boolean isGenerics() {
+		if (getDeclaration() instanceof CtTypeParameter) {
+			return true;
+		}
+		if (getBoundingType() != null && getBoundingType().isGenerics()) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -52,6 +52,13 @@ public interface CtComment extends CtStatement {
 	}
 
 	/**
+	 * This line separator is used in comments returned by {@link #getContent()}.
+	 * It is OS independent.
+	 * It has no influence to pretty printed comments, which uses by default OS dependent line separator
+	 */
+	String LINE_SEPARATOR = "\n";
+
+	/**
 	 * Get the content of the comment
 	 * @return the content of the comment
 	 */

@@ -16,8 +16,11 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
@@ -38,11 +41,13 @@ public interface CtReference extends CtElement {
 	/**
 	 * Gets the simple name of referenced element.
 	 */
+	@PropertyGetter(role = CtRole.NAME)
 	String getSimpleName();
 
 	/**
 	 * Sets the name of referenced element.
 	 */
+	@PropertySetter(role = CtRole.NAME)
 	<T extends CtReference> T setSimpleName(String simpleName);
 
 	/**

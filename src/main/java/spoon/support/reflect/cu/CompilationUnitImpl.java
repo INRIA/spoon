@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtPackage ctPackage;
 
-	Set<CtReference> imports = new HashSet<>();
+	Collection<CtReference> imports = new HashSet<>();
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -145,7 +146,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 				byte[] elementBytes = new byte[s.available()];
 				s.read(elementBytes);
 				s.close();
-				originalSourceCode = new String(elementBytes);
+				originalSourceCode = new String(elementBytes, this.getFactory().getEnvironment().getEncoding());
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -191,12 +192,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Set<CtReference> getImports() {
+	public Collection<CtReference> getImports() {
 		return this.imports;
 	}
 
 	@Override
-	public void setImports(Set<CtReference> imports) {
+	public void setImports(Collection<CtReference> imports) {
 		this.imports = imports;
 	}
 

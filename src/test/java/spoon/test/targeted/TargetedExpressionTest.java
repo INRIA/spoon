@@ -29,7 +29,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtConstructorCallImpl;
@@ -43,8 +43,6 @@ import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
 
-import com.sun.org.apache.bcel.internal.classfile.InnerClass;
-
 
 public class TargetedExpressionTest {
 	@Test
@@ -52,13 +50,13 @@ public class TargetedExpressionTest {
 		final Factory factory = build(InternalSuperCall.class);
 		final CtClass<?> ctClass = factory.Class().get(InternalSuperCall.class);
 
-		CtMethod<?> method = ctClass.getElements(new NameFilter<CtMethod<?>>("methode")).get(0);
+		CtMethod<?> method = ctClass.getElements(new NamedElementFilter<>(CtMethod.class,"methode")).get(0);
 		assertEquals(
 				"spoon.test.targeted.testclasses.InternalSuperCall.super.toString()",
 				method.getBody().getStatements().get(0).toString());
 		assertNotNull(method.getElements(new TypeFilter<>(CtSuperAccess.class)).get(0).getTarget());
 
-		CtMethod<?> toStringMethod = ctClass.getElements(new NameFilter<CtMethod<?>>("toString")).get(0);
+		CtMethod<?> toStringMethod = ctClass.getElements(new NamedElementFilter<>(CtMethod.class,"toString")).get(0);
 		assertEquals(
 				"return super.toString()",
 				toStringMethod.getBody().getStatements().get(0).toString());
@@ -70,12 +68,12 @@ public class TargetedExpressionTest {
 		CtType<?> type = build("spoon.test.targeted.testclasses", "InnerClassThisAccess");
 		assertEquals("InnerClassThisAccess", type.getSimpleName());
 
-		CtMethod<?> meth1 = type.getElements(new NameFilter<CtMethod<?>>("method2")).get(0);
+		CtMethod<?> meth1 = type.getElements(new NamedElementFilter<>(CtMethod.class,"method2")).get(0);
 		assertEquals(
 				"this.method()",
 				meth1.getBody().getStatements().get(0).toString());
 
-		CtClass<?> c = type.getElements(new NameFilter<CtClass<?>>("1InnerClass")).get(0);
+		CtClass<?> c = type.getElements(new NamedElementFilter<>(CtClass.class,"1InnerClass")).get(0);
 		assertEquals("1InnerClass", c.getSimpleName());
 		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type().createReference(boolean.class));
 		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
@@ -186,14 +184,14 @@ public class TargetedExpressionTest {
 		final CtClass<Foo> type = factory.Class().get(Foo.class);
 		final CtTypeReference<Foo> expectedType = type.getReference();
 		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
-		final CtType<InnerClass> innerClass = type.getNestedType("InnerClass");
-		final CtTypeReference<InnerClass> expectedInnerClass = innerClass.getReference();
+		final CtType<?> innerClass = type.getNestedType("InnerClass");
+		final CtTypeReference<?> expectedInnerClass = innerClass.getReference();
 		final CtType<?> nestedTypeScanner = type.getNestedType("1NestedTypeScanner");
 		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
 
 		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
 		final CtThisAccess<Foo> expectedThisAccess = factory.Code().createThisAccess(expectedType);
-		final CtThisAccess<InnerClass> expectedInnerClassAccess = factory.Code().createThisAccess(expectedInnerClass);
+		final CtThisAccess<?> expectedInnerClassAccess = factory.Code().createThisAccess(expectedInnerClass);
 		final CtThisAccess expectedNestedAccess = factory.Code().createThisAccess(expectedNested);
 
 		final CtMethod<?> innerInvMethod = innerClass.getMethodsByName("innerField").get(0);
@@ -332,15 +330,15 @@ public class TargetedExpressionTest {
 		final CtClass<Foo> type = factory.Class().get(Foo.class);
 		final CtTypeReference<Foo> expectedType = type.getReference();
 		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
-		final CtType<InnerClass> innerClass = type.getNestedType("InnerClass");
-		final CtTypeReference<InnerClass> expectedInnerClass = innerClass.getReference();
+		final CtType<?> innerClass = type.getNestedType("InnerClass");
+		final CtTypeReference<?> expectedInnerClass = innerClass.getReference();
 		final CtType<?> nestedTypeScanner = type.getNestedType("1NestedTypeScanner");
 		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
 
 		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
 		final CtThisAccess expectedThisAccess = factory.Code().createThisAccess(expectedType);
 		final CtThisAccess expectedSuperThisAccess = factory.Code().createThisAccess(expectedSuperClassType);
-		final CtThisAccess<InnerClass> expectedInnerClassAccess = factory.Code().createThisAccess(expectedInnerClass);
+		final CtThisAccess<?> expectedInnerClassAccess = factory.Code().createThisAccess(expectedInnerClass);
 		final CtThisAccess expectedNestedAccess = factory.Code().createThisAccess(expectedNested);
 
 		final CtMethod<?> innerInvMethod = innerClass.getMethodsByName("innerInv").get(0);

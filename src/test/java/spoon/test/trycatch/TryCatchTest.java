@@ -1,21 +1,30 @@
 package spoon.test.trycatch;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -196,5 +205,88 @@ public class TryCatchTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	@Test
+	public void testTryCatchVariableGetType() throws Exception {
+		Factory factory = createFactory();
+		CtClass<?> clazz = factory
+				.Code()
+				.createCodeSnippetStatement(
+						"" + "class X {" + "public void foo() {"
+								+ " try{}catch(RuntimeException e){System.exit(0);}" + "}"
+								+ "};").compile();
+		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+		List<CtCatch> catchers = tryStmt.getCatchers();
+		assertEquals(1, catchers.size());
+		
+		CtCatchVariable<?> catchVariable = catchers.get(0).getParameter();
+
+		assertEquals(
+				RuntimeException.class,
+				catchVariable.getType().getActualClass());
+
+		assertEquals(1, catchVariable.getMultiTypes().size());
+
+		assertEquals(
+				RuntimeException.class,
+				catchVariable.getMultiTypes().get(0).getActualClass());
+		
+		//contract: the manipulation with catch variable type is possible
+		catchVariable.setType((CtTypeReference)factory.Type().createReference(IllegalArgumentException.class));
+		assertEquals(IllegalArgumentException.class,catchVariable.getType().getActualClass());
+		//contract setType influences multitypes
+		assertEquals(1, catchVariable.getMultiTypes().size());
+		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		
+		catchVariable.setMultiTypes(Collections.singletonList((CtTypeReference)factory.Type().createReference(UnsupportedOperationException.class)));
+		assertEquals(UnsupportedOperationException.class,catchVariable.getType().getActualClass());
+		//contract setType influences multitypes
+		assertEquals(1, catchVariable.getMultiTypes().size());
+		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		
+		catchVariable.setMultiTypes(Arrays.asList(
+				factory.Type().createReference(UnsupportedOperationException.class),
+				factory.Type().createReference(IllegalArgumentException.class)
+				));
+		assertEquals(2, catchVariable.getMultiTypes().size());
+		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(1).getActualClass());
+		
+		//contract setMultiTypes influences types, which contains common super class of all multi types
+		assertEquals(RuntimeException.class,catchVariable.getType().getActualClass());
+	}
+
+	@Test
+	public void testCatchWithExplicitFinalVariable() throws IOException {
+		// contract: explicit final modifier are possible in catch variables and should be kept when pretty-printing
+		String inputResource = "./src/test/java/spoon/test/trycatch/testclasses/Bar.java";
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(inputResource);
+		launcher.getEnvironment().setComplianceLevel(5);
+		launcher.buildModel();
+
+		CtTry tryStmt = launcher.getModel().getElements(new TypeFilter<>(CtTry.class)).get(0);
+		List<CtCatch> catchers = tryStmt.getCatchers();
+		assertEquals(1, catchers.size());
+
+		CtCatchVariable<?> catchVariable = catchers.get(0).getParameter();
+		assertTrue(catchVariable.hasModifier(ModifierKind.FINAL));
+
+		Set<CtExtendedModifier> extendedModifierSet = catchVariable.getExtendedModifiers();
+		assertEquals(1, extendedModifierSet.size());
+
+		assertEquals(new CtExtendedModifier(ModifierKind.FINAL, false), extendedModifierSet.iterator().next());
+
+		launcher = new Launcher();
+		launcher.addInputResource(inputResource);
+		launcher.setSourceOutputDirectory("./target/spoon-trycatch");
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setComplianceLevel(5);
+		launcher.run();
+
+		File f = new File("target/spoon-trycatch/spoon/test/trycatch/testclasses/Bar.java");
+		String content = StringUtils.join(Files.readAllLines(f.toPath()),"\n");
+
+		assertTrue(content.contains("catch (final java.lang.Exception e)"));
 	}
 }

@@ -23,7 +23,6 @@ import java.util.List;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
@@ -50,14 +49,6 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 		this.files = files;
 	}
 
-	/*
-	 * This method is not used now, so let's get rid of it.
-	 */
-	@Deprecated
-	public FileCompilerConfig(SpoonFolder folder) {
-		this(folder.getAllJavaFiles());
-	}
-
 	@Override
 	public void initializeCompiler(JDTBatchCompiler compiler) {
 		JDTBasedSpoonCompiler jdtCompiler = compiler.getJdtCompiler();
@@ -73,7 +64,7 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 
 				String fName = f.isActualFile() ? f.getPath() : f.getName();
 				inputStream = f.getContent();
-				char[] content = IOUtils.toCharArray(inputStream, jdtCompiler.encoding);
+				char[] content = IOUtils.toCharArray(inputStream, jdtCompiler.getEnvironment().getEncoding());
 				cuList.add(new CompilationUnit(content, fName, null));
 				IOUtils.closeQuietly(inputStream);
 			}

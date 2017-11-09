@@ -18,6 +18,7 @@ package spoon.support.reflect.reference;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -28,6 +29,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -55,18 +57,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
 import static spoon.reflect.path.CtRole.PACKAGE_REF;
-import static spoon.reflect.path.CtRole.TYPE;
-import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
+import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
+	@MetamodelPropertyField(role = CtRole.TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
+	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
@@ -256,7 +261,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_PARAMETER, this.actualTypeArguments, new ArrayList<>(this.actualTypeArguments));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE_ARGUMENT, this.actualTypeArguments, new ArrayList<>(this.actualTypeArguments));
 		this.actualTypeArguments.clear();
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
@@ -269,7 +274,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, declaringType, this.declaringType);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
 		return (C) this;
 	}
@@ -492,24 +497,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
-		CtType<T> t = getDeclaration();
-		if (t != null) {
-			return t.getSuperclass();
-		} else {
-			try {
-				Class<T> c = getActualClass();
-				Class<?> sc = c.getSuperclass();
-				if (sc == null) {
-					return null;
-				}
-				return getFactory().Type().createReference(sc);
-			} catch (final SpoonClassNotFoundException e) {
-				if (getFactory().getEnvironment().getNoClasspath()) {
-					return null;
-				}
-				throw e;
+		try {
+			CtType<T> t = getTypeDeclaration();
+			if (t != null) {
+				return t.getSuperclass();
 			}
+		} catch (SpoonClassNotFoundException e) {
+			return null;
 		}
+		return null;
 	}
 
 	@Override
@@ -564,7 +560,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		actualTypeArgument.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_PARAMETER, this.actualTypeArguments, actualTypeArgument);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_ARGUMENT, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
 		return (C) this;
 	}
@@ -574,7 +570,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			return false;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_PARAMETER, actualTypeArguments, actualTypeArguments.indexOf(actualTypeArgument), actualTypeArgument);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE_ARGUMENT, actualTypeArguments, actualTypeArguments.indexOf(actualTypeArgument), actualTypeArgument);
 		return actualTypeArguments.remove(actualTypeArgument);
 	}
 
@@ -620,11 +616,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		} else {
 			return t.isEnum();
 		}
-	}
-
-	@Override
-	public boolean isGenerics() {
-		return false;
 	}
 
 	@Override
@@ -783,6 +774,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override
@@ -822,6 +814,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean isGenerics() {
+		if (getDeclaration() instanceof CtTypeParameter) {
+			return true;
+		}
+		for (CtTypeReference ref : getActualTypeArguments()) {
+			if (ref.isGenerics()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private CtTypeParameter findTypeParamDeclarationByPosition(CtFormalTypeDeclarer type, int position) {

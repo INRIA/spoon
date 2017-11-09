@@ -16,6 +16,12 @@
  */
 package spoon.support.visitor.equals;
 
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
+import spoon.support.util.EmptyClearableList;
+import spoon.support.util.EmptyClearableSet;
+import spoon.support.visitor.clone.CloneVisitor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,31 +30,37 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import spoon.SpoonException;
-import spoon.reflect.declaration.CtElement;
-import spoon.support.util.EmptyClearableList;
-import spoon.support.util.EmptyClearableSet;
-import spoon.support.visitor.clone.CloneVisitor;
+/**
+ * {@link CloneHelper} is responsible for creating clones of {@link CtElement} AST nodes including the whole subtree.
+ *
+ * By default, the same instance of {@link CloneHelper} is used for whole clonning process.
+ *
+ * However, by subclassing this class and overriding method {@link #clone(CtElement)},
+ * one can extend and/or modify the cloning behavior.
+ *
+ * For instance, one can listen to each call to clone and get each pair of `clone source` and `clone target`.
+ */
+public class CloneHelper {
+	public static final CloneHelper INSTANCE = new CloneHelper();
 
-public final class CloneHelper {
-	public static <T extends CtElement> T clone(T element) {
-		final CloneVisitor cloneVisitor = new CloneVisitor();
+	public <T extends CtElement> T clone(T element) {
+		final CloneVisitor cloneVisitor = new CloneVisitor(this);
 		cloneVisitor.scan(element);
 		return cloneVisitor.getClone();
 	}
 
-	public static <T extends CtElement> Collection<T> clone(Collection<T> elements) {
+	public <T extends CtElement> Collection<T> clone(Collection<T> elements) {
 		if (elements == null || elements.isEmpty()) {
 			return new ArrayList<>();
 		}
 		Collection<T> others = new ArrayList<>();
 		for (T element : elements) {
-			others.add(CloneHelper.clone(element));
+			others.add(clone(element));
 		}
 		return others;
 	}
 
-	public static <T extends CtElement> List<T> clone(List<T> elements) {
+	public <T extends CtElement> List<T> clone(List<T> elements) {
 		if (elements instanceof EmptyClearableList) {
 			return elements;
 		}
@@ -57,12 +69,12 @@ public final class CloneHelper {
 		}
 		List<T> others = new ArrayList<>();
 		for (T element : elements) {
-			others.add(CloneHelper.clone(element));
+			others.add(clone(element));
 		}
 		return others;
 	}
 
-	private static <T extends CtElement> Set<T> createRightSet(Set<T> elements) {
+	private <T extends CtElement> Set<T> createRightSet(Set<T> elements) {
 		try {
 			if (elements instanceof TreeSet) {
 				// we copy the set, incl its comparator
@@ -78,7 +90,7 @@ public final class CloneHelper {
 		}
 	}
 
-	public static <T extends CtElement> Set<T> clone(Set<T> elements) {
+	public <T extends CtElement> Set<T> clone(Set<T> elements) {
 		if (elements instanceof EmptyClearableSet) {
 			return elements;
 		}
@@ -88,23 +100,19 @@ public final class CloneHelper {
 
 		Set<T> others = createRightSet(elements);
 		for (T element : elements) {
-			others.add(CloneHelper.clone(element));
+			others.add(clone(element));
 		}
 		return others;
 	}
 
-	public static <T extends CtElement> Map<String, T> clone(Map<String, T> elements) {
+	public <T extends CtElement> Map<String, T> clone(Map<String, T> elements) {
 		if (elements == null || elements.isEmpty()) {
 			return new HashMap<>();
 		}
 		Map<String, T> others = new HashMap<>();
 		for (Map.Entry<String, T> tEntry : elements.entrySet()) {
-			others.put(tEntry.getKey(), CloneHelper.clone(tEntry.getValue()));
+			others.put(tEntry.getKey(), clone(tEntry.getValue()));
 		}
 		return others;
-	}
-
-	private CloneHelper() {
-		throw new AssertionError("No instance.");
 	}
 }

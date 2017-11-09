@@ -39,6 +39,16 @@ public class SubTemplate extends SuperTemplate {
 		for(Object x : o) {
 			System.out.println(x); // will be NOT inlined
 		}
+		var = o;	//will be replaced by newVarName = o
+		l = (ArrayList) var;	//will be replaced by l = (LinkedList) newVarName
+	}
+	
+	List var = null;
+	public void methodWithFieldAccess() {
+		List o = (ArrayList) new ArrayList(); // will be replaced by List o = (LinkedList) new LinkedList();
+		ArrayList l = null; // will be replaced by LinkedList l = null;
+		var = o;
+		l = (ArrayList) var;	//will be replaced by l = (LinkedList) newVarName
 	}
 
 	/**
@@ -55,8 +65,8 @@ public class SubTemplate extends SuperTemplate {
 	public List<CtParameter> params;
 
 	// name template "var" -> "newVarName"
-	@Parameter
-	public String var = "newVarName";
+	@Parameter("var")
+	public String param_var = "newVarName";
 
 	// type reference template
 	@Parameter

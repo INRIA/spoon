@@ -43,6 +43,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *
 	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
@@ -54,11 +55,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	/**
 	 * Adds a bound.
 	 */
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	boolean removeBound(CtTypeReference<?> bound);
 
 	/**
@@ -71,11 +74,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *     T extends Interface1 &amp; Interface2
 	 * </pre>
 	 */
+	@PropertyGetter(role = CtRole.BOUNDING_TYPE)
 	CtTypeReference<?> getBoundingType();
 
 	/**
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
+	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
 	/**
@@ -94,4 +99,10 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	@Override
 	@UnsettableProperty
 	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
+
+	/**
+	 * Returns true if this has the default bounding type that is java.lang.Object (which basically means that there is no bound)
+	 */
+	@DerivedProperty
+	boolean isDefaultBoundingType();
 }

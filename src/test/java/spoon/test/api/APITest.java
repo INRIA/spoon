@@ -198,15 +198,16 @@ public class APITest {
 
 	@Test
 	public void testPrintNotAllSourcesWithFilter() throws Exception {
+		// contract: setOutputFilter can take an arbitrary filter
 		final File target = new File("./target/print-not-all/default");
 		final SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/main/java");
+		launcher.addInputResource("./src/main/java/spoon/template/");
 		launcher.setSourceOutputDirectory(target);
 		launcher.setOutputFilter(new AbstractFilter<CtType<?>>(CtType.class) {
 			@Override
 			public boolean matches(CtType<?> element) {
-				return "spoon.Launcher".equals(element.getQualifiedName())
+				return "spoon.template.Parameter".equals(element.getQualifiedName())
 						|| "spoon.template.AbstractTemplate".equals(element.getQualifiedName());
 			}
 		});
@@ -217,17 +218,18 @@ public class APITest {
 
 		assertEquals(2, filesName.size());
 		assertEquals("AbstractTemplate.java", filesName.get(0));
-		assertEquals("Launcher.java", filesName.get(1));
+		assertEquals("Parameter.java", filesName.get(1));
 	}
 
 	@Test
 	public void testPrintNotAllSourcesWithNames() throws Exception {
+		// contract: setOutputFilter can take a list of fully-qualified classes to be pretty-printed
 		final File target = new File("./target/print-not-all/array");
 		final SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/main/java");
+		launcher.addInputResource("./src/main/java/spoon/template/");
 		launcher.setSourceOutputDirectory(target);
-		launcher.setOutputFilter("spoon.Launcher", "spoon.template.AbstractTemplate");
+		launcher.setOutputFilter("spoon.template.Parameter", "spoon.template.AbstractTemplate");
 		launcher.run();
 
 		List<File> list = new ArrayList<>(FileUtils.listFiles(target, new String[] {"java"}, true));
@@ -235,7 +237,7 @@ public class APITest {
 
 		assertEquals(2, filesName.size());
 		assertEquals("AbstractTemplate.java", filesName.get(0));
-		assertEquals("Launcher.java", filesName.get(1));
+		assertEquals("Parameter.java", filesName.get(1));
 	}
 
 	@Test
@@ -315,7 +317,7 @@ public class APITest {
 					return false;
 				}
 
-				CtClass<?> zeClass = (CtClass)method.getParent();
+				CtType<?> zeClass = (CtType)method.getParent();
 				List<CtMethod<?>> getterMethods = zeClass.getMethodsByName(getterName);
 
 				if (getterMethods.size() != 1) {
@@ -403,5 +405,15 @@ public class APITest {
 
 			assertEquals("Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(),1, matcher.find(ifCondition).size());
 		}
+	}
+
+	@Test
+	public void testOneLinerIntro() {
+		// contract: spoon can be used with a single line of code with Launcher.parseClass
+		CtClass<?> l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
+		assertEquals("A", l.getSimpleName());
+		assertEquals(1, l.getMethods().size());
+		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
+		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
 	}
 }

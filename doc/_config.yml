@@ -18,15 +18,14 @@ include: [_includes]
 # variables
 
 sidebar_tagline: Spoon
-sidebar_version: version 5.8.0
-spoon_release: "5.8.0"
-spoon_snapshot: "5.9.0-SNAPSHOT"
+sidebar_version: version 5.9.0
+spoon_release: "5.9.0"
+spoon_snapshot: "6.0.0-SNAPSHOT"
 
 exclude:
   - _site
 
 # same for all
-feedback_email: spoon-discuss@lists.gforge.inria.fr
 sidebar_accordion: true
 markdown: redcarpet
 theme_file: theme-mauve.css

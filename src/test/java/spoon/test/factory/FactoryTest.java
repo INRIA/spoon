@@ -12,13 +12,13 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.reflect.declaration.CtMethodImpl;
@@ -129,12 +129,12 @@ public class FactoryTest {
 		assertEquals(5, model.getAllPackages().size());
 
 
-		CtPackage p = model.getRootPackage().getElements(new NameFilter<CtPackage>("spoon")).get(0).clone();
+		CtPackage p = model.getRootPackage().getElements(new NamedElementFilter<>(CtPackage.class,"spoon")).get(0).clone();
 		// if we change the implem, merge is impossible
 		CtField f = spoon.getFactory().Core().createField();
 		f.setSimpleName("foo");
 		f.setType(spoon.getFactory().Type().BYTE);
-		p.getElements(new NameFilter<CtPackage>("testclasses")).get(0).getType("Foo").addField(f);
+		p.getElements(new NamedElementFilter<>(CtPackage.class,"testclasses")).get(0).getType("Foo").addField(f);
 		try {
 			model.getRootPackage().addPackage(p);
 			fail("no exception thrown");
@@ -200,5 +200,4 @@ public class FactoryTest {
 			assertTrue(itf.getActualClass().isInstance(o));
 		}
 	}
-
 }

@@ -25,6 +25,7 @@ import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.experimental.modelobs.EmptyModelChangeListener;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -35,8 +36,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFolder;
 
 import java.io.File;
@@ -44,6 +43,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +57,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
+
 	private FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
-
-	private transient Factory factory;
 
 	ProcessingManager manager;
 
@@ -89,6 +89,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
+	private Charset encoding = Charset.defaultCharset();
+
+	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -115,11 +119,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public FileGenerator<? extends CtElement> getDefaultFileGenerator() {
 		return defaultFileGenerator;
-	}
-
-	@Override
-	public Factory getFactory() {
-		return factory;
 	}
 
 	@Override
@@ -289,7 +288,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public void setDefaultFileGenerator(FileGenerator<? extends CtElement> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
-		defaultFileGenerator.setFactory(getFactory());
 	}
 
 	public void setManager(ProcessingManager manager) {
@@ -303,7 +301,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setVerbose(boolean verbose) {
 	}
 
-	int complianceLevel = 7;
+
 
 	public int getComplianceLevel() {
 		return complianceLevel;
@@ -350,11 +348,22 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (aClassLoader instanceof URLClassLoader) {
 			final URL[] urls = ((URLClassLoader) aClassLoader).getURLs();
 			if (urls != null && urls.length > 0) {
-				List<String> classpath = new ArrayList<>();
+				// Check that the URLs are only file URLs
+				boolean onlyFileURLs = true;
 				for (URL url : urls) {
-					classpath.add(url.toString());
+					if (!url.getProtocol().equals("file")) {
+						onlyFileURLs = false;
+					}
 				}
-				setSourceClasspath(classpath.toArray(new String[0]));
+				if (onlyFileURLs) {
+					List<String> classpath = new ArrayList<>();
+					for (URL url : urls) {
+						classpath.add(url.getPath());
+					}
+					setSourceClasspath(classpath.toArray(new String[0]));
+				} else {
+					throw new SpoonException("Spoon does not support a URLClassLoader containing other resources than local file.");
+				}
 			}
 			return;
 		}
@@ -493,5 +502,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setModelChangeListener(FineModelChangeListener modelChangeListener) {
 		this.modelChangeListener = modelChangeListener;
+	}
+
+	@Override
+	public Charset getEncoding() {
+		return this.encoding;
+	}
+
+	@Override
+	public void setEncoding(Charset encoding) {
+		this.encoding = encoding;
 	}
 }

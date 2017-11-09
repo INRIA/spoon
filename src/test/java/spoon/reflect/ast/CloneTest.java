@@ -6,16 +6,27 @@ import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.visitor.equals.CloneHelper;
+import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CloneTest {
 	@Test
@@ -98,5 +109,43 @@ public class CloneTest {
 			}
 		});
 		launcher.run();
+	}
+
+	@Test
+	public void testCloneListener() throws Exception {
+		// contract: it is possible to extend the cloning behavior
+
+		// in this example extension, a listener of cloning process gets access to origin node and cloned node
+		// we check the contract with some complicated class as target of cloning
+		Factory factory = ModelUtils.build(new File("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java"));
+		CtType<?> cloneSource = factory.Type().get(DefaultJavaPrettyPrinter.class);
+		class CloneListener extends CloneHelper {
+			Map<CtElement, CtElement> sourceToTarget = new IdentityHashMap<>();
+			@Override
+			public <T extends CtElement> T clone(T source) {
+				if (source == null) {
+					return null;
+				}
+				T target = super.clone(source);
+				onCloned(source, target);
+				return target;
+			}
+			private void onCloned(CtElement source, CtElement target) {
+				CtElement previousTarget = sourceToTarget.put(source, target);
+				assertNull(previousTarget);
+			}
+		}
+		
+		CloneListener cl = new CloneListener();
+		CtType<?> cloneTarget = cl.clone(cloneSource);
+		
+		cloneSource.filterChildren(null).forEach(sourceElement -> {
+			//contract: there exists cloned target for each visitable element
+			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
+			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
+			assertEquals("Source and Target are not equal", sourceElement, targetElement);
+		});
+		//contract: each visitable elements was cloned exactly once.  No more no less.
+		assertTrue(cl.sourceToTarget.isEmpty());
 	}
 }

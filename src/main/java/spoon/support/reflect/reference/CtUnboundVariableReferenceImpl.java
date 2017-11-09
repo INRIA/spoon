@@ -16,8 +16,15 @@
  */
 package spoon.support.reflect.reference;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /** represents a reference to an unbound field (used when no full classpath is available */
 public class CtUnboundVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtUnboundVariableReference<T> {
@@ -31,5 +38,17 @@ public class CtUnboundVariableReferenceImpl<T> extends CtVariableReferenceImpl<T
 	@Override
 	public CtUnboundVariableReference<T> clone() {
 		return (CtUnboundVariableReference<T>) super.clone();
+	}
+
+	@Override
+	@DerivedProperty
+	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
+		return emptyList();
+	}
+
+	@Override
+	@UnsettableProperty
+	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+		return (E) this;
 	}
 }

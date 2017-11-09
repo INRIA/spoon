@@ -86,6 +86,7 @@ public class AstCheckerTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		// Implementations.
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/CtModifierHandler.java");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
@@ -131,7 +132,9 @@ public class AstCheckerTest {
 			return candidate.getBody() != null //
 					&& candidate.getParameters().size() != 0 //
 					&& candidate.hasModifier(ModifierKind.PUBLIC) //
-					&& (candidate.getSimpleName().startsWith("add") || candidate.getSimpleName().startsWith("set") || candidate.getSimpleName().startsWith("remove")) //
+					&& (candidate.getSimpleName().startsWith("add")
+						|| candidate.getSimpleName().startsWith("set")
+						|| candidate.getSimpleName().startsWith("remove")) //
 					&& candidate.getDeclaringType().getSimpleName().startsWith("Ct") //
 					&& !isNotCandidate(candidate) //
 					&& !isSurcharged(candidate) //
@@ -141,7 +144,8 @@ public class AstCheckerTest {
 		}
 
 		private boolean isNotCandidate(CtMethod<?> candidate) {
-			return "setVisibility".equals(candidate.getSimpleName()) || notCandidates.contains(candidate.getDeclaringType().getSimpleName() + "#" + candidate.getSimpleName());
+			return "setVisibility".equals(candidate.getSimpleName())
+					|| notCandidates.contains(candidate.getDeclaringType().getSimpleName() + "#" + candidate.getSimpleName());
 		}
 
 		private boolean isSurcharged(CtMethod<?> candidate) {

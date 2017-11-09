@@ -11,6 +11,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
@@ -30,12 +31,15 @@ import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
-import spoon.reflect.visitor.filter.NameFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ParameterReferenceFunction;
 import spoon.reflect.visitor.filter.ParameterScopeFunction;
+import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.reflect.visitor.filter.VariableScopeFunction;
+import spoon.test.query_function.testclasses.VariableReferencesFromStaticMethod;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -93,7 +97,7 @@ public class VariableReferencesTest {
 //		System.out.println("Next available key is: "+(context.maxKey+1));
 		assertTrue(context.unique.size()>0);
 		assertEquals("Only these keys were found: "+context.unique.keySet(), context.maxKey, context.unique.size());
-		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NameFilter("maxValue")).first()), context.maxKey);
+		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class,"maxValue")).first()), context.maxKey);
 	}
 	
 	@Test
@@ -335,6 +339,18 @@ public class VariableReferencesTest {
 			sp = e.getPosition();
 		}
 		return sp;
+	}
+	
+	@Test
+	public void testPotentialVariableAccessFromStaticMethod() throws Exception {
+		Factory factory = ModelUtils.build(VariableReferencesFromStaticMethod.class);
+		CtClass<?> clazz = factory.Class().get(VariableReferencesFromStaticMethod.class);
+		CtMethod staticMethod = clazz.getMethodsByName("staticMethod").get(0);
+		CtStatement stmt = staticMethod.getBody().getStatements().get(1);
+		assertEquals("org.junit.Assert.assertTrue((field == 2))", stmt.toString());
+		CtLocalVariableReference varRef = stmt.filterChildren(new TypeFilter<>(CtLocalVariableReference.class)).first();
+		List<CtVariable> vars = varRef.map(new PotentialVariableDeclarationFunction()).list();
+		assertEquals("Found unexpected variable declaration.", 1, vars.size());
 	}
 
 }
