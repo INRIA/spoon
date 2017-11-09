@@ -59,7 +59,6 @@ public interface CtModifiable extends CtElement {
 	 * add a modifier
 	 *
 	 * @param modifier
-	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModifiable> T addModifier(ModifierKind modifier);
