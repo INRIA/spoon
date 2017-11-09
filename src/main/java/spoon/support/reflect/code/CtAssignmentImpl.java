@@ -20,7 +20,6 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
