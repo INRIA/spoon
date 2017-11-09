@@ -55,11 +55,6 @@ public interface CtVariableReference<T> extends CtReference {
 	 */
 	Set<ModifierKind> getModifiers();
 
-	/**
-	 * Replace a variable reference by another one.
-	 */
-	void replace(CtVariableReference<?> reference);
-
 	@Override
 	CtVariableReference<T> clone();
 }

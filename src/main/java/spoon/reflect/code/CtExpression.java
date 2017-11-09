@@ -52,11 +52,6 @@ public interface CtExpression<T> extends CtCodeElement, CtTypedElement<T>, Templ
 	@PropertySetter(role = CAST)
 	<C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type);
 
-	/**
-	 * Replaces this element by another one.
-	 */
-	<E extends T> void replace(CtExpression<E> element);
-
 	@Override
 	CtExpression<T> clone();
 }

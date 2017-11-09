@@ -138,11 +138,6 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	}
 
 	@Override
-	public <E extends T> void replace(CtExpression<E> element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public T S() {
 		return null;
 	}

@@ -45,11 +45,6 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 	}
 
 	@Override
-	public void replace(CtPackageReference packageReference) {
-		super.replace(packageReference);
-	}
-
-	@Override
 	protected AnnotatedElement getActualAnnotatedElement() {
 		return getActualPackage();
 	}

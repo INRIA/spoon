@@ -162,11 +162,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	@DerivedProperty
 	public CtTypeReference<T> getType() {
 		return getExecutable() == null ? null : getExecutable().getType();

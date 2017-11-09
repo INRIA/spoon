@@ -240,11 +240,6 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	}
 
 	@Override
-	public <T extends R> void replace(CtBlock<T> element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public R S() {
 		return null;
 	}

@@ -65,11 +65,6 @@ public interface CtStatement extends CtCodeElement {
 	@PropertySetter(role = LABEL)
 	<T extends CtStatement> T setLabel(String label);
 
-	/**
-	 * Replaces this element by another one.
-	 */
-	void replace(CtStatement element);
-
 	@Override
 	CtStatement clone();
 }

@@ -164,11 +164,6 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
-	public <R extends T> void replace(CtField<R> element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	@DerivedProperty
 	public CtExpression<T> getAssignment() {
 		return getDefaultExpression();

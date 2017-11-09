@@ -34,11 +34,6 @@ import spoon.template.TemplateParameter;
  */
 public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParameter<R> {
 
-	/**
-	 * Replaces this element by another one.
-	 */
-	<T extends R> void replace(CtBlock<T> element);
-
 	@Override
 	CtBlock<R> clone();
 }

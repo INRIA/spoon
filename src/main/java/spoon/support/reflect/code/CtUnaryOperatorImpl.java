@@ -111,11 +111,6 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public CtUnaryOperator<T> clone() {
 		return (CtUnaryOperator<T>) super.clone();
 	}

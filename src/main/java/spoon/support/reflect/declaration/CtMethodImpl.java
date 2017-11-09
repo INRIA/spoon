@@ -193,11 +193,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <R extends T> void replace(CtMethod<T> element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public boolean isOverriding(CtMethod<?> superMethod) {
 		return new ClassTypingContext(getDeclaringType()).isOverriding(this, superMethod);
 	}

@@ -256,11 +256,6 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public CtClass<T> clone() {
 		return (CtClass<T>) super.clone();
 	}

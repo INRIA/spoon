@@ -130,11 +130,6 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	<C extends CtTypeReference<T>> C setPackage(CtPackageReference pack);
 
 	/**
-	 * Replaces a type reference by another one.
-	 */
-	void replace(CtTypeReference<?> reference);
-
-	/**
 	 * Casts the type reference in {@link CtIntersectionTypeReference}.
 	 */
 	CtIntersectionTypeReference<T> asCtIntersectionTypeReference();

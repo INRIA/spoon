@@ -159,11 +159,6 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	@DerivedProperty
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return getExecutable() == null ? CtElementImpl.<CtTypeReference<?>>emptyList() : getExecutable().getActualTypeArguments();

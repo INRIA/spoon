@@ -36,11 +36,6 @@ public interface CtPackageReference extends CtReference {
 	Package getActualPackage();
 
 	/**
-	 * Replace a package reference by another one.
-	 */
-	void replace(CtPackageReference packageReference);
-
-	/**
 	 * Returns {@code true} if this is a reference to an <i>unnamed</i>
 	 * Java package. See JLS §7.4.2. Unnamed Packages.
 	 */
