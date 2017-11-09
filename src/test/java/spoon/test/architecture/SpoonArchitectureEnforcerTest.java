@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -224,13 +225,13 @@ public class SpoonArchitectureEnforcerTest {
 
 		Collection<CtType<?>> allTypes = interfaces.getModel().getAllTypes();
 
-		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtScanner.class);
+		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtInheritanceScanner.class);
 		CtType<?> ctElement = interfaces.getFactory().Type().get(CtElement.class);
 
 		List<String> missingMethods = new ArrayList<>();
 		for (CtType type : allTypes) {
 			if (type.getSuperInterfaces().contains(ctElement.getReference())) {
-				String methodName = "visit"+type.getSimpleName();
+				String methodName = "scan"+type.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);
 				}
