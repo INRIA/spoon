@@ -90,6 +90,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -896,6 +897,13 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, docTag.getComments());
 		scan(CtRole.ANNOTATION, docTag.getAnnotations());
 		exit(docTag);
+	}
+
+	@Override
+	public void visitCtImport(final CtImport ctImport) {
+		enter(ctImport);
+		scan(CtRole.BODY, ctImport.getReference());
+		exit(ctImport);
 	}
 }
 

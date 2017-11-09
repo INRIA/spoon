@@ -7,6 +7,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.SortedList;
@@ -52,11 +53,11 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitA.getImports();
+        Collection<CtImport> imports = unitA.getImports();
 
         assertEquals(1, imports.size());
 
-        CtReference ref = imports.iterator().next();
+        CtImport ref = imports.iterator().next();
         assertEquals("GlobalAnnotation", ref.getSimpleName());
         assertTrue(ref instanceof CtTypeReference);
 
@@ -101,11 +102,11 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(StaticImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitA.getImports();
+        Collection<CtImport> imports = unitA.getImports();
 
         assertEquals(1, imports.size());
 
-        CtReference ref = imports.iterator().next();
+        CtImport ref = imports.iterator().next();
 
         assertTrue(ref instanceof CtFieldReference);
         assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", ((CtFieldReference) ref).getQualifiedName());
@@ -122,14 +123,14 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(StarredImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitA.getImports();
+        Collection<CtImport> imports = unitA.getImports();
 
         assertEquals(3, imports.size());
 
-        Iterator<CtReference> iterator = imports.iterator();
-        CtReference firstRef = iterator.next();
-        CtReference secondRef = iterator.next();
-        CtReference thirdRef = iterator.next();
+        Iterator<CtImport> iterator = imports.iterator();
+        CtImport firstRef = iterator.next();
+        CtImport secondRef = iterator.next();
+        CtImport thirdRef = iterator.next();
 
         assertTrue(firstRef instanceof CtTypeReference);
         assertTrue(secondRef instanceof CtTypeReference);
@@ -163,7 +164,7 @@ public class ImportBuilderTest {
 
         CtClass classStatic = spoon.getFactory().Class().get(StaticImportWithInheritance.class);
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitStatic.getImports();
+        Collection<CtImport> imports = unitStatic.getImports();
 
         assertEquals(4, imports.size());
 
@@ -174,7 +175,7 @@ public class ImportBuilderTest {
             }
         });
 
-        for (CtReference refImport : imports) {
+        for (CtImport refImport : imports) {
             if (refImport instanceof CtFieldReference) {
                 importNames.add(((CtFieldReference) refImport).getQualifiedName());
             } else if (refImport instanceof CtExecutableReference) {
@@ -201,7 +202,7 @@ public class ImportBuilderTest {
 
         CtClass classStatic = spoon.getFactory().Class().get("jdtimportbuilder.ItfImport");
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitStatic.getImports();
+        Collection<CtImport> imports = unitStatic.getImports();
 
         assertEquals(2, imports.size());
 
@@ -212,7 +213,7 @@ public class ImportBuilderTest {
             }
         });
 
-        for (CtReference refImport : imports) {
+        for (CtImport refImport : imports) {
             if (refImport instanceof CtFieldReference) {
                 importNames.add(((CtFieldReference) refImport).getQualifiedName());
             } else if (refImport instanceof CtExecutableReference) {

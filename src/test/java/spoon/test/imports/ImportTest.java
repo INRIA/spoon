@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -80,6 +81,7 @@ public class ImportTest {
 		spoon.getEnvironment().setAutoImports(true);
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/PublicInterface2.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClientClass.java");
 		spoon.setBinaryOutputDirectory("./target/spoon/super_imports/bin");
 		spoon.setSourceOutputDirectory("./target/spoon/super_imports/src");
@@ -341,7 +343,7 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(factory.Class().get(Mole.class));
 
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
@@ -357,13 +359,13 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 				// java.lang.Object is considered as imported but it will never be output
 		assertEquals(3, imports.size());
 		Set<String> expectedImports = new HashSet<>(
 				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
-		Set<String> actualImports = imports.stream().map(CtReference::toString).collect(Collectors.toSet());
+		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
 
@@ -376,7 +378,7 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(factory.Class().get(Pozole.class));
 
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
 		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());

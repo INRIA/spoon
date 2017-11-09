@@ -28,7 +28,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.Collection;
@@ -46,7 +48,7 @@ class JDTImportBuilder {
 	private CompilationUnit spoonUnit;
 	private ICompilationUnit sourceUnit;
 	private Factory factory;
-	private Set<CtReference> imports;
+	private Set<CtImport> imports;
 
 	JDTImportBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
 		this.declarationUnit = declarationUnit;
@@ -66,8 +68,6 @@ class JDTImportBuilder {
 		for (ImportReference importRef : declarationUnit.imports) {
 			String importName = importRef.toString();
 			if (!importRef.isStatic()) {
-				// Starred import are only managed by importing types of the model for now
-				// as it can cost a lot to retrieve all classes of a package by reflection
 				if (importName.endsWith("*")) {
 					int lastDot = importName.lastIndexOf(".");
 					String packageName = importName.substring(0, lastDot);
@@ -77,17 +77,13 @@ class JDTImportBuilder {
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
 					if (ctPackage != null) {
-						for (CtType type : ctPackage.getTypes()) {
-							if (type.getVisibility() == ModifierKind.PUBLIC) {
-								this.imports.add(type.getReference());
-							}
-						}
+						this.imports.add(factory.Type().createImport(ImportKind.STAR_PACKAGE, ctPackage.getReference()));
 					}
 
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {
-						this.imports.add(klass.getReference());
+						this.imports.add(factory.Type().createImport(ImportKind.TYPE, klass.getReference()));
 					}
 				}
 			} else {
@@ -97,30 +93,15 @@ class JDTImportBuilder {
 
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
-
-					// for now starred import are treated by importing
-					// all static fields and methods
-					// or all fields and methods if it concerns an interface
 					if (methodOrFieldName.equals("*")) {
-						Collection<CtFieldReference<?>> fields = klass.getAllFields();
-						Set<CtMethod> methods = klass.getAllMethods();
-
-						for (CtFieldReference fieldReference : fields) {
-							if (fieldReference.isStatic() && fieldReference.getFieldDeclaration().hasModifier(ModifierKind.PUBLIC)) {
-								this.imports.add(fieldReference.clone());
-							}
-						}
-
-						for (CtMethod method : methods) {
-							if (method.hasModifier(ModifierKind.STATIC) && method.hasModifier(ModifierKind.PUBLIC)) {
-								this.imports.add(method.getReference());
-							}
-						}
+						this.imports.add(factory.Type().createImport(ImportKind.STAR_TYPE, klass.getReference()));
 					} else {
 						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
-							this.imports.add(methodOrFields.get(0).getReference());
+							CtNamedElement methodOrField = methodOrFields.get(0);
+							ImportKind kind = (methodOrField instanceof CtMethod) ? ImportKind.METHOD : ImportKind.FIELD;
+							this.imports.add(factory.Type().createImport(kind, methodOrField.getReference()));
 						}
 					}
 				}

@@ -46,8 +46,11 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.support.reflect.CtExtendedModifier;
@@ -274,26 +277,47 @@ public class ElementPrinterHelper {
 		return importType.matches("^(java\\.lang\\.)[^.]*$");
 	}
 
-	public void writeImports(Collection<CtReference> imports) {
+	public void writeImports(Collection<CtImport> imports) {
 		Set<String> setImports = new HashSet<>();
 		Set<String> setStaticImports = new HashSet<>();
-		for (CtReference ref : imports) {
+		for (CtImport ctImport : imports) {
 			String importTypeStr;
+			switch (ctImport.getKindImport()) {
+				case TYPE:
+					CtTypeReference typeRef = (CtTypeReference) ctImport.getReference();
+					importTypeStr = typeRef.getQualifiedName();
+					if (!isJavaLangClasses(importTypeStr)) {
+						setImports.add(importTypeStr);
+					}
+					break;
 
-			if (ref instanceof CtTypeReference) {
-				CtTypeReference typeRef = (CtTypeReference) ref;
-				importTypeStr = typeRef.getQualifiedName();
-				if (isJavaLangClasses(importTypeStr) == false) {
-					setImports.add(importTypeStr);
-				}
-			} else if (ref instanceof CtExecutableReference) {
-				CtExecutableReference execRef = (CtExecutableReference) ref;
-				if (execRef.getDeclaringType() != null) {
-					setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
-				}
-			} else if (ref instanceof CtFieldReference) {
-				CtFieldReference fieldRef = (CtFieldReference) ref;
-				setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
+				case STAR_PACKAGE:
+					CtPackageReference packageRef = (CtPackageReference) ctImport.getReference();
+					importTypeStr = packageRef.getQualifiedName() + ".*";
+					if (!isJavaLangClasses(importTypeStr)) {
+						setImports.add(importTypeStr);
+					}
+					break;
+
+				case METHOD:
+					CtExecutableReference execRef = (CtExecutableReference) ctImport.getReference();
+					if (execRef.getDeclaringType() != null) {
+						setStaticImports.add(this.removeInnerTypeSeparator(execRef.getDeclaringType().getQualifiedName()) + "." + execRef.getSimpleName());
+					}
+					break;
+
+				case FIELD:
+					CtFieldReference fieldRef = (CtFieldReference) ctImport.getReference();
+					setStaticImports.add(this.removeInnerTypeSeparator(fieldRef.getDeclaringType().getQualifiedName()) + "." + fieldRef.getSimpleName());
+					break;
+
+				case STAR_TYPE:
+					CtTypeReference typeStarRef = (CtTypeReference) ctImport.getReference();
+					importTypeStr = typeStarRef.getQualifiedName() + ".*";
+					if (!isJavaLangClasses(importTypeStr)) {
+						setStaticImports.add(importTypeStr);
+					}
+					break;
 			}
 		}
 
@@ -326,7 +350,7 @@ public class ElementPrinterHelper {
 	/**
 	 * Write the compilation unit header.
 	 */
-	public void writeHeader(List<CtType<?>> types, Collection<CtReference> imports) {
+	public void writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {
 				writeComment(ctType, CommentOffset.TOP_FILE);

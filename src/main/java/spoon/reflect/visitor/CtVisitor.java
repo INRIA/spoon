@@ -82,6 +82,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -466,4 +467,6 @@ public interface CtVisitor {
 	 * Visits a javadoc tag
 	 */
 	void visitCtJavaDocTag(CtJavaDocTag docTag);
+
+	void visitCtImport(CtImport ctImport);
 }

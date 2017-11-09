@@ -108,6 +108,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -939,5 +940,10 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
+	}
+
+	public void visitCtImport(CtImport ctImport) {
+		scanCtReference(ctImport.getReference());
+		scanCtElement(ctImport);
 	}
 }

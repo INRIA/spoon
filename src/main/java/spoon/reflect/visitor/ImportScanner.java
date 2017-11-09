@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 
 import java.util.Collection;
@@ -36,7 +37,7 @@ public interface ImportScanner {
 	 *
 	 * @return the list of computed imports or an empty collection if not imports has been computed.
 	 */
-	Collection<CtReference> getAllImports();
+	Collection<CtImport> getAllImports();
 
 	/**
 	 * Checks if the type is already imported.

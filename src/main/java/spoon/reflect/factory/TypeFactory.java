@@ -28,15 +28,19 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.StandardEnvironment;
+import spoon.support.reflect.reference.CtImportImpl;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
@@ -660,6 +664,12 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtTypeReference getDefaultBoundingType() {
 		return OBJECT;
+	}
+
+	public CtImport createImport(ImportKind kind, CtReference reference) {
+		CtImport ctImport = new CtImportImpl();
+		ctImport.setFactory(this.factory);
+		return ctImport.setKindImport(kind).setReference(reference);
 	}
 
 }

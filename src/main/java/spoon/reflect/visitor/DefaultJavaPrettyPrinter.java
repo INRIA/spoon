@@ -101,6 +101,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -279,7 +280,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtReference> computeImports(CtType<?> type) {
+	public Collection<CtImport> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		importsContext.computeImports(context.currentTopLevel);
 		return importsContext.getAllImports();
@@ -935,6 +936,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		 * Write directly to PrinterHelper, because java doc tag is not a java token. Normally it is part of COMMENT token.
 		 */
 		CommentHelper.printJavaDocTag(printer.getPrinterHelper(), docTag);
+	}
+
+	@Override
+	public void visitCtImport(CtImport ctImport) {
 	}
 
 	@Override
@@ -1785,7 +1790,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		this.sourceCompilationUnit = sourceCompilationUnit;
 
-		Set<CtReference> imports = new HashSet<>();
+		Set<CtImport> imports = new HashSet<>();
 		if (sourceCompilationUnit != null) {
 			imports.addAll(sourceCompilationUnit.getImports());
 		}

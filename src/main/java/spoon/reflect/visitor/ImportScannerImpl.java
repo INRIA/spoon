@@ -35,12 +35,15 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
@@ -75,6 +78,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
+	private Factory factory;
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -132,6 +136,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void scan(CtElement element) {
 		if (element != null && !element.isImplicit()) {
+			this.factory = element.getFactory();
 			element.accept(this);
 		}
 	}
@@ -182,11 +187,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtReference> getAllImports() {
-		Collection<CtReference> listallImports = new ArrayList<>();
-		listallImports.addAll(this.classImports.values());
-		listallImports.addAll(this.fieldImports.values());
-		listallImports.addAll(this.methodImports.values());
+	public Collection<CtImport> getAllImports() {
+		Collection<CtImport> listallImports = new ArrayList<>();
+
+		for (CtReference reference : this.classImports.values()) {
+			listallImports.add(this.factory.Type().createImport(ImportKind.TYPE, reference));
+		}
+
+		for (CtReference reference : this.fieldImports.values()) {
+			listallImports.add(this.factory.Type().createImport(ImportKind.FIELD, reference));
+		}
+
+		for (CtReference reference : this.methodImports.values()) {
+			listallImports.add(this.factory.Type().createImport(ImportKind.METHOD, reference));
+		}
 		return listallImports;
 	}
 

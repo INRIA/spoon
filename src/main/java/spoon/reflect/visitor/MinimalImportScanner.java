@@ -26,7 +26,6 @@ import spoon.reflect.reference.CtTypeReference;
  *
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
-
 	/**
 	 * This method use @link{ImportScannerImpl#isTypeInCollision} to import a ref only if there is a collision
 	 * @param ref: the type we are testing, it can be a CtTypeReference, a CtFieldReference or a CtExecutableReference
