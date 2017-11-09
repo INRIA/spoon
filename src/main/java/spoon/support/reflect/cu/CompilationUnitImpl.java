@@ -22,7 +22,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtImport;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
