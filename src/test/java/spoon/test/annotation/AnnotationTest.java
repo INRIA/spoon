@@ -1098,6 +1098,6 @@ public class AnnotationTest {
 		// contract: Spoon manage to process recursively defined annotation in shadow classes
 		Launcher spoon = new Launcher();
 		CtType type = spoon.getFactory().Type().get(AliasFor.class);
-		assertEquals(3, type.getMethods().size());
+		assertEquals(3, type.getFields().size());
 	}
 }

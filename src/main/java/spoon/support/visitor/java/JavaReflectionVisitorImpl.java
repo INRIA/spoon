@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
@@ -154,8 +155,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public void visitAnnotation(Annotation annotation) {
 		if (annotation.annotationType() != null) {
 			visitClassReference(annotation.annotationType());
-			for (RtMethod method : getDeclaredMethods(annotation.annotationType())) {
-				visitMethod(method);
+			List<RtMethod> methods = getDeclaredMethods(annotation.annotationType());
+			for (RtMethod method : methods) {
+				visitMethod(method, annotation);
 			}
 		}
 	}
@@ -175,8 +177,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public void visitMethod(RtMethod method) {
+		this.visitMethod(method, null);
+	}
+
+	public void visitMethod(RtMethod method, Annotation parent) {
 		for (Annotation annotation : method.getDeclaredAnnotations()) {
-			visitAnnotation(annotation);
+			if (parent == null || !annotation.annotationType().equals(parent.annotationType())) {
+				visitAnnotation(annotation);
+			}
 		}
 		for (RtParameter parameter : RtParameter.parametersOf(method)) {
 			visitParameter(parameter);
@@ -200,6 +208,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public void visitField(Field field) {
 		for (Annotation annotation : field.getDeclaredAnnotations()) {
+
 			visitAnnotation(annotation);
 		}
 		if (field.getType() != null) {
