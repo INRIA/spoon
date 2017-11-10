@@ -16,7 +16,6 @@
  */
 package spoon.support.visitor.java;
 
-import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
