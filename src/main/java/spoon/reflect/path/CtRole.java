@@ -95,11 +95,9 @@ public enum CtRole {
 	 * @return
 	 */
 	public static CtRole fromName(String name) {
-		name = name.toLowerCase();
-		for (int i = 0; i < CtRole.values().length; i++) {
-			if (CtRole.values()[i].getCamelCaseName().toLowerCase()
-					.equals(name)) {
-				return CtRole.values()[i];
+		for (CtRole role : CtRole.values()) {
+			if (role.getCamelCaseName().toLowerCase().equals(name.toLowerCase()) || role.name().equals(name)) {
+				return role;
 			}
 		}
 		return null;
@@ -111,11 +109,18 @@ public enum CtRole {
 	 */
 	public String getCamelCaseName() {
 		String s = name().toLowerCase();
-		int i = s.indexOf("_");
-		if (i != -1) {
-			s = s.substring(0, i) + Character.toUpperCase(s.charAt(i + 1)) + s.substring(i + 2);
+		String[] tokens = s.split("_");
+		if (tokens.length == 1) {
+			return s;
+		} else {
+			StringBuffer buffer = new StringBuffer(tokens[0]);
+			for (int i = 1; i < tokens.length; i++) {
+				String t = tokens[i];
+				buffer.append(Character.toUpperCase(t.charAt(0)));
+				buffer.append(t.substring(1));
+			}
+			return buffer.toString();
 		}
-		return s;
 	}
 
 	@Override
