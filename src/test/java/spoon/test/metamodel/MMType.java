@@ -105,9 +105,15 @@ public class MMType {
 				return null;
 			} else {
 				// we first consider interface
-				CtType<?> typeToConsider = (modelInterface != null) ? modelInterface : modelClass;
-				// if we get modifier from an interface it may be implicitely abstract
-				return (typeToConsider.getExtendedModifiers().contains(new CtExtendedModifier(ModifierKind.ABSTRACT, false))) ? MMTypeKind.ABSTRACT : MMTypeKind.LEAF;
+				if (modelClass == null) {
+					this.kind = MMTypeKind.ABSTRACT;
+				} else {
+					if (modelClass.hasModifier(ModifierKind.ABSTRACT)) {
+						this.kind = MMTypeKind.ABSTRACT;
+					} else {
+						this.kind = MMTypeKind.LEAF;
+					}
+				}
 			}
 		}
 		return kind;

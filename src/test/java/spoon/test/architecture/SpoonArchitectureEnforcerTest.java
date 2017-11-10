@@ -219,6 +219,7 @@ public class SpoonArchitectureEnforcerTest {
 	public void testInterfacesAreCtScannable() {
 		// contract: all interface inherited from CtElement should be visited in CtScanner
 		Launcher interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/support");
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
