@@ -48,11 +48,6 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalType
 	@PropertySetter(role = IS_DEFAULT)
 	<C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod);
 
-	/**
-	 * Replaces this element by another one.
-	 */
-	<R extends T> void replace(CtMethod<T> element);
-
 	@Override
 	CtMethod<T> clone();
 }

@@ -22,7 +22,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
@@ -159,11 +158,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (C) this;
-	}
-
-	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
 	}
 
 	@Override

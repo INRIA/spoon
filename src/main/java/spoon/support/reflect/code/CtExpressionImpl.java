@@ -90,11 +90,6 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 	}
 
 	@Override
-	public <E extends T> void replace(CtExpression<E> element) {
-		super.replace(element);
-	}
-
-	@Override
 	public T S() {
 		return null;
 	}
