@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.processing.AbstractManualProcessor;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -19,6 +20,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
@@ -205,5 +207,92 @@ public class SpoonArchitectureEnforcerTest {
 		})) {
 			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
 		}
+	}
+
+	@Test
+	public void testSpecPackage() throws Exception {
+		// contract: when a pull-request introduces a new package, it is made explicit during code review
+		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
+
+		Set<String> officialPackages = new TreeSet<>();
+		officialPackages.add("spoon.compiler.builder");
+		officialPackages.add("spoon.compiler");
+		officialPackages.add("spoon.experimental.modelobs.action");
+		officialPackages.add("spoon.experimental.modelobs.context");
+		officialPackages.add("spoon.experimental.modelobs");
+		officialPackages.add("spoon.experimental");
+		officialPackages.add("spoon.legacy");
+		officialPackages.add("spoon.processing");
+		officialPackages.add("spoon.refactoring");
+		officialPackages.add("spoon.reflect.annotations");
+		officialPackages.add("spoon.reflect.code");
+		officialPackages.add("spoon.reflect.cu.position");
+		officialPackages.add("spoon.reflect.cu");
+		officialPackages.add("spoon.reflect.declaration");
+		officialPackages.add("spoon.reflect.eval");
+		officialPackages.add("spoon.reflect.factory");
+		officialPackages.add("spoon.reflect.path.impl");
+		officialPackages.add("spoon.reflect.path");
+		officialPackages.add("spoon.reflect.reference");
+		officialPackages.add("spoon.reflect.visitor.chain");
+		officialPackages.add("spoon.reflect.visitor.filter");
+		officialPackages.add("spoon.reflect.visitor.printer");
+		officialPackages.add("spoon.reflect.visitor");
+		officialPackages.add("spoon.reflect");
+		officialPackages.add("spoon.support.comparator");
+		officialPackages.add("spoon.support.compiler.jdt");
+		officialPackages.add("spoon.support.compiler");
+		officialPackages.add("spoon.support.gui");
+		officialPackages.add("spoon.support.reflect.code");
+		officialPackages.add("spoon.support.reflect.cu.position");
+		officialPackages.add("spoon.support.reflect.cu");
+		officialPackages.add("spoon.support.reflect.declaration");
+		officialPackages.add("spoon.support.reflect.eval");
+		officialPackages.add("spoon.support.reflect.reference");
+		officialPackages.add("spoon.support.reflect");
+		officialPackages.add("spoon.support.template");
+		officialPackages.add("spoon.support.util");
+		officialPackages.add("spoon.support.visitor.clone");
+		officialPackages.add("spoon.support.visitor.equals");
+		officialPackages.add("spoon.support.visitor.java.internal");
+		officialPackages.add("spoon.support.visitor.java.reflect");
+		officialPackages.add("spoon.support.visitor.java");
+		officialPackages.add("spoon.support.visitor.replace");
+		officialPackages.add("spoon.support.visitor");
+		officialPackages.add("spoon.support");
+		officialPackages.add("spoon.template");
+		officialPackages.add("spoon.testing.utils");
+		officialPackages.add("spoon.testing");
+		officialPackages.add("spoon");
+		officialPackages.add(""); // root package
+
+		SpoonAPI spoon = new Launcher();
+		spoon.addInputResource("src/main/java/");
+		spoon.buildModel();
+		final Set<String> currentPackages = new TreeSet<>();
+		spoon.getModel().processWith(new AbstractProcessor<CtPackage>() {
+			@Override
+			public void process(CtPackage element) {
+				currentPackages.add(element.getQualifiedName());
+			}
+		});
+
+		assertSetEquals("you have created a new package or removed an existing one, please declare it explicitly in SpoonArchitectureEnforcerTest#testSpecPackage", officialPackages, currentPackages);
+	}
+
+	public static void assertSetEquals(String msg, Set<?> set1, Set<?> set2){
+
+		if(set1 == null || set2 ==null){
+			throw new IllegalArgumentException();
+		}
+
+		if(set1.size()!=set2.size()){
+			throw new AssertionError(msg);
+		}
+
+		if (!set1.containsAll(set2)) {
+			throw new AssertionError(msg);
+		}
+
 	}
 }
