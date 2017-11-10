@@ -378,6 +378,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> e) {
@@ -389,6 +390,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
@@ -399,6 +401,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	@Override
@@ -442,6 +445,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtRHSReceiver(e);
 	}
 
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> e) {
@@ -488,6 +492,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtModifiable(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	@Override
@@ -500,6 +505,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(typeParameter);
 		scanCtModifiable(typeParameter);
 		scanCtVisitable(typeParameter);
+		scanCtShadowable(typeParameter);
 	}
 
 	public <T> void visitCtConditional(CtConditional<T> e) {
@@ -519,6 +525,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	public void visitCtContinue(CtContinue e) {
@@ -536,6 +543,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCodeElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> e) {
@@ -557,6 +565,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtRHSReceiver(e);
 	}
 
 	@Override
@@ -586,6 +595,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCodeElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	public void visitCtForEach(CtForEach e) {
@@ -594,6 +604,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCodeElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	public void visitCtIf(CtIf e) {
@@ -643,6 +654,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtModifiable(e);
 		scanCtVisitable(e);
+		scanCtRHSReceiver(e);
 	}
 
 	public <T> void visitCtLocalVariableReference(
@@ -680,6 +692,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtModifiable(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	@Override
@@ -721,6 +734,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	@Override
@@ -742,6 +756,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	public void visitCtPackageReference(CtPackageReference e) {
@@ -757,6 +772,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	public <T> void visitCtParameterReference(CtParameterReference<T> e) {
@@ -807,6 +823,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCodeElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	@Override
@@ -834,6 +851,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtActualTypeContainer(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	@Override
@@ -905,6 +923,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCodeElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
