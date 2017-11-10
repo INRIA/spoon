@@ -28,8 +28,10 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
@@ -99,10 +101,13 @@ public class MMType {
 	 */
 	public MMTypeKind getKind() {
 		if (kind == null) {
-			if (modelClass != null && modelClass.hasModifier(ModifierKind.ABSTRACT) == false) {
-				kind = MMTypeKind.LEAF;
+			if (modelClass == null && modelInterface == null) {
+				return null;
 			} else {
-				kind = MMTypeKind.ABSTRACT;
+				// we first consider interface
+				CtType<?> typeToConsider = (modelInterface != null) ? modelInterface : modelClass;
+				// if we get modifier from an interface it may be implicitely abstract
+				return (typeToConsider.getExtendedModifiers().contains(new CtExtendedModifier(ModifierKind.ABSTRACT, false))) ? MMTypeKind.ABSTRACT : MMTypeKind.LEAF;
 			}
 		}
 		return kind;
