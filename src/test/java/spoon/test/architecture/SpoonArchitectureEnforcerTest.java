@@ -9,7 +9,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -19,13 +18,12 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -284,6 +282,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.reflect.cu");
 		officialPackages.add("spoon.support.reflect.declaration");
 		officialPackages.add("spoon.support.reflect.eval");
+		officialPackages.add("spoon.reflect.meta");
+		officialPackages.add("spoon.reflect.meta.impl");
 		officialPackages.add("spoon.support.reflect.reference");
 		officialPackages.add("spoon.support.reflect");
 		officialPackages.add("spoon.support.template");
@@ -316,18 +316,35 @@ public class SpoonArchitectureEnforcerTest {
 		assertSetEquals("you have created a new package or removed an existing one, please declare it explicitly in SpoonArchitectureEnforcerTest#testSpecPackage", officialPackages, currentPackages);
 	}
 
-	public static void assertSetEquals(String msg, Set<?> set1, Set<?> set2){
-
+	private static void assertSetEquals(String msg, Set<?> set1, Set<?> set2){
 		if(set1 == null || set2 ==null){
 			throw new IllegalArgumentException();
 		}
 
-		if(set1.size()!=set2.size()){
-			throw new AssertionError(msg);
+		if(set1.size() != set2.size()){
+			throw new AssertionError(msg+"\n\nDetails: "+computeDifference(set1, set2));
 		}
 
 		if (!set1.containsAll(set2)) {
-			throw new AssertionError(msg);
+			throw new AssertionError(msg+"\n\nDetails: "+computeDifference(set1, set2));
 		}
+
+	}
+
+	private static String computeDifference(Set<?> set1, Set<?> set2) {
+		Set<String> results = new HashSet<>();
+
+		for (Object o : set1) {
+			if (!set2.contains(o)) {
+				results.add("Missing package "+o+" in computed set");
+			} else {
+				set2.remove(o);
+			}
+		}
+
+		for (Object o : set2) {
+			results.add("Package "+o+" presents in computed but not expected set.");
+		}
+		return StringUtils.join(results, "\n");
 	}
 }
