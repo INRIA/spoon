@@ -25,6 +25,7 @@ import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtCase;
@@ -57,6 +58,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -94,6 +96,7 @@ import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeMember;
@@ -309,6 +312,24 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans a variable access (read and write).
 	 */
 	public <T> void scanCtVariableAccess(CtVariableAccess<T> variableAccess) {
+	}
+
+	/**
+	 * Scans the right-hand side of an assignment
+	 */
+	public <T> void scanCtRHSReceiver(CtRHSReceiver<T> ctRHSReceiver) {
+	}
+
+	/**
+	 * Scans a shadowable element
+	 */
+	public void scanCtShadowable(CtShadowable ctShadowable) {
+	}
+
+	/**
+	 * Scans a body holder
+	 */
+	public void scanCtBodyHolder(CtBodyHolder ctBodyHolder) {
 	}
 
 	@Override

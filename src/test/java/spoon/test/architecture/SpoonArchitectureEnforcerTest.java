@@ -217,7 +217,7 @@ public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void testInterfacesAreCtScannable() {
-		// contract: all interface inherited from CtElement should be visited in CtScanner
+		// contract: all non-leaf interfaces of the metamodel should be visited by CtInheritanceScanner
 		Launcher interfaces = new Launcher();
 		interfaces.addInputResource("src/main/java/spoon/support");
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
