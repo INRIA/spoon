@@ -60,6 +60,7 @@ import spoon.test.annotation.testclasses.PortRange;
 import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
+import spoon.test.annotation.testclasses.spring.AliasFor;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -1092,5 +1093,11 @@ public class AnnotationTest {
 		assertEquals(102, annot.integers()[1]);
 	}
 	
-	
+	@Test
+	public void testSpoonManageRecursivelyDefinedAnnotation() {
+		// contract: Spoon manage to process recursively defined annotation in shadow classes
+		Launcher spoon = new Launcher();
+		CtType type = spoon.getFactory().Type().get(AliasFor.class);
+		assertEquals(3, type.getMethods().size());
+	}
 }
