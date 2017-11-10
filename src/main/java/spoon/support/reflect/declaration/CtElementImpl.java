@@ -26,6 +26,8 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -495,5 +497,18 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public CtElement clone() {
 		return CloneHelper.INSTANCE.clone(this);
+	}
+
+	@Override
+	public <T> T getValueByRole(CtRole role) {
+		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
+		return rh.getValue(this);
+	}
+
+	@Override
+	public <E extends CtElement, T> E setValueByRole(CtRole role, T value) {
+		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
+		rh.setValue(this, value);
+		return (E) this;
 	}
 }
