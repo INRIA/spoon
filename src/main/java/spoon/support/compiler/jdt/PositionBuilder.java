@@ -185,7 +185,7 @@ public class PositionBuilder {
 				modifiersSourceEnd = typeParameters[0].declarationSourceStart - 3;
 			}
 
-			if (getModifiers(methodDeclaration.modifiers, false).isEmpty()) {
+			if (getModifiers(methodDeclaration.modifiers, false, true).isEmpty()) {
 				modifiersSourceStart = modifiersSourceEnd + 1;
 			}
 

@@ -293,16 +293,6 @@ class JDTTreeBuilderQuery {
 	}
 
 	/**
-	 * Converts the modifier from JDT to Spoon and consider all modifiers as explicit.
-	 *
-	 * @param modifier Identifier of the modifier.
-	 * @return Set of enum value of {@link CtExtendedModifier}.
-	 */
-	static Set<CtExtendedModifier> getModifiers(int modifier) {
-		return getModifiers(modifier, false);
-	}
-
-	/**
 	 * Converts the modifier from JDT to Spoon.
 	 *
 	 * @param modifier
@@ -310,7 +300,7 @@ class JDTTreeBuilderQuery {
 	 * @param implicit True if the modifier is not explicit in the source code (e.g. a missing 'public' in an interface)
 	 * @return Set of enum value of {@link CtExtendedModifier}.
 	 */
-	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit) {
+	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, boolean isMethod) {
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
 		if ((modifier & ClassFileConstants.AccPublic) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, implicit));
@@ -333,7 +323,9 @@ class JDTTreeBuilderQuery {
 		if ((modifier & ClassFileConstants.AccVolatile) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.VOLATILE, implicit));
 		}
-		if ((modifier & ClassFileConstants.AccTransient) != 0) {
+		// a method can never be transient, but it can have the flag because of varArgs.
+		// source: https://stackoverflow.com/questions/16233910/can-transient-keywords-mark-a-method
+		if (!isMethod && (modifier & ClassFileConstants.AccTransient) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.TRANSIENT, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccAbstract) != 0) {

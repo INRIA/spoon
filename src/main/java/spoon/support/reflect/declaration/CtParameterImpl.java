@@ -134,8 +134,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public boolean removeModifier(ModifierKind modifier) {
-		return modifierHandler.removeModifier(modifier);
+	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+		modifierHandler.removeModifier(modifier);
+		return (C) this;
 	}
 
 	@Override

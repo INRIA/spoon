@@ -116,9 +116,11 @@ public class AstCheckerTest {
 					"CtElementImpl#setPositions", //
 					"CtElementImpl#setDocComment", //
 					"CtElementImpl#setParent", //
+					"CtElementImpl#setValueByRole", //
 					"CtTypeParameterReferenceImpl#addBound", //
 					"CtTypeParameterReferenceImpl#removeBound", //
 					"CtTypeParameterReferenceImpl#setBounds" //
+					
 			);
 		}
 

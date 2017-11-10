@@ -14,38 +14,30 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
-
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.support.DerivedProperty;
+package spoon.reflect.meta;
 
 /**
- * This element defines a field declaration.
+ * Defines kind of container, which is used in an attribute of Spoon model
  */
-public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
-
+public enum ContainerKind {
 	/**
-	 * The separator for a string representation of a field.
+	 * it is a single value field
+	 * Example: CtClassImpl.simpleName
 	 */
-	String FIELD_SEPARATOR = "#";
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
-	 */
-	@DerivedProperty
-	CtFieldReference<T> getReference();
-
+	SINGLE,
 	/**
-	 * Useful proxy to {@link #getDefaultExpression()}.
+	 * It is a list of values
+	 * Example: CtClassImpl.typeMembers
 	 */
-	@Override
-	@DerivedProperty
-	CtExpression<T> getAssignment();
-
-	@Override
-	CtField<T> clone();
+	LIST,
+	/**
+	 * It is a set of values
+	 * Example: CtPackageImpl.types
+	 */
+	SET,
+	/**
+	 * It is a map&lt;String, T&gt; of values
+	 * Example: CtAnnotationImpl.elementValues
+	 */
+	MAP;
 }

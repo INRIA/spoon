@@ -14,38 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.declaration;
+package spoon.generating.meta;
 
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.support.DerivedProperty;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.path.CtRole;
 
 /**
- * This element defines a field declaration.
+ * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */
-public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T>, CtShadowable {
+class ModelRoleHandlerTemplate {
 
-	/**
-	 * The separator for a string representation of a field.
-	 */
-	String FIELD_SEPARATOR = "#";
+	private ModelRoleHandlerTemplate() {
+	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
-	 */
-	@DerivedProperty
-	CtFieldReference<T> getReference();
-
-	/**
-	 * Useful proxy to {@link #getDefaultExpression()}.
-	 */
-	@Override
-	@DerivedProperty
-	CtExpression<T> getAssignment();
-
-	@Override
-	CtField<T> clone();
+	static final RoleHandler[] roleHandlers = new RoleHandler[] { };
 }

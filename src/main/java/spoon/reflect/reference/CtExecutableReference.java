@@ -161,11 +161,6 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 */
 	String getSignature();
 
-	/**
-	 * Replaces an executable reference by another one.
-	 */
-	void replace(CtExecutableReference<?> reference);
-
 	@Override
 	CtExecutableReference<T> clone();
 }

@@ -280,11 +280,6 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 	}
 
 	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public CtStatement clone() {
 		return (CtStatement) super.clone();
 	}

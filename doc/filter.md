@@ -1,10 +1,26 @@
 ---
-title: Filter
+title: Navigation and Query
 tags: [quering]
 keywords: quering, query, filter, ast, elements
 ---
 
-Spoon gives developers a way to query code elements.
+
+Getters
+-------
+
+All elements provide a set of appropriate getters to get the children of an element.
+
+
+```java
+methods = ctClass.getMethods();
+```
+
+In addition, there exists a generic getter based on the role played by an element with respect to its parent. See CtRole for a complete list of roles.
+
+```java
+methods = ctClass.getValueByRole(CtRole.METHOD);
+```
+
 
 Filters
 -------
