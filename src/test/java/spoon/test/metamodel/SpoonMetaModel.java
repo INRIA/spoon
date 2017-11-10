@@ -25,14 +25,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
@@ -41,7 +39,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFolder;
@@ -174,11 +171,11 @@ public class SpoonMetaModel {
 		if (type instanceof CtInterface<?>) {
 			CtInterface<?> iface = (CtInterface<?>) type;
 			mmType.setModelClass(getImplementationOfInterface(iface));
-			mmType.setModelInteface(iface);
+			mmType.setModelInterface(iface);
 		} else if (type instanceof CtClass<?>) {
 			CtClass<?> clazz = (CtClass<?>) type;
 			mmType.setModelClass(clazz);
-			mmType.setModelInteface(getInterfaceOfImplementation(clazz));
+			mmType.setModelInterface(getInterfaceOfImplementation(clazz));
 		} else {
 			throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
 		}
@@ -188,9 +185,9 @@ public class SpoonMetaModel {
 			addFieldsOfType(mmType, mmType.getModelClass());
 		}
 		//add fields of interface
-		if (mmType.getModelInteface() != null) {
+		if (mmType.getModelInterface() != null) {
 			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MMType already exists in name2mmType
-			addFieldsOfType(mmType, mmType.getModelInteface());
+			addFieldsOfType(mmType, mmType.getModelInterface());
 		}
 		//initialize all fields
 		mmType.getRole2field().forEach((role, mmField) -> {
