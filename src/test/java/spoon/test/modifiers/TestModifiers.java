@@ -38,6 +38,24 @@ public class TestModifiers {
     }
 
     @Test
+    public void testCtModifiableAddRemoveReturnCtModifiable() {
+        // contract: CtModifiable#addModifier and CtModifiable#removeModifier should return CtModifiable
+
+        Launcher spoon = new Launcher();
+        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/MethodVarArgs.java");
+        spoon.buildModel();
+
+        CtType<?> myClass = spoon.getFactory().Type().get(MethodVarArgs.class);
+        CtMethod methodVarargs = myClass.getMethodsByName("getInitValues").get(0);
+
+        Object o = methodVarargs.addModifier(ModifierKind.FINAL);
+        assertEquals(methodVarargs, o);
+
+        o = methodVarargs.removeModifier(ModifierKind.FINAL);
+        assertEquals(methodVarargs, o);
+    }
+
+    @Test
     public void testSetVisibility() {
         // contract: setVisibility should only work with public/private/protected modifiers
 
