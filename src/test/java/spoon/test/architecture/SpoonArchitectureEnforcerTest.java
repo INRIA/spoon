@@ -230,8 +230,8 @@ public class SpoonArchitectureEnforcerTest {
 		List<String> missingMethods = new ArrayList<>();
 
 		new SpoonMetaModel(interfaces.getFactory()).getMMTypes().forEach(mmType->{
-			if(mmType.getKind()==ABSTRACT && mmType.getModelInteface()!=null)  {
-				CtInterface abstractIface = mmType.getModelInteface();
+			if(mmType.getKind()==ABSTRACT && mmType.getModelInterface() != null)  {
+				CtInterface abstractIface = mmType.getModelInterface();
 				String methodName = "scan"+abstractIface.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);
