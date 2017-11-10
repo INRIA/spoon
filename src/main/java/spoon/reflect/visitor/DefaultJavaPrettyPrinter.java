@@ -567,7 +567,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(catchBlock, CommentOffset.BEFORE);
 		printer.writeSpace().writeKeyword("catch").writeSpace().writeSeparator("(");
 		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
-		if (parameter.getMultiTypes().size() > 1) {
+		if (parameter != null && parameter.getMultiTypes() != null && parameter.getMultiTypes().size() > 1) {
 			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, true, "|", true, false, null)) {
 			for (int i = 0; i < parameter.getMultiTypes().size(); i++) {
 					lp.printSeparatorIfAppropriate();

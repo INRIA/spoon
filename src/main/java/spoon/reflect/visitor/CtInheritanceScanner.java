@@ -479,6 +479,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtCodeElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+		scanCtBodyHolder(e);
 	}
 
 	public <T> void visitCtClass(CtClass<T> e) {
@@ -526,6 +527,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 		scanCtShadowable(e);
+		scanCtBodyHolder(e);
 	}
 
 	public void visitCtContinue(CtContinue e) {
@@ -566,6 +568,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 		scanCtRHSReceiver(e);
+		scanCtShadowable(e);
 	}
 
 	@Override
@@ -623,6 +626,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtModifiable(e);
 		scanCtVisitable(e);
+		scanCtShadowable(e);
 	}
 
 	public <T> void visitCtInvocation(CtInvocation<T> e) {
@@ -693,6 +697,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(e);
 		scanCtVisitable(e);
 		scanCtShadowable(e);
+		scanCtBodyHolder(e);
 	}
 
 	@Override
