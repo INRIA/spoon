@@ -21,6 +21,7 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import java.util.TreeSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.metamodel.MMTypeKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
@@ -223,20 +225,19 @@ public class SpoonArchitectureEnforcerTest {
 		interfaces.addInputResource("src/main/java/spoon/reflect/visitor/CtScanner.java");
 		interfaces.buildModel();
 
-		Collection<CtType<?>> allTypes = interfaces.getModel().getAllTypes();
-
 		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtInheritanceScanner.class);
-		CtType<?> ctElement = interfaces.getFactory().Type().get(CtElement.class);
 
 		List<String> missingMethods = new ArrayList<>();
-		for (CtType type : allTypes) {
-			if (type.isSubtypeOf(ctElement.getReference())) {
-				String methodName = "scan"+type.getSimpleName();
+
+		new SpoonMetaModel(interfaces.getFactory()).getMMTypes().forEach(mmType->{
+			if(mmType.getKind()==ABSTRACT && mmType.getModelInteface()!=null)  {
+				CtInterface abstractIface = mmType.getModelInteface();
+				String methodName = "scan"+abstractIface.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);
 				}
 			}
-		}
+		});
 
 		assertTrue("The following methods are missing in CtScanner: \n"+ StringUtils.join(missingMethods, "\n"),missingMethods.isEmpty());
 	}
