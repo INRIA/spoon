@@ -98,15 +98,18 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.visitor.GenericTypeAdapter;
 
@@ -920,4 +923,10 @@ public interface Factory {
 	 * @see QueryFactory#createQuery(Object...)
 	 */
 	CtQuery createQuery(Object... input);
+
+	/**
+	 *
+	 * @see TypeFactory#createImport(ImportKind, CtReference)
+	 */
+	CtImport createImport(ImportKind importKind, CtReference reference);
 }
