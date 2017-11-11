@@ -28,7 +28,7 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
 	private ImportKind importKind;
 
-	@MetamodelPropertyField(role = CtRole.TARGET)
+	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
 	private CtReference localReference;
 
 	public CtImportImpl() {
@@ -48,6 +48,9 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 
 	@Override
 	public <T extends CtImport> T setReference(CtReference reference) {
+		if (reference != null) {
+			reference.setParent(this);
+		}
 		this.localReference = reference;
 		return (T) this;
 	}

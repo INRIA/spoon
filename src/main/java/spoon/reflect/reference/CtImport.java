@@ -21,7 +21,7 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtElement;
 
 import static spoon.reflect.path.CtRole.IMPORT_KIND;
-import static spoon.reflect.path.CtRole.TARGET;
+import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
 
 /**
  * This element represents an import declaration
@@ -38,10 +38,10 @@ public interface CtImport extends CtElement {
 	@PropertyGetter(role = IMPORT_KIND)
 	ImportKind getImportKind();
 
-	@PropertyGetter(role = TARGET)
+	@PropertyGetter(role = IMPORT_REFERENCE)
 	CtReference getReference();
 
-	@PropertySetter(role = TARGET)
+	@PropertySetter(role = IMPORT_REFERENCE)
 	<T extends CtImport> T setReference(CtReference reference);
 
 	String getSimpleName();
