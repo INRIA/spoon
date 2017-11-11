@@ -113,7 +113,7 @@ public enum CtRole {
 		if (tokens.length == 1) {
 			return s;
 		} else {
-			StringBuffer buffer = new StringBuffer(tokens[0]);
+			StringBuilder buffer = new StringBuilder(tokens[0]);
 			for (int i = 1; i < tokens.length; i++) {
 				String t = tokens[i];
 				buffer.append(Character.toUpperCase(t.charAt(0)));
