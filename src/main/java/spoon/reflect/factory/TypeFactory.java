@@ -40,7 +40,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.StandardEnvironment;
-import spoon.support.reflect.reference.CtImportImpl;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
