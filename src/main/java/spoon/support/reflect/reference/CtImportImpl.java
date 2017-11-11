@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.ImportKind;
@@ -23,7 +25,10 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 public class CtImportImpl extends CtElementImpl implements CtImport {
+	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
 	private ImportKind importKind;
+
+	@MetamodelPropertyField(role = CtRole.TARGET)
 	private CtReference localReference;
 
 	public CtImportImpl() {

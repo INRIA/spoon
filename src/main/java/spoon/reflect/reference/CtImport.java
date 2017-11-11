@@ -20,11 +20,14 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtElement;
 
+import static spoon.reflect.path.CtRole.IMPORT_KIND;
 import static spoon.reflect.path.CtRole.TARGET;
 
 public interface CtImport extends CtElement {
+	@PropertySetter(role = IMPORT_KIND)
 	<T extends CtImport> T setImportKind(ImportKind importKind);
 
+	@PropertyGetter(role = IMPORT_KIND)
 	ImportKind getImportKind();
 
 	@PropertyGetter(role = TARGET)
