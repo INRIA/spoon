@@ -945,23 +945,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		switch (ctImport.getImportKind()) {
 			case TYPE:
-				visitCtTypeReference((CtTypeReference)ctImport.getReference());
+				visitCtTypeReference((CtTypeReference) ctImport.getReference());
 				break;
 
 			case METHOD:
 				printer.writeKeyword("static");
 				printer.writeSpace();
-				visitCtExecutableReference((CtExecutableReference)ctImport.getReference());
+				visitCtExecutableReference((CtExecutableReference) ctImport.getReference());
 				break;
 
 			case FIELD:
 				printer.writeKeyword("static");
 				printer.writeSpace();
-				visitCtFieldReference((CtFieldReference)ctImport.getReference());
+				visitCtFieldReference((CtFieldReference) ctImport.getReference());
 				break;
 
 			case STAR_PACKAGE:
-				visitCtPackageReference((CtPackageReference)ctImport.getReference());
+				visitCtPackageReference((CtPackageReference) ctImport.getReference());
 				printer.writeSeparator(".");
 				printer.writeIdentifier("*");
 				break;
@@ -969,7 +969,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			case STAR_TYPE:
 				printer.writeKeyword("static");
 				printer.writeSpace();
-				visitCtTypeReference((CtTypeReference)ctImport.getReference());
+				visitCtTypeReference((CtTypeReference) ctImport.getReference());
 				printer.writeSeparator(".");
 				printer.writeIdentifier("*");
 				break;
