@@ -19,9 +19,9 @@ package spoon.reflect.reference;
 import spoon.reflect.declaration.CtElement;
 
 public interface CtImport extends CtElement {
-	<T extends CtImport> T setKindImport(ImportKind importKind);
+	<T extends CtImport> T setImportKind(ImportKind importKind);
 
-	ImportKind getKindImport();
+	ImportKind getImportKind();
 
 	CtReference getReference();
 

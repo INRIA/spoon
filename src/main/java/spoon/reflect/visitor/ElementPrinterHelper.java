@@ -280,7 +280,7 @@ public class ElementPrinterHelper {
 		Set<String> setStaticImports = new HashSet<>();
 		for (CtImport ctImport : imports) {
 			String importTypeStr;
-			switch (ctImport.getKindImport()) {
+			switch (ctImport.getImportKind()) {
 				case TYPE:
 					CtTypeReference typeRef = (CtTypeReference) ctImport.getReference();
 					importTypeStr = typeRef.getQualifiedName();

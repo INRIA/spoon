@@ -31,13 +31,13 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	}
 
 	@Override
-	public <T extends CtImport> T setKindImport(ImportKind importKind) {
+	public <T extends CtImport> T setImportKind(ImportKind importKind) {
 		this.importKind = importKind;
 		return (T) this;
 	}
 
 	@Override
-	public ImportKind getKindImport() {
+	public ImportKind getImportKind() {
 		return this.importKind;
 	}
 

@@ -9,7 +9,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.ImportKind;
 import spoon.support.util.SortedList;
@@ -132,7 +131,7 @@ public class ImportBuilderTest {
         Iterator<CtImport> iterator = imports.iterator();
         CtImport ctImport = iterator.next();
 
-        assertEquals(ImportKind.STAR_PACKAGE, ctImport.getKindImport());
+        assertEquals(ImportKind.STAR_PACKAGE, ctImport.getImportKind());
 
         assertTrue(ctImport.getReference() instanceof CtPackageReference);
 

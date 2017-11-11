@@ -669,7 +669,7 @@ public class TypeFactory extends SubFactory {
 	public CtImport createImport(ImportKind kind, CtReference reference) {
 		CtImport ctImport = new CtImportImpl();
 		ctImport.setFactory(this.factory);
-		return ctImport.setKindImport(kind).setReference(reference);
+		return ctImport.setImportKind(kind).setReference(reference);
 	}
 
 }
