@@ -141,7 +141,7 @@ public class ImportBuilderTest {
 
     @Test
     public void testWithStaticInheritedImport() {
-        // contract: static field or methods can be inherited, JDTImportBuilder must retrieve the imported type from the right class
+        // contract: When using starred static import of a type, it imports a starred type
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImportWithInheritance.java");
         spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/staticimport");
@@ -154,33 +154,15 @@ public class ImportBuilderTest {
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
         Collection<CtImport> imports = unitStatic.getImports();
 
-        assertEquals(4, imports.size());
-
-        List<String> importNames = new SortedList<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        for (CtImport refImport : imports) {
-            if (refImport.getReference() instanceof CtFieldReference) {
-                importNames.add(((CtFieldReference) refImport.getReference()).getQualifiedName());
-            } else if (refImport.getReference() instanceof CtExecutableReference) {
-                importNames.add(((CtExecutableReference) refImport.getReference()).getDeclaringType().getQualifiedName() + CtMethod.EXECUTABLE_SEPARATOR + refImport.getSimpleName());
-            }
-
-        }
-
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", importNames.get(0));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#TRUE", importNames.get(1));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#maMethod", importNames.get(2));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass#OTHER_INT", importNames.get(3));
+        assertEquals(1, imports.size());
+        CtImport ctImport = imports.iterator().next();
+        assertEquals(ImportKind.STAR_TYPE, ctImport.getImportKind());
+        assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;\n", ctImport.toString());
     }
 
     @Test
     public void testWithImportFromItf() {
-        // contract: When using static import of an interface, only static method and fields should be imported
+        // contract: When using starred static import of an interface, it imports a starred type
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/resources/jdtimportbuilder/");
         spoon.getEnvironment().setAutoImports(true);
@@ -192,25 +174,11 @@ public class ImportBuilderTest {
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
         Collection<CtImport> imports = unitStatic.getImports();
 
-        assertEquals(2, imports.size());
+        assertEquals(1, imports.size());
+        CtImport ctImport = imports.iterator().next();
 
-        List<String> importNames = new SortedList<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        for (CtImport refImport : imports) {
-            if (refImport.getReference() instanceof CtFieldReference) {
-                importNames.add(((CtFieldReference) refImport.getReference()).getQualifiedName());
-            } else if (refImport.getReference() instanceof CtExecutableReference) {
-                importNames.add(((CtExecutableReference) refImport.getReference()).getDeclaringType().getQualifiedName() + CtMethod.EXECUTABLE_SEPARATOR + refImport.getSimpleName());
-            }
-        }
-
-        assertEquals("jdtimportbuilder.itf.DumbItf#MYSTRING", importNames.get(0));
-        assertEquals("jdtimportbuilder.itf.DumbItf#anotherStaticMethod", importNames.get(1));
+        assertEquals(ImportKind.STAR_TYPE, ctImport.getImportKind());
+        assertEquals("import static jdtimportbuilder.itf.DumbItf.*;\n", ctImport.toString());
     }
 
 }
