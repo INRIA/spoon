@@ -16,15 +16,21 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtElement;
+
+import static spoon.reflect.path.CtRole.TARGET;
 
 public interface CtImport extends CtElement {
 	<T extends CtImport> T setImportKind(ImportKind importKind);
 
 	ImportKind getImportKind();
 
+	@PropertyGetter(role = TARGET)
 	CtReference getReference();
 
+	@PropertySetter(role = TARGET)
 	<T extends CtImport> T setReference(CtReference reference);
 
 	String getSimpleName();
