@@ -940,42 +940,44 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtImport(CtImport ctImport) {
-		printer.writeKeyword("import");
-		printer.writeSpace();
+		if (ctImport.getImportKind() != null) {
+			printer.writeKeyword("import");
+			printer.writeSpace();
 
-		switch (ctImport.getImportKind()) {
-			case TYPE:
-				visitCtTypeReference((CtTypeReference) ctImport.getReference());
-				break;
+			switch (ctImport.getImportKind()) {
+				case TYPE:
+					visitCtTypeReference((CtTypeReference) ctImport.getReference());
+					break;
 
-			case METHOD:
-				printer.writeKeyword("static");
-				printer.writeSpace();
-				visitCtExecutableReference((CtExecutableReference) ctImport.getReference());
-				break;
+				case METHOD:
+					printer.writeKeyword("static");
+					printer.writeSpace();
+					visitCtExecutableReference((CtExecutableReference) ctImport.getReference());
+					break;
 
-			case FIELD:
-				printer.writeKeyword("static");
-				printer.writeSpace();
-				visitCtFieldReference((CtFieldReference) ctImport.getReference());
-				break;
+				case FIELD:
+					printer.writeKeyword("static");
+					printer.writeSpace();
+					visitCtFieldReference((CtFieldReference) ctImport.getReference());
+					break;
 
-			case STAR_PACKAGE:
-				visitCtPackageReference((CtPackageReference) ctImport.getReference());
-				printer.writeSeparator(".");
-				printer.writeIdentifier("*");
-				break;
+				case STAR_PACKAGE:
+					visitCtPackageReference((CtPackageReference) ctImport.getReference());
+					printer.writeSeparator(".");
+					printer.writeIdentifier("*");
+					break;
 
-			case STAR_TYPE:
-				printer.writeKeyword("static");
-				printer.writeSpace();
-				visitCtTypeReference((CtTypeReference) ctImport.getReference());
-				printer.writeSeparator(".");
-				printer.writeIdentifier("*");
-				break;
+				case STAR_TYPE:
+					printer.writeKeyword("static");
+					printer.writeSpace();
+					visitCtTypeReference((CtTypeReference) ctImport.getReference());
+					printer.writeSeparator(".");
+					printer.writeIdentifier("*");
+					break;
+			}
+			printer.writeSeparator(";");
+			printer.writeln();
 		}
-		printer.writeSeparator(";");
-		printer.writeln();
 	}
 
 	@Override

@@ -945,5 +945,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void visitCtImport(CtImport ctImport) {
 		scanCtReference(ctImport.getReference());
 		scanCtElement(ctImport);
+		scanCtVisitable(ctImport);
 	}
 }
