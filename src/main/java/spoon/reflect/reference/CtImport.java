@@ -23,6 +23,14 @@ import spoon.reflect.declaration.CtElement;
 import static spoon.reflect.path.CtRole.IMPORT_KIND;
 import static spoon.reflect.path.CtRole.TARGET;
 
+/**
+ * This element represents an import declaration
+ *
+ * Example:
+ * <pre>
+ *     import java.io.File;
+ * </pre>
+ */
 public interface CtImport extends CtElement {
 	@PropertySetter(role = IMPORT_KIND)
 	<T extends CtImport> T setImportKind(ImportKind importKind);
