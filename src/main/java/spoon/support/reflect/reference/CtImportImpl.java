@@ -63,6 +63,6 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 
 	@Override
 	public void accept(CtVisitor visitor) {
-
+		visitor.visitCtImport(this);
 	}
 }

@@ -25,6 +25,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -346,7 +347,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;\n", imports.toArray()[0].toString());
 	}
 
 	@Test
@@ -381,7 +382,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
 	}
 
 	@Test
@@ -1215,7 +1216,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportStarredPackageWithNonVisibleClass() throws IOException {
-		// contract: when importing starred import, it should not import package-protected classes
+		// contract: when importing starred import, it should import the starred import
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
@@ -1230,7 +1231,8 @@ public class ImportTest {
 
 		assertNotNull(cu);
 
-		assertEquals(3, cu.getImports().size());
+		assertEquals(1, cu.getImports().size());
+		assertEquals(ImportKind.STAR_PACKAGE, cu.getImports().iterator().next().getImportKind());
 	}
 
 	@Test
