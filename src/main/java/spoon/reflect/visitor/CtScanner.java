@@ -902,7 +902,7 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public void visitCtImport(final CtImport ctImport) {
 		enter(ctImport);
-		scan(CtRole.TARGET, ctImport.getReference());
+		scan(CtRole.IMPORT_REFERENCE, ctImport.getReference());
 		scan(CtRole.ANNOTATION, ctImport.getAnnotations());
 		exit(ctImport);
 	}

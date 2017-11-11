@@ -885,7 +885,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 	public void visitCtImport(final spoon.reflect.reference.CtImport ctImport) {
 		spoon.reflect.reference.CtImport other = ((spoon.reflect.reference.CtImport) (this.stack.peek()));
 		enter(ctImport);
-		biScan(spoon.reflect.path.CtRole.TARGET, ctImport.getReference(), other.getReference());
+		biScan(spoon.reflect.path.CtRole.IMPORT_REFERENCE, ctImport.getReference(), other.getReference());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, ctImport.getAnnotations(), other.getAnnotations());
 		exit(ctImport);
 	}
