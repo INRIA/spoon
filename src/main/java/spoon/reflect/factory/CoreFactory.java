@@ -87,6 +87,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -507,6 +508,11 @@ public interface CoreFactory {
 	 * Creates a javadoc tag.
 	 */
 	CtJavaDocTag createJavaDocTag();
+
+	/**
+	 * Creates an import.
+	 */
+	CtImport createImport();
 
 	/**
 	 * Gets the main factory of that core factory (cannot be <code>null</code>).

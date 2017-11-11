@@ -667,8 +667,7 @@ public class TypeFactory extends SubFactory {
 	}
 
 	public CtImport createImport(ImportKind kind, CtReference reference) {
-		CtImport ctImport = new CtImportImpl();
-		ctImport.setFactory(this.factory);
+		CtImport ctImport = factory.Core().createImport();
 		return ctImport.setImportKind(kind).setReference(reference);
 	}
 
