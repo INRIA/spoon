@@ -79,6 +79,17 @@ public class SpoonMetaModel {
 	 */
 	public SpoonMetaModel(Factory factory) {
 		this.factory =  factory;
+		
+		for (String apiPackage : MODEL_IFACE_PACKAGES) {
+			if (factory.Package().get(apiPackage) == null) {
+				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
+			}
+			String implPackage = replaceApiToImplPackage(apiPackage);
+			if (factory.Package().get(implPackage) == null) {
+				throw new SpoonException("Spoon Factory model is missing implementation package " + implPackage);
+			}
+		}
+		
 		//search for all interfaces of spoon model and create MMTypes for them
 		factory.getModel().getRootPackage().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
@@ -106,16 +117,26 @@ public class SpoonMetaModel {
 		}
 		return name;
 	}
+	
 
 	/**
 	 * @param iface the interface of spoon model element
 	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
 	 */
 	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
-		String impl = iface.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect") + CLASS_SUFFIX;
+		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) iface.getFactory().Type().get(impl);
 	}
 
+	private static final String modelApiPackage = "spoon.reflect";
+	private static final String modelApiImplPackage = "spoon.support.reflect";
+	
+	private static String replaceApiToImplPackage(String modelInterfaceQName) {
+		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
+			throw new SpoonException("The qualified name doesn't belong to Spoon model API package: " + modelApiPackage);
+		}
+		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
+	}
 	/**
 	 * @param impl the implementation of spoon model element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
