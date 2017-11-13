@@ -45,4 +45,7 @@ public interface CtImport extends CtElement {
 	<T extends CtImport> T setReference(CtReference reference);
 
 	String getSimpleName();
+
+	@Override
+	CtImport clone();
 }

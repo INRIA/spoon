@@ -73,4 +73,9 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtImport(this);
 	}
+
+	@Override
+	public CtImport clone() {
+		return (CtImport) super.clone();
+	}
 }
