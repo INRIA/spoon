@@ -125,7 +125,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	}
 
 	/**
-	 * Gets a created package.
+	 * Gets a package.
 	 *
 	 * @param qualifiedName
 	 * 		the package to search

@@ -152,6 +152,9 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
 		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
 		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
 		// Templates
 		launcher.addInputResource("./src/test/java/spoon/generating/meta");
 		// Linked classes
