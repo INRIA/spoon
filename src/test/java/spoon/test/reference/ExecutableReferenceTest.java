@@ -13,6 +13,7 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Bar;
 import spoon.test.reference.testclasses.Burritos;
+import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Kuu;
 import spoon.test.reference.testclasses.SuperFoo;
 
@@ -172,5 +173,35 @@ public class ExecutableReferenceTest {
 		launcher.addInputResource("./src/test/resources/noclasspath/org/elasticsearch/action/admin/cluster/node/tasks");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.buildModel();
+	}
+
+	@Test
+	public void testHashcodeWorksWithReference() {
+		// contract: two distinct CtExecutableReference should have different hashcodes
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/EnumValue.java");
+		launcher.buildModel();
+
+		CtClass enumValue = launcher.getFactory().Class().get(EnumValue.class);
+
+		CtMethod firstMethod = (CtMethod) enumValue.getMethodsByName("asEnum").get(0);
+		CtMethod secondMethod = (CtMethod) enumValue.getMethodsByName("unwrap").get(0);
+
+		assertNotNull(firstMethod);
+		assertNotNull(secondMethod);
+
+		assertNotEquals(firstMethod, secondMethod);
+		assertNotEquals(firstMethod.getReference(), secondMethod.getReference());
+
+		int hashCode1 = firstMethod.hashCode();
+		int hashCode2 = secondMethod.hashCode();
+
+		assertNotEquals(hashCode1, hashCode2);
+
+		hashCode1 = firstMethod.getReference().hashCode();
+		hashCode2 = secondMethod.getReference().hashCode();
+
+		assertNotEquals(hashCode1, hashCode2);
 	}
 }
