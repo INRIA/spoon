@@ -41,4 +41,10 @@ public class MavenLauncherTest {
 	public void mavenLauncherOnDirectoryWithoutPomTest() {
 		new MavenLauncher("./src", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 	}
+
+	@Test
+	public void mavenLauncherTestWithVerySimpleProject() {
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/very-simple", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
+	}
 }
