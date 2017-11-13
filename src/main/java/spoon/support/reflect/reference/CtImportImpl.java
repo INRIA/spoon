@@ -25,8 +25,6 @@ import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.lang.reflect.AnnotatedElement;
-
 public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
 	private ImportKind importKind;

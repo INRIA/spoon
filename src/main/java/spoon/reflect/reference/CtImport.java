@@ -18,7 +18,6 @@ package spoon.reflect.reference;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-import spoon.reflect.declaration.CtElement;
 
 import static spoon.reflect.path.CtRole.IMPORT_KIND;
 import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
