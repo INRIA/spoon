@@ -65,6 +65,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -1255,5 +1256,24 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertTrue(output.contains("import spoon.test.imports.testclasses.withgenerics.Target;"));
+	}
+
+	@Test
+	public void testEqualsImports() {
+		// contract: two imports of same kind with same reference should be equals
+		final Launcher launcher = new Launcher();
+
+		CtType typeA = launcher.getFactory().Type().get(A.class);
+
+		CtImport importsA1 = launcher.getFactory().createImport(ImportKind.TYPE, typeA.getReference());
+		CtImport importsA2 = launcher.getFactory().createImport(ImportKind.TYPE, typeA.getReference());
+
+		assertEquals(importsA1, importsA2);
+		assertEquals(importsA1.hashCode(), importsA2.hashCode());
+
+		CtType typeB = launcher.getFactory().Type().get(Pozole.class);
+		CtImport importsB = launcher.getFactory().createImport(ImportKind.TYPE, typeB.getReference());
+		assertNotEquals(importsA1, importsB);
+		assertNotEquals(importsA1.hashCode(), importsB.hashCode());
 	}
 }

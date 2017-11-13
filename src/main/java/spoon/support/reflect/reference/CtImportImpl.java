@@ -80,16 +80,4 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	public CtImport clone() {
 		return (CtImport) super.clone();
 	}
-
-	@Override
-	public int hashCode() {
-		int result = 0;
-		if (getReference() != null) {
-			result += getReference().hashCode()*32;
-		}
-		if (getImportKind() != null) {
-			result += getImportKind().hashCode();
-		}
-		return result;
-	}
 }
