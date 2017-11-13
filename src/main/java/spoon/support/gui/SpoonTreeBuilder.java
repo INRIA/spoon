@@ -18,6 +18,7 @@ package spoon.support.gui;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -36,7 +37,8 @@ public class SpoonTreeBuilder extends CtScanner {
 		nodes.push(root);
 	}
 
-	private void createNode(Object o) {
+	private void createNode(Object o, CtRole roleInParent) {
+		String prefix = roleInParent == null ? "" : roleInParent.getCamelCaseName() + ": ";
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(o) {
 			private static final long serialVersionUID = 1L;
 
@@ -47,23 +49,38 @@ public class SpoonTreeBuilder extends CtScanner {
 
 			@Override
 			public String toString() {
+				String nodeName;
 				if (getUserObject() instanceof CtNamedElement) {
-					return getASTNodeName()
+					nodeName = getASTNodeName()
 							+ " - "
 							+ ((CtNamedElement) getUserObject())
 							.getSimpleName();
+				} else {
+					String objectRepresentation;
+					try {
+						objectRepresentation = getUserObject().toString();
+					} catch (Exception e) {
+						objectRepresentation = "Failed:" + e.getMessage();
+					}
+					nodeName = getASTNodeName() + " - "	+ objectRepresentation;
 				}
-				return getASTNodeName() + " - "
-						+ getUserObject().toString();
+				return prefix + nodeName;
 			}
 		};
 		nodes.peek().add(node);
 		nodes.push(node);
 	}
 
+	private CtRole roleInParent;
+	@Override
+	public void scan(CtRole role, CtElement element) {
+		roleInParent = role;
+		super.scan(role, element);
+	}
+
 	@Override
 	public void enter(CtElement element) {
-		createNode(element);
+		createNode(element, roleInParent);
 		super.enter(element);
 	}
 

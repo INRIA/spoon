@@ -252,6 +252,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitMethod(RtMethod method) {
+		this.visitMethod(method, null);
+	}
+
+	@Override
+	public void visitMethod(RtMethod method, Annotation parent) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
 		ctMethod.setBody(factory.Core().createBlock());
@@ -259,7 +264,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctMethod.setDefaultMethod(method.isDefault());
 
 		enter(new ExecutableRuntimeBuilderContext(ctMethod));
-		super.visitMethod(method);
+		super.visitMethod(method, parent);
 		exit();
 
 		contexts.peek().addMethod(ctMethod);

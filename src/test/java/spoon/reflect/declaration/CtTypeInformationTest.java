@@ -133,7 +133,7 @@ public class CtTypeInformationTest {
 
 	@Test
 	public void testGetSuperclass() throws Exception {
-		int expectedNumberInJDK8 = 61;
+		int expectedNumberInJDK8 = 62; // in Java 1.8.0_151
 		int expectedNumberInJDK9 = 81;
 
 		int expectedNumber;
