@@ -37,6 +37,7 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 
 	@Override
 	public <T extends CtImport> T setImportKind(ImportKind importKind) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_KIND, importKind, this.importKind);
 		this.importKind = importKind;
 		return (T) this;
 	}
@@ -51,6 +52,7 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 		if (reference != null) {
 			reference.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_REFERENCE, reference, this.localReference);
 		this.localReference = reference;
 		return (T) this;
 	}
