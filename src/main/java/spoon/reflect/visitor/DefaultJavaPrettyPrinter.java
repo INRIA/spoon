@@ -86,6 +86,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -111,6 +112,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -200,10 +202,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private CompilationUnit sourceCompilationUnit;
 
 	/**
+	 * Imports computed
+	 */
+	Set<CtImport> imports;
+
+	/**
 	 * Creates a new code generator visitor.
 	 */
 	public DefaultJavaPrettyPrinter(Environment env) {
 		this.env = env;
+		this.imports = new HashSet<>();
 		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
@@ -786,6 +794,34 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printCtFieldAccess(fieldWrite);
 	}
 
+	private boolean isImported(CtFieldReference fieldReference) {
+		if (!this.env.isAutoImports()) {
+			return false;
+		}
+		CtImport fieldImport = fieldReference.getFactory().createImport(ImportKind.FIELD, fieldReference);
+
+		if (this.imports.contains(fieldImport)) {
+			return true;
+		} else {
+			CtImport staticClassImport = fieldReference.getFactory().createImport(ImportKind.STAR_TYPE, fieldReference.getDeclaringType());
+			return this.imports.contains(staticClassImport);
+		}
+	}
+
+	private boolean isImported(CtExecutableReference executableReference) {
+		if (!this.env.isAutoImports()) {
+			return false;
+		}
+		CtImport executableImport = executableReference.getFactory().createImport(ImportKind.METHOD, executableReference);
+
+		if (this.imports.contains(executableImport)) {
+			return true;
+		} else {
+			CtImport staticClassImport = executableReference.getFactory().createImport(ImportKind.STAR_TYPE, executableReference.getDeclaringType());
+			return this.imports.contains(staticClassImport);
+		}
+	}
+
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
 		try (Writable _context = context.modify()) {
@@ -796,7 +832,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (target != null) {
 				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
 				boolean isStaticField = f.getVariable().isStatic();
-				boolean isImportedField = importsContext.isImported(f.getVariable());
+				boolean isImportedField = this.isImported(f.getVariable());
 
 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
 					if (target.isImplicit() && !(f.getVariable().getFieldDeclaration() == null && this.env.getNoClasspath())) {
@@ -1149,7 +1185,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			if (!this.importsContext.isImported(invocation.getExecutable())) {
+			boolean isImported = this.isImported(invocation.getExecutable());
+			if (!isImported) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);
@@ -1827,8 +1864,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		reset();
 
 		this.sourceCompilationUnit = sourceCompilationUnit;
-
-		Set<CtImport> imports = new HashSet<>();
+		this.imports = new HashSet<>();
 		if (sourceCompilationUnit != null) {
 			imports.addAll(sourceCompilationUnit.getImports());
 		}
