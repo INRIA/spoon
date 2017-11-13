@@ -794,28 +794,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean isImported(CtFieldReference fieldReference) {
-		if (!this.env.isAutoImports()) {
-			return false;
-		}
 		CtImport fieldImport = fieldReference.getFactory().createImport(ImportKind.FIELD, fieldReference);
 
 		if (this.imports.contains(fieldImport)) {
 			return true;
 		} else {
+			if (fieldReference.getDeclaringType() == null) {
+				return false;
+			}
 			CtImport staticClassImport = fieldReference.getFactory().createImport(ImportKind.STAR_TYPE, fieldReference.getDeclaringType());
 			return this.imports.contains(staticClassImport);
 		}
 	}
 
 	private boolean isImported(CtExecutableReference executableReference) {
-		if (!this.env.isAutoImports()) {
-			return false;
-		}
 		CtImport executableImport = executableReference.getFactory().createImport(ImportKind.METHOD, executableReference);
 
 		if (this.imports.contains(executableImport)) {
 			return true;
 		} else {
+			if (executableReference.getDeclaringType() == null) {
+				return false;
+			}
 			CtImport staticClassImport = executableReference.getFactory().createImport(ImportKind.STAR_TYPE, executableReference.getDeclaringType());
 			return this.imports.contains(staticClassImport);
 		}

@@ -177,11 +177,11 @@ public class DefaultPrettyPrinterTest {
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" +nl+
-			"    localField = E1.ordinal();" +nl+
+			"    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
 			"}"
 		;
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals( "E1 is statically imported then we can call it directly", expected, computed );
+		assertEquals( "We use FQN for E1", expected, computed );
 
 		expected = //This is correct however it could be more concise.
 			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
@@ -193,11 +193,11 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" +nl+
-			"    globalField = localField;" +nl+
+			"    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" +nl+
 			"}"
 		;
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
-		assertEquals( "The static field of an external type with the same identifier as the compilation unit is statically imported", expected, computed );
+		assertEquals( "The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed );
 
 		expected = //This is correct however it could be more concise.
 			"public void referToTwoInnerClassesWithTheSameName() {" +nl+
@@ -213,7 +213,7 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public enum ENUM {" +nl+
-			"    E1(globalField,E1);" +nl+
+			"    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField,spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
 			"    final int NUM;" +nl+nl+
 			"    final Enum<?> e;" +nl+nl+
 			"    private ENUM(int num, Enum<?> e) {" +nl+
@@ -223,7 +223,7 @@ public class DefaultPrettyPrinterTest {
 			"}"
 		;
 		computed = aClass.getNestedType("ENUM").toString();
-		assertEquals( "Parameters in an enum constructor should be statically imported when they refer to externally defined static field of a class with the same identifier as another locally defined type", expected, computed );
+		assertEquals( expected, computed );
 	}
 
 	@Test
