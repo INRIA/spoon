@@ -223,6 +223,9 @@ public class SpoonArchitectureEnforcerTest {
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/reference");
 		interfaces.addInputResource("src/main/java/spoon/reflect/visitor/CtScanner.java");
 		interfaces.buildModel();
 
