@@ -354,7 +354,6 @@ public class MavenLauncher extends Launcher {
 					break;
 				}
 			}
-			
 			String javaVersion = getProperty("java.version");
 			if (javaVersion != null) {
 				return Integer.parseInt(extractVariable(javaVersion).substring(2));
