@@ -341,16 +341,18 @@ public class MavenLauncher extends Launcher {
 		 * @return the source version of the project
 		 */
 		public int getSourceVersion() {
-			for (Plugin plugin : model.getBuild().getPlugins()) {
-				if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
-					continue;
+			if (model.getBuild() != null) {
+				for (Plugin plugin : model.getBuild().getPlugins()) {
+					if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
+						continue;
+					}
+					Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
+					Xpp3Dom source = configuration.getChild("source");
+					if (source != null) {
+						return Integer.parseInt(extractVariable(source.getValue()).substring(2));
+					}
+					break;
 				}
-				Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
-				Xpp3Dom source = configuration.getChild("source");
-				if (source != null) {
-					return Integer.parseInt(extractVariable(source.getValue()).substring(2));
-				}
-				break;
 			}
 			String javaVersion = getProperty("java.version");
 			if (javaVersion != null) {
