@@ -31,7 +31,7 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  *     import java.io.File;
  * </pre>
  */
-public interface CtImport extends CtElement {
+public interface CtImport extends CtReference {
 	@PropertySetter(role = IMPORT_KIND)
 	<T extends CtImport> T setImportKind(ImportKind importKind);
 

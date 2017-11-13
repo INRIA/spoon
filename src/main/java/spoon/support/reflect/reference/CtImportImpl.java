@@ -17,12 +17,15 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.lang.reflect.AnnotatedElement;
 
 public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
@@ -69,6 +72,23 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 		}
 
 		return this.localReference.getSimpleName();
+	}
+
+	@Override
+	public <T extends CtReference> T setSimpleName(String simpleName) {
+		if (this.getReference() != null) {
+			this.getReference().setSimpleName(simpleName);
+		}
+
+		return (T) this;
+	}
+
+	@Override
+	public CtElement getDeclaration() {
+		if (this.getReference() != null) {
+			this.getReference().getDeclaration();
+		}
+		return null;
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
@@ -253,5 +254,25 @@ public class EqualsChecker extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtLiteral(e);
+	}
+
+	@Override
+	public void visitCtImport(CtImport ctImport) {
+		final CtImport peek = (CtImport) this.other;
+
+		if (ctImport.getImportKind() == null) {
+			if (peek.getImportKind() != null) {
+				isNotEqual = true;
+				return;
+			}
+		} else if (peek.getImportKind() == null) {
+			isNotEqual = true;
+			return;
+		} else if (!ctImport.getImportKind().equals(peek.getImportKind())) {
+			isNotEqual = true;
+			return;
+		}
+
+		super.visitCtImport(ctImport);
 	}
 }

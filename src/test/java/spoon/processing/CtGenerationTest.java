@@ -173,6 +173,7 @@ public class CtGenerationTest {
 		launcher.setOutputFilter(new RegexFilter("\\Q" + RoleHandlersGenerator.TARGET_PACKAGE + ".ModelRoleHandlers\\E.*"));
 		launcher.run();
 
+		// cp ./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java ./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		try {
