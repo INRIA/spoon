@@ -13,9 +13,12 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -38,8 +41,15 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/support/visitor/replace/");
-		launcher.addInputResource("./src/test/java/spoon/generating/replace/");
+
+		Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())
+				.forEach(path -> {
+					if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
+						launcher.addInputResource(path.toString());
+					}
+		});
+		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
+		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
