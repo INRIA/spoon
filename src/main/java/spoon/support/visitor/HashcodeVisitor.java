@@ -18,6 +18,7 @@ package spoon.support.visitor;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 /** Responsible for computing CtElement.hashCode().
@@ -29,6 +30,11 @@ public class HashcodeVisitor extends CtInheritanceScanner {
 
 	@Override
 	public void scanCtNamedElement(CtNamedElement e) {
+		hashCode += e.getSimpleName().hashCode();
+	}
+
+	@Override
+	public void scanCtReference(CtReference e) {
 		hashCode += e.getSimpleName().hashCode();
 	}
 
