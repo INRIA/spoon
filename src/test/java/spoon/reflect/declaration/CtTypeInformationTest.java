@@ -133,13 +133,18 @@ public class CtTypeInformationTest {
 
 	@Test
 	public void testGetSuperclass() throws Exception {
-		int expectedNumberInJDK8 = 62; // in Java 1.8.0_151
+		int expectedNumberInJDK8_151 = 62; // in Java 1.8.0_151
+		int expectedNumberInJDK8_111 = 61; // in Java 1.8.0_XXX with XXX before 151
 		int expectedNumberInJDK9 = 81;
 
 		int expectedNumber;
 
 		if (System.getProperty("java.version").startsWith("1.8.")) {
-			expectedNumber = expectedNumberInJDK8;
+			if (System.getProperty("java.version").endsWith("151")) {
+				expectedNumber = expectedNumberInJDK8_151;
+			} else {
+				expectedNumber = expectedNumberInJDK8_111;
+			}
 		} else {
 			expectedNumber = expectedNumberInJDK9;
 		}
