@@ -17,9 +17,12 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.metamodel.SpoonMetaModel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +31,7 @@ import java.util.TreeSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.metamodel.MMTypeKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
@@ -212,6 +216,37 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
+	public void testInterfacesAreCtScannable() {
+		// contract: all non-leaf interfaces of the metamodel should be visited by CtInheritanceScanner
+		Launcher interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/support");
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/reflect/visitor/CtScanner.java");
+		interfaces.buildModel();
+
+		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtInheritanceScanner.class);
+
+		List<String> missingMethods = new ArrayList<>();
+
+		new SpoonMetaModel(interfaces.getFactory()).getMMTypes().forEach(mmType -> {
+			if (mmType.getKind() == ABSTRACT && mmType.getModelInterface() != null) {
+				CtInterface abstractIface = mmType.getModelInterface();
+				String methodName = "scan" + abstractIface.getSimpleName();
+				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
+					missingMethods.add(methodName);
+				}
+			}
+		});
+
+		assertTrue("The following methods are missing in CtScanner: \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
+	}
+
+	@Test
 	public void testSpecPackage() throws Exception {
 		// contract: when a pull-request introduces a new package, it is made explicit during code review
 		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
@@ -313,7 +348,6 @@ public class SpoonArchitectureEnforcerTest {
 		for (Object o : set2) {
 			results.add("Package "+o+" presents in computed but not expected set.");
 		}
-
 		return StringUtils.join(results, "\n");
 	}
 }
