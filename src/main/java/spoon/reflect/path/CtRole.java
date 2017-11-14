@@ -89,6 +89,7 @@ public enum CtRole {
 	SNIPPET,
 	ACCESSED_TYPE;
 
+
 	/**
 	 * Get the {@link CtRole} associated to the field name
 	 * @param name
@@ -126,5 +127,40 @@ public enum CtRole {
 	@Override
 	public String toString() {
 		return getCamelCaseName();
+	}
+
+	/**
+	 * @return the CtRole which is the real holder of this virtual CtRole or null if there is no super role.
+	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
+	 */
+	public CtRole getSuperRole() {
+		return superRole;
+	}
+
+	/**
+	 * @return sub roles of this super role or empty array if there is no sub role.
+	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
+	 *
+	 */
+	public CtRole[] getSubRoles() {
+		return subRoles;
+	}
+
+	private static final CtRole[] EMPTY = new CtRole[0];
+	private CtRole superRole;
+	private CtRole[] subRoles;
+
+	static {
+		for (CtRole role : values()) {
+			role.subRoles = EMPTY;
+		}
+		CtRole.TYPE_MEMBER.setSubRoles(FIELD, CONSTRUCTOR, METHOD, NESTED_TYPE);
+	}
+
+	private void setSubRoles(CtRole... subRoles) {
+		this.subRoles = subRoles;
+		for (CtRole ctRole : subRoles) {
+			ctRole.superRole = this;
+		}
 	}
 }
