@@ -60,6 +60,8 @@ import spoon.test.annotation.testclasses.PortRange;
 import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
+import spoon.test.annotation.testclasses.repeatable.Repeated;
+import spoon.test.annotation.testclasses.repeatable.Tag;
 import spoon.test.annotation.testclasses.spring.AliasFor;
 
 import java.io.File;
@@ -1099,5 +1101,58 @@ public class AnnotationTest {
 		Launcher spoon = new Launcher();
 		CtType type = spoon.getFactory().Type().get(AliasFor.class);
 		assertEquals(3, type.getFields().size());
+	}
+
+	@Test
+	public void testRepeatableAnnotationAreManaged() {
+		// contract: when two identical repeatable annotation are used, they should be displayed in two different annotations and not factorized
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/repeatable");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Repeated.class);
+		CtMethod firstMethod = (CtMethod)type.getMethodsByName("method").get(0);
+		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
+
+		assertEquals(2, annotations.size());
+
+		for (CtAnnotation a : annotations) {
+			assertEquals("Tag", a.getAnnotationType().getSimpleName());
+		}
+
+		String classContent = type.toString();
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"machin\")"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"truc\")"));
+	}
+
+	@Test
+	public void testCreateRepeatableAnnotation() {
+		// contract: when creating two repeatable annotations, two annotations should be created
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/repeatable");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Repeated.class);
+		CtMethod firstMethod = (CtMethod)type.getMethodsByName("withoutAnnotation").get(0);
+		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
+
+		assertTrue(annotations.isEmpty());
+
+		spoon.getFactory().Annotation().annotate(firstMethod, Tag.class,"value", "foo");
+		assertEquals(1, firstMethod.getAnnotations().size());
+
+		spoon.getFactory().Annotation().annotate(firstMethod, Tag.class,"value", "bar");
+
+		annotations = firstMethod.getAnnotations();
+		assertEquals(2, annotations.size());
+
+		for (CtAnnotation a : annotations) {
+			assertEquals("Tag", a.getAnnotationType().getSimpleName());
+		}
+
+		String classContent = type.toString();
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"foo\")"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"bar\")"));
 	}
 }
