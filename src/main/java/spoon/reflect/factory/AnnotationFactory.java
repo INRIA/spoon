@@ -29,7 +29,6 @@ import spoon.reflect.reference.CtTypeReference;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 /**
  * The {@link CtAnnotationType} sub-factory.
