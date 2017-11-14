@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
@@ -113,6 +114,7 @@ public class AnnotationFactory extends TypeFactory {
 		boolean isArray;
 		// try with CT reflection
 		CtAnnotationType<A> ctAnnotationType = ((CtAnnotationType<A>) annotation.getAnnotationType().getDeclaration());
+		boolean newValue = annotation.getValue(annotationElementName) == null;
 		if (ctAnnotationType != null) {
 			CtMethod<?> e = ctAnnotationType.getMethod(annotationElementName);
 			isArray = (e.getType() instanceof CtArrayTypeReference);
@@ -126,12 +128,10 @@ public class AnnotationFactory extends TypeFactory {
 			}
 			isArray = m.getReturnType().isArray();
 		}
-		if (isArray == (value instanceof Collection || value.getClass().isArray())) {
-			annotation.addValue(annotationElementName, value);
-		} else if (isArray) {
+		if (isArray || newValue) {
 			annotation.addValue(annotationElementName, value);
 		} else {
-			throw new RuntimeException("cannot assign an array to a non-array annotation element");
+			throw new SpoonException("cannot assign an array to a non-array annotation element");
 		}
 		return annotation;
 	}

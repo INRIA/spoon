@@ -1230,7 +1230,7 @@ public class AnnotationTest {
 			methodContent = aMethod.toString();
 			fail("You should not be able to add two values to StringAnnot annotation: "+methodContent);
 		} catch (SpoonException e) {
-			
+			assertEquals("cannot assign an array to a non-array annotation element", e.getMessage());
 		}
 
 	}
