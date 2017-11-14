@@ -26,6 +26,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
@@ -158,8 +159,13 @@ public class AnnotationFactory extends TypeFactory {
 	 * @return the concerned annotation
 	 */
 	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, CtTypeReference<A> annotationType) {
+		CtAnnotationType<A> ctAnnotationType = ((CtAnnotationType<A>) annotationType.getDeclaration());
+		boolean isRepeatable = false;
+		if (ctAnnotationType != null) {
+			isRepeatable = (ctAnnotationType.getAnnotation(factory.Type().createReference(Repeatable.class)) != null);
+		}
 		CtAnnotation<A> annotation = element.getAnnotation(annotationType);
-		if (annotation == null) {
+		if (annotation == null || isRepeatable) {
 			annotation = factory.Core().createAnnotation();
 			annotation.setAnnotationType(factory.Core().clone(annotationType));
 			element.addAnnotation(annotation);
