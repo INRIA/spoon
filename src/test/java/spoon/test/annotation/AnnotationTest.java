@@ -60,6 +60,11 @@ import spoon.test.annotation.testclasses.PortRange;
 import spoon.test.annotation.testclasses.SuperAnnotation;
 import spoon.test.annotation.testclasses.TestInterface;
 import spoon.test.annotation.testclasses.TypeAnnotation;
+import spoon.test.annotation.testclasses.notrepeatable.StringAnnot;
+import spoon.test.annotation.testclasses.repeatable.Repeated;
+import spoon.test.annotation.testclasses.repeatable.Tag;
+import spoon.test.annotation.testclasses.repeatandarrays.RepeatedArrays;
+import spoon.test.annotation.testclasses.repeatandarrays.TagArrays;
 import spoon.test.annotation.testclasses.spring.AliasFor;
 
 import java.io.File;
@@ -1099,5 +1104,134 @@ public class AnnotationTest {
 		Launcher spoon = new Launcher();
 		CtType type = spoon.getFactory().Type().get(AliasFor.class);
 		assertEquals(3, type.getFields().size());
+	}
+
+	@Test
+	public void testRepeatableAnnotationAreManaged() {
+		// contract: when two identical repeatable annotation are used, they should be displayed in two different annotations and not factorized
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/repeatable");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Repeated.class);
+		CtMethod firstMethod = (CtMethod)type.getMethodsByName("method").get(0);
+		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
+
+		assertEquals(2, annotations.size());
+
+		for (CtAnnotation a : annotations) {
+			assertEquals("Tag", a.getAnnotationType().getSimpleName());
+		}
+
+		String classContent = type.toString();
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"machin\")"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"truc\")"));
+	}
+
+	@Test
+	public void testCreateRepeatableAnnotation() {
+		// contract: when creating two repeatable annotations, two annotations should be created
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/repeatable");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Repeated.class);
+		CtMethod firstMethod = (CtMethod)type.getMethodsByName("withoutAnnotation").get(0);
+		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
+
+		assertTrue(annotations.isEmpty());
+
+		spoon.getFactory().Annotation().annotate(firstMethod, Tag.class,"value", "foo");
+		assertEquals(1, firstMethod.getAnnotations().size());
+
+		spoon.getFactory().Annotation().annotate(firstMethod, Tag.class,"value", "bar");
+
+		annotations = firstMethod.getAnnotations();
+		assertEquals(2, annotations.size());
+
+		for (CtAnnotation a : annotations) {
+			assertEquals("Tag", a.getAnnotationType().getSimpleName());
+		}
+
+		String classContent = type.toString();
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"foo\")"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatable.Tag(\"bar\")"));
+	}
+
+	@Test
+	public void testRepeatableAnnotationAreManagedWithArrays() {
+		// contract: when two identical repeatable annotation with arrays are used, they should be displayed in two different annotations and not factorized
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/repeatandarrays");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(RepeatedArrays.class);
+		CtMethod firstMethod = (CtMethod)type.getMethodsByName("method").get(0);
+		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
+
+		assertEquals(2, annotations.size());
+
+		for (CtAnnotation a : annotations) {
+			assertEquals("TagArrays", a.getAnnotationType().getSimpleName());
+		}
+
+		String classContent = type.toString();
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays({ \"machin\", \"truc\" })"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays({ \"truc\", \"bidule\" })"));
+	}
+
+	@Test
+	public void testCreateRepeatableAnnotationWithArrays() {
+		// contract: when using annotate with a repeatable annotation, it will create a new annotation, even if an annotation with an array already exists
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/repeatandarrays");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(Repeated.class);
+		CtMethod firstMethod = (CtMethod)type.getMethodsByName("withoutAnnotation").get(0);
+		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
+
+		assertTrue(annotations.isEmpty());
+
+		spoon.getFactory().Annotation().annotate(firstMethod, TagArrays.class,"value", "foo");
+		assertEquals(1, firstMethod.getAnnotations().size());
+
+		spoon.getFactory().Annotation().annotate(firstMethod, TagArrays.class,"value", "bar");
+		annotations = firstMethod.getAnnotations();
+		assertEquals(2, annotations.size());
+
+		for (CtAnnotation a : annotations) {
+			assertEquals("TagArrays", a.getAnnotationType().getSimpleName());
+		}
+
+		String classContent = type.toString();
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays(\"foo\")"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays(\"bar\")"));
+	}
+
+	@Test
+	public void testAnnotationNotRepeatableNotArrayAnnotation() {
+		// contract: when trying to annotate multiple times with same not repeatable, not array annotation, it should throw an exception
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/notrepeatable/StringAnnot.java");
+		spoon.buildModel();
+
+		CtMethod aMethod = spoon.getFactory().createMethod().setSimpleName(("mamethod"));
+
+		spoon.getFactory().Annotation().annotate(aMethod, StringAnnot.class, "value", "foo");
+		assertEquals(1, aMethod.getAnnotations().size());
+
+		String methodContent = aMethod.toString();
+		assertTrue("Content: "+methodContent, methodContent.contains("@spoon.test.annotation.testclasses.notrepeatable.StringAnnot(\"foo\")"));
+
+		try {
+			spoon.getFactory().Annotation().annotate(aMethod, StringAnnot.class, "value", "bar");
+			methodContent = aMethod.toString();
+			fail("You should not be able to add two values to StringAnnot annotation: "+methodContent);
+		} catch (SpoonException e) {
+			assertEquals("cannot assign an array to a non-array annotation element", e.getMessage());
+		}
+
 	}
 }
