@@ -195,4 +195,34 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	public CtField<T> clone() {
 		return (CtField<T>) super.clone();
 	}
+
+	@Override
+	public boolean isPublic() {
+		return this.modifierHandler.isPublic();
+	}
+
+	@Override
+	public boolean isPrivate() {
+		return this.modifierHandler.isPrivate();
+	}
+
+	@Override
+	public boolean isProtected() {
+		return this.modifierHandler.isProtected();
+	}
+
+	@Override
+	public boolean isFinal() {
+		return this.modifierHandler.isFinal();
+	}
+
+	@Override
+	public boolean isStatic() {
+		return this.modifierHandler.isStatic();
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return this.modifierHandler.isAbstract();
+	}
 }
