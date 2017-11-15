@@ -33,10 +33,10 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  */
 public interface CtImport extends CtNamedElement {
 	@PropertySetter(role = IMPORT_KIND)
-	<T extends CtImport> T setImportKind(ImportKind importKind);
+	<T extends CtImport> T setImportKind(CtImportKind importKind);
 
 	@PropertyGetter(role = IMPORT_KIND)
-	ImportKind getImportKind();
+    CtImportKind getImportKind();
 
 	@PropertyGetter(role = IMPORT_REFERENCE)
 	CtReference getReference();

@@ -111,7 +111,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -794,7 +794,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean isImported(CtFieldReference fieldReference) {
-		CtImport fieldImport = fieldReference.getFactory().createImport(ImportKind.FIELD, fieldReference);
+		CtImport fieldImport = fieldReference.getFactory().createImport(CtImportKind.FIELD, fieldReference);
 
 		if (this.imports.contains(fieldImport)) {
 			return true;
@@ -802,13 +802,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (fieldReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtImport staticClassImport = fieldReference.getFactory().createImport(ImportKind.STAR_TYPE, fieldReference.getDeclaringType());
+			CtImport staticClassImport = fieldReference.getFactory().createImport(CtImportKind.ALL_STATIC_MEMBERS, fieldReference.getDeclaringType());
 			return this.imports.contains(staticClassImport);
 		}
 	}
 
 	private boolean isImported(CtExecutableReference executableReference) {
-		CtImport executableImport = executableReference.getFactory().createImport(ImportKind.METHOD, executableReference);
+		CtImport executableImport = executableReference.getFactory().createImport(CtImportKind.METHOD, executableReference);
 
 		if (this.imports.contains(executableImport)) {
 			return true;
@@ -816,7 +816,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (executableReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtImport staticClassImport = executableReference.getFactory().createImport(ImportKind.STAR_TYPE, executableReference.getDeclaringType());
+			CtImport staticClassImport = executableReference.getFactory().createImport(CtImportKind.ALL_STATIC_MEMBERS, executableReference.getDeclaringType());
 			return this.imports.contains(staticClassImport);
 		}
 	}
@@ -996,13 +996,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					visitCtFieldReference((CtFieldReference) ctImport.getReference());
 					break;
 
-				case STAR_PACKAGE:
+				case ALL_TYPES:
 					visitCtPackageReference((CtPackageReference) ctImport.getReference());
 					printer.writeSeparator(".");
 					printer.writeIdentifier("*");
 					break;
 
-				case STAR_TYPE:
+				case ALL_STATIC_MEMBERS:
 					printer.writeKeyword("static");
 					printer.writeSpace();
 					visitCtTypeReference((CtTypeReference) ctImport.getReference());

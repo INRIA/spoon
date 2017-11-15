@@ -33,7 +33,7 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -665,7 +665,7 @@ public class TypeFactory extends SubFactory {
 		return OBJECT;
 	}
 
-	public CtImport createImport(ImportKind kind, CtReference reference) {
+	public CtImport createImport(CtImportKind kind, CtReference reference) {
 		CtImport ctImport = factory.Core().createImport();
 		return ctImport.setImportKind(kind).setReference(reference.clone());
 	}

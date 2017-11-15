@@ -19,6 +19,7 @@ package spoon;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.reference.CtImportKind;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
@@ -147,7 +148,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtImport.class));
-		result.add(factory.Type().get(spoon.reflect.reference.ImportKind.class));
+		result.add(factory.Type().get(CtImportKind.class));
 		return result;
 	}
 

@@ -20,13 +20,13 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtNamedElementImpl;
 
 public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
-	private ImportKind importKind;
+	private CtImportKind importKind;
 
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
 	private CtReference localReference;
@@ -36,14 +36,14 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	}
 
 	@Override
-	public <T extends CtImport> T setImportKind(ImportKind importKind) {
+	public <T extends CtImport> T setImportKind(CtImportKind importKind) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_KIND, importKind, this.importKind);
 		this.importKind = importKind;
 		return (T) this;
 	}
 
 	@Override
-	public ImportKind getImportKind() {
+	public CtImportKind getImportKind() {
 		return this.importKind;
 	}
 
@@ -70,7 +70,7 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 
 		String s = this.localReference.getSimpleName();
 
-		if (importKind == ImportKind.STAR_TYPE || importKind == ImportKind.STAR_PACKAGE) {
+		if (importKind == CtImportKind.ALL_STATIC_MEMBERS || importKind == CtImportKind.ALL_TYPES) {
 			return s + ".*";
 		} else {
 			return s;

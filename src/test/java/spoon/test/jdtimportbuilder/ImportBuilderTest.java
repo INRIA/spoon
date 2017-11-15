@@ -4,14 +4,11 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.ImportKind;
-import spoon.support.util.SortedList;
+import spoon.reflect.reference.CtImportKind;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.jdtimportbuilder.testclasses.StarredImport;
@@ -19,9 +16,7 @@ import spoon.test.jdtimportbuilder.testclasses.StaticImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -131,7 +126,7 @@ public class ImportBuilderTest {
         Iterator<CtImport> iterator = imports.iterator();
         CtImport ctImport = iterator.next();
 
-        assertEquals(ImportKind.STAR_PACKAGE, ctImport.getImportKind());
+        assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
 
         assertTrue(ctImport.getReference() instanceof CtPackageReference);
 
@@ -156,7 +151,7 @@ public class ImportBuilderTest {
 
         assertEquals(1, imports.size());
         CtImport ctImport = imports.iterator().next();
-        assertEquals(ImportKind.STAR_TYPE, ctImport.getImportKind());
+        assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
         assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;\n", ctImport.toString());
     }
 
@@ -177,7 +172,7 @@ public class ImportBuilderTest {
         assertEquals(1, imports.size());
         CtImport ctImport = imports.iterator().next();
 
-        assertEquals(ImportKind.STAR_TYPE, ctImport.getImportKind());
+        assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
         assertEquals("import static jdtimportbuilder.itf.DumbItf.*;\n", ctImport.toString());
     }
 

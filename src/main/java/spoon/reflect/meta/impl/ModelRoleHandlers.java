@@ -106,7 +106,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 
 
 /**
@@ -1890,9 +1890,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtImport_IMPORT_KIND_RoleHandler extends SingleHandler<CtImport, ImportKind> {
+	static class CtImport_IMPORT_KIND_RoleHandler extends SingleHandler<CtImport, CtImportKind> {
 		private CtImport_IMPORT_KIND_RoleHandler() {
-			super(CtRole.IMPORT_KIND, CtImport.class, ImportKind.class);
+			super(CtRole.IMPORT_KIND, CtImport.class, CtImportKind.class);
 		}
 
 		@SuppressWarnings("unchecked")

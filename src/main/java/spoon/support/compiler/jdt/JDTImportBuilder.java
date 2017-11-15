@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtImport;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.HashSet;
@@ -73,13 +73,13 @@ class JDTImportBuilder {
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
 					if (ctPackage != null) {
-						this.imports.add(factory.Type().createImport(ImportKind.STAR_PACKAGE, ctPackage.getReference()));
+						this.imports.add(factory.Type().createImport(CtImportKind.ALL_TYPES, ctPackage.getReference()));
 					}
 
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {
-						this.imports.add(factory.Type().createImport(ImportKind.TYPE, klass.getReference()));
+						this.imports.add(factory.Type().createImport(CtImportKind.TYPE, klass.getReference()));
 					}
 				}
 			} else {
@@ -90,13 +90,13 @@ class JDTImportBuilder {
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
 					if (methodOrFieldName.equals("*")) {
-						this.imports.add(factory.Type().createImport(ImportKind.STAR_TYPE, klass.getReference()));
+						this.imports.add(factory.Type().createImport(CtImportKind.ALL_STATIC_MEMBERS, klass.getReference()));
 					} else {
 						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
 							CtNamedElement methodOrField = methodOrFields.get(0);
-							ImportKind kind = (methodOrField instanceof CtMethod) ? ImportKind.METHOD : ImportKind.FIELD;
+							CtImportKind kind = (methodOrField instanceof CtMethod) ? CtImportKind.METHOD : CtImportKind.FIELD;
 							this.imports.add(factory.Type().createImport(kind, methodOrField.getReference()));
 						}
 					}

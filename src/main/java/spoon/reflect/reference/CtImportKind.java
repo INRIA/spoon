@@ -16,10 +16,10 @@
  */
 package spoon.reflect.reference;
 
-public enum ImportKind {
+public enum CtImportKind {
 	TYPE,
-	STAR_PACKAGE,
-	STAR_TYPE,
+	ALL_TYPES,
+	ALL_STATIC_MEMBERS,
 	FIELD,
 	METHOD
 }

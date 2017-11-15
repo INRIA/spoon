@@ -43,7 +43,7 @@ import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
@@ -191,15 +191,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		Collection<CtImport> listallImports = new ArrayList<>();
 
 		for (CtReference reference : this.classImports.values()) {
-			listallImports.add(this.factory.Type().createImport(ImportKind.TYPE, reference));
+			listallImports.add(this.factory.Type().createImport(CtImportKind.TYPE, reference));
 		}
 
 		for (CtReference reference : this.fieldImports.values()) {
-			listallImports.add(this.factory.Type().createImport(ImportKind.FIELD, reference));
+			listallImports.add(this.factory.Type().createImport(CtImportKind.FIELD, reference));
 		}
 
 		for (CtReference reference : this.methodImports.values()) {
-			listallImports.add(this.factory.Type().createImport(ImportKind.METHOD, reference));
+			listallImports.add(this.factory.Type().createImport(CtImportKind.METHOD, reference));
 		}
 		return listallImports;
 	}

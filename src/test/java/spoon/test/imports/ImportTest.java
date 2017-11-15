@@ -25,7 +25,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.ImportKind;
+import spoon.reflect.reference.CtImportKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -1233,7 +1233,7 @@ public class ImportTest {
 		assertNotNull(cu);
 
 		assertEquals(1, cu.getImports().size());
-		assertEquals(ImportKind.STAR_PACKAGE, cu.getImports().iterator().next().getImportKind());
+		assertEquals(CtImportKind.ALL_TYPES, cu.getImports().iterator().next().getImportKind());
 	}
 
 	@Test
@@ -1265,14 +1265,14 @@ public class ImportTest {
 
 		CtType typeA = launcher.getFactory().Type().get(A.class);
 
-		CtImport importsA1 = launcher.getFactory().createImport(ImportKind.TYPE, typeA.getReference());
-		CtImport importsA2 = launcher.getFactory().createImport(ImportKind.TYPE, typeA.getReference());
+		CtImport importsA1 = launcher.getFactory().createImport(CtImportKind.TYPE, typeA.getReference());
+		CtImport importsA2 = launcher.getFactory().createImport(CtImportKind.TYPE, typeA.getReference());
 
 		assertEquals(importsA1, importsA2);
 		assertEquals(importsA1.hashCode(), importsA2.hashCode());
 
 		CtType typeB = launcher.getFactory().Type().get(Pozole.class);
-		CtImport importsB = launcher.getFactory().createImport(ImportKind.TYPE, typeB.getReference());
+		CtImport importsB = launcher.getFactory().createImport(CtImportKind.TYPE, typeB.getReference());
 		assertNotEquals(importsA1, importsB);
 		assertNotEquals(importsA1.hashCode(), importsB.hashCode());
 	}
