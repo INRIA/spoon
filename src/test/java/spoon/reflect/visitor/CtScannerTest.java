@@ -181,7 +181,6 @@ public class CtScannerTest {
 				} else {
 					c.nbChecks++;
 					//System.out.println(invocation.toString());
-
 					// contract: the scan method is called with the same role as the one set on field / property
 
 					CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>) invocation.getExecutable().getDeclaration());
