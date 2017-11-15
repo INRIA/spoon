@@ -85,4 +85,40 @@ public interface CtModifiable extends CtElement {
 
 	Set<CtExtendedModifier> getExtendedModifiers();
 	<T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers);
+
+	/**
+	 * Returns true if it contains a public modifier (see {@link #hasModifier(ModifierKind)})
+	 */
+	@DerivedProperty
+	boolean isPublic();
+
+	/**
+	 * Returns true if it contains a final modifier (see {@link #hasModifier(ModifierKind)})
+	 */
+	@DerivedProperty
+	boolean isFinal();
+
+	/**
+	 * Returns true if it contains a static modifier (see {@link #hasModifier(ModifierKind)})
+	 */
+	@DerivedProperty
+	boolean isStatic();
+
+	/**
+	 * Returns true if it contains a protected modifier (see {@link #hasModifier(ModifierKind)})
+	 */
+	@DerivedProperty
+	boolean isProtected();
+
+	/**
+	 * Returns true if it contains a private modifier (see {@link #hasModifier(ModifierKind)})
+	 */
+	@DerivedProperty
+	boolean isPrivate();
+
+	/**
+	 * Returns true if it contains an abstract modifier (see {@link #hasModifier(ModifierKind)})
+	 */
+	@DerivedProperty
+	boolean isAbstract();
 }

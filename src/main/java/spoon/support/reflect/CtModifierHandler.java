@@ -150,6 +150,18 @@ public class CtModifierHandler implements Serializable {
 		return getModifiers().contains(ModifierKind.PRIVATE);
 	}
 
+	public boolean isAbstract() {
+		return getModifiers().contains(ModifierKind.ABSTRACT);
+	}
+
+	public boolean isStatic() {
+		return getModifiers().contains(ModifierKind.STATIC);
+	}
+
+	public boolean isFinal() {
+		return getModifiers().contains(ModifierKind.FINAL);
+	}
+
 	@Override
 	public int hashCode() {
 		return getModifiers().hashCode();
