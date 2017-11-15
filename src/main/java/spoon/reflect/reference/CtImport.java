@@ -18,6 +18,7 @@ package spoon.reflect.reference;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtNamedElement;
 
 import static spoon.reflect.path.CtRole.IMPORT_KIND;
 import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
@@ -30,7 +31,7 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  *     import java.io.File;
  * </pre>
  */
-public interface CtImport extends CtReference {
+public interface CtImport extends CtNamedElement {
 	@PropertySetter(role = IMPORT_KIND)
 	<T extends CtImport> T setImportKind(ImportKind importKind);
 
@@ -42,8 +43,6 @@ public interface CtImport extends CtReference {
 
 	@PropertySetter(role = IMPORT_REFERENCE)
 	<T extends CtImport> T setReference(CtReference reference);
-
-	String getSimpleName();
 
 	@Override
 	CtImport clone();

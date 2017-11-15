@@ -17,15 +17,14 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.ImportKind;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.reflect.declaration.CtNamedElementImpl;
 
-public class CtImportImpl extends CtElementImpl implements CtImport {
+public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
 	private ImportKind importKind;
 
@@ -65,28 +64,17 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 
 	@Override
 	public String getSimpleName() {
-		if (this.localReference == null) {
+		if (this.localReference == null || this.importKind == null) {
 			return null;
 		}
 
-		return this.localReference.getSimpleName();
-	}
+		String s = this.localReference.getSimpleName();
 
-	@Override
-	public <T extends CtReference> T setSimpleName(String simpleName) {
-		if (this.getReference() != null) {
-			this.getReference().setSimpleName(simpleName);
+		if (importKind == ImportKind.STAR_TYPE || importKind == ImportKind.STAR_PACKAGE) {
+			return s+".*";
+		} else {
+			return s;
 		}
-
-		return (T) this;
-	}
-
-	@Override
-	public CtElement getDeclaration() {
-		if (this.getReference() != null) {
-			this.getReference().getDeclaration();
-		}
-		return null;
 	}
 
 	@Override
