@@ -3,9 +3,12 @@ package spoon.test.modifiers;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.test.modifiers.testclasses.AbstractClass;
 import spoon.test.modifiers.testclasses.MethodVarArgs;
 import spoon.test.modifiers.testclasses.StaticMethod;
 
@@ -13,6 +16,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestModifiers {
@@ -76,5 +81,113 @@ public class TestModifiers {
         }
 
         assertEquals(ModifierKind.PROTECTED, methodPublicStatic.getVisibility());
+    }
+
+    @Test
+    public void testGetModifiersHelpers() {
+        // contract: the CtModifiable helpers like isPublic, isFinal etc returns right values
+
+        Launcher spoon = new Launcher();
+        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/AbstractClass.java");
+        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/ConcreteClass.java");
+        spoon.getEnvironment().setShouldCompile(true);
+        spoon.run();
+
+        CtType<?> abstractClass = spoon.getFactory().Type().get(AbstractClass.class);
+
+        checkCtModifiableHelpersAssertion(abstractClass, true, false, false, true, false, false);
+
+        assertEquals(4, abstractClass.getFields().size());
+        for (CtField field : abstractClass.getFields()) {
+            switch (field.getSimpleName()) {
+                case "privateField":
+                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, false);
+                    break;
+
+                case "protectedField":
+                    checkCtModifiableHelpersAssertion(field, false, true, false, false, false, false);
+                    break;
+
+                case "privateStaticField":
+                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, true);
+                    break;
+
+                case "publicFinalField":
+                    checkCtModifiableHelpersAssertion(field, true, false, false, false, true, false);
+                    break;
+
+                default:
+                    fail("The field "+field.getSimpleName()+" should be take into account.");
+            }
+        }
+
+        assertEquals(4, abstractClass.getMethods().size());
+
+        for (CtMethod method : abstractClass.getMethods()) {
+            switch (method.getSimpleName()) {
+                case "method":
+                    checkCtModifiableHelpersAssertion(method, true, false, false, false, true, true);
+                    break;
+
+                case "onlyStatic":
+                    checkCtModifiableHelpersAssertion(method, true, false, false, false, false, true);
+                    break;
+
+                case "otherMethod":
+                    checkCtModifiableHelpersAssertion(method, false, true, false, true, false, false);
+                    break;
+
+                case "anotherOne":
+                    checkCtModifiableHelpersAssertion(method, false, false, false, true, false, false);
+                    break;
+
+                default:
+                    fail("The method "+method.getSimpleName()+" should be taken into account.");
+            }
+        }
+
+        CtType<?> concreteClass = spoon.getFactory().Type().get("spoon.test.modifiers.testclasses.ConcreteClass");
+        checkCtModifiableHelpersAssertion(concreteClass, false, false, false, false, true, false);
+
+        assertEquals(2, concreteClass.getFields().size());
+        for (CtField field : concreteClass.getFields()) {
+            switch (field.getSimpleName()) {
+                case "className":
+                    checkCtModifiableHelpersAssertion(field, true, false, false, false, true, true);
+                    break;
+
+                case "test":
+                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, true);
+                    break;
+
+                default:
+                    fail("The field "+field.getSimpleName()+" should be take into account.");
+            }
+        }
+
+        assertEquals(2, concreteClass.getMethods().size());
+        for (CtMethod method : concreteClass.getMethods()) {
+            switch (method.getSimpleName()) {
+                case "otherMethod":
+                    checkCtModifiableHelpersAssertion(method, false, true, false, false, false, false);
+                    break;
+
+                case "anotherOne":
+                    checkCtModifiableHelpersAssertion(method, false, false, false, false, true, false);
+                    break;
+
+                default:
+                    fail("The method "+method.getSimpleName()+" should be taken into account.");
+            }
+        }
+    }
+
+    private void checkCtModifiableHelpersAssertion(CtModifiable element, boolean isPublic, boolean isProtected, boolean isPrivate, boolean isAbstract, boolean isFinal, boolean isStatic) {
+        assertEquals("isPublic for "+element+" is wrong", isPublic, element.isPublic());
+        assertEquals("isProtected for "+element+" is wrong", isProtected, element.isProtected());
+        assertEquals("isPrivate for "+element+" is wrong", isPrivate, element.isPrivate());
+        assertEquals("isAbstract for "+element+" is wrong", isAbstract, element.isAbstract());
+        assertEquals("isFinal for "+element+" is wrong", isFinal, element.isFinal());
+        assertEquals("isStatic for "+element+" is wrong", isStatic, element.isStatic());
     }
 }
