@@ -71,7 +71,7 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 		String s = this.localReference.getSimpleName();
 
 		if (importKind == ImportKind.STAR_TYPE || importKind == ImportKind.STAR_PACKAGE) {
-			return s+".*";
+			return s + ".*";
 		} else {
 			return s;
 		}
