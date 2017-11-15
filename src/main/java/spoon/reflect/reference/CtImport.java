@@ -36,7 +36,7 @@ public interface CtImport extends CtNamedElement {
 	<T extends CtImport> T setImportKind(CtImportKind importKind);
 
 	@PropertyGetter(role = IMPORT_KIND)
-    CtImportKind getImportKind();
+	CtImportKind getImportKind();
 
 	@PropertyGetter(role = IMPORT_REFERENCE)
 	CtReference getReference();
