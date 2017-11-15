@@ -78,7 +78,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
-	private Factory factory;
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -136,7 +135,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void scan(CtElement element) {
 		if (element != null && !element.isImplicit()) {
-			this.factory = element.getFactory();
 			element.accept(this);
 		}
 	}
@@ -191,15 +189,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		Collection<CtImport> listallImports = new ArrayList<>();
 
 		for (CtReference reference : this.classImports.values()) {
-			listallImports.add(this.factory.Type().createImport(CtImportKind.TYPE, reference));
+			listallImports.add(reference.getFactory().Type().createImport(CtImportKind.TYPE, reference));
 		}
 
 		for (CtReference reference : this.fieldImports.values()) {
-			listallImports.add(this.factory.Type().createImport(CtImportKind.FIELD, reference));
+			listallImports.add(reference.getFactory().Type().createImport(CtImportKind.FIELD, reference));
 		}
 
 		for (CtReference reference : this.methodImports.values()) {
-			listallImports.add(this.factory.Type().createImport(CtImportKind.METHOD, reference));
+			listallImports.add(reference.getFactory().Type().createImport(CtImportKind.METHOD, reference));
 		}
 		return listallImports;
 	}
