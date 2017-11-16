@@ -146,14 +146,10 @@ public enum CtRole {
 		return subRoles;
 	}
 
-	private static final CtRole[] EMPTY = new CtRole[0];
 	private CtRole superRole;
-	private CtRole[] subRoles;
+	private CtRole[] subRoles = new CtRole[0];
 
 	static {
-		for (CtRole role : values()) {
-			role.subRoles = EMPTY;
-		}
 		CtRole.TYPE_MEMBER.setSubRoles(FIELD, CONSTRUCTOR, METHOD, NESTED_TYPE);
 	}
 
