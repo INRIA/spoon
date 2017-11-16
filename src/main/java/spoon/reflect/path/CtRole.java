@@ -89,7 +89,6 @@ public enum CtRole {
 	SNIPPET,
 	ACCESSED_TYPE;
 
-
 	/**
 	 * Get the {@link CtRole} associated to the field name
 	 * @param name
