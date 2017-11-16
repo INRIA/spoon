@@ -21,7 +21,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtImport;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;

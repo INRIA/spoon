@@ -14,20 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.reference;
+package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtImport;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtImportKind;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.reflect.declaration.CtNamedElementImpl;
 
 public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)

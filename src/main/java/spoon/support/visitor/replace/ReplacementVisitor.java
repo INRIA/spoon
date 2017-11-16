@@ -17,6 +17,8 @@
 package spoon.support.visitor.replace;
 
 
+import spoon.reflect.declaration.CtImport;
+
 /**
  * Used to replace an element by another one.
  *
@@ -1951,9 +1953,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
-		private final spoon.reflect.reference.CtImport element;
+		private final CtImport element;
 
-		CtImportReferenceReplaceListener(spoon.reflect.reference.CtImport element) {
+		CtImportReferenceReplaceListener(CtImport element) {
 			this.element = element;
 		}
 
@@ -1965,7 +1967,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public void visitCtImport(final spoon.reflect.reference.CtImport ctImport) {
+	public void visitCtImport(final CtImport ctImport) {
 		replaceElementIfExist(ctImport.getReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportReferenceReplaceListener(ctImport));
 		replaceInListIfExist(ctImport.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ctImport));
 	}

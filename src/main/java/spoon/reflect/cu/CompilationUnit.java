@@ -19,7 +19,7 @@ package spoon.reflect.cu;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtImport;
+import spoon.reflect.declaration.CtImport;
 
 import java.io.File;
 import java.util.Collection;

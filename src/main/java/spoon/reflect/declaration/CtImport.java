@@ -14,11 +14,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.reflect.declaration;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.reference.CtReference;
 
 import static spoon.reflect.path.CtRole.IMPORT_KIND;
 import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;

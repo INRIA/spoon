@@ -26,8 +26,8 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtImport;
-import spoon.reflect.reference.CtImportKind;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.HashSet;

@@ -17,6 +17,8 @@
 package spoon.support.visitor.clone;
 
 
+import spoon.reflect.declaration.CtImport;
+
 /**
  * Used to clone a given element.
  *
@@ -816,8 +818,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public void visitCtImport(final spoon.reflect.reference.CtImport ctImport) {
-		spoon.reflect.reference.CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
+	public void visitCtImport(final CtImport ctImport) {
+		CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
 		aCtImport.setReference(this.cloneHelper.clone(ctImport.getReference()));
 		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
 		this.other = aCtImport;

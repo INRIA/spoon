@@ -17,7 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtImport;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 
 import java.util.Collection;
