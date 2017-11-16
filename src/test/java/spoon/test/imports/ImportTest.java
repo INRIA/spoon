@@ -1276,4 +1276,50 @@ public class ImportTest {
 		assertNotEquals(importsA1, importsB);
 		assertNotEquals(importsA1.hashCode(), importsB.hashCode());
 	}
+
+	@Test
+	public void testCreateImportWithWrongImportKind() {
+		// contract: when creating an import, the compatibility between import kind and reference should be checked
+
+		final Launcher spoon = new Launcher();
+
+		CtType aType = spoon.getFactory().Type().get(A.class);
+
+		try {
+			spoon.getFactory().Type().createImport(CtImportKind.METHOD, aType.getReference());
+			fail("You should not be able to create an import with kind METHOD for a TypeReference");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().startsWith("ImportError"));
+		}
+
+		try {
+			spoon.getFactory().Type().createImport(CtImportKind.TYPE, aType.getPackage().getReference());
+			fail("You should not be able to create an import with kind TYPE for a PackageReference");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().startsWith("ImportError"));
+		}
+
+		try {
+			spoon.getFactory().Type().createImport(CtImportKind.ALL_STATIC_MEMBERS, aType.getPackage().getReference());
+			fail("You should not be able to create an import with kind ALL_STATIC_MEMBERS for a PackageReference");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().startsWith("ImportError"));
+		}
+
+		try {
+			spoon.getFactory().Type().createImport(CtImportKind.FIELD, aType.getReference());
+			fail("You should not be able to create an import with kind FIELD for a TypeReference");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().startsWith("ImportError"));
+		}
+
+		try {
+			spoon.getFactory().Type().createImport(CtImportKind.ALL_TYPES, aType.getReference());
+			fail("You should not be able to create an import with kind ALL_TYPES for a TypeReference");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().startsWith("ImportError"));
+		}
+
+
+	}
 }

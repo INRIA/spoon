@@ -16,11 +16,16 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtImport;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtImportKind;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtNamedElementImpl;
 
@@ -37,6 +42,7 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 
 	@Override
 	public <T extends CtImport> T setImportKind(CtImportKind importKind) {
+		assertCompatibilityImportKindReference(importKind, this.localReference);
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_KIND, importKind, this.importKind);
 		this.importKind = importKind;
 		return (T) this;
@@ -49,6 +55,7 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 
 	@Override
 	public <T extends CtImport> T setReference(CtReference reference) {
+		assertCompatibilityImportKindReference(this.importKind, reference);
 		if (reference != null) {
 			reference.setParent(this);
 		}
@@ -60,6 +67,20 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	@Override
 	public CtReference getReference() {
 		return this.localReference;
+	}
+
+	private void assertCompatibilityImportKindReference(CtImportKind importKind, CtReference reference) {
+		if (importKind != null && reference != null) {
+			if (reference instanceof CtExecutableReference && importKind != CtImportKind.METHOD) {
+				throw new SpoonException("ImportError: You can only have an executable reference for a static method import.");
+			} else if (reference instanceof CtFieldReference && importKind != CtImportKind.FIELD) {
+				throw new SpoonException("ImportError: You can only have a field reference for a static field import.");
+			} else if (reference instanceof CtPackageReference && importKind != CtImportKind.ALL_TYPES) {
+				throw new SpoonException("ImportError: You can only have a package reference for a package.* import.");
+			} else if (reference instanceof CtTypeReference && importKind != CtImportKind.TYPE && importKind != CtImportKind.ALL_STATIC_MEMBERS) {
+				throw new SpoonException("ImportError: You can only have a type reference for a type import or a static type.* import.");
+			}
+		}
 	}
 
 	@Override
