@@ -5,6 +5,9 @@ import spoon.reflect.path.CtRole;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class TestCtRole {
     @Test
@@ -26,7 +29,27 @@ public class TestCtRole {
         for (CtRole role : CtRole.values()) {
             assertEquals(role, CtRole.fromName(role.name().replaceAll("_", "").toLowerCase()));
         }
+    }
 
+    @Test
+    public void testCtRoleGetSubRolesNotNull() {
+        // contract: CtRole#getSubRoles() never returns null
 
+        for (CtRole role : CtRole.values()) {
+            assertNotNull(role.getSubRoles());
+        }
+    }
+
+    @Test
+    public void testCtRoleSubRoleMatchesWithSuperRole() {
+        // contract: CtRole#getSubRoles() and CtRole#getSuperRole() are empty or links to each other
+    	int countOfSubRoles = 0;
+        for (CtRole role : CtRole.values()) {
+        	for (CtRole subRole : role.getSubRoles()) {
+        		countOfSubRoles++;
+				assertSame(role, subRole.getSuperRole());
+			}
+        }
+        assertTrue(countOfSubRoles > 0);
     }
 }
