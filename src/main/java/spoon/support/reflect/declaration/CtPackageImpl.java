@@ -18,6 +18,7 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -121,6 +122,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, SUB_PACKAGE, packs, pack);
 		return packs.remove(pack);
+	}
+
+	@Override
+	public CtModule getDeclaringModule() {
+		try {
+			return getParent(CtModule.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override

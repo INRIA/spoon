@@ -356,6 +356,18 @@ public class FactoryImpl implements Factory, Serializable {
 		return query;
 	}
 
+	private transient ModuleFactory module;
+
+	/**
+	 * The module sub-factory
+	 */
+	public ModuleFactory Module() {
+		if (module == null) {
+			module = new ModuleFactory(this);
+		}
+		return module;
+	}
+
 
 	/**
 	 * A constructor that takes the parent factory

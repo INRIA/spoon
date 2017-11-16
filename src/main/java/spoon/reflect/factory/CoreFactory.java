@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -90,6 +91,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -552,4 +555,10 @@ public interface CoreFactory {
 	 * Create a wildcard reference to a type member, used in a static import
 	 */
 	CtTypeReference createWildcardStaticTypeMemberReference();
+
+	CtModule createModule();
+
+	CtModuleReference createModuleReference();
+
+	CtModuleRequirement createModuleRequirement();
 }

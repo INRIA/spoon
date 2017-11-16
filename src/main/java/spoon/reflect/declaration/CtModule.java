@@ -14,6 +14,8 @@ public interface CtModule extends CtNamedElement {
      */
     String TOP_LEVEL_MODULE_NAME = "unnamed module";
 
+    boolean isUnnamedModule();
+
     boolean isOpenModule();
 
     <T extends CtModule> T setIsOpenModule(boolean openModule);

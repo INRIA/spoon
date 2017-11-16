@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -93,6 +94,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -161,6 +164,7 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
+import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
@@ -171,6 +175,8 @@ import spoon.support.reflect.reference.CtFieldReferenceImpl;
 import spoon.support.reflect.declaration.CtImportImpl;
 import spoon.support.reflect.reference.CtIntersectionTypeReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
+import spoon.support.reflect.reference.CtModuleReferenceImpl;
+import spoon.support.reflect.reference.CtModuleRequirementImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
@@ -929,6 +935,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		if (klass.equals(spoon.reflect.declaration.CtImport.class)) {
 			return createImport();
 		}
+		if (klass.equals(spoon.reflect.reference.CtModuleReference.class)) {
+			return createModuleReference();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtModule.class)) {
+			return createModule();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -937,6 +949,25 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		CtTypeReference result = new CtWildcardStaticTypeMemberReferenceImpl();
 		result.setFactory(getMainFactory());
 		return result;
+	}
+	public CtModule createModule() {
+		CtModule module = new CtModuleImpl();
+		module.setFactory(getMainFactory());
+		return module;
+	}
+
+	@Override
+	public CtModuleReference createModuleReference() {
+		CtModuleReference moduleReference = new CtModuleReferenceImpl();
+		moduleReference.setFactory(getMainFactory());
+		return moduleReference;
+	}
+
+	@Override
+	public CtModuleRequirement createModuleRequirement() {
+		CtModuleRequirement moduleRequirement = new CtModuleRequirementImpl();
+		moduleRequirement.setFactory(getMainFactory());
+		return moduleRequirement;
 	}
 
 }

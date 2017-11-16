@@ -18,6 +18,7 @@ package spoon.reflect;
 
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -31,6 +32,7 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
 import java.util.ArrayList;
@@ -108,15 +110,57 @@ public class CtModelImpl implements CtModel {
 
 	}
 
-	private final CtPackage rootPackage = new CtRootPackage();
+	public static class CtUnnamedModule extends CtModuleImpl {
+		{
+			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
+			this.setParent(new CtElementImpl() {
+				@Override
+				public void accept(CtVisitor visitor) {
+
+				}
+
+				@Override
+				public CtElement getParent() throws ParentNotInitializedException {
+					return null;
+				}
+
+				@Override
+				public Factory getFactory() {
+					return CtUnnamedModule.this.getFactory();
+				}
+			});
+
+			this.setRootPackage(new CtRootPackage());
+		}
+
+		@Override
+		public <T extends CtNamedElement> T setSimpleName(String name) {
+			if (name == null) {
+				return (T) this;
+			}
+
+			if (name.equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
+				return super.setSimpleName(name);
+			}
+
+			return (T) this;
+		}
+
+		@Override
+		public String toString() {
+			return CtModule.TOP_LEVEL_MODULE_NAME;
+		}
+	}
+
+	private final CtModule unnamedModule = new CtUnnamedModule();
 
 	public CtModelImpl(Factory f) {
-		rootPackage.setFactory(f);
+		getRootPackage().setFactory(f);
 	}
 
 	@Override
 	public CtPackage getRootPackage() {
-		return rootPackage;
+		return this.unnamedModule.getRootPackage();
 	}
 
 
@@ -132,7 +176,11 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
+<<<<<<< HEAD
 		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtPackage.class)));
+=======
+		return Collections.unmodifiableCollection(getRootPackage().getElements(new TypeFilter<>(CtPackage.class)));
+>>>>>>> Start to implement classes
 	}
 
 
