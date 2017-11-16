@@ -109,7 +109,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.visitor.GenericTypeAdapter;
 
@@ -925,8 +924,7 @@ public interface Factory {
 	CtQuery createQuery(Object... input);
 
 	/**
-	 *
-	 * @see TypeFactory#createImport(CtImportKind, CtReference)
+	 * @see TypeFactory#createImport(CtReference)
 	 */
-	CtImport createImport(CtImportKind importKind, CtReference reference);
+	CtImport createImport(CtReference reference);
 }

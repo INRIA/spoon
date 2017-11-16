@@ -17,8 +17,6 @@
 package spoon.support.visitor.clone;
 
 
-import spoon.reflect.declaration.CtImport;
-
 /**
  * Used to set all data in the cloned element.
  *
@@ -268,8 +266,8 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	public void visitCtImport(CtImport ctImport) {
-		((CtImport) (other)).setImportKind(ctImport.getImportKind());
+	public void visitCtImport(spoon.reflect.declaration.CtImport ctImport) {
+		((spoon.reflect.declaration.CtImport) (other)).setImportAllTypeMembers(ctImport.isImportAllTypeMembers());
 		super.visitCtImport(ctImport);
 	}
 }

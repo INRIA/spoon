@@ -17,9 +17,11 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.declaration.CtImport;
@@ -44,6 +46,7 @@ import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
 import spoon.test.imports.testclasses.NotImportExecutableType;
 import spoon.test.imports.testclasses.Pozole;
+import spoon.test.imports.testclasses.Reflection;
 import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
@@ -1265,61 +1268,38 @@ public class ImportTest {
 
 		CtType typeA = launcher.getFactory().Type().get(A.class);
 
-		CtImport importsA1 = launcher.getFactory().createImport(CtImportKind.TYPE, typeA.getReference());
-		CtImport importsA2 = launcher.getFactory().createImport(CtImportKind.TYPE, typeA.getReference());
+		CtImport importsA1 = launcher.getFactory().createImport(typeA.getReference());
+		CtImport importsA2 = launcher.getFactory().createImport(typeA.getReference());
 
 		assertEquals(importsA1, importsA2);
 		assertEquals(importsA1.hashCode(), importsA2.hashCode());
 
 		CtType typeB = launcher.getFactory().Type().get(Pozole.class);
-		CtImport importsB = launcher.getFactory().createImport(CtImportKind.TYPE, typeB.getReference());
+		CtImport importsB = launcher.getFactory().createImport(typeB.getReference());
 		assertNotEquals(importsA1, importsB);
 		assertNotEquals(importsA1.hashCode(), importsB.hashCode());
 	}
 
 	@Test
-	public void testCreateImportWithWrongImportKind() {
-		// contract: when creating an import, the compatibility between import kind and reference should be checked
-
+	public void testGetImportKindReturnRightValue() {
+		// contract: the importKind is computed based on the reference class type and the boolean isImportAllStaticTypeMembers
 		final Launcher spoon = new Launcher();
 
-		CtType aType = spoon.getFactory().Type().get(A.class);
+		CtType aType = spoon.getFactory().Type().get(Reflection.class);
 
-		try {
-			spoon.getFactory().Type().createImport(CtImportKind.METHOD, aType.getReference());
-			fail("You should not be able to create an import with kind METHOD for a TypeReference");
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().startsWith("ImportError"));
-		}
+		CtImport ctImport = spoon.getFactory().createImport(aType.getReference());
+		assertEquals(CtImportKind.TYPE, ctImport.getImportKind());
 
-		try {
-			spoon.getFactory().Type().createImport(CtImportKind.TYPE, aType.getPackage().getReference());
-			fail("You should not be able to create an import with kind TYPE for a PackageReference");
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().startsWith("ImportError"));
-		}
+		ctImport = spoon.getFactory().createImport(aType.getReference(), true);
+		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
 
-		try {
-			spoon.getFactory().Type().createImport(CtImportKind.ALL_STATIC_MEMBERS, aType.getPackage().getReference());
-			fail("You should not be able to create an import with kind ALL_STATIC_MEMBERS for a PackageReference");
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().startsWith("ImportError"));
-		}
+		ctImport = spoon.getFactory().createImport(((CtMethod)aType.getAllMethods().iterator().next()).getReference());
+		assertEquals(CtImportKind.METHOD, ctImport.getImportKind());
 
-		try {
-			spoon.getFactory().Type().createImport(CtImportKind.FIELD, aType.getReference());
-			fail("You should not be able to create an import with kind FIELD for a TypeReference");
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().startsWith("ImportError"));
-		}
+		ctImport = spoon.getFactory().createImport(((CtField)aType.getFields().get(0)).getReference());
+		assertEquals(CtImportKind.FIELD, ctImport.getImportKind());
 
-		try {
-			spoon.getFactory().Type().createImport(CtImportKind.ALL_TYPES, aType.getReference());
-			fail("You should not be able to create an import with kind ALL_TYPES for a TypeReference");
-		} catch (SpoonException e) {
-			assertTrue(e.getMessage().startsWith("ImportError"));
-		}
-
-
+		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
+		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
 	}
 }

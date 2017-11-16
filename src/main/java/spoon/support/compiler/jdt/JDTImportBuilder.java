@@ -21,13 +21,11 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.HashSet;
@@ -73,13 +71,13 @@ class JDTImportBuilder {
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
 					if (ctPackage != null) {
-						this.imports.add(factory.Type().createImport(CtImportKind.ALL_TYPES, ctPackage.getReference()));
+						this.imports.add(factory.Type().createImport(ctPackage.getReference()));
 					}
 
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {
-						this.imports.add(factory.Type().createImport(CtImportKind.TYPE, klass.getReference()));
+						this.imports.add(factory.Type().createImport(klass.getReference()));
 					}
 				}
 			} else {
@@ -90,14 +88,13 @@ class JDTImportBuilder {
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
 					if (methodOrFieldName.equals("*")) {
-						this.imports.add(factory.Type().createImport(CtImportKind.ALL_STATIC_MEMBERS, klass.getReference()));
+						this.imports.add(factory.Type().createImport(klass.getReference(), true));
 					} else {
 						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
 							CtNamedElement methodOrField = methodOrFields.get(0);
-							CtImportKind kind = (methodOrField instanceof CtMethod) ? CtImportKind.METHOD : CtImportKind.FIELD;
-							this.imports.add(factory.Type().createImport(kind, methodOrField.getReference()));
+							this.imports.add(factory.Type().createImport(methodOrField.getReference()));
 						}
 					}
 				}

@@ -111,7 +111,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -794,7 +793,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean isImported(CtFieldReference fieldReference) {
-		CtImport fieldImport = fieldReference.getFactory().createImport(CtImportKind.FIELD, fieldReference);
+		CtImport fieldImport = fieldReference.getFactory().createImport(fieldReference);
 
 		if (this.imports.contains(fieldImport)) {
 			return true;
@@ -802,13 +801,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (fieldReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtImport staticClassImport = fieldReference.getFactory().createImport(CtImportKind.ALL_STATIC_MEMBERS, fieldReference.getDeclaringType());
+			CtImport staticClassImport = fieldReference.getFactory().createImport(fieldReference.getDeclaringType(), true);
 			return this.imports.contains(staticClassImport);
 		}
 	}
 
 	private boolean isImported(CtExecutableReference executableReference) {
-		CtImport executableImport = executableReference.getFactory().createImport(CtImportKind.METHOD, executableReference);
+		CtImport executableImport = executableReference.getFactory().createImport(executableReference);
 
 		if (this.imports.contains(executableImport)) {
 			return true;
@@ -816,7 +815,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (executableReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtImport staticClassImport = executableReference.getFactory().createImport(CtImportKind.ALL_STATIC_MEMBERS, executableReference.getDeclaringType());
+			CtImport staticClassImport = executableReference.getFactory().createImport(executableReference.getDeclaringType(), true);
 			return this.imports.contains(staticClassImport);
 		}
 	}

@@ -33,7 +33,6 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -665,9 +664,22 @@ public class TypeFactory extends SubFactory {
 		return OBJECT;
 	}
 
-	public CtImport createImport(CtImportKind kind, CtReference reference) {
+	/**
+	 * Creates an import declaration
+	 * @param reference The reference the import will target to
+	 * @param isImportAllStaticTypeMembers If set to true, in combination with a CtTypeReference,
+	 *                                     it will create a static import of all static type members. See {@link CtImport}.
+	 */
+	public CtImport createImport(CtReference reference, boolean isImportAllStaticTypeMembers) {
 		CtImport ctImport = factory.Core().createImport();
-		return ctImport.setImportKind(kind).setReference(reference.clone());
+		return ctImport.setReference(reference.clone()).setImportAllTypeMembers(isImportAllStaticTypeMembers);
+	}
+
+	/**
+	 * Creates an import declaration.
+	 */
+	public CtImport createImport(CtReference reference) {
+		return this.createImport(reference, false);
 	}
 
 }

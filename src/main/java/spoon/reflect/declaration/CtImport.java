@@ -19,12 +19,25 @@ package spoon.reflect.declaration;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtReference;
+import spoon.support.DerivedProperty;
 
-import static spoon.reflect.path.CtRole.IMPORT_KIND;
+import static spoon.reflect.path.CtRole.IMPORT_ALL_TYPE_MEMBERS;
 import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
 
 /**
- * This element represents an import declaration
+ * This element represents an import declaration.
+ * The given reference should be of type {@link spoon.reflect.reference.CtTypeReference},
+ * {@link spoon.reflect.reference.CtPackageReference}, {@link spoon.reflect.reference.CtExecutableReference}
+ * or {@link spoon.reflect.reference.CtFieldReference}.
+ *
+ * The method {@link #setImportAllTypeMembers(boolean)} is used in combination with a reference of type {@link spoon.reflect.reference.CtTypeReference}
+ * to create a static import of all static members of a type, like this:
+ *
+ * <pre>
+ *     import static import static org.junit.Assert.*;
+ * </pre>
+ *
+ * It will be ignored in all other cases.
  *
  * Example:
  * <pre>
@@ -32,17 +45,37 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  * </pre>
  */
 public interface CtImport extends CtNamedElement {
-	@PropertySetter(role = IMPORT_KIND)
-	<T extends CtImport> T setImportKind(CtImportKind importKind);
-
-	@PropertyGetter(role = IMPORT_KIND)
+	/**
+	 * Returns the kind of import (see {@link CtImportKind})
+	 */
+	@DerivedProperty
 	CtImportKind getImportKind();
 
+	/**
+	 * Returns the reference of the import.
+	 */
 	@PropertyGetter(role = IMPORT_REFERENCE)
 	CtReference getReference();
 
+	/**
+	 * Sets the reference of the import.
+	 * The import kind will be computed based on this reference.
+	 */
 	@PropertySetter(role = IMPORT_REFERENCE)
 	<T extends CtImport> T setReference(CtReference reference);
+
+	/**
+	 * Determines if the import is an import of all static members of a type.
+	 * This value is only used with a CtTypeReference reference.
+	 */
+	@PropertySetter(role = IMPORT_ALL_TYPE_MEMBERS)
+	<T extends CtImport> T setImportAllTypeMembers(boolean isImportAllTypeMembers);
+
+	/**
+	 * Returns true if the import is an import of all static members of a type.
+	 */
+	@PropertyGetter(role = IMPORT_ALL_TYPE_MEMBERS)
+	boolean isImportAllTypeMembers();
 
 	@Override
 	CtImport clone();

@@ -29,32 +29,41 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtImportImpl extends CtNamedElementImpl implements CtImport {
-	@MetamodelPropertyField(role = CtRole.IMPORT_KIND)
-	private CtImportKind importKind;
-
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
 	private CtReference localReference;
+
+	@MetamodelPropertyField(role = CtRole.IMPORT_ALL_TYPE_MEMBERS)
+	private boolean importAllTypeMembers;
 
 	public CtImportImpl() {
 		super();
 	}
 
 	@Override
-	public <T extends CtImport> T setImportKind(CtImportKind importKind) {
-		assertCompatibilityImportKindReference(importKind, this.localReference);
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_KIND, importKind, this.importKind);
-		this.importKind = importKind;
-		return (T) this;
-	}
-
-	@Override
 	public CtImportKind getImportKind() {
-		return this.importKind;
+		if (this.localReference == null) {
+			return null;
+		}
+
+		if (this.localReference instanceof CtFieldReference) {
+			return CtImportKind.FIELD;
+		} else if (this.localReference instanceof CtExecutableReference) {
+			return CtImportKind.METHOD;
+		} else if (this.localReference instanceof CtPackageReference) {
+			return CtImportKind.ALL_TYPES;
+		} else if (this.localReference instanceof CtTypeReference) {
+			if (this.importAllTypeMembers) {
+				return CtImportKind.ALL_STATIC_MEMBERS;
+			} else {
+				return CtImportKind.TYPE;
+			}
+		} else {
+			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference and CtTypeReference are accepted reference types.");
+		}
 	}
 
 	@Override
 	public <T extends CtImport> T setReference(CtReference reference) {
-		assertCompatibilityImportKindReference(this.importKind, reference);
 		if (reference != null) {
 			reference.setParent(this);
 		}
@@ -64,33 +73,31 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	}
 
 	@Override
+	public <T extends CtImport> T setImportAllTypeMembers(boolean isImportAllTypeMembers) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_ALL_TYPE_MEMBERS, isImportAllTypeMembers, this.importAllTypeMembers);
+		this.importAllTypeMembers = isImportAllTypeMembers;
+		return (T) this;
+	}
+
+	@Override
+	public boolean isImportAllTypeMembers() {
+		return this.importAllTypeMembers;
+	}
+
+	@Override
 	public CtReference getReference() {
 		return this.localReference;
 	}
 
-	private void assertCompatibilityImportKindReference(CtImportKind importKind, CtReference reference) {
-		if (importKind != null && reference != null) {
-			if (reference instanceof CtExecutableReference && importKind != CtImportKind.METHOD) {
-				throw new SpoonException("ImportError: You can only have an executable reference for a static method import.");
-			} else if (reference instanceof CtFieldReference && importKind != CtImportKind.FIELD) {
-				throw new SpoonException("ImportError: You can only have a field reference for a static field import.");
-			} else if (reference instanceof CtPackageReference && importKind != CtImportKind.ALL_TYPES) {
-				throw new SpoonException("ImportError: You can only have a package reference for a package.* import.");
-			} else if (reference instanceof CtTypeReference && importKind != CtImportKind.TYPE && importKind != CtImportKind.ALL_STATIC_MEMBERS) {
-				throw new SpoonException("ImportError: You can only have a type reference for a type import or a static type.* import.");
-			}
-		}
-	}
-
 	@Override
 	public String getSimpleName() {
-		if (this.localReference == null || this.importKind == null) {
+		if (this.localReference == null) {
 			return null;
 		}
 
 		String s = this.localReference.getSimpleName();
 
-		if (importKind == CtImportKind.ALL_STATIC_MEMBERS || importKind == CtImportKind.ALL_TYPES) {
+		if (this.getImportKind() == CtImportKind.ALL_STATIC_MEMBERS || this.getImportKind() == CtImportKind.ALL_TYPES) {
 			return s + ".*";
 		} else {
 			return s;

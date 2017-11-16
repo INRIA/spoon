@@ -92,8 +92,8 @@ public enum CtRole {
 	POSITION,
 	SNIPPET,
 	ACCESSED_TYPE,
-	IMPORT_KIND,
-	IMPORT_REFERENCE;
+	IMPORT_REFERENCE,
+	IMPORT_ALL_TYPE_MEMBERS;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

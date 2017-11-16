@@ -110,7 +110,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -1177,7 +1176,7 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CtImport createImport(CtImportKind importKind, CtReference reference) {
-		return Type().createImport(importKind, reference);
+	public CtImport createImport(CtReference reference) {
+		return Type().createImport(reference);
 	}
 }
