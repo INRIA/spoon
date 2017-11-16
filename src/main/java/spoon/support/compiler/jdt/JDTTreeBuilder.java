@@ -73,6 +73,7 @@ import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
 import org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
@@ -145,6 +146,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -1571,6 +1573,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(WhileStatement whileStatement, BlockScope scope) {
 		context.enter(factory.Core().createWhile(), whileStatement);
+		return true;
+	}
+
+	@Override
+	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
+		CtModule module = factory.Module().create(new String(moduleDeclaration.moduleName));
+		module.setIsOpenModule(moduleDeclaration.isOpen());
+		context.enter(module, moduleDeclaration);
 		return true;
 	}
 }

@@ -160,6 +160,8 @@ public interface Factory {
 
 	QueryFactory Query();
 
+	ModuleFactory Module();
+
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)
 	 */
