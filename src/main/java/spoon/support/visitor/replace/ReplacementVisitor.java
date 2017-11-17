@@ -17,8 +17,6 @@
 package spoon.support.visitor.replace;
 
 
-import spoon.reflect.declaration.CtImport;
-
 /**
  * Used to replace an element by another one.
  *
@@ -1953,9 +1951,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
-		private final CtImport element;
+		private final spoon.reflect.declaration.CtImport element;
 
-		CtImportReferenceReplaceListener(CtImport element) {
+		CtImportReferenceReplaceListener(spoon.reflect.declaration.CtImport element) {
 			this.element = element;
 		}
 
@@ -1967,9 +1965,19 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public void visitCtImport(final CtImport ctImport) {
+	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
 		replaceElementIfExist(ctImport.getReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportReferenceReplaceListener(ctImport));
 		replaceInListIfExist(ctImport.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ctImport));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtWildcardStaticTypeMemberReference(final spoon.reflect.reference.CtWildcardStaticTypeMemberReference reference) {
+		replaceElementIfExist(reference.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(reference));
+		replaceElementIfExist(reference.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(reference));
+		replaceInListIfExist(reference.getActualTypeArguments(), new spoon.support.visitor.replace.ReplacementVisitor.CtActualTypeContainerActualTypeArgumentsReplaceListener(reference));
+		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
+		replaceInListIfExist(reference.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(reference));
 	}
 }
 

@@ -311,7 +311,7 @@ public class ElementPrinterHelper {
 
 				case ALL_STATIC_MEMBERS:
 					CtTypeReference typeStarRef = (CtTypeReference) ctImport.getReference();
-					importTypeStr = typeStarRef.getQualifiedName() + ".*";
+					importTypeStr = typeStarRef.getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
 						setStaticImports.add(importTypeStr);
 					}

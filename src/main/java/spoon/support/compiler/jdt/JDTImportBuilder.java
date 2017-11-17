@@ -88,7 +88,7 @@ class JDTImportBuilder {
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
 					if (methodOrFieldName.equals("*")) {
-						this.imports.add(factory.Type().createImport(klass.getReference(), true));
+						this.imports.add(factory.Type().createImport(factory.Type().createWildcardStaticTypeMemberReference(klass.getReference())));
 					} else {
 						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 

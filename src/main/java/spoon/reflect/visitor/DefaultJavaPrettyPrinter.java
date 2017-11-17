@@ -111,6 +111,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -801,7 +802,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (fieldReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtImport staticClassImport = fieldReference.getFactory().createImport(fieldReference.getDeclaringType(), true);
+			CtWildcardStaticTypeMemberReference staticTypeMemberReference = fieldReference.getFactory().createWildcardStaticTypeMemberReference(fieldReference.getDeclaringType());
+			CtImport staticClassImport = fieldReference.getFactory().createImport(staticTypeMemberReference);
 			return this.imports.contains(staticClassImport);
 		}
 	}
@@ -815,7 +817,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (executableReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtImport staticClassImport = executableReference.getFactory().createImport(executableReference.getDeclaringType(), true);
+			CtWildcardStaticTypeMemberReference staticTypeMemberReference = executableReference.getFactory().createWildcardStaticTypeMemberReference(executableReference.getDeclaringType());
+			CtImport staticClassImport = executableReference.getFactory().createImport(staticTypeMemberReference);
 			return this.imports.contains(staticClassImport);
 		}
 	}
@@ -1004,14 +1007,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				case ALL_STATIC_MEMBERS:
 					printer.writeKeyword("static");
 					printer.writeSpace();
-					visitCtTypeReference((CtTypeReference) ctImport.getReference());
-					printer.writeSeparator(".");
-					printer.writeIdentifier("*");
+					visitCtWildcardStaticTypeMemberReference((CtWildcardStaticTypeMemberReference) ctImport.getReference());
 					break;
 			}
 			printer.writeSeparator(";");
 			printer.writeln();
 		}
+	}
+
+	@Override
+	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference ctWildcardStaticTypeMemberReference) {
+		visitCtTypeReference(ctWildcardStaticTypeMemberReference);
 	}
 
 	@Override

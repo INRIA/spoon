@@ -119,6 +119,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -946,5 +947,9 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(ctImport);
 		scanCtVisitable(ctImport);
 		scanCtNamedElement(ctImport);
+	}
+
+	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference ctWildcardStaticTypeMemberReference) {
+		visitCtTypeReference(ctWildcardStaticTypeMemberReference);
 	}
 }

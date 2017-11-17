@@ -14,40 +14,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.visitor;
+package spoon.support.reflect.reference;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.visitor.CtVisitor;
 
-/** Responsible for computing CtElement.hashCode().
- * Version that is fast and compatible with EqualVisitor
- */
-public class HashcodeVisitor extends CtInheritanceScanner {
 
-	private int hashCode = 0;
+public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl implements CtWildcardStaticTypeMemberReference {
+
+	public CtWildcardStaticTypeMemberReferenceImpl() {
+		super();
+	}
 
 	@Override
-	public void scanCtNamedElement(CtNamedElement e) {
-		if (e.getSimpleName() != null) {
-			hashCode += e.getSimpleName().hashCode();
+	public <T extends CtReference> T setSimpleName(String newName) {
+		if (!newName.endsWith(".*")) {
+			newName += ".*";
 		}
+		return super.setSimpleName(newName);
 	}
 
 	@Override
-	public void scanCtReference(CtReference e) {
-		hashCode += e.getSimpleName().hashCode();
+	public CtWildcardStaticTypeMemberReference clone() {
+		return (CtWildcardStaticTypeMemberReference) super.clone();
 	}
 
 	@Override
-	public void scan(CtElement element) {
-		hashCode += 1;
-		super.scan(element);;
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtWildcardStaticTypeMemberReference(this);
 	}
-
-	public int getHasCode() {
-		return hashCode;
-	}
-
 }

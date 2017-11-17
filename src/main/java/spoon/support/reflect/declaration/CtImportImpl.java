@@ -26,14 +26,12 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.CtVisitor;
 
 public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
 	private CtReference localReference;
-
-	@MetamodelPropertyField(role = CtRole.IMPORT_ALL_TYPE_MEMBERS)
-	private boolean importAllTypeMembers;
 
 	public CtImportImpl() {
 		super();
@@ -51,12 +49,10 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 			return CtImportKind.METHOD;
 		} else if (this.localReference instanceof CtPackageReference) {
 			return CtImportKind.ALL_TYPES;
+		} else if (this.localReference instanceof CtWildcardStaticTypeMemberReference) {
+			return CtImportKind.ALL_STATIC_MEMBERS;
 		} else if (this.localReference instanceof CtTypeReference) {
-			if (this.importAllTypeMembers) {
-				return CtImportKind.ALL_STATIC_MEMBERS;
-			} else {
-				return CtImportKind.TYPE;
-			}
+			return CtImportKind.TYPE;
 		} else {
 			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference and CtTypeReference are accepted reference types.");
 		}
@@ -73,18 +69,6 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	}
 
 	@Override
-	public <T extends CtImport> T setImportAllTypeMembers(boolean isImportAllTypeMembers) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_ALL_TYPE_MEMBERS, isImportAllTypeMembers, this.importAllTypeMembers);
-		this.importAllTypeMembers = isImportAllTypeMembers;
-		return (T) this;
-	}
-
-	@Override
-	public boolean isImportAllTypeMembers() {
-		return this.importAllTypeMembers;
-	}
-
-	@Override
 	public CtReference getReference() {
 		return this.localReference;
 	}
@@ -97,7 +81,8 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 
 		String s = this.localReference.getSimpleName();
 
-		if (this.getImportKind() == CtImportKind.ALL_STATIC_MEMBERS || this.getImportKind() == CtImportKind.ALL_TYPES) {
+		// in all static members, the reference name is already computed in CtWildcardStaticTypeMemberReference
+		if (this.getImportKind() == CtImportKind.ALL_TYPES) {
 			return s + ".*";
 		} else {
 			return s;

@@ -17,8 +17,6 @@
 package spoon.support.visitor.clone;
 
 
-import spoon.reflect.declaration.CtImport;
-
 /**
  * Used to clone a given element.
  *
@@ -818,11 +816,23 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public void visitCtImport(final CtImport ctImport) {
-		CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
+	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
+		spoon.reflect.declaration.CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
 		aCtImport.setReference(this.cloneHelper.clone(ctImport.getReference()));
 		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
 		this.other = aCtImport;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtWildcardStaticTypeMemberReference(final spoon.reflect.reference.CtWildcardStaticTypeMemberReference reference) {
+		spoon.reflect.reference.CtWildcardStaticTypeMemberReference aCtWildcardStaticTypeMemberReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createWildcardStaticTypeMemberReference());
+		aCtWildcardStaticTypeMemberReference.setPackage(this.cloneHelper.clone(reference.getPackage()));
+		aCtWildcardStaticTypeMemberReference.setDeclaringType(this.cloneHelper.clone(reference.getDeclaringType()));
+		aCtWildcardStaticTypeMemberReference.setActualTypeArguments(this.cloneHelper.clone(reference.getActualTypeArguments()));
+		aCtWildcardStaticTypeMemberReference.setAnnotations(this.cloneHelper.clone(reference.getAnnotations()));
+		aCtWildcardStaticTypeMemberReference.setComments(this.cloneHelper.clone(reference.getComments()));
+		this.other = aCtWildcardStaticTypeMemberReference;
 	}
 }
 

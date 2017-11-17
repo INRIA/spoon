@@ -91,6 +91,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 
 import java.lang.annotation.Annotation;
 
@@ -468,5 +469,13 @@ public interface CtVisitor {
 	 */
 	void visitCtJavaDocTag(CtJavaDocTag docTag);
 
+	/**
+	 * Visits an import declaration
+	 */
 	void visitCtImport(CtImport ctImport);
+
+	/**
+	 * Visits a static reference for an import
+	 */
+	void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference ctWildcardStaticTypeMemberReference);
 }

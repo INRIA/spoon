@@ -99,6 +99,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
@@ -177,6 +178,7 @@ import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardReferenceImpl;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
 import java.io.Serializable;
@@ -925,10 +927,20 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		if (klass.equals(spoon.reflect.reference.CtWildcardReference.class)) {
 			return createWildcardReference();
 		}
-		if (klass.equals(CtImport.class)) {
+		if (klass.equals(spoon.reflect.declaration.CtImport.class)) {
 			return createImport();
 		}
+		if (klass.equals(spoon.reflect.reference.CtWildcardStaticTypeMemberReference.class)) {
+			return createWildcardStaticTypeMemberReference();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
+	}
+
+	@Override
+	public CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference() {
+		CtWildcardStaticTypeMemberReference result = new CtWildcardStaticTypeMemberReferenceImpl();
+		result.setFactory(getMainFactory());
+		return result;
 	}
 
 }

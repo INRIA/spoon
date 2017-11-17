@@ -96,6 +96,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 
 import java.lang.annotation.Annotation;
 
@@ -547,4 +548,9 @@ public interface CoreFactory {
 	 * This is in particular useful when one uses reflection.
 	 */
 	CtElement create(Class<? extends CtElement> klass);
+
+	/**
+	 * Create a wildcard reference to a type member, used in a static import
+	 */
+	CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference();
 }
