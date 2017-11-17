@@ -404,7 +404,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		unitLoop:
 		for (CompilationUnitDeclaration unit : units) {
-			if (!unit.isEmpty()) {
+			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				for (final CompilationUnitFilter cuf : compilationUnitFilters) {
 					if (cuf.exclude(unitPath)) {

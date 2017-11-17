@@ -38,7 +38,9 @@ import spoon.support.reflect.declaration.CtPackageImpl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CtModelImpl implements CtModel {
 
@@ -110,57 +112,16 @@ public class CtModelImpl implements CtModel {
 
 	}
 
-	public static class CtUnnamedModule extends CtModuleImpl {
-		{
-			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
-			this.setParent(new CtElementImpl() {
-				@Override
-				public void accept(CtVisitor visitor) {
-
-				}
-
-				@Override
-				public CtElement getParent() throws ParentNotInitializedException {
-					return null;
-				}
-
-				@Override
-				public Factory getFactory() {
-					return CtUnnamedModule.this.getFactory();
-				}
-			});
-
-			this.setRootPackage(new CtRootPackage());
-		}
-
-		@Override
-		public <T extends CtNamedElement> T setSimpleName(String name) {
-			if (name == null) {
-				return (T) this;
-			}
-
-			if (name.equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
-				return super.setSimpleName(name);
-			}
-
-			return (T) this;
-		}
-
-		@Override
-		public String toString() {
-			return CtModule.TOP_LEVEL_MODULE_NAME;
-		}
-	}
-
-	private final CtModule unnamedModule = new CtUnnamedModule();
+	private final CtModule unnamedModule;
 
 	public CtModelImpl(Factory f) {
+		this.unnamedModule = f.Module().getOrCreate(CtModule.TOP_LEVEL_MODULE_NAME);
 		getRootPackage().setFactory(f);
 	}
 
 	@Override
 	public CtPackage getRootPackage() {
-		return this.unnamedModule.getRootPackage();
+		return getUnnamedModule().getRootPackage();
 	}
 
 
@@ -181,6 +142,16 @@ public class CtModelImpl implements CtModel {
 =======
 		return Collections.unmodifiableCollection(getRootPackage().getElements(new TypeFilter<>(CtPackage.class)));
 >>>>>>> Start to implement classes
+	}
+
+	@Override
+	public CtModule getUnnamedModule() {
+		return this.unnamedModule;
+	}
+
+	@Override
+	public Collection<CtModule> getAllModules() {
+		return this.unnamedModule.getFactory().Module().getAllModules();
 	}
 
 
