@@ -24,7 +24,7 @@ import spoon.support.visitor.equals.CloneHelper;
 /**
  * Used to clone a given element.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 class CloneVisitorTemplate extends CtScanner {
 	private final CloneHelper cloneHelper;

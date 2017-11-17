@@ -36,7 +36,7 @@ import java.util.Set;
 /**
  * Used to replace an element by another one.
  *
- * This class is generated automatically by the processor {@link spoon.generating.ReplacementVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.ReplacementVisitorGenerator.
  */
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {

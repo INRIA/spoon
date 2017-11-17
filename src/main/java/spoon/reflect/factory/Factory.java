@@ -912,7 +912,7 @@ public interface Factory {
 	CtPackage createPackage(CtPackage parent, String simpleName);
 
 	/**
-	 * @see CoreFactory#create(Class<? extends CtElement>)
+	 * @see CoreFactory#create(Class)
 	 */
 	CtElement createElement(Class<? extends CtElement> klass);
 }

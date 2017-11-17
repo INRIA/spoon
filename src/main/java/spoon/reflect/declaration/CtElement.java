@@ -317,7 +317,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * @return a a single value (eg a CtElement), List, Set or Map depending on this `element` and `role`. Returned collections are read-only.
-	 * @param the role of the returned attribute with respect to this element.
+	 * @param role the role of the returned attribute with respect to this element.
 	 *
 	 * For instance, "klass.getValueByRole(CtRole.METHOD)" returns a list of methods.
 	 *
@@ -327,7 +327,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Sets a field according to a role.
-	 * @param the role of the field to be set
+	 * @param role the role of the field to be set
 	 * @param value to be assigned to this field.
 	 */
 	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
