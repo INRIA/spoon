@@ -23,7 +23,7 @@ package spoon.reflect.visitor;
  * Ensures that all children nodes are visited once, a visit means three method
  * calls, one call to "enter", one call to "exit" and one call to biScan.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CtBiScannerGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CtBiScannerGenerator.
  *
  * Is used by EqualsVisitor.
  */

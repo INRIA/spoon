@@ -20,7 +20,7 @@ package spoon.support.visitor.replace;
 /**
  * Used to replace an element by another one.
  *
- * This class is generated automatically by the processor {@link spoon.generating.ReplacementVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.ReplacementVisitorGenerator.
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	private spoon.reflect.declaration.CtElement original;

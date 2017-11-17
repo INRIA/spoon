@@ -20,7 +20,7 @@ package spoon.support.visitor.clone;
 /**
  * Used to clone a given element.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	private final spoon.support.visitor.equals.CloneHelper cloneHelper;
