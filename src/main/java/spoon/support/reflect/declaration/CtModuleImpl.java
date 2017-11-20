@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.reference.CtModuleExport;
 import spoon.reflect.reference.CtModuleProvidedService;
-import spoon.reflect.reference.CtModuleRequirement;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 

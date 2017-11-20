@@ -18,7 +18,6 @@ package spoon.reflect.declaration;
 
 import spoon.reflect.reference.CtModuleExport;
 import spoon.reflect.reference.CtModuleProvidedService;
-import spoon.reflect.reference.CtModuleRequirement;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Set;

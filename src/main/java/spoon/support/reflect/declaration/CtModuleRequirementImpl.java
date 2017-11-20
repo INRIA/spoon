@@ -14,16 +14,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.reflect.reference;
+package spoon.support.reflect.declaration;
 
-import spoon.reflect.reference.CtModuleRequirement;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.reflect.declaration.CtNamedElementImpl;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class CtModuleRequirementImpl extends CtModuleReferenceImpl implements CtModuleRequirement {
+public class CtModuleRequirementImpl extends CtNamedElementImpl implements CtModuleRequirement {
 	Set<RequiresModifier> requiresModifiers = CtElementImpl.emptySet();
+	CtModuleReference moduleReference;
 
 	public CtModuleRequirementImpl() {
 		super();
@@ -48,5 +52,24 @@ public class CtModuleRequirementImpl extends CtModuleReferenceImpl implements Ct
 		this.requiresModifiers.addAll(requiresModifiers);
 
 		return (T) this;
+	}
+
+	@Override
+	public CtModuleReference getModuleReference() {
+		return this.moduleReference;
+	}
+
+	@Override
+	public <T extends CtModuleRequirement> T setModuleReference(CtModuleReference moduleReference) {
+		if (moduleReference != null) {
+			moduleReference.setParent(this);
+		}
+		this.moduleReference = moduleReference;
+		return (T) this;
+	}
+
+	@Override
+	public void accept(CtVisitor visitor) {
+
 	}
 }

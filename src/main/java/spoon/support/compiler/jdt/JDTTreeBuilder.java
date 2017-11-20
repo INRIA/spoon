@@ -1578,9 +1578,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
-		CtModule module = factory.Module().getOrCreate(new String(moduleDeclaration.moduleName));
-		module.setIsOpenModule(moduleDeclaration.isOpen());
-		context.enter(module, moduleDeclaration);
+		getHelper().createModule(moduleDeclaration);
 		return true;
 	}
 }

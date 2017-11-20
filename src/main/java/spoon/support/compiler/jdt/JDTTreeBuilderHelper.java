@@ -20,8 +20,10 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
+import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -46,6 +48,8 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -62,6 +66,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -656,5 +661,42 @@ public class JDTTreeBuilderHelper {
 		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
 
 		return type;
+	}
+
+	/**
+	 * Creates an entire object CtModule from a module declaration.
+	 * @return a CtModule
+	 */
+	CtModule createModule(ModuleDeclaration moduleDeclaration) {
+		CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(new String(moduleDeclaration.moduleName));
+		module.setIsOpenModule(moduleDeclaration.isOpen());
+		jdtTreeBuilder.getContextBuilder().enter(module, moduleDeclaration);
+
+		if (moduleDeclaration.requires != null) {
+			Set<CtModuleRequirement> moduleRequirements = new HashSet<>();
+			for (RequiresStatement requiresStatement : moduleDeclaration.requires) {
+				moduleRequirements.add(this.createModuleRequirement(requiresStatement));
+			}
+
+			module.setRequiredModules(moduleRequirements);
+		}
+		return module;
+	}
+
+	CtModuleRequirement createModuleRequirement(RequiresStatement requiresStatement) {
+		String moduleName = new String(requiresStatement.module.moduleName);
+		CtModule ctModule = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
+		CtModuleRequirement moduleRequirement = jdtTreeBuilder.getFactory().Module().createModuleRequirement(ctModule);
+
+		Set<CtModuleRequirement.RequiresModifier> modifiers = new HashSet<>();
+		if (requiresStatement.isStatic()) {
+			modifiers.add(CtModuleRequirement.RequiresModifier.STATIC);
+		}
+		if (requiresStatement.isTransitive()) {
+			modifiers.add(CtModuleRequirement.RequiresModifier.TRANSITIVE);
+		}
+		moduleRequirement.setRequiresModifiers(modifiers);
+
+		return moduleRequirement;
 	}
 }

@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.reference.CtModuleRequirement;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;

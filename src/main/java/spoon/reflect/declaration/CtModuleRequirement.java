@@ -14,11 +14,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.reflect.declaration;
+
+import spoon.reflect.reference.CtModuleReference;
 
 import java.util.Set;
 
-public interface CtModuleRequirement extends CtModuleReference {
+public interface CtModuleRequirement extends CtNamedElement {
 
 	enum RequiresModifier {
 		STATIC, TRANSITIVE;
@@ -27,4 +29,8 @@ public interface CtModuleRequirement extends CtModuleReference {
 	Set<RequiresModifier> getRequiresModifiers();
 
 	<T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers);
+
+	CtModuleReference getModuleReference();
+
+	<T extends CtModuleRequirement> T setModuleReference(CtModuleReference moduleReference);
 }
