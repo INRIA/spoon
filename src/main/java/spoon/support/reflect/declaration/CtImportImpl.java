@@ -29,7 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtImportImpl extends CtNamedElementImpl implements CtImport {
+public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
 	private CtReference localReference;
 
@@ -71,22 +71,6 @@ public class CtImportImpl extends CtNamedElementImpl implements CtImport {
 	@Override
 	public CtReference getReference() {
 		return this.localReference;
-	}
-
-	@Override
-	public String getSimpleName() {
-		if (this.localReference == null) {
-			return null;
-		}
-
-		String s = this.localReference.getSimpleName();
-
-		// in all static members, the reference name is already computed in CtWildcardStaticTypeMemberReference
-		if (this.getImportKind() == CtImportKind.ALL_TYPES) {
-			return s + ".*";
-		} else {
-			return s;
-		}
 	}
 
 	@Override

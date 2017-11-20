@@ -946,7 +946,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void visitCtImport(CtImport ctImport) {
 		scanCtElement(ctImport);
 		scanCtVisitable(ctImport);
-		scanCtNamedElement(ctImport);
 	}
 
 	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference ctWildcardStaticTypeMemberReference) {

@@ -40,7 +40,7 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  *     import java.io.File;
  * </pre>
  */
-public interface CtImport extends CtNamedElement {
+public interface CtImport extends CtElement {
 	/**
 	 * Returns the kind of import (see {@link CtImportKind})
 	 */

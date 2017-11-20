@@ -54,7 +54,7 @@ public class ImportBuilderTest {
         assertEquals(1, imports.size());
 
         CtImport ref = imports.iterator().next();
-        assertEquals("GlobalAnnotation", ref.getSimpleName());
+        assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;", ref);
         assertTrue(ref.getReference() instanceof CtTypeReference);
 
         CtTypeReference refType = (CtTypeReference)ref.getReference();
