@@ -245,10 +245,16 @@ public class ProcessingTest {
 
 		ProcessorProperties props = new ProcessorPropertiesImpl();
 		props.set("aString", "foo");
-		props.set("anInt", "foo");
 		props.set("anObject", "foo");
+		props.set("anInt", "foo");
 
-		ProcessorUtils.initProperties(p, props);
+		try {
+			ProcessorUtils.initProperties(p, props);
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains("anInt"));
+		}
+
 
 		assertEquals("foo", p.aString);
 		assertEquals(0, p.anInt);
