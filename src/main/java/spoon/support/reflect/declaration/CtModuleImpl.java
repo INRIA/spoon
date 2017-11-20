@@ -18,9 +18,10 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.reference.CtModuleExport;
+import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.reference.CtModuleProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -180,6 +181,11 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 
 	@Override
 	public void accept(CtVisitor visitor) {
+		visitor.visitCtModule(this);
+	}
 
+	@Override
+	public CtModuleReference getReference() {
+		return this.getFactory().Module().createReference(this);
 	}
 }

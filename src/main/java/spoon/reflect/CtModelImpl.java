@@ -134,11 +134,7 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
-<<<<<<< HEAD
 		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtPackage.class)));
-=======
-		return Collections.unmodifiableCollection(getRootPackage().getElements(new TypeFilter<>(CtPackage.class)));
->>>>>>> Start to implement classes
 	}
 
 	@Override

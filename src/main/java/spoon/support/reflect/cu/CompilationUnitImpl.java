@@ -18,6 +18,7 @@ package spoon.support.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -43,6 +44,9 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	CtPackage ctPackage;
 
 	Collection<CtImport> imports = new HashSet<>();
+
+	CtModule ctModule;
+
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -74,6 +78,16 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setDeclaredTypes(List<CtType<?>> types) {
 		this.declaredTypes = types;
+	}
+
+	@Override
+	public CtModule getDeclaredModule() {
+		return this.ctModule;
+	}
+
+	@Override
+	public void setDeclaredModule(CtModule module) {
+		this.ctModule = module;
 	}
 
 	@Override

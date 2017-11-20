@@ -20,7 +20,7 @@ import spoon.reflect.reference.CtModuleReference;
 
 import java.util.Set;
 
-public interface CtModuleRequirement extends CtNamedElement {
+public interface CtModuleRequirement extends CtElement {
 
 	enum RequiresModifier {
 		STATIC, TRANSITIVE;

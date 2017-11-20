@@ -14,11 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.reflect.declaration;
+
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
 
 import java.util.Set;
 
-public interface CtModuleExport extends CtPackageReference {
+public interface CtModuleExport extends CtElement {
+
+	CtPackageReference getPackageReference();
+
+	<T extends CtModuleExport> T setPackageReference(CtPackageReference packageReference);
 
 	Set<CtModuleReference> getTargetExport();
 

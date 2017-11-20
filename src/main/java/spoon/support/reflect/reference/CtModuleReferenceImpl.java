@@ -30,7 +30,7 @@ public class CtModuleReferenceImpl extends CtReferenceImpl implements CtModuleRe
 
 	@Override
 	public CtModule getDeclaration() {
-		return null;
+		return this.getFactory().Module().getOrCreate(this.getSimpleName());
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class CtModuleReferenceImpl extends CtReferenceImpl implements CtModuleRe
 
 	@Override
 	public void accept(CtVisitor visitor) {
-
+		visitor.visitCtModuleReference(this);
 	}
 
 	@Override

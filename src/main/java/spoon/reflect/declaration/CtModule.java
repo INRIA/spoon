@@ -16,8 +16,8 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtModuleExport;
 import spoon.reflect.reference.CtModuleProvidedService;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.Set;
@@ -58,4 +58,7 @@ public interface CtModule extends CtNamedElement {
 	CtPackage getRootPackage();
 
 	<T extends CtModule> T setRootPackage(CtPackage rootPackage);
+
+	@Override
+	CtModuleReference getReference();
 }

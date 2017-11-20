@@ -19,7 +19,9 @@ package spoon.reflect.factory;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -106,6 +108,10 @@ public class ModuleFactory extends SubFactory implements Serializable {
 	}
 
 	public CtModuleRequirement createModuleRequirement(CtModule module) {
-		return factory.Core().createModuleRequirement().setSimpleName(module.getSimpleName());
+		return factory.Core().createModuleRequirement().setModuleReference(module.getReference());
+	}
+
+	public CtModuleExport createModuleExport(CtPackage ctPackage) {
+		return factory.Core().createModuleExport().setPackageReference(ctPackage.getReference());
 	}
 }

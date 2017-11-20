@@ -92,6 +92,9 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
@@ -111,6 +114,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -942,8 +946,31 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
 	}
 
+	@Override
 	public void visitCtImport(CtImport ctImport) {
 		scanCtElement(ctImport);
 		scanCtVisitable(ctImport);
+	}
+
+	@Override
+	public void visitCtModule(CtModule module) {
+		scanCtNamedElement(module);
+		scanCtVisitable(module);
+		scanCtElement(module);
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+		scanCtReference(moduleReference);
+	}
+
+	@Override
+	public void visitCtModuleExport(CtModuleExport moduleExport) {
+		scanCtElement(moduleExport);
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		scanCtElement(moduleRequirement);
 	}
 }

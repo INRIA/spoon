@@ -82,6 +82,9 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -93,6 +96,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -905,6 +909,43 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.IMPORT_REFERENCE, ctImport.getReference());
 		scan(CtRole.ANNOTATION, ctImport.getAnnotations());
 		exit(ctImport);
+	}
+
+	@Override
+	public void visitCtModule(CtModule module) {
+		enter(module);
+		scan(CtRole.COMMENT, module.getComments());
+		scan(CtRole.ANNOTATION, module.getAnnotations());
+		scan(module.getExportedPackages());
+		scan(module.getRequiredModules());
+		scan(module.getOpenedPackages());
+		scan(module.getConsumedServices());
+		scan(module.getProvidedServices());
+		exit(module);
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+		enter(moduleReference);
+		scan(CtRole.ANNOTATION, moduleReference);
+		exit(moduleReference);
+	}
+
+	@Override
+	public void visitCtModuleExport(CtModuleExport moduleExport) {
+		enter(moduleExport);
+		scan(CtRole.COMMENT, moduleExport.getComments());
+		scan(moduleExport.getPackageReference());
+		scan(moduleExport.getTargetExport());
+		exit(moduleExport);
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		enter(moduleRequirement);
+		scan(CtRole.COMMENT, moduleRequirement.getComments());
+		scan(moduleRequirement.getModuleReference());
+		exit(moduleRequirement);
 	}
 }
 

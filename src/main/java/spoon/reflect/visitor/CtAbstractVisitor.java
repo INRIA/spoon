@@ -75,6 +75,9 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -85,6 +88,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -469,6 +473,26 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtImport(CtImport ctImport) {
+
+	}
+
+	@Override
+	public void visitCtModule(CtModule module) {
+
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+
+	}
+
+	@Override
+	public void visitCtModuleExport(CtModuleExport moduleExport) {
+
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
 
 	}
 }

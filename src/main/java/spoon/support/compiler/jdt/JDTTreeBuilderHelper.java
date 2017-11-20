@@ -19,8 +19,10 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
@@ -49,7 +51,9 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -59,6 +63,7 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -672,7 +677,7 @@ public class JDTTreeBuilderHelper {
 		module.setIsOpenModule(moduleDeclaration.isOpen());
 		jdtTreeBuilder.getContextBuilder().enter(module, moduleDeclaration);
 
-		if (moduleDeclaration.requires != null) {
+		if (moduleDeclaration.requires != null && moduleDeclaration.requires.length > 0) {
 			Set<CtModuleRequirement> moduleRequirements = new HashSet<>();
 			for (RequiresStatement requiresStatement : moduleDeclaration.requires) {
 				moduleRequirements.add(this.createModuleRequirement(requiresStatement));
@@ -680,11 +685,24 @@ public class JDTTreeBuilderHelper {
 
 			module.setRequiredModules(moduleRequirements);
 		}
+
+		if (moduleDeclaration.exports != null && moduleDeclaration.exports.length > 0) {
+			Set<CtModuleExport> moduleExports = new HashSet<>();
+			for (ExportsStatement exportsStatement : moduleDeclaration.exports) {
+				moduleExports.add(this.createModuleExport(exportsStatement));
+			}
+
+			module.setExportedPackages(moduleExports);
+		}
+
 		return module;
 	}
 
 	CtModuleRequirement createModuleRequirement(RequiresStatement requiresStatement) {
 		String moduleName = new String(requiresStatement.module.moduleName);
+		int sourceStart = requiresStatement.sourceStart;
+		int sourceEnd = requiresStatement.sourceEnd;
+
 		CtModule ctModule = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
 		CtModuleRequirement moduleRequirement = jdtTreeBuilder.getFactory().Module().createModuleRequirement(ctModule);
 
@@ -696,7 +714,31 @@ public class JDTTreeBuilderHelper {
 			modifiers.add(CtModuleRequirement.RequiresModifier.TRANSITIVE);
 		}
 		moduleRequirement.setRequiresModifiers(modifiers);
-
+		moduleRequirement.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 		return moduleRequirement;
+	}
+
+	CtModuleExport createModuleExport(ExportsStatement exportsStatement) {
+		String packageName = new String(exportsStatement.pkgName);
+		int sourceStart = exportsStatement.sourceStart;
+		int sourceEnd = exportsStatement.sourceEnd;
+
+		CtPackage ctPackage = jdtTreeBuilder.getFactory().Package().getOrCreate(packageName);
+		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackage);
+
+		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
+			Set<CtModuleReference> moduleReferences = new HashSet<>();
+
+			for (ModuleReference moduleReference : exportsStatement.targets) {
+				String moduleName = new String(moduleReference.moduleName);
+				CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
+				moduleReferences.add(module.getReference());
+			}
+
+			moduleExport.setTargetExport(moduleReferences);
+		}
+
+		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return moduleExport;
 	}
 }

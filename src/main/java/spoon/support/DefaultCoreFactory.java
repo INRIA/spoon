@@ -81,6 +81,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -164,6 +165,7 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
+import spoon.support.reflect.declaration.CtModuleExportImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
@@ -968,6 +970,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		CtModuleRequirement moduleRequirement = new CtModuleRequirementImpl();
 		moduleRequirement.setFactory(getMainFactory());
 		return moduleRequirement;
+	}
+
+	@Override
+	public CtModuleExport createModuleExport() {
+		CtModuleExport moduleExport = new CtModuleExportImpl();
+		moduleExport.setFactory(getMainFactory());
+		return moduleExport;
 	}
 
 }

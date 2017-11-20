@@ -1,3 +1,4 @@
 module com.greetings {
-    requires java.logging;
+    requires static java.logging;
+    exports com.greetings.pkg to com.other.module, com.second.module;
 }
