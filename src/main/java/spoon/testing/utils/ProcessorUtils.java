@@ -16,6 +16,7 @@
  */
 package spoon.testing.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Level;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -30,6 +31,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 public final class ProcessorUtils {
+	private final static ObjectMapper converter = new ObjectMapper();
+
 	private ProcessorUtils() {
 		throw new AssertionError();
 	}
@@ -52,9 +55,19 @@ public final class ProcessorUtils {
 							throw new SpoonException(e);
 						}
 					} else {
-						p.getFactory().getEnvironment().report(p, Level.WARN,
-								"No value found for property '" + f.getName() + "' in processor " + p.getClass()
-										.getName());
+						obj = properties.get(String.class, f.getName());
+						if (obj != null) {
+							try {
+								obj = converter.readValue((String)obj, f.getType());
+								f.setAccessible(true);
+								f.set(p, obj);
+							} catch (Exception e) {
+								throw new SpoonException("Error while assigning the value to "+f.getName(), e);
+							}
+						} else {
+							p.getFactory().getEnvironment().report(p, Level.WARN,
+									"No value found for property '" + f.getName() + "' in processor " + p.getClass().getName());
+						}
 					}
 				}
 			}

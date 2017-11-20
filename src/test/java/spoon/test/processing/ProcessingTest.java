@@ -23,10 +23,17 @@ import spoon.test.processing.testclasses.CtInterfaceProcessor;
 import spoon.test.processing.testclasses.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -165,6 +172,18 @@ public class ProcessingTest {
 			@Property
 			Object anObject;
 
+			@Property
+			int[] arrayInt;
+
+			@Property
+			List<String> listString;
+
+			@Property
+			boolean[] arrayBoolean;
+
+			@Property
+			Map<String,Double> mapStringDouble;
+
 			@Override
 			public void process() {
 
@@ -172,6 +191,8 @@ public class ProcessingTest {
 		};
 
 		AProcessor p = new AProcessor();
+		Launcher launcher = new Launcher();
+		p.setFactory(launcher.getFactory());
 
 		ProcessorProperties props = new ProcessorPropertiesImpl();
 		props.set("aString", "foo");
@@ -179,11 +200,117 @@ public class ProcessingTest {
 		Object o = new Object();
 		props.set("anObject", o);
 
+		int[] arrayInt = new int[]{ 1, 2, 3};
+		props.set("arrayInt", arrayInt);
+		props.set("listString", Arrays.asList(new String[]{"42"}));
+
+		boolean[] arrayBoolean = new boolean[] {true};
+		props.set("arrayBoolean", arrayBoolean);
+		HashMap<String,Double> mapTest = new HashMap<>();
+		mapTest.put("foobar",42.42);
+		props.set("mapStringDouble", mapTest);
+
 		ProcessorUtils.initProperties(p, props);
 
 		assertEquals("foo", p.aString);
 		assertEquals(5, p.anInt);
 		assertSame(o, p.anObject);
+		assertSame(arrayInt, p.arrayInt);
+		assertEquals(Arrays.asList(new String[]{"42"}), p.listString);
+		assertSame(arrayBoolean, p.arrayBoolean);
+		assertSame(mapTest, p.mapStringDouble);
+	}
+
+	@Test
+	public void testInitPropertiesWithWrongType() throws Exception {
+		class AProcessor extends AbstractManualProcessor {
+			@Property
+			String aString;
+
+			@Property
+			int anInt;
+
+			@Property
+			Object anObject;
+
+			@Override
+			public void process() {
+
+			}
+		};
+
+		AProcessor p = new AProcessor();
+		Launcher launcher = new Launcher();
+		p.setFactory(launcher.getFactory());
+
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+		props.set("aString", "foo");
+		props.set("anInt", "foo");
+		props.set("anObject", "foo");
+
+		ProcessorUtils.initProperties(p, props);
+
+		assertEquals("foo", p.aString);
+		assertEquals(0, p.anInt);
+		assertNull(p.anObject);
+	}
+
+	@Test
+	public void testInitPropertiesWithStringType() throws Exception {
+		class AProcessor extends AbstractManualProcessor {
+			@Property
+			String aString;
+
+			@Property
+			int anInt;
+
+			@Property
+			Object anObject;
+
+			@Property
+			int[] arrayInt;
+
+			@Property
+			List<String> listString;
+
+			@Property
+			boolean[] arrayBoolean;
+
+			@Property
+			Map<String,Double> mapStringDouble;
+
+			@Override
+			public void process() {
+
+			}
+		};
+
+		AProcessor p = new AProcessor();
+		Launcher launcher = new Launcher();
+		p.setFactory(launcher.getFactory());
+
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+		props.set("aString", "foo");
+		props.set("anInt", "42");
+		props.set("anObject", "{}");
+		props.set("arrayInt", "[42,43]");
+		props.set("listString", "[\"foo\", \"bar\"]");
+		props.set("arrayBoolean", "[true]");
+		props.set("mapStringDouble","{\"foo\": 10.21, \"bar\": 14.42}");
+
+		ProcessorUtils.initProperties(p, props);
+
+		assertEquals("foo", p.aString);
+		assertEquals(42, p.anInt);
+		assertNotNull(p.anObject);
+
+		assertArrayEquals(new int[] {42, 43}, p.arrayInt);
+		assertEquals(Arrays.asList(new String[]{"foo", "bar"}), p.listString);
+		assertArrayEquals(new boolean[]{true}, p.arrayBoolean);
+		Map<String, Double> mamap = new HashMap<>();
+		mamap.put("foo", 10.21);
+		mamap.put("bar", 14.42);
+		assertEquals(mamap, p.mapStringDouble);
 	}
 
 	@Test
