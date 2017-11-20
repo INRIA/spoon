@@ -32,15 +32,12 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class CtModelImpl implements CtModel {
 

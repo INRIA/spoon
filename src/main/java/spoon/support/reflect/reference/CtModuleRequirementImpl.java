@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2017 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.support.reflect.reference;
 
 import spoon.reflect.reference.CtModuleRequirement;
@@ -7,30 +23,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CtModuleRequirementImpl extends CtModuleReferenceImpl implements CtModuleRequirement {
-    Set<RequiresModifier> requiresModifiers = CtElementImpl.emptySet();
+	Set<RequiresModifier> requiresModifiers = CtElementImpl.emptySet();
 
-    public CtModuleRequirementImpl() {
-        super();
-    }
+	public CtModuleRequirementImpl() {
+		super();
+	}
 
-    @Override
-    public Set<RequiresModifier> getRequiresModifiers() {
-        return this.requiresModifiers;
-    }
+	@Override
+	public Set<RequiresModifier> getRequiresModifiers() {
+		return this.requiresModifiers;
+	}
 
-    @Override
-    public <T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers) {
-        if (requiresModifiers == null || requiresModifiers.isEmpty()) {
-            this.requiresModifiers = CtElementImpl.emptySet();
-            return (T) this;
-        }
+	@Override
+	public <T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers) {
+		if (requiresModifiers == null || requiresModifiers.isEmpty()) {
+			this.requiresModifiers = CtElementImpl.emptySet();
+			return (T) this;
+		}
 
-        if (this.requiresModifiers == CtElementImpl.<RequiresModifier>emptySet()) {
-            this.requiresModifiers = new HashSet<>();
-        }
-        this.requiresModifiers.clear();
-        this.requiresModifiers.addAll(requiresModifiers);
+		if (this.requiresModifiers == CtElementImpl.<RequiresModifier>emptySet()) {
+			this.requiresModifiers = new HashSet<>();
+		}
+		this.requiresModifiers.clear();
+		this.requiresModifiers.addAll(requiresModifiers);
 
-        return (T) this;
-    }
+		return (T) this;
+	}
 }
