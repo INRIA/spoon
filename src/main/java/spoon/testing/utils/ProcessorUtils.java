@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 public final class ProcessorUtils {
-	private final static ObjectMapper converter = new ObjectMapper();
+	private static final ObjectMapper converter = new ObjectMapper();
 
 	private ProcessorUtils() {
 		throw new AssertionError();
@@ -58,11 +58,11 @@ public final class ProcessorUtils {
 						obj = properties.get(String.class, f.getName());
 						if (obj != null) {
 							try {
-								obj = converter.readValue((String)obj, f.getType());
+								obj = converter.readValue((String) obj, f.getType());
 								f.setAccessible(true);
 								f.set(p, obj);
 							} catch (Exception e) {
-								throw new SpoonException("Error while assigning the value to "+f.getName(), e);
+								throw new SpoonException("Error while assigning the value to " + f.getName(), e);
 							}
 						} else {
 							p.getFactory().getEnvironment().report(p, Level.WARN,
