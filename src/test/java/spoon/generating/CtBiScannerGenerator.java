@@ -69,7 +69,11 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 			clone.getBody().insertBegin(peek);
 
 			for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
-				final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(1);
+				List<CtExpression> invArgs = ((CtInvocation) clone.getBody().getStatement(i)).getArguments();
+				if (invArgs.size() <= 1) {
+					throw new RuntimeException("You forget the role argument in line "+i+" of method "+element.getSimpleName()+" from "+element.getDeclaringType().getQualifiedName());
+				}
+				final CtInvocation targetInvocation = (CtInvocation) invArgs.get(1);
 				if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
 					clone.getBody().getStatement(i--).delete();
 					continue;
