@@ -181,12 +181,12 @@ public class CtScannerTest {
 				} else {
 					c.nbChecks++;
 					//System.out.println(invocation.toString());
-					// contract: the scan method is called with the same role as the one set on field / property
 
-					CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>) invocation.getExecutable().getDeclaration());
+					// contract: the scan method is called with the same role as the one set on field / property
+					CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>)invocation.getExecutable().getDeclaration());
 					CtInvocation<?> scanInvocation = invocation.getParent(CtInvocation.class);
 					String realRoleName = ((CtFieldRead<?>) scanInvocation.getArguments().get(0)).getVariable().getSimpleName();
-					if (expectedRole.name().equals(realRoleName) == false) {
+					if(expectedRole.name().equals(realRoleName) == false) {
 						problems.add("Wrong role " + realRoleName + " used in " + scanInvocation.getPosition());
 					}
 				}

@@ -117,6 +117,6 @@ import spoon.reflect.reference.CtVariableReference;
  * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */
 class ModelRoleHandlers {
-	
+
 }
 
