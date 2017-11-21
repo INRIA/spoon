@@ -900,6 +900,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(spoon.reflect.path.CtRole.OPENED_PACKAGE, module.getOpenedPackages(), other.getOpenedPackages());
 		biScan(spoon.reflect.path.CtRole.SERVICE_TYPE, module.getConsumedServices(), other.getConsumedServices());
 		biScan(spoon.reflect.path.CtRole.PROVIDED_SERVICE, module.getProvidedServices(), other.getProvidedServices());
+		biScan(spoon.reflect.path.CtRole.SUB_PACKAGE, module.getRootPackage(), other.getRootPackage());
 		exit(module);
 	}
 
@@ -920,6 +921,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(spoon.reflect.path.CtRole.COMMENT, moduleExport.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, moduleExport.getPackageReference(), other.getPackageReference());
 		biScan(spoon.reflect.path.CtRole.MODULE_REF, moduleExport.getTargetExport(), other.getTargetExport());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, moduleExport.getAnnotations(), other.getAnnotations());
 		exit(moduleExport);
 	}
 
@@ -930,6 +932,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(moduleRequirement);
 		biScan(spoon.reflect.path.CtRole.COMMENT, moduleRequirement.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.MODULE_REF, moduleRequirement.getModuleReference(), other.getModuleReference());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, moduleRequirement.getAnnotations(), other.getAnnotations());
 		exit(moduleRequirement);
 	}
 
@@ -941,6 +944,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		biScan(spoon.reflect.path.CtRole.COMMENT, moduleProvidedService.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.SERVICE_TYPE, moduleProvidedService.getServiceType(), other.getServiceType());
 		biScan(spoon.reflect.path.CtRole.IMPLEMENTATION_TYPE, moduleProvidedService.getImplementationTypes(), other.getImplementationTypes());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, moduleProvidedService.getAnnotations(), other.getAnnotations());
 		exit(moduleProvidedService);
 	}
 }

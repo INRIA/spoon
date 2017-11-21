@@ -922,6 +922,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.OPENED_PACKAGE, module.getOpenedPackages());
 		scan(CtRole.SERVICE_TYPE, module.getConsumedServices());
 		scan(CtRole.PROVIDED_SERVICE, module.getProvidedServices());
+		scan(CtRole.SUB_PACKAGE, module.getRootPackage());
 		exit(module);
 	}
 
@@ -938,6 +939,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, moduleExport.getComments());
 		scan(CtRole.PACKAGE_REF, moduleExport.getPackageReference());
 		scan(CtRole.MODULE_REF, moduleExport.getTargetExport());
+		scan(CtRole.ANNOTATION, moduleExport.getAnnotations());
 		exit(moduleExport);
 	}
 
@@ -946,6 +948,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(moduleRequirement);
 		scan(CtRole.COMMENT, moduleRequirement.getComments());
 		scan(CtRole.MODULE_REF, moduleRequirement.getModuleReference());
+		scan(CtRole.ANNOTATION, moduleRequirement.getAnnotations());
 		exit(moduleRequirement);
 	}
 
@@ -955,6 +958,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, moduleProvidedService.getComments());
 		scan(CtRole.SERVICE_TYPE, moduleProvidedService.getServiceType());
 		scan(CtRole.IMPLEMENTATION_TYPE, moduleProvidedService.getImplementationTypes());
+		scan(CtRole.ANNOTATION, moduleProvidedService.getAnnotations());
 		exit(moduleProvidedService);
 	}
 }

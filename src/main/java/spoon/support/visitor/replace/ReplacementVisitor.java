@@ -2006,22 +2006,16 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	@java.lang.Override
-	public void visitCtModuleReference(spoon.reflect.reference.CtModuleReference moduleReference) {
-		replaceInListIfExist(moduleReference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(moduleReference));
-	}
+	class CtModuleRootPackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackage> {
+		private final spoon.reflect.declaration.CtModule element;
 
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
-		private final spoon.reflect.declaration.CtModuleExport element;
-
-		CtModuleExportPackageReferenceReplaceListener(spoon.reflect.declaration.CtModuleExport element) {
+		CtModuleRootPackageReplaceListener(spoon.reflect.declaration.CtModule element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
-		public void set(spoon.reflect.reference.CtPackageReference replace) {
-			this.element.setPackageReference(replace);
+		public void set(spoon.reflect.declaration.CtPackage replace) {
+			this.element.setRootPackage(replace);
 		}
 	}
 
@@ -2039,13 +2033,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 	}
 
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	@java.lang.Override
-	public void visitCtModuleExport(spoon.reflect.declaration.CtModuleExport moduleExport) {
-		replaceInListIfExist(moduleExport.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(moduleExport));
-		replaceElementIfExist(moduleExport.getPackageReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleExportPackageReferenceReplaceListener(moduleExport));
-		replaceInListIfExist(moduleExport.getTargetExport(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleExportTargetExportReplaceListener(moduleExport));
-	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtModuleRequirementModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
@@ -2066,6 +2053,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public void visitCtModuleRequirement(spoon.reflect.declaration.CtModuleRequirement moduleRequirement) {
 		replaceInListIfExist(moduleRequirement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(moduleRequirement));
 		replaceElementIfExist(moduleRequirement.getModuleReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleRequirementModuleReferenceReplaceListener(moduleRequirement));
+		replaceInListIfExist(moduleRequirement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(moduleRequirement));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -2101,6 +2089,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(moduleProvidedService.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(moduleProvidedService));
 		replaceElementIfExist(moduleProvidedService.getServiceType(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleProvidedServiceServiceTypeReplaceListener(moduleProvidedService));
 		replaceInListIfExist(moduleProvidedService.getImplementationTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleProvidedServiceImplementationTypesReplaceListener(moduleProvidedService));
+		replaceInListIfExist(moduleProvidedService.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(moduleProvidedService));
 	}
 }
 

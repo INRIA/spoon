@@ -804,5 +804,69 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtJavaDoc.setTags(this.cloneHelper.clone(javaDoc.getTags()));
 		this.other = aCtJavaDoc;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtJavaDocTag(final spoon.reflect.code.CtJavaDocTag docTag) {
+		spoon.reflect.code.CtJavaDocTag aCtJavaDocTag = spoon.support.visitor.clone.CloneBuilder.build(this.builder, docTag, docTag.getFactory().Core().createJavaDocTag());
+		aCtJavaDocTag.setComments(this.cloneHelper.clone(docTag.getComments()));
+		aCtJavaDocTag.setAnnotations(this.cloneHelper.clone(docTag.getAnnotations()));
+		this.other = aCtJavaDocTag;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtModule(spoon.reflect.declaration.CtModule module) {
+		spoon.reflect.declaration.CtModule aCtModule = spoon.support.visitor.clone.CloneBuilder.build(this.builder, module, module.getFactory().Core().createModule());
+		aCtModule.setComments(this.cloneHelper.clone(module.getComments()));
+		aCtModule.setAnnotations(this.cloneHelper.clone(module.getAnnotations()));
+		aCtModule.setExportedPackages(this.cloneHelper.clone(module.getExportedPackages()));
+		aCtModule.setRequiredModules(this.cloneHelper.clone(module.getRequiredModules()));
+		aCtModule.setOpenedPackages(this.cloneHelper.clone(module.getOpenedPackages()));
+		aCtModule.setConsumedServices(this.cloneHelper.clone(module.getConsumedServices()));
+		aCtModule.setProvidedServices(this.cloneHelper.clone(module.getProvidedServices()));
+		aCtModule.setRootPackage(this.cloneHelper.clone(module.getRootPackage()));
+		this.other = aCtModule;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtModuleReference(spoon.reflect.reference.CtModuleReference moduleReference) {
+		spoon.reflect.reference.CtModuleReference aCtModuleReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleReference, moduleReference.getFactory().Core().createModuleReference());
+		aCtModuleReference.setAnnotations(this.cloneHelper.clone(moduleReference.getAnnotations()));
+		this.other = aCtModuleReference;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtModuleExport(spoon.reflect.declaration.CtModuleExport moduleExport) {
+		spoon.reflect.declaration.CtModuleExport aCtModuleExport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleExport, moduleExport.getFactory().Core().createModuleExport());
+		aCtModuleExport.setComments(this.cloneHelper.clone(moduleExport.getComments()));
+		aCtModuleExport.setPackageReference(this.cloneHelper.clone(moduleExport.getPackageReference()));
+		aCtModuleExport.setTargetExport(this.cloneHelper.clone(moduleExport.getTargetExport()));
+		aCtModuleExport.setAnnotations(this.cloneHelper.clone(moduleExport.getAnnotations()));
+		this.other = aCtModuleExport;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtModuleRequirement(spoon.reflect.declaration.CtModuleRequirement moduleRequirement) {
+		spoon.reflect.declaration.CtModuleRequirement aCtModuleRequirement = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleRequirement, moduleRequirement.getFactory().Core().createModuleRequirement());
+		aCtModuleRequirement.setComments(this.cloneHelper.clone(moduleRequirement.getComments()));
+		aCtModuleRequirement.setModuleReference(this.cloneHelper.clone(moduleRequirement.getModuleReference()));
+		aCtModuleRequirement.setAnnotations(this.cloneHelper.clone(moduleRequirement.getAnnotations()));
+		this.other = aCtModuleRequirement;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtModuleProvidedService(spoon.reflect.declaration.CtModuleProvidedService moduleProvidedService) {
+		spoon.reflect.declaration.CtModuleProvidedService aCtModuleProvidedService = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleProvidedService, moduleProvidedService.getFactory().Core().createModuleProvidedService());
+		aCtModuleProvidedService.setComments(this.cloneHelper.clone(moduleProvidedService.getComments()));
+		aCtModuleProvidedService.setServiceType(this.cloneHelper.clone(moduleProvidedService.getServiceType()));
+		aCtModuleProvidedService.setImplementationTypes(this.cloneHelper.clone(moduleProvidedService.getImplementationTypes()));
+		aCtModuleProvidedService.setAnnotations(this.cloneHelper.clone(moduleProvidedService.getAnnotations()));
+		this.other = aCtModuleProvidedService;
+	}
 }
 
