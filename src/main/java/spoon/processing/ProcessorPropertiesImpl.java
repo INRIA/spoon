@@ -16,15 +16,24 @@
  */
 package spoon.processing;
 
+import org.apache.commons.lang3.ClassUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProcessorPropertiesImpl implements ProcessorProperties {
-
 	private final Map<String, Object> _properties = new HashMap<>();
 
 	public <T> T get(Class<T> type, String name) {
-		return (T) _properties.get(name);
+		if (type.isPrimitive()) {
+			type = (Class<T>) ClassUtils.primitiveToWrapper(type);
+		}
+		T result = (T) _properties.get(name);
+		if (result == null) {
+			return null;
+		} else {
+			return (type.isAssignableFrom(result.getClass())) ? result : null;
+		}
 	}
 
 	public void set(String name, Object o) {
