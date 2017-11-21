@@ -42,6 +42,7 @@ import spoon.compiler.builder.SourceOptions;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -434,8 +435,16 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			ProcessingManager processing = new QueueProcessingManager(factory);
 			processing.addProcessor(factory.getEnvironment().getDefaultFileGenerator());
 			if (typeFilter != null) {
+				for (CtModule module : factory.getModel().getAllModules()) {
+					processing.process(Query.getElements(module, typeFilter));
+				}
 				processing.process(Query.getElements(factory.Package().getRootPackage(), typeFilter));
 			} else {
+				for (CtModule module : factory.getModel().getAllModules()) {
+					if (module != factory.getModel().getUnnamedModule()) {
+						processing.process(module);
+					}
+				}
 				processing.process(factory.Package().getRootPackage());
 			}
 		}

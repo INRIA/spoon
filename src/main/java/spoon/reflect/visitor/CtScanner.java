@@ -928,7 +928,7 @@ public abstract class CtScanner implements CtVisitor {
 	@Override
 	public void visitCtModuleReference(CtModuleReference moduleReference) {
 		enter(moduleReference);
-		scan(CtRole.ANNOTATION, moduleReference);
+		scan(CtRole.ANNOTATION, moduleReference.getAnnotations());
 		exit(moduleReference);
 	}
 

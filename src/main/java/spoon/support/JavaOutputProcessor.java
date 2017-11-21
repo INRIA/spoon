@@ -21,6 +21,7 @@ import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -162,7 +163,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	@Override
 	public boolean isToBeProcessed(CtNamedElement candidate) {
-		return candidate instanceof CtType<?> || candidate instanceof CtPackage && (candidate.getComments().size() > 0 || candidate.getAnnotations().size() > 0);
+		return candidate instanceof CtType<?> || candidate instanceof CtModule || candidate instanceof CtPackage && (candidate.getComments().size() > 0 || candidate.getAnnotations().size() > 0);
 	}
 
 	/**
@@ -174,6 +175,8 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			createJavaFile((CtType<?>) nameElement);
 		} else if (nameElement instanceof CtPackage) {
 			createPackageFile((CtPackage) nameElement);
+		} else if (nameElement instanceof CtModule) {
+			createModuleFile((CtModule) nameElement);
 		}
 	}
 
@@ -197,13 +200,48 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		}
 	}
 
+	private void createModuleFile(CtModule module) {
+		File moduleFile = new File(getModuleFile(module).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+		if (!printedFiles.contains(moduleFile)) {
+			printedFiles.add(moduleFile);
+		}
+		PrintStream stream = null;
+		try {
+			stream = new PrintStream(moduleFile);
+			stream.println(printer.printModuleInfo(module));
+			stream.close();
+		} catch (FileNotFoundException e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
+	}
+
+	private File getModuleFile(CtModule module) {
+		File moduleDir;
+		if (module == null || module.isUnnamedModule()) {
+			moduleDir = new File(directory.getAbsolutePath());
+		} else {
+			// Create current package dir
+			moduleDir = new File(directory.getAbsolutePath() + File.separatorChar + module.getSimpleName());
+		}
+		if (!moduleDir.exists()) {
+			if (!moduleDir.mkdirs()) {
+				throw new RuntimeException("Error creating output directory");
+			}
+		}
+		return moduleDir;
+	}
+
 	private File getPackageFile(CtPackage pack) {
 		File packageDir;
 		if (pack.isUnnamedPackage()) {
-			packageDir = new File(directory.getAbsolutePath());
+			packageDir = this.getModuleFile(pack.getDeclaringModule());
 		} else {
 			// Create current package dir
-			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
+			packageDir = new File(this.getModuleFile(pack.getDeclaringModule()).getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
 		}
 		if (!packageDir.exists()) {
 			if (!packageDir.mkdirs()) {

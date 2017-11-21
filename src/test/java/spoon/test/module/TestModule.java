@@ -9,6 +9,9 @@ import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -22,9 +25,8 @@ public class TestModule {
 		// contract: all information of the module-info should be available through the model
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/spoon/test/module/module-info.java");
-		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.buildModel();
 
 		assertEquals(6, launcher.getModel().getAllModules().size());
@@ -83,5 +85,30 @@ public class TestModule {
 		assertEquals("java.logging.Service", providedService2.getProvidingType().getQualifiedName());
 		assertEquals(1, providedService2.getUsedTypes().size());
 		assertEquals("com.greetings.logging.Logger", providedService2.getUsedTypes().get(0).getQualifiedName());
+	}
+
+	@Test
+	public void testModuleInfoShouldBeCorrectlyPrettyPrinted() throws IOException {
+		// contract: module-info with complete information should be correctly pretty printed
+
+		File input = new File("./src/test/resources/spoon/test/module/module-info.java");
+		File output = new File("./target/spoon-module");
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.setSourceOutputDirectory(output.getPath());
+		launcher.addInputResource(input.getPath());
+		launcher.run();
+
+		assertEquals(6, launcher.getModel().getAllModules().size());
+		File fileOuput = new File(output, "com.greetings/module-info.java");
+		List<String> originalLines = Files.readAllLines(input.toPath());
+		List<String> createdLines = Files.readAllLines(fileOuput.toPath());
+
+		assertEquals(originalLines.size(), createdLines.size());
+
+		for (int i = 0; i < originalLines.size(); i++) {
+			assertEquals(originalLines.get(i), createdLines.get(i));
+		}
 	}
 }

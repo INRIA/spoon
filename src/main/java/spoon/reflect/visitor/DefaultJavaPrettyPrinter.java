@@ -145,6 +145,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String JAVA_PACKAGE_DECLARATION = "package-info" + JAVA_FILE_EXTENSION;
 
 	/**
+	 * Module declaration file name.
+	 */
+	public static final String JAVA_MODULE_DECLARATION = "module-info" + JAVA_FILE_EXTENSION;
+
+	/**
 	 * Line separator which is used by the system
 	 */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -1023,32 +1028,82 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtModule(CtModule module) {
 		enter(module);
 		printer.writeKeyword("module").writeSpace().writeIdentifier(module.getSimpleName());
-		printer.writeSpace().writeSeparator("{").incTab();
+		printer.writeSpace().writeSeparator("{").incTab().writeln();
 
-		// print content
+		for (CtModuleRequirement moduleRequirement : module.getRequiredModules()) {
+			printer.writeKeyword("requires").writeSpace();
+			scan(moduleRequirement);
+			printer.writeln();
+		}
+		for (CtModuleExport moduleExport : module.getExportedPackages()) {
+			printer.writeKeyword("exports").writeSpace();
+			scan(moduleExport);
+			printer.writeln();
+		}
+		for (CtModuleExport moduleExport : module.getOpenedPackages()) {
+			printer.writeKeyword("opens").writeSpace();
+			scan(moduleExport);
+			printer.writeln();
+		}
+		for (CtTypeReference consumedService : module.getConsumedServices()) {
+			printer.writeKeyword("uses").writeSpace();
+			scan(consumedService);
+			printer.writeSeparator(";").writeln();
+		}
+		for (CtModuleProvidedService providedService : module.getProvidedServices()) {
+			printer.writeKeyword("provides").writeSpace();
+			scan(providedService);
+			printer.writeln();
+		}
 
-		printer.writeSeparator("}").decTab();
+		printer.decTab().writeSeparator("}");
 		exit(module);
 	}
 
 	@Override
 	public void visitCtModuleReference(CtModuleReference moduleReference) {
-
+		printer.writeIdentifier(moduleReference.getSimpleName());
 	}
 
 	@Override
 	public void visitCtModuleExport(CtModuleExport moduleExport) {
-
+		visitCtPackageReference(moduleExport.getPackageReference());
+		if (!moduleExport.getTargetExport().isEmpty()) {
+			try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, " to", true, false, ",", true, false, null)) {
+				for (CtModuleReference moduleReference : moduleExport.getTargetExport()) {
+					lp.printSeparatorIfAppropriate();
+					scan(moduleReference);
+				}
+			}
+		}
+		printer.writeSeparator(";");
 	}
 
 	@Override
 	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		if (!moduleRequirement.getRequiresModifiers().isEmpty()) {
+			try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, null, false, false, " ", false, false, " ")) {
+				for (CtModuleRequirement.RequiresModifier modifier : moduleRequirement.getRequiresModifiers()) {
+					lp.printSeparatorIfAppropriate();
+					printer.writeKeyword(modifier.name().toLowerCase());
+				}
+			}
+		}
 
+		scan(moduleRequirement.getModuleReference());
+		printer.writeSeparator(";");
 	}
 
 	@Override
 	public void visitCtModuleProvidedService(CtModuleProvidedService moduleProvidedService) {
-
+		scan(moduleProvidedService.getProvidingType());
+		try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, " with", true, false, ",", true, false, null)) {
+			for (CtTypeReference implementations : moduleProvidedService.getUsedTypes()) {
+				lp.printSeparatorIfAppropriate();
+				scan(implementations);
+			}
+		}
+		printer.writeSeparator(";");
 	}
 
 	@Override
@@ -1876,6 +1931,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		elementPrinterHelper.writeImports(this.importsContext.getAllImports());
 		return printer.getPrinterHelper().toString();
+	}
+
+	@Override
+	public String printModuleInfo(CtModule module) {
+		reset();
+		scan(module);
+		return this.getResult();
 	}
 
 	@Override
