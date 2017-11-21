@@ -945,6 +945,15 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		if (klass.equals(spoon.reflect.declaration.CtModule.class)) {
 			return createModule();
 		}
+		if (klass.equals(spoon.reflect.declaration.CtModuleRequirement.class)) {
+			return createModuleRequirement();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtModuleExport.class)) {
+			return createModuleExport();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtModuleProvidedService.class)) {
+			return createModuleProvidedService();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
