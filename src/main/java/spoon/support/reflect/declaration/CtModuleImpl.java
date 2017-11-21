@@ -16,12 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -277,7 +279,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (rootPackage != null) {
 			rootPackage.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
+		if (!(this instanceof ModuleFactory.CtUnnamedModule)) {
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
+		}
 		this.rootPackage = rootPackage;
 		return (T) this;
 	}
