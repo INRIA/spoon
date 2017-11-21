@@ -917,11 +917,11 @@ public abstract class CtScanner implements CtVisitor {
 		enter(module);
 		scan(CtRole.COMMENT, module.getComments());
 		scan(CtRole.ANNOTATION, module.getAnnotations());
-		scan(module.getExportedPackages());
-		scan(module.getRequiredModules());
-		scan(module.getOpenedPackages());
-		scan(module.getConsumedServices());
-		scan(module.getProvidedServices());
+		scan(CtRole.EXPORTED_PACKAGE, module.getExportedPackages());
+		scan(CtRole.REQUIRED_MODULE, module.getRequiredModules());
+		scan(CtRole.OPENED_PACKAGE, module.getOpenedPackages());
+		scan(CtRole.SERVICE_TYPE, module.getConsumedServices());
+		scan(CtRole.PROVIDED_SERVICE, module.getProvidedServices());
 		exit(module);
 	}
 
@@ -936,8 +936,8 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtModuleExport(CtModuleExport moduleExport) {
 		enter(moduleExport);
 		scan(CtRole.COMMENT, moduleExport.getComments());
-		scan(moduleExport.getPackageReference());
-		scan(moduleExport.getTargetExport());
+		scan(CtRole.PACKAGE_REF, moduleExport.getPackageReference());
+		scan(CtRole.MODULE_REF, moduleExport.getTargetExport());
 		exit(moduleExport);
 	}
 
@@ -945,7 +945,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
 		enter(moduleRequirement);
 		scan(CtRole.COMMENT, moduleRequirement.getComments());
-		scan(moduleRequirement.getModuleReference());
+		scan(CtRole.MODULE_REF, moduleRequirement.getModuleReference());
 		exit(moduleRequirement);
 	}
 
@@ -953,8 +953,8 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtModuleProvidedService(CtModuleProvidedService moduleProvidedService) {
 		enter(moduleProvidedService);
 		scan(CtRole.COMMENT, moduleProvidedService.getComments());
-		scan(moduleProvidedService.getServiceType());
-		scan(moduleProvidedService.getImplementationTypes());
+		scan(CtRole.SERVICE_TYPE, moduleProvidedService.getServiceType());
+		scan(CtRole.IMPLEMENTATION_TYPE, moduleProvidedService.getImplementationTypes());
 		exit(moduleProvidedService);
 	}
 }
