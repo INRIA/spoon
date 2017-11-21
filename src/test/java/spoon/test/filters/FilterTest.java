@@ -510,7 +510,7 @@ public class FilterTest {
 		}
 		Context context = new Context();
 		
-		CtQuery l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
+		CtQuery l_qv = launcher.getFactory().getModel().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
 		l_qv.forEach(cls->{
@@ -1114,7 +1114,7 @@ public class FilterTest {
 		Context context1 = new Context();
 
 		// scan only packages until top level classes. Do not scan class internals
-		List<CtElement> result1 = launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+		List<CtElement> result1 = launcher.getFactory().getModel().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			@Override
 			public ScanningMode enter(CtElement element) {
 				context1.nrOfEnter++;
@@ -1141,7 +1141,7 @@ public class FilterTest {
 		Iterator iter = result1.iterator();
 		
 		//scan only from packages till top level classes. Do not scan class internals
-		launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+		launcher.getFactory().getModel().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			int inClass = 0;
 			@Override
 			public ScanningMode enter(CtElement element) {
