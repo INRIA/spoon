@@ -82,6 +82,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -167,6 +168,7 @@ import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.reflect.declaration.CtModuleExportImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
+import spoon.support.reflect.declaration.CtModuleProvidedServiceImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
@@ -977,6 +979,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		CtModuleExport moduleExport = new CtModuleExportImpl();
 		moduleExport.setFactory(getMainFactory());
 		return moduleExport;
+	}
+
+	@Override
+	public CtModuleProvidedService createModuleProvidedService() {
+		CtModuleProvidedService moduleProvidedService = new CtModuleProvidedServiceImpl();
+		moduleProvidedService.setFactory(getMainFactory());
+		return moduleProvidedService;
 	}
 
 }

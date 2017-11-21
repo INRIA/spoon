@@ -20,11 +20,13 @@ import spoon.reflect.CtModelImpl;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
@@ -113,5 +115,9 @@ public class ModuleFactory extends SubFactory implements Serializable {
 
 	public CtModuleExport createModuleExport(CtPackage ctPackage) {
 		return factory.Core().createModuleExport().setPackageReference(ctPackage.getReference());
+	}
+
+	public CtModuleProvidedService createModuleProvidedService(CtTypeReference typeReference) {
+		return factory.Core().createModuleProvidedService().setProvidingType(typeReference);
 	}
 }

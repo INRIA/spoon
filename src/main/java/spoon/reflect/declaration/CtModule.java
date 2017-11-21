@@ -16,7 +16,6 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtModuleProvidedService;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 

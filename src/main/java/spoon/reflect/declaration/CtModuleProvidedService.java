@@ -14,13 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.reference;
+package spoon.reflect.declaration;
 
-import java.util.Set;
+import spoon.reflect.reference.CtTypeReference;
 
-public interface CtModuleProvidedService extends CtTypeReference {
+import java.util.List;
 
-	Set<CtTypeReference> getProvidingTypes();
+public interface CtModuleProvidedService extends CtElement {
 
-	<T extends CtModuleProvidedService> T setProvidingTypes(Set<CtTypeReference> providingTypes);
+	CtTypeReference getProvidingType();
+
+	<T extends CtModuleProvidedService> T setProvidingType(CtTypeReference providingType);
+
+	List<CtTypeReference> getUsedTypes();
+
+	<T extends CtModuleProvidedService> T setUsedTypes(List<CtTypeReference> usedTypes);
 }

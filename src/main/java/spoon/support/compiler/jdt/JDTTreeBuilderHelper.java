@@ -24,6 +24,7 @@ import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
+import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
@@ -54,6 +55,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -715,6 +717,15 @@ public class JDTTreeBuilderHelper {
 			module.setConsumedServices(consumedServices);
 		}
 
+		if (moduleDeclaration.services != null && moduleDeclaration.services.length > 0) {
+			List<CtModuleProvidedService> moduleProvidedServices = new ArrayList<>();
+			for (ProvidesStatement providesStatement : moduleDeclaration.services) {
+				moduleProvidedServices.add(this.createModuleProvidedService(providesStatement));
+			}
+
+			module.setProvidedServices(moduleProvidedServices);
+		}
+
 		return module;
 	}
 
@@ -784,5 +795,22 @@ public class JDTTreeBuilderHelper {
 
 		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 		return moduleExport;
+	}
+
+	CtModuleProvidedService createModuleProvidedService(ProvidesStatement providesStatement) {
+		int sourceStart = providesStatement.sourceStart;
+		int sourceEnd = providesStatement.sourceEnd;
+
+		CtTypeReference provideService = this.jdtTreeBuilder.references.getTypeReference(providesStatement.serviceInterface);
+		List<CtTypeReference> implementations = new ArrayList<>();
+
+		for (TypeReference typeReference : providesStatement.implementations) {
+			implementations.add(this.jdtTreeBuilder.references.getTypeReference(typeReference));
+		}
+
+		CtModuleProvidedService providedService = this.jdtTreeBuilder.getFactory().Module().createModuleProvidedService(provideService);
+		providedService.setUsedTypes(implementations);
+		providedService.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return providedService;
 	}
 }

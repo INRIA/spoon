@@ -82,6 +82,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -564,4 +565,6 @@ public interface CoreFactory {
 	CtModuleRequirement createModuleRequirement();
 
 	CtModuleExport createModuleExport();
+
+	CtModuleProvidedService createModuleProvidedService();
 }

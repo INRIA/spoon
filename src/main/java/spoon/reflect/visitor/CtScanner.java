@@ -84,6 +84,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -946,6 +947,15 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, moduleRequirement.getComments());
 		scan(moduleRequirement.getModuleReference());
 		exit(moduleRequirement);
+	}
+
+	@Override
+	public void visitCtModuleProvidedService(CtModuleProvidedService moduleProvidedService) {
+		enter(moduleProvidedService);
+		scan(CtRole.COMMENT, moduleProvidedService.getComments());
+		scan(moduleProvidedService.getProvidingType());
+		scan(moduleProvidedService.getUsedTypes());
+		exit(moduleProvidedService);
 	}
 }
 
