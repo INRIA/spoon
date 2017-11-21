@@ -374,7 +374,7 @@ public class CompilationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/reference-test/Foo.java");
 		launcher.buildModel();
-		launcher.getModel().getRootPackage().accept(new CtScanner() {
+		launcher.getModel().getUnnamedModule().accept(new CtScanner() {
 			@Override
 			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 				try {
