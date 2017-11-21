@@ -25,12 +25,14 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.chain.CtConsumableFunction;
+import spoon.reflect.visitor.chain.CtFunction;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +41,23 @@ public class CtModelImpl implements CtModel {
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
+		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).filterChildren(filter);
+	}
+
+	@Override
+	public <I, R> CtQuery map(CtFunction<I, R> function) {
+		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(function);
+	}
+
+	@Override
+	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
+		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(queryStep);
+	}
+
+	@Deprecated
+	// this class should move to PackageFactory in the future.
 	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
@@ -104,30 +123,26 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		List<CtType<?>> types = new ArrayList<>();
-		for (CtPackage pack : getAllPackages()) {
-			types.addAll(pack.getTypes());
-		}
-		return types;
+		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtType.class)));
 	}
 
 
 	@Override
 	public Collection<CtPackage> getAllPackages() {
-		return Collections.unmodifiableCollection(rootPackage.getElements(new TypeFilter<>(CtPackage.class)));
+		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtPackage.class)));
 	}
 
 
 	@Override
 	public void processWith(Processor<?> processor) {
-		QueueProcessingManager processingManager = new QueueProcessingManager(rootPackage.getFactory());
+		QueueProcessingManager processingManager = new QueueProcessingManager(getRootPackage().getFactory());
 		processingManager.addProcessor(processor);
 		processingManager.process(getRootPackage());
 	}
 
 	@Override
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
-		return getRootPackage().getElements(filter);
+		return filterChildren(filter).list();
 	}
 
 }
