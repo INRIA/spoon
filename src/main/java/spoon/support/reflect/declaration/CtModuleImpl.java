@@ -16,7 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
