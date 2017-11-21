@@ -20,7 +20,7 @@ import spoon.reflect.reference.CtModuleProvidedService;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.Set;
+import java.util.List;
 
 public interface CtModule extends CtNamedElement {
 
@@ -35,25 +35,25 @@ public interface CtModule extends CtNamedElement {
 
 	<T extends CtModule> T setIsOpenModule(boolean openModule);
 
-	Set<CtTypeReference> getConsumedServices();
+	List<CtTypeReference> getConsumedServices();
 
-	<T extends CtModule> T setConsumedServices(Set<CtTypeReference> consumedServices);
+	<T extends CtModule> T setConsumedServices(List<CtTypeReference> consumedServices);
 
-	Set<CtModuleExport> getExportedPackages();
+	List<CtModuleExport> getExportedPackages();
 
-	<T extends CtModule> T setExportedPackages(Set<CtModuleExport> exportedPackages);
+	<T extends CtModule> T setExportedPackages(List<CtModuleExport> exportedPackages);
 
-	Set<CtModuleExport> getOpenedPackages();
+	List<CtModuleExport> getOpenedPackages();
 
-	<T extends CtModule> T setOpenedPackages(Set<CtModuleExport> openedPackages);
+	<T extends CtModule> T setOpenedPackages(List<CtModuleExport> openedPackages);
 
-	Set<CtModuleRequirement> getRequiredModules();
+	List<CtModuleRequirement> getRequiredModules();
 
-	<T extends CtModule> T setRequiredModules(Set<CtModuleRequirement> requiredModules);
+	<T extends CtModule> T setRequiredModules(List<CtModuleRequirement> requiredModules);
 
-	Set<CtModuleProvidedService> getProvidedServices();
+	List<CtModuleProvidedService> getProvidedServices();
 
-	<T extends CtModule> T setProvidedServices(Set<CtModuleProvidedService> providedServices);
+	<T extends CtModule> T setProvidedServices(List<CtModuleProvidedService> providedServices);
 
 	CtPackage getRootPackage();
 

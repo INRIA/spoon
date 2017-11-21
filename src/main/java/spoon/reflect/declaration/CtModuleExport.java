@@ -19,7 +19,7 @@ package spoon.reflect.declaration;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 
-import java.util.Set;
+import java.util.List;
 
 public interface CtModuleExport extends CtElement {
 
@@ -27,7 +27,7 @@ public interface CtModuleExport extends CtElement {
 
 	<T extends CtModuleExport> T setPackageReference(CtPackageReference packageReference);
 
-	Set<CtModuleReference> getTargetExport();
+	List<CtModuleReference> getTargetExport();
 
-	<T extends CtModuleExport> T setTargetExport(Set<CtModuleReference> targetExport);
+	<T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExport);
 }

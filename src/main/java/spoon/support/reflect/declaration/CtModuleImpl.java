@@ -25,18 +25,19 @@ import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 
 	private boolean openModule;
 
-	private Set<CtModuleExport> exportedPackages = CtElementImpl.emptySet();
-	private Set<CtModuleExport> openedPackages = CtElementImpl.emptySet();
-	private Set<CtModuleRequirement> requiredModules = CtElementImpl.emptySet();
-	private Set<CtModuleProvidedService> providedServices = CtElementImpl.emptySet();
-	private Set<CtTypeReference> consumedServices = CtElementImpl.emptySet();
+	private List<CtModuleExport> exportedPackages = CtElementImpl.emptyList();
+	private List<CtModuleExport> openedPackages = CtElementImpl.emptyList();
+	private List<CtModuleRequirement> requiredModules = CtElementImpl.emptyList();
+	private List<CtModuleProvidedService> providedServices = CtElementImpl.emptyList();
+	private List<CtTypeReference> consumedServices = CtElementImpl.emptyList();
 
 	private CtPackage rootPackage;
 
@@ -61,19 +62,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public Set<CtTypeReference> getConsumedServices() {
-		return this.consumedServices;
+	public List<CtTypeReference> getConsumedServices() {
+		return Collections.unmodifiableList(this.consumedServices);
 	}
 
 	@Override
-	public <T extends CtModule> T setConsumedServices(Set<CtTypeReference> consumedServices) {
+	public <T extends CtModule> T setConsumedServices(List<CtTypeReference> consumedServices) {
 		if (consumedServices == null || consumedServices.isEmpty()) {
-			this.consumedServices = CtElementImpl.emptySet();
+			this.consumedServices = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.consumedServices == CtElementImpl.<CtTypeReference>emptySet()) {
-			this.consumedServices = new HashSet<>();
+		if (this.consumedServices == CtElementImpl.<CtTypeReference>emptyList()) {
+			this.consumedServices = new ArrayList<>();
 		}
 		this.consumedServices.clear();
 		this.consumedServices.addAll(consumedServices);
@@ -81,19 +82,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public Set<CtModuleExport> getExportedPackages() {
-		return this.exportedPackages;
+	public List<CtModuleExport> getExportedPackages() {
+		return Collections.unmodifiableList(this.exportedPackages);
 	}
 
 	@Override
-	public <T extends CtModule> T setExportedPackages(Set<CtModuleExport> exportedPackages) {
+	public <T extends CtModule> T setExportedPackages(List<CtModuleExport> exportedPackages) {
 		if (exportedPackages == null || exportedPackages.isEmpty()) {
-			this.exportedPackages = CtElementImpl.emptySet();
+			this.exportedPackages = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.exportedPackages == CtElementImpl.<CtModuleExport>emptySet()) {
-			this.exportedPackages = new HashSet<>();
+		if (this.exportedPackages == CtElementImpl.<CtModuleExport>emptyList()) {
+			this.exportedPackages = new ArrayList<>();
 		}
 
 		this.exportedPackages.clear();
@@ -103,19 +104,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public Set<CtModuleExport> getOpenedPackages() {
-		return this.openedPackages;
+	public List<CtModuleExport> getOpenedPackages() {
+		return Collections.unmodifiableList(this.openedPackages);
 	}
 
 	@Override
-	public <T extends CtModule> T setOpenedPackages(Set<CtModuleExport> openedPackages) {
+	public <T extends CtModule> T setOpenedPackages(List<CtModuleExport> openedPackages) {
 		if (openedPackages == null || openedPackages.isEmpty()) {
-			this.openedPackages = CtElementImpl.emptySet();
+			this.openedPackages = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.openedPackages == CtElementImpl.<CtModuleExport>emptySet()) {
-			this.openedPackages = new HashSet<>();
+		if (this.openedPackages == CtElementImpl.<CtModuleExport>emptyList()) {
+			this.openedPackages = new ArrayList<>();
 		}
 
 		this.openedPackages.clear();
@@ -125,19 +126,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public Set<CtModuleRequirement> getRequiredModules() {
-		return this.requiredModules;
+	public List<CtModuleRequirement> getRequiredModules() {
+		return Collections.unmodifiableList(this.requiredModules);
 	}
 
 	@Override
-	public <T extends CtModule> T setRequiredModules(Set<CtModuleRequirement> requiredModules) {
+	public <T extends CtModule> T setRequiredModules(List<CtModuleRequirement> requiredModules) {
 		if (requiredModules == null || requiredModules.isEmpty()) {
-			this.requiredModules = CtElementImpl.emptySet();
+			this.requiredModules = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.requiredModules == CtElementImpl.<CtModuleRequirement>emptySet()) {
-			this.requiredModules = new HashSet<>();
+		if (this.requiredModules == CtElementImpl.<CtModuleRequirement>emptyList()) {
+			this.requiredModules = new ArrayList<>();
 		}
 
 		this.requiredModules.clear();
@@ -147,19 +148,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public Set<CtModuleProvidedService> getProvidedServices() {
-		return this.getProvidedServices();
+	public List<CtModuleProvidedService> getProvidedServices() {
+		return Collections.unmodifiableList(this.providedServices);
 	}
 
 	@Override
-	public <T extends CtModule> T setProvidedServices(Set<CtModuleProvidedService> providedServices) {
+	public <T extends CtModule> T setProvidedServices(List<CtModuleProvidedService> providedServices) {
 		if (providedServices == null || providedServices.isEmpty()) {
-			this.providedServices = CtElementImpl.emptySet();
+			this.providedServices = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.providedServices == CtElementImpl.<CtModuleProvidedService>emptySet()) {
-			this.providedServices = new HashSet<>();
+		if (this.providedServices == CtElementImpl.<CtModuleProvidedService>emptyList()) {
+			this.providedServices = new ArrayList<>();
 		}
 
 		this.providedServices.clear();

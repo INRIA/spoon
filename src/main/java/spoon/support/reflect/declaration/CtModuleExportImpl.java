@@ -21,13 +21,14 @@ import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport {
 	CtPackageReference packageReference;
 
-	Set<CtModuleReference> targets = CtElementImpl.emptySet();
+	List<CtModuleReference> targets = CtElementImpl.emptyList();
 
 	@Override
 	public CtPackageReference getPackageReference() {
@@ -44,18 +45,22 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 	}
 
 	@Override
-	public Set<CtModuleReference> getTargetExport() {
-		return Collections.unmodifiableSet(targets);
+	public List<CtModuleReference> getTargetExport() {
+		return Collections.unmodifiableList(targets);
 	}
 
 	@Override
-	public <T extends CtModuleExport> T setTargetExport(Set<CtModuleReference> targetExport) {
+	public <T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExport) {
 		if (targetExport == null || targetExport.isEmpty()) {
-			this.targets = CtElementImpl.emptySet();
+			this.targets = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		this.targets = Collections.unmodifiableSet(targetExport);
+		if (this.targets == CtElementImpl.<CtModuleReference>emptyList()) {
+			this.targets = new ArrayList<>();
+		}
+
+		this.targets.addAll(targetExport);
 		return (T) this;
 	}
 

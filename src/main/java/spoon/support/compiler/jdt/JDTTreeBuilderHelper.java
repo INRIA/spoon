@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
+import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.UsesStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
@@ -678,7 +680,7 @@ public class JDTTreeBuilderHelper {
 		jdtTreeBuilder.getContextBuilder().enter(module, moduleDeclaration);
 
 		if (moduleDeclaration.requires != null && moduleDeclaration.requires.length > 0) {
-			Set<CtModuleRequirement> moduleRequirements = new HashSet<>();
+			List<CtModuleRequirement> moduleRequirements = new ArrayList<>();
 			for (RequiresStatement requiresStatement : moduleDeclaration.requires) {
 				moduleRequirements.add(this.createModuleRequirement(requiresStatement));
 			}
@@ -687,12 +689,30 @@ public class JDTTreeBuilderHelper {
 		}
 
 		if (moduleDeclaration.exports != null && moduleDeclaration.exports.length > 0) {
-			Set<CtModuleExport> moduleExports = new HashSet<>();
+			List<CtModuleExport> moduleExports = new ArrayList<>();
 			for (ExportsStatement exportsStatement : moduleDeclaration.exports) {
 				moduleExports.add(this.createModuleExport(exportsStatement));
 			}
 
 			module.setExportedPackages(moduleExports);
+		}
+
+		if (moduleDeclaration.opens != null && moduleDeclaration.opens.length > 0) {
+			List<CtModuleExport> moduleOpens = new ArrayList<>();
+			for (OpensStatement opensStatement : moduleDeclaration.opens) {
+				moduleOpens.add(this.createModuleExport(opensStatement));
+			}
+
+			module.setOpenedPackages(moduleOpens);
+		}
+
+		if (moduleDeclaration.uses != null && moduleDeclaration.uses.length > 0) {
+			List<CtTypeReference> consumedServices = new ArrayList<>();
+			for (UsesStatement consumedService : moduleDeclaration.uses) {
+				consumedServices.add(this.jdtTreeBuilder.references.getTypeReference(consumedService.serviceInterface));
+			}
+
+			module.setConsumedServices(consumedServices);
 		}
 
 		return module;
@@ -727,9 +747,33 @@ public class JDTTreeBuilderHelper {
 		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackage);
 
 		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
-			Set<CtModuleReference> moduleReferences = new HashSet<>();
+			List<CtModuleReference> moduleReferences = new ArrayList<>();
 
 			for (ModuleReference moduleReference : exportsStatement.targets) {
+				String moduleName = new String(moduleReference.moduleName);
+				CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
+				moduleReferences.add(module.getReference());
+			}
+
+			moduleExport.setTargetExport(moduleReferences);
+		}
+
+		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return moduleExport;
+	}
+
+	CtModuleExport createModuleExport(OpensStatement opensStatement) {
+		String packageName = new String(opensStatement.pkgName);
+		int sourceStart = opensStatement.sourceStart;
+		int sourceEnd = opensStatement.sourceEnd;
+
+		CtPackage ctPackage = jdtTreeBuilder.getFactory().Package().getOrCreate(packageName);
+		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackage);
+
+		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
+			List<CtModuleReference> moduleReferences = new ArrayList<>();
+
+			for (ModuleReference moduleReference : opensStatement.targets) {
 				String moduleName = new String(moduleReference.moduleName);
 				CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
 				moduleReferences.add(module.getReference());

@@ -6,7 +6,9 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtTypeReference;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -16,41 +18,55 @@ import static org.junit.Assert.fail;
 public class TestModule {
 
 	@Test
-	public void testSimpleModule() {
+	public void testCompleteModuleInfoContentNoClasspath() {
+		// contract: all information of the module-info should be available through the model
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/module/com.greetings");
+		launcher.addInputResource("./src/test/resources/spoon/test/module/module-info.java");
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.getEnvironment().setCommentEnabled(true);
-		// does not compile in full classpath mode as it should be...
-		// we got the following error: The package com.greetings.pkg does not exist or is empty
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.buildModel();
 
-		assertEquals(5, launcher.getModel().getAllModules().size());
+		assertEquals(6, launcher.getModel().getAllModules().size());
 		CtModule moduleGreetings = launcher.getFactory().Module().getOrCreate("com.greetings");
 
 		assertEquals("com.greetings", moduleGreetings.getSimpleName());
 
-
-		Set<CtModuleRequirement> requiredModules = moduleGreetings.getRequiredModules();
+		List<CtModuleRequirement> requiredModules = moduleGreetings.getRequiredModules();
 		assertEquals(1, requiredModules.size());
 
-		CtModuleRequirement moduleRequirement = requiredModules.iterator().next();
+		CtModuleRequirement moduleRequirement = requiredModules.get(0);
 		assertEquals("java.logging", moduleRequirement.getModuleReference().getSimpleName());
-		assertTrue(moduleRequirement.getRequiresModifiers().contains(CtModuleRequirement.RequiresModifier.STATIC));
+		assertTrue(moduleRequirement.getRequiresModifiers().contains(CtModuleRequirement.RequiresModifier.TRANSITIVE));
 
-		Set<CtModuleExport> moduleExports = moduleGreetings.getExportedPackages();
+		List<CtModuleExport> moduleExports = moduleGreetings.getExportedPackages();
 		assertEquals(1, moduleExports.size());
 
-		CtModuleExport moduleExport = moduleExports.iterator().next();
-		assertEquals("com.greetings.pkg", moduleExport.getPackageReference().getQualifiedName());
+		assertEquals("com.greetings.pkg", moduleExports.get(0).getPackageReference().getQualifiedName());
 
-		assertEquals(2, moduleExport.getTargetExport().size());
+		assertEquals(2, moduleExports.get(0).getTargetExport().size());
 
-		for (CtModuleReference target : moduleExport.getTargetExport()) {
+		for (CtModuleReference target : moduleExports.get(0).getTargetExport()) {
 			if (!target.getSimpleName().equals("com.other.module") && !target.getSimpleName().equals("com.second.module")) {
 				fail();
 			}
 		}
+
+		List<CtModuleExport> moduleOpened = moduleGreetings.getOpenedPackages();
+		assertEquals(2, moduleOpened.size());
+
+		CtModuleExport openedFirst = moduleOpened.get(0);
+		CtModuleExport openedSecond = moduleOpened.get(1);
+
+		assertEquals("com.greetings.otherpkg", openedFirst.getPackageReference().getSimpleName());
+		assertTrue(openedFirst.getTargetExport().isEmpty());
+
+		assertEquals("com.greetings.openpkg", openedSecond.getPackageReference().getSimpleName());
+		assertEquals(1, openedSecond.getTargetExport().size());
+		assertEquals("com.third.module", openedSecond.getTargetExport().iterator().next().getSimpleName());
+
+		List<CtTypeReference> consumedService = moduleGreetings.getConsumedServices();
+		assertEquals(1, consumedService.size());
+		assertEquals("com.greetings.pkg.ConsumedService", consumedService.get(0).getQualifiedName());
 	}
 }
