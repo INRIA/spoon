@@ -1096,9 +1096,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtModuleProvidedService(CtModuleProvidedService moduleProvidedService) {
-		scan(moduleProvidedService.getProvidingType());
+		scan(moduleProvidedService.getServiceType());
 		try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, " with", true, false, ",", true, false, null)) {
-			for (CtTypeReference implementations : moduleProvidedService.getUsedTypes()) {
+			for (CtTypeReference implementations : moduleProvidedService.getImplementationTypes()) {
 				lp.printSeparatorIfAppropriate();
 				scan(implementations);
 			}

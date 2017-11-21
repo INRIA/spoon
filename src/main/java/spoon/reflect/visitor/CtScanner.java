@@ -953,8 +953,8 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtModuleProvidedService(CtModuleProvidedService moduleProvidedService) {
 		enter(moduleProvidedService);
 		scan(CtRole.COMMENT, moduleProvidedService.getComments());
-		scan(moduleProvidedService.getProvidingType());
-		scan(moduleProvidedService.getUsedTypes());
+		scan(moduleProvidedService.getServiceType());
+		scan(moduleProvidedService.getImplementationTypes());
 		exit(moduleProvidedService);
 	}
 }

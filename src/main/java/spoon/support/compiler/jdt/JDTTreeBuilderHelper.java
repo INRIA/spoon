@@ -809,7 +809,7 @@ public class JDTTreeBuilderHelper {
 		}
 
 		CtModuleProvidedService providedService = this.jdtTreeBuilder.getFactory().Module().createModuleProvidedService(provideService);
-		providedService.setUsedTypes(implementations);
+		providedService.setImplementationTypes(implementations);
 		providedService.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 		return providedService;
 	}

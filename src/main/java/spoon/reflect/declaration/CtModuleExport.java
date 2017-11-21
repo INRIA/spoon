@@ -16,6 +16,9 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 
@@ -23,11 +26,21 @@ import java.util.List;
 
 public interface CtModuleExport extends CtElement {
 
+	@PropertyGetter(role = CtRole.PACKAGE_REF)
 	CtPackageReference getPackageReference();
 
+	@PropertySetter(role = CtRole.PACKAGE_REF)
 	<T extends CtModuleExport> T setPackageReference(CtPackageReference packageReference);
 
+	@PropertyGetter(role = CtRole.MODULE_REF)
 	List<CtModuleReference> getTargetExport();
 
+	@PropertySetter(role = CtRole.MODULE_REF)
 	<T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExport);
+
+	@PropertySetter(role = CtRole.MODULE_REF)
+	<T extends CtModuleExport> T addTargetExport(CtModuleReference targetExport);
+
+	@Override
+	CtModuleExport clone();
 }

@@ -963,20 +963,25 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	@Override
 	public void visitCtModuleReference(CtModuleReference moduleReference) {
 		scanCtReference(moduleReference);
+		scanCtElement(moduleReference);
+		scanCtVisitable(moduleReference);
 	}
 
 	@Override
 	public void visitCtModuleExport(CtModuleExport moduleExport) {
 		scanCtElement(moduleExport);
+		scanCtVisitable(moduleExport);
 	}
 
 	@Override
 	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
 		scanCtElement(moduleRequirement);
+		scanCtVisitable(moduleRequirement);
 	}
 
 	@Override
 	public void visitCtModuleProvidedService(CtModuleProvidedService moduleProvidedService) {
 		scanCtElement(moduleProvidedService);
+		scanCtVisitable(moduleProvidedService);
 	}
 }

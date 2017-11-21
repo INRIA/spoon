@@ -17,6 +17,7 @@
 package spoon.experimental.modelobs;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 
@@ -94,6 +95,11 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 	@Override
 	public void onSetAdd(CtElement currentElement, CtRole role, Set field,
 			ModifierKind newValue) {
+	}
+
+	@Override
+	public void onSetAdd(CtElement currentElement, CtRole role, Set field, CtModuleRequirement.RequiresModifier newValue) {
+
 	}
 
 

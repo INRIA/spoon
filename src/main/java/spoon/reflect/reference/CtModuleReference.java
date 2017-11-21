@@ -17,9 +17,11 @@
 package spoon.reflect.reference;
 
 import spoon.reflect.declaration.CtModule;
+import spoon.support.DerivedProperty;
 
 public interface CtModuleReference extends CtReference {
 
+	@DerivedProperty
 	CtModule getDeclaration();
 
 	@Override

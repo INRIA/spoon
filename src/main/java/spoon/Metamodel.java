@@ -148,6 +148,11 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtImport.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtImportKind.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModule.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModuleRequirement.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModuleExport.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModuleProvidedService.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
 		return result;
 	}
 

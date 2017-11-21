@@ -16,17 +16,30 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
 public interface CtModuleProvidedService extends CtElement {
 
-	CtTypeReference getProvidingType();
+	@PropertyGetter(role = CtRole.SERVICE_TYPE)
+	CtTypeReference getServiceType();
 
-	<T extends CtModuleProvidedService> T setProvidingType(CtTypeReference providingType);
+	@PropertySetter(role = CtRole.SERVICE_TYPE)
+	<T extends CtModuleProvidedService> T setServiceType(CtTypeReference providingType);
 
-	List<CtTypeReference> getUsedTypes();
+	@PropertyGetter(role = CtRole.IMPLEMENTATION_TYPE)
+	List<CtTypeReference> getImplementationTypes();
 
-	<T extends CtModuleProvidedService> T setUsedTypes(List<CtTypeReference> usedTypes);
+	@PropertySetter(role = CtRole.IMPLEMENTATION_TYPE)
+	<T extends CtModuleProvidedService> T setImplementationTypes(List<CtTypeReference> usedTypes);
+
+	@PropertySetter(role = CtRole.IMPLEMENTATION_TYPE)
+	<T extends CtModuleProvidedService> T addImplementationType(CtTypeReference usedType);
+
+	@Override
+	CtModuleProvidedService clone();
 }

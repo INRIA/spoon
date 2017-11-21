@@ -118,6 +118,6 @@ public class ModuleFactory extends SubFactory implements Serializable {
 	}
 
 	public CtModuleProvidedService createModuleProvidedService(CtTypeReference typeReference) {
-		return factory.Core().createModuleProvidedService().setProvidingType(typeReference);
+		return factory.Core().createModuleProvidedService().setServiceType(typeReference);
 	}
 }

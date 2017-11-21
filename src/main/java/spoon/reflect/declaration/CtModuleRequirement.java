@@ -16,6 +16,9 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 
 import java.util.Set;
@@ -26,11 +29,18 @@ public interface CtModuleRequirement extends CtElement {
 		STATIC, TRANSITIVE;
 	}
 
+	@PropertyGetter(role = CtRole.MODIFIER)
 	Set<RequiresModifier> getRequiresModifiers();
 
+	@PropertySetter(role = CtRole.MODIFIER)
 	<T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers);
 
+	@PropertyGetter(role = CtRole.MODULE_REF)
 	CtModuleReference getModuleReference();
 
+	@PropertySetter(role = CtRole.MODULE_REF)
 	<T extends CtModuleRequirement> T setModuleReference(CtModuleReference moduleReference);
+
+	@Override
+	CtModuleRequirement clone();
 }

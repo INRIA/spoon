@@ -16,7 +16,9 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -26,9 +28,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport {
-	CtPackageReference packageReference;
+	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
+	private CtPackageReference packageReference;
 
-	List<CtModuleReference> targets = CtElementImpl.emptyList();
+	@MetamodelPropertyField(role = CtRole.MODULE_REF)
+	private List<CtModuleReference> targets = CtElementImpl.emptyList();
+
+	public CtModuleExportImpl() {
+		super();
+	}
 
 	@Override
 	public CtPackageReference getPackageReference() {
@@ -40,6 +48,7 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 		if (packageReference != null) {
 			packageReference.setParent(this);
 		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.PACKAGE_REF, packageReference, this.packageReference);
 		this.packageReference = packageReference;
 		return (T) this;
 	}
@@ -50,8 +59,9 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 	}
 
 	@Override
-	public <T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExport) {
-		if (targetExport == null || targetExport.isEmpty()) {
+	public <T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExports) {
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.MODULE_REF, this.targets, new ArrayList<>(this.targets));
+		if (targetExports == null || targetExports.isEmpty()) {
 			this.targets = CtElementImpl.emptyList();
 			return (T) this;
 		}
@@ -59,13 +69,35 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 		if (this.targets == CtElementImpl.<CtModuleReference>emptyList()) {
 			this.targets = new ArrayList<>();
 		}
+		this.targets.clear();
+		for (CtModuleReference targetExport : targetExports) {
+			this.addTargetExport(targetExport);
+		}
 
-		this.targets.addAll(targetExport);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtModuleExport> T addTargetExport(CtModuleReference targetExport) {
+		if (targetExport == null) {
+			return (T) this;
+		}
+		if (this.targets == CtElementImpl.<CtModuleReference>emptyList()) {
+			this.targets = new ArrayList<>();
+		}
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.MODULE_REF, this.targets, targetExport);
+		targetExport.setParent(this);
+		this.targets.add(targetExport);
 		return (T) this;
 	}
 
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtModuleExport(this);
+	}
+
+	@Override
+	public CtModuleExport clone() {
+		return (CtModuleExport) super.clone();
 	}
 }
