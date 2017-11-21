@@ -24,6 +24,16 @@ import spoon.reflect.reference.CtPackageReference;
 
 import java.util.List;
 
+/**
+ * Represents an exported or opened package in a Java module
+ * See: https://docs.oracle.com/javase/specs/jls/se9/html/jls-7.html#jls-7.7
+ *
+ * Examples:
+ * <pre>
+ *     exports com.example.foo.internal to com.example.foo.probe;
+ *     opens com.example.foo.quux;
+ * </pre>
+ */
 public interface CtModuleExport extends CtElement {
 
 	@PropertyGetter(role = CtRole.PACKAGE_REF)

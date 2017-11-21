@@ -23,6 +23,15 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
+/**
+ * Represents a provided service in a Java module.
+ * See: https://docs.oracle.com/javase/specs/jls/se9/html/jls-7.html#jls-7.7
+ *
+ * Example:
+ * <pre>
+ *     provides com.example.foo.spi.Intf with com.example.foo.Impl;
+ * </pre>
+ */
 public interface CtModuleProvidedService extends CtElement {
 
 	@PropertyGetter(role = CtRole.SERVICE_TYPE)

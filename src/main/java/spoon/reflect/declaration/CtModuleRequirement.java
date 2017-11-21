@@ -23,6 +23,15 @@ import spoon.reflect.reference.CtModuleReference;
 
 import java.util.Set;
 
+/**
+ * Represents a require module in a Java module definition
+ * See: https://docs.oracle.com/javase/specs/jls/se9/html/jls-7.html#jls-7.7
+ *
+ * Example:
+ * <pre>
+ *     requires transitive com.example.foo.network;
+ * </pre>
+ */
 public interface CtModuleRequirement extends CtElement {
 
 	enum RequiresModifier {

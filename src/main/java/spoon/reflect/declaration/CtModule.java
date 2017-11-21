@@ -32,6 +32,16 @@ import static spoon.reflect.path.CtRole.REQUIRED_MODULE;
 import static spoon.reflect.path.CtRole.SERVICE_TYPE;
 import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 
+/**
+ * Represents a Java module as defined in Java 9
+ *
+ * Example:
+ * <pre>
+ *     module com.example.foo {
+ *
+ *     }
+ * </pre>
+ */
 public interface CtModule extends CtNamedElement {
 
 	/**

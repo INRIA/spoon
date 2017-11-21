@@ -88,6 +88,10 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -102,6 +106,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -1195,5 +1200,29 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
+
+	@Override
+	public CtModuleExport createModuleExport(CtPackage ctPackage) {
+		return Module().createModuleExport(ctPackage);
+	}
+
+	@Override
+	public CtModuleProvidedService createModuleProvidedService(CtTypeReference ctTypeReference) {
+		return Module().createModuleProvidedService(ctTypeReference);
+	}
+
+	@Override
+	public CtModuleRequirement createModuleRequirement(CtModule ctModule) {
+		return Module().createModuleRequirement(ctModule);
+	}
+
+	@Override
+	public CtModule createModule(String moduleName) {
+		return Module().getOrCreate(moduleName);
+	}
+
+	@Override
+	public CtModuleReference createModuleReference(CtModule ctModule) {
+		return Module().createReference(ctModule);
 	}
 }

@@ -19,6 +19,9 @@ package spoon.reflect.reference;
 import spoon.reflect.declaration.CtModule;
 import spoon.support.DerivedProperty;
 
+/**
+ * Represents a reference to a {@link CtModule}
+ */
 public interface CtModuleReference extends CtReference {
 
 	@DerivedProperty
