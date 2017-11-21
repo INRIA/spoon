@@ -53,7 +53,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory
-			f.createQuery(f.getModel().getAllModules()).filterChildren(new Filter<CtElement>() {
+			f.createQuery(f.getModel().getAllModules().toArray()).filterChildren(new Filter<CtElement>() {
 				@Override
 				public boolean matches(CtElement e) {
 					e.setFactory(f);

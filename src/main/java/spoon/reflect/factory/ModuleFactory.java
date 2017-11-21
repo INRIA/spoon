@@ -83,7 +83,11 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		@Override
 		public void accept(CtVisitor visitor) {
 			visitor.visitCtModule(this);
-			getFactory().Module().getAllModules().forEach(module -> module.accept(visitor));
+			getFactory().Module().getAllModules().forEach(module -> {
+				if (!module.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
+					module.accept(visitor);
+				}
+			});
 		}
 	}
 

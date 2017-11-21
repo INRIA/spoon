@@ -115,6 +115,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -1074,6 +1075,11 @@ public class FactoryImpl implements Factory, Serializable {
 
 	@Override
 	public CtQuery createQuery(Object input) {
+		return Query().createQuery(input);
+	}
+
+	@Override
+	public CtQuery createQuery(Object[] input) {
 		return Query().createQuery(input);
 	}
 

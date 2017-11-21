@@ -36,6 +36,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -1110,7 +1111,7 @@ public class FilterTest {
 		//context.expectedParent is last visited element
 		
 		//Check that last visited element was root package
-		assertSame(launcher.getFactory().getModel().getRootPackage(), context.expectedParent);
+		assertSame(launcher.getFactory().getModel().getUnnamedModule(), context.expectedParent);
 		
 		//contract: if includingSelf(false), then parent of input element is first element
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
@@ -1189,7 +1190,7 @@ public class FilterTest {
 			
 		})).forEach(ele->{
 			context2.nrOfResults++;
-			assertTrue(ele instanceof CtPackage || ele instanceof CtType);
+			assertTrue("ele instanceof "+ele.getClass(),ele instanceof CtPackage || ele instanceof CtType || ele instanceof CtModule);
 			//check that first and second query returned same results
 			assertSame(ele, iter.next());
 		});

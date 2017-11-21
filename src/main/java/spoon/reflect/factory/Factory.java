@@ -795,6 +795,11 @@ public interface Factory {
 	CtQuery createQuery(Object input);
 
 	/**
+	 * @see QueryFactory#createQuery(Object...) 
+	 */
+	CtQuery createQuery(Object[] input);
+
+	/**
 	 *
 	 * @see AnnotationFactory#create(String)
 	 */
