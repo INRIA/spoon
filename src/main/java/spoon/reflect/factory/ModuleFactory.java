@@ -79,6 +79,12 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		public String toString() {
 			return CtModule.TOP_LEVEL_MODULE_NAME;
 		}
+
+		@Override
+		public void accept(CtVisitor visitor) {
+			visitor.visitCtModule(this);
+			getFactory().Module().getAllModules().forEach(module -> module.accept(visitor));
+		}
 	}
 
 	final Map<String, CtModule> allModules = new HashMap<>();
@@ -100,7 +106,7 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		}
 
 		if (!allModules.containsKey(moduleName)) {
-			allModules.put(moduleName, factory.Core().createModule().setSimpleName(moduleName));
+			allModules.put(moduleName, factory.Core().createModule().setParent(this.allModules.get(CtModule.TOP_LEVEL_MODULE_NAME)).setSimpleName(moduleName));
 		}
 		return allModules.get(moduleName);
 	}

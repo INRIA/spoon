@@ -45,19 +45,21 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
-		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).filterChildren(filter);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).filterChildren(filter);
 	}
 
 	@Override
 	public <I, R> CtQuery map(CtFunction<I, R> function) {
-		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(function);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(function);
 	}
 
 	@Override
 	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
-		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(queryStep);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(queryStep);
 	}
 
+	@Deprecated
+	// this class should move to PackageFactory in the future.
 	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
@@ -150,9 +152,9 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public void processWith(Processor<?> processor) {
-		QueueProcessingManager processingManager = new QueueProcessingManager(getRootPackage().getFactory());
+		QueueProcessingManager processingManager = new QueueProcessingManager(getUnnamedModule().getFactory());
 		processingManager.addProcessor(processor);
-		processingManager.process(getRootPackage());
+		processingManager.process(getAllModules());
 	}
 
 	@Override

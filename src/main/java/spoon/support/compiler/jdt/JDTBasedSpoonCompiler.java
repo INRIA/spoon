@@ -130,7 +130,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	private void checkModel() {
 		if (!factory.getEnvironment().checksAreSkipped()) {
-			factory.getModel().getRootPackage().accept(new AstParentConsistencyChecker());
+			factory.getModel().getUnnamedModule().accept(new AstParentConsistencyChecker());
 		}
 	}
 
