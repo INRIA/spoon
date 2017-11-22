@@ -50,8 +50,8 @@ public class QueryFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a bound query with an optional number of inputs
-	 * See {@link CtQueryImpl#CtQueryImpl(Object...)}
+	 * Creates a bound query with an optional number
+	 * of inputs elements to the query (see {@link CtQuery#setInput(Object...)})
 	 */
 	public CtQuery createQuery(Object... input) {
 		return new CtQueryImpl(input);

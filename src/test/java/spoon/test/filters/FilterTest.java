@@ -732,6 +732,7 @@ public class FilterTest {
 		assertSame(cls2, ((CtQueryImpl)q).getInputs().get(0));
 
 	}
+
 	@Test
 	public void testReuseOfBaseQuery() throws Exception {
 		// contract: an empty  query can be used on several inputs
@@ -751,7 +752,25 @@ public class FilterTest {
 		assertEquals("Tostada", q.setInput(cls2).list().get(0));
 	}
 
+	@Test
+	public void testQueryWithOptionalNumberOfInputs() throws Exception {
+		// contract: an empty  query can be used on several inputs
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
 
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
+		CtClass<?> cls3 = launcher.getFactory().Class().get(Antojito.class);
+
+		// here is the query
+		CtQuery q1 = launcher.getFactory().Query().createQuery(cls, cls2).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1.list().toArray());
+
+		CtQuery q2 = launcher.getFactory().Query().createQuery(cls, cls3).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2.list().toArray());
+	}
 
 	// now testing map(CtConsumableFunction)
 
