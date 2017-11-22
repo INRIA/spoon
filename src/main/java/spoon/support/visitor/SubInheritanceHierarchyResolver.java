@@ -54,7 +54,7 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
 public class SubInheritanceHierarchyResolver {
 
 	/** where the subtypes will be looked for */
-	private CtPackage inputPackage;
+	private CtElement inputRoot;
 
 	/** whether interfaces are included in the result */
 	private boolean includingInterfaces = true;
@@ -71,8 +71,8 @@ public class SubInheritanceHierarchyResolver {
 
 	private boolean failOnClassNotFound = false;
 
-	public SubInheritanceHierarchyResolver(CtPackage input) {
-		inputPackage = input;
+	public SubInheritanceHierarchyResolver(CtElement input) {
+		inputRoot = input;
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class SubInheritanceHierarchyResolver {
 		final Deque<CtTypeReference<?>> currentSubTypes = new ArrayDeque<>();
 		//algorithm
 		//1) query step: scan input package for sub classes and sub interfaces
-		final CtQuery q = inputPackage.map(new CtScannerFunction());
+		final CtQuery q = inputRoot.map(new CtScannerFunction());
 		//2) query step: visit only required CtTypes
 		if (includingInterfaces) {
 			//the client is interested in sub inheritance hierarchy of interfaces too. Check interfaces, classes, enums, Annotations, but not CtTypeParameters.

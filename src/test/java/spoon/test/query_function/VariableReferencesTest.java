@@ -292,7 +292,7 @@ public class VariableReferencesTest {
 				return getLiteralValue((CtExpression<?>)inv.getArguments().get(l_argIdx));
 			} else {
 				CtExecutableReference<?> l_execRef = l_exec.getReference();
-				List<CtAbstractInvocation<?>> list = l_exec.getFactory().Package().getRootPackage().filterChildren((CtAbstractInvocation inv)->{
+				List<CtAbstractInvocation<?>> list = l_exec.getFactory().getModel().getRootElement().filterChildren((CtAbstractInvocation inv)->{
 //					return inv.getExecutable().equals(l_execRef);
 					return inv.getExecutable().getExecutableDeclaration()==l_exec;
 				}).list();

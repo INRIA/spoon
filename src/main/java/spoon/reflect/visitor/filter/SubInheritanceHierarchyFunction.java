@@ -75,7 +75,7 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 
 	@Override
 	public void apply(CtTypeInformation input, final CtConsumer<Object> outputConsumer) {
-		final SubInheritanceHierarchyResolver fnc = new SubInheritanceHierarchyResolver(((CtElement) input).getFactory().getModel().getRootPackage())
+		final SubInheritanceHierarchyResolver fnc = new SubInheritanceHierarchyResolver(((CtElement) input).getFactory().getModel().getRootElement())
 			.failOnClassNotFound(failOnClassNotFound)
 			.includingInterfaces(includingInterfaces);
 		if (includingSelf) {

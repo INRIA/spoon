@@ -97,6 +97,11 @@ public class CtModelImpl implements CtModel {
 	}
 
 	@Override
+	public CtElement getRootElement() {
+		return getRootPackage();
+	}
+
+	@Override
 	public CtPackage getRootPackage() {
 		return rootPackage;
 	}
@@ -122,12 +127,12 @@ public class CtModelImpl implements CtModel {
 	public void processWith(Processor<?> processor) {
 		QueueProcessingManager processingManager = new QueueProcessingManager(rootPackage.getFactory());
 		processingManager.addProcessor(processor);
-		processingManager.process(getRootPackage());
+		processingManager.process(getRootElement());
 	}
 
 	@Override
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
-		return getRootPackage().getElements(filter);
+		return getRootElement().getElements(filter);
 	}
 
 }

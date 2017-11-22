@@ -80,6 +80,6 @@ public class SerializableTest {
 
 		assertFalse(factory.Type().getAll().isEmpty());
 		assertFalse(loadedFactory.Type().getAll().isEmpty());
-		assertEquals(factory.getModel().getRootPackage(), loadedFactory.getModel().getRootPackage());
+		assertEquals(factory.getModel().getRootElement(), loadedFactory.getModel().getRootElement());
 	}
 }

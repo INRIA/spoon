@@ -63,7 +63,7 @@ public class FieldScopeFunction implements CtConsumableFunction<CtField<?>> {
 	}
 	protected void searchForProtectedField(CtField<?> field, CtConsumer<Object> outputConsumer) {
 		//protected field can be referred from the scope of current top level type only and children
-		field.getFactory().getModel().getRootPackage()
+		field.getFactory().getModel().getRootElement()
 			//search for all types which inherits from declaring type of this field
 			.filterChildren(new SubtypeFilter(field.getDeclaringType().getReference()))
 			//visit all elements in scope of these inherited types
@@ -72,7 +72,7 @@ public class FieldScopeFunction implements CtConsumableFunction<CtField<?>> {
 	}
 	protected void searchForPublicField(CtField<?> field, CtConsumer<Object> outputConsumer) {
 		//public field is visible everywhere
-		field.getFactory().getModel().getRootPackage()
+		field.getFactory().getModel().getRootElement()
 			//visit all children of root package
 			.filterChildren(null)
 			.forEach(outputConsumer);

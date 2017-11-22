@@ -65,6 +65,6 @@ public class JavaDocTest {
 				fail("Shouldn't have comment in the model.");
 				super.visitCtComment(comment);
 			}
-		}.scan(launcher.getModel().getRootPackage());
+		}.scan(launcher.getModel().getRootElement());
 	}
 }

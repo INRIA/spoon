@@ -91,7 +91,7 @@ public class SpoonMetaModel {
 		}
 		
 		//search for all interfaces of spoon model and create MMTypes for them
-		factory.getModel().getRootPackage().filterChildren(new TypeFilter<>(CtInterface.class))
+		factory.getModel().getRootElement().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
 				if (MODEL_IFACE_PACKAGES.contains(iface.getPackage().getQualifiedName())) {
 					getOrCreateMMType(iface);

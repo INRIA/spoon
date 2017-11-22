@@ -57,7 +57,7 @@ public class FieldReferenceFunction implements CtConsumableFunction<CtElement> {
 			} else {
 				throw new SpoonException("The input of FieldReferenceFunction must be a CtField but is " + fieldOrScope.getClass().getSimpleName());
 			}
-			scope = field.getFactory().getModel().getRootPackage();
+			scope = field.getFactory().getModel().getRootElement();
 		} else {
 			scope = fieldOrScope;
 		}

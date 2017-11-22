@@ -78,7 +78,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 	public void apply(final CtExecutable<?> targetExecutable, final CtConsumer<Object> outputConsumer) {
 		//prepare filter for lambda expression. It will be configured by the algorithm below
 		final LambdaFilter lambdaFilter = new LambdaFilter();
-		final CtQuery lambdaQuery = targetExecutable.getFactory().getModel().getRootPackage().filterChildren(lambdaFilter);
+		final CtQuery lambdaQuery = targetExecutable.getFactory().getModel().getRootElement().filterChildren(lambdaFilter);
 		//the to be searched method
 		CtMethod<?> targetMethod;
 		if (targetExecutable instanceof CtLambda) {
@@ -131,7 +131,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		//at the beginning we know that we have to always search for sub types too.
 		context.haveToSearchForSubtypes = true;
 		//Sub inheritance hierarchy function, which remembers visited sub types and does not returns/visits them again
-		final SubInheritanceHierarchyResolver subHierarchyFnc = new SubInheritanceHierarchyResolver(declaringType.getFactory().getModel().getRootPackage());
+		final SubInheritanceHierarchyResolver subHierarchyFnc = new SubInheritanceHierarchyResolver(declaringType.getFactory().getModel().getRootElement());
 		//add hierarchy of `targetMethod` as to be checked for sub types of declaring type
 		subHierarchyFnc.addSuperType(declaringType);
 		//unique names of all types whose super inheritance hierarchy was searched for rootType

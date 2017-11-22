@@ -613,7 +613,7 @@ public class TemplateTest {
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
-		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
+		List<CtElement> matches = matcher.find(factory.getModel().getRootElement());
 
 		assertEquals(1, matches.size());
 
@@ -657,7 +657,7 @@ public class TemplateTest {
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
 		//match using legacy TemplateMatcher#find method
-		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
+		List<CtElement> matches = matcher.find(factory.getModel().getRootElement());
 
 		assertEquals(2, matches.size());
 
@@ -667,7 +667,7 @@ public class TemplateTest {
 		assertTrue(match1.equals(match2));
 		
 		//match using TemplateMatcher#matches method and query filter
-		matches = factory.getModel().getRootPackage().filterChildren(matcher).list();
+		matches = factory.getModel().getRootElement().filterChildren(matcher).list();
 
 		assertEquals(2, matches.size());
 

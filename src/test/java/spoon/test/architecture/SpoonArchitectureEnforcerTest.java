@@ -42,7 +42,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/spoon/reflect/factory");
 		spoon.buildModel();
 
-		for (CtType t : spoon.getFactory().Package().getRootPackage().getElements(new AbstractFilter<CtType>() {
+		for (CtType t : spoon.getModel().getRootElement().getElements(new AbstractFilter<CtType>() {
 			@Override
 			public boolean matches(CtType element) {
 				return super.matches(element)
@@ -118,7 +118,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
 
-		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
+		List<CtConstructorCall> treeSetWithoutComparators = spoon.getModel().getRootElement().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
 				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().size() == 0;
@@ -163,7 +163,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/test/java/");
 		spoon.buildModel();
 
-		for (CtMethod<?> meth : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
+		for (CtMethod<?> meth : spoon.getModel().getRootElement().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 			@Override
 			public boolean matches(CtMethod element) {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
@@ -175,7 +175,7 @@ public class SpoonArchitectureEnforcerTest {
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
 		// otherwise, intellij automatically selects the junit3 runner, finds nothing
 		// and crashes with a dirty exception
-		assertEquals(0, spoon.getModel().getRootPackage().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class){
+		assertEquals(0, spoon.getModel().getRootElement().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class){
 			@Override
 			public boolean matches(CtTypeReference element) {
 				CtMethod parent = element.getParent(CtMethod.class);
@@ -204,7 +204,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
 
-		for (CtClass<?> klass : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtClass>(CtClass.class) {
+		for (CtClass<?> klass : spoon.getModel().getRootElement().getElements(new TypeFilter<CtClass>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass element) {
 				return element.getSuperclass() == null && super.matches(element) && element.getMethods().size()>0

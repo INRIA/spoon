@@ -691,143 +691,143 @@ public class GenericsTest {
 		 */
 
 		// T
-		CtTypeReference<?> var1Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "var1")).first(CtVariable.class).getType();
+		CtTypeReference<?> var1Ref = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "var1")).first(CtVariable.class).getType();
 		assertEquals(true, var1Ref.isGenerics());
 
 		// spoon.test.generics.testclasses.rxjava.Subscriber<? super T>
-		CtTypeReference<?> sRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "s")).first(CtVariable.class).getType();
+		CtTypeReference<?> sRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "s")).first(CtVariable.class).getType();
 		assertEquals(true, sRef.isGenerics());
 
 		// spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>
-		CtTypeReference<?> notificationRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "notification")).first(CtVariable.class).getType();
+		CtTypeReference<?> notificationRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "notification")).first(CtVariable.class).getType();
 		assertEquals(false, notificationRef.isGenerics());
 
 		// java.util.function.Function<? super spoon.test.generics.testclasses.rxjava.Observable<spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>>, ? extends spoon.test.generics.testclasses.rxjava.Publisher<?>>
-		CtTypeReference<?> managerRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "manager")).first(CtVariable.class).getType();
+		CtTypeReference<?> managerRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "manager")).first(CtVariable.class).getType();
 		assertEquals(false, managerRef.isGenerics());
 
 		// spoon.test.generics.testclasses.rxjava.BehaviorSubject<spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>>
-		CtTypeReference<?> subjectRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "subject")).first(CtVariable.class).getType();
+		CtTypeReference<?> subjectRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "subject")).first(CtVariable.class).getType();
 		assertEquals(false, subjectRef.isGenerics());
 
 		// spoon.test.generics.testclasses.rxjava.PublisherRedo.RedoSubscriber<T>
-		CtTypeReference<?> parentRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "parent")).first(CtVariable.class).getType();
+		CtTypeReference<?> parentRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "parent")).first(CtVariable.class).getType();
 		assertEquals(true, parentRef.isGenerics());
 
 		// spoon.test.generics.testclasses.rxjava.Publisher<?>
-		CtTypeReference<?> actionRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "action")).first(CtVariable.class).getType();
+		CtTypeReference<?> actionRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "action")).first(CtVariable.class).getType();
 		assertEquals(false, actionRef.isGenerics());
 
 		// spoon.test.generics.testclasses.rxjava.ToNotificationSubscriber
-		CtTypeReference<?> trucRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "truc")).first(CtVariable.class).getType();
+		CtTypeReference<?> trucRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "truc")).first(CtVariable.class).getType();
 		assertEquals(false, trucRef.isGenerics());
 
 		// java.util.function.Consumer<? super spoon.test.generics.testclasses.rxjava.Try<java.util.Optional<java.lang.Object>>>
-		CtTypeReference<?> consumerRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "consumer")).first(CtVariable.class).getType();
+		CtTypeReference<?> consumerRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "consumer")).first(CtVariable.class).getType();
 		assertEquals(false, consumerRef.isGenerics());
 
 		// S
-		CtTypeReference<?> sectionRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "section")).first(CtVariable.class).getType();
+		CtTypeReference<?> sectionRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "section")).first(CtVariable.class).getType();
 		assertEquals(true, sectionRef.isGenerics());
 
 		// X
-		CtTypeReference<?> paramARef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "paramA")).first(CtVariable.class).getType();
+		CtTypeReference<?> paramARef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "paramA")).first(CtVariable.class).getType();
 		assertEquals(true, paramARef.isGenerics());
 
 		// spoon.test.generics.testclasses.Tacos
-		CtTypeReference<?> paramBRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "paramB")).first(CtVariable.class).getType();
+		CtTypeReference<?> paramBRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "paramB")).first(CtVariable.class).getType();
 		assertEquals(false, paramBRef.isGenerics());
 
 		// C
-		CtTypeReference<?> paramCRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "paramC")).first(CtVariable.class).getType();
+		CtTypeReference<?> paramCRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "paramC")).first(CtVariable.class).getType();
 		assertEquals(true, paramCRef.isGenerics());
 
 		// R
-		CtTypeReference<?> cookRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "cook")).first(CtVariable.class).getType();
+		CtTypeReference<?> cookRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "cook")).first(CtVariable.class).getType();
 		assertEquals(true, cookRef.isGenerics());
 
 		// spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>
-		CtTypeReference<?> clRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "cl")).first(CtVariable.class).getType();
+		CtTypeReference<?> clRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "cl")).first(CtVariable.class).getType();
 		assertEquals(false, clRef.isGenerics());
 
 		// spoon.test.generics.testclasses.CelebrationLunch<java.lang.Integer, java.lang.Long, java.lang.Double>.WeddingLunch<spoon.test.generics.testclasses.Mole>
-		CtTypeReference<?> disgustRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "disgust")).first(CtVariable.class).getType();
+		CtTypeReference<?> disgustRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "disgust")).first(CtVariable.class).getType();
 		assertEquals(false, disgustRef.isGenerics());
 
 		// L
-		CtTypeReference<?> paramRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "param")).first(CtVariable.class).getType();
+		CtTypeReference<?> paramRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "param")).first(CtVariable.class).getType();
 		assertEquals(true, paramRef.isGenerics());
 
 		// spoon.reflect.declaration.CtType<? extends spoon.reflect.declaration.CtNamedElement>
-		CtTypeReference<?> targetTypeRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "targetType")).first(CtVariable.class).getType();
+		CtTypeReference<?> targetTypeRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "targetType")).first(CtVariable.class).getType();
 		assertEquals(false, targetTypeRef.isGenerics());
 
 		// spoon.reflect.declaration.CtType<?>
-		CtTypeReference<?> somethingRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "something")).first(CtVariable.class).getType();
+		CtTypeReference<?> somethingRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "something")).first(CtVariable.class).getType();
 		assertEquals(false, somethingRef.isGenerics());
 
 		// int
-		CtTypeReference<?> iRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "i")).first(CtVariable.class).getType();
+		CtTypeReference<?> iRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "i")).first(CtVariable.class).getType();
 		assertEquals(false, iRef.isGenerics());
 
 		// T
-		CtTypeReference<?> biduleRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "bidule")).first(CtVariable.class).getType();
+		CtTypeReference<?> biduleRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "bidule")).first(CtVariable.class).getType();
 		assertEquals(true, biduleRef.isGenerics());
 
 		// Cook<java.lang.String>
-		CtTypeReference<?> aClassRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "aClass")).first(CtVariable.class).getType();
+		CtTypeReference<?> aClassRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "aClass")).first(CtVariable.class).getType();
 		assertEquals(false, aClassRef.isGenerics());
 
 		// java.util.List<java.util.List<M>>
-		CtTypeReference<?> list2mRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "list2m")).first(CtVariable.class).getType();
+		CtTypeReference<?> list2mRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "list2m")).first(CtVariable.class).getType();
 		assertEquals(true, list2mRef.isGenerics());
 
 		// spoon.test.generics.testclasses.Panini.Subscriber<? extends java.lang.Long>
-		CtTypeReference<?> tRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "t")).first(CtVariable.class).getType();
+		CtTypeReference<?> tRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "t")).first(CtVariable.class).getType();
 		assertEquals(false, tRef.isGenerics());
 
 		// spoon.test.generics.testclasses.Spaghetti<B>.Tester
-		CtTypeReference<?> testerRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "tester")).first(CtVariable.class).getType();
+		CtTypeReference<?> testerRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "tester")).first(CtVariable.class).getType();
 		assertEquals(false, testerRef.isGenerics());
 
 		// spoon.test.generics.testclasses.Spaghetti<B>.Tester
-		CtTypeReference<?> tester1Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "tester1")).first(CtVariable.class).getType();
+		CtTypeReference<?> tester1Ref = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "tester1")).first(CtVariable.class).getType();
 		assertEquals(false, tester1Ref.isGenerics());
 
 		// spoon.test.generics.testclasses.Spaghetti<B>.That<java.lang.String, java.lang.String>
-		CtTypeReference<?> fieldRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "field")).first(CtVariable.class).getType();
+		CtTypeReference<?> fieldRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "field")).first(CtVariable.class).getType();
 		assertEquals(false, fieldRef.isGenerics());
 
 		// spoon.test.generics.testclasses.Spaghetti<java.lang.String>.That<java.lang.String, java.lang.String>
-		CtTypeReference<?> field1Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "field1")).first(CtVariable.class).getType();
+		CtTypeReference<?> field1Ref = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "field1")).first(CtVariable.class).getType();
 		assertEquals(false, field1Ref.isGenerics());
 
 		// spoon.test.generics.testclasses.Spaghetti<java.lang.Number>.That<java.lang.String, java.lang.String>
-		CtTypeReference<?> field2Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "field2")).first(CtVariable.class).getType();
+		CtTypeReference<?> field2Ref = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "field2")).first(CtVariable.class).getType();
 		assertEquals(false, field2Ref.isGenerics());
 
 		// spoon.test.generics.testclasses.Tacos<K, java.lang.String>.Burritos<K, V>
-		CtTypeReference<?> burritosRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "burritos")).first(CtVariable.class).getType();
+		CtTypeReference<?> burritosRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "burritos")).first(CtVariable.class).getType();
 		assertEquals(true, burritosRef.isGenerics());
 
 		// int
-		CtTypeReference<?> nbTacosRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "nbTacos")).first(CtVariable.class).getType();
+		CtTypeReference<?> nbTacosRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "nbTacos")).first(CtVariable.class).getType();
 		assertEquals(false, nbTacosRef.isGenerics());
 
 		// java.util.List<java.lang.String>
-		CtTypeReference<?> lRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "l")).first(CtVariable.class).getType();
+		CtTypeReference<?> lRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "l")).first(CtVariable.class).getType();
 		assertEquals(false, lRef.isGenerics());
 
 		// java.util.List
-		CtTypeReference<?> l2Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "l2")).first(CtVariable.class).getType();
+		CtTypeReference<?> l2Ref = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "l2")).first(CtVariable.class).getType();
 		assertEquals(false, l2Ref.isGenerics());
 
 		// java.util.List<?>
-		CtTypeReference<?> l3Ref = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "l3")).first(CtVariable.class).getType();
+		CtTypeReference<?> l3Ref = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "l3")).first(CtVariable.class).getType();
 		assertEquals(false, l3Ref.isGenerics());
 
 		// T
-		CtTypeReference<?> anObjectRef = factory.getModel().getRootPackage().filterChildren(new NamedElementFilter(CtVariable.class, "anObject")).first(CtVariable.class).getType();
+		CtTypeReference<?> anObjectRef = factory.getModel().getRootElement().filterChildren(new NamedElementFilter(CtVariable.class, "anObject")).first(CtVariable.class).getType();
 		assertEquals(true, anObjectRef.isGenerics());
 
 	}
@@ -1400,7 +1400,7 @@ public class GenericsTest {
 		assertEquals(adaptedMethod.getParameters().get(0).getType(), classGetter.getType());
 		assertEquals(adaptedMethod.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
 		
-		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
+		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootElement());
 		MainTest.checkParentConsistency(adaptedMethod);
 	}
 }
