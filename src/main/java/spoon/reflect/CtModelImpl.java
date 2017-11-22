@@ -33,6 +33,7 @@ import spoon.support.QueueProcessingManager;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -123,7 +124,11 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtType<?>> getAllTypes() {
-		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtType.class)));
+		final List<CtType<?>> result = new ArrayList<>();
+		getAllPackages().forEach(ctPackage -> {
+			result.addAll(ctPackage.getTypes());
+		});
+		return result;
 	}
 
 
