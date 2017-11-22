@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -30,6 +31,9 @@ public class TestModule {
 		launcher.buildModel();
 
 		assertEquals(2, launcher.getModel().getAllModules().size());
+
+		CtModule unnamedModule = launcher.getFactory().Module().getOrCreate(CtModule.TOP_LEVEL_MODULE_NAME);
+		assertSame(unnamedModule, launcher.getModel().getUnnamedModule());
 		CtModule moduleGreetings = launcher.getFactory().Module().getOrCreate("com.greetings");
 
 		assertEquals("com.greetings", moduleGreetings.getSimpleName());

@@ -95,9 +95,15 @@ public class ModuleFactory extends SubFactory implements Serializable {
 
 	public ModuleFactory(Factory factory) {
 		super(factory);
-		CtModule unnamedModule = new CtUnnamedModule();
-		unnamedModule.setFactory(factory);
-		allModules.put(CtModule.TOP_LEVEL_MODULE_NAME, unnamedModule);
+		// in case of deserializing model
+		if (factory.getModel() != null && factory.getModel().getUnnamedModule() != null) {
+			allModules.put(CtModule.TOP_LEVEL_MODULE_NAME, factory.getModel().getUnnamedModule());
+		} else {
+			CtModule unnamedModule = new CtUnnamedModule();
+			unnamedModule.setFactory(factory);
+			allModules.put(CtModule.TOP_LEVEL_MODULE_NAME, unnamedModule);
+		}
+
 	}
 
 	public Collection<CtModule> getAllModules() {
