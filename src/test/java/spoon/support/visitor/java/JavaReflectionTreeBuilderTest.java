@@ -15,6 +15,7 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.generics.ComparableComparatorBug;
 
 import java.io.ObjectInputStream;
+import java.lang.annotation.Retention;
 import java.net.CookieManager;
 import java.net.URLClassLoader;
 import java.time.format.TextStyle;
@@ -65,12 +66,19 @@ public class JavaReflectionTreeBuilderTest {
 
 	@Test
 	public void testScannerAnnotation() throws Exception {
-		final CtAnnotationType<SuppressWarnings> anAnnotation = new JavaReflectionTreeBuilder(createFactory()).scan(SuppressWarnings.class);
-		assertNotNull(anAnnotation);
-		assertEquals("java.lang.SuppressWarnings", anAnnotation.getQualifiedName());
-		assertTrue(anAnnotation.getAnnotations().size() > 0);
-		assertTrue(anAnnotation.getFields().size() > 0);
-		assertTrue(anAnnotation.isShadow());
+		final CtAnnotationType<SuppressWarnings> suppressWarning = new JavaReflectionTreeBuilder(createFactory()).scan(SuppressWarnings.class);
+		assertNotNull(suppressWarning);
+		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
+		assertTrue(suppressWarning.getAnnotations().size() > 0);
+		assertTrue(suppressWarning.getFields().size() > 0);
+		assertTrue(suppressWarning.isShadow());
+
+		// here is the bug, fails with java.lang.NullPointerException
+		assertNotNull(suppressWarning.getAnnotation(Retention.class));
+
+		// to be fixed when the bug is fixed
+		assertEquals("TODO",suppressWarning.getAnnotation(Retention.class).value().toString());
+
 	}
 
 	@Test
