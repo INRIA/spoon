@@ -34,9 +34,9 @@ public class UnknownDeclarationTest {
         runLaunch.addInputResource("./src/test/resources/noclasspath/UnknownCalls.java");
         runLaunch.buildModel();
 
-        final CtPackage rootPackage = runLaunch.getFactory().Package().getRootPackage();
+        final CtElement rootElement = runLaunch.getModel().getRootElement();
         final ExecutableReferenceVisitor visitor = new ExecutableReferenceVisitor();
-        visitor.scan(rootPackage);
+        visitor.scan(rootElement);
         // super constructor to Object +
         // UnknownClass constructor +
         // UnknownClass method

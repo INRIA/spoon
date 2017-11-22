@@ -408,7 +408,7 @@ public class ParentTest {
 				});
 				return ctInvocations.size() >0 ? ctInvocations.get(0) :  null;
 			}
-		}.scan(launcher.getModel().getRootPackage());
+		}.scan(launcher.getModel().getRootElement());
 	}
 
 }

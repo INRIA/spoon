@@ -42,7 +42,7 @@ public class VisitorTest {
         launcher.buildModel();
 
         final MyVisitor visitor = new MyVisitor(2);
-        visitor.scan(launcher.getFactory().Package().getRootPackage());
+        visitor.scan(launcher.getFactory().getModel().getRootElement());
         assertTrue(visitor.equals);
     }
 }

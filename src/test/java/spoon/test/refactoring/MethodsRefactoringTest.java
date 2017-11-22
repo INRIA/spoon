@@ -225,7 +225,7 @@ public class MethodsRefactoringTest {
 	}
 
 	private List<CtExecutable<?>> getExecutablesOfHierarchy(Factory factory, String hierarchyName) {
-		return factory.getModel().getRootPackage().filterChildren(new TypeFilter(CtExecutable.class)).select((CtExecutable<?> exec)->{
+		return factory.getModel().getRootElement().filterChildren(new TypeFilter(CtExecutable.class)).select((CtExecutable<?> exec)->{
 			//detect if found executable belongs to hierarchy 'hierarchyName'
 			CtElement ele = exec;
 			if (exec instanceof CtLambda) {
@@ -247,7 +247,7 @@ public class MethodsRefactoringTest {
 	public void testExecutableReferenceFilter() {
 		Factory factory = ModelUtils.build(new File("./src/test/java/spoon/test/refactoring/parameter/testclasses"));
 		
-		List<CtExecutable<?>> executables = factory.getModel().getRootPackage().filterChildren((CtExecutable<?> e)->true).list();
+		List<CtExecutable<?>> executables = factory.getModel().getRootElement().filterChildren((CtExecutable<?> e)->true).list();
 		int nrExecRefsTotal = 0;
 		//contract check that ExecutableReferenceFilter found CtExecutableReferences of each executable individually 
 		for (CtExecutable<?> executable : executables) {
@@ -259,7 +259,7 @@ public class MethodsRefactoringTest {
 		assertSame(nrExecRefsTotal, nrExecRefsTotal2);
 
 		//contract check that it found lambdas too
-		CtLambda lambda = factory.getModel().getRootPackage().filterChildren((CtLambda<?> e)->true).first();
+		CtLambda lambda = factory.getModel().getRootElement().filterChildren((CtLambda<?> e)->true).first();
 		assertNotNull(lambda);
 		//this test case is quite wild, because there is normally lambda reference in spoon model. So make one lambda reference here:
 		CtExecutableReference<?> lambdaRef = lambda.getReference();
@@ -272,10 +272,10 @@ public class MethodsRefactoringTest {
 		assertTrue(executables.size()>0);
 		ExecutableReferenceFilter execRefFilter = new ExecutableReferenceFilter();
 		executables.forEach((CtExecutable<?> e)->execRefFilter.addExecutable(e));
-		final List<CtExecutableReference<?>> refs = new ArrayList<>(factory.getModel().getRootPackage().filterChildren(execRefFilter).list());
+		final List<CtExecutableReference<?>> refs = new ArrayList<>(factory.getModel().getRootElement().filterChildren(execRefFilter).list());
 		int nrExecRefs = refs.size();
 		//use different (slower, but straight forward) algorithm to search for all executable references to check if ExecutableReferenceFilter returns correct results
-		factory.getModel().getRootPackage().filterChildren((CtExecutableReference er)->{
+		factory.getModel().getRootElement().filterChildren((CtExecutableReference er)->{
 			return containsSame(executables, er.getDeclaration());
 		}).forEach((CtExecutableReference er)->{
 			//check that each expected reference was found by ExecutableReferenceFilter and remove it from that list

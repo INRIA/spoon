@@ -49,7 +49,7 @@ public abstract class Query {
 	 */
 	public static <E extends CtElement> List<E> getElements(Factory factory,
 															Filter<E> filter) {
-		return getElements(factory.Package().getRootPackage(), filter);
+		return getElements(factory.getModel().getRootElement(), filter);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public abstract class Query {
 	 */
 	public static <R extends CtReference> List<R> getReferences(
 			Factory factory, Filter<R> filter) {
-		return getReferences(factory.Package().getRootPackage(), filter);
+		return getReferences(factory.getModel().getRootElement(), filter);
 	}
 
 }

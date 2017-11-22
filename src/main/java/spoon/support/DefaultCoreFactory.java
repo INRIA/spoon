@@ -208,7 +208,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public <T extends Annotation> CtAnnotationType<T> createAnnotationType() {
 		CtAnnotationType<T> e = new CtAnnotationTypeImpl<>();
 		e.setFactory(getMainFactory());
-		e.setParent(getMainFactory().Package().getRootPackage());
+		e.setParent(getMainFactory().Package().getRootPackage()); // FIXME: why that?
 		return e;
 	}
 
@@ -283,7 +283,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public <T> CtClass<T> createClass() {
 		CtClass<T> e = new CtClassImpl<>();
 		e.setFactory(getMainFactory());
-		e.setParent(getMainFactory().Package().getRootPackage());
+		e.setParent(getMainFactory().Package().getRootPackage()); // FIXME: why that?
 		return e;
 	}
 
@@ -321,7 +321,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public <T extends Enum<?>> CtEnum<T> createEnum() {
 		CtEnum<T> e = new CtEnumImpl<>();
 		e.setFactory(getMainFactory());
-		e.setParent(getMainFactory().Package().getRootPackage());
+		e.setParent(getMainFactory().Package().getRootPackage()); //FIXME: why that?
 		return e;
 	}
 
@@ -398,7 +398,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public <T> CtInterface<T> createInterface() {
 		CtInterface<T> e = new CtInterfaceImpl<>();
 		e.setFactory(getMainFactory());
-		e.setParent(getMainFactory().Package().getRootPackage());
+		e.setParent(getMainFactory().Package().getRootPackage()); //FIXME: why that?
 		return e;
 	}
 
@@ -495,7 +495,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public CtPackage createPackage() {
 		CtPackage e = new CtPackageImpl();
 		e.setFactory(getMainFactory());
-		e.setParent(getMainFactory().Package().getRootPackage());
+		e.setParent(getMainFactory().Package().getRootPackage()); //FIXME: why that?
 		return e;
 	}
 

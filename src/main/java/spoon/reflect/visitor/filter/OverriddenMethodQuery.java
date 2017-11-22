@@ -16,8 +16,8 @@
  */
 package spoon.reflect.visitor.filter;
 
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 
@@ -27,7 +27,7 @@ import spoon.reflect.visitor.chain.CtConsumer;
 public class OverriddenMethodQuery implements CtConsumableFunction<CtMethod<?>> {
 	@Override
 	public void apply(CtMethod<?> input, CtConsumer<Object> outputConsumer) {
-		CtPackage searchScope = input.getFactory().Package().getRootPackage();
+		CtElement searchScope = input.getFactory().getModel().getRootElement();
 		searchScope.filterChildren(new OverriddenMethodFilter(input)).forEach(outputConsumer);
 	}
 }

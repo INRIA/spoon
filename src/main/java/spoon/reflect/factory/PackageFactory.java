@@ -69,7 +69,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * Returns a reference on the top level package.
 	 */
 	public CtPackageReference topLevel() {
-		return factory.getModel().getRootPackage().getReference();
+		return getRootPackage().getReference();
 	}
 
 	/**
@@ -105,10 +105,10 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
 		if (qualifiedName.isEmpty()) {
-			return factory.getModel().getRootPackage();
+			return getRootPackage();
 		}
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage last = factory.getModel().getRootPackage();
+		CtPackage last = getRootPackage();
 
 		while (token.hasMoreElements()) {
 			String name = token.nextToken();
@@ -136,7 +136,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 			throw new RuntimeException("Invalid package name " + qualifiedName);
 		}
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage current = factory.getModel().getRootPackage();
+		CtPackage current = getRootPackage();
 		if (token.hasMoreElements()) {
 			current = current.getPackage(token.nextToken());
 			while (token.hasMoreElements() && current != null) {

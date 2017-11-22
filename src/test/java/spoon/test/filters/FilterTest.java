@@ -510,7 +510,7 @@ public class FilterTest {
 		}
 		Context context = new Context();
 		
-		CtQuery l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
+		CtQuery l_qv = launcher.getFactory().getModel().getRootElement().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
 		l_qv.forEach(cls->{
@@ -883,7 +883,7 @@ public class FilterTest {
 		{
 			Context context = new Context();
 			//contract: if the query produces elements which cannot be cast to forEach consumer, then they are ignored
-			launcher.getFactory().Package().getRootPackage().filterChildren(null).forEach((CtType t)->{
+			launcher.getFactory().getModel().getRootElement().filterChildren(null).forEach((CtType t)->{
 				context.count++;
 			});
 			assertTrue(context.count>0);
@@ -892,7 +892,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the for each implementation made by lambda throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).forEach((CtType t)->{
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).forEach((CtType t)->{
 					context.count++;
 					throw new ClassCastException("TEST");
 				});
@@ -906,7 +906,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the for each implementation made by local class throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).forEach(new CtConsumer<CtType>() {
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).forEach(new CtConsumer<CtType>() {
 					@Override
 					public void accept(CtType t) {
 						context.count++;
@@ -923,7 +923,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the select implementation made by local class throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).select(new Filter<CtType>(){
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).select(new Filter<CtType>(){
 					@Override
 					public boolean matches(CtType element) {
 						context.count++;
@@ -940,7 +940,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the select implementation made by lambda throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).select((CtType element) -> {
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).select((CtType element) -> {
 					context.count++;
 					throw new ClassCastException("TEST");
 				}).list();
@@ -954,7 +954,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the map(CtFunction) implementation made by local class throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map(new CtFunction<CtType, Object>(){
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).map(new CtFunction<CtType, Object>(){
 					@Override
 					public Object apply(CtType input) {
 						context.count++;
@@ -971,7 +971,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the map(CtFunction) implementation made by lambda throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map((CtType input) -> {
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).map((CtType input) -> {
 					context.count++;
 					throw new ClassCastException("TEST");
 				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
@@ -985,7 +985,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the map(CtConsumableFunction) implementation made by local class throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map(new CtConsumableFunction<CtType>(){
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).map(new CtConsumableFunction<CtType>(){
 					@Override
 					public void apply(CtType input, CtConsumer<Object> outputConsumer) {
 						context.count++;
@@ -1002,7 +1002,7 @@ public class FilterTest {
 			Context context = new Context();
 			//contract: if the map(CtConsumableFunction) implementation made by lambda throws CCE then it is reported
 			try {
-				launcher.getFactory().Package().getRootPackage().filterChildren(null).map((CtType input, CtConsumer<Object> outputConsumer) -> {
+				launcher.getFactory().getModel().getRootElement().filterChildren(null).map((CtType input, CtConsumer<Object> outputConsumer) -> {
 					context.count++;
 					throw new ClassCastException("TEST");
 				}).failurePolicy(QueryFailurePolicy.IGNORE).list();
@@ -1088,7 +1088,7 @@ public class FilterTest {
 		//context.expectedParent is last visited element
 		
 		//Check that last visited element was root package
-		assertSame(launcher.getFactory().getModel().getRootPackage(), context.expectedParent);
+		assertSame(launcher.getFactory().getModel().getRootElement(), context.expectedParent);
 		
 		//contract: if includingSelf(false), then parent of input element is first element
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
@@ -1114,7 +1114,7 @@ public class FilterTest {
 		Context context1 = new Context();
 
 		// scan only packages until top level classes. Do not scan class internals
-		List<CtElement> result1 = launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+		List<CtElement> result1 = launcher.getFactory().getModel().getRootElement().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			@Override
 			public ScanningMode enter(CtElement element) {
 				context1.nrOfEnter++;
@@ -1141,7 +1141,7 @@ public class FilterTest {
 		Iterator iter = result1.iterator();
 		
 		//scan only from packages till top level classes. Do not scan class internals
-		launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+		launcher.getFactory().getModel().getRootElement().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			int inClass = 0;
 			@Override
 			public ScanningMode enter(CtElement element) {
@@ -1187,7 +1187,7 @@ public class FilterTest {
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.buildModel();
 
-		SubInheritanceHierarchyResolver resolver = new SubInheritanceHierarchyResolver(launcher.getModel().getRootPackage());
+		SubInheritanceHierarchyResolver resolver = new SubInheritanceHierarchyResolver(launcher.getModel().getRootElement());
 
 		// contract: by default, nothing is sent to the consumer
 		resolver.forEachSubTypeInPackage(new CtConsumer<CtType<?>>() {

@@ -82,7 +82,7 @@ public class CloneTest {
 			private <T> boolean isRootDeclaration(CtInterface<T> intrface) {
 				return "CtElement".equals(intrface.getSimpleName());
 			}
-		}.scan(launcher.getModel().getRootPackage());
+		}.scan(launcher.getModel().getRootElement());
 	}
 
 	@Test

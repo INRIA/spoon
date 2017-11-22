@@ -215,7 +215,7 @@ public class VariableAccessTest {
 		launcher.addInputResource("src/test/resources/reference-test/ChangeScanner.java");
 		launcher.buildModel();
 
-		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
+		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootElement());
 	}
 
 	@Test
@@ -239,7 +239,7 @@ public class VariableAccessTest {
 		launcher.addInputResource("src/test/resources/reference-test/MultipleDeclarationsOfLocalVariable.java");
 		launcher.buildModel();
 
-		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootPackage());
+		new CtLocalVariableReferenceScanner().scan(launcher.getModel().getRootElement());
 	}
 
 	private CtMethod<Object> getMethod(Launcher launcher, CtClass<Object> a2) {

@@ -1,5 +1,6 @@
 package spoon.test.factory;
 
+import com.sun.javafx.font.coretext.CTFactory;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -106,8 +107,10 @@ public class FactoryTest {
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/java/spoon/test/factory/testclasses");
 		spoon.buildModel();
-
+		
 		CtModel model = spoon.getModel();
+		
+		CtPackage rootPackage = spoon.getFactory().Package().getRootPackage();
 
 		// contains Foo and Foo.@Bar
 		assertEquals(1, model.getAllTypes().size());
@@ -116,27 +119,27 @@ public class FactoryTest {
 		assertEquals(5, model.getAllPackages().size());
 
 		// add to itself is fine
-		model.getRootPackage().addPackage(model.getRootPackage());
+		rootPackage.addPackage(rootPackage);
 		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
-		model.getRootPackage().getPackage("spoon").addPackage(model.getRootPackage().getPackage("spoon"));
+		rootPackage.getPackage("spoon").addPackage(rootPackage.getPackage("spoon"));
 		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
-		model.getRootPackage().addPackage(model.getRootPackage().getPackage("spoon"));
+		rootPackage.addPackage(rootPackage.getPackage("spoon"));
 		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
 
-		CtPackage p = model.getRootPackage().getElements(new NamedElementFilter<>(CtPackage.class,"spoon")).get(0).clone();
+		CtPackage p = model.getRootElement().getElements(new NamedElementFilter<>(CtPackage.class,"spoon")).get(0).clone();
 		// if we change the implem, merge is impossible
 		CtField f = spoon.getFactory().Core().createField();
 		f.setSimpleName("foo");
 		f.setType(spoon.getFactory().Type().BYTE);
 		p.getElements(new NamedElementFilter<>(CtPackage.class,"testclasses")).get(0).getType("Foo").addField(f);
 		try {
-			model.getRootPackage().addPackage(p);
+			rootPackage.addPackage(p);
 			fail("no exception thrown");
 		} catch (IllegalStateException success) {}
 
@@ -178,12 +181,12 @@ public class FactoryTest {
 		assertEquals(1, spoon2.getModel().getAllTypes().size());
 
 		// attach them to the existing model.
-		model.getRootPackage().addPackage(spoon2.getModel().getRootPackage());
+		spoon.getFactory().Package().getRootPackage().addPackage(spoon2.getFactory().Package().getRootPackage());
 
 		// checking the results
 		assertEquals(6, model.getAllPackages().size());
 		assertEquals(2, model.getAllTypes().size());
-		assertEquals(1, model.getRootPackage().getElements(new AbstractFilter<CtPackage>() {
+		assertEquals(1, model.getRootElement().getElements(new AbstractFilter<CtPackage>() {
 			@Override
 			public boolean matches(CtPackage element) {
 				return "spoon.test.factory.testclasses2".equals(element.getQualifiedName());
