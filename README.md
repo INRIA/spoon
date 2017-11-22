@@ -90,7 +90,7 @@ Snapshot version:
 	<dependency>
 		<groupId>fr.inria.gforge.spoon</groupId>
 		<artifactId>spoon-core</artifactId>
-		<version>7.0.0-SNAPSHOT</version>
+		<version>6.1.0-SNAPSHOT</version>
 	</dependency>
 </dependencies>
 <repositories>
