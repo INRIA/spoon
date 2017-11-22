@@ -56,9 +56,7 @@ public class CtModelImpl implements CtModel {
 	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
 		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(queryStep);
 	}
-
-	@Deprecated
-	// this class should move to PackageFactory in the future.
+	
 	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
