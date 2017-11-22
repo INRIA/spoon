@@ -73,11 +73,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertTrue(suppressWarning.getFields().size() > 0);
 		assertTrue(suppressWarning.isShadow());
 
-		// here is the bug, fails with java.lang.NullPointerException
 		assertNotNull(suppressWarning.getAnnotation(Retention.class));
 
-		// to be fixed when the bug is fixed
-		assertEquals("TODO",suppressWarning.getAnnotation(Retention.class).value().toString());
+		assertEquals("SOURCE",suppressWarning.getAnnotation(Retention.class).value().toString());
 
 	}
 
