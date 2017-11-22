@@ -111,195 +111,144 @@ import spoon.reflect.reference.CtVariableReference;
  * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */
 class ModelRoleHandlers {
-	static final RoleHandler[] roleHandlers = new RoleHandler[]{ new CtNamedElement_NAME_RoleHandler(), new CtReference_NAME_RoleHandler(), new CtArrayTypeReference_TYPE_RoleHandler(), new CtExecutableReference_TYPE_RoleHandler(), new CtMultiTypedElement_TYPE_RoleHandler(), new CtTypedElement_TYPE_RoleHandler(), new CtVariableReference_TYPE_RoleHandler(), new CtExecutableReference_DECLARING_TYPE_RoleHandler(), new CtFieldReference_DECLARING_TYPE_RoleHandler(), new CtTypeReference_DECLARING_TYPE_RoleHandler(), new CtPackage_CONTAINED_TYPE_RoleHandler(), new CtBodyHolder_BODY_RoleHandler(), new CtSynchronized_BODY_RoleHandler(), new CtShadowable_IS_SHADOW_RoleHandler(), new CtIntersectionTypeReference_BOUND_RoleHandler(), new CtTypeParameterReference_BOUNDING_TYPE_RoleHandler(), new CtFieldReference_IS_FINAL_RoleHandler(), new CtExecutableReference_IS_STATIC_RoleHandler(), new CtFieldReference_IS_STATIC_RoleHandler(), new CtTypeParameterReference_IS_UPPER_RoleHandler(), new CtElement_IS_IMPLICIT_RoleHandler(), new CtMethod_IS_DEFAULT_RoleHandler(), new CtParameter_IS_VARARGS_RoleHandler(), new CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler(), new CtVariable_DEFAULT_EXPRESSION_RoleHandler(), new CtConditional_THEN_RoleHandler(), new CtIf_THEN_RoleHandler(), new CtConditional_ELSE_RoleHandler(), new CtIf_ELSE_RoleHandler(), new CtTypeReference_PACKAGE_REF_RoleHandler(), new CtPackage_SUB_PACKAGE_RoleHandler(), new CtAssert_CONDITION_RoleHandler(), new CtConditional_CONDITION_RoleHandler(), new CtIf_CONDITION_RoleHandler(), new CtBinaryOperator_RIGHT_OPERAND_RoleHandler(), new CtBinaryOperator_LEFT_OPERAND_RoleHandler(), new CtStatement_LABEL_RoleHandler(), new CtSwitch_CASE_RoleHandler(), new CtBinaryOperator_OPERATOR_KIND_RoleHandler(), new CtOperatorAssignment_OPERATOR_KIND_RoleHandler(), new CtUnaryOperator_OPERATOR_KIND_RoleHandler(), new CtCatch_PARAMETER_RoleHandler(), new CtExecutable_PARAMETER_RoleHandler(), new CtExecutableReference_ARGUMENT_TYPE_RoleHandler(), new CtArrayAccess_EXPRESSION_RoleHandler(), new CtAssert_EXPRESSION_RoleHandler(), new CtCase_EXPRESSION_RoleHandler(), new CtDo_EXPRESSION_RoleHandler(), new CtFor_EXPRESSION_RoleHandler(), new CtForEach_EXPRESSION_RoleHandler(), new CtLambda_EXPRESSION_RoleHandler(), new CtNewArray_EXPRESSION_RoleHandler(), new CtReturn_EXPRESSION_RoleHandler(), new CtSwitch_EXPRESSION_RoleHandler(), new CtSynchronized_EXPRESSION_RoleHandler(), new CtThrow_EXPRESSION_RoleHandler(), new CtUnaryOperator_EXPRESSION_RoleHandler(), new CtWhile_EXPRESSION_RoleHandler(), new CtTargetedExpression_TARGET_RoleHandler(), new CtVariableAccess_VARIABLE_RoleHandler(), new CtTry_FINALIZER_RoleHandler(), new CtExecutable_THROWN_RoleHandler(), new CtRHSReceiver_ASSIGNMENT_RoleHandler(), new CtAssignment_ASSIGNED_RoleHandler(), new CtModifiable_MODIFIER_RoleHandler(), new CtTypeInformation_MODIFIER_RoleHandler(), new CtElement_COMMENT_RoleHandler(), new CtAnnotation_ANNOTATION_TYPE_RoleHandler(), new CtTypeInformation_INTERFACE_RoleHandler(), new CtElement_ANNOTATION_RoleHandler(), new CtStatementList_STATEMENT_RoleHandler(), new CtAbstractInvocation_ARGUMENT_RoleHandler(), new CtTypeInformation_SUPER_TYPE_RoleHandler(), new CtNewClass_NESTED_TYPE_RoleHandler(), new CtType_NESTED_TYPE_RoleHandler(), new CtClass_CONSTRUCTOR_RoleHandler(), new CtAbstractInvocation_EXECUTABLE_REF_RoleHandler(), new CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler(), new CtParameterReference_EXECUTABLE_REF_RoleHandler(), new CtType_METHOD_RoleHandler(), new CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler(), new CtType_FIELD_RoleHandler(), new CtType_TYPE_MEMBER_RoleHandler(), new CtExpression_CAST_RoleHandler(), new CtAnnotation_VALUE_RoleHandler(), new CtEnum_VALUE_RoleHandler(), new CtLiteral_VALUE_RoleHandler(), new CtFor_FOR_UPDATE_RoleHandler(), new CtFor_FOR_INIT_RoleHandler(), new CtForEach_FOREACH_VARIABLE_RoleHandler(), new CtTryWithResource_TRY_RESOURCE_RoleHandler(), new CtNewArray_DIMENSION_RoleHandler(), new CtTry_CATCH_RoleHandler(), new CtLabelledFlowBreak_TARGET_LABEL_RoleHandler(), new CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler(), new CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler(), new CtJavaDoc_COMMENT_TAG_RoleHandler(), new CtComment_COMMENT_CONTENT_RoleHandler(), new CtJavaDocTag_COMMENT_CONTENT_RoleHandler(), new CtComment_COMMENT_TYPE_RoleHandler(), new CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler(), new CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler(), new CtElement_POSITION_RoleHandler(), new CtCodeSnippet_SNIPPET_RoleHandler(), new CtTypeAccess_ACCESSED_TYPE_RoleHandler() };
+	static final RoleHandler[] roleHandlers = new RoleHandler[]{ new CtTypeAccess_ACCESSED_TYPE_RoleHandler(), new CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler(), new CtElement_ANNOTATION_RoleHandler(), new CtAnnotation_ANNOTATION_TYPE_RoleHandler(), new CtAbstractInvocation_ARGUMENT_RoleHandler(), new CtExecutableReference_ARGUMENT_TYPE_RoleHandler(), new CtAssignment_ASSIGNED_RoleHandler(), new CtRHSReceiver_ASSIGNMENT_RoleHandler(), new CtBodyHolder_BODY_RoleHandler(), new CtSynchronized_BODY_RoleHandler(), new CtIntersectionTypeReference_BOUND_RoleHandler(), new CtTypeParameterReference_BOUNDING_TYPE_RoleHandler(), new CtSwitch_CASE_RoleHandler(), new CtExpression_CAST_RoleHandler(), new CtTry_CATCH_RoleHandler(), new CtElement_COMMENT_RoleHandler(), new CtComment_COMMENT_CONTENT_RoleHandler(), new CtJavaDocTag_COMMENT_CONTENT_RoleHandler(), new CtJavaDoc_COMMENT_TAG_RoleHandler(), new CtComment_COMMENT_TYPE_RoleHandler(), new CtAssert_CONDITION_RoleHandler(), new CtConditional_CONDITION_RoleHandler(), new CtIf_CONDITION_RoleHandler(), new CtClass_CONSTRUCTOR_RoleHandler(), new CtPackage_CONTAINED_TYPE_RoleHandler(), new CtExecutableReference_DECLARING_TYPE_RoleHandler(), new CtFieldReference_DECLARING_TYPE_RoleHandler(), new CtTypeReference_DECLARING_TYPE_RoleHandler(), new CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler(), new CtVariable_DEFAULT_EXPRESSION_RoleHandler(), new CtNewArray_DIMENSION_RoleHandler(), new CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler(), new CtConditional_ELSE_RoleHandler(), new CtIf_ELSE_RoleHandler(), new CtAbstractInvocation_EXECUTABLE_REF_RoleHandler(), new CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler(), new CtParameterReference_EXECUTABLE_REF_RoleHandler(), new CtArrayAccess_EXPRESSION_RoleHandler(), new CtAssert_EXPRESSION_RoleHandler(), new CtCase_EXPRESSION_RoleHandler(), new CtDo_EXPRESSION_RoleHandler(), new CtFor_EXPRESSION_RoleHandler(), new CtForEach_EXPRESSION_RoleHandler(), new CtLambda_EXPRESSION_RoleHandler(), new CtNewArray_EXPRESSION_RoleHandler(), new CtReturn_EXPRESSION_RoleHandler(), new CtSwitch_EXPRESSION_RoleHandler(), new CtSynchronized_EXPRESSION_RoleHandler(), new CtThrow_EXPRESSION_RoleHandler(), new CtUnaryOperator_EXPRESSION_RoleHandler(), new CtWhile_EXPRESSION_RoleHandler(), new CtType_FIELD_RoleHandler(), new CtTry_FINALIZER_RoleHandler(), new CtForEach_FOREACH_VARIABLE_RoleHandler(), new CtFor_FOR_INIT_RoleHandler(), new CtFor_FOR_UPDATE_RoleHandler(), new CtTypeInformation_INTERFACE_RoleHandler(), new CtMethod_IS_DEFAULT_RoleHandler(), new CtFieldReference_IS_FINAL_RoleHandler(), new CtElement_IS_IMPLICIT_RoleHandler(), new CtShadowable_IS_SHADOW_RoleHandler(), new CtExecutableReference_IS_STATIC_RoleHandler(), new CtFieldReference_IS_STATIC_RoleHandler(), new CtTypeParameterReference_IS_UPPER_RoleHandler(), new CtParameter_IS_VARARGS_RoleHandler(), new CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler(), new CtStatement_LABEL_RoleHandler(), new CtBinaryOperator_LEFT_OPERAND_RoleHandler(), new CtType_METHOD_RoleHandler(), new CtModifiable_MODIFIER_RoleHandler(), new CtTypeInformation_MODIFIER_RoleHandler(), new CtNamedElement_NAME_RoleHandler(), new CtReference_NAME_RoleHandler(), new CtNewClass_NESTED_TYPE_RoleHandler(), new CtType_NESTED_TYPE_RoleHandler(), new CtBinaryOperator_OPERATOR_KIND_RoleHandler(), new CtOperatorAssignment_OPERATOR_KIND_RoleHandler(), new CtUnaryOperator_OPERATOR_KIND_RoleHandler(), new CtTypeReference_PACKAGE_REF_RoleHandler(), new CtCatch_PARAMETER_RoleHandler(), new CtExecutable_PARAMETER_RoleHandler(), new CtElement_POSITION_RoleHandler(), new CtBinaryOperator_RIGHT_OPERAND_RoleHandler(), new CtCodeSnippet_SNIPPET_RoleHandler(), new CtStatementList_STATEMENT_RoleHandler(), new CtPackage_SUB_PACKAGE_RoleHandler(), new CtTypeInformation_SUPER_TYPE_RoleHandler(), new CtTargetedExpression_TARGET_RoleHandler(), new CtLabelledFlowBreak_TARGET_LABEL_RoleHandler(), new CtConditional_THEN_RoleHandler(), new CtIf_THEN_RoleHandler(), new CtExecutable_THROWN_RoleHandler(), new CtTryWithResource_TRY_RESOURCE_RoleHandler(), new CtArrayTypeReference_TYPE_RoleHandler(), new CtExecutableReference_TYPE_RoleHandler(), new CtMultiTypedElement_TYPE_RoleHandler(), new CtTypedElement_TYPE_RoleHandler(), new CtVariableReference_TYPE_RoleHandler(), new CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler(), new CtType_TYPE_MEMBER_RoleHandler(), new CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler(), new CtAnnotation_VALUE_RoleHandler(), new CtEnum_VALUE_RoleHandler(), new CtLiteral_VALUE_RoleHandler(), new CtVariableAccess_VARIABLE_RoleHandler() };
 
 	private ModelRoleHandlers() {
 	}
 
-	static class CtNamedElement_NAME_RoleHandler extends SingleHandler<CtNamedElement, String> {
-		private CtNamedElement_NAME_RoleHandler() {
-			super(CtRole.NAME, CtNamedElement.class, String.class);
+	static class CtTypeAccess_ACCESSED_TYPE_RoleHandler extends SingleHandler<CtTypeAccess, CtTypeReference<?>> {
+		private CtTypeAccess_ACCESSED_TYPE_RoleHandler() {
+			super(CtRole.ACCESSED_TYPE, CtTypeAccess.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSimpleName())));
+			return ((U) ((Object) (castTarget(element).getAccessedType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setSimpleName(castValue(value));
+			castTarget(element).setAccessedType(castValue(value));
 		}
 	}
 
-	static class CtReference_NAME_RoleHandler extends SingleHandler<CtReference, String> {
-		private CtReference_NAME_RoleHandler() {
-			super(CtRole.NAME, CtReference.class, String.class);
+	static class CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler extends ListHandler<CtClass, CtAnonymousExecutable> {
+		private CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler() {
+			super(CtRole.ANNONYMOUS_EXECUTABLE, CtClass.class, CtAnonymousExecutable.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSimpleName())));
+			return ((U) ((Object) (castTarget(element).getAnonymousExecutables())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setSimpleName(castValue(value));
+			castTarget(element).setAnonymousExecutables(castValue(value));
 		}
 	}
 
-	static class CtArrayTypeReference_TYPE_RoleHandler extends SingleHandler<CtArrayTypeReference, CtTypeReference<?>> {
-		private CtArrayTypeReference_TYPE_RoleHandler() {
-			super(CtRole.TYPE, CtArrayTypeReference.class, CtTypeReference.class);
+	static class CtElement_ANNOTATION_RoleHandler extends ListHandler<CtElement, CtAnnotation<? extends Annotation>> {
+		private CtElement_ANNOTATION_RoleHandler() {
+			super(CtRole.ANNOTATION, CtElement.class, CtAnnotation.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getComponentType())));
+			return ((U) ((Object) (castTarget(element).getAnnotations())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setComponentType(castValue(value));
+			castTarget(element).setAnnotations(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
-		private CtExecutableReference_TYPE_RoleHandler() {
-			super(CtRole.TYPE, CtExecutableReference.class, CtTypeReference.class);
+	static class CtAnnotation_ANNOTATION_TYPE_RoleHandler extends SingleHandler<CtAnnotation, CtTypeReference<? extends Annotation>> {
+		private CtAnnotation_ANNOTATION_TYPE_RoleHandler() {
+			super(CtRole.ANNOTATION_TYPE, CtAnnotation.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getAnnotationType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setType(castValue(value));
+			castTarget(element).setAnnotationType(castValue(value));
 		}
 	}
 
-	static class CtMultiTypedElement_TYPE_RoleHandler extends ListHandler<CtMultiTypedElement, CtTypeReference<?>> {
-		private CtMultiTypedElement_TYPE_RoleHandler() {
-			super(CtRole.TYPE, CtMultiTypedElement.class, CtTypeReference.class);
+	static class CtAbstractInvocation_ARGUMENT_RoleHandler extends ListHandler<CtAbstractInvocation, CtExpression<?>> {
+		private CtAbstractInvocation_ARGUMENT_RoleHandler() {
+			super(CtRole.ARGUMENT, CtAbstractInvocation.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getMultiTypes())));
+			return ((U) ((Object) (castTarget(element).getArguments())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setMultiTypes(castValue(value));
+			castTarget(element).setArguments(castValue(value));
 		}
 	}
 
-	static class CtTypedElement_TYPE_RoleHandler extends SingleHandler<CtTypedElement, CtTypeReference<?>> {
-		private CtTypedElement_TYPE_RoleHandler() {
-			super(CtRole.TYPE, CtTypedElement.class, CtTypeReference.class);
+	static class CtExecutableReference_ARGUMENT_TYPE_RoleHandler extends ListHandler<CtExecutableReference, CtTypeReference<?>> {
+		private CtExecutableReference_ARGUMENT_TYPE_RoleHandler() {
+			super(CtRole.ARGUMENT_TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getParameters())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setType(castValue(value));
+			castTarget(element).setParameters(castValue(value));
 		}
 	}
 
-	static class CtVariableReference_TYPE_RoleHandler extends SingleHandler<CtVariableReference, CtTypeReference<?>> {
-		private CtVariableReference_TYPE_RoleHandler() {
-			super(CtRole.TYPE, CtVariableReference.class, CtTypeReference.class);
+	static class CtAssignment_ASSIGNED_RoleHandler extends SingleHandler<CtAssignment, CtExpression<?>> {
+		private CtAssignment_ASSIGNED_RoleHandler() {
+			super(CtRole.ASSIGNED, CtAssignment.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
+			return ((U) ((Object) (castTarget(element).getAssigned())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setType(castValue(value));
+			castTarget(element).setAssigned(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
-		private CtExecutableReference_DECLARING_TYPE_RoleHandler() {
-			super(CtRole.DECLARING_TYPE, CtExecutableReference.class, CtTypeReference.class);
+	static class CtRHSReceiver_ASSIGNMENT_RoleHandler extends SingleHandler<CtRHSReceiver, CtExpression<?>> {
+		private CtRHSReceiver_ASSIGNMENT_RoleHandler() {
+			super(CtRole.ASSIGNMENT, CtRHSReceiver.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringType())));
+			return ((U) ((Object) (castTarget(element).getAssignment())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDeclaringType(castValue(value));
-		}
-	}
-
-	static class CtFieldReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtFieldReference, CtTypeReference<?>> {
-		private CtFieldReference_DECLARING_TYPE_RoleHandler() {
-			super(CtRole.DECLARING_TYPE, CtFieldReference.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringType())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDeclaringType(castValue(value));
-		}
-	}
-
-	static class CtTypeReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtTypeReference, CtTypeReference<?>> {
-		private CtTypeReference_DECLARING_TYPE_RoleHandler() {
-			super(CtRole.DECLARING_TYPE, CtTypeReference.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringType())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDeclaringType(castValue(value));
-		}
-	}
-
-	static class CtPackage_CONTAINED_TYPE_RoleHandler extends SetHandler<CtPackage, CtType<?>> {
-		private CtPackage_CONTAINED_TYPE_RoleHandler() {
-			super(CtRole.CONTAINED_TYPE, CtPackage.class, CtType.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTypes())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setTypes(castValue(value));
+			castTarget(element).setAssignment(castValue(value));
 		}
 	}
 
@@ -337,23 +286,6 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtShadowable_IS_SHADOW_RoleHandler extends SingleHandler<CtShadowable, Boolean> {
-		private CtShadowable_IS_SHADOW_RoleHandler() {
-			super(CtRole.IS_SHADOW, CtShadowable.class, Boolean.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isShadow())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setShadow(castValue(value));
-		}
-	}
-
 	static class CtIntersectionTypeReference_BOUND_RoleHandler extends ListHandler<CtIntersectionTypeReference, CtTypeReference<?>> {
 		private CtIntersectionTypeReference_BOUND_RoleHandler() {
 			super(CtRole.BOUND, CtIntersectionTypeReference.class, CtTypeReference.class);
@@ -388,258 +320,139 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtFieldReference_IS_FINAL_RoleHandler extends SingleHandler<CtFieldReference, Boolean> {
-		private CtFieldReference_IS_FINAL_RoleHandler() {
-			super(CtRole.IS_FINAL, CtFieldReference.class, Boolean.class);
+	static class CtSwitch_CASE_RoleHandler extends ListHandler<CtSwitch, CtCase<?>> {
+		private CtSwitch_CASE_RoleHandler() {
+			super(CtRole.CASE, CtSwitch.class, CtCase.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isFinal())));
+			return ((U) ((Object) (castTarget(element).getCases())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setFinal(castValue(value));
+			castTarget(element).setCases(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_IS_STATIC_RoleHandler extends SingleHandler<CtExecutableReference, Boolean> {
-		private CtExecutableReference_IS_STATIC_RoleHandler() {
-			super(CtRole.IS_STATIC, CtExecutableReference.class, Boolean.class);
+	static class CtExpression_CAST_RoleHandler extends ListHandler<CtExpression, CtTypeReference<?>> {
+		private CtExpression_CAST_RoleHandler() {
+			super(CtRole.CAST, CtExpression.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isStatic())));
+			return ((U) ((Object) (castTarget(element).getTypeCasts())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setStatic(castValue(value));
+			castTarget(element).setTypeCasts(castValue(value));
 		}
 	}
 
-	static class CtFieldReference_IS_STATIC_RoleHandler extends SingleHandler<CtFieldReference, Boolean> {
-		private CtFieldReference_IS_STATIC_RoleHandler() {
-			super(CtRole.IS_STATIC, CtFieldReference.class, Boolean.class);
+	static class CtTry_CATCH_RoleHandler extends ListHandler<CtTry, CtCatch> {
+		private CtTry_CATCH_RoleHandler() {
+			super(CtRole.CATCH, CtTry.class, CtCatch.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isStatic())));
+			return ((U) ((Object) (castTarget(element).getCatchers())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setStatic(castValue(value));
+			castTarget(element).setCatchers(castValue(value));
 		}
 	}
 
-	static class CtTypeParameterReference_IS_UPPER_RoleHandler extends SingleHandler<CtTypeParameterReference, Boolean> {
-		private CtTypeParameterReference_IS_UPPER_RoleHandler() {
-			super(CtRole.IS_UPPER, CtTypeParameterReference.class, Boolean.class);
+	static class CtElement_COMMENT_RoleHandler extends ListHandler<CtElement, CtComment> {
+		private CtElement_COMMENT_RoleHandler() {
+			super(CtRole.COMMENT, CtElement.class, CtComment.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isUpper())));
+			return ((U) ((Object) (castTarget(element).getComments())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setUpper(castValue(value));
+			castTarget(element).setComments(castValue(value));
 		}
 	}
 
-	static class CtElement_IS_IMPLICIT_RoleHandler extends SingleHandler<CtElement, Boolean> {
-		private CtElement_IS_IMPLICIT_RoleHandler() {
-			super(CtRole.IS_IMPLICIT, CtElement.class, Boolean.class);
+	static class CtComment_COMMENT_CONTENT_RoleHandler extends SingleHandler<CtComment, String> {
+		private CtComment_COMMENT_CONTENT_RoleHandler() {
+			super(CtRole.COMMENT_CONTENT, CtComment.class, String.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isImplicit())));
+			return ((U) ((Object) (castTarget(element).getContent())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setImplicit(castValue(value));
+			castTarget(element).setContent(castValue(value));
 		}
 	}
 
-	static class CtMethod_IS_DEFAULT_RoleHandler extends SingleHandler<CtMethod, Boolean> {
-		private CtMethod_IS_DEFAULT_RoleHandler() {
-			super(CtRole.IS_DEFAULT, CtMethod.class, Boolean.class);
+	static class CtJavaDocTag_COMMENT_CONTENT_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
+		private CtJavaDocTag_COMMENT_CONTENT_RoleHandler() {
+			super(CtRole.COMMENT_CONTENT, CtJavaDocTag.class, String.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isDefaultMethod())));
+			return ((U) ((Object) (castTarget(element).getContent())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDefaultMethod(castValue(value));
+			castTarget(element).setContent(castValue(value));
 		}
 	}
 
-	static class CtParameter_IS_VARARGS_RoleHandler extends SingleHandler<CtParameter, Boolean> {
-		private CtParameter_IS_VARARGS_RoleHandler() {
-			super(CtRole.IS_VARARGS, CtParameter.class, Boolean.class);
+	static class CtJavaDoc_COMMENT_TAG_RoleHandler extends ListHandler<CtJavaDoc, CtJavaDocTag> {
+		private CtJavaDoc_COMMENT_TAG_RoleHandler() {
+			super(CtRole.COMMENT_TAG, CtJavaDoc.class, CtJavaDocTag.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).isVarArgs())));
+			return ((U) ((Object) (castTarget(element).getTags())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setVarArgs(castValue(value));
+			castTarget(element).setTags(castValue(value));
 		}
 	}
 
-	static class CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler extends SingleHandler<CtAnnotationMethod, CtExpression<?>> {
-		private CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler() {
-			super(CtRole.DEFAULT_EXPRESSION, CtAnnotationMethod.class, CtExpression.class);
+	static class CtComment_COMMENT_TYPE_RoleHandler extends SingleHandler<CtComment, CtComment.CommentType> {
+		private CtComment_COMMENT_TYPE_RoleHandler() {
+			super(CtRole.COMMENT_TYPE, CtComment.class, CtComment.CommentType.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
+			return ((U) ((Object) (castTarget(element).getCommentType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDefaultExpression(castValue(value));
-		}
-	}
-
-	static class CtVariable_DEFAULT_EXPRESSION_RoleHandler extends SingleHandler<CtVariable, CtExpression<?>> {
-		private CtVariable_DEFAULT_EXPRESSION_RoleHandler() {
-			super(CtRole.DEFAULT_EXPRESSION, CtVariable.class, CtExpression.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDefaultExpression(castValue(value));
-		}
-	}
-
-	static class CtConditional_THEN_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
-		private CtConditional_THEN_RoleHandler() {
-			super(CtRole.THEN, CtConditional.class, CtExpression.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThenExpression())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setThenExpression(castValue(value));
-		}
-	}
-
-	static class CtIf_THEN_RoleHandler extends SingleHandler<CtIf, CtStatement> {
-		private CtIf_THEN_RoleHandler() {
-			super(CtRole.THEN, CtIf.class, CtStatement.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThenStatement())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setThenStatement(castValue(value));
-		}
-	}
-
-	static class CtConditional_ELSE_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
-		private CtConditional_ELSE_RoleHandler() {
-			super(CtRole.ELSE, CtConditional.class, CtExpression.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getElseExpression())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setElseExpression(castValue(value));
-		}
-	}
-
-	static class CtIf_ELSE_RoleHandler extends SingleHandler<CtIf, CtStatement> {
-		private CtIf_ELSE_RoleHandler() {
-			super(CtRole.ELSE, CtIf.class, CtStatement.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getElseStatement())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setElseStatement(castValue(value));
-		}
-	}
-
-	static class CtTypeReference_PACKAGE_REF_RoleHandler extends SingleHandler<CtTypeReference, CtPackageReference> {
-		private CtTypeReference_PACKAGE_REF_RoleHandler() {
-			super(CtRole.PACKAGE_REF, CtTypeReference.class, CtPackageReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPackage())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setPackage(castValue(value));
-		}
-	}
-
-	static class CtPackage_SUB_PACKAGE_RoleHandler extends SetHandler<CtPackage, CtPackage> {
-		private CtPackage_SUB_PACKAGE_RoleHandler() {
-			super(CtRole.SUB_PACKAGE, CtPackage.class, CtPackage.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPackages())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setPackages(castValue(value));
+			castTarget(element).setCommentType(castValue(value));
 		}
 	}
 
@@ -694,173 +507,241 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtBinaryOperator_RIGHT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<?>> {
-		private CtBinaryOperator_RIGHT_OPERAND_RoleHandler() {
-			super(CtRole.RIGHT_OPERAND, CtBinaryOperator.class, CtExpression.class);
+	static class CtClass_CONSTRUCTOR_RoleHandler extends SetHandler<CtClass, CtConstructor<?>> {
+		private CtClass_CONSTRUCTOR_RoleHandler() {
+			super(CtRole.CONSTRUCTOR, CtClass.class, CtConstructor.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRightHandOperand())));
+			return ((U) ((Object) (castTarget(element).getConstructors())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setRightHandOperand(castValue(value));
+			castTarget(element).setConstructors(castValue(value));
 		}
 	}
 
-	static class CtBinaryOperator_LEFT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<?>> {
-		private CtBinaryOperator_LEFT_OPERAND_RoleHandler() {
-			super(CtRole.LEFT_OPERAND, CtBinaryOperator.class, CtExpression.class);
+	static class CtPackage_CONTAINED_TYPE_RoleHandler extends SetHandler<CtPackage, CtType<?>> {
+		private CtPackage_CONTAINED_TYPE_RoleHandler() {
+			super(CtRole.CONTAINED_TYPE, CtPackage.class, CtType.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getLeftHandOperand())));
+			return ((U) ((Object) (castTarget(element).getTypes())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setLeftHandOperand(castValue(value));
+			castTarget(element).setTypes(castValue(value));
 		}
 	}
 
-	static class CtStatement_LABEL_RoleHandler extends SingleHandler<CtStatement, String> {
-		private CtStatement_LABEL_RoleHandler() {
-			super(CtRole.LABEL, CtStatement.class, String.class);
+	static class CtExecutableReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
+		private CtExecutableReference_DECLARING_TYPE_RoleHandler() {
+			super(CtRole.DECLARING_TYPE, CtExecutableReference.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getLabel())));
+			return ((U) ((Object) (castTarget(element).getDeclaringType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setLabel(castValue(value));
+			castTarget(element).setDeclaringType(castValue(value));
 		}
 	}
 
-	static class CtSwitch_CASE_RoleHandler extends ListHandler<CtSwitch, CtCase<?>> {
-		private CtSwitch_CASE_RoleHandler() {
-			super(CtRole.CASE, CtSwitch.class, CtCase.class);
+	static class CtFieldReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtFieldReference, CtTypeReference<?>> {
+		private CtFieldReference_DECLARING_TYPE_RoleHandler() {
+			super(CtRole.DECLARING_TYPE, CtFieldReference.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCases())));
+			return ((U) ((Object) (castTarget(element).getDeclaringType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setCases(castValue(value));
+			castTarget(element).setDeclaringType(castValue(value));
 		}
 	}
 
-	static class CtBinaryOperator_OPERATOR_KIND_RoleHandler extends SingleHandler<CtBinaryOperator, BinaryOperatorKind> {
-		private CtBinaryOperator_OPERATOR_KIND_RoleHandler() {
-			super(CtRole.OPERATOR_KIND, CtBinaryOperator.class, BinaryOperatorKind.class);
+	static class CtTypeReference_DECLARING_TYPE_RoleHandler extends SingleHandler<CtTypeReference, CtTypeReference<?>> {
+		private CtTypeReference_DECLARING_TYPE_RoleHandler() {
+			super(CtRole.DECLARING_TYPE, CtTypeReference.class, CtTypeReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getKind())));
+			return ((U) ((Object) (castTarget(element).getDeclaringType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setKind(castValue(value));
+			castTarget(element).setDeclaringType(castValue(value));
 		}
 	}
 
-	static class CtOperatorAssignment_OPERATOR_KIND_RoleHandler extends SingleHandler<CtOperatorAssignment, BinaryOperatorKind> {
-		private CtOperatorAssignment_OPERATOR_KIND_RoleHandler() {
-			super(CtRole.OPERATOR_KIND, CtOperatorAssignment.class, BinaryOperatorKind.class);
+	static class CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler extends SingleHandler<CtAnnotationMethod, CtExpression<?>> {
+		private CtAnnotationMethod_DEFAULT_EXPRESSION_RoleHandler() {
+			super(CtRole.DEFAULT_EXPRESSION, CtAnnotationMethod.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getKind())));
+			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setKind(castValue(value));
+			castTarget(element).setDefaultExpression(castValue(value));
 		}
 	}
 
-	static class CtUnaryOperator_OPERATOR_KIND_RoleHandler extends SingleHandler<CtUnaryOperator, UnaryOperatorKind> {
-		private CtUnaryOperator_OPERATOR_KIND_RoleHandler() {
-			super(CtRole.OPERATOR_KIND, CtUnaryOperator.class, UnaryOperatorKind.class);
+	static class CtVariable_DEFAULT_EXPRESSION_RoleHandler extends SingleHandler<CtVariable, CtExpression<?>> {
+		private CtVariable_DEFAULT_EXPRESSION_RoleHandler() {
+			super(CtRole.DEFAULT_EXPRESSION, CtVariable.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getKind())));
+			return ((U) ((Object) (castTarget(element).getDefaultExpression())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setKind(castValue(value));
+			castTarget(element).setDefaultExpression(castValue(value));
 		}
 	}
 
-	static class CtCatch_PARAMETER_RoleHandler extends SingleHandler<CtCatch, CtCatchVariable<? extends Throwable>> {
-		private CtCatch_PARAMETER_RoleHandler() {
-			super(CtRole.PARAMETER, CtCatch.class, CtCatchVariable.class);
+	static class CtNewArray_DIMENSION_RoleHandler extends ListHandler<CtNewArray, CtExpression<Integer>> {
+		private CtNewArray_DIMENSION_RoleHandler() {
+			super(CtRole.DIMENSION, CtNewArray.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParameter())));
+			return ((U) ((Object) (castTarget(element).getDimensionExpressions())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setParameter(castValue(value));
+			castTarget(element).setDimensionExpressions(castValue(value));
 		}
 	}
 
-	static class CtExecutable_PARAMETER_RoleHandler extends ListHandler<CtExecutable, CtParameter<?>> {
-		private CtExecutable_PARAMETER_RoleHandler() {
-			super(CtRole.PARAMETER, CtExecutable.class, CtParameter.class);
+	static class CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler extends SingleHandler<CtJavaDocTag, CtJavaDocTag.TagType> {
+		private CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler() {
+			super(CtRole.DOCUMENTATION_TYPE, CtJavaDocTag.class, CtJavaDocTag.TagType.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParameters())));
+			return ((U) ((Object) (castTarget(element).getType())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setParameters(castValue(value));
+			castTarget(element).setType(castValue(value));
 		}
 	}
 
-	static class CtExecutableReference_ARGUMENT_TYPE_RoleHandler extends ListHandler<CtExecutableReference, CtTypeReference<?>> {
-		private CtExecutableReference_ARGUMENT_TYPE_RoleHandler() {
-			super(CtRole.ARGUMENT_TYPE, CtExecutableReference.class, CtTypeReference.class);
+	static class CtConditional_ELSE_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
+		private CtConditional_ELSE_RoleHandler() {
+			super(CtRole.ELSE, CtConditional.class, CtExpression.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParameters())));
+			return ((U) ((Object) (castTarget(element).getElseExpression())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setParameters(castValue(value));
+			castTarget(element).setElseExpression(castValue(value));
+		}
+	}
+
+	static class CtIf_ELSE_RoleHandler extends SingleHandler<CtIf, CtStatement> {
+		private CtIf_ELSE_RoleHandler() {
+			super(CtRole.ELSE, CtIf.class, CtStatement.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getElseStatement())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setElseStatement(castValue(value));
+		}
+	}
+
+	static class CtAbstractInvocation_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtAbstractInvocation, CtExecutableReference<?>> {
+		private CtAbstractInvocation_EXECUTABLE_REF_RoleHandler() {
+			super(CtRole.EXECUTABLE_REF, CtAbstractInvocation.class, CtExecutableReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getExecutable())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setExecutable(castValue(value));
+		}
+	}
+
+	static class CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtExecutableReferenceExpression, CtExecutableReference<?>> {
+		private CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler() {
+			super(CtRole.EXECUTABLE_REF, CtExecutableReferenceExpression.class, CtExecutableReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getExecutable())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setExecutable(castValue(value));
+		}
+	}
+
+	static class CtParameterReference_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtParameterReference, CtExecutableReference<?>> {
+		private CtParameterReference_EXECUTABLE_REF_RoleHandler() {
+			super(CtRole.EXECUTABLE_REF, CtParameterReference.class, CtExecutableReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getDeclaringExecutable())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setDeclaringExecutable(castValue(value));
 		}
 	}
 
@@ -1102,37 +983,20 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTargetedExpression_TARGET_RoleHandler extends SingleHandler<CtTargetedExpression, CtExpression<?>> {
-		private CtTargetedExpression_TARGET_RoleHandler() {
-			super(CtRole.TARGET, CtTargetedExpression.class, CtExpression.class);
+	static class CtType_FIELD_RoleHandler extends ListHandler<CtType, CtField<?>> {
+		private CtType_FIELD_RoleHandler() {
+			super(CtRole.FIELD, CtType.class, CtField.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTarget())));
+			return ((U) ((Object) (castTarget(element).getFields())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setTarget(castValue(value));
-		}
-	}
-
-	static class CtVariableAccess_VARIABLE_RoleHandler extends SingleHandler<CtVariableAccess, CtVariableReference<?>> {
-		private CtVariableAccess_VARIABLE_RoleHandler() {
-			super(CtRole.VARIABLE, CtVariableAccess.class, CtVariableReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getVariable())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setVariable(castValue(value));
+			castTarget(element).setFields(castValue(value));
 		}
 	}
 
@@ -1153,54 +1017,270 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtExecutable_THROWN_RoleHandler extends SetHandler<CtExecutable, CtTypeReference<? extends Throwable>> {
-		private CtExecutable_THROWN_RoleHandler() {
-			super(CtRole.THROWN, CtExecutable.class, CtTypeReference.class);
+	static class CtForEach_FOREACH_VARIABLE_RoleHandler extends SingleHandler<CtForEach, CtLocalVariable<?>> {
+		private CtForEach_FOREACH_VARIABLE_RoleHandler() {
+			super(CtRole.FOREACH_VARIABLE, CtForEach.class, CtLocalVariable.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getThrownTypes())));
+			return ((U) ((Object) (castTarget(element).getVariable())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setThrownTypes(castValue(value));
+			castTarget(element).setVariable(castValue(value));
 		}
 	}
 
-	static class CtRHSReceiver_ASSIGNMENT_RoleHandler extends SingleHandler<CtRHSReceiver, CtExpression<?>> {
-		private CtRHSReceiver_ASSIGNMENT_RoleHandler() {
-			super(CtRole.ASSIGNMENT, CtRHSReceiver.class, CtExpression.class);
+	static class CtFor_FOR_INIT_RoleHandler extends ListHandler<CtFor, CtStatement> {
+		private CtFor_FOR_INIT_RoleHandler() {
+			super(CtRole.FOR_INIT, CtFor.class, CtStatement.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAssignment())));
+			return ((U) ((Object) (castTarget(element).getForInit())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setAssignment(castValue(value));
+			castTarget(element).setForInit(castValue(value));
 		}
 	}
 
-	static class CtAssignment_ASSIGNED_RoleHandler extends SingleHandler<CtAssignment, CtExpression<?>> {
-		private CtAssignment_ASSIGNED_RoleHandler() {
-			super(CtRole.ASSIGNED, CtAssignment.class, CtExpression.class);
+	static class CtFor_FOR_UPDATE_RoleHandler extends ListHandler<CtFor, CtStatement> {
+		private CtFor_FOR_UPDATE_RoleHandler() {
+			super(CtRole.FOR_UPDATE, CtFor.class, CtStatement.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAssigned())));
+			return ((U) ((Object) (castTarget(element).getForUpdate())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setAssigned(castValue(value));
+			castTarget(element).setForUpdate(castValue(value));
+		}
+	}
+
+	static class CtTypeInformation_INTERFACE_RoleHandler extends SetHandler<CtTypeInformation, CtTypeReference<?>> {
+		private CtTypeInformation_INTERFACE_RoleHandler() {
+			super(CtRole.INTERFACE, CtTypeInformation.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getSuperInterfaces())));
+		}
+	}
+
+	static class CtMethod_IS_DEFAULT_RoleHandler extends SingleHandler<CtMethod, Boolean> {
+		private CtMethod_IS_DEFAULT_RoleHandler() {
+			super(CtRole.IS_DEFAULT, CtMethod.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isDefaultMethod())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setDefaultMethod(castValue(value));
+		}
+	}
+
+	static class CtFieldReference_IS_FINAL_RoleHandler extends SingleHandler<CtFieldReference, Boolean> {
+		private CtFieldReference_IS_FINAL_RoleHandler() {
+			super(CtRole.IS_FINAL, CtFieldReference.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isFinal())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setFinal(castValue(value));
+		}
+	}
+
+	static class CtElement_IS_IMPLICIT_RoleHandler extends SingleHandler<CtElement, Boolean> {
+		private CtElement_IS_IMPLICIT_RoleHandler() {
+			super(CtRole.IS_IMPLICIT, CtElement.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isImplicit())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setImplicit(castValue(value));
+		}
+	}
+
+	static class CtShadowable_IS_SHADOW_RoleHandler extends SingleHandler<CtShadowable, Boolean> {
+		private CtShadowable_IS_SHADOW_RoleHandler() {
+			super(CtRole.IS_SHADOW, CtShadowable.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isShadow())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setShadow(castValue(value));
+		}
+	}
+
+	static class CtExecutableReference_IS_STATIC_RoleHandler extends SingleHandler<CtExecutableReference, Boolean> {
+		private CtExecutableReference_IS_STATIC_RoleHandler() {
+			super(CtRole.IS_STATIC, CtExecutableReference.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isStatic())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setStatic(castValue(value));
+		}
+	}
+
+	static class CtFieldReference_IS_STATIC_RoleHandler extends SingleHandler<CtFieldReference, Boolean> {
+		private CtFieldReference_IS_STATIC_RoleHandler() {
+			super(CtRole.IS_STATIC, CtFieldReference.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isStatic())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setStatic(castValue(value));
+		}
+	}
+
+	static class CtTypeParameterReference_IS_UPPER_RoleHandler extends SingleHandler<CtTypeParameterReference, Boolean> {
+		private CtTypeParameterReference_IS_UPPER_RoleHandler() {
+			super(CtRole.IS_UPPER, CtTypeParameterReference.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isUpper())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setUpper(castValue(value));
+		}
+	}
+
+	static class CtParameter_IS_VARARGS_RoleHandler extends SingleHandler<CtParameter, Boolean> {
+		private CtParameter_IS_VARARGS_RoleHandler() {
+			super(CtRole.IS_VARARGS, CtParameter.class, Boolean.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).isVarArgs())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setVarArgs(castValue(value));
+		}
+	}
+
+	static class CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
+		private CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler() {
+			super(CtRole.JAVADOC_TAG_VALUE, CtJavaDocTag.class, String.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getParam())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setParam(castValue(value));
+		}
+	}
+
+	static class CtStatement_LABEL_RoleHandler extends SingleHandler<CtStatement, String> {
+		private CtStatement_LABEL_RoleHandler() {
+			super(CtRole.LABEL, CtStatement.class, String.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getLabel())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setLabel(castValue(value));
+		}
+	}
+
+	static class CtBinaryOperator_LEFT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<?>> {
+		private CtBinaryOperator_LEFT_OPERAND_RoleHandler() {
+			super(CtRole.LEFT_OPERAND, CtBinaryOperator.class, CtExpression.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getLeftHandOperand())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setLeftHandOperand(castValue(value));
+		}
+	}
+
+	static class CtType_METHOD_RoleHandler extends SetHandler<CtType, CtMethod<?>> {
+		private CtType_METHOD_RoleHandler() {
+			super(CtRole.METHOD, CtType.class, CtMethod.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getMethods())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setMethods(castValue(value));
 		}
 	}
 
@@ -1233,112 +1313,37 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtElement_COMMENT_RoleHandler extends ListHandler<CtElement, CtComment> {
-		private CtElement_COMMENT_RoleHandler() {
-			super(CtRole.COMMENT, CtElement.class, CtComment.class);
+	static class CtNamedElement_NAME_RoleHandler extends SingleHandler<CtNamedElement, String> {
+		private CtNamedElement_NAME_RoleHandler() {
+			super(CtRole.NAME, CtNamedElement.class, String.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getComments())));
+			return ((U) ((Object) (castTarget(element).getSimpleName())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setComments(castValue(value));
+			castTarget(element).setSimpleName(castValue(value));
 		}
 	}
 
-	static class CtAnnotation_ANNOTATION_TYPE_RoleHandler extends SingleHandler<CtAnnotation, CtTypeReference<? extends Annotation>> {
-		private CtAnnotation_ANNOTATION_TYPE_RoleHandler() {
-			super(CtRole.ANNOTATION_TYPE, CtAnnotation.class, CtTypeReference.class);
+	static class CtReference_NAME_RoleHandler extends SingleHandler<CtReference, String> {
+		private CtReference_NAME_RoleHandler() {
+			super(CtRole.NAME, CtReference.class, String.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnnotationType())));
+			return ((U) ((Object) (castTarget(element).getSimpleName())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setAnnotationType(castValue(value));
-		}
-	}
-
-	static class CtTypeInformation_INTERFACE_RoleHandler extends SetHandler<CtTypeInformation, CtTypeReference<?>> {
-		private CtTypeInformation_INTERFACE_RoleHandler() {
-			super(CtRole.INTERFACE, CtTypeInformation.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSuperInterfaces())));
-		}
-	}
-
-	static class CtElement_ANNOTATION_RoleHandler extends ListHandler<CtElement, CtAnnotation<? extends Annotation>> {
-		private CtElement_ANNOTATION_RoleHandler() {
-			super(CtRole.ANNOTATION, CtElement.class, CtAnnotation.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnnotations())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setAnnotations(castValue(value));
-		}
-	}
-
-	static class CtStatementList_STATEMENT_RoleHandler extends ListHandler<CtStatementList, CtStatement> {
-		private CtStatementList_STATEMENT_RoleHandler() {
-			super(CtRole.STATEMENT, CtStatementList.class, CtStatement.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getStatements())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setStatements(castValue(value));
-		}
-	}
-
-	static class CtAbstractInvocation_ARGUMENT_RoleHandler extends ListHandler<CtAbstractInvocation, CtExpression<?>> {
-		private CtAbstractInvocation_ARGUMENT_RoleHandler() {
-			super(CtRole.ARGUMENT, CtAbstractInvocation.class, CtExpression.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getArguments())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setArguments(castValue(value));
-		}
-	}
-
-	static class CtTypeInformation_SUPER_TYPE_RoleHandler extends SingleHandler<CtTypeInformation, CtTypeReference<?>> {
-		private CtTypeInformation_SUPER_TYPE_RoleHandler() {
-			super(CtRole.SUPER_TYPE, CtTypeInformation.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getSuperclass())));
+			castTarget(element).setSimpleName(castValue(value));
 		}
 	}
 
@@ -1376,122 +1381,406 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtClass_CONSTRUCTOR_RoleHandler extends SetHandler<CtClass, CtConstructor<?>> {
-		private CtClass_CONSTRUCTOR_RoleHandler() {
-			super(CtRole.CONSTRUCTOR, CtClass.class, CtConstructor.class);
+	static class CtBinaryOperator_OPERATOR_KIND_RoleHandler extends SingleHandler<CtBinaryOperator, BinaryOperatorKind> {
+		private CtBinaryOperator_OPERATOR_KIND_RoleHandler() {
+			super(CtRole.OPERATOR_KIND, CtBinaryOperator.class, BinaryOperatorKind.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getConstructors())));
+			return ((U) ((Object) (castTarget(element).getKind())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setConstructors(castValue(value));
+			castTarget(element).setKind(castValue(value));
 		}
 	}
 
-	static class CtAbstractInvocation_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtAbstractInvocation, CtExecutableReference<?>> {
-		private CtAbstractInvocation_EXECUTABLE_REF_RoleHandler() {
-			super(CtRole.EXECUTABLE_REF, CtAbstractInvocation.class, CtExecutableReference.class);
+	static class CtOperatorAssignment_OPERATOR_KIND_RoleHandler extends SingleHandler<CtOperatorAssignment, BinaryOperatorKind> {
+		private CtOperatorAssignment_OPERATOR_KIND_RoleHandler() {
+			super(CtRole.OPERATOR_KIND, CtOperatorAssignment.class, BinaryOperatorKind.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExecutable())));
+			return ((U) ((Object) (castTarget(element).getKind())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setExecutable(castValue(value));
+			castTarget(element).setKind(castValue(value));
 		}
 	}
 
-	static class CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtExecutableReferenceExpression, CtExecutableReference<?>> {
-		private CtExecutableReferenceExpression_EXECUTABLE_REF_RoleHandler() {
-			super(CtRole.EXECUTABLE_REF, CtExecutableReferenceExpression.class, CtExecutableReference.class);
+	static class CtUnaryOperator_OPERATOR_KIND_RoleHandler extends SingleHandler<CtUnaryOperator, UnaryOperatorKind> {
+		private CtUnaryOperator_OPERATOR_KIND_RoleHandler() {
+			super(CtRole.OPERATOR_KIND, CtUnaryOperator.class, UnaryOperatorKind.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getExecutable())));
+			return ((U) ((Object) (castTarget(element).getKind())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setExecutable(castValue(value));
+			castTarget(element).setKind(castValue(value));
 		}
 	}
 
-	static class CtParameterReference_EXECUTABLE_REF_RoleHandler extends SingleHandler<CtParameterReference, CtExecutableReference<?>> {
-		private CtParameterReference_EXECUTABLE_REF_RoleHandler() {
-			super(CtRole.EXECUTABLE_REF, CtParameterReference.class, CtExecutableReference.class);
+	static class CtTypeReference_PACKAGE_REF_RoleHandler extends SingleHandler<CtTypeReference, CtPackageReference> {
+		private CtTypeReference_PACKAGE_REF_RoleHandler() {
+			super(CtRole.PACKAGE_REF, CtTypeReference.class, CtPackageReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDeclaringExecutable())));
+			return ((U) ((Object) (castTarget(element).getPackage())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDeclaringExecutable(castValue(value));
+			castTarget(element).setPackage(castValue(value));
 		}
 	}
 
-	static class CtType_METHOD_RoleHandler extends SetHandler<CtType, CtMethod<?>> {
-		private CtType_METHOD_RoleHandler() {
-			super(CtRole.METHOD, CtType.class, CtMethod.class);
+	static class CtCatch_PARAMETER_RoleHandler extends SingleHandler<CtCatch, CtCatchVariable<? extends Throwable>> {
+		private CtCatch_PARAMETER_RoleHandler() {
+			super(CtRole.PARAMETER, CtCatch.class, CtCatchVariable.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getMethods())));
+			return ((U) ((Object) (castTarget(element).getParameter())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setMethods(castValue(value));
+			castTarget(element).setParameter(castValue(value));
 		}
 	}
 
-	static class CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler extends ListHandler<CtClass, CtAnonymousExecutable> {
-		private CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler() {
-			super(CtRole.ANNONYMOUS_EXECUTABLE, CtClass.class, CtAnonymousExecutable.class);
+	static class CtExecutable_PARAMETER_RoleHandler extends ListHandler<CtExecutable, CtParameter<?>> {
+		private CtExecutable_PARAMETER_RoleHandler() {
+			super(CtRole.PARAMETER, CtExecutable.class, CtParameter.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAnonymousExecutables())));
+			return ((U) ((Object) (castTarget(element).getParameters())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setAnonymousExecutables(castValue(value));
+			castTarget(element).setParameters(castValue(value));
 		}
 	}
 
-	static class CtType_FIELD_RoleHandler extends ListHandler<CtType, CtField<?>> {
-		private CtType_FIELD_RoleHandler() {
-			super(CtRole.FIELD, CtType.class, CtField.class);
+	static class CtElement_POSITION_RoleHandler extends SingleHandler<CtElement, SourcePosition> {
+		private CtElement_POSITION_RoleHandler() {
+			super(CtRole.POSITION, CtElement.class, SourcePosition.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getFields())));
+			return ((U) ((Object) (castTarget(element).getPosition())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setFields(castValue(value));
+			castTarget(element).setPosition(castValue(value));
+		}
+	}
+
+	static class CtBinaryOperator_RIGHT_OPERAND_RoleHandler extends SingleHandler<CtBinaryOperator, CtExpression<?>> {
+		private CtBinaryOperator_RIGHT_OPERAND_RoleHandler() {
+			super(CtRole.RIGHT_OPERAND, CtBinaryOperator.class, CtExpression.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getRightHandOperand())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setRightHandOperand(castValue(value));
+		}
+	}
+
+	static class CtCodeSnippet_SNIPPET_RoleHandler extends SingleHandler<CtCodeSnippet, String> {
+		private CtCodeSnippet_SNIPPET_RoleHandler() {
+			super(CtRole.SNIPPET, CtCodeSnippet.class, String.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getValue())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setValue(castValue(value));
+		}
+	}
+
+	static class CtStatementList_STATEMENT_RoleHandler extends ListHandler<CtStatementList, CtStatement> {
+		private CtStatementList_STATEMENT_RoleHandler() {
+			super(CtRole.STATEMENT, CtStatementList.class, CtStatement.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getStatements())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setStatements(castValue(value));
+		}
+	}
+
+	static class CtPackage_SUB_PACKAGE_RoleHandler extends SetHandler<CtPackage, CtPackage> {
+		private CtPackage_SUB_PACKAGE_RoleHandler() {
+			super(CtRole.SUB_PACKAGE, CtPackage.class, CtPackage.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getPackages())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setPackages(castValue(value));
+		}
+	}
+
+	static class CtTypeInformation_SUPER_TYPE_RoleHandler extends SingleHandler<CtTypeInformation, CtTypeReference<?>> {
+		private CtTypeInformation_SUPER_TYPE_RoleHandler() {
+			super(CtRole.SUPER_TYPE, CtTypeInformation.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getSuperclass())));
+		}
+	}
+
+	static class CtTargetedExpression_TARGET_RoleHandler extends SingleHandler<CtTargetedExpression, CtExpression<?>> {
+		private CtTargetedExpression_TARGET_RoleHandler() {
+			super(CtRole.TARGET, CtTargetedExpression.class, CtExpression.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getTarget())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setTarget(castValue(value));
+		}
+	}
+
+	static class CtLabelledFlowBreak_TARGET_LABEL_RoleHandler extends SingleHandler<CtLabelledFlowBreak, String> {
+		private CtLabelledFlowBreak_TARGET_LABEL_RoleHandler() {
+			super(CtRole.TARGET_LABEL, CtLabelledFlowBreak.class, String.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getTargetLabel())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setTargetLabel(castValue(value));
+		}
+	}
+
+	static class CtConditional_THEN_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
+		private CtConditional_THEN_RoleHandler() {
+			super(CtRole.THEN, CtConditional.class, CtExpression.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getThenExpression())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setThenExpression(castValue(value));
+		}
+	}
+
+	static class CtIf_THEN_RoleHandler extends SingleHandler<CtIf, CtStatement> {
+		private CtIf_THEN_RoleHandler() {
+			super(CtRole.THEN, CtIf.class, CtStatement.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getThenStatement())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setThenStatement(castValue(value));
+		}
+	}
+
+	static class CtExecutable_THROWN_RoleHandler extends SetHandler<CtExecutable, CtTypeReference<? extends Throwable>> {
+		private CtExecutable_THROWN_RoleHandler() {
+			super(CtRole.THROWN, CtExecutable.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getThrownTypes())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setThrownTypes(castValue(value));
+		}
+	}
+
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtLocalVariable<?>> {
+		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
+			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtLocalVariable.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getResources())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setResources(castValue(value));
+		}
+	}
+
+	static class CtArrayTypeReference_TYPE_RoleHandler extends SingleHandler<CtArrayTypeReference, CtTypeReference<?>> {
+		private CtArrayTypeReference_TYPE_RoleHandler() {
+			super(CtRole.TYPE, CtArrayTypeReference.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getComponentType())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setComponentType(castValue(value));
+		}
+	}
+
+	static class CtExecutableReference_TYPE_RoleHandler extends SingleHandler<CtExecutableReference, CtTypeReference<?>> {
+		private CtExecutableReference_TYPE_RoleHandler() {
+			super(CtRole.TYPE, CtExecutableReference.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getType())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setType(castValue(value));
+		}
+	}
+
+	static class CtMultiTypedElement_TYPE_RoleHandler extends ListHandler<CtMultiTypedElement, CtTypeReference<?>> {
+		private CtMultiTypedElement_TYPE_RoleHandler() {
+			super(CtRole.TYPE, CtMultiTypedElement.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getMultiTypes())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setMultiTypes(castValue(value));
+		}
+	}
+
+	static class CtTypedElement_TYPE_RoleHandler extends SingleHandler<CtTypedElement, CtTypeReference<?>> {
+		private CtTypedElement_TYPE_RoleHandler() {
+			super(CtRole.TYPE, CtTypedElement.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getType())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setType(castValue(value));
+		}
+	}
+
+	static class CtVariableReference_TYPE_RoleHandler extends SingleHandler<CtVariableReference, CtTypeReference<?>> {
+		private CtVariableReference_TYPE_RoleHandler() {
+			super(CtRole.TYPE, CtVariableReference.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getType())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setType(castValue(value));
+		}
+	}
+
+	static class CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler extends ListHandler<CtActualTypeContainer, CtTypeReference<?>> {
+		private CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler() {
+			super(CtRole.TYPE_ARGUMENT, CtActualTypeContainer.class, CtTypeReference.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getActualTypeArguments())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setActualTypeArguments(castValue(value));
 		}
 	}
 
@@ -1512,20 +1801,20 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtExpression_CAST_RoleHandler extends ListHandler<CtExpression, CtTypeReference<?>> {
-		private CtExpression_CAST_RoleHandler() {
-			super(CtRole.CAST, CtExpression.class, CtTypeReference.class);
+	static class CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler extends ListHandler<CtFormalTypeDeclarer, CtTypeParameter> {
+		private CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler() {
+			super(CtRole.TYPE_PARAMETER, CtFormalTypeDeclarer.class, CtTypeParameter.class);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTypeCasts())));
+			return ((U) ((Object) (castTarget(element).getFormalCtTypeParameters())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setTypeCasts(castValue(value));
+			castTarget(element).setFormalCtTypeParameters(castValue(value));
 		}
 	}
 
@@ -1580,43 +1869,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtFor_FOR_UPDATE_RoleHandler extends ListHandler<CtFor, CtStatement> {
-		private CtFor_FOR_UPDATE_RoleHandler() {
-			super(CtRole.FOR_UPDATE, CtFor.class, CtStatement.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getForUpdate())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setForUpdate(castValue(value));
-		}
-	}
-
-	static class CtFor_FOR_INIT_RoleHandler extends ListHandler<CtFor, CtStatement> {
-		private CtFor_FOR_INIT_RoleHandler() {
-			super(CtRole.FOR_INIT, CtFor.class, CtStatement.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getForInit())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setForInit(castValue(value));
-		}
-	}
-
-	static class CtForEach_FOREACH_VARIABLE_RoleHandler extends SingleHandler<CtForEach, CtLocalVariable<?>> {
-		private CtForEach_FOREACH_VARIABLE_RoleHandler() {
-			super(CtRole.FOREACH_VARIABLE, CtForEach.class, CtLocalVariable.class);
+	static class CtVariableAccess_VARIABLE_RoleHandler extends SingleHandler<CtVariableAccess, CtVariableReference<?>> {
+		private CtVariableAccess_VARIABLE_RoleHandler() {
+			super(CtRole.VARIABLE, CtVariableAccess.class, CtVariableReference.class);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -1628,261 +1883,6 @@ class ModelRoleHandlers {
 		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setVariable(castValue(value));
-		}
-	}
-
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtLocalVariable<?>> {
-		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
-			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtLocalVariable.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getResources())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setResources(castValue(value));
-		}
-	}
-
-	static class CtNewArray_DIMENSION_RoleHandler extends ListHandler<CtNewArray, CtExpression<Integer>> {
-		private CtNewArray_DIMENSION_RoleHandler() {
-			super(CtRole.DIMENSION, CtNewArray.class, CtExpression.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getDimensionExpressions())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setDimensionExpressions(castValue(value));
-		}
-	}
-
-	static class CtTry_CATCH_RoleHandler extends ListHandler<CtTry, CtCatch> {
-		private CtTry_CATCH_RoleHandler() {
-			super(CtRole.CATCH, CtTry.class, CtCatch.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCatchers())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setCatchers(castValue(value));
-		}
-	}
-
-	static class CtLabelledFlowBreak_TARGET_LABEL_RoleHandler extends SingleHandler<CtLabelledFlowBreak, String> {
-		private CtLabelledFlowBreak_TARGET_LABEL_RoleHandler() {
-			super(CtRole.TARGET_LABEL, CtLabelledFlowBreak.class, String.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTargetLabel())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setTargetLabel(castValue(value));
-		}
-	}
-
-	static class CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler extends ListHandler<CtFormalTypeDeclarer, CtTypeParameter> {
-		private CtFormalTypeDeclarer_TYPE_PARAMETER_RoleHandler() {
-			super(CtRole.TYPE_PARAMETER, CtFormalTypeDeclarer.class, CtTypeParameter.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getFormalCtTypeParameters())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setFormalCtTypeParameters(castValue(value));
-		}
-	}
-
-	static class CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler extends ListHandler<CtActualTypeContainer, CtTypeReference<?>> {
-		private CtActualTypeContainer_TYPE_ARGUMENT_RoleHandler() {
-			super(CtRole.TYPE_ARGUMENT, CtActualTypeContainer.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getActualTypeArguments())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setActualTypeArguments(castValue(value));
-		}
-	}
-
-	static class CtJavaDoc_COMMENT_TAG_RoleHandler extends ListHandler<CtJavaDoc, CtJavaDocTag> {
-		private CtJavaDoc_COMMENT_TAG_RoleHandler() {
-			super(CtRole.COMMENT_TAG, CtJavaDoc.class, CtJavaDocTag.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getTags())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setTags(castValue(value));
-		}
-	}
-
-	static class CtComment_COMMENT_CONTENT_RoleHandler extends SingleHandler<CtComment, String> {
-		private CtComment_COMMENT_CONTENT_RoleHandler() {
-			super(CtRole.COMMENT_CONTENT, CtComment.class, String.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getContent())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setContent(castValue(value));
-		}
-	}
-
-	static class CtJavaDocTag_COMMENT_CONTENT_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
-		private CtJavaDocTag_COMMENT_CONTENT_RoleHandler() {
-			super(CtRole.COMMENT_CONTENT, CtJavaDocTag.class, String.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getContent())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setContent(castValue(value));
-		}
-	}
-
-	static class CtComment_COMMENT_TYPE_RoleHandler extends SingleHandler<CtComment, CtComment.CommentType> {
-		private CtComment_COMMENT_TYPE_RoleHandler() {
-			super(CtRole.COMMENT_TYPE, CtComment.class, CtComment.CommentType.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCommentType())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setCommentType(castValue(value));
-		}
-	}
-
-	static class CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler extends SingleHandler<CtJavaDocTag, CtJavaDocTag.TagType> {
-		private CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler() {
-			super(CtRole.DOCUMENTATION_TYPE, CtJavaDocTag.class, CtJavaDocTag.TagType.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getType())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setType(castValue(value));
-		}
-	}
-
-	static class CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
-		private CtJavaDocTag_JAVADOC_TAG_VALUE_RoleHandler() {
-			super(CtRole.JAVADOC_TAG_VALUE, CtJavaDocTag.class, String.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getParam())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setParam(castValue(value));
-		}
-	}
-
-	static class CtElement_POSITION_RoleHandler extends SingleHandler<CtElement, SourcePosition> {
-		private CtElement_POSITION_RoleHandler() {
-			super(CtRole.POSITION, CtElement.class, SourcePosition.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getPosition())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setPosition(castValue(value));
-		}
-	}
-
-	static class CtCodeSnippet_SNIPPET_RoleHandler extends SingleHandler<CtCodeSnippet, String> {
-		private CtCodeSnippet_SNIPPET_RoleHandler() {
-			super(CtRole.SNIPPET, CtCodeSnippet.class, String.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getValue())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setValue(castValue(value));
-		}
-	}
-
-	static class CtTypeAccess_ACCESSED_TYPE_RoleHandler extends SingleHandler<CtTypeAccess, CtTypeReference<?>> {
-		private CtTypeAccess_ACCESSED_TYPE_RoleHandler() {
-			super(CtRole.ACCESSED_TYPE, CtTypeAccess.class, CtTypeReference.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getAccessedType())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setAccessedType(castValue(value));
 		}
 	}
 }

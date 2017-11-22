@@ -16,6 +16,10 @@
  */
 package spoon.reflect.path;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Identifies the roles of attributes of spoon model.
  */
@@ -62,13 +66,13 @@ public enum CtRole {
 	STATEMENT,
 	ARGUMENT,
 	SUPER_TYPE,
-	NESTED_TYPE,
-	CONSTRUCTOR,
-	EXECUTABLE_REF,
-	METHOD,
-	ANNONYMOUS_EXECUTABLE,
-	FIELD,
 	TYPE_MEMBER,
+	NESTED_TYPE(TYPE_MEMBER),
+	CONSTRUCTOR(TYPE_MEMBER),
+	METHOD(TYPE_MEMBER),
+	ANNONYMOUS_EXECUTABLE(TYPE_MEMBER),
+	FIELD(TYPE_MEMBER),
+	EXECUTABLE_REF,
 	CAST,
 	VALUE,
 	FOR_UPDATE,
@@ -88,6 +92,29 @@ public enum CtRole {
 	POSITION,
 	SNIPPET,
 	ACCESSED_TYPE;
+
+	private final CtRole superRole;
+	private final List<CtRole> subRoles;
+	private List<CtRole> initSubRoles;
+
+	CtRole() {
+		this(null);
+	}
+	CtRole(CtRole superRole) {
+		this.superRole = superRole;
+		this.initSubRoles = new ArrayList<>(0);
+		this.subRoles = Collections.unmodifiableList(this.initSubRoles);
+		if (superRole != null) {
+			superRole.initSubRoles.add(this);
+		}
+	}
+
+	static {
+		//after all are initialized, avoid further modification
+		for (CtRole role : CtRole.values()) {
+			role.initSubRoles = null;
+		}
+	}
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -126,5 +153,22 @@ public enum CtRole {
 	@Override
 	public String toString() {
 		return getCamelCaseName();
+	}
+
+	/**
+	 * @return the CtRole which is the real holder of this virtual CtRole or null if there is no super role.
+	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
+	 */
+	public CtRole getSuperRole() {
+		return superRole;
+	}
+
+	/**
+	 * @return sub roles of this super role or empty array if there is no sub role.
+	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
+	 *
+	 */
+	public List<CtRole> getSubRoles() {
+		return subRoles;
 	}
 }

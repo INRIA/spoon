@@ -65,7 +65,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 		});
 
 		superFields.sort((a, b) -> {
-			int d = a.getRole().ordinal() - b.getRole().ordinal();
+			int d = a.getRole().name().compareTo(b.getRole().name());
 			if (d != 0) {
 				return d;
 			}
