@@ -129,7 +129,7 @@ public class FactoryTest {
 		assertEquals(5, model.getAllPackages().size());
 
 
-		CtPackage p = model.getRootPackage().getElements(new NamedElementFilter<>(CtPackage.class,"spoon")).get(0).clone();
+		CtPackage p = model.getElements(new NamedElementFilter<>(CtPackage.class,"spoon")).get(0).clone();
 		// if we change the implem, merge is impossible
 		CtField f = spoon.getFactory().Core().createField();
 		f.setSimpleName("foo");
@@ -183,7 +183,7 @@ public class FactoryTest {
 		// checking the results
 		assertEquals(6, model.getAllPackages().size());
 		assertEquals(2, model.getAllTypes().size());
-		assertEquals(1, model.getRootPackage().getElements(new AbstractFilter<CtPackage>() {
+		assertEquals(1, model.getElements(new AbstractFilter<CtPackage>() {
 			@Override
 			public boolean matches(CtPackage element) {
 				return "spoon.test.factory.testclasses2".equals(element.getQualifiedName());

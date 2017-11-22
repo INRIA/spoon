@@ -30,7 +30,7 @@ public class MethodOverriddingTest {
 	private void checkMethodOverride(BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
 		Factory factory = ModelUtils.build(new File("src/test/java/spoon/test/method_overriding/testclasses").listFiles());
 		Map<String, List<CtMethod>> methodsByName = new HashMap<>();
-		factory.getModel().getRootPackage().filterChildren(new TypeFilter<>(CtMethod.class)).forEach((CtMethod m)->{
+		factory.getModel().filterChildren(new TypeFilter<>(CtMethod.class)).forEach((CtMethod m)->{
 			List<CtMethod> methods = methodsByName.get(m.getSimpleName());
 			if(methods==null) {
 				methods = new ArrayList<>();

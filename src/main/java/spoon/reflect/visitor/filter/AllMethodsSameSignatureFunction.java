@@ -78,7 +78,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 	public void apply(final CtExecutable<?> targetExecutable, final CtConsumer<Object> outputConsumer) {
 		//prepare filter for lambda expression. It will be configured by the algorithm below
 		final LambdaFilter lambdaFilter = new LambdaFilter();
-		final CtQuery lambdaQuery = targetExecutable.getFactory().getModel().getRootPackage().filterChildren(lambdaFilter);
+		final CtQuery lambdaQuery = targetExecutable.getFactory().getModel().filterChildren(lambdaFilter);
 		//the to be searched method
 		CtMethod<?> targetMethod;
 		if (targetExecutable instanceof CtLambda) {
