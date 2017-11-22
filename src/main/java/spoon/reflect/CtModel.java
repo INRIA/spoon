@@ -20,6 +20,7 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.PackageFactory;
 import spoon.reflect.visitor.Filter;
 
 import java.io.Serializable;
@@ -31,7 +32,20 @@ import java.util.List;
  */
 public interface CtModel extends Serializable {
 
-	/** returns the root package */
+	/**
+	 * Returns the root element of the model:
+	 * it can be the root package, or the root module,
+	 * depending on the compliance version.
+	 */
+	CtElement getRootElement();
+
+	/**
+	 * Returns the root package
+	 * @deprecated If you want to traverse the model,
+	 * prefer using {@link #getRootElement()}. If you really need the rootPackage,
+	 * prefer using {@link PackageFactory#getRootPackage()}
+	 */
+	@Deprecated
 	CtPackage getRootPackage();
 
 	/** returns all top-level types of the model */
