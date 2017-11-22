@@ -144,7 +144,7 @@ public class SpoonTestHelpers {
 		return
 				m.getSimpleName().startsWith("get")
 						&& m.getParameters().size() == 0 // a getter has no parameter
-						&& m.getAnnotation(DerivedProperty.class) == null
+						&& !m.hasAnnotation(DerivedProperty.class)
 						&&
 						// return type
 						isMetamodelRelatedType(m.getType());

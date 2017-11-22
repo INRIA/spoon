@@ -23,6 +23,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -131,13 +132,26 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+		CtType annot = getFactory().Annotation().get(annotationType);
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
-			if (a.getAnnotationType().toString().equals(annotationType.getName().replace('$', '.'))) {
+			if (a.getAnnotationType().equals(annot)) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
+		CtType annot = getFactory().Annotation().get(annotationType);
+		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
+			if (a.getAnnotationType().equals(annot)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")
