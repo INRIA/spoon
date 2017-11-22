@@ -1206,10 +1206,15 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
+	}
 
 	@Override
-	public CtModuleExport createModuleExport(CtPackage ctPackage) {
+	public CtModuleExport createModuleExport(CtPackage ctPackage){
 		return Module().createModuleExport(ctPackage);
+	}
+
+	public CtModuleExport createModuleExport(CtPackageReference ctPackageReference) {
+		return Module().createModuleExport(ctPackageReference);
 	}
 
 	@Override
@@ -1218,8 +1223,8 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CtModuleRequirement createModuleRequirement(CtModule ctModule) {
-		return Module().createModuleRequirement(ctModule);
+	public CtModuleRequirement createModuleRequirement(CtModuleReference ctModuleReference) {
+		return Module().createModuleRequirement(ctModuleReference);
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class TestModule {
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.buildModel();
 
-		assertEquals(6, launcher.getModel().getAllModules().size());
+		assertEquals(2, launcher.getModel().getAllModules().size());
 		CtModule moduleGreetings = launcher.getFactory().Module().getOrCreate("com.greetings");
 
 		assertEquals("com.greetings", moduleGreetings.getSimpleName());
@@ -100,7 +100,9 @@ public class TestModule {
 		launcher.addInputResource(input.getPath());
 		launcher.run();
 
-		assertEquals(6, launcher.getModel().getAllModules().size());
+		assertEquals(2, launcher.getModel().getAllModules().size());
+
+		assertEquals(1, Files.list(output.toPath()).count());
 		File fileOuput = new File(output, "com.greetings/module-info.java");
 		List<String> originalLines = Files.readAllLines(input.toPath());
 		List<String> createdLines = Files.readAllLines(fileOuput.toPath());

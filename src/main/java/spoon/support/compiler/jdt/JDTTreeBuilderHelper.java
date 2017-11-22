@@ -57,7 +57,6 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -68,6 +67,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -734,8 +734,8 @@ public class JDTTreeBuilderHelper {
 		int sourceStart = requiresStatement.sourceStart;
 		int sourceEnd = requiresStatement.sourceEnd;
 
-		CtModule ctModule = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
-		CtModuleRequirement moduleRequirement = jdtTreeBuilder.getFactory().Module().createModuleRequirement(ctModule);
+		CtModuleReference ctModuleReference = jdtTreeBuilder.references.getModuleReference(requiresStatement.module);
+		CtModuleRequirement moduleRequirement = jdtTreeBuilder.getFactory().Module().createModuleRequirement(ctModuleReference);
 
 		Set<CtModuleRequirement.RequiresModifier> modifiers = new HashSet<>();
 		if (requiresStatement.isStatic()) {
@@ -754,16 +754,14 @@ public class JDTTreeBuilderHelper {
 		int sourceStart = exportsStatement.sourceStart;
 		int sourceEnd = exportsStatement.sourceEnd;
 
-		CtPackage ctPackage = jdtTreeBuilder.getFactory().Package().getOrCreate(packageName);
-		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackage);
+		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
+		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackageReference);
 
 		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
 
 			for (ModuleReference moduleReference : exportsStatement.targets) {
-				String moduleName = new String(moduleReference.moduleName);
-				CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
-				moduleReferences.add(module.getReference());
+				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
 			}
 
 			moduleExport.setTargetExport(moduleReferences);
@@ -778,16 +776,14 @@ public class JDTTreeBuilderHelper {
 		int sourceStart = opensStatement.sourceStart;
 		int sourceEnd = opensStatement.sourceEnd;
 
-		CtPackage ctPackage = jdtTreeBuilder.getFactory().Package().getOrCreate(packageName);
-		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackage);
+		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
+		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackageReference);
 
 		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
 
 			for (ModuleReference moduleReference : opensStatement.targets) {
-				String moduleName = new String(moduleReference.moduleName);
-				CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(moduleName);
-				moduleReferences.add(module.getReference());
+				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
 			}
 
 			moduleExport.setTargetExport(moduleReferences);

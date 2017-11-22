@@ -795,7 +795,7 @@ public interface Factory {
 	CtQuery createQuery(Object input);
 
 	/**
-	 * @see QueryFactory#createQuery(Object...) 
+	 * @see QueryFactory#createQuery(Object...)
 	 */
 	CtQuery createQuery(Object[] input);
 
@@ -931,11 +931,6 @@ public interface Factory {
 	CtElement createElement(Class<? extends CtElement> klass);
 
 	/**
-	 * @see QueryFactory#createQuery(Object...)
-	 */
-	CtQuery createQuery(Object... input);
-
-	/**
 	 * @see TypeFactory#createImport(CtReference)
 	 */
 	CtImport createImport(CtReference reference);
@@ -948,7 +943,7 @@ public interface Factory {
 	/**
 	 * @see ModuleFactory#createModuleExport(CtPackage)
 	 */
-	CtModuleExport createModuleExport(CtPackage ctPackage);
+	CtModuleExport createModuleExport(CtPackageReference ctPackageReference);
 
 	/**
 	 * @see ModuleFactory#createModuleProvidedService(CtTypeReference)
@@ -956,9 +951,9 @@ public interface Factory {
 	CtModuleProvidedService createModuleProvidedService(CtTypeReference ctTypeReference);
 
 	/**
-	 * @see ModuleFactory#createModuleRequirement(CtModule)
+	 * @see ModuleFactory#createModuleRequirement(CtModuleReference)
 	 */
-	CtModuleRequirement createModuleRequirement(CtModule ctModule);
+	CtModuleRequirement createModuleRequirement(CtModuleReference ctModuleReference);
 
 	/**
 	 * @see ModuleFactory#getOrCreate(String)

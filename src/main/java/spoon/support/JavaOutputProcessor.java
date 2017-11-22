@@ -201,27 +201,29 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	private void createModuleFile(CtModule module) {
-		File moduleFile = new File(getModuleFile(module).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
-		if (!printedFiles.contains(moduleFile)) {
-			printedFiles.add(moduleFile);
-		}
-		PrintStream stream = null;
-		try {
-			stream = new PrintStream(moduleFile);
-			stream.println(printer.printModuleInfo(module));
-			stream.close();
-		} catch (FileNotFoundException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-		} finally {
-			if (stream != null) {
+		if (getEnvironment().getComplianceLevel() > 8 && module != getFactory().getModel().getUnnamedModule()) {
+			File moduleFile = new File(getModuleFile(module).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			if (!printedFiles.contains(moduleFile)) {
+				printedFiles.add(moduleFile);
+			}
+			PrintStream stream = null;
+			try {
+				stream = new PrintStream(moduleFile);
+				stream.println(printer.printModuleInfo(module));
 				stream.close();
+			} catch (FileNotFoundException e) {
+				Launcher.LOGGER.error(e.getMessage(), e);
+			} finally {
+				if (stream != null) {
+					stream.close();
+				}
 			}
 		}
 	}
 
 	private File getModuleFile(CtModule module) {
 		File moduleDir;
-		if (module == null || module.isUnnamedModule()) {
+		if (module == null || module.isUnnamedModule() || getEnvironment().getComplianceLevel() <= 8) {
 			moduleDir = new File(directory.getAbsolutePath());
 		} else {
 			// Create current package dir

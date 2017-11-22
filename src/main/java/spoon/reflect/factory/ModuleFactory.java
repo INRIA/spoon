@@ -22,10 +22,10 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleExport;
 import spoon.reflect.declaration.CtModuleProvidedService;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -104,6 +104,10 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		return Collections.unmodifiableCollection(allModules.values());
 	}
 
+	public CtModule getModule(String moduleName) {
+		return allModules.get(moduleName);
+	}
+
 	public CtModule getOrCreate(String moduleName) {
 		if (moduleName == null || moduleName.isEmpty()) {
 			return allModules.get(CtModule.TOP_LEVEL_MODULE_NAME);
@@ -119,12 +123,12 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		return factory.Core().createModuleReference().setSimpleName(module.getSimpleName());
 	}
 
-	public CtModuleRequirement createModuleRequirement(CtModule module) {
-		return factory.Core().createModuleRequirement().setModuleReference(module.getReference());
+	public CtModuleRequirement createModuleRequirement(CtModuleReference moduleReference) {
+		return factory.Core().createModuleRequirement().setModuleReference(moduleReference);
 	}
 
-	public CtModuleExport createModuleExport(CtPackage ctPackage) {
-		return factory.Core().createModuleExport().setPackageReference(ctPackage.getReference());
+	public CtModuleExport createModuleExport(CtPackageReference ctPackageReference) {
+		return factory.Core().createModuleExport().setPackageReference(ctPackageReference);
 	}
 
 	public CtModuleProvidedService createModuleProvidedService(CtTypeReference typeReference) {
