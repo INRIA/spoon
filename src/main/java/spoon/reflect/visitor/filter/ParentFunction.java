@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -53,8 +54,9 @@ public class ParentFunction implements CtConsumableFunction<CtElement>, CtQueryA
 		if (includingSelf) {
 			outputConsumer.accept(input);
 		}
+		CtPackage rootPackage = input.getFactory().getModel().getRootPackage();
 		CtElement parent = input;
-		while (parent != null && query.isTerminated() == false) {
+		while (parent != null && parent != rootPackage && query.isTerminated() == false) {
 			parent = parent.getParent();
 			outputConsumer.accept(parent);
 		}
