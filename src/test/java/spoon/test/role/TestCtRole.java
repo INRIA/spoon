@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-
 public class TestCtRole {
     @Test
     public void testGetCtRoleByName() {
@@ -52,7 +50,7 @@ public class TestCtRole {
 				assertSame(role, subRole.getSuperRole());
 			}
         	if (role.getSuperRole() != null) {
-        		assertTrue(Arrays.asList(role.getSuperRole().getSubRoles()).contains(role));
+        		assertTrue(role.getSuperRole().getSubRoles().contains(role));
         	}
         }
         assertTrue(countOfSubRoles > 0);

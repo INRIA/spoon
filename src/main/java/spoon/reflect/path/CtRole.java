@@ -16,6 +16,10 @@
  */
 package spoon.reflect.path;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Identifies the roles of attributes of spoon model.
  */
@@ -62,13 +66,13 @@ public enum CtRole {
 	STATEMENT,
 	ARGUMENT,
 	SUPER_TYPE,
-	NESTED_TYPE,
-	CONSTRUCTOR,
+	TYPE_MEMBER(true),
+	NESTED_TYPE(TYPE_MEMBER),
+	CONSTRUCTOR(TYPE_MEMBER),
+	METHOD(TYPE_MEMBER),
+	ANNONYMOUS_EXECUTABLE(TYPE_MEMBER),
+	FIELD(TYPE_MEMBER),
 	EXECUTABLE_REF,
-	METHOD,
-	ANNONYMOUS_EXECUTABLE,
-	FIELD,
-	TYPE_MEMBER,
 	CAST,
 	VALUE,
 	FOR_UPDATE,
@@ -88,6 +92,41 @@ public enum CtRole {
 	POSITION,
 	SNIPPET,
 	ACCESSED_TYPE;
+
+	private final CtRole superRole;
+	private final List<CtRole> subRoles;
+
+
+	//Collects sub roles of last super role
+	private static List<CtRole> helper;
+	//creates helper which will be used to collect sub roles
+	private static List<CtRole> createHeper() {
+		return helper = new ArrayList<>();
+	}
+	//adds sub role into helper
+	private static void addSuperRole(CtRole superRole) {
+		helper.add(superRole);
+	}
+	static {
+		//after all constructors are initialized clean the helper, so it is not possible to modify collection later
+		helper = null;
+	}
+
+	CtRole() {
+		this.superRole = null;
+		this.subRoles = Collections.<CtRole>emptyList();
+	}
+	CtRole(CtRole superRole) {
+		this.superRole = superRole;
+		this.subRoles = Collections.<CtRole>emptyList();
+		addSuperRole(this);
+	}
+	CtRole(boolean hasSubRoles) {
+		this.superRole = null;
+		//create sub roles using helper, which will be filled in by next calls of CtRole(CtRole)
+		this.subRoles = Collections.unmodifiableList(createHeper());
+	}
+
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -141,21 +180,7 @@ public enum CtRole {
 	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
 	 *
 	 */
-	public CtRole[] getSubRoles() {
+	public List<CtRole> getSubRoles() {
 		return subRoles;
-	}
-
-	private CtRole superRole;
-	private CtRole[] subRoles = new CtRole[0];
-
-	static {
-		CtRole.TYPE_MEMBER.setSubRoles(FIELD, CONSTRUCTOR, METHOD, NESTED_TYPE);
-	}
-
-	private void setSubRoles(CtRole... subRoles) {
-		this.subRoles = subRoles;
-		for (CtRole ctRole : subRoles) {
-			ctRole.superRole = this;
-		}
 	}
 }
