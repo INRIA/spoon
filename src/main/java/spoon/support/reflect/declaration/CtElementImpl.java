@@ -134,9 +134,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-		CtType annot = getFactory().Annotation().get(annotationType);
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
-			if (a.getAnnotationType().equals(annot)) {
+			if (a.getAnnotationType().toString().equals(annotationType.getName().replace('$', '.'))) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}
@@ -145,9 +144,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
-		CtType annot = getFactory().Annotation().get(annotationType);
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
-			if (a.getAnnotationType().equals(annot)) {
+			if (a.getAnnotationType().toString().equals(annotationType.getName().replace('$', '.'))) {
 				return true;
 			}
 		}
