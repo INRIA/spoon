@@ -17,12 +17,9 @@
 package spoon.support;
 
 import spoon.Launcher;
-import spoon.reflect.CtModel;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModule;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.visitor.Filter;
 
 import java.io.IOException;
@@ -30,7 +27,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.Collection;
 
 /**
  * This class provides a regular Java serialization-based implementation of the
@@ -55,11 +51,9 @@ public class SerializationModelStreamer implements ModelStreamer {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(in);
 			final Factory f = (Factory) ois.readObject();
-			ModuleFactory module = f.Module();
-			Collection<CtModule> allModules = module.getAllModules();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory
-			f.createQuery(allModules.toArray()).filterChildren(new Filter<CtElement>() {
+			f.createQuery(f.Module().getAllModules().toArray()).filterChildren(new Filter<CtElement>() {
 				@Override
 				public boolean matches(CtElement e) {
 					e.setFactory(f);
