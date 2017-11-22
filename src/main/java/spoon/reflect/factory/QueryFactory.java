@@ -48,4 +48,12 @@ public class QueryFactory extends SubFactory {
 	public CtQuery createQuery(Object input) {
 		return new CtQueryImpl(input);
 	}
+
+	/**
+	 * Creates a bound query with an optional number
+	 * of inputs elements to the query (see {@link CtQuery#setInput(Object...)})
+	 */
+	public CtQuery createQuery(Object... input) {
+		return new CtQueryImpl(input);
+	}
 }
