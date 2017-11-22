@@ -1,6 +1,5 @@
 package spoon.test.factory;
 
-import com.sun.javafx.font.coretext.CTFactory;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -13,7 +12,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
