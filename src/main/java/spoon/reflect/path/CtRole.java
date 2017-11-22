@@ -66,7 +66,7 @@ public enum CtRole {
 	STATEMENT,
 	ARGUMENT,
 	SUPER_TYPE,
-	TYPE_MEMBER(true),
+	TYPE_MEMBER,
 	NESTED_TYPE(TYPE_MEMBER),
 	CONSTRUCTOR(TYPE_MEMBER),
 	METHOD(TYPE_MEMBER),
@@ -95,38 +95,26 @@ public enum CtRole {
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;
-
-
-	//Collects sub roles of last super role
-	private static List<CtRole> helper;
-	//creates helper which will be used to collect sub roles
-	private static List<CtRole> createHeper() {
-		return helper = new ArrayList<>();
-	}
-	//adds sub role into helper
-	private static void addSuperRole(CtRole superRole) {
-		helper.add(superRole);
-	}
-	static {
-		//after all constructors are initialized clean the helper, so it is not possible to modify collection later
-		helper = null;
-	}
+	private List<CtRole> initSubRoles;
 
 	CtRole() {
-		this.superRole = null;
-		this.subRoles = Collections.<CtRole>emptyList();
+		this(null);
 	}
 	CtRole(CtRole superRole) {
 		this.superRole = superRole;
-		this.subRoles = Collections.<CtRole>emptyList();
-		addSuperRole(this);
-	}
-	CtRole(boolean hasSubRoles) {
-		this.superRole = null;
-		//create sub roles using helper, which will be filled in by next calls of CtRole(CtRole)
-		this.subRoles = Collections.unmodifiableList(createHeper());
+		this.initSubRoles = new ArrayList<>(0);
+		this.subRoles = Collections.unmodifiableList(this.initSubRoles);
+		if (superRole != null) {
+			superRole.initSubRoles.add(this);
+		}
 	}
 
+	static {
+		//after all are initialized, avoid further modification
+		for (CtRole role : CtRole.values()) {
+			role.initSubRoles = null;
+		}
+	}
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
