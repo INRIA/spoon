@@ -1167,4 +1167,9 @@ public class FactoryImpl implements Factory, Serializable {
 	public CtElement createElement(Class<? extends CtElement> klass) {
 		return Core().create(klass);
 	}
+
+	@Override
+	public CtQuery createQuery(Object... input) {
+		return Query().createQuery(input);
+	}
 }

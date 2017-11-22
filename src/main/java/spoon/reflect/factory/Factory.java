@@ -915,4 +915,9 @@ public interface Factory {
 	 * @see CoreFactory#create(Class)
 	 */
 	CtElement createElement(Class<? extends CtElement> klass);
+
+	/**
+	 * @see QueryFactory#createQuery(Object...)
+	 */
+	CtQuery createQuery(Object... input);
 }
