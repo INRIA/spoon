@@ -47,14 +47,16 @@ import static spoon.reflect.path.CtRole.POSITION;
 public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable {
 
 	/**
-	 * Searches for an annotation (proxy) of the given class that annotates the
+	 * Searches for an annotation of the given class that annotates the
 	 * current element.
+	 *
+	 * WARNING: this method uses a class loader proxy, which is costly.
+	 * Use {@link #getAnnotation(CtTypeReference)} preferably.
 	 *
 	 * <p>
 	 * NOTE: before using an annotation proxy, you have to make sure that all
 	 * the types referenced by the annotation have been compiled and are in the
 	 * classpath so that accessed values can be converted into the actual types.
-	 * Otherwise, use {@link #getAnnotation(CtTypeReference)}.
 	 *
 	 * @param <A>
 	 * 		the annotation's type
@@ -76,6 +78,16 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	@PropertyGetter(role = ANNOTATION)
 	<A extends Annotation> CtAnnotation<A> getAnnotation(
 			CtTypeReference<A> annotationType);
+
+	/**
+	 * @return  true if the element is annotated by the given annotation type.
+	 *
+	 * @param annotationType
+	 * 		the annotation type
+	 */
+	@DerivedProperty
+	<A extends Annotation> boolean hasAnnotation(Class<A> annotationType);
+
 
 	/**
 	 * Returns the annotations that are present on this element.
