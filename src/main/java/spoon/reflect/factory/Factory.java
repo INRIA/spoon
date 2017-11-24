@@ -947,7 +947,7 @@ public interface Factory {
 	CtPackageExport createPackageExport(CtPackageReference ctPackageReference);
 
 	/**
-	 * @see ModuleFactory#createModuleProvidedService(CtTypeReference)
+	 * @see ModuleFactory#createProvidedService(CtTypeReference)
 	 */
 	CtProvidedService createProvidedService(CtTypeReference ctTypeReference);
 

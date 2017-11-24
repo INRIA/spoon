@@ -1209,7 +1209,7 @@ public class FactoryImpl implements Factory, Serializable {
 
 	@Override
 	public CtProvidedService createProvidedService(CtTypeReference ctTypeReference) {
-		return Module().createModuleProvidedService(ctTypeReference);
+		return Module().createProvidedService(ctTypeReference);
 	}
 
 	@Override

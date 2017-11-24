@@ -17,7 +17,7 @@ public class CtUsedServiceImpl extends CtElementImpl implements CtUsedService {
 	}
 
 	@Override
-	public <T extends CtProvidedService> T setServiceType(CtTypeReference usedService) {
+	public <T extends CtUsedService> T setServiceType(CtTypeReference usedService) {
 		if (usedService != null) {
 			usedService.setParent(this);
 		}

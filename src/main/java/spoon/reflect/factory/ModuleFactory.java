@@ -138,7 +138,7 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		return factory.Core().createPackageExport().setPackageReference(ctPackageReference);
 	}
 
-	public CtProvidedService createModuleProvidedService(CtTypeReference typeReference) {
+	public CtProvidedService createProvidedService(CtTypeReference typeReference) {
 		return factory.Core().createProvidedService().setServiceType(typeReference);
 	}
 

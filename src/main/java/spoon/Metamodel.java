@@ -155,6 +155,7 @@ public class Metamodel {
 		result.add(factory.Type().get(CtPackageExport.class));
 		result.add(factory.Type().get(CtProvidedService.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
 		return result;
 	}
 
