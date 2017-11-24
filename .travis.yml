@@ -10,6 +10,7 @@ env:
   - SCRIPT=travis-coverage.sh
   - SCRIPT=travis-verify.sh
 
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -B -V
 script: ./chore/travis/$SCRIPT
 
 cache:
