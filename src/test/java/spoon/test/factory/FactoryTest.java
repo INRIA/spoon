@@ -110,7 +110,7 @@ public class FactoryTest {
 		CtModel model = spoon.getModel();
 
 		// contains Foo and Foo.@Bar
-		assertEquals(2, model.getAllTypes().size());
+		assertEquals(1, model.getAllTypes().size());
 
 		// [, spoon, spoon.test, spoon.test.factory, spoon.test.factory.testclasses]
 		assertEquals(5, model.getAllPackages().size());
@@ -158,7 +158,7 @@ public class FactoryTest {
 
 		// Build model
 		spoon.buildModel();
-		assertEquals(2, spoon.getModel().getAllTypes().size());
+		assertEquals(1, spoon.getModel().getAllTypes().size());
 
 		// Do something with that model..
 		CtModel model = spoon.getModel();
