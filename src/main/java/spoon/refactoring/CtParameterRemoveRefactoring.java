@@ -161,7 +161,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 		}
 		//all the invocations, which belongs to same inheritance tree
 		final List<CtInvocation<?>> invocations = new ArrayList<>();
-		target.getFactory().getModel().getRootPackage().filterChildren(execRefFilter).forEach(new CtConsumer<CtExecutableReference<?>>() {
+		target.getFactory().getModel().filterChildren(execRefFilter).forEach(new CtConsumer<CtExecutableReference<?>>() {
 			@Override
 			public void accept(CtExecutableReference<?> t) {
 				CtElement parent = t.getParent();

@@ -510,7 +510,7 @@ public class FilterTest {
 		}
 		Context context = new Context();
 		
-		CtQuery l_qv = launcher.getFactory().getModel().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class));
+		CtQuery l_qv = launcher.getFactory().getModel().filterChildren(new TypeFilter<>(CtClass.class));
 		
 		assertEquals(0, context.counter);
 		l_qv.forEach(cls->{
@@ -732,6 +732,7 @@ public class FilterTest {
 		assertSame(cls2, ((CtQueryImpl)q).getInputs().get(0));
 
 	}
+
 	@Test
 	public void testReuseOfBaseQuery() throws Exception {
 		// contract: an empty  query can be used on several inputs
@@ -751,7 +752,28 @@ public class FilterTest {
 		assertEquals("Tostada", q.setInput(cls2).list().get(0));
 	}
 
+	@Test
+	public void testQueryWithOptionalNumberOfInputs() throws Exception {
+		// contract: QueryFactory allows to create query with an optional number of inputs
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
 
+		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
+		CtClass<?> cls2 = launcher.getFactory().Class().get(Tostada.class);
+		CtClass<?> cls3 = launcher.getFactory().Class().get(Antojito.class);
+
+		// here is the query
+		CtQuery q1 = launcher.getFactory().Query().createQuery(cls, cls2).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1.list().toArray());
+
+		CtQuery q2 = launcher.getFactory().Query().createQuery(cls, cls3).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2.list().toArray());
+
+		CtQuery q3 = launcher.getFactory().Query().createQuery(cls, cls2, cls3).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3.list().toArray());
+	}
 
 	// now testing map(CtConsumableFunction)
 
@@ -1114,7 +1136,7 @@ public class FilterTest {
 		Context context1 = new Context();
 
 		// scan only packages until top level classes. Do not scan class internals
-		List<CtElement> result1 = launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+		List<CtElement> result1 = launcher.getFactory().getModel().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			@Override
 			public ScanningMode enter(CtElement element) {
 				context1.nrOfEnter++;
@@ -1141,7 +1163,7 @@ public class FilterTest {
 		Iterator iter = result1.iterator();
 		
 		//scan only from packages till top level classes. Do not scan class internals
-		launcher.getFactory().getModel().getRootPackage().map(new CtScannerFunction().setListener(new CtScannerListener() {
+		launcher.getFactory().getModel().map(new CtScannerFunction().setListener(new CtScannerListener() {
 			int inClass = 0;
 			@Override
 			public ScanningMode enter(CtElement element) {

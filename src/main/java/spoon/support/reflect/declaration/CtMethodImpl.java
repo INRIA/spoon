@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
@@ -166,8 +165,9 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public boolean removeModifier(ModifierKind modifier) {
-		return modifierHandler.removeModifier(modifier);
+	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+		modifierHandler.removeModifier(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -193,11 +193,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <R extends T> void replace(CtMethod<T> element) {
-		replace((CtElement) element);
-	}
-
-	@Override
 	public boolean isOverriding(CtMethod<?> superMethod) {
 		return new ClassTypingContext(getDeclaringType()).isOverriding(this, superMethod);
 	}
@@ -220,5 +215,35 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public CtMethod<T> clone() {
 		return (CtMethod<T>) super.clone();
+	}
+
+	@Override
+	public boolean isPublic() {
+		return this.modifierHandler.isPublic();
+	}
+
+	@Override
+	public boolean isPrivate() {
+		return this.modifierHandler.isPrivate();
+	}
+
+	@Override
+	public boolean isProtected() {
+		return this.modifierHandler.isProtected();
+	}
+
+	@Override
+	public boolean isFinal() {
+		return this.modifierHandler.isFinal();
+	}
+
+	@Override
+	public boolean isStatic() {
+		return this.modifierHandler.isStatic();
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return this.modifierHandler.isAbstract();
 	}
 }

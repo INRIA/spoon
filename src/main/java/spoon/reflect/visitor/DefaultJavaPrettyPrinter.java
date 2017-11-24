@@ -101,6 +101,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -199,10 +200,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private CompilationUnit sourceCompilationUnit;
 
 	/**
+	 * Imports computed
+	 */
+	Set<CtImport> imports;
+
+	/**
 	 * Creates a new code generator visitor.
 	 */
 	public DefaultJavaPrettyPrinter(Environment env) {
 		this.env = env;
+		this.imports = new HashSet<>();
 		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
 		if (env.isAutoImports()) {
 			this.importsContext = new ImportScannerImpl();
@@ -279,7 +286,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtReference> computeImports(CtType<?> type) {
+	public Collection<CtImport> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		importsContext.computeImports(context.currentTopLevel);
 		return importsContext.getAllImports();
@@ -567,7 +574,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(catchBlock, CommentOffset.BEFORE);
 		printer.writeSpace().writeKeyword("catch").writeSpace().writeSeparator("(");
 		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
-		if (parameter.getMultiTypes().size() > 1) {
+		if (parameter != null && parameter.getMultiTypes().size() > 1) {
 			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, true, "|", true, false, null)) {
 			for (int i = 0; i < parameter.getMultiTypes().size(); i++) {
 					lp.printSeparatorIfAppropriate();
@@ -785,6 +792,36 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printCtFieldAccess(fieldWrite);
 	}
 
+	private boolean isImported(CtFieldReference fieldReference) {
+		CtImport fieldImport = fieldReference.getFactory().createImport(fieldReference);
+
+		if (this.imports.contains(fieldImport)) {
+			return true;
+		} else {
+			if (fieldReference.getDeclaringType() == null) {
+				return false;
+			}
+			CtTypeReference staticTypeMemberReference = fieldReference.getFactory().Type().createWildcardStaticTypeMemberReference(fieldReference.getDeclaringType());
+			CtImport staticClassImport = fieldReference.getFactory().createImport(staticTypeMemberReference);
+			return this.imports.contains(staticClassImport);
+		}
+	}
+
+	private boolean isImported(CtExecutableReference executableReference) {
+		CtImport executableImport = executableReference.getFactory().createImport(executableReference);
+
+		if (this.imports.contains(executableImport)) {
+			return true;
+		} else {
+			if (executableReference.getDeclaringType() == null) {
+				return false;
+			}
+			CtTypeReference staticTypeMemberReference = executableReference.getFactory().Type().createWildcardStaticTypeMemberReference(executableReference.getDeclaringType());
+			CtImport staticClassImport = executableReference.getFactory().createImport(staticTypeMemberReference);
+			return this.imports.contains(staticClassImport);
+		}
+	}
+
 	private <T> void printCtFieldAccess(CtFieldAccess<T> f) {
 		enterCtExpression(f);
 		try (Writable _context = context.modify()) {
@@ -795,7 +832,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (target != null) {
 				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
 				boolean isStaticField = f.getVariable().isStatic();
-				boolean isImportedField = importsContext.isImported(f.getVariable());
+				boolean isImportedField = this.isImported(f.getVariable());
 
 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
 					if (target.isImplicit() && !(f.getVariable().getFieldDeclaration() == null && this.env.getNoClasspath())) {
@@ -935,6 +972,46 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		 * Write directly to PrinterHelper, because java doc tag is not a java token. Normally it is part of COMMENT token.
 		 */
 		CommentHelper.printJavaDocTag(printer.getPrinterHelper(), docTag);
+	}
+
+	@Override
+	public void visitCtImport(CtImport ctImport) {
+		if (ctImport.getImportKind() != null) {
+			printer.writeKeyword("import");
+			printer.writeSpace();
+
+			switch (ctImport.getImportKind()) {
+				case TYPE:
+					visitCtTypeReference((CtTypeReference) ctImport.getReference());
+					break;
+
+				case METHOD:
+					printer.writeKeyword("static");
+					printer.writeSpace();
+					visitCtExecutableReference((CtExecutableReference) ctImport.getReference());
+					break;
+
+				case FIELD:
+					printer.writeKeyword("static");
+					printer.writeSpace();
+					visitCtFieldReference((CtFieldReference) ctImport.getReference());
+					break;
+
+				case ALL_TYPES:
+					visitCtPackageReference((CtPackageReference) ctImport.getReference());
+					printer.writeSeparator(".");
+					printer.writeIdentifier("*");
+					break;
+
+				case ALL_STATIC_MEMBERS:
+					printer.writeKeyword("static");
+					printer.writeSpace();
+					visitCtTypeReference((CtTypeReference) ctImport.getReference());
+					break;
+			}
+			printer.writeSeparator(";");
+			printer.writeln();
+		}
 	}
 
 	@Override
@@ -1106,7 +1183,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			if (!this.importsContext.isImported(invocation.getExecutable())) {
+			boolean isImported = this.isImported(invocation.getExecutable());
+			if (!isImported) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);
@@ -1784,8 +1862,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		reset();
 
 		this.sourceCompilationUnit = sourceCompilationUnit;
-
-		Set<CtReference> imports = new HashSet<>();
+		this.imports = new HashSet<>();
 		if (sourceCompilationUnit != null) {
 			imports.addAll(sourceCompilationUnit.getImports());
 		}

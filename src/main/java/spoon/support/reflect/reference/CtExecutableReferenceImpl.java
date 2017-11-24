@@ -394,11 +394,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return m != null && Modifier.isFinal(m.getModifiers());
 	}
 
-	@Override
-	public void replace(CtExecutableReference<?> reference) {
-		super.replace(reference);
-	}
-
 	public Set<ModifierKind> getModifiers() {
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {

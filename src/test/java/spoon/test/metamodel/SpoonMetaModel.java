@@ -25,14 +25,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
@@ -41,7 +39,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFolder;
@@ -82,8 +79,19 @@ public class SpoonMetaModel {
 	 */
 	public SpoonMetaModel(Factory factory) {
 		this.factory =  factory;
+		
+		for (String apiPackage : MODEL_IFACE_PACKAGES) {
+			if (factory.Package().get(apiPackage) == null) {
+				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
+			}
+			String implPackage = replaceApiToImplPackage(apiPackage);
+			if (factory.Package().get(implPackage) == null) {
+				throw new SpoonException("Spoon Factory model is missing implementation package " + implPackage);
+			}
+		}
+		
 		//search for all interfaces of spoon model and create MMTypes for them
-		factory.getModel().getRootPackage().filterChildren(new TypeFilter<>(CtInterface.class))
+		factory.getModel().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
 				if (MODEL_IFACE_PACKAGES.contains(iface.getPackage().getQualifiedName())) {
 					getOrCreateMMType(iface);
@@ -109,16 +117,26 @@ public class SpoonMetaModel {
 		}
 		return name;
 	}
+	
 
 	/**
 	 * @param iface the interface of spoon model element
 	 * @return {@link CtClass} of Spoon model which implements the spoon model interface. null if there is no implementation.
 	 */
 	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
-		String impl = iface.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect") + CLASS_SUFFIX;
+		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) iface.getFactory().Type().get(impl);
 	}
 
+	private static final String modelApiPackage = "spoon.reflect";
+	private static final String modelApiImplPackage = "spoon.support.reflect";
+	
+	private static String replaceApiToImplPackage(String modelInterfaceQName) {
+		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
+			throw new SpoonException("The qualified name doesn't belong to Spoon model API package: " + modelApiPackage);
+		}
+		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
+	}
 	/**
 	 * @param impl the implementation of spoon model element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
@@ -174,11 +192,11 @@ public class SpoonMetaModel {
 		if (type instanceof CtInterface<?>) {
 			CtInterface<?> iface = (CtInterface<?>) type;
 			mmType.setModelClass(getImplementationOfInterface(iface));
-			mmType.setModelInteface(iface);
+			mmType.setModelInterface(iface);
 		} else if (type instanceof CtClass<?>) {
 			CtClass<?> clazz = (CtClass<?>) type;
 			mmType.setModelClass(clazz);
-			mmType.setModelInteface(getInterfaceOfImplementation(clazz));
+			mmType.setModelInterface(getInterfaceOfImplementation(clazz));
 		} else {
 			throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
 		}
@@ -188,9 +206,9 @@ public class SpoonMetaModel {
 			addFieldsOfType(mmType, mmType.getModelClass());
 		}
 		//add fields of interface
-		if (mmType.getModelInteface() != null) {
+		if (mmType.getModelInterface() != null) {
 			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MMType already exists in name2mmType
-			addFieldsOfType(mmType, mmType.getModelInteface());
+			addFieldsOfType(mmType, mmType.getModelInterface());
 		}
 		//initialize all fields
 		mmType.getRole2field().forEach((role, mmField) -> {

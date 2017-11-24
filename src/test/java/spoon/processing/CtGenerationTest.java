@@ -6,15 +6,19 @@ import spoon.Launcher;
 import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
+import spoon.generating.RoleHandlersGenerator;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.Filter;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -37,8 +41,15 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
-		launcher.addInputResource("./src/main/java/spoon/support/visitor/replace/");
-		launcher.addInputResource("./src/test/java/spoon/generating/replace/");
+
+		Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())
+				.forEach(path -> {
+					if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
+						launcher.addInputResource(path.toString());
+					}
+		});
+		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
+		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
@@ -133,6 +144,45 @@ public class CtGenerationTest {
 			throw new ComparisonFailure("CloneVisitor different", expected.toString(), actual.toString());
 		}
 	}
+	
+	@Test
+	public void testGenerateRoleHandler() throws Exception {
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
+		System.setProperty("line.separator", "\n");
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setCopyResources(false);
+		launcher.getEnvironment().useTabulations(true);
+		//launcher.getEnvironment().setAutoImports(true);
+		launcher.setSourceOutputDirectory("./target/generated/");
+		// Spoon model interfaces
+		launcher.addInputResource("./src/main/java/spoon/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/reflect/reference");
+		launcher.addInputResource("./src/main/java/spoon/reflect/internal");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/code");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/declaration");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference");
+		// Templates
+		launcher.addInputResource("./src/test/java/spoon/generating/meta");
+		// Linked classes
+		launcher.addInputResource("./src/main/java/spoon/reflect/meta/impl/AbstractRoleHandler.java");
+		launcher.addProcessor(new RoleHandlersGenerator());
+		launcher.setOutputFilter(new RegexFilter("\\Q" + RoleHandlersGenerator.TARGET_PACKAGE + ".ModelRoleHandlers\\E.*"));
+		launcher.run();
+
+		// cp ./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java ./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java
+		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
+		CtClass<Object> expected = build(new File("./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
+		try {
+			assertThat(actual).isEqualTo(expected);
+		} catch (AssertionError e) {
+			throw new ComparisonFailure("ModelRoleHandlers different", expected.toString(), actual.toString());
+		}
+	}
+	
 
 	private class RegexFilter implements Filter<CtType<?>> {
 		private final Pattern regex;

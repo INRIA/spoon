@@ -4,21 +4,16 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.DefaultTokenWriter;
-import spoon.reflect.visitor.ElementPrinterHelper;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
@@ -213,7 +208,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new MinimalImportScanner();
 		importContext.computeImports(theClass);
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertTrue(imports.isEmpty());
 	}
@@ -229,7 +224,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		// java.lang are also computed
 		assertEquals(4, imports.size());
@@ -249,7 +244,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(0, imports.size());
 	}
@@ -286,7 +281,7 @@ public class ImportScannerTest {
 		ImportScanner importScanner = new MinimalImportScanner();
 		importScanner.computeImports(fieldRef);
 
-		Collection<CtReference> imports = importScanner.getAllImports();
+		Collection<CtImport> imports = importScanner.getAllImports();
 
 		assertEquals(0, imports.size());
 	}

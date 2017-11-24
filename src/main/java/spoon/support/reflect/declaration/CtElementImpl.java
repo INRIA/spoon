@@ -23,10 +23,14 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
@@ -129,13 +133,26 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+		CtType annot = getFactory().Annotation().get(annotationType);
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
-			if (a.getAnnotationType().toString().equals(annotationType.getName().replace('$', '.'))) {
-				return ((CtAnnotation<A>) a).getActualAnnotation();
+			if (a.getAnnotationType().getQualifiedName().equals(annot.getQualifiedName())) {
+				return ((CtAnnotation<A>) a).getActualAnnotation(); // warning, here we do heavy and costly work with proxy
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
+		CtType annot = getFactory().Annotation().get(annotationType);
+		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
+			if (a.getAnnotationType().getQualifiedName().equals(annot.getQualifiedName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -247,7 +264,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
 		String errorMessage = "";
 		try {
-			printer.computeImports(this);
+			// we do not want to compute imports of a CtImport as it may change the print of a reference
+			if (!(this instanceof CtImport)) {
+				printer.computeImports(this);
+			}
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
@@ -495,5 +515,18 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public CtElement clone() {
 		return CloneHelper.INSTANCE.clone(this);
+	}
+
+	@Override
+	public <T> T getValueByRole(CtRole role) {
+		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
+		return rh.getValue(this);
+	}
+
+	@Override
+	public <E extends CtElement, T> E setValueByRole(CtRole role, T value) {
+		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
+		rh.setValue(this, value);
+		return (E) this;
 	}
 }

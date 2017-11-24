@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CheckScannerTestProcessor extends AbstractProcessor<CtClass<?>> {
-	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl");
+	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtWildcardStaticTypeMemberReferenceImpl");
 
 	@Override
 	public boolean isToBeProcessed(CtClass<?> candidate) {

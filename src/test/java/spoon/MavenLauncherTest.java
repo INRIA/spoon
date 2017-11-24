@@ -11,9 +11,9 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(5, launcher.getEnvironment().getSourceClasspath().length);
-		// 54 because of the sub folders of src/main/java
-		assertEquals(50, launcher.getModelBuilder().getInputSources().size());
+		assertEquals(7, launcher.getEnvironment().getSourceClasspath().length);
+		// 52 because of the sub folders of src/main/java
+		assertEquals(52, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
@@ -40,5 +40,11 @@ public class MavenLauncherTest {
 	@Test(expected = SpoonException.class)
 	public void mavenLauncherOnDirectoryWithoutPomTest() {
 		new MavenLauncher("./src", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+	}
+
+	@Test
+	public void mavenLauncherTestWithVerySimpleProject() {
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/very-simple", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
 	}
 }

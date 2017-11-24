@@ -20,7 +20,7 @@ package spoon.support.visitor.clone;
 /**
  * Used to clone a given element.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	private final spoon.support.visitor.equals.CloneHelper cloneHelper;
@@ -812,6 +812,15 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtJavaDocTag.setComments(this.cloneHelper.clone(docTag.getComments()));
 		aCtJavaDocTag.setAnnotations(this.cloneHelper.clone(docTag.getAnnotations()));
 		this.other = aCtJavaDocTag;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
+		spoon.reflect.declaration.CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
+		aCtImport.setReference(this.cloneHelper.clone(ctImport.getReference()));
+		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
+		this.other = aCtImport;
 	}
 }
 

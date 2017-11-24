@@ -14,16 +14,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.support.visitor.clone;
 
 
 /**
  * Used to set all data in the cloned element.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
+	private spoon.reflect.declaration.CtElement other;
+
 	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
 		return spoon.support.visitor.clone.CloneBuilder.build(new spoon.support.visitor.clone.CloneBuilder(), element, other);
 	}
@@ -33,8 +34,6 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		builder.scan(element);
 		return ((T) (builder.other));
 	}
-
-	private spoon.reflect.declaration.CtElement other;
 
 	public void setOther(spoon.reflect.declaration.CtElement other) {
 		this.other = other;

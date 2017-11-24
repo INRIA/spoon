@@ -99,10 +99,12 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -1166,5 +1168,20 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtElement createElement(Class<? extends CtElement> klass) {
 		return Core().create(klass);
+	}
+
+	@Override
+	public CtQuery createQuery(Object... input) {
+		return Query().createQuery(input);
+	}
+
+	@Override
+	public CtImport createImport(CtReference reference) {
+		return Type().createImport(reference);
+	}
+
+	@Override
+	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
+		return Type().createWildcardStaticTypeMemberReference(typeReference);
 	}
 }

@@ -134,8 +134,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public boolean removeModifier(ModifierKind modifier) {
-		return modifierHandler.removeModifier(modifier);
+	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+		modifierHandler.removeModifier(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -185,5 +186,35 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	@Override
 	public CtParameter<T> clone() {
 		return (CtParameter<T>) super.clone();
+	}
+
+	@Override
+	public boolean isPublic() {
+		return this.modifierHandler.isPublic();
+	}
+
+	@Override
+	public boolean isPrivate() {
+		return this.modifierHandler.isPrivate();
+	}
+
+	@Override
+	public boolean isProtected() {
+		return this.modifierHandler.isProtected();
+	}
+
+	@Override
+	public boolean isFinal() {
+		return this.modifierHandler.isFinal();
+	}
+
+	@Override
+	public boolean isStatic() {
+		return this.modifierHandler.isStatic();
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return this.modifierHandler.isAbstract();
 	}
 }

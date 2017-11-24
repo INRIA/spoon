@@ -21,7 +21,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtPackage ctPackage;
 
-	Collection<CtReference> imports = new HashSet<>();
+	Collection<CtImport> imports = new HashSet<>();
 
 	public List<CtType<?>> getDeclaredTypes() {
 		return declaredTypes;
@@ -191,12 +191,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Collection<CtReference> getImports() {
+	public Collection<CtImport> getImports() {
 		return this.imports;
 	}
 
 	@Override
-	public void setImports(Collection<CtReference> imports) {
+	public void setImports(Collection<CtImport> imports) {
 		this.imports = imports;
 	}
 

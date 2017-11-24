@@ -16,6 +16,10 @@
  */
 package spoon.reflect.path;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Identifies the roles of attributes of spoon model.
  */
@@ -62,13 +66,13 @@ public enum CtRole {
 	STATEMENT,
 	ARGUMENT,
 	SUPER_TYPE,
-	NESTED_TYPE,
-	CONSTRUCTOR,
-	EXECUTABLE_REF,
-	METHOD,
-	ANNONYMOUS_EXECUTABLE,
-	FIELD,
 	TYPE_MEMBER,
+	NESTED_TYPE(TYPE_MEMBER),
+	CONSTRUCTOR(TYPE_MEMBER),
+	METHOD(TYPE_MEMBER),
+	ANNONYMOUS_EXECUTABLE(TYPE_MEMBER),
+	FIELD(TYPE_MEMBER),
+	EXECUTABLE_REF,
 	CAST,
 	VALUE,
 	FOR_UPDATE,
@@ -87,7 +91,31 @@ public enum CtRole {
 	JAVADOC_TAG_VALUE,
 	POSITION,
 	SNIPPET,
-	ACCESSED_TYPE;
+	ACCESSED_TYPE,
+	IMPORT_REFERENCE;
+
+	private final CtRole superRole;
+	private final List<CtRole> subRoles;
+	private List<CtRole> initSubRoles;
+
+	CtRole() {
+		this(null);
+	}
+	CtRole(CtRole superRole) {
+		this.superRole = superRole;
+		this.initSubRoles = new ArrayList<>(0);
+		this.subRoles = Collections.unmodifiableList(this.initSubRoles);
+		if (superRole != null) {
+			superRole.initSubRoles.add(this);
+		}
+	}
+
+	static {
+		//after all are initialized, avoid further modification
+		for (CtRole role : CtRole.values()) {
+			role.initSubRoles = null;
+		}
+	}
 
 	/**
 	 * Get the {@link CtRole} associated to the field name
@@ -95,98 +123,10 @@ public enum CtRole {
 	 * @return
 	 */
 	public static CtRole fromName(String name) {
-		name = name.toLowerCase();
-		for (int i = 0; i < CtRole.values().length; i++) {
-			if (CtRole.values()[i].getCamelCaseName().toLowerCase()
-					.equals(name)) {
-				return CtRole.values()[i];
+		for (CtRole role : CtRole.values()) {
+			if (role.getCamelCaseName().toLowerCase().equals(name.toLowerCase()) || role.name().equals(name)) {
+				return role;
 			}
-		}
-		name = name.toLowerCase();
-		if ("implicit".equals(name)) {
-			return IS_IMPLICIT;
-		}
-		if ("varargs".equals(name)) {
-			return IS_VARARGS;
-		}
-		if ("defaultmethod".equals(name)) {
-			return IS_DEFAULT;
-		}
-		if ("block".equals(name)) {
-			return BODY;
-		}
-		if ("param".equals(name)) {
-			return PARAMETER;
-		}
-		if ("dimensionexpressions".equals(name)) {
-			return DIMENSION;
-		}
-		if ("actualtypearguments".equals(name)) {
-			return TYPE_PARAMETER;
-		}
-		if ("formalcttypeparameters".equals(name)) {
-			return TYPE_PARAMETER;
-		}
-		if ("typecasts".equals(name)) {
-			return CAST;
-		}
-		if ("cases".equals(name)) {
-			return CASE;
-		}
-		if ("enumvalues".equals(name) || "elementvalues".equals(name)) {
-			return VALUE;
-		}
-		if ("throwntypes".equals(name)) {
-			return THROWN;
-		}
-		if ("value".equals(name) || "returnedexpression".equals(name) || "expressions".equals(name)) {
-			return EXPRESSION;
-		}
-		if ("asserted".equals(name)) {
-			return CONDITION;
-		}
-		if ("parameters".equals(name)) {
-			return PARAMETER;
-		}
-		if ("typemembers".equals(name)) {
-			return FIELD;
-		}
-		if ("throwexpression".equals(name)) {
-			return THROWN;
-		}
-		if ("declaringtype".equals(name)) {
-			return DECLARING_TYPE;
-		}
-		if ("boundingtype".equals(name)) {
-			return BOUNDING_TYPE;
-		}
-		if ("returntype".equals(name)
-				|| "componenttype".equals(name)) {
-			return TYPE;
-		}
-		if ("caseexpression".equals(name)) {
-			return CASE;
-		}
-		if ("elseexpression".equals(name) || "elsestatement".equals(name)) {
-			return ELSE;
-		}
-		if ("thenexpression".equals(name) || "thenstatement".equals(name)) {
-			return THEN;
-		}
-		if ("righthandoperand".equals(name)) {
-			return RIGHT_OPERAND;
-		}
-		if ("lefthandoperand".equals(name)) {
-			return LEFT_OPERAND;
-		}
-		if ("pack".equals(name) || "packs".equals(name)) {
-			return SUB_PACKAGE;
-		}
-		if ("superclass".equals(name)) {
-			return SUPER_TYPE;
-		}
-		if ("name".equals(name) || "simplename".equals(name)) {
-			return NAME;
 		}
 		return null;
 	}
@@ -197,15 +137,39 @@ public enum CtRole {
 	 */
 	public String getCamelCaseName() {
 		String s = name().toLowerCase();
-		int i = s.indexOf("_");
-		if (i != -1) {
-			s = s.substring(0, i) + Character.toUpperCase(s.charAt(i + 1)) + s.substring(i + 2);
+		String[] tokens = s.split("_");
+		if (tokens.length == 1) {
+			return s;
+		} else {
+			StringBuilder buffer = new StringBuilder(tokens[0]);
+			for (int i = 1; i < tokens.length; i++) {
+				String t = tokens[i];
+				buffer.append(Character.toUpperCase(t.charAt(0)));
+				buffer.append(t.substring(1));
+			}
+			return buffer.toString();
 		}
-		return s;
 	}
 
 	@Override
 	public String toString() {
 		return getCamelCaseName();
+	}
+
+	/**
+	 * @return the CtRole which is the real holder of this virtual CtRole or null if there is no super role.
+	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
+	 */
+	public CtRole getSuperRole() {
+		return superRole;
+	}
+
+	/**
+	 * @return sub roles of this super role or empty array if there is no sub role.
+	 * 	For example {@link #TYPE_MEMBER} is super role of {@link #CONSTRUCTOR}, {@link #FIELD}, {@link #METHOD}, {@link #NESTED_TYPE}
+	 *
+	 */
+	public List<CtRole> getSubRoles() {
+		return subRoles;
 	}
 }

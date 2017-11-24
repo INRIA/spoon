@@ -19,7 +19,6 @@ package spoon.support.reflect.declaration;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtShadowable;
@@ -136,8 +135,9 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
-	public boolean removeModifier(ModifierKind modifier) {
-		return modifierHandler.removeModifier(modifier);
+	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+		modifierHandler.removeModifier(modifier);
+		return (C) this;
 	}
 
 	@Override
@@ -161,11 +161,6 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	@Override
 	public ModifierKind getVisibility() {
 		return modifierHandler.getVisibility();
-	}
-
-	@Override
-	public <R extends T> void replace(CtField<R> element) {
-		replace((CtElement) element);
 	}
 
 	@Override
@@ -199,5 +194,35 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	@Override
 	public CtField<T> clone() {
 		return (CtField<T>) super.clone();
+	}
+
+	@Override
+	public boolean isPublic() {
+		return this.modifierHandler.isPublic();
+	}
+
+	@Override
+	public boolean isPrivate() {
+		return this.modifierHandler.isPrivate();
+	}
+
+	@Override
+	public boolean isProtected() {
+		return this.modifierHandler.isProtected();
+	}
+
+	@Override
+	public boolean isFinal() {
+		return this.modifierHandler.isFinal();
+	}
+
+	@Override
+	public boolean isStatic() {
+		return this.modifierHandler.isStatic();
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return this.modifierHandler.isAbstract();
 	}
 }

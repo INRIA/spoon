@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.chain.CtQueryable;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -29,7 +30,7 @@ import java.util.List;
 /** represents a Java program, modeled by a set of compile-time (Ct) objects
  * where each objects is a program element (for instance, a CtClass represents a class).
  */
-public interface CtModel extends Serializable {
+public interface CtModel extends Serializable, CtQueryable {
 
 	/** returns the root package */
 	CtPackage getRootPackage();

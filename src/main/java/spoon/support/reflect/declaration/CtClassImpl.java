@@ -25,7 +25,6 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -253,11 +252,6 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 			l.add(c.getReference());
 		}
 		return Collections.unmodifiableList(l);
-	}
-
-	@Override
-	public void replace(CtStatement element) {
-		replace((CtElement) element);
 	}
 
 	@Override

@@ -98,10 +98,12 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
@@ -912,7 +914,22 @@ public interface Factory {
 	CtPackage createPackage(CtPackage parent, String simpleName);
 
 	/**
-	 * @see CoreFactory#create(Class<? extends CtElement>)
+	 * @see CoreFactory#create(Class)
 	 */
 	CtElement createElement(Class<? extends CtElement> klass);
+
+	/**
+	 * @see QueryFactory#createQuery(Object...)
+	 */
+	CtQuery createQuery(Object... input);
+
+	/**
+	 * @see TypeFactory#createImport(CtReference)
+	 */
+	CtImport createImport(CtReference reference);
+
+	/**
+	 * @see TypeFactory#createWildcardStaticTypeMemberReference(CtTypeReference)
+	 */
+	CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference);
 }

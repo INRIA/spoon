@@ -28,8 +28,10 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
@@ -65,7 +67,7 @@ public class MMType {
 	/**
 	 * The {@link CtInterface} linked to this {@link MMType}. Is null in case of interface without class
 	 */
-	private CtInterface<?> modelInteface;
+	private CtInterface<?> modelInterface;
 
 	/**
 	 * {@link ClassTypingContext} of this type used to adapt methods from super type implementations to this {@link MMType}
@@ -99,10 +101,19 @@ public class MMType {
 	 */
 	public MMTypeKind getKind() {
 		if (kind == null) {
-			if (modelClass != null && modelClass.hasModifier(ModifierKind.ABSTRACT) == false) {
-				kind = MMTypeKind.LEAF;
+			if (modelClass == null && modelInterface == null) {
+				return null;
 			} else {
-				kind = MMTypeKind.ABSTRACT;
+				// we first consider interface
+				if (modelClass == null) {
+					this.kind = MMTypeKind.ABSTRACT;
+				} else {
+					if (modelClass.hasModifier(ModifierKind.ABSTRACT)) {
+						this.kind = MMTypeKind.ABSTRACT;
+					} else {
+						this.kind = MMTypeKind.LEAF;
+					}
+				}
 			}
 		}
 		return kind;
@@ -149,12 +160,12 @@ public class MMType {
 	/**
 	 * @return {@link CtInterface} which represents this {@link MMType}
 	 */
-	public CtInterface<?> getModelInteface() {
-		return modelInteface;
+	public CtInterface<?> getModelInterface() {
+		return modelInterface;
 	}
 
-	void setModelInteface(CtInterface<?> modelInteface) {
-		this.modelInteface = modelInteface;
+	void setModelInterface(CtInterface<?> modelInterface) {
+		this.modelInterface = modelInterface;
 	}
 
 	/**
@@ -162,7 +173,7 @@ public class MMType {
 	 */
 	public ClassTypingContext getTypeContext() {
 		if (typeContext == null) {
-			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInteface);
+			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInterface);
 		}
 		return typeContext;
 	}

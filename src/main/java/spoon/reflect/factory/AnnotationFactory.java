@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
@@ -26,8 +27,8 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 /**
  * The {@link CtAnnotationType} sub-factory.
@@ -112,6 +113,7 @@ public class AnnotationFactory extends TypeFactory {
 		boolean isArray;
 		// try with CT reflection
 		CtAnnotationType<A> ctAnnotationType = ((CtAnnotationType<A>) annotation.getAnnotationType().getDeclaration());
+		boolean newValue = annotation.getValue(annotationElementName) == null;
 		if (ctAnnotationType != null) {
 			CtMethod<?> e = ctAnnotationType.getMethod(annotationElementName);
 			isArray = (e.getType() instanceof CtArrayTypeReference);
@@ -125,12 +127,10 @@ public class AnnotationFactory extends TypeFactory {
 			}
 			isArray = m.getReturnType().isArray();
 		}
-		if (isArray == (value instanceof Collection || value.getClass().isArray())) {
-			annotation.addValue(annotationElementName, value);
-		} else if (isArray) {
+		if (isArray || newValue) {
 			annotation.addValue(annotationElementName, value);
 		} else {
-			throw new RuntimeException("cannot assign an array to a non-array annotation element");
+			throw new SpoonException("cannot assign an array to a non-array annotation element");
 		}
 		return annotation;
 	}
@@ -158,8 +158,13 @@ public class AnnotationFactory extends TypeFactory {
 	 * @return the concerned annotation
 	 */
 	public <A extends Annotation> CtAnnotation<A> annotate(CtElement element, CtTypeReference<A> annotationType) {
+		CtAnnotationType<A> ctAnnotationType = ((CtAnnotationType<A>) annotationType.getDeclaration());
+		boolean isRepeatable = false;
+		if (ctAnnotationType != null) {
+			isRepeatable = (ctAnnotationType.getAnnotation(factory.Type().createReference(Repeatable.class)) != null);
+		}
 		CtAnnotation<A> annotation = element.getAnnotation(annotationType);
-		if (annotation == null) {
+		if (annotation == null || isRepeatable) {
 			annotation = factory.Core().createAnnotation();
 			annotation.setAnnotationType(factory.Core().clone(annotationType));
 			element.addAnnotation(annotation);

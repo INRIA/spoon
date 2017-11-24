@@ -17,13 +17,17 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -42,6 +46,7 @@ import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
 import spoon.test.imports.testclasses.NotImportExecutableType;
 import spoon.test.imports.testclasses.Pozole;
+import spoon.test.imports.testclasses.Reflection;
 import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
@@ -63,6 +68,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -80,6 +86,7 @@ public class ImportTest {
 		spoon.getEnvironment().setAutoImports(true);
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
+		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/PublicInterface2.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClientClass.java");
 		spoon.setBinaryOutputDirectory("./target/spoon/super_imports/bin");
 		spoon.setSourceOutputDirectory("./target/spoon/super_imports/src");
@@ -341,10 +348,10 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(factory.Class().get(Mole.class));
 
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("spoon.test.imports.testclasses.internal2.Chimichanga", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;\n", imports.toArray()[0].toString());
 	}
 
 	@Test
@@ -357,13 +364,13 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 				// java.lang.Object is considered as imported but it will never be output
 		assertEquals(3, imports.size());
 		Set<String> expectedImports = new HashSet<>(
 				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
-		Set<String> actualImports = imports.stream().map(CtReference::toString).collect(Collectors.toSet());
+		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
 
@@ -376,10 +383,10 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(factory.Class().get(Pozole.class));
 
-		Collection<CtReference> imports = importContext.getAllImports();
+		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("spoon.test.imports.testclasses.internal2.Menudo", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
 	}
 
 	@Test
@@ -1213,7 +1220,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportStarredPackageWithNonVisibleClass() throws IOException {
-		// contract: when importing starred import, it should not import package-protected classes
+		// contract: when importing starred import, it should import the starred import
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
@@ -1228,7 +1235,8 @@ public class ImportTest {
 
 		assertNotNull(cu);
 
-		assertEquals(3, cu.getImports().size());
+		assertEquals(1, cu.getImports().size());
+		assertEquals(CtImportKind.ALL_TYPES, cu.getImports().iterator().next().getImportKind());
 	}
 
 	@Test
@@ -1251,5 +1259,47 @@ public class ImportTest {
 		String output = prettyPrinter.getResult();
 
 		assertTrue(output.contains("import spoon.test.imports.testclasses.withgenerics.Target;"));
+	}
+
+	@Test
+	public void testEqualsImports() {
+		// contract: two imports of same kind with same reference should be equals
+		final Launcher launcher = new Launcher();
+
+		CtType typeA = launcher.getFactory().Type().get(A.class);
+
+		CtImport importsA1 = launcher.getFactory().createImport(typeA.getReference());
+		CtImport importsA2 = launcher.getFactory().createImport(typeA.getReference());
+
+		assertEquals(importsA1, importsA2);
+		assertEquals(importsA1.hashCode(), importsA2.hashCode());
+
+		CtType typeB = launcher.getFactory().Type().get(Pozole.class);
+		CtImport importsB = launcher.getFactory().createImport(typeB.getReference());
+		assertNotEquals(importsA1, importsB);
+		assertNotEquals(importsA1.hashCode(), importsB.hashCode());
+	}
+
+	@Test
+	public void testGetImportKindReturnRightValue() {
+		// contract: the importKind is computed based on the reference class type and the boolean isImportAllStaticTypeMembers
+		final Launcher spoon = new Launcher();
+
+		CtType aType = spoon.getFactory().Type().get(Reflection.class);
+
+		CtImport ctImport = spoon.getFactory().createImport(aType.getReference());
+		assertEquals(CtImportKind.TYPE, ctImport.getImportKind());
+
+		ctImport = spoon.getFactory().createImport(spoon.getFactory().Type().createWildcardStaticTypeMemberReference(aType.getReference()));
+		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
+
+		ctImport = spoon.getFactory().createImport(((CtMethod)aType.getAllMethods().iterator().next()).getReference());
+		assertEquals(CtImportKind.METHOD, ctImport.getImportKind());
+
+		ctImport = spoon.getFactory().createImport(((CtField)aType.getFields().get(0)).getReference());
+		assertEquals(CtImportKind.FIELD, ctImport.getImportKind());
+
+		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
+		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
 	}
 }

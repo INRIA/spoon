@@ -90,6 +90,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -167,6 +168,7 @@ import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
+import spoon.support.reflect.declaration.CtImportImpl;
 import spoon.support.reflect.reference.CtIntersectionTypeReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
@@ -175,6 +177,7 @@ import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardReferenceImpl;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
 import java.io.Serializable;
@@ -651,6 +654,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		return e;
 	}
 
+	public CtImport createImport() {
+		CtImport e = new CtImportImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
 	public Factory getMainFactory() {
 		return factory;
 	}
@@ -917,7 +926,17 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		if (klass.equals(spoon.reflect.reference.CtWildcardReference.class)) {
 			return createWildcardReference();
 		}
+		if (klass.equals(spoon.reflect.declaration.CtImport.class)) {
+			return createImport();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
+	}
+
+	@Override
+	public CtTypeReference createWildcardStaticTypeMemberReference() {
+		CtTypeReference result = new CtWildcardStaticTypeMemberReferenceImpl();
+		result.setFactory(getMainFactory());
+		return result;
 	}
 
 }

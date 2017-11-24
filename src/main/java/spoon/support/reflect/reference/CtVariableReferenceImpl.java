@@ -81,11 +81,6 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 	}
 
 	@Override
-	public void replace(CtVariableReference<?> reference) {
-		super.replace(reference);
-	}
-
-	@Override
 	public CtVariableReference<T> clone() {
 		return (CtVariableReference<T>) super.clone();
 	}

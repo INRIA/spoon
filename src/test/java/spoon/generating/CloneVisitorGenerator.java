@@ -16,6 +16,7 @@
  */
 package spoon.generating;
 
+import org.apache.commons.lang3.StringUtils;
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -100,7 +101,11 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 
 				// Changes body of the cloned method.
 				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
-					final CtInvocation targetInvocation = (CtInvocation) ((CtInvocation) clone.getBody().getStatement(i)).getArguments().get(1);
+					List<CtExpression> invArgs = ((CtInvocation) clone.getBody().getStatement(i)).getArguments();
+					if (invArgs.size() <= 1) {
+						throw new RuntimeException("You forget the role argument in line "+i+" of method "+element.getSimpleName()+" from "+element.getDeclaringType().getQualifiedName());
+					}
+					final CtInvocation targetInvocation = (CtInvocation) invArgs.get(1);
 					if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
 						clone.getBody().getStatement(i--).delete();
 						continue;
@@ -199,7 +204,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtCodeSnippetImpl", "spoon.support.reflect.declaration.CtFormalTypeDeclarerImpl", //
 					"spoon.support.reflect.declaration.CtGenericElementImpl", "spoon.support.reflect.reference.CtGenericElementReferenceImpl", //
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
-					"spoon.support.reflect.declaration.CtTypeMemberImpl");
+					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.code.CtRHSReceiverImpl",
+					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "metadata");
 			private final CtTypeReference<List> LIST_REFERENCE = factory.Type().createReference(List.class);
 			private final CtTypeReference<Collection> COLLECTION_REFERENCE = factory.Type().createReference(Collection.class);
@@ -478,8 +484,12 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						return element.getBody().toString().equals(templateRoot.toString());
 					}
 				});
-				if (matchers.size() != 1) {
-					throw new SpoonException("Get more than one getter. Please make an more ingenious method to get getter method.");
+				if (matchers.isEmpty()) {
+					throw new SpoonException("No getter found for field "+ctField);
+				}
+
+				if (matchers.size() > 1) {
+					throw new SpoonException("Get more than one getter ("+ StringUtils.join(matchers, ";")+"). Please make an more ingenious method to get getter method.");
 				}
 				return matchers.get(0);
 			}

@@ -667,7 +667,7 @@ public class TemplateTest {
 		assertTrue(match1.equals(match2));
 		
 		//match using TemplateMatcher#matches method and query filter
-		matches = factory.getModel().getRootPackage().filterChildren(matcher).list();
+		matches = factory.getModel().filterChildren(matcher).list();
 
 		assertEquals(2, matches.size());
 

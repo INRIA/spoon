@@ -1,9 +1,11 @@
 package spoon.test.architecture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.processing.AbstractManualProcessor;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -15,15 +17,23 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.metamodel.SpoonMetaModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.metamodel.MMTypeKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
@@ -123,6 +133,8 @@ public class SpoonArchitectureEnforcerTest {
 	@Test
 	public void metamodelPackageRule() throws Exception {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
+		List<String> exceptions = Collections.singletonList("CtWildcardStaticTypeMemberReferenceImpl");
+
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
 		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
@@ -137,10 +149,12 @@ public class SpoonArchitectureEnforcerTest {
 		interfaces.buildModel();
 
 		for (CtType<?> implType : implementations.getModel().getAllTypes()) {
-			String impl = implType.getQualifiedName().replace(".support", "").replace("Impl", "");
-			CtType interfaceType = interfaces.getFactory().Type().get(impl);
-			// the implementation is a subtype of the superinterface
-			assertTrue(implType.getReference().isSubtypeOf(interfaceType.getReference()));
+			if (!exceptions.contains(implType.getSimpleName())) {
+				String impl = implType.getQualifiedName().replace(".support", "").replace("Impl", "");
+				CtType interfaceType = interfaces.getFactory().Type().get(impl);
+				// the implementation is a subtype of the superinterface
+				assertTrue(implType.getReference().isSubtypeOf(interfaceType.getReference()));
+			}
 		}
 	}
 
@@ -155,7 +169,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/test/java/");
 		spoon.buildModel();
 
-		for (CtMethod<?> meth : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
+		for (CtMethod<?> meth : spoon.getModel().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 			@Override
 			public boolean matches(CtMethod element) {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
@@ -167,7 +181,7 @@ public class SpoonArchitectureEnforcerTest {
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
 		// otherwise, intellij automatically selects the junit3 runner, finds nothing
 		// and crashes with a dirty exception
-		assertEquals(0, spoon.getModel().getRootPackage().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class){
+		assertEquals(0, spoon.getModel().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class){
 			@Override
 			public boolean matches(CtTypeReference element) {
 				CtMethod parent = element.getParent(CtMethod.class);
@@ -196,7 +210,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
 
-		for (CtClass<?> klass : spoon.getModel().getRootPackage().getElements(new TypeFilter<CtClass>(CtClass.class) {
+		for (CtClass<?> klass : spoon.getModel().getElements(new TypeFilter<CtClass>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass element) {
 				return element.getSuperclass() == null && super.matches(element) && element.getMethods().size()>0
@@ -205,5 +219,141 @@ public class SpoonArchitectureEnforcerTest {
 		})) {
 			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
 		}
+	}
+
+	@Test
+	public void testInterfacesAreCtScannable() {
+		// contract: all non-leaf interfaces of the metamodel should be visited by CtInheritanceScanner
+		Launcher interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/support");
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/support/reflect/reference");
+		interfaces.addInputResource("src/main/java/spoon/reflect/visitor/CtScanner.java");
+		interfaces.buildModel();
+
+		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtInheritanceScanner.class);
+
+		List<String> missingMethods = new ArrayList<>();
+
+		new SpoonMetaModel(interfaces.getFactory()).getMMTypes().forEach(mmType -> {
+			if (mmType.getKind() == ABSTRACT && mmType.getModelInterface() != null) {
+				CtInterface abstractIface = mmType.getModelInterface();
+				String methodName = "scan" + abstractIface.getSimpleName();
+				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
+					missingMethods.add(methodName);
+				}
+			}
+		});
+
+		assertTrue("The following methods are missing in CtScanner: \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
+	}
+
+	@Test
+	public void testSpecPackage() throws Exception {
+		// contract: when a pull-request introduces a new package, it is made explicit during code review
+		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
+
+		Set<String> officialPackages = new TreeSet<>();
+		officialPackages.add("spoon.compiler.builder");
+		officialPackages.add("spoon.compiler");
+		officialPackages.add("spoon.experimental.modelobs.action");
+		officialPackages.add("spoon.experimental.modelobs.context");
+		officialPackages.add("spoon.experimental.modelobs");
+		officialPackages.add("spoon.experimental");
+		officialPackages.add("spoon.legacy");
+		officialPackages.add("spoon.processing");
+		officialPackages.add("spoon.refactoring");
+		officialPackages.add("spoon.reflect.annotations");
+		officialPackages.add("spoon.reflect.code");
+		officialPackages.add("spoon.reflect.cu.position");
+		officialPackages.add("spoon.reflect.cu");
+		officialPackages.add("spoon.reflect.declaration");
+		officialPackages.add("spoon.reflect.eval");
+		officialPackages.add("spoon.reflect.factory");
+		officialPackages.add("spoon.reflect.path.impl");
+		officialPackages.add("spoon.reflect.path");
+		officialPackages.add("spoon.reflect.reference");
+		officialPackages.add("spoon.reflect.visitor.chain");
+		officialPackages.add("spoon.reflect.visitor.filter");
+		officialPackages.add("spoon.reflect.visitor.printer");
+		officialPackages.add("spoon.reflect.visitor");
+		officialPackages.add("spoon.reflect");
+		officialPackages.add("spoon.support.comparator");
+		officialPackages.add("spoon.support.compiler.jdt");
+		officialPackages.add("spoon.support.compiler");
+		officialPackages.add("spoon.support.gui");
+		officialPackages.add("spoon.support.reflect.code");
+		officialPackages.add("spoon.support.reflect.cu.position");
+		officialPackages.add("spoon.support.reflect.cu");
+		officialPackages.add("spoon.support.reflect.declaration");
+		officialPackages.add("spoon.support.reflect.eval");
+		officialPackages.add("spoon.reflect.meta");
+		officialPackages.add("spoon.reflect.meta.impl");
+		officialPackages.add("spoon.support.reflect.reference");
+		officialPackages.add("spoon.support.reflect");
+		officialPackages.add("spoon.support.template");
+		officialPackages.add("spoon.support.util");
+		officialPackages.add("spoon.support.visitor.clone");
+		officialPackages.add("spoon.support.visitor.equals");
+		officialPackages.add("spoon.support.visitor.java.internal");
+		officialPackages.add("spoon.support.visitor.java.reflect");
+		officialPackages.add("spoon.support.visitor.java");
+		officialPackages.add("spoon.support.visitor.replace");
+		officialPackages.add("spoon.support.visitor");
+		officialPackages.add("spoon.support");
+		officialPackages.add("spoon.template");
+		officialPackages.add("spoon.testing.utils");
+		officialPackages.add("spoon.testing");
+		officialPackages.add("spoon");
+		officialPackages.add(""); // root package
+
+		SpoonAPI spoon = new Launcher();
+		spoon.addInputResource("src/main/java/");
+		spoon.buildModel();
+		final Set<String> currentPackages = new TreeSet<>();
+		spoon.getModel().processWith(new AbstractProcessor<CtPackage>() {
+			@Override
+			public void process(CtPackage element) {
+				currentPackages.add(element.getQualifiedName());
+			}
+		});
+
+		assertSetEquals("you have created a new package or removed an existing one, please declare it explicitly in SpoonArchitectureEnforcerTest#testSpecPackage", officialPackages, currentPackages);
+	}
+
+	private static void assertSetEquals(String msg, Set<?> set1, Set<?> set2){
+		if(set1 == null || set2 ==null){
+			throw new IllegalArgumentException();
+		}
+
+		if(set1.size() != set2.size()){
+			throw new AssertionError(msg+"\n\nDetails: "+computeDifference(set1, set2));
+		}
+
+		if (!set1.containsAll(set2)) {
+			throw new AssertionError(msg+"\n\nDetails: "+computeDifference(set1, set2));
+		}
+
+	}
+
+	private static String computeDifference(Set<?> set1, Set<?> set2) {
+		Set<String> results = new HashSet<>();
+
+		for (Object o : set1) {
+			if (!set2.contains(o)) {
+				results.add("Missing package "+o+" in computed set");
+			} else {
+				set2.remove(o);
+			}
+		}
+
+		for (Object o : set2) {
+			results.add("Package "+o+" presents in computed but not expected set.");
+		}
+		return StringUtils.join(results, "\n");
 	}
 }

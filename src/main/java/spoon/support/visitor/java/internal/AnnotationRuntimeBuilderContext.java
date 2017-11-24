@@ -38,4 +38,8 @@ public class AnnotationRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	public void addClassReference(CtTypeReference<?> typeReference) {
 		ctAnnotation.setAnnotationType((CtTypeReference<? extends Annotation>) typeReference);
 	}
+
+	public CtAnnotation<Annotation> getCtAnnotation() {
+		return this.ctAnnotation;
+	}
 }

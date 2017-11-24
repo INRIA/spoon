@@ -38,6 +38,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -182,11 +183,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtReference> getAllImports() {
-		Collection<CtReference> listallImports = new ArrayList<>();
-		listallImports.addAll(this.classImports.values());
-		listallImports.addAll(this.fieldImports.values());
-		listallImports.addAll(this.methodImports.values());
+	public Collection<CtImport> getAllImports() {
+		Collection<CtImport> listallImports = new ArrayList<>();
+
+		for (CtReference reference : this.classImports.values()) {
+			listallImports.add(reference.getFactory().Type().createImport(reference));
+		}
+
+		for (CtReference reference : this.fieldImports.values()) {
+			listallImports.add(reference.getFactory().Type().createImport(reference));
+		}
+
+		for (CtReference reference : this.methodImports.values()) {
+			listallImports.add(reference.getFactory().Type().createImport(reference));
+		}
 		return listallImports;
 	}
 
