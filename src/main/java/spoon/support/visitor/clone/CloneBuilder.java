@@ -20,7 +20,7 @@ package spoon.support.visitor.clone;
 /**
  * Used to set all data in the cloned element.
  *
- * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
+ * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
  */
 public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	private spoon.reflect.declaration.CtElement other;

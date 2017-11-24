@@ -816,6 +816,15 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
+	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
+		spoon.reflect.declaration.CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
+		aCtImport.setReference(this.cloneHelper.clone(ctImport.getReference()));
+		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
+		this.other = aCtImport;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
 	public void visitCtModule(spoon.reflect.declaration.CtModule module) {
 		spoon.reflect.declaration.CtModule aCtModule = spoon.support.visitor.clone.CloneBuilder.build(this.builder, module, module.getFactory().Core().createModule());
 		aCtModule.setComments(this.cloneHelper.clone(module.getComments()));

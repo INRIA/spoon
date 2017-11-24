@@ -941,7 +941,7 @@ public interface Factory {
 	CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference);
 
 	/**
-	 * @see ModuleFactory#createModuleExport(CtPackage)
+	 * @see ModuleFactory#createModuleExport(CtPackageReference)
 	 */
 	CtModuleExport createModuleExport(CtPackageReference ctPackageReference);
 

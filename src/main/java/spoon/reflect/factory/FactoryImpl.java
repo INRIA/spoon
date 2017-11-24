@@ -1194,11 +1194,6 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CtQuery createQuery(Object... input) {
-		return Query().createQuery(input);
-	}
-
-	@Override
 	public CtImport createImport(CtReference reference) {
 		return Type().createImport(reference);
 	}
@@ -1206,11 +1201,6 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
-	}
-
-	@Override
-	public CtModuleExport createModuleExport(CtPackage ctPackage){
-		return Module().createModuleExport(ctPackage);
 	}
 
 	public CtModuleExport createModuleExport(CtPackageReference ctPackageReference) {
