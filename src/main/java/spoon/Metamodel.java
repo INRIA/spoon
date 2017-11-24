@@ -16,12 +16,9 @@
  */
 package spoon;
 
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.declaration.CtImportKind;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 
@@ -149,9 +146,8 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtUnboundVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardReference.class));
-		result.add(factory.Type().get(CtImport.class));
-		result.add(factory.Type().get(CtImportKind.class));
-		result.add(factory.Type().get(CtWildcardStaticTypeMemberReference.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtImport.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtImportKind.class));
 		return result;
 	}
 

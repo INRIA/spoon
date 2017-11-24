@@ -91,7 +91,6 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 
 import java.lang.annotation.Annotation;
 
@@ -470,11 +469,6 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtImport(CtImport ctImport) {
-
-	}
-
-	@Override
-	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference ctWildcardStaticTypeMemberReference) {
 
 	}
 }

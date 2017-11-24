@@ -17,11 +17,14 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
-import spoon.reflect.visitor.CtVisitor;
 
-
-public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl implements CtWildcardStaticTypeMemberReference {
+/**
+ * This class intends to be used only to represent the reference of a
+ * static import of all members of a type:
+ *
+ * import static org.junit.Assert.*;
+ */
+public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl {
 
 	public CtWildcardStaticTypeMemberReferenceImpl() {
 		super();
@@ -36,12 +39,7 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl
 	}
 
 	@Override
-	public CtWildcardStaticTypeMemberReference clone() {
-		return (CtWildcardStaticTypeMemberReference) super.clone();
-	}
-
-	@Override
-	public void accept(CtVisitor visitor) {
-		visitor.visitCtWildcardStaticTypeMemberReference(this);
+	public CtWildcardStaticTypeMemberReferenceImpl clone() {
+		return (CtWildcardStaticTypeMemberReferenceImpl) getFactory().Type().createWildcardStaticTypeMemberReference(this);
 	}
 }

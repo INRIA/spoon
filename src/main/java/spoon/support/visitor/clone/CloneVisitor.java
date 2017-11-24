@@ -822,17 +822,5 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
 		this.other = aCtImport;
 	}
-
-	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	@java.lang.Override
-	public void visitCtWildcardStaticTypeMemberReference(final spoon.reflect.reference.CtWildcardStaticTypeMemberReference reference) {
-		spoon.reflect.reference.CtWildcardStaticTypeMemberReference aCtWildcardStaticTypeMemberReference = spoon.support.visitor.clone.CloneBuilder.build(this.builder, reference, reference.getFactory().Core().createWildcardStaticTypeMemberReference());
-		aCtWildcardStaticTypeMemberReference.setPackage(this.cloneHelper.clone(reference.getPackage()));
-		aCtWildcardStaticTypeMemberReference.setDeclaringType(this.cloneHelper.clone(reference.getDeclaringType()));
-		aCtWildcardStaticTypeMemberReference.setActualTypeArguments(this.cloneHelper.clone(reference.getActualTypeArguments()));
-		aCtWildcardStaticTypeMemberReference.setAnnotations(this.cloneHelper.clone(reference.getAnnotations()));
-		aCtWildcardStaticTypeMemberReference.setComments(this.cloneHelper.clone(reference.getComments()));
-		this.other = aCtWildcardStaticTypeMemberReference;
-	}
 }
 

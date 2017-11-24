@@ -109,7 +109,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.visitor.GenericTypeAdapter;
 
@@ -932,5 +931,5 @@ public interface Factory {
 	/**
 	 * @see TypeFactory#createWildcardStaticTypeMemberReference(CtTypeReference)
 	 */
-	CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference);
+	CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference);
 }

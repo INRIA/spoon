@@ -110,7 +110,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -1182,7 +1181,7 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
+	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
 	}
 }

@@ -26,8 +26,8 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
 public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
@@ -49,7 +49,7 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 			return CtImportKind.METHOD;
 		} else if (this.localReference instanceof CtPackageReference) {
 			return CtImportKind.ALL_TYPES;
-		} else if (this.localReference instanceof CtWildcardStaticTypeMemberReference) {
+		} else if (this.localReference instanceof CtWildcardStaticTypeMemberReferenceImpl) {
 			return CtImportKind.ALL_STATIC_MEMBERS;
 		} else if (this.localReference instanceof CtTypeReference) {
 			return CtImportKind.TYPE;
