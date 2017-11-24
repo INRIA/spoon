@@ -19,9 +19,10 @@ package spoon.reflect.factory;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleExport;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -133,11 +134,15 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		return factory.Core().createModuleRequirement().setModuleReference(moduleReference);
 	}
 
-	public CtModuleExport createModuleExport(CtPackageReference ctPackageReference) {
-		return factory.Core().createModuleExport().setPackageReference(ctPackageReference);
+	public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
+		return factory.Core().createPackageExport().setPackageReference(ctPackageReference);
 	}
 
-	public CtModuleProvidedService createModuleProvidedService(CtTypeReference typeReference) {
-		return factory.Core().createModuleProvidedService().setServiceType(typeReference);
+	public CtProvidedService createModuleProvidedService(CtTypeReference typeReference) {
+		return factory.Core().createProvidedService().setServiceType(typeReference);
+	}
+
+	public CtUsedService createUsedService(CtTypeReference typeReference) {
+		return factory.Core().createUsedService().setServiceType(typeReference);
 	}
 }

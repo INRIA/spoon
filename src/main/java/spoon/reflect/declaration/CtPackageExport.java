@@ -34,23 +34,23 @@ import java.util.List;
  *     opens com.example.foo.quux;
  * </pre>
  */
-public interface CtModuleExport extends CtElement {
+public interface CtPackageExport extends CtElement {
 
 	@PropertyGetter(role = CtRole.PACKAGE_REF)
 	CtPackageReference getPackageReference();
 
 	@PropertySetter(role = CtRole.PACKAGE_REF)
-	<T extends CtModuleExport> T setPackageReference(CtPackageReference packageReference);
+	<T extends CtPackageExport> T setPackageReference(CtPackageReference packageReference);
 
 	@PropertyGetter(role = CtRole.MODULE_REF)
 	List<CtModuleReference> getTargetExport();
 
 	@PropertySetter(role = CtRole.MODULE_REF)
-	<T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExport);
+	<T extends CtPackageExport> T setTargetExport(List<CtModuleReference> targetExport);
 
 	@PropertySetter(role = CtRole.MODULE_REF)
-	<T extends CtModuleExport> T addTargetExport(CtModuleReference targetExport);
+	<T extends CtPackageExport> T addTargetExport(CtModuleReference targetExport);
 
 	@Override
-	CtModuleExport clone();
+	CtPackageExport clone();
 }

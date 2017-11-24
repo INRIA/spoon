@@ -3,9 +3,10 @@ package spoon.test.module;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtModuleRequirement;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -45,7 +46,7 @@ public class TestModule {
 		assertEquals("java.logging", moduleRequirement.getModuleReference().getSimpleName());
 		assertTrue(moduleRequirement.getRequiresModifiers().contains(CtModuleRequirement.RequiresModifier.TRANSITIVE));
 
-		List<CtModuleExport> moduleExports = moduleGreetings.getExportedPackages();
+		List<CtPackageExport> moduleExports = moduleGreetings.getExportedPackages();
 		assertEquals(1, moduleExports.size());
 
 		assertEquals("com.greetings.pkg", moduleExports.get(0).getPackageReference().getQualifiedName());
@@ -58,11 +59,11 @@ public class TestModule {
 			}
 		}
 
-		List<CtModuleExport> moduleOpened = moduleGreetings.getOpenedPackages();
+		List<CtPackageExport> moduleOpened = moduleGreetings.getOpenedPackages();
 		assertEquals(2, moduleOpened.size());
 
-		CtModuleExport openedFirst = moduleOpened.get(0);
-		CtModuleExport openedSecond = moduleOpened.get(1);
+		CtPackageExport openedFirst = moduleOpened.get(0);
+		CtPackageExport openedSecond = moduleOpened.get(1);
 
 		assertEquals("com.greetings.otherpkg", openedFirst.getPackageReference().getSimpleName());
 		assertTrue(openedFirst.getTargetExport().isEmpty());
@@ -71,15 +72,15 @@ public class TestModule {
 		assertEquals(1, openedSecond.getTargetExport().size());
 		assertEquals("com.third.module", openedSecond.getTargetExport().iterator().next().getSimpleName());
 
-		List<CtTypeReference> consumedService = moduleGreetings.getConsumedServices();
+		List<CtUsedService> consumedService = moduleGreetings.getUsedServices();
 		assertEquals(1, consumedService.size());
-		assertEquals("com.greetings.pkg.ConsumedService", consumedService.get(0).getQualifiedName());
+		assertEquals("com.greetings.pkg.ConsumedService", consumedService.get(0).getServiceType().getQualifiedName());
 
-		List<CtModuleProvidedService> providedServices = moduleGreetings.getProvidedServices();
+		List<CtProvidedService> providedServices = moduleGreetings.getProvidedServices();
 		assertEquals(2, providedServices.size());
 
-		CtModuleProvidedService providedService1 = providedServices.get(0);
-		CtModuleProvidedService providedService2 = providedServices.get(1);
+		CtProvidedService providedService1 = providedServices.get(0);
+		CtProvidedService providedService2 = providedServices.get(1);
 
 		assertEquals("com.greetings.pkg.ConsumedService", providedService1.getServiceType().getQualifiedName());
 		assertEquals(2, providedService1.getImplementationTypes().size());

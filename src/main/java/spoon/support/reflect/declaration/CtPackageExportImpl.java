@@ -17,7 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtModuleExport;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -27,14 +27,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport {
+public class CtPackageExportImpl extends CtElementImpl implements CtPackageExport {
 	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
 	private CtPackageReference packageReference;
 
 	@MetamodelPropertyField(role = CtRole.MODULE_REF)
 	private List<CtModuleReference> targets = CtElementImpl.emptyList();
 
-	public CtModuleExportImpl() {
+	public CtPackageExportImpl() {
 		super();
 	}
 
@@ -44,7 +44,7 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 	}
 
 	@Override
-	public <T extends CtModuleExport> T setPackageReference(CtPackageReference packageReference) {
+	public <T extends CtPackageExport> T setPackageReference(CtPackageReference packageReference) {
 		if (packageReference != null) {
 			packageReference.setParent(this);
 		}
@@ -59,7 +59,7 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 	}
 
 	@Override
-	public <T extends CtModuleExport> T setTargetExport(List<CtModuleReference> targetExports) {
+	public <T extends CtPackageExport> T setTargetExport(List<CtModuleReference> targetExports) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.MODULE_REF, this.targets, new ArrayList<>(this.targets));
 		if (targetExports == null || targetExports.isEmpty()) {
 			this.targets = CtElementImpl.emptyList();
@@ -78,7 +78,7 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 	}
 
 	@Override
-	public <T extends CtModuleExport> T addTargetExport(CtModuleReference targetExport) {
+	public <T extends CtPackageExport> T addTargetExport(CtModuleReference targetExport) {
 		if (targetExport == null) {
 			return (T) this;
 		}
@@ -93,11 +93,11 @@ public class CtModuleExportImpl extends CtElementImpl implements CtModuleExport 
 
 	@Override
 	public void accept(CtVisitor visitor) {
-		visitor.visitCtModuleExport(this);
+		visitor.visitCtPackageExport(this);
 	}
 
 	@Override
-	public CtModuleExport clone() {
-		return (CtModuleExport) super.clone();
+	public CtPackageExport clone() {
+		return (CtPackageExport) super.clone();
 	}
 }

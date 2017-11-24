@@ -89,13 +89,14 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleExport;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
@@ -115,7 +116,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -1203,12 +1203,12 @@ public class FactoryImpl implements Factory, Serializable {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
 	}
 
-	public CtModuleExport createModuleExport(CtPackageReference ctPackageReference) {
-		return Module().createModuleExport(ctPackageReference);
+	public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
+		return Module().createPackageExport(ctPackageReference);
 	}
 
 	@Override
-	public CtModuleProvidedService createModuleProvidedService(CtTypeReference ctTypeReference) {
+	public CtProvidedService createProvidedService(CtTypeReference ctTypeReference) {
 		return Module().createModuleProvidedService(ctTypeReference);
 	}
 
@@ -1225,5 +1225,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtModuleReference createModuleReference(CtModule ctModule) {
 		return Module().createReference(ctModule);
+	}
+
+	@Override
+	public CtUsedService createUsedService(CtTypeReference typeReference) {
+		return Module().createUsedService(typeReference);
 	}
 }

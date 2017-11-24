@@ -81,11 +81,12 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleExport;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -564,7 +565,9 @@ public interface CoreFactory {
 
 	CtModuleRequirement createModuleRequirement();
 
-	CtModuleExport createModuleExport();
+	CtPackageExport createPackageExport();
 
-	CtModuleProvidedService createModuleProvidedService();
+	CtProvidedService createProvidedService();
+
+	CtUsedService createUsedService();
 }

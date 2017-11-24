@@ -19,7 +19,6 @@ package spoon.reflect.declaration;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 
 import java.util.List;
@@ -33,14 +32,22 @@ import static spoon.reflect.path.CtRole.SERVICE_TYPE;
 import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 
 /**
- * Represents a Java module as defined in Java 9
+ * Represents a Java module as defined in Java 9.
  *
- * Example:
+ * Modules are defined in `module-info.java` as follows:
  * <pre>
  *     module com.example.foo {
  *
  *     }
  * </pre>
+ *
+ * Modules define required modules, and exported packages for client code.
+ *
+ * A module can export a service, defined as a type.
+ * Provided services are implementations of given service.
+ * Modules can require services ("uses" in Java 9)
+ *
+ * An open module is a module where all packages are exported.
  */
 public interface CtModule extends CtNamedElement {
 
@@ -49,6 +56,10 @@ public interface CtModule extends CtNamedElement {
 	 */
 	String TOP_LEVEL_MODULE_NAME = "unnamed module";
 
+	/**
+	 * Returns the unnamed module
+	 * Warning: if there are other modules, they are not contained in that unnamed root module.
+	 */
 	@DerivedProperty
 	boolean isUnnamedModule();
 
@@ -59,31 +70,31 @@ public interface CtModule extends CtNamedElement {
 	<T extends CtModule> T setIsOpenModule(boolean openModule);
 
 	@PropertyGetter(role = SERVICE_TYPE)
-	List<CtTypeReference> getConsumedServices();
+	List<CtUsedService> getUsedServices();
 
 	@PropertySetter(role = SERVICE_TYPE)
-	<T extends CtModule> T setConsumedServices(List<CtTypeReference> consumedServices);
+	<T extends CtModule> T setUsedServices(List<CtUsedService> usedServices);
 
 	@PropertySetter(role = SERVICE_TYPE)
-	<T extends CtModule> T addConsumedService(CtTypeReference consumedService);
+	<T extends CtModule> T addUsedService(CtUsedService usedService);
 
 	@PropertyGetter(role = EXPORTED_PACKAGE)
-	List<CtModuleExport> getExportedPackages();
+	List<CtPackageExport> getExportedPackages();
 
 	@PropertySetter(role = EXPORTED_PACKAGE)
-	<T extends CtModule> T setExportedPackages(List<CtModuleExport> exportedPackages);
+	<T extends CtModule> T setExportedPackages(List<CtPackageExport> exportedPackages);
 
 	@PropertySetter(role = EXPORTED_PACKAGE)
-	<T extends CtModule> T addExportedPackage(CtModuleExport exportedPackage);
+	<T extends CtModule> T addExportedPackage(CtPackageExport exportedPackage);
 
 	@PropertyGetter(role = OPENED_PACKAGE)
-	List<CtModuleExport> getOpenedPackages();
+	List<CtPackageExport> getOpenedPackages();
 
 	@PropertySetter(role = OPENED_PACKAGE)
-	<T extends CtModule> T setOpenedPackages(List<CtModuleExport> openedPackages);
+	<T extends CtModule> T setOpenedPackages(List<CtPackageExport> openedPackages);
 
 	@PropertySetter(role = OPENED_PACKAGE)
-	<T extends CtModule> T addOpenedPackage(CtModuleExport openedPackage);
+	<T extends CtModule> T addOpenedPackage(CtPackageExport openedPackage);
 
 	@PropertyGetter(role = REQUIRED_MODULE)
 	List<CtModuleRequirement> getRequiredModules();
@@ -95,14 +106,18 @@ public interface CtModule extends CtNamedElement {
 	<T extends CtModule> T addRequiredModule(CtModuleRequirement requiredModule);
 
 	@PropertyGetter(role = PROVIDED_SERVICE)
-	List<CtModuleProvidedService> getProvidedServices();
+	List<CtProvidedService> getProvidedServices();
 
 	@PropertySetter(role = PROVIDED_SERVICE)
-	<T extends CtModule> T setProvidedServices(List<CtModuleProvidedService> providedServices);
+	<T extends CtModule> T setProvidedServices(List<CtProvidedService> providedServices);
 
 	@PropertySetter(role = PROVIDED_SERVICE)
-	<T extends CtModule> T addProvidedService(CtModuleProvidedService providedService);
+	<T extends CtModule> T addProvidedService(CtProvidedService providedService);
 
+	/**
+	 * returns the root package of the unnamed module
+	 * If there are several modules, it throws an exception
+	 */
 	@PropertyGetter(role = SUB_PACKAGE)
 	CtPackage getRootPackage();
 

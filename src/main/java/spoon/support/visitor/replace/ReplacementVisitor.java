@@ -2013,16 +2013,16 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleConsumedServicesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	class CtModuleUsedServicesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtModule element;
 
-		CtModuleConsumedServicesReplaceListener(spoon.reflect.declaration.CtModule element) {
+		CtModuleUsedServicesReplaceListener(spoon.reflect.declaration.CtModule element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(java.util.List replace) {
-			this.element.setConsumedServices(replace);
+			this.element.setUsedServices(replace);
 		}
 	}
 
@@ -2062,7 +2062,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(module.getExportedPackages(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleExportedPackagesReplaceListener(module));
 		replaceInListIfExist(module.getRequiredModules(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleRequiredModulesReplaceListener(module));
 		replaceInListIfExist(module.getOpenedPackages(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleOpenedPackagesReplaceListener(module));
-		replaceInListIfExist(module.getConsumedServices(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleConsumedServicesReplaceListener(module));
+		replaceInListIfExist(module.getUsedServices(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleUsedServicesReplaceListener(module));
 		replaceInListIfExist(module.getProvidedServices(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleProvidedServicesReplaceListener(module));
 		replaceElementIfExist(module.getRootPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleRootPackageReplaceListener(module));
 	}
@@ -2074,10 +2074,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
-		private final spoon.reflect.declaration.CtModuleExport element;
+	class CtPackageExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+		private final spoon.reflect.declaration.CtPackageExport element;
 
-		CtModuleExportPackageReferenceReplaceListener(spoon.reflect.declaration.CtModuleExport element) {
+		CtPackageExportPackageReferenceReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
 			this.element = element;
 		}
 
@@ -2088,10 +2088,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleExportTargetExportReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtModuleExport element;
+	class CtPackageExportTargetExportReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtPackageExport element;
 
-		CtModuleExportTargetExportReplaceListener(spoon.reflect.declaration.CtModuleExport element) {
+		CtPackageExportTargetExportReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
 			this.element = element;
 		}
 
@@ -2103,10 +2103,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public void visitCtModuleExport(spoon.reflect.declaration.CtModuleExport moduleExport) {
+	public void visitCtPackageExport(spoon.reflect.declaration.CtPackageExport moduleExport) {
 		replaceInListIfExist(moduleExport.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(moduleExport));
-		replaceElementIfExist(moduleExport.getPackageReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleExportPackageReferenceReplaceListener(moduleExport));
-		replaceInListIfExist(moduleExport.getTargetExport(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleExportTargetExportReplaceListener(moduleExport));
+		replaceElementIfExist(moduleExport.getPackageReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtPackageExportPackageReferenceReplaceListener(moduleExport));
+		replaceInListIfExist(moduleExport.getTargetExport(), new spoon.support.visitor.replace.ReplacementVisitor.CtPackageExportTargetExportReplaceListener(moduleExport));
 		replaceInListIfExist(moduleExport.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(moduleExport));
 	}
 
@@ -2133,10 +2133,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleProvidedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.declaration.CtModuleProvidedService element;
+	class CtProvidedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtProvidedService element;
 
-		CtModuleProvidedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtModuleProvidedService element) {
+		CtProvidedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtProvidedService element) {
 			this.element = element;
 		}
 
@@ -2147,10 +2147,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleProvidedServiceImplementationTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtModuleProvidedService element;
+	class CtProvidedServiceImplementationTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtProvidedService element;
 
-		CtModuleProvidedServiceImplementationTypesReplaceListener(spoon.reflect.declaration.CtModuleProvidedService element) {
+		CtProvidedServiceImplementationTypesReplaceListener(spoon.reflect.declaration.CtProvidedService element) {
 			this.element = element;
 		}
 
@@ -2162,11 +2162,33 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public void visitCtModuleProvidedService(spoon.reflect.declaration.CtModuleProvidedService moduleProvidedService) {
+	public void visitCtProvidedService(spoon.reflect.declaration.CtProvidedService moduleProvidedService) {
 		replaceInListIfExist(moduleProvidedService.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(moduleProvidedService));
-		replaceElementIfExist(moduleProvidedService.getServiceType(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleProvidedServiceServiceTypeReplaceListener(moduleProvidedService));
-		replaceInListIfExist(moduleProvidedService.getImplementationTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtModuleProvidedServiceImplementationTypesReplaceListener(moduleProvidedService));
+		replaceElementIfExist(moduleProvidedService.getServiceType(), new spoon.support.visitor.replace.ReplacementVisitor.CtProvidedServiceServiceTypeReplaceListener(moduleProvidedService));
+		replaceInListIfExist(moduleProvidedService.getImplementationTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtProvidedServiceImplementationTypesReplaceListener(moduleProvidedService));
 		replaceInListIfExist(moduleProvidedService.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(moduleProvidedService));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtUsedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtUsedService element;
+
+		CtUsedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtUsedService element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setServiceType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtUsedService(spoon.reflect.declaration.CtUsedService usedService) {
+		replaceInListIfExist(usedService.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(usedService));
+		replaceElementIfExist(usedService.getServiceType(), new spoon.support.visitor.replace.ReplacementVisitor.CtUsedServiceServiceTypeReplaceListener(usedService));
+		replaceInListIfExist(usedService.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(usedService));
 	}
 }
 

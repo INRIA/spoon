@@ -54,11 +54,12 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleExport;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.ExecutableFactory;
@@ -691,7 +692,7 @@ public class JDTTreeBuilderHelper {
 		}
 
 		if (moduleDeclaration.exports != null && moduleDeclaration.exports.length > 0) {
-			List<CtModuleExport> moduleExports = new ArrayList<>();
+			List<CtPackageExport> moduleExports = new ArrayList<>();
 			for (ExportsStatement exportsStatement : moduleDeclaration.exports) {
 				moduleExports.add(this.createModuleExport(exportsStatement));
 			}
@@ -700,7 +701,7 @@ public class JDTTreeBuilderHelper {
 		}
 
 		if (moduleDeclaration.opens != null && moduleDeclaration.opens.length > 0) {
-			List<CtModuleExport> moduleOpens = new ArrayList<>();
+			List<CtPackageExport> moduleOpens = new ArrayList<>();
 			for (OpensStatement opensStatement : moduleDeclaration.opens) {
 				moduleOpens.add(this.createModuleExport(opensStatement));
 			}
@@ -709,16 +710,16 @@ public class JDTTreeBuilderHelper {
 		}
 
 		if (moduleDeclaration.uses != null && moduleDeclaration.uses.length > 0) {
-			List<CtTypeReference> consumedServices = new ArrayList<>();
+			List<CtUsedService> consumedServices = new ArrayList<>();
 			for (UsesStatement consumedService : moduleDeclaration.uses) {
-				consumedServices.add(this.jdtTreeBuilder.references.getTypeReference(consumedService.serviceInterface));
+				consumedServices.add(this.createUsedService(consumedService));
 			}
 
-			module.setConsumedServices(consumedServices);
+			module.setUsedServices(consumedServices);
 		}
 
 		if (moduleDeclaration.services != null && moduleDeclaration.services.length > 0) {
-			List<CtModuleProvidedService> moduleProvidedServices = new ArrayList<>();
+			List<CtProvidedService> moduleProvidedServices = new ArrayList<>();
 			for (ProvidesStatement providesStatement : moduleDeclaration.services) {
 				moduleProvidedServices.add(this.createModuleProvidedService(providesStatement));
 			}
@@ -727,6 +728,11 @@ public class JDTTreeBuilderHelper {
 		}
 
 		return module;
+	}
+
+	CtUsedService createUsedService(UsesStatement usesStatement) {
+		CtTypeReference typeReference = this.jdtTreeBuilder.references.getTypeReference(usesStatement.serviceInterface);
+		return this.jdtTreeBuilder.getFactory().Module().createUsedService(typeReference);
 	}
 
 	CtModuleRequirement createModuleRequirement(RequiresStatement requiresStatement) {
@@ -749,13 +755,13 @@ public class JDTTreeBuilderHelper {
 		return moduleRequirement;
 	}
 
-	CtModuleExport createModuleExport(ExportsStatement exportsStatement) {
+	CtPackageExport createModuleExport(ExportsStatement exportsStatement) {
 		String packageName = new String(exportsStatement.pkgName);
 		int sourceStart = exportsStatement.sourceStart;
 		int sourceEnd = exportsStatement.sourceEnd;
 
 		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
-		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackageReference);
+		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
 
 		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
@@ -771,13 +777,13 @@ public class JDTTreeBuilderHelper {
 		return moduleExport;
 	}
 
-	CtModuleExport createModuleExport(OpensStatement opensStatement) {
+	CtPackageExport createModuleExport(OpensStatement opensStatement) {
 		String packageName = new String(opensStatement.pkgName);
 		int sourceStart = opensStatement.sourceStart;
 		int sourceEnd = opensStatement.sourceEnd;
 
 		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
-		CtModuleExport moduleExport = jdtTreeBuilder.getFactory().Module().createModuleExport(ctPackageReference);
+		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
 
 		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
 			List<CtModuleReference> moduleReferences = new ArrayList<>();
@@ -793,7 +799,7 @@ public class JDTTreeBuilderHelper {
 		return moduleExport;
 	}
 
-	CtModuleProvidedService createModuleProvidedService(ProvidesStatement providesStatement) {
+	CtProvidedService createModuleProvidedService(ProvidesStatement providesStatement) {
 		int sourceStart = providesStatement.sourceStart;
 		int sourceEnd = providesStatement.sourceEnd;
 
@@ -804,7 +810,7 @@ public class JDTTreeBuilderHelper {
 			implementations.add(this.jdtTreeBuilder.references.getTypeReference(typeReference));
 		}
 
-		CtModuleProvidedService providedService = this.jdtTreeBuilder.getFactory().Module().createModuleProvidedService(provideService);
+		CtProvidedService providedService = this.jdtTreeBuilder.getFactory().Module().createModuleProvidedService(provideService);
 		providedService.setImplementationTypes(implementations);
 		providedService.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 		return providedService;

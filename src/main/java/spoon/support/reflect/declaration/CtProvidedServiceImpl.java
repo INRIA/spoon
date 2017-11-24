@@ -1,7 +1,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CtModuleProvidedServiceImpl extends CtElementImpl implements CtModuleProvidedService {
+public class CtProvidedServiceImpl extends CtElementImpl implements CtProvidedService {
 	@MetamodelPropertyField(role = CtRole.SERVICE_TYPE)
 	private CtTypeReference serviceType;
 
 	@MetamodelPropertyField(role = CtRole.IMPLEMENTATION_TYPE)
 	private List<CtTypeReference> implementationTypes = CtElementImpl.emptyList();
 
-	public CtModuleProvidedServiceImpl() {
+	public CtProvidedServiceImpl() {
 		super();
 	}
 
@@ -27,7 +27,7 @@ public class CtModuleProvidedServiceImpl extends CtElementImpl implements CtModu
 	}
 
 	@Override
-	public <T extends CtModuleProvidedService> T setServiceType(CtTypeReference providingType) {
+	public <T extends CtProvidedService> T setServiceType(CtTypeReference providingType) {
 		if (providingType != null) {
 			providingType.setParent(this);
 		}
@@ -42,7 +42,7 @@ public class CtModuleProvidedServiceImpl extends CtElementImpl implements CtModu
 	}
 
 	@Override
-	public <T extends CtModuleProvidedService> T setImplementationTypes(List<CtTypeReference> usedTypes) {
+	public <T extends CtProvidedService> T setImplementationTypes(List<CtTypeReference> usedTypes) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.IMPLEMENTATION_TYPE, this.implementationTypes, new ArrayList<>(this.implementationTypes));
 		if (usedTypes == null || usedTypes.size() == 0) {
 			this.implementationTypes = CtElementImpl.emptyList();
@@ -61,7 +61,7 @@ public class CtModuleProvidedServiceImpl extends CtElementImpl implements CtModu
 	}
 
 	@Override
-	public <T extends CtModuleProvidedService> T addImplementationType(CtTypeReference usedType) {
+	public <T extends CtProvidedService> T addImplementationType(CtTypeReference usedType) {
 		if (usedType == null) {
 			return (T) this;
 		}
@@ -77,11 +77,11 @@ public class CtModuleProvidedServiceImpl extends CtElementImpl implements CtModu
 
 	@Override
 	public void accept(CtVisitor visitor) {
-		visitor.visitCtModuleProvidedService(this);
+		visitor.visitCtProvidedService(this);
 	}
 
 	@Override
-	public CtModuleProvidedService clone() {
-		return (CtModuleProvidedService) super.clone();
+	public CtProvidedService clone() {
+		return (CtProvidedService) super.clone();
 	}
 }

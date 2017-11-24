@@ -81,11 +81,12 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleExport;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.SubFactory;
@@ -166,12 +167,13 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
-import spoon.support.reflect.declaration.CtModuleExportImpl;
+import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
-import spoon.support.reflect.declaration.CtModuleProvidedServiceImpl;
+import spoon.support.reflect.declaration.CtProvidedServiceImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
+import spoon.support.reflect.declaration.CtUsedServiceImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
@@ -948,11 +950,14 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 		if (klass.equals(spoon.reflect.declaration.CtModuleRequirement.class)) {
 			return createModuleRequirement();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtModuleExport.class)) {
-			return createModuleExport();
+		if (klass.equals(spoon.reflect.declaration.CtPackageExport.class)) {
+			return createPackageExport();
 		}
-		if (klass.equals(spoon.reflect.declaration.CtModuleProvidedService.class)) {
-			return createModuleProvidedService();
+		if (klass.equals(spoon.reflect.declaration.CtProvidedService.class)) {
+			return createProvidedService();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtUsedService.class)) {
+			return createUsedService();
 		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
@@ -984,17 +989,24 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	@Override
-	public CtModuleExport createModuleExport() {
-		CtModuleExport moduleExport = new CtModuleExportImpl();
+	public CtPackageExport createPackageExport() {
+		CtPackageExport moduleExport = new CtPackageExportImpl();
 		moduleExport.setFactory(getMainFactory());
 		return moduleExport;
 	}
 
 	@Override
-	public CtModuleProvidedService createModuleProvidedService() {
-		CtModuleProvidedService moduleProvidedService = new CtModuleProvidedServiceImpl();
+	public CtProvidedService createProvidedService() {
+		CtProvidedService moduleProvidedService = new CtProvidedServiceImpl();
 		moduleProvidedService.setFactory(getMainFactory());
 		return moduleProvidedService;
+	}
+
+	@Override
+	public CtUsedService createUsedService() {
+		CtUsedService ctUsedService = new CtUsedServiceImpl();
+		ctUsedService.setFactory(getMainFactory());
+		return ctUsedService;
 	}
 
 }

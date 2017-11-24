@@ -832,7 +832,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtModule.setExportedPackages(this.cloneHelper.clone(module.getExportedPackages()));
 		aCtModule.setRequiredModules(this.cloneHelper.clone(module.getRequiredModules()));
 		aCtModule.setOpenedPackages(this.cloneHelper.clone(module.getOpenedPackages()));
-		aCtModule.setConsumedServices(this.cloneHelper.clone(module.getConsumedServices()));
+		aCtModule.setUsedServices(this.cloneHelper.clone(module.getUsedServices()));
 		aCtModule.setProvidedServices(this.cloneHelper.clone(module.getProvidedServices()));
 		aCtModule.setRootPackage(this.cloneHelper.clone(module.getRootPackage()));
 		this.other = aCtModule;
@@ -848,13 +848,13 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public void visitCtModuleExport(spoon.reflect.declaration.CtModuleExport moduleExport) {
-		spoon.reflect.declaration.CtModuleExport aCtModuleExport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleExport, moduleExport.getFactory().Core().createModuleExport());
-		aCtModuleExport.setComments(this.cloneHelper.clone(moduleExport.getComments()));
-		aCtModuleExport.setPackageReference(this.cloneHelper.clone(moduleExport.getPackageReference()));
-		aCtModuleExport.setTargetExport(this.cloneHelper.clone(moduleExport.getTargetExport()));
-		aCtModuleExport.setAnnotations(this.cloneHelper.clone(moduleExport.getAnnotations()));
-		this.other = aCtModuleExport;
+	public void visitCtPackageExport(spoon.reflect.declaration.CtPackageExport moduleExport) {
+		spoon.reflect.declaration.CtPackageExport aCtPackageExport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleExport, moduleExport.getFactory().Core().createPackageExport());
+		aCtPackageExport.setComments(this.cloneHelper.clone(moduleExport.getComments()));
+		aCtPackageExport.setPackageReference(this.cloneHelper.clone(moduleExport.getPackageReference()));
+		aCtPackageExport.setTargetExport(this.cloneHelper.clone(moduleExport.getTargetExport()));
+		aCtPackageExport.setAnnotations(this.cloneHelper.clone(moduleExport.getAnnotations()));
+		this.other = aCtPackageExport;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
@@ -869,13 +869,23 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public void visitCtModuleProvidedService(spoon.reflect.declaration.CtModuleProvidedService moduleProvidedService) {
-		spoon.reflect.declaration.CtModuleProvidedService aCtModuleProvidedService = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleProvidedService, moduleProvidedService.getFactory().Core().createModuleProvidedService());
-		aCtModuleProvidedService.setComments(this.cloneHelper.clone(moduleProvidedService.getComments()));
-		aCtModuleProvidedService.setServiceType(this.cloneHelper.clone(moduleProvidedService.getServiceType()));
-		aCtModuleProvidedService.setImplementationTypes(this.cloneHelper.clone(moduleProvidedService.getImplementationTypes()));
-		aCtModuleProvidedService.setAnnotations(this.cloneHelper.clone(moduleProvidedService.getAnnotations()));
-		this.other = aCtModuleProvidedService;
+	public void visitCtProvidedService(spoon.reflect.declaration.CtProvidedService moduleProvidedService) {
+		spoon.reflect.declaration.CtProvidedService aCtProvidedService = spoon.support.visitor.clone.CloneBuilder.build(this.builder, moduleProvidedService, moduleProvidedService.getFactory().Core().createProvidedService());
+		aCtProvidedService.setComments(this.cloneHelper.clone(moduleProvidedService.getComments()));
+		aCtProvidedService.setServiceType(this.cloneHelper.clone(moduleProvidedService.getServiceType()));
+		aCtProvidedService.setImplementationTypes(this.cloneHelper.clone(moduleProvidedService.getImplementationTypes()));
+		aCtProvidedService.setAnnotations(this.cloneHelper.clone(moduleProvidedService.getAnnotations()));
+		this.other = aCtProvidedService;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtUsedService(spoon.reflect.declaration.CtUsedService usedService) {
+		spoon.reflect.declaration.CtUsedService aCtUsedService = spoon.support.visitor.clone.CloneBuilder.build(this.builder, usedService, usedService.getFactory().Core().createUsedService());
+		aCtUsedService.setComments(this.cloneHelper.clone(usedService.getComments()));
+		aCtUsedService.setServiceType(this.cloneHelper.clone(usedService.getServiceType()));
+		aCtUsedService.setAnnotations(this.cloneHelper.clone(usedService.getAnnotations()));
+		this.other = aCtUsedService;
 	}
 }
 

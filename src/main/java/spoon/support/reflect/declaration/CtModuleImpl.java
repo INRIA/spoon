@@ -19,13 +19,13 @@ package spoon.support.reflect.declaration;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtModuleExport;
-import spoon.reflect.declaration.CtModuleProvidedService;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.ArrayList;
@@ -37,19 +37,19 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	private boolean openModule;
 
 	@MetamodelPropertyField(role = CtRole.EXPORTED_PACKAGE)
-	private List<CtModuleExport> exportedPackages = CtElementImpl.emptyList();
+	private List<CtPackageExport> exportedPackages = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = CtRole.OPENED_PACKAGE)
-	private List<CtModuleExport> openedPackages = CtElementImpl.emptyList();
+	private List<CtPackageExport> openedPackages = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = CtRole.REQUIRED_MODULE)
 	private List<CtModuleRequirement> requiredModules = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = CtRole.PROVIDED_SERVICE)
-	private List<CtModuleProvidedService> providedServices = CtElementImpl.emptyList();
+	private List<CtProvidedService> providedServices = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = CtRole.SERVICE_TYPE)
-	private List<CtTypeReference> consumedServices = CtElementImpl.emptyList();
+	private List<CtUsedService> consumedServices = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
 	private CtPackage rootPackage;
@@ -76,34 +76,34 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public List<CtTypeReference> getConsumedServices() {
+	public List<CtUsedService> getUsedServices() {
 		return Collections.unmodifiableList(this.consumedServices);
 	}
 
 	@Override
-	public <T extends CtModule> T setConsumedServices(List<CtTypeReference> consumedServices) {
+	public <T extends CtModule> T setUsedServices(List<CtUsedService> consumedServices) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.SERVICE_TYPE, this.consumedServices, new ArrayList<>(this.consumedServices));
 		if (consumedServices == null || consumedServices.isEmpty()) {
 			this.consumedServices = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.consumedServices == CtElementImpl.<CtTypeReference>emptyList()) {
+		if (this.consumedServices == CtElementImpl.<CtUsedService>emptyList()) {
 			this.consumedServices = new ArrayList<>();
 		}
 		this.consumedServices.clear();
-		for (CtTypeReference consumedService : consumedServices) {
-			this.addConsumedService(consumedService);
+		for (CtUsedService consumedService : consumedServices) {
+			this.addUsedService(consumedService);
 		}
 		return (T) this;
 	}
 
 	@Override
-	public <T extends CtModule> T addConsumedService(CtTypeReference consumedService) {
+	public <T extends CtModule> T addUsedService(CtUsedService consumedService) {
 		if (consumedService == null) {
 			return (T) this;
 		}
-		if (this.consumedServices == CtElementImpl.<CtTypeReference>emptyList()) {
+		if (this.consumedServices == CtElementImpl.<CtUsedService>emptyList()) {
 			this.consumedServices = new ArrayList<>();
 		}
 
@@ -114,24 +114,24 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public List<CtModuleExport> getExportedPackages() {
+	public List<CtPackageExport> getExportedPackages() {
 		return Collections.unmodifiableList(this.exportedPackages);
 	}
 
 	@Override
-	public <T extends CtModule> T setExportedPackages(List<CtModuleExport> exportedPackages) {
+	public <T extends CtModule> T setExportedPackages(List<CtPackageExport> exportedPackages) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.EXPORTED_PACKAGE, this.exportedPackages, new ArrayList<>(this.exportedPackages));
 		if (exportedPackages == null || exportedPackages.isEmpty()) {
 			this.exportedPackages = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.exportedPackages == CtElementImpl.<CtModuleExport>emptyList()) {
+		if (this.exportedPackages == CtElementImpl.<CtPackageExport>emptyList()) {
 			this.exportedPackages = new ArrayList<>();
 		}
 
 		this.exportedPackages.clear();
-		for (CtModuleExport moduleExport : exportedPackages) {
+		for (CtPackageExport moduleExport : exportedPackages) {
 			this.addExportedPackage(moduleExport);
 		}
 
@@ -139,11 +139,11 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T addExportedPackage(CtModuleExport exportedPackage) {
+	public <T extends CtModule> T addExportedPackage(CtPackageExport exportedPackage) {
 		if (exportedPackage == null) {
 			return (T) this;
 		}
-		if (this.exportedPackages == CtElementImpl.<CtModuleExport>emptyList()) {
+		if (this.exportedPackages == CtElementImpl.<CtPackageExport>emptyList()) {
 			this.exportedPackages = new ArrayList<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.EXPORTED_PACKAGE, this.exportedPackages, exportedPackage);
@@ -153,35 +153,35 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public List<CtModuleExport> getOpenedPackages() {
+	public List<CtPackageExport> getOpenedPackages() {
 		return Collections.unmodifiableList(this.openedPackages);
 	}
 
 	@Override
-	public <T extends CtModule> T setOpenedPackages(List<CtModuleExport> openedPackages) {
+	public <T extends CtModule> T setOpenedPackages(List<CtPackageExport> openedPackages) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.OPENED_PACKAGE, this.openedPackages, new ArrayList<>(this.openedPackages));
 		if (openedPackages == null || openedPackages.isEmpty()) {
 			this.openedPackages = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.openedPackages == CtElementImpl.<CtModuleExport>emptyList()) {
+		if (this.openedPackages == CtElementImpl.<CtPackageExport>emptyList()) {
 			this.openedPackages = new ArrayList<>();
 		}
 
 		this.openedPackages.clear();
-		for (CtModuleExport openedPackage : openedPackages) {
+		for (CtPackageExport openedPackage : openedPackages) {
 			this.addOpenedPackage(openedPackage);
 		}
 		return (T) this;
 	}
 
 	@Override
-	public <T extends CtModule> T addOpenedPackage(CtModuleExport openedPackage) {
+	public <T extends CtModule> T addOpenedPackage(CtPackageExport openedPackage) {
 		if (openedPackage == null) {
 			return (T) this;
 		}
-		if (this.openedPackages == CtElementImpl.<CtModuleExport>emptyList()) {
+		if (this.openedPackages == CtElementImpl.<CtPackageExport>emptyList()) {
 			this.openedPackages = new ArrayList<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.OPENED_PACKAGE, this.openedPackages, openedPackage);
@@ -230,24 +230,24 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public List<CtModuleProvidedService> getProvidedServices() {
+	public List<CtProvidedService> getProvidedServices() {
 		return Collections.unmodifiableList(this.providedServices);
 	}
 
 	@Override
-	public <T extends CtModule> T setProvidedServices(List<CtModuleProvidedService> providedServices) {
+	public <T extends CtModule> T setProvidedServices(List<CtProvidedService> providedServices) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.PROVIDED_SERVICE, this.providedServices, new ArrayList<>(providedServices));
 		if (providedServices == null || providedServices.isEmpty()) {
 			this.providedServices = CtElementImpl.emptyList();
 			return (T) this;
 		}
 
-		if (this.providedServices == CtElementImpl.<CtModuleProvidedService>emptyList()) {
+		if (this.providedServices == CtElementImpl.<CtProvidedService>emptyList()) {
 			this.providedServices = new ArrayList<>();
 		}
 
 		this.providedServices.clear();
-		for (CtModuleProvidedService providedService : providedServices) {
+		for (CtProvidedService providedService : providedServices) {
 			this.addProvidedService(providedService);
 		}
 
@@ -255,11 +255,11 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T addProvidedService(CtModuleProvidedService providedService) {
+	public <T extends CtModule> T addProvidedService(CtProvidedService providedService) {
 		if (providedService == null) {
 			return (T) this;
 		}
-		if (this.providedServices == CtElementImpl.<CtModuleProvidedService>emptyList()) {
+		if (this.providedServices == CtElementImpl.<CtProvidedService>emptyList()) {
 			this.providedServices = new ArrayList<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.PROVIDED_SERVICE, this.providedServices, providedService);
