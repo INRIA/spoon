@@ -1948,5 +1948,26 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(docTag.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(docTag));
 		replaceInListIfExist(docTag.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(docTag));
 	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
+		private final spoon.reflect.declaration.CtImport element;
+
+		CtImportReferenceReplaceListener(spoon.reflect.declaration.CtImport element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtReference replace) {
+			this.element.setReference(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
+		replaceElementIfExist(ctImport.getReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportReferenceReplaceListener(ctImport));
+		replaceInListIfExist(ctImport.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ctImport));
+	}
 }
 

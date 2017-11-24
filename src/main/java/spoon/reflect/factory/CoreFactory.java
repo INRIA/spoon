@@ -87,6 +87,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -509,6 +510,11 @@ public interface CoreFactory {
 	CtJavaDocTag createJavaDocTag();
 
 	/**
+	 * Creates an import.
+	 */
+	CtImport createImport();
+
+	/**
 	 * Gets the main factory of that core factory (cannot be <code>null</code>).
 	 */
 	Factory getMainFactory();
@@ -541,4 +547,9 @@ public interface CoreFactory {
 	 * This is in particular useful when one uses reflection.
 	 */
 	CtElement create(Class<? extends CtElement> klass);
+
+	/**
+	 * Create a wildcard reference to a type member, used in a static import
+	 */
+	CtTypeReference createWildcardStaticTypeMemberReference();
 }

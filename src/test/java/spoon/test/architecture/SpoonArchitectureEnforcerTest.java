@@ -23,6 +23,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -131,6 +133,8 @@ public class SpoonArchitectureEnforcerTest {
 	@Test
 	public void metamodelPackageRule() throws Exception {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
+		List<String> exceptions = Collections.singletonList("CtWildcardStaticTypeMemberReferenceImpl");
+
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
 		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
@@ -145,10 +149,12 @@ public class SpoonArchitectureEnforcerTest {
 		interfaces.buildModel();
 
 		for (CtType<?> implType : implementations.getModel().getAllTypes()) {
-			String impl = implType.getQualifiedName().replace(".support", "").replace("Impl", "");
-			CtType interfaceType = interfaces.getFactory().Type().get(impl);
-			// the implementation is a subtype of the superinterface
-			assertTrue(implType.getReference().isSubtypeOf(interfaceType.getReference()));
+			if (!exceptions.contains(implType.getSimpleName())) {
+				String impl = implType.getQualifiedName().replace(".support", "").replace("Impl", "");
+				CtType interfaceType = interfaces.getFactory().Type().get(impl);
+				// the implementation is a subtype of the superinterface
+				assertTrue(implType.getReference().isSubtypeOf(interfaceType.getReference()));
+			}
 		}
 	}
 

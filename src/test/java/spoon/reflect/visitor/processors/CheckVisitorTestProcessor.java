@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtVisitor;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProcessor<CtClass<?>> {
 	private Class<T> visitor;
-	private final List<String> excludingClasses = Collections.singletonList("CompilationUnitVirtualImpl");
+	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtWildcardStaticTypeMemberReferenceImpl");
 	private boolean hasScanners;
 	private boolean hasVisitors;
 

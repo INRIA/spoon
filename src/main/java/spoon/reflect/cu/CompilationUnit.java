@@ -19,7 +19,7 @@ package spoon.reflect.cu;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtReference;
+import spoon.reflect.declaration.CtImport;
 
 import java.io.File;
 import java.util.Collection;
@@ -113,12 +113,12 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Get the imports computed for this CU
 	 * @return All the imports from the original source code
 	 */
-	Collection<CtReference> getImports();
+	Collection<CtImport> getImports();
 
 	/**
 	 * Set the imports of this CU
 	 * @param imports All the imports of the original source code
 	 */
-	void setImports(Collection<CtReference> imports);
+	void setImports(Collection<CtImport> imports);
 
 }

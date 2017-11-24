@@ -4,12 +4,11 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtReference;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.util.SortedList;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.jdtimportbuilder.testclasses.StarredImport;
@@ -17,9 +16,7 @@ import spoon.test.jdtimportbuilder.testclasses.StaticImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,15 +49,15 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitA.getImports();
+        Collection<CtImport> imports = unitA.getImports();
 
         assertEquals(1, imports.size());
 
-        CtReference ref = imports.iterator().next();
-        assertEquals("GlobalAnnotation", ref.getSimpleName());
-        assertTrue(ref instanceof CtTypeReference);
+        CtImport ref = imports.iterator().next();
+        assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;\n", ref.toString());
+        assertTrue(ref.getReference() instanceof CtTypeReference);
 
-        CtTypeReference refType = (CtTypeReference)ref;
+        CtTypeReference refType = (CtTypeReference)ref.getReference();
         assertEquals("spoon.test.annotation.testclasses.GlobalAnnotation", refType.getQualifiedName());
     }
 
@@ -101,14 +98,14 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(StaticImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitA.getImports();
+        Collection<CtImport> imports = unitA.getImports();
 
         assertEquals(1, imports.size());
 
-        CtReference ref = imports.iterator().next();
+        CtImport ref = imports.iterator().next();
 
-        assertTrue(ref instanceof CtFieldReference);
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", ((CtFieldReference) ref).getQualifiedName());
+        assertTrue(ref.getReference() instanceof CtFieldReference);
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", ((CtFieldReference) ref.getReference()).getQualifiedName());
     }
 
     @Test
@@ -122,40 +119,27 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(StarredImport.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitA.getImports();
+        Collection<CtImport> imports = unitA.getImports();
 
-        assertEquals(3, imports.size());
+        assertEquals(1, imports.size());
 
-        Iterator<CtReference> iterator = imports.iterator();
-        CtReference firstRef = iterator.next();
-        CtReference secondRef = iterator.next();
-        CtReference thirdRef = iterator.next();
+        Iterator<CtImport> iterator = imports.iterator();
+        CtImport ctImport = iterator.next();
 
-        assertTrue(firstRef instanceof CtTypeReference);
-        assertTrue(secondRef instanceof CtTypeReference);
-        assertTrue(thirdRef instanceof CtTypeReference);
+        assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
 
-        List<String> importNames = new SortedList<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        assertTrue(ctImport.getReference() instanceof CtPackageReference);
 
-        importNames.add(((CtTypeReference) firstRef).getQualifiedName());
-        importNames.add(((CtTypeReference) secondRef).getQualifiedName());
-        importNames.add(((CtTypeReference) thirdRef).getQualifiedName());
-
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack.A", importNames.get(0));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack.B", importNames.get(1));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack.C", importNames.get(2));
+        CtPackageReference ref = (CtPackageReference)ctImport.getReference();
+        assertEquals("spoon.test.jdtimportbuilder.testclasses.fullpack", ref.getQualifiedName());
     }
 
     @Test
     public void testWithStaticInheritedImport() {
-        // contract: static field or methods can be inherited, JDTImportBuilder must retrieve the imported type from the right class
+        // contract: When using starred static import of a type, it imports a starred type
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/StaticImportWithInheritance.java");
+        spoon.addInputResource("./src/test/java/spoon/test/jdtimportbuilder/testclasses/staticimport");
         spoon.getEnvironment().setAutoImports(true);
         spoon.getEnvironment().setShouldCompile(true);
         spoon.setSourceOutputDirectory("./target/spoon-jdtimport-inheritedstatic");
@@ -163,35 +147,17 @@ public class ImportBuilderTest {
 
         CtClass classStatic = spoon.getFactory().Class().get(StaticImportWithInheritance.class);
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitStatic.getImports();
+        Collection<CtImport> imports = unitStatic.getImports();
 
-        assertEquals(4, imports.size());
-
-        List<String> importNames = new SortedList<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        for (CtReference refImport : imports) {
-            if (refImport instanceof CtFieldReference) {
-                importNames.add(((CtFieldReference) refImport).getQualifiedName());
-            } else if (refImport instanceof CtExecutableReference) {
-                importNames.add(((CtExecutableReference) refImport).getDeclaringType().getQualifiedName() + CtMethod.EXECUTABLE_SEPARATOR + refImport.getSimpleName());
-            }
-
-        }
-
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#ANY", importNames.get(0));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#TRUE", importNames.get(1));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency#maMethod", importNames.get(2));
-        assertEquals("spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass#OTHER_INT", importNames.get(3));
+        assertEquals(1, imports.size());
+        CtImport ctImport = imports.iterator().next();
+        assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
+        assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;\n", ctImport.toString());
     }
 
     @Test
     public void testWithImportFromItf() {
-        // contract: When using static import of an interface, only static method and fields should be imported
+        // contract: When using starred static import of an interface, it imports a starred type
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/resources/jdtimportbuilder/");
         spoon.getEnvironment().setAutoImports(true);
@@ -201,27 +167,13 @@ public class ImportBuilderTest {
 
         CtClass classStatic = spoon.getFactory().Class().get("jdtimportbuilder.ItfImport");
         CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
-        Collection<CtReference> imports = unitStatic.getImports();
+        Collection<CtImport> imports = unitStatic.getImports();
 
-        assertEquals(2, imports.size());
+        assertEquals(1, imports.size());
+        CtImport ctImport = imports.iterator().next();
 
-        List<String> importNames = new SortedList<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        for (CtReference refImport : imports) {
-            if (refImport instanceof CtFieldReference) {
-                importNames.add(((CtFieldReference) refImport).getQualifiedName());
-            } else if (refImport instanceof CtExecutableReference) {
-                importNames.add(((CtExecutableReference) refImport).getDeclaringType().getQualifiedName() + CtMethod.EXECUTABLE_SEPARATOR + refImport.getSimpleName());
-            }
-        }
-
-        assertEquals("jdtimportbuilder.itf.DumbItf#MYSTRING", importNames.get(0));
-        assertEquals("jdtimportbuilder.itf.DumbItf#anotherStaticMethod", importNames.get(1));
+        assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
+        assertEquals("import static jdtimportbuilder.itf.DumbItf.*;\n", ctImport.toString());
     }
 
 }

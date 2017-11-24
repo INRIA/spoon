@@ -813,5 +813,14 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtJavaDocTag.setAnnotations(this.cloneHelper.clone(docTag.getAnnotations()));
 		this.other = aCtJavaDocTag;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtImport(final spoon.reflect.declaration.CtImport ctImport) {
+		spoon.reflect.declaration.CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
+		aCtImport.setReference(this.cloneHelper.clone(ctImport.getReference()));
+		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
+		this.other = aCtImport;
+	}
 }
 

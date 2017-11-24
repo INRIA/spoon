@@ -16,6 +16,7 @@
  */
 package spoon.generating;
 
+import org.apache.commons.lang3.StringUtils;
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -483,8 +484,12 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						return element.getBody().toString().equals(templateRoot.toString());
 					}
 				});
-				if (matchers.size() != 1) {
-					throw new SpoonException("Get more than one getter. Please make an more ingenious method to get getter method.");
+				if (matchers.isEmpty()) {
+					throw new SpoonException("No getter found for field "+ctField);
+				}
+
+				if (matchers.size() > 1) {
+					throw new SpoonException("Get more than one getter ("+ StringUtils.join(matchers, ";")+"). Please make an more ingenious method to get getter method.");
 				}
 				return matchers.get(0);
 			}

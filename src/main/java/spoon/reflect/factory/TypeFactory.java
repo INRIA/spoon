@@ -28,7 +28,9 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
@@ -331,6 +333,22 @@ public class TypeFactory extends SubFactory {
 	 */
 	public <T> CtTypeReference<T> createReference(CtType<T> type) {
 		return createReference(type, false);
+	}
+
+	/**
+	 * Create a wildcard reference to a simple type
+	 */
+	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
+		CtTypeReference ref = factory.Core().createWildcardStaticTypeMemberReference();
+		ref.setFactory(this.factory);
+		if (typeReference.getDeclaringType() != null) {
+			ref.setDeclaringType(typeReference.getDeclaringType().clone());
+		}
+		if (typeReference.getPackage() != null) {
+			ref.setPackage(typeReference.getPackage().clone());
+		}
+		ref.setSimpleName(typeReference.getSimpleName());
+		return ref;
 	}
 
 	/**
@@ -660,6 +678,14 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtTypeReference getDefaultBoundingType() {
 		return OBJECT;
+	}
+
+	/**
+	 * Creates an import declaration.
+	 */
+	public CtImport createImport(CtReference reference) {
+		CtImport ctImport = factory.Core().createImport();
+		return ctImport.setReference(reference.clone());
 	}
 
 }

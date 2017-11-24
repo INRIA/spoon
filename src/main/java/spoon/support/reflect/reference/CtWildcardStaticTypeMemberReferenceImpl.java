@@ -14,33 +14,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
+package spoon.support.reflect.reference;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 
-import java.util.Collection;
-
 /**
- * Used to compute the imports required to write readable code with no fully qualified names.
+ * This class intends to be used only to represent the reference of a
+ * static import of all members of a type:
+ *
+ * import static org.junit.Assert.*;
  */
-public interface ImportScanner {
+public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl {
 
-	/**
-	 * Computes import of a {@link spoon.reflect.declaration.CtElement}
-	 */
-	void computeImports(CtElement element);
+	public CtWildcardStaticTypeMemberReferenceImpl() {
+		super();
+	}
 
-	/**
-	 * Use computeImports or computeAllImports before getting the different imports.
-	 *
-	 * @return the list of computed imports or an empty collection if not imports has been computed.
-	 */
-	Collection<CtImport> getAllImports();
+	@Override
+	public <T extends CtReference> T setSimpleName(String newName) {
+		if (!newName.endsWith(".*")) {
+			newName += ".*";
+		}
+		return super.setSimpleName(newName);
+	}
 
-	/**
-	 * Checks if the type is already imported.
-	 */
-	boolean isImported(CtReference ref);
+	@Override
+	public CtWildcardStaticTypeMemberReferenceImpl clone() {
+		return (CtWildcardStaticTypeMemberReferenceImpl) getFactory().Type().createWildcardStaticTypeMemberReference(this);
+	}
 }

@@ -14,33 +14,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
+package spoon.reflect.declaration;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.reference.CtReference;
-
-import java.util.Collection;
-
-/**
- * Used to compute the imports required to write readable code with no fully qualified names.
- */
-public interface ImportScanner {
-
-	/**
-	 * Computes import of a {@link spoon.reflect.declaration.CtElement}
-	 */
-	void computeImports(CtElement element);
-
-	/**
-	 * Use computeImports or computeAllImports before getting the different imports.
-	 *
-	 * @return the list of computed imports or an empty collection if not imports has been computed.
-	 */
-	Collection<CtImport> getAllImports();
-
-	/**
-	 * Checks if the type is already imported.
-	 */
-	boolean isImported(CtReference ref);
+public enum CtImportKind {
+	TYPE,
+	ALL_TYPES,
+	ALL_STATIC_MEMBERS,
+	FIELD,
+	METHOD
 }

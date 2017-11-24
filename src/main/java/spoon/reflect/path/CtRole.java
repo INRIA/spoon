@@ -91,7 +91,8 @@ public enum CtRole {
 	JAVADOC_TAG_VALUE,
 	POSITION,
 	SNIPPET,
-	ACCESSED_TYPE;
+	ACCESSED_TYPE,
+	IMPORT_REFERENCE;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;
