@@ -102,10 +102,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 		element.accept(this);
 		if (result != null) {
+			CtElement r = result;
+			//reset result, to not influence another evaluation.
+			result = null;
 			if (element.isParentInitialized()) {
-				result.setParent(element.getParent());
+				r.setParent(element.getParent());
 			}
-			return (R) result;
+			return (R) r;
 		}
 
 		// otherwise nothing has been changed
@@ -399,10 +402,12 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 		if (constant) {
 			CtExecutable<?> executable = invocation.getExecutable().getDeclaration();
+			CtType<?> aType = invocation.getParent(CtType.class);
+			CtTypeReference<?> execDeclaringType = invocation.getExecutable().getDeclaringType();
 			// try to inline partial evaluation results for local calls
 			// (including to superclasses)
-			if ((executable != null) && (invocation.getType() != null) && invocation.getExecutable().getDeclaringType()
-					.isSubtypeOf(((CtType<?>) invocation.getParent(CtType.class)).getReference())) {
+			if (executable != null && aType != null && invocation.getType() != null && execDeclaringType != null
+					&& execDeclaringType.isSubtypeOf(aType.getReference())) {
 				CtBlock<?> b = evaluate(executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
