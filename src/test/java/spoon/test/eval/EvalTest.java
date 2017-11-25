@@ -35,6 +35,17 @@ public class EvalTest {
 	}
 
 	@Test
+	public void testArrayLength() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testArray").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals("// if removed", b.getStatements().get(0).toString());
+	}
+
+	@Test
 	public void testVisitorPartialEvaluator_binary() throws Exception {
 		Launcher launcher = new Launcher();
 
