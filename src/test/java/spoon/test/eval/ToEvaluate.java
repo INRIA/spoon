@@ -32,4 +32,10 @@ public class ToEvaluate {
 		}
 	}
 
+	public static void testArray() {
+		// all the following code will be removed by the partial evaluator
+		if (new String[]{"a", null, "b"}.length == 11) {
+			System.out.println("dead code");
+		}
+	}
 }

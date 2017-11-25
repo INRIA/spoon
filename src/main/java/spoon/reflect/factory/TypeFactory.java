@@ -96,6 +96,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<List> LIST = createReference(List.class);
 	public final CtTypeReference<Set> SET = createReference(Set.class);
 	public final CtTypeReference<Map> MAP = createReference(Map.class);
+	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
 
 	private final Map<Class<?>, CtType<?>> shadowCache = new HashMap<>();
 

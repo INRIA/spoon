@@ -33,6 +33,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSynchronized;
@@ -101,7 +102,9 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 		element.accept(this);
 		if (result != null) {
-			result.setParent(element.getParent());
+			if (element.isParentInitialized()) {
+				result.setParent(element.getParent());
+			}
 			return (R) result;
 		}
 
@@ -283,7 +286,16 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				return;
 			}
 		}
-		if (fieldAccess.getFactory().Type().createReference(Enum.class)
+		if ("length".equals(fieldAccess.getVariable().getSimpleName())) {
+			CtExpression<?> target = fieldAccess.getTarget();
+			if (target instanceof CtNewArray<?>) {
+				CtNewArray<?> newArr = (CtNewArray<?>) target;
+				CtLiteral<Number> literal = fieldAccess.getFactory().createLiteral(newArr.getElements().size());
+				setResult(literal);
+				return;
+			}
+		}
+		if (fieldAccess.getFactory().Type().ENUM
 				.isSubtypeOf(fieldAccess.getVariable().getDeclaringType())) {
 			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
 			l.setValue(fieldAccess.getVariable());
