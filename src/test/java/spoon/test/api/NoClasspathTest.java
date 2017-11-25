@@ -141,4 +141,13 @@ public class NoClasspathTest {
 		assertEquals(true, ctReturn.getReferencedTypes().contains(expectedType));
 	}
 
+	@Test
+	public void testIssue1747() {
+		Launcher spoon = new Launcher();
+		final Factory factory = spoon.getFactory();
+		factory.getEnvironment().setNoClasspath(true);
+		spoon.addInputResource("./src/test/resources/noclasspath/SubscriptionAdapter.java");
+		spoon.buildModel();
+	}
+
 }

@@ -26,8 +26,10 @@ public class AstParentConsistencyChecker extends CtScanner {
 		if (element == null) {
 			return;
 		}
-		if (parent != null && element.getParent() != parent) {
-			throw new IllegalStateException(element.toString()
+		if (parent != null
+				&& element.isParentInitialized() // this is the fix of #1747
+				&& element.getParent() != parent) {
+			throw new IllegalStateException(toDebugString(element) // better debug
 					+ " is set as child of\n" + toDebugString(element.getParent())
 					+ "however it is visited as a child of\n" + toDebugString(parent));
 		}
@@ -38,6 +40,6 @@ public class AstParentConsistencyChecker extends CtScanner {
 	}
 
 	private static String toDebugString(CtElement e) {
-		return "Element: " + e + "\nSignature: " + e.getShortRepresentation() + "\nClass: " + e.getClass() + "\n";
+		return "Element: " + e + "\nSignature: " + e.getShortRepresentation() + "\nClass: " + e.getClass() + "\nposition: " + e.getPosition() + "\n";
 	}
 }
