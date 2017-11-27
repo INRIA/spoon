@@ -14,7 +14,7 @@ import spoon.reflect.reference.CtTypeReference;
  *     uses java.logging.Logger;
  * </pre>
  */
-public interface CtUsedService extends CtElement {
+public interface CtUsedService extends CtModuleMember {
 	@PropertyGetter(role = CtRole.SERVICE_TYPE)
 	CtTypeReference getServiceType();
 

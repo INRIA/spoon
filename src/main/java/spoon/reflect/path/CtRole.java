@@ -99,7 +99,8 @@ public enum CtRole {
 	OPENED_PACKAGE,
 	SERVICE_TYPE,
 	IMPLEMENTATION_TYPE,
-	PROVIDED_SERVICE;
+	PROVIDED_SERVICE,
+	MODULE_MEMBER;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

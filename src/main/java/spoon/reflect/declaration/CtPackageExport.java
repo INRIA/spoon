@@ -28,13 +28,22 @@ import java.util.List;
  * Represents an exported or opened package in a Java module
  * See: https://docs.oracle.com/javase/specs/jls/se9/html/jls-7.html#jls-7.7
  *
+ * An opened package has an access granted only at runtime, contrary to an exported package
+ * which is available at compile time and runtime.
+ *
  * Examples:
  * <pre>
  *     exports com.example.foo.internal to com.example.foo.probe;
  *     opens com.example.foo.quux;
  * </pre>
  */
-public interface CtPackageExport extends CtElement {
+public interface CtPackageExport extends CtModuleMember {
+
+	@PropertySetter(role = CtRole.OPENED_PACKAGE)
+	<T extends CtPackageExport> T setOpenedPackage(boolean openedPackage);
+
+	@PropertyGetter(role = CtRole.OPENED_PACKAGE)
+	boolean isOpenedPackage();
 
 	@PropertyGetter(role = CtRole.PACKAGE_REF)
 	CtPackageReference getPackageReference();

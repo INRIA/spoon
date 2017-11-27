@@ -93,15 +93,9 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 	}
 
 	@Override
-	public void onSetAdd(CtElement currentElement, CtRole role, Set field,
-			ModifierKind newValue) {
+	public <T extends Enum> void onSetAdd(CtElement currentElement, CtRole role, Set field,
+			T newValue) {
 	}
-
-	@Override
-	public void onSetAdd(CtElement currentElement, CtRole role, Set field, CtModuleRequirement.RequiresModifier newValue) {
-
-	}
-
 
 	@Override
 	public void onSetDelete(CtElement currentElement, CtRole role, Set field,

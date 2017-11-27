@@ -39,6 +39,8 @@ public class TestModule {
 
 		assertEquals("com.greetings", moduleGreetings.getSimpleName());
 
+		assertEquals(7, moduleGreetings.getModuleMembers().size());
+
 		List<CtModuleRequirement> requiredModules = moduleGreetings.getRequiredModules();
 		assertEquals(1, requiredModules.size());
 

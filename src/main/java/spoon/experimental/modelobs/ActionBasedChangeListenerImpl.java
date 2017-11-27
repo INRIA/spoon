@@ -111,12 +111,7 @@ public abstract class ActionBasedChangeListenerImpl implements ActionBasedChange
 	}
 
 	@Override
-	public void onSetAdd(CtElement currentElement, CtRole role, Set field, ModifierKind newValue) {
-		propagateModelChange(new AddAction<>(new SetContext(currentElement, role, field), newValue));
-	}
-
-	@Override
-	public void onSetAdd(CtElement currentElement, CtRole role, Set field, CtModuleRequirement.RequiresModifier newValue) {
+	public  <T extends Enum> void onSetAdd(CtElement currentElement, CtRole role, Set field, T newValue) {
 		propagateModelChange(new AddAction<>(new SetContext(currentElement, role, field), newValue));
 	}
 

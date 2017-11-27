@@ -90,6 +90,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleMember;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -1031,30 +1032,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeKeyword("module").writeSpace().writeIdentifier(module.getSimpleName());
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
 
-		for (CtModuleRequirement moduleRequirement : module.getRequiredModules()) {
-			printer.writeKeyword("requires").writeSpace();
-			scan(moduleRequirement);
-			printer.writeln();
-		}
-		for (CtPackageExport moduleExport : module.getExportedPackages()) {
-			printer.writeKeyword("exports").writeSpace();
-			scan(moduleExport);
-			printer.writeln();
-		}
-		for (CtPackageExport moduleExport : module.getOpenedPackages()) {
-			printer.writeKeyword("opens").writeSpace();
-			scan(moduleExport);
-			printer.writeln();
-		}
-		for (CtUsedService consumedService : module.getUsedServices()) {
-			printer.writeKeyword("uses").writeSpace();
-			scan(consumedService);
-			printer.writeSeparator(";").writeln();
-		}
-		for (CtProvidedService providedService : module.getProvidedServices()) {
-			printer.writeKeyword("provides").writeSpace();
-			scan(providedService);
-			printer.writeln();
+		for (CtModuleMember moduleMember : module.getModuleMembers()) {
+			scan(moduleMember);
 		}
 
 		printer.decTab().writeSeparator("}");
@@ -1068,6 +1047,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtPackageExport(CtPackageExport moduleExport) {
+		if (moduleExport.isOpenedPackage()) {
+			printer.writeKeyword("opens");
+		} else {
+			printer.writeKeyword("exports");
+		}
+		printer.writeSpace();
+
 		visitCtPackageReference(moduleExport.getPackageReference());
 		if (!moduleExport.getTargetExport().isEmpty()) {
 			try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, " to", true, false, ",", true, false, null)) {
@@ -1077,11 +1063,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 		}
-		printer.writeSeparator(";");
+		printer.writeSeparator(";").writeln();
 	}
 
 	@Override
 	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		printer.writeKeyword("requires").writeSpace();
+
 		if (!moduleRequirement.getRequiresModifiers().isEmpty()) {
 			try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, null, false, false, " ", false, false, " ")) {
 				for (CtModuleRequirement.RequiresModifier modifier : moduleRequirement.getRequiresModifiers()) {
@@ -1092,11 +1080,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		scan(moduleRequirement.getModuleReference());
-		printer.writeSeparator(";");
+		printer.writeSeparator(";").writeln();
 	}
 
 	@Override
 	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
+		printer.writeKeyword("provides").writeSpace();
 		scan(moduleProvidedService.getServiceType());
 		try (ListPrinter lp = this.elementPrinterHelper.createListPrinter(false, " with", true, false, ",", true, false, null)) {
 			for (CtTypeReference implementations : moduleProvidedService.getImplementationTypes()) {
@@ -1104,12 +1093,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				scan(implementations);
 			}
 		}
-		printer.writeSeparator(";");
+		printer.writeSeparator(";").writeln();
 	}
 
 	@Override
 	public void visitCtUsedService(CtUsedService usedService) {
+		printer.writeKeyword("uses").writeSpace();
 		scan(usedService.getServiceType());
+		printer.writeSeparator(";").writeln();
 	}
 
 	@Override

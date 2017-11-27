@@ -50,9 +50,7 @@ public interface FineModelChangeListener {
 
 	void onSetAdd(CtElement currentElement, CtRole role, Set field, CtElement newValue);
 
-	void onSetAdd(CtElement currentElement, CtRole role, Set field, ModifierKind newValue);
-
-	void onSetAdd(CtElement currentElement, CtRole role, Set field, CtModuleRequirement.RequiresModifier newValue);
+	<T extends Enum> void onSetAdd(CtElement currentElement, CtRole role, Set field, T newValue);
 
 	void onSetDelete(CtElement currentElement, CtRole role, Set field, CtElement oldValue);
 

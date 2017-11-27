@@ -34,8 +34,23 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 	@MetamodelPropertyField(role = CtRole.MODULE_REF)
 	private List<CtModuleReference> targets = CtElementImpl.emptyList();
 
+	@MetamodelPropertyField(role = CtRole.OPENED_PACKAGE)
+	private boolean isOpen;
+
 	public CtPackageExportImpl() {
 		super();
+	}
+
+	@Override
+	public <T extends CtPackageExport> T setOpenedPackage(boolean openedPackage) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.OPENED_PACKAGE, openedPackage, this.isOpen);
+		this.isOpen = openedPackage;
+		return (T) this;
+	}
+
+	@Override
+	public boolean isOpenedPackage() {
+		return this.isOpen;
 	}
 
 	@Override

@@ -117,15 +117,15 @@ public class FactoryTest {
 
 		// add to itself is fine
 		model.getRootPackage().addPackage(model.getRootPackage());
-		assertEquals(2, model.getAllTypes().size());
+		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
 		model.getRootPackage().getPackage("spoon").addPackage(model.getRootPackage().getPackage("spoon"));
-		assertEquals(2, model.getAllTypes().size());
+		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
 		model.getRootPackage().addPackage(model.getRootPackage().getPackage("spoon"));
-		assertEquals(2, model.getAllTypes().size());
+		assertEquals(1, model.getAllTypes().size());
 		assertEquals(5, model.getAllPackages().size());
 
 
@@ -182,7 +182,7 @@ public class FactoryTest {
 
 		// checking the results
 		assertEquals(6, model.getAllPackages().size());
-		assertEquals(3, model.getAllTypes().size());
+		assertEquals(2, model.getAllTypes().size());
 		assertEquals(1, model.getElements(new AbstractFilter<CtPackage>() {
 			@Override
 			public boolean matches(CtPackage element) {

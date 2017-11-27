@@ -32,7 +32,7 @@ import java.util.List;
  *     provides com.example.foo.spi.Intf with com.example.foo.Impl;
  * </pre>
  */
-public interface CtProvidedService extends CtElement {
+public interface CtProvidedService extends CtModuleMember {
 
 	@PropertyGetter(role = CtRole.SERVICE_TYPE)
 	CtTypeReference getServiceType();
