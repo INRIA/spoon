@@ -8,7 +8,6 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.reference.CtTypeReference;
 
 import java.io.File;
 import java.io.IOException;

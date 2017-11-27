@@ -225,7 +225,7 @@ public class CtScannerTest {
 			int nElement=0;
 		};
 		Counter counter = new Counter();
-		launcher.getModel().getUnnamedModule().accept(new CtScanner() {
+		launcher.getModel().getRootPackage().accept(new CtScanner() {
 			@Override
 			public void scan(Object o) {
 				counter.nObject++;

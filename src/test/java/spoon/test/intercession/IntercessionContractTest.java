@@ -47,7 +47,7 @@ public class IntercessionContractTest {
 			protected void process(CtMethod<?> element) {
 				values.add(new Object[] { createCompatibleObject(element.getDeclaringType().getReference()), element.getReference().getActualMethod() });
 			}
-		}.scan(launcher.getModel().getUnnamedModule());
+		}.scan(launcher.getModel().getRootPackage());
 		return values;
 	}
 

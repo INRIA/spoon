@@ -40,7 +40,7 @@ public class ElasticsearchStackoverflowTest {
 
 		CtModel model = launcher.getModel();
 		Scanner scanner = new Scanner();
-		scanner.scan(model.getUnnamedModule());
+		scanner.scan(model.getRootPackage());
 
 		List<CtExecutableReference> executables = launcher.getModel().getElements(new TypeFilter<CtExecutableReference>(CtExecutableReference.class));
 		assertFalse(executables.isEmpty());

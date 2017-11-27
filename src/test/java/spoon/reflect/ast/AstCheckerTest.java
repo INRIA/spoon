@@ -96,7 +96,7 @@ public class AstCheckerTest {
 		launcher.buildModel();
 
 		final PushStackInIntercessionChecker checker = new PushStackInIntercessionChecker();
-		checker.scan(launcher.getModel().getAllModules());
+		checker.scan(launcher.getModel().getRootPackage());
 		if (!checker.result.isEmpty()) {
 			System.err.println(checker.count);
 			throw new AssertionError(checker.result);

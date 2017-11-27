@@ -613,7 +613,7 @@ public class TemplateTest {
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
-		List<CtElement> matches = matcher.find(factory.getModel().getUnnamedModule());
+		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
 
 		assertEquals(1, matches.size());
 
@@ -657,7 +657,7 @@ public class TemplateTest {
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
 		//match using legacy TemplateMatcher#find method
-		List<CtElement> matches = matcher.find(factory.getModel().getUnnamedModule());
+		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
 
 		assertEquals(2, matches.size());
 
