@@ -119,8 +119,12 @@ public class AstCheckerTest {
 					"CtElementImpl#setValueByRole", //
 					"CtTypeParameterReferenceImpl#addBound", //
 					"CtTypeParameterReferenceImpl#removeBound", //
-					"CtTypeParameterReferenceImpl#setBounds" //
-					
+					"CtTypeParameterReferenceImpl#setBounds", //
+					"CtModuleImpl#addUsedService", //
+					"CtModuleImpl#addExportedPackage", //
+					"CtModuleImpl#addOpenedPackage", //
+					"CtModuleImpl#addRequiredModule", //
+					"CtModuleImpl#addProvidedService"
 			);
 		}
 

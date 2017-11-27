@@ -29,6 +29,7 @@ import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
@@ -179,6 +180,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (consumedServices == null || consumedServices.isEmpty()) {
 			return (T) this;
 		}
+		List<CtUsedService> usedServices = getUsedServices();
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.SERVICE_TYPE, this.moduleMembers, new ArrayList<>(usedServices));
+		this.moduleMembers.removeAll(usedServices);
 
 		for (CtUsedService consumedService : consumedServices) {
 			this.addModuleMember(consumedService);
@@ -227,6 +231,10 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (exportedPackages == null || exportedPackages.isEmpty()) {
 			return (T) this;
 		}
+
+		List<CtPackageExport> oldExportedPackages = getExportedPackages();
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.EXPORTED_PACKAGE, this.moduleMembers, new ArrayList<>(oldExportedPackages));
+		this.moduleMembers.removeAll(oldExportedPackages);
 
 		for (CtPackageExport exportedPackage : exportedPackages) {
 			exportedPackage.setOpenedPackage(false);
@@ -278,6 +286,10 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			return (T) this;
 		}
 
+		List<CtPackageExport> oldOpenedPackages = getOpenedPackages();
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.OPENED_PACKAGE, this.moduleMembers, new ArrayList<>(oldOpenedPackages));
+		this.moduleMembers.removeAll(oldOpenedPackages);
+
 		for (CtPackageExport exportedPackage : openedPackages) {
 			exportedPackage.setOpenedPackage(true);
 			this.addModuleMember(exportedPackage);
@@ -325,6 +337,10 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			return (T) this;
 		}
 
+		List<CtModuleRequirement> oldRequiredModules = getRequiredModules();
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.REQUIRED_MODULE, this.moduleMembers, new ArrayList<>(oldRequiredModules));
+		this.moduleMembers.removeAll(oldRequiredModules);
+
 		for (CtModuleRequirement moduleRequirement : requiredModules) {
 			this.addModuleMember(moduleRequirement);
 		}
@@ -369,6 +385,10 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (providedServices == null || providedServices.isEmpty()) {
 			return (T) this;
 		}
+
+		List<CtProvidedService> oldProvidedServices = getProvidedServices();
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.PROVIDED_SERVICE, this.moduleMembers, new ArrayList<>(oldProvidedServices));
+		this.moduleMembers.removeAll(oldProvidedServices);
 
 		for (CtProvidedService providedService : providedServices) {
 			this.addModuleMember(providedService);
