@@ -26,7 +26,6 @@ import spoon.experimental.modelobs.context.MapContext;
 import spoon.experimental.modelobs.context.ObjectContext;
 import spoon.experimental.modelobs.context.SetContext;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 

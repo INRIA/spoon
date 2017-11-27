@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleMember;
 import spoon.reflect.declaration.CtPackage;
@@ -29,14 +28,12 @@ import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.DerivedProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)

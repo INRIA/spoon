@@ -1,7 +1,6 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
