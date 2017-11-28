@@ -199,7 +199,11 @@ public class MMField {
 				valueType = f.Type().OBJECT;
 			}
 		}
-
+		if (valueType.isImplicit()) {
+			valueType = valueType.clone();
+			//never return type  with implicit==true, such type is then not pretty printed
+			valueType.setImplicit(false);
+		}
 		this.valueType = valueType;
 		this.valueContainerType = MMContainerType.valueOf(valueType.getActualClass());
 		if (valueContainerType != MMContainerType.SINGLE) {
