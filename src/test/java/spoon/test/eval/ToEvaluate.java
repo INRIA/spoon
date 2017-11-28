@@ -38,4 +38,9 @@ public class ToEvaluate {
 			System.out.println("dead code");
 		}
 	}
+
+	public static void testDoNotSimplify(String className, String methodName) {
+		// this code must not be simplified
+		java.lang.System.out.println(((("enter: " + className) + " - ") + methodName));
+	}
 }

@@ -9,8 +9,6 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.eval.PartialEvaluator;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -43,6 +41,17 @@ public class EvalTest {
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("// if removed", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testDoNotSimplify() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", b.getStatements().get(0).toString());
 	}
 
 	@Test
