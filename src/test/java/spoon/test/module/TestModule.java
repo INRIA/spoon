@@ -1,7 +1,10 @@
 package spoon.test.module;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -15,17 +18,47 @@ import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestModule {
+	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
+
+	@BeforeClass
+	public static void setUp() throws IOException {
+		File directory = new File(MODULE_RESOURCES_PATH);
+		Files.walk(directory.toPath()).forEach(path -> {
+			if (path.toFile().getName().equals("module-info-tpl.java")) {
+				try {
+					Files.copy(path, new File(path.getParent().toFile(), "module-info.java").toPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	@AfterClass
+	public static void tearDown() throws IOException {
+		File directory = new File(MODULE_RESOURCES_PATH);
+		Files.walk(directory.toPath()).forEach(path -> {
+			if (path.toFile().getName().equals("module-info.java")) {
+				try {
+					Files.delete(path);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	@Test
 	public void testCompleteModuleInfoContentNoClasspath() {
 		// contract: all information of the module-info should be available through the model
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/module/module-info.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/module/simple-module/module-info.java");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.buildModel();
@@ -97,7 +130,7 @@ public class TestModule {
 	public void testModuleInfoShouldBeCorrectlyPrettyPrinted() throws IOException {
 		// contract: module-info with complete information should be correctly pretty printed
 
-		File input = new File("./src/test/resources/spoon/test/module/module-info.java");
+		File input = new File("./src/test/resources/spoon/test/module/simple-module/module-info.java");
 		File output = new File("./target/spoon-module");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -118,5 +151,56 @@ public class TestModule {
 		for (int i = 0; i < originalLines.size(); i++) {
 			assertEquals(originalLines.get(i), createdLines.get(i));
 		}
+	}
+
+	@Test
+	public void testModuleInfoWithComments() {
+		// contract: documentation on module-info elements should be managed
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.addInputResource(MODULE_RESOURCES_PATH+"/module-with-comments/module-info.java");
+		launcher.buildModel();
+
+		assertEquals(2, launcher.getModel().getAllModules().size());
+		CtModule module = launcher.getFactory().Module().getModule("anothermodule");
+		assertNotNull(module);
+
+		assertTrue(module.isOpenModule());
+
+		List<CtComment> comments = module.getComments();
+		assertEquals(1, comments.size());
+
+		CtComment comment = comments.get(0);
+		assertEquals("This is the main module of the application", comment.getContent());
+		assertEquals(CtComment.CommentType.JAVADOC, comment.getCommentType());
+
+		assertEquals(3, module.getModuleDirectives().size());
+
+		CtModuleRequirement moduleRequirement = module.getRequiredModules().get(0);
+		comments = moduleRequirement.getComments();
+		assertEquals(1, comments.size());
+
+		comment = comments.get(0);
+		assertEquals("this is needed for logging stuff", comment.getContent());
+		assertEquals(CtComment.CommentType.INLINE, comment.getCommentType());
+
+		CtProvidedService providedService = module.getProvidedServices().get(0);
+		comments = providedService.getComments();
+		assertEquals(1, comments.size());
+
+		comment = comments.get(0);
+		assertEquals("A specific implementation", comment.getContent());
+		assertEquals(CtComment.CommentType.JAVADOC, comment.getCommentType());
+
+		CtUsedService usedService = module.getUsedServices().get(0);
+		comments = usedService.getComments();
+		assertEquals(1, comments.size());
+
+		comment = comments.get(0);
+		assertEquals("A simple implementation", comment.getContent());
+		assertEquals(CtComment.CommentType.BLOCK, comment.getCommentType());
 	}
 }

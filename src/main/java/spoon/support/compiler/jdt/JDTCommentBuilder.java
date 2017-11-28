@@ -45,6 +45,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -256,6 +257,8 @@ class JDTCommentBuilder {
 			File file = spoonUnit.getFile();
 			if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
 				spoonUnit.getDeclaredPackage().addComment(comment);
+			} else if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION)) {
+				spoonUnit.getDeclaredModule().addComment(comment);
 			} else {
 				comment.setCommentType(CtComment.CommentType.FILE);
 				addCommentToNear(comment, new ArrayList<CtElement>(spoonUnit.getDeclaredTypes()));
@@ -460,6 +463,11 @@ class JDTCommentBuilder {
 					return;
 				}
 			}
+
+			@Override
+			public void visitCtModule(CtModule module) {
+				addCommentToNear(comment, new ArrayList<>(module.getModuleDirectives()));
+			}
 		};
 		insertionVisitor.scan(commentParent);
 		try {
@@ -486,6 +494,12 @@ class JDTCommentBuilder {
 				this.end = end;
 			}
 
+			private boolean isCommentBetweenElementPosition(CtElement element) {
+				return (element.getPosition() != null
+						&& element.getPosition().getSourceStart() <= this.start
+						&& element.getPosition().getSourceEnd() >= this.end);
+			}
+
 			@Override
 			public void scan(CtElement element) {
 				if (element == null) {
@@ -498,11 +512,11 @@ class JDTCommentBuilder {
 				if (body != null && body.getPosition() == null) {
 					body = null;
 				}
-				if (element.getPosition() != null
-						&& ((element.getPosition().getSourceStart() <= start
-						&& element.getPosition().getSourceEnd() >= end)
-						|| (body != null && (body.getPosition().getSourceStart() <= start
-						&& body.getPosition().getSourceEnd() >= end)))) {
+
+				boolean betweenElementPosition = this.isCommentBetweenElementPosition(element);
+				boolean bodyBetweenElementPosition = (body != null) && this.isCommentBetweenElementPosition(body);
+
+				if (betweenElementPosition || bodyBetweenElementPosition) {
 					commentParent = element;
 					element.accept(this);
 				}

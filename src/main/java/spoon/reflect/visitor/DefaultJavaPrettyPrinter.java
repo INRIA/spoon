@@ -1029,6 +1029,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtModule(CtModule module) {
 		enter(module);
+		if (module.isOpenModule()) {
+			printer.writeKeyword("open").writeSpace();
+		}
 		printer.writeKeyword("module").writeSpace().writeIdentifier(module.getSimpleName());
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
 

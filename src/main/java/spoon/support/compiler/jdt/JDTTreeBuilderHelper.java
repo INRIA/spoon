@@ -726,17 +726,18 @@ public class JDTTreeBuilderHelper {
 
 			module.setProvidedServices(moduleProvidedServices);
 		}
-
+		module.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(moduleDeclaration.declarationSourceStart, moduleDeclaration.declarationSourceEnd));
 		return module;
 	}
 
 	CtUsedService createUsedService(UsesStatement usesStatement) {
 		CtTypeReference typeReference = this.jdtTreeBuilder.references.getTypeReference(usesStatement.serviceInterface);
-		return this.jdtTreeBuilder.getFactory().Module().createUsedService(typeReference);
+		CtUsedService usedService = this.jdtTreeBuilder.getFactory().Module().createUsedService(typeReference);
+		usedService.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(usesStatement.sourceStart, usesStatement.sourceEnd));
+		return usedService;
 	}
 
 	CtModuleRequirement createModuleRequirement(RequiresStatement requiresStatement) {
-		String moduleName = new String(requiresStatement.module.moduleName);
 		int sourceStart = requiresStatement.sourceStart;
 		int sourceEnd = requiresStatement.sourceEnd;
 
