@@ -798,7 +798,7 @@ public interface Factory {
 	/**
 	 * @see QueryFactory#createQuery(Object...)
 	 */
-	CtQuery createQuery(Object[] input);
+	CtQuery createQuery(Object... input);
 
 	/**
 	 *

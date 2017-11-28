@@ -41,6 +41,8 @@ import java.util.Map;
 public class ModuleFactory extends SubFactory implements Serializable {
 
 	public static class CtUnnamedModule extends CtModuleImpl {
+		final Map<String, CtModule> allModules = new HashMap<>();
+
 		{
 			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
 			this.setParent(new CtElementImpl() {
@@ -61,6 +63,23 @@ public class ModuleFactory extends SubFactory implements Serializable {
 			});
 
 			this.setRootPackage(new CtModelImpl.CtRootPackage());
+			this.addModule(this);
+		}
+
+		public boolean addModule(CtModule module) {
+			if (allModules.containsKey(module.getSimpleName())) {
+				return false;
+			}
+			allModules.put(module.getSimpleName(), module);
+			return true;
+		}
+
+		public CtModule getModule(String name) {
+			return allModules.get(name);
+		}
+
+		public Collection<CtModule> getAllModules() {
+			return Collections.unmodifiableCollection(allModules.values());
 		}
 
 		@Override
@@ -92,38 +111,34 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		}
 	}
 
-	final Map<String, CtModule> allModules = new HashMap<>();
-
 	public ModuleFactory(Factory factory) {
 		super(factory);
-		// in case of deserializing model
-		if (factory.getModel() != null && factory.getModel().getUnnamedModule() != null) {
-			allModules.put(CtModule.TOP_LEVEL_MODULE_NAME, factory.getModel().getUnnamedModule());
-		} else {
-			CtModule unnamedModule = new CtUnnamedModule();
-			unnamedModule.setFactory(factory);
-			allModules.put(CtModule.TOP_LEVEL_MODULE_NAME, unnamedModule);
-		}
+	}
 
+	public CtUnnamedModule getUnnamedModule() {
+		return (CtUnnamedModule) factory.getModel().getUnnamedModule();
 	}
 
 	public Collection<CtModule> getAllModules() {
-		return Collections.unmodifiableCollection(allModules.values());
+		return getUnnamedModule().getAllModules();
 	}
 
 	public CtModule getModule(String moduleName) {
-		return allModules.get(moduleName);
+		return getUnnamedModule().getModule(moduleName);
 	}
 
 	public CtModule getOrCreate(String moduleName) {
 		if (moduleName == null || moduleName.isEmpty()) {
-			return allModules.get(CtModule.TOP_LEVEL_MODULE_NAME);
+			return getUnnamedModule();
 		}
 
-		if (!allModules.containsKey(moduleName)) {
-			allModules.put(moduleName, factory.Core().createModule().setParent(this.allModules.get(CtModule.TOP_LEVEL_MODULE_NAME)).setSimpleName(moduleName));
+		CtModule ctModule = getUnnamedModule().getModule(moduleName);
+		if (ctModule == null) {
+			ctModule = factory.Core().createModule().setSimpleName(moduleName).setParent(getUnnamedModule());
+			getUnnamedModule().addModule(ctModule);
 		}
-		return allModules.get(moduleName);
+
+		return ctModule;
 	}
 
 	public CtModuleReference createReference(CtModule module) {

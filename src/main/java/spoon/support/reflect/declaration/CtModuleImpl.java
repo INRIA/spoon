@@ -16,7 +16,9 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackage;
@@ -168,7 +170,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 					usedServices.add((CtUsedService) moduleDirective);
 				}
 			}
-			return usedServices;
+			return Collections.unmodifiableList(usedServices);
 		}
 	}
 
@@ -219,7 +221,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 					}
 				}
 			}
-			return exportedPackages;
+			return Collections.unmodifiableList(exportedPackages);
 		}
 	}
 
@@ -273,7 +275,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 					}
 				}
 			}
-			return openedPackages;
+			return Collections.unmodifiableList(openedPackages);
 		}
 	}
 
@@ -324,7 +326,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 					moduleRequirements.add((CtModuleRequirement) moduleDirective);
 				}
 			}
-			return moduleRequirements;
+			return Collections.unmodifiableList(moduleRequirements);
 		}
 	}
 
@@ -373,7 +375,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 					providedServices.add((CtProvidedService) moduleDirective);
 				}
 			}
-			return providedServices;
+			return Collections.unmodifiableList(providedServices);
 		}
 	}
 
@@ -442,5 +444,13 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@Override
 	public CtModule clone() {
 		return (CtModule) super.clone();
+	}
+
+	@Override
+	public <T extends CtElement> T setParent(T parent) {
+		if (!this.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME) && parent != getFactory().Module().getUnnamedModule()) {
+			throw new SpoonException("The parent of a module should necessarily be the unnamed module.");
+		}
+		return (T) super.setParent(this);
 	}
 }

@@ -58,14 +58,16 @@ public interface CtModule extends CtNamedElement {
 	String TOP_LEVEL_MODULE_NAME = "unnamed module";
 
 	/**
-	 * Returns the unnamed module
-	 * Warning: if there are other modules, they are not contained in that unnamed root module.
+	 * Returns true if the module is the unnamed module
 	 */
 	@DerivedProperty
 	boolean isUnnamedModule();
 
 	@PropertyGetter(role = MODIFIER)
 	boolean isOpenModule();
+
+	@PropertySetter(role = MODIFIER)
+	<T extends CtModule> T setIsOpenModule(boolean openModule);
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
 	<T extends CtModule> T setModuleDirectives(List<CtModuleDirective> moduleDirectives);
@@ -81,9 +83,6 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
 	<T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective);
-
-	@PropertySetter(role = MODIFIER)
-	<T extends CtModule> T setIsOpenModule(boolean openModule);
 
 	@PropertyGetter(role = SERVICE_TYPE)
 	@DerivedProperty

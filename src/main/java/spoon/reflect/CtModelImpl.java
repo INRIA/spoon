@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
@@ -58,8 +59,6 @@ public class CtModelImpl implements CtModel {
 		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(queryStep);
 	}
 
-	@Deprecated
-	// this class should move to PackageFactory in the future.
 	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
@@ -114,7 +113,8 @@ public class CtModelImpl implements CtModel {
 	private final CtModule unnamedModule;
 
 	public CtModelImpl(Factory f) {
-		this.unnamedModule = f.Module().getOrCreate(CtModule.TOP_LEVEL_MODULE_NAME);
+		this.unnamedModule = new ModuleFactory.CtUnnamedModule();
+		this.unnamedModule.setFactory(f);
 		getRootPackage().setFactory(f);
 	}
 
