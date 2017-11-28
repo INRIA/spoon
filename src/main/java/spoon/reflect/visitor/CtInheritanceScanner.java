@@ -93,7 +93,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleMember;
+import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -210,7 +210,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void scanCtTypeMember(CtTypeMember e) {
 	}
 
-	public void scanCtModuleMember(CtModuleMember e) {
+	public void scanCtModuleDirective(CtModuleDirective e) {
 
 	}
 
@@ -977,27 +977,27 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void visitCtPackageExport(CtPackageExport moduleExport) {
 		scanCtElement(moduleExport);
 		scanCtVisitable(moduleExport);
-		scanCtModuleMember(moduleExport);
+		scanCtModuleDirective(moduleExport);
 	}
 
 	@Override
 	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
 		scanCtElement(moduleRequirement);
 		scanCtVisitable(moduleRequirement);
-		scanCtModuleMember(moduleRequirement);
+		scanCtModuleDirective(moduleRequirement);
 	}
 
 	@Override
 	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
 		scanCtElement(moduleProvidedService);
 		scanCtVisitable(moduleProvidedService);
-		scanCtModuleMember(moduleProvidedService);
+		scanCtModuleDirective(moduleProvidedService);
 	}
 
 	@Override
 	public void visitCtUsedService(CtUsedService usedService) {
 		scanCtElement(usedService);
 		scanCtVisitable(usedService);
-		scanCtModuleMember(usedService);
+		scanCtModuleDirective(usedService);
 	}
 }

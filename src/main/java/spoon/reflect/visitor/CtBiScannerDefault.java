@@ -897,7 +897,7 @@ public abstract class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstrac
 		enter(module);
 		biScan(spoon.reflect.path.CtRole.COMMENT, module.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, module.getAnnotations(), other.getAnnotations());
-		biScan(spoon.reflect.path.CtRole.MODULE_MEMBER, module.getModuleMembers(), other.getModuleMembers());
+		biScan(spoon.reflect.path.CtRole.MODULE_DIRECTIVE, module.getModuleDirectives(), other.getModuleDirectives());
 		biScan(spoon.reflect.path.CtRole.SUB_PACKAGE, module.getRootPackage(), other.getRootPackage());
 		exit(module);
 	}

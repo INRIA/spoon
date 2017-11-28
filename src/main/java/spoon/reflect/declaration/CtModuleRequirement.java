@@ -32,7 +32,7 @@ import java.util.Set;
  *     requires transitive com.example.foo.network;
  * </pre>
  */
-public interface CtModuleRequirement extends CtModuleMember {
+public interface CtModuleRequirement extends CtModuleDirective {
 
 	enum RequiresModifier {
 		STATIC, TRANSITIVE;

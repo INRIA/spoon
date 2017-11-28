@@ -90,7 +90,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleMember;
+import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -1032,8 +1032,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeKeyword("module").writeSpace().writeIdentifier(module.getSimpleName());
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
 
-		for (CtModuleMember moduleMember : module.getModuleMembers()) {
-			scan(moduleMember);
+		for (CtModuleDirective moduleDirective : module.getModuleDirectives()) {
+			scan(moduleDirective);
 		}
 
 		printer.decTab().writeSeparator("}");

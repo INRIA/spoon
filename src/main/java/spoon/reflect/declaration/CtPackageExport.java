@@ -37,7 +37,7 @@ import java.util.List;
  *     opens com.example.foo.quux;
  * </pre>
  */
-public interface CtPackageExport extends CtModuleMember {
+public interface CtPackageExport extends CtModuleDirective {
 
 	@PropertySetter(role = CtRole.OPENED_PACKAGE)
 	<T extends CtPackageExport> T setOpenedPackage(boolean openedPackage);

@@ -25,7 +25,7 @@ import java.util.List;
 
 import static spoon.reflect.path.CtRole.EXPORTED_PACKAGE;
 import static spoon.reflect.path.CtRole.MODIFIER;
-import static spoon.reflect.path.CtRole.MODULE_MEMBER;
+import static spoon.reflect.path.CtRole.MODULE_DIRECTIVE;
 import static spoon.reflect.path.CtRole.OPENED_PACKAGE;
 import static spoon.reflect.path.CtRole.PROVIDED_SERVICE;
 import static spoon.reflect.path.CtRole.REQUIRED_MODULE;
@@ -67,20 +67,20 @@ public interface CtModule extends CtNamedElement {
 	@PropertyGetter(role = MODIFIER)
 	boolean isOpenModule();
 
-	@PropertySetter(role = MODULE_MEMBER)
-	<T extends CtModule> T setModuleMembers(List<CtModuleMember> moduleMembers);
+	@PropertySetter(role = MODULE_DIRECTIVE)
+	<T extends CtModule> T setModuleDirectives(List<CtModuleDirective> moduleDirectives);
 
-	@PropertySetter(role = MODULE_MEMBER)
-	<T extends CtModule> T addModuleMember(CtModuleMember moduleMember);
+	@PropertySetter(role = MODULE_DIRECTIVE)
+	<T extends CtModule> T addModuleDirective(CtModuleDirective moduleDirective);
 
-	@PropertySetter(role = MODULE_MEMBER)
-	<T extends CtModule> T addModuleMemberAt(int position, CtModuleMember moduleMember);
+	@PropertySetter(role = MODULE_DIRECTIVE)
+	<T extends CtModule> T addModuleDirectiveAt(int position, CtModuleDirective moduleDirective);
 
-	@PropertyGetter(role = MODULE_MEMBER)
-	List<CtModuleMember> getModuleMembers();
+	@PropertyGetter(role = MODULE_DIRECTIVE)
+	List<CtModuleDirective> getModuleDirectives();
 
-	@PropertySetter(role = MODULE_MEMBER)
-	<T extends CtModule> T removeModuleMember(CtModuleMember moduleMember);
+	@PropertySetter(role = MODULE_DIRECTIVE)
+	<T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective);
 
 	@PropertySetter(role = MODIFIER)
 	<T extends CtModule> T setIsOpenModule(boolean openModule);

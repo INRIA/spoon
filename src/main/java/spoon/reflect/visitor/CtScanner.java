@@ -918,7 +918,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(module);
 		scan(CtRole.COMMENT, module.getComments());
 		scan(CtRole.ANNOTATION, module.getAnnotations());
-		scan(CtRole.MODULE_MEMBER, module.getModuleMembers());
+		scan(CtRole.MODULE_DIRECTIVE, module.getModuleDirectives());
 		scan(CtRole.SUB_PACKAGE, module.getRootPackage());
 		exit(module);
 	}

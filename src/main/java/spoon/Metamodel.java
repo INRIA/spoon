@@ -16,6 +16,7 @@
  */
 package spoon;
 
+import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
@@ -156,7 +157,7 @@ public class Metamodel {
 		result.add(factory.Type().get(CtProvidedService.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
-		result.add(factory.Type().get(spoon.reflect.declaration.CtModuleMember.class));
+		result.add(factory.Type().get(CtModuleDirective.class));
 		return result;
 	}
 
