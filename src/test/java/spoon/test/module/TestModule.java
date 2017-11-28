@@ -7,9 +7,11 @@ import spoon.Launcher;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
 
@@ -228,7 +230,17 @@ public class TestModule {
 	}
 
 	@Test
-	public void testMultipleModules() {
+	public void testGetParentOfRootPackageOfModule() {
+		// contract: unnamed module root package should have unnamed module as parent
+
+		final Launcher launcher = new Launcher();
+
+		CtModule unnamedModule = launcher.getFactory().getModel().getUnnamedModule();
+		assertSame(unnamedModule, unnamedModule.getRootPackage().getParent());
+	}
+
+	@Test
+	public void testMultipleModulesAndParents() {
 		// contract: Spoon is able to build a model with multiple modules
 
 		final Launcher launcher = new Launcher();
@@ -238,5 +250,14 @@ public class TestModule {
 		launcher.buildModel();
 
 		assertEquals(3, launcher.getModel().getAllModules().size());
+
+		CtType barclass = launcher.getFactory().Type().get("packbar.BarClass");
+		assertNotNull(barclass);
+
+		assertTrue(barclass.getParent() instanceof CtPackage);
+
+		CtPackage packBar = (CtPackage) barclass.getParent();
+
+		assertTrue(packBar.getParent() instanceof CtModule);
 	}
 }
