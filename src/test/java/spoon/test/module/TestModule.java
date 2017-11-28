@@ -6,6 +6,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
@@ -202,5 +203,40 @@ public class TestModule {
 		comment = comments.get(0);
 		assertEquals("A simple implementation", comment.getContent());
 		assertEquals(CtComment.CommentType.BLOCK, comment.getCommentType());
+	}
+
+	@Test
+	public void testDirectiveOrders() {
+		// contract: module directive should be ordered the same way as in the original file
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource(MODULE_RESOURCES_PATH+"/module-with-comments/module-info.java");
+		launcher.buildModel();
+
+		assertEquals(2, launcher.getModel().getAllModules().size());
+		CtModule module = launcher.getFactory().Module().getModule("anothermodule");
+		assertNotNull(module);
+
+		List<CtModuleDirective> moduleDirectives = module.getModuleDirectives();
+		assertEquals(3, moduleDirectives.size());
+
+		assertTrue(moduleDirectives.get(0) instanceof CtModuleRequirement);
+		assertTrue(moduleDirectives.get(1) instanceof CtProvidedService);
+		assertTrue(moduleDirectives.get(2) instanceof CtUsedService);
+	}
+
+	@Test
+	public void testMultipleModules() {
+		// contract: Spoon is able to build a model with multiple modules
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource(MODULE_RESOURCES_PATH+"/code-multiple-modules");
+		launcher.buildModel();
+
+		assertEquals(3, launcher.getModel().getAllModules().size());
 	}
 }

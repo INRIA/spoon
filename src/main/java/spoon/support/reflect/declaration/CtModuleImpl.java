@@ -86,7 +86,18 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			return (T) this;
 		}
 
-		return this.addModuleDirectiveAt(this.moduleDirectives.size(), moduleDirective);
+		if (this.moduleDirectives == CtElementImpl.<CtModuleDirective>emptyList()) {
+			this.moduleDirectives = new SortedList<>(new CtLineElementComparator());
+		}
+		if (!this.moduleDirectives.contains(moduleDirective)) {
+			moduleDirective.setParent(this);
+			CtRole role = this.computeRoleFromModuleDirectory(moduleDirective);
+
+			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.moduleDirectives, moduleDirective);
+			this.moduleDirectives.add(moduleDirective);
+		}
+
+		return (T) this;
 	}
 
 	private CtRole computeRoleFromModuleDirectory(CtModuleDirective moduleDirective) {
