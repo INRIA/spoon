@@ -462,6 +462,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (!this.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME) && parent != getFactory().Module().getUnnamedModule()) {
 			throw new SpoonException("The parent of a module should necessarily be the unnamed module.");
 		}
-		return (T) super.setParent(this);
+		return (T) super.setParent(parent);
 	}
 }
