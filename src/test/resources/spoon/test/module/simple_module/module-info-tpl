@@ -1,4 +1,4 @@
-module com.greetings {
+module simple_module {
     requires transitive java.logging;
     exports com.greetings.pkg to com.other.module, com.second.module;
     opens com.greetings.otherpkg;

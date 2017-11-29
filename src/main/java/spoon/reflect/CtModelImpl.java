@@ -90,6 +90,7 @@ public class CtModelImpl implements CtModel {
 	public CtModelImpl(Factory f) {
 		this.unnamedModule = new ModuleFactory.CtUnnamedModule();
 		this.unnamedModule.setFactory(f);
+		this.unnamedModule.setRootPackage(new CtModelImpl.CtRootPackage());
 		getRootPackage().setFactory(f);
 	}
 

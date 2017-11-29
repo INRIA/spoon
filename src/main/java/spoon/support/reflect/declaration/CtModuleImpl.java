@@ -435,9 +435,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		if (rootPackage != null) {
 			rootPackage.setParent(this);
 		}
-		if (!(this instanceof ModuleFactory.CtUnnamedModule)) {
-			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
-		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
 		this.rootPackage = rootPackage;
 		return (T) this;
 	}

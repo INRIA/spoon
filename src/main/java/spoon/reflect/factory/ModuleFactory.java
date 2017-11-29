@@ -62,7 +62,6 @@ public class ModuleFactory extends SubFactory implements Serializable {
 
 		{
 			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
-			this.setRootPackage(new CtModelImpl.CtRootPackage());
 			this.addModule(this);
 		}
 
@@ -140,7 +139,9 @@ public class ModuleFactory extends SubFactory implements Serializable {
 
 		CtModule ctModule = getUnnamedModule().getModule(moduleName);
 		if (ctModule == null) {
-			ctModule = factory.Core().createModule().setSimpleName(moduleName).setParent(getUnnamedModule()).setRootPackage(new CtModelImpl.CtRootPackage());
+			ctModule = factory.Core().createModule().setSimpleName(moduleName);
+			ctModule.setRootPackage(new CtModelImpl.CtRootPackage());
+			ctModule.setParent(getUnnamedModule());
 		}
 
 		return ctModule;

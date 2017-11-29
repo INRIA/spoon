@@ -1,7 +1,7 @@
 /**
  * This is the main module of the application
  */
-open module anothermodule {
+open module module_with_comments {
     requires static java.logging; // this is needed for logging stuff
 
     /**

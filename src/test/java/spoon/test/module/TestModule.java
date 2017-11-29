@@ -33,7 +33,7 @@ public class TestModule {
 	public static void setUp() throws IOException {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		Files.walk(directory.toPath()).forEach(path -> {
-			if (path.toFile().getName().equals("module-info-tpl.java")) {
+			if (path.toFile().getName().equals("module-info-tpl")) {
 				try {
 					Files.copy(path, new File(path.getParent().toFile(), "module-info.java").toPath());
 				} catch (IOException e) {
@@ -61,7 +61,7 @@ public class TestModule {
 	public void testCompleteModuleInfoContentNoClasspath() {
 		// contract: all information of the module-info should be available through the model
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/module/simple-module/module-info.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module/module-info.java");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.buildModel();
@@ -70,9 +70,9 @@ public class TestModule {
 
 		CtModule unnamedModule = launcher.getFactory().Module().getOrCreate(CtModule.TOP_LEVEL_MODULE_NAME);
 		assertSame(unnamedModule, launcher.getModel().getUnnamedModule());
-		CtModule moduleGreetings = launcher.getFactory().Module().getOrCreate("com.greetings");
+		CtModule moduleGreetings = launcher.getFactory().Module().getOrCreate("simple_module");
 
-		assertEquals("com.greetings", moduleGreetings.getSimpleName());
+		assertEquals("simple_module", moduleGreetings.getSimpleName());
 
 		assertEquals(7, moduleGreetings.getModuleDirectives().size());
 
@@ -133,7 +133,7 @@ public class TestModule {
 	public void testModuleInfoShouldBeCorrectlyPrettyPrinted() throws IOException {
 		// contract: module-info with complete information should be correctly pretty printed
 
-		File input = new File("./src/test/resources/spoon/test/module/simple-module/module-info.java");
+		File input = new File("./src/test/resources/spoon/test/module/simple_module/module-info.java");
 		File output = new File("./target/spoon-module");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -145,7 +145,7 @@ public class TestModule {
 		assertEquals(2, launcher.getModel().getAllModules().size());
 
 		assertEquals(1, Files.list(output.toPath()).count());
-		File fileOuput = new File(output, "com.greetings/module-info.java");
+		File fileOuput = new File(output, "simple_module/module-info.java");
 		List<String> originalLines = Files.readAllLines(input.toPath());
 		List<String> createdLines = Files.readAllLines(fileOuput.toPath());
 
@@ -164,11 +164,11 @@ public class TestModule {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.addInputResource(MODULE_RESOURCES_PATH+"/module-with-comments/module-info.java");
+		launcher.addInputResource(MODULE_RESOURCES_PATH+"/module_with_comments/module-info.java");
 		launcher.buildModel();
 
 		assertEquals(2, launcher.getModel().getAllModules().size());
-		CtModule module = launcher.getFactory().Module().getModule("anothermodule");
+		CtModule module = launcher.getFactory().Module().getModule("module_with_comments");
 		assertNotNull(module);
 
 		assertTrue(module.isOpenModule());
@@ -214,11 +214,11 @@ public class TestModule {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.addInputResource(MODULE_RESOURCES_PATH+"/module-with-comments/module-info.java");
+		launcher.addInputResource(MODULE_RESOURCES_PATH+"/module_with_comments/module-info.java");
 		launcher.buildModel();
 
 		assertEquals(2, launcher.getModel().getAllModules().size());
-		CtModule module = launcher.getFactory().Module().getModule("anothermodule");
+		CtModule module = launcher.getFactory().Module().getModule("module_with_comments");
 		assertNotNull(module);
 
 		List<CtModuleDirective> moduleDirectives = module.getModuleDirectives();
@@ -253,14 +253,30 @@ public class TestModule {
 	}
 
 	@Test
+	public void testSimpleModuleCanBeBuiltAndCompiled() {
+		// contract: Spoon is able to build and compile a model with a module
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setComplianceLevel(9);
+		//launcher.addModulePath("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.run();
+
+		assertEquals(2, launcher.getModel().getAllModules().size());
+		assertEquals(1, launcher.getModel().getAllTypes().size());
+	}
+
+	@Test
 	public void testMultipleModulesAndParents() {
 		// contract: Spoon is able to build a model with multiple modules
 
 		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setComplianceLevel(9);
+		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/foo");
+		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/bar");
 		launcher.addInputResource(MODULE_RESOURCES_PATH+"/code-multiple-modules");
-		launcher.buildModel();
+		launcher.run();
 
 		assertEquals(3, launcher.getModel().getAllModules().size());
 
