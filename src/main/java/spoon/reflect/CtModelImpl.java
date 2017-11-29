@@ -22,17 +22,14 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.ModuleFactory;
-import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
-import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
 import java.util.ArrayList;
@@ -62,27 +59,6 @@ public class CtModelImpl implements CtModel {
 	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-			this.setParent(new CtElementImpl() {
-				@Override
-				public void accept(CtVisitor visitor) {
-
-				}
-
-				@Override
-				public CtElement getParent() throws ParentNotInitializedException {
-					return null;
-				}
-
-				@Override
-				public Factory getFactory() {
-					return CtRootPackage.this.getFactory();
-				}
-			});
-		}
-
-		@Override
-		public String getSimpleName() {
-			return super.getSimpleName();
 		}
 
 		@Override
@@ -107,7 +83,6 @@ public class CtModelImpl implements CtModel {
 		public String toString() {
 			return TOP_LEVEL_PACKAGE_NAME;
 		}
-
 	}
 
 	private final CtModule unnamedModule;

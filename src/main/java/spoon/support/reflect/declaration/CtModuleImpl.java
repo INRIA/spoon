@@ -16,7 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;

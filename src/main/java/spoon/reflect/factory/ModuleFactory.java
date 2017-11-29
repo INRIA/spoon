@@ -42,26 +42,26 @@ public class ModuleFactory extends SubFactory implements Serializable {
 
 	public static class CtUnnamedModule extends CtModuleImpl {
 		final Set<CtModule> allModules = new HashSet<>();
+		final CtElement parent = new CtElementImpl() {
+			@Override
+			public void accept(CtVisitor visitor) {
+
+			}
+
+			@Override
+			public CtElement getParent() throws ParentNotInitializedException {
+				return null;
+			}
+
+			@Override
+			public Factory getFactory() {
+				return CtUnnamedModule.this.getFactory();
+			}
+		};
+
 
 		{
 			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
-			this.setParent(new CtElementImpl() {
-				@Override
-				public void accept(CtVisitor visitor) {
-
-				}
-
-				@Override
-				public CtElement getParent() throws ParentNotInitializedException {
-					return null;
-				}
-
-				@Override
-				public Factory getFactory() {
-					return CtUnnamedModule.this.getFactory();
-				}
-			});
-
 			this.setRootPackage(new CtModelImpl.CtRootPackage());
 			this.addModule(this);
 		}
@@ -110,6 +110,11 @@ public class ModuleFactory extends SubFactory implements Serializable {
 				}
 			});
 		}
+
+		@Override
+		public CtElement getParent() {
+			return this.parent;
+		}
 	}
 
 	public ModuleFactory(Factory factory) {
@@ -135,7 +140,7 @@ public class ModuleFactory extends SubFactory implements Serializable {
 
 		CtModule ctModule = getUnnamedModule().getModule(moduleName);
 		if (ctModule == null) {
-			ctModule = factory.Core().createModule().setSimpleName(moduleName).setParent(getUnnamedModule());
+			ctModule = factory.Core().createModule().setSimpleName(moduleName).setParent(getUnnamedModule()).setRootPackage(new CtModelImpl.CtRootPackage());
 		}
 
 		return ctModule;
