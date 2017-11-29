@@ -409,6 +409,22 @@ public class CtQueryImpl implements CtQuery {
 			}
 			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
 			StackTraceElement[] stackEles = e.getStackTrace();
+			if (stackEles.length == 0) {
+				/*
+				 * The java runtime detected that this ClassCastException is thrown often and recompiled code to use faster pre-alocated exception,
+				 * which doesn't provide stacktrace.
+				 * So exceptions, which doesn't provide stacktrace can be ignored too, because they were already ignored before many times.
+				 *
+				 * See http://www.oracle.com/technetwork/java/javase/relnotes-139183.html#vm
+				 *---------------------------------------------------------------------------------------------------------------
+				 * The compiler in the server VM now provides correct stack backtraces for all "cold" built-in exceptions.
+				 * For performance purposes, when such an exception is thrown a few times, the method may be recompiled.
+				 * After recompilation, the compiler may choose a faster tactic using preallocated exceptions that do not provide a stack trace.
+				 * To disable completely the use of preallocated exceptions, use this new flag: -XX:-OmitStackTraceInFastThrow.
+				 *---------------------------------------------------------------------------------------------------------------
+				 */
+				return;
+			}
 			StackTraceElement stackEle = stackEles[indexOfCallerInStack];
 			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
 				/*
