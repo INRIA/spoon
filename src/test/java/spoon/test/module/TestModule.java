@@ -240,6 +240,19 @@ public class TestModule {
 	}
 
 	@Test
+	public void testGetModuleAfterChangingItsName() {
+		// contract: a module should be always available through ModuleFactory even after its name changed
+
+		final Launcher launcher = new Launcher();
+		CtModule module = launcher.getFactory().Module().getOrCreate("myModule");
+		module.setSimpleName("newName");
+
+		CtModule moduleNewName = launcher.getFactory().Module().getOrCreate("newName");
+
+		assertSame(module, moduleNewName);
+	}
+
+	@Test
 	public void testMultipleModulesAndParents() {
 		// contract: Spoon is able to build a model with multiple modules
 

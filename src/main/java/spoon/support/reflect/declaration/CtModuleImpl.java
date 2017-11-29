@@ -30,6 +30,7 @@ import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
@@ -458,10 +459,14 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
+	@DerivedProperty
 	public <T extends CtElement> T setParent(T parent) {
-		if (!this.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME) && parent != getFactory().Module().getUnnamedModule()) {
-			throw new SpoonException("The parent of a module should necessarily be the unnamed module.");
-		}
-		return (T) super.setParent(parent);
+		return (T) this;
+	}
+
+	@Override
+	@DerivedProperty
+	public CtElement getParent() {
+		return getFactory().getModel().getUnnamedModule();
 	}
 }

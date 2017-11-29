@@ -89,6 +89,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.factory.SubFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -971,6 +972,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public CtModule createModule() {
 		CtModule module = new CtModuleImpl();
 		module.setFactory(getMainFactory());
+		this.getMainFactory().Module().getUnnamedModule().addModule(module);
 		return module;
 	}
 

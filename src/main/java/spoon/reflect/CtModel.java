@@ -44,7 +44,6 @@ public interface CtModel extends Serializable, CtQueryable {
 
 	/**
 	 * Returns the unnamed module.
-	 * Warning: if there are other modules, they are not contained in that unnamed root module, use getAllModules instead.
 	 */
 	CtModule getUnnamedModule();
 

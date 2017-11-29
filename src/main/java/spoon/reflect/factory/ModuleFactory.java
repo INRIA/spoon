@@ -35,13 +35,13 @@ import spoon.support.reflect.declaration.CtModuleImpl;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModuleFactory extends SubFactory implements Serializable {
 
 	public static class CtUnnamedModule extends CtModuleImpl {
-		final Map<String, CtModule> allModules = new HashMap<>();
+		final Set<CtModule> allModules = new HashSet<>();
 
 		{
 			this.setSimpleName(CtModule.TOP_LEVEL_MODULE_NAME);
@@ -67,19 +67,20 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		}
 
 		public boolean addModule(CtModule module) {
-			if (allModules.containsKey(module.getSimpleName())) {
-				return false;
-			}
-			allModules.put(module.getSimpleName(), module);
-			return true;
+			return this.allModules.add(module);
 		}
 
 		public CtModule getModule(String name) {
-			return allModules.get(name);
+			for (CtModule module : this.allModules) {
+				if (module.getSimpleName().equals(name)) {
+					return module;
+				}
+			}
+			return null;
 		}
 
 		public Collection<CtModule> getAllModules() {
-			return Collections.unmodifiableCollection(allModules.values());
+			return Collections.unmodifiableCollection(allModules);
 		}
 
 		@Override
@@ -103,7 +104,7 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		@Override
 		public void accept(CtVisitor visitor) {
 			visitor.visitCtModule(this);
-			getFactory().Module().getAllModules().forEach(module -> {
+			allModules.forEach(module -> {
 				if (!module.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
 					module.accept(visitor);
 				}
@@ -135,7 +136,6 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		CtModule ctModule = getUnnamedModule().getModule(moduleName);
 		if (ctModule == null) {
 			ctModule = factory.Core().createModule().setSimpleName(moduleName).setParent(getUnnamedModule());
-			getUnnamedModule().addModule(ctModule);
 		}
 
 		return ctModule;

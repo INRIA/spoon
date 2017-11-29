@@ -146,7 +146,7 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public Collection<CtModule> getAllModules() {
-		return this.unnamedModule.getFactory().Module().getAllModules();
+		return ((ModuleFactory.CtUnnamedModule) this.unnamedModule).getAllModules();
 	}
 
 
