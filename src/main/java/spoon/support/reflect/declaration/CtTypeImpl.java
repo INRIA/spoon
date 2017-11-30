@@ -765,18 +765,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return false;
 			}
 		} else if (expectedType instanceof CtTypeParameterReference) {
-			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(expectedType.getActualClass()))) {
+			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(expectedType.getQualifiedName()))) {
 				return false;
 			}
 		} else if (ctParameterType instanceof CtTypeParameterReference) {
 			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
-			if (declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
+			if (declaration != null && declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
 				for (CtTypeReference<?> ctTypeReference : declaration.getSuperclass().asCtIntersectionTypeReference().getBounds()) {
 					if (ctTypeReference.equals(expectedType)) {
 						return true;
 					}
 				}
-			} else if (declaration.getSuperclass() != null) {
+			} else if (declaration != null && declaration.getSuperclass() != null) {
 				return declaration.getSuperclass().equals(expectedType);
 			} else {
 				return getFactory().Type().objectType().equals(expectedType);
