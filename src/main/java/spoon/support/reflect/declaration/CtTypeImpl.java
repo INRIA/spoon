@@ -759,22 +759,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return false;
 			}
 		}
-		if (ctParameterType.equals(factory.Type().OBJECT) && (expectedType instanceof CtTypeParameterReference)) {
-			CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) expectedType;
-			if (!typeParameterReference.isUpper() || (typeParameterReference.isUpper() && typeParameterReference.getBoundingType().equals(ctParameterType))) {
-				return true;
-			}
-		}
 		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
-			// Check if Object or extended.
+			// both types are generic
 			if (!ctParameterType.equals(expectedType)) {
 				return false;
 			}
 		} else if (expectedType instanceof CtTypeParameterReference) {
-			if (!ctParameterType.isSubtypeOf(factory.Type().createTypeParameterReference(expectedType.getQualifiedName()))) {
+			// expectedType type is generic, ctParameterType is real type
+			if (!expectedType.getTypeErasure().getQualifiedName().equals(ctParameterType.getQualifiedName())) {
 				return false;
 			}
 		} else if (ctParameterType instanceof CtTypeParameterReference) {
+			// ctParameterType is generic, expectedType type is real type
 			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
 			if (declaration != null && declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
 				for (CtTypeReference<?> ctTypeReference : declaration.getSuperclass().asCtIntersectionTypeReference().getBounds()) {
@@ -788,6 +784,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return getFactory().Type().objectType().equals(expectedType);
 			}
 		} else if (!expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName())) {
+			// both are real types
 			return false;
 		}
 		return true;
