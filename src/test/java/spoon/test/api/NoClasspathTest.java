@@ -185,25 +185,4 @@ public class NoClasspathTest {
 		assertTrue(myClassReference.isSubtypeOf(myInterfaceReference));
 		assertTrue(field.getType().isSubtypeOf(myInterfaceReference));
 	}
-
-	@Test
-	public void testClasspathWorksWhenSpecifyingClassFullPathAndNotDir() {
-		String sourceInputDirPath = "./src/test/resources/spoon/test/inheritance";
-		String targetBinPath = "./target/spoon-nocp-bin2";
-
-		Launcher spoon = new Launcher();
-		spoon.getEnvironment().setShouldCompile(true);
-		spoon.addInputResource(sourceInputDirPath);
-		spoon.setBinaryOutputDirectory(targetBinPath);
-		spoon.run();
-
-		spoon = new Launcher();
-		spoon.getEnvironment().setNoClasspath(true);
-		spoon.getEnvironment().setSourceClasspath(new String[] { targetBinPath+"/fr/acme/MyClass.class" });
-		spoon.addInputResource(sourceInputDirPath+"/AnotherClass.java");
-		spoon.buildModel();
-
-		CtTypeReference myClassReference = spoon.getFactory().Type().createReference("fr.acme.MyClass");
-		assertNotNull(myClassReference.getActualClass());
-	}
 }
