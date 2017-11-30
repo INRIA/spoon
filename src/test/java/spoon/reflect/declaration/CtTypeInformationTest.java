@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import spoon.Launcher;
 import spoon.reflect.declaration.testclasses.ExtendsArrayList;
 import spoon.reflect.declaration.testclasses.ExtendsObject;
 import spoon.reflect.declaration.testclasses.Subclass;
@@ -134,9 +135,12 @@ public class CtTypeInformationTest {
 
 	@Test
 	public void testGetAllMethodsReturnsTheRightNumber() {
-		int nbMethodsObject = this.factory.Type().get(Object.class).getAllMethods().size();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/ExtendsObject.java");
+		launcher.buildModel();
+		int nbMethodsObject = launcher.getFactory().Type().get(Object.class).getAllMethods().size();
 
-		final CtType<?> extendsObject = this.factory.Type().get(ExtendsObject.class);
+		final CtType<?> extendsObject = launcher.getFactory().Type().get("test.ExtendsObject");
 		assertEquals("It should contain only 'oneMethod' and 'toString' but also contains: "+ StringUtils.join(extendsObject.getMethods(),"\n"), 2, extendsObject.getMethods().size());
 		assertEquals(nbMethodsObject + 1, extendsObject.getAllMethods().size());
 	}

@@ -1,4 +1,4 @@
-package spoon.reflect.declaration.testclasses;
+package test;
 
 public class ExtendsObject {
 	public void oneMethod() {
