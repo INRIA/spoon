@@ -252,7 +252,13 @@ public class DefaultPrettyPrinterTest {
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
 		CtClass<Object> ctClass = factory.Class().create("foo.Bar");
+<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 		JavaOutputProcessor jop = launcher.createOutputWriter();
+=======
+		PrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
+		JavaOutputProcessor jop =
+				new JavaOutputProcessor(File.createTempFile("foo","").getParentFile(),pp);
+>>>>>>> wip
 		jop.setFactory(factory);
 
 		jop.createJavaFile(ctClass);//JavaOutputProcessor is able to create the file even if we do not set the cu manually

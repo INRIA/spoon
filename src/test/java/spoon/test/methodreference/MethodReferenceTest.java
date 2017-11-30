@@ -51,8 +51,16 @@ public class MethodReferenceTest {
 	@Before
 	public void setUp() throws Exception {
 		final Launcher launcher = new Launcher();
+<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 		final Factory factory = launcher.getFactory();
 		launcher.getEnvironment().setComplianceLevel(8);
+=======
+		final Factory factory = launcher.createFactory();
+		factory.getEnvironment().setComplianceLevel(8);
+		final File sourceOutputDir = new File("./target/spooned/");
+		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir));
+		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
+>>>>>>> wip
 
 		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		launcher.setSourceOutputDirectory("./target/spooned/");

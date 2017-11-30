@@ -73,7 +73,11 @@ public class APITest {
 		final List<Object> l = new ArrayList<Object>();
 		Launcher spoon = new Launcher() {
 			@Override
+<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 			public JavaOutputProcessor createOutputWriter() {
+=======
+			public JavaOutputProcessor createOutputWriter(File sourceOutputDir) {
+>>>>>>> wip
 				return new JavaOutputProcessor() {
 					@Override
 					public void process(CtNamedElement e) {

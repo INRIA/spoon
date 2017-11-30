@@ -95,8 +95,6 @@ public class Launcher implements SpoonAPI {
 	private List<String> processorTypes = new ArrayList<>();
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
-	private OutputDestination outputDirectory = new DefaultOutputDestination();
-
 	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
@@ -568,7 +566,6 @@ public class Launcher implements SpoonAPI {
 		// building
 		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
-		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 
 		// backward compatibility
 		// we don't have to set the source classpath
@@ -576,7 +573,6 @@ public class Launcher implements SpoonAPI {
 			comp.setSourceClasspath(jsapActualArgs.getString("source-classpath").split(System.getProperty("path.separator")));
 		}
 
-		env.debugMessage("output: " + comp.getSourceOutputDirectory());
 		env.debugMessage("destination: " + comp.getBinaryOutputDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
@@ -636,10 +632,14 @@ public class Launcher implements SpoonAPI {
 		return this.createOutputWriter();
 	}
 
-	public JavaOutputProcessor createOutputWriter() {
-		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter(), outputDirectory);
+	public JavaOutputProcessor createOutputWriter(OutputDestination output) {
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter(), output);
 		outputProcessor.setFactory(this.getFactory());
 		return outputProcessor;
+	}
+
+	public JavaOutputProcessor createOutputWriter() {
+		return createOutputWriter(new DefaultOutputDestination(getEnvironment().getSourceOutputDirectory()));
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
@@ -752,7 +752,7 @@ public class Launcher implements SpoonAPI {
 					for (Object resource : resources) {
 						final String resourceParentPath = ((File) resource).getParent();
 						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
-						final String targetDirectory = modelBuilder.getSourceOutputDirectory() + packageDir;
+						final String targetDirectory = getEnvironment().getDefaultFileGenerator().getOutputDirectory() + packageDir;
 						try {
 							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
 						} catch (IOException e) {
@@ -778,6 +778,12 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
 		getEnvironment().setSourceOutputDirectory(outputDirectory);
+		getEnvironment().setDefaultFileGenerator(createOutputWriter());
+	}
+
+	public void setSourceOutputDirectory(OutputDestination outputDirectory) {
+		getEnvironment().setSourceOutputDirectory(outputDirectory.getDefaultOutputDirectory());
+		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory));
 		getEnvironment().setDefaultFileGenerator(createOutputWriter());
 	}
 
@@ -831,13 +837,5 @@ public class Launcher implements SpoonAPI {
 		} catch (ClassCastException e) {
 			throw new SpoonException("parseClass only considers classes (and not interfaces and enums). Please consider using a Launcher object for more advanced usage.");
 		}
-	}
-
-	public OutputDestination getOutputDirectory() {
-		return outputDirectory;
-	}
-
-	public void setOutputDirectory(OutputDestination outputDirectory) {
-		this.outputDirectory = outputDirectory;
 	}
 }

@@ -82,7 +82,13 @@ public class PackageTest {
 	@Test
 	public void testAnnotationOnPackage() throws Exception {
 		Launcher launcher = new Launcher();
+<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 		Factory factory = launcher.getFactory();
+=======
+		Factory factory = launcher.createFactory();
+
+		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(new File("./target/spooned/")));
+>>>>>>> wip
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		launcher.setSourceOutputDirectory("./target/spooned/");

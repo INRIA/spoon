@@ -222,6 +222,7 @@ public interface SpoonModelBuilder {
 	Set<File> getTemplateSources();
 
 	/**
+<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 	 * Sets the output directory for source generated.
 	 *
 	 * @param outputDirectory
@@ -238,6 +239,8 @@ public interface SpoonModelBuilder {
 	File getSourceOutputDirectory();
 
 	/**
+=======
+>>>>>>> wip
 	 * Sets the output directory for binary generated.
 	 *
 	 * @param binaryOutputDirectory

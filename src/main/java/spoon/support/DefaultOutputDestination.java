@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -28,8 +29,19 @@ import java.nio.file.Paths;
  */
 public class DefaultOutputDestination implements OutputDestination {
 
+	private File defaultOutputDirectory;
+
+	public DefaultOutputDestination(File defaultOutputDirectory) {
+		this.defaultOutputDirectory = defaultOutputDirectory;
+	}
+
 	@Override
 	public Path getOutputPath(CtModule module, CtPackage pack, CtType type, Path packagePath, String filename) {
-		return Paths.get(module.getFactory().getEnvironment().getSourceOutputDirectory().getAbsolutePath(), packagePath.toString(), filename);
+		return Paths.get(defaultOutputDirectory.getAbsolutePath(), packagePath.toString(), filename);
+	}
+
+	@Override
+	public File getDefaultOutputDirectory() {
+		return defaultOutputDirectory;
 	}
 }

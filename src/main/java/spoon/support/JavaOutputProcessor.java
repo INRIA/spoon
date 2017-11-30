@@ -99,7 +99,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	public void init() {
 		// Skip loading properties
 		// super.init();
-
 		File directory = getOutputDirectory();
 
 		// Check output directory

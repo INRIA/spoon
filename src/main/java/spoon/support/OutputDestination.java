@@ -20,8 +20,11 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public interface OutputDestination {
 	Path getOutputPath(CtModule module, CtPackage pack, CtType type, Path packagePath, String filename);
+
+	File getDefaultOutputDirectory();
 }
