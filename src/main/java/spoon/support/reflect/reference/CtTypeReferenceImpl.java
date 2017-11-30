@@ -157,7 +157,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			// creating a classloader on the fly is not the most efficient
 			// but it decreases the amount of state to maintain
 			// since getActualClass is only used in rare cases, that's OK.
-			return (Class<T>) getFactory().getEnvironment().getInputClassLoader().loadClass(getQualifiedName());
+			ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+			String qualifiedName = getQualifiedName();
+			return (Class<T>) classLoader.loadClass(qualifiedName);
 		} catch (Throwable e) {
 			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
 		}
