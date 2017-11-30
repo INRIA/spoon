@@ -13,6 +13,7 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +137,7 @@ public class CtTypeInformationTest {
 		int nbMethodsObject = this.factory.Type().get(Object.class).getAllMethods().size();
 
 		final CtType<?> extendsObject = this.factory.Type().get(ExtendsObject.class);
-		assertEquals(2, extendsObject.getMethods().size());
+		assertEquals("It should contain only 'oneMethod' and 'toString' but also contains: "+ StringUtils.join(extendsObject.getMethods(),"\n"), 2, extendsObject.getMethods().size());
 		assertEquals(nbMethodsObject + 1, extendsObject.getAllMethods().size());
 	}
 
