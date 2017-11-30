@@ -759,6 +759,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return false;
 			}
 		}
+		if (ctParameterType.equals(factory.Type().OBJECT) && (expectedType instanceof CtTypeParameterReference)) {
+			CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) expectedType;
+			if (!typeParameterReference.isUpper() || (typeParameterReference.isUpper() && typeParameterReference.getBoundingType().equals(ctParameterType))) {
+				return true;
+			}
+		}
 		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
 			// Check if Object or extended.
 			if (!ctParameterType.equals(expectedType)) {
