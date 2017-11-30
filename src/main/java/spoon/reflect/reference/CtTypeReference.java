@@ -56,8 +56,8 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * Use {@link #getTypeDeclaration()} instead,
 	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class
 	 *
-	 * @return the Java class or null if the class is not found (not in
-	 * classpath)
+	 * @return the Java class or throws a {@link SpoonClassNotFoundException} if the class is not found.
+	 *  In case of a {@link CtTypeParameterReference} or a {@link CtArrayTypeReference} this method can return null value.
 	 * @throws SpoonClassNotFoundException
 	 * 		if the class is not in the classpath
 	 */
