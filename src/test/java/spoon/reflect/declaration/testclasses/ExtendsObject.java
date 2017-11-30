@@ -1,7 +1,12 @@
 package spoon.reflect.declaration.testclasses;
 
-import java.util.ArrayList;
+public class ExtendsObject {
+	public void oneMethod() {
 
-public class ExtendsObject extends ArrayList {
-	void m() {}
+	}
+
+	@Override
+	public String toString() {
+		return "Hello";
+	}
 }

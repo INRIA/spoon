@@ -9,23 +9,23 @@ import java.lang.reflect.Field;
 import java.util.AbstractCollection;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.RandomAccess;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import spoon.reflect.declaration.testclasses.ExtendsArrayList;
 import spoon.reflect.declaration.testclasses.ExtendsObject;
 import spoon.reflect.declaration.testclasses.Subclass;
 import spoon.reflect.declaration.testclasses.Subinterface;
 import spoon.reflect.declaration.testclasses.TestInterface;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.comparator.SignatureComparator;
+import spoon.support.util.SortedList;
 import spoon.support.visitor.ClassTypingContext;
 
 public class CtTypeInformationTest {
@@ -33,7 +33,7 @@ public class CtTypeInformationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		factory = build(ExtendsObject.class, Subclass.class, Subinterface.class, TestInterface.class);
+		factory = build(ExtendsArrayList.class, Subclass.class, Subinterface.class, TestInterface.class);
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class CtTypeInformationTest {
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		final CtTypeReference<?> subinterface = this.factory.Type().createReference(Subinterface.class);
 		final CtTypeReference<?> testInterface = this.factory.Type().createReference(TestInterface.class);
-		final CtTypeReference<?> extendObject = this.factory.Type().createReference(ExtendsObject.class);
+		final CtTypeReference<?> extendObject = this.factory.Type().createReference(ExtendsArrayList.class);
 		final CtTypeReference<?> arrayList = this.factory.Type().createReference(ArrayList.class);
 		final CtTypeReference<?> abstractList = this.factory.Type().createReference(AbstractList.class);
 		final CtTypeReference<?> abstractCollection = this.factory.Type().createReference(AbstractCollection.class);
@@ -132,42 +132,33 @@ public class CtTypeInformationTest {
 	}
 
 	@Test
+	public void testGetAllMethodsReturnsTheRightNumber() {
+		int nbMethodsObject = this.factory.Type().get(Object.class).getAllMethods().size();
+
+		final CtType<?> extendsObject = this.factory.Type().get(ExtendsObject.class);
+		assertEquals(2, extendsObject.getMethods().size());
+		assertEquals(nbMethodsObject + 1, extendsObject.getAllMethods().size());
+	}
+
+	@Test
 	public void testGetSuperclass() throws Exception {
-		int expectedNumberInJDK8_151 = 62; // in Java 1.8.0_151
-		int expectedNumberInJDK8_111 = 61; // in Java 1.8.0_XXX with XXX before 151
-		int expectedNumberInJDK9 = 81;
-
-		int expectedNumber;
-
-		if (System.getProperty("java.version").startsWith("1.8.")) {
-			if (System.getProperty("java.version").endsWith("151")) {
-				expectedNumber = expectedNumberInJDK8_151;
-			} else {
-				expectedNumber = expectedNumberInJDK8_111;
-			}
-		} else {
-			expectedNumber = expectedNumberInJDK9;
-		}
-
-		final CtType<?> extendObject = this.factory.Type().get(ExtendsObject.class);
+		final CtType<?> extendsArrayList = this.factory.Type().get(ExtendsArrayList.class);
 
 		// only 1 method directly in this class
-		Assert.assertEquals(1, extendObject.getMethods().size());
+		Assert.assertEquals(1, extendsArrayList.getMethods().size());
 
-		Assert.assertEquals(expectedNumber, extendObject.getAllMethods().size());
+		int nbMethodExtendedArrayList = extendsArrayList.getAllMethods().size();
 
 		final CtType<?> subClass = this.factory.Type().get(Subclass.class);
 		assertEquals(2, subClass.getMethods().size());
 
-
-
 		// the abstract method from Comparable which is overridden should not be present in the model
-		assertEquals(expectedNumber+2, subClass.getAllMethods().size());
+		assertEquals(nbMethodExtendedArrayList+2, subClass.getAllMethods().size());
 
 		CtTypeReference<?> superclass = subClass.getSuperclass();
-		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());
+		Assert.assertEquals(ExtendsArrayList.class.getName(), superclass.getQualifiedName());
 
-		Assert.assertEquals(ExtendsObject.class.getName(), superclass.getQualifiedName());
+		Assert.assertEquals(ExtendsArrayList.class.getName(), superclass.getQualifiedName());
 
 		Assert.assertNotNull(superclass.getSuperclass());
 

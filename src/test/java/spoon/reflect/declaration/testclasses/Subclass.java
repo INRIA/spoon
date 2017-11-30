@@ -1,6 +1,6 @@
 package spoon.reflect.declaration.testclasses;
 
-public class Subclass extends ExtendsObject implements Subinterface {
+public class Subclass extends ExtendsArrayList implements Subinterface {
     @Override
     public int compareTo(Object o) {
         return 0;
