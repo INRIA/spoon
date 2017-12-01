@@ -6,6 +6,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -415,5 +416,24 @@ public class APITest {
 		assertEquals(1, l.getMethods().size());
 		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
 		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void testSourceClasspathDoesNotAcceptDotClass() {
+		// contract: setSourceClassPath does not accept .class files
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		launcher.setBinaryOutputDirectory("./target/spoon-setscp");
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.run();
+
+		final Launcher launcher2 = new Launcher();
+		try {
+			launcher2.getEnvironment().setSourceClasspath(new String[] {"./target/spoon-setscp/spoon/test/api/testclasses/Bar.class"});
+			fail();
+		} catch (Exception e) {
+			assertTrue(e instanceof InvalidClassPathException);
+			assertTrue(e.getMessage().contains(".class files are not accepted in source classpath."));
+		}
 	}
 }
