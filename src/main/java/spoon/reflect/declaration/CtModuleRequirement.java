@@ -25,12 +25,19 @@ import java.util.Set;
 
 /**
  * Represents a require module in a Java module definition
- * See: https://docs.oracle.com/javase/specs/jls/se9/html/jls-7.html#jls-7.7
+ *
+ * The requires directive specifies the name of a module on which the current module has a dependence.
+ * The requires keyword may be followed by the modifier transitive.
+ * This causes any module which requires the current module to have an implicitly declared dependence
+ * on the module specified by the requires transitive directive.
+ * The requires keyword may be followed by the modifier static.
+ * This specifies that the dependence, while mandatory at compile time, is optional at run time.
  *
  * Example:
  * <pre>
  *     requires transitive com.example.foo.network;
  * </pre>
+ *
  */
 public interface CtModuleRequirement extends CtModuleDirective {
 

@@ -48,7 +48,9 @@ import static spoon.reflect.path.CtRole.SUB_PACKAGE;
  * Provided services are implementations of given service.
  * Modules can require services ("uses" in Java 9)
  *
- * An open module is a module where all packages are exported.
+ * An open module, with the open modifier,
+ * grants access at compile time to types in only those packages which are explicitly exported,
+ * but grants access at run time to types in all its packages, as if all packages had been exported.
  */
 public interface CtModule extends CtNamedElement {
 

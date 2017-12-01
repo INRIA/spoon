@@ -26,10 +26,22 @@ import java.util.List;
 
 /**
  * Represents an exported or opened package in a Java module
- * See: https://docs.oracle.com/javase/specs/jls/se9/html/jls-7.html#jls-7.7
  *
- * An opened package has an access granted only at runtime, contrary to an exported package
- * which is available at compile time and runtime.
+ * The exports directive specifies the name of a package to be exported by the current module.
+ * For code in other modules, this grants access at compile time and run time to the public and protected types in the package,
+ * and the public and protected members of those types. It also grants reflective access to those types and members for code in other modules.
+ *
+ * The opens directive specifies the name of a package to be opened by the current module.
+ * For code in other modules, this grants access at run time, but not compile time, to the public and protected types in the package,
+ * and the public and protected members of those types. It also grants reflective access to all types in the package, and all their members, for code in other modules.
+ *
+ * It is permitted for opens to specify a package which is not declared by a compilation unit associated with the current module.
+ * (If the package should happen to be declared by an observable compilation unit associated with another module, the opens directive has no effect on that other module.)
+ *
+ * If an exports or opens directive has a to clause, then the directive is qualified; otherwise, it is unqualified.
+ * For a qualified directive, the public and protected types in the package, and their public and protected members, are accessible solely to code in the modules specified in the to clause.
+ * The modules specified in the to clause are referred to as friends of the current module. For an unqualified directive, these types and their members are accessible to code in any module.
+ * It is permitted for the to clause of an exports or opens directive to specify a module which is not observable (§7.7.6).
  *
  * Examples:
  * <pre>

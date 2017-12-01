@@ -2,6 +2,7 @@ package spoon.test.module;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtComment;
@@ -252,6 +253,7 @@ public class TestModule {
 		assertSame(module, moduleNewName);
 	}
 
+	@Ignore
 	@Test
 	public void testSimpleModuleCanBeBuiltAndCompiled() {
 		// contract: Spoon is able to build and compile a model with a module
@@ -267,6 +269,7 @@ public class TestModule {
 		assertEquals(1, launcher.getModel().getAllTypes().size());
 	}
 
+	@Ignore
 	@Test
 	public void testMultipleModulesAndParents() {
 		// contract: Spoon is able to build a model with multiple modules
