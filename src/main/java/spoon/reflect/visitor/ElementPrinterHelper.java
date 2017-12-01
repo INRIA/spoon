@@ -286,7 +286,7 @@ public class ElementPrinterHelper {
 					CtTypeReference typeRef = (CtTypeReference) ctImport.getReference();
 					importTypeStr = typeRef.getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
-						setImports.add(importTypeStr);
+						setImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
 					break;
 
@@ -294,7 +294,7 @@ public class ElementPrinterHelper {
 					CtPackageReference packageRef = (CtPackageReference) ctImport.getReference();
 					importTypeStr = packageRef.getQualifiedName() + ".*";
 					if (!isJavaLangClasses(importTypeStr)) {
-						setImports.add(importTypeStr);
+						setImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
 					break;
 
@@ -314,7 +314,7 @@ public class ElementPrinterHelper {
 					CtTypeReference typeStarRef = (CtTypeReference) ctImport.getReference();
 					importTypeStr = typeStarRef.getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
-						setStaticImports.add(importTypeStr);
+						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
 					break;
 			}
