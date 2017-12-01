@@ -14,6 +14,8 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ElementPrinterHelper;
+import spoon.reflect.visitor.ListPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
@@ -447,5 +449,30 @@ public class PrinterTest {
 				assertTrue(Character.isWhitespace(c)==false);
 			}
 		}
+	}
+
+	@Test
+	public void testListPrinter() {
+
+		Launcher spoon = new Launcher();
+		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) spoon.createPrettyPrinter();
+
+		PrinterHelper ph = new PrinterHelper(spoon.getEnvironment());
+		TokenWriter tw = new DefaultTokenWriter(ph);
+		pp.setPrinterTokenWriter(tw);
+
+		ElementPrinterHelper elementPrinterHelper = pp.getElementPrinterHelper();
+
+		String[] listString = new String[] {"un", "deux", "trois"};
+
+		try (ListPrinter listPrinter = elementPrinterHelper.createListPrinter(true, "start", true, true, "next", true, true, "end")) {
+			for (String s : listString) {
+				listPrinter.printSeparatorIfAppropriate();
+				tw.writeIdentifier(s);
+			}
+		}
+
+		String expectedResult = " start un next deux next trois end";
+		assertEquals(expectedResult, pp.toString());
 	}
 }

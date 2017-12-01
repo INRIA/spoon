@@ -473,7 +473,7 @@ public class ElementPrinterHelper {
 	 * before printing of each item.
 	 */
 	public ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
-		return new ListPrinter(printer, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
+		return new ListPrinter(printer, startPrefixSpace, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
 	}
 
 	private static final String QALIFIED_NAME_SEPARATORS = ".$";
