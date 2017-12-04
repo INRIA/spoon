@@ -253,16 +253,14 @@ public class TestModule {
 		assertSame(module, moduleNewName);
 	}
 
-	@Ignore
 	@Test
 	public void testSimpleModuleCanBeBuiltAndCompiled() {
 		// contract: Spoon is able to build and compile a model with a module
 
 		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setComplianceLevel(9);
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.getEnvironment().setModuleSourcePath("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.run();
 
 		assertEquals(2, launcher.getModel().getAllModules().size());

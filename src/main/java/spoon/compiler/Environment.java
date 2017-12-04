@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.experimental.modelobs.FineModelChangeListener;
 
+import java.io.File;
 import java.nio.charset.Charset;
 
 /**
@@ -351,4 +352,8 @@ public interface Environment {
 	 * Set the encoding to use for parsing source code
 	 */
 	void setEncoding(Charset encoding);
+
+	String getModuleSourcePath();
+
+	void setModuleSourcePath(String moduleSourcePath);
 }

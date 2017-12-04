@@ -38,6 +38,7 @@ import spoon.compiler.builder.ClasspathOptions;
 import spoon.compiler.builder.ComplianceOptions;
 import spoon.compiler.builder.JDTBuilder;
 import spoon.compiler.builder.JDTBuilderImpl;
+import spoon.compiler.builder.ModuleOptions;
 import spoon.compiler.builder.SourceOptions;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
@@ -381,6 +382,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(classpath)) //
 					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
 					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
+					.modules(new ModuleOptions().modules(getEnvironment().getModuleSourcePath()))
 					.sources(new SourceOptions().sources(sourceFiles)) // no sources, handled by the JDTBatchCompiler
 					.build();
 		} else {

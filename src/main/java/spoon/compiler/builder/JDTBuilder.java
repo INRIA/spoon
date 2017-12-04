@@ -46,6 +46,11 @@ public interface JDTBuilder {
 	JDTBuilder sources(SourceOptions<?> options);
 
 	/**
+	 * Modules for the compiler.
+	 */
+	JDTBuilder modules(ModuleOptions<?> options);
+
+	/**
 	 * Builds arguments.
 	 */
 	String[] build();

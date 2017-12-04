@@ -93,6 +93,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
+	private String moduleSourcePath;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -514,5 +516,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public String getModuleSourcePath() {
+		return this.moduleSourcePath;
+	}
+
+	@Override
+	public void setModuleSourcePath(String moduleSourcePath) {
+		this.moduleSourcePath = moduleSourcePath;
 	}
 }
