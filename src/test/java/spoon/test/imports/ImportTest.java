@@ -1,6 +1,7 @@
 package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -41,6 +42,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
+import spoon.test.imports.testclasses.AddImport;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
@@ -1301,5 +1303,35 @@ public class ImportTest {
 
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
+	}
+
+	@Test
+	public void testRemoveAndAddImports() {
+		// contract: the API authorize to add and remove imports
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/AddImport.java");
+		launcher.buildModel();
+
+		CtType addImport = launcher.getFactory().Type().get(AddImport.class);
+		CompilationUnit cu = addImport.getPosition().getCompilationUnit();
+
+		assertEquals(1, cu.getImports().size());
+		assertTrue(addImport.toString().contains("Assert.assertNull(null);"));
+
+		CtType assertType = launcher.getFactory().Type().get(Assert.class);
+		CtImport importAssert = launcher.getFactory().createImport(assertType.getReference());
+		cu.removeImport(importAssert);
+
+		assertEquals(0, cu.getImports().size());
+		assertTrue("Content of the file:"+addImport.toString(), addImport.toString().contains("org.junit.Assert.assertNull(null);"));
+
+		CtMethod assertNull = assertType.getMethod("assertNull", launcher.getFactory().Type().objectType());
+		CtImport importAssertMethod = launcher.getFactory().createImport(assertNull.getReference());
+		cu.addImport(importAssertMethod);
+
+		assertEquals(1, cu.getImports().size());
+		assertFalse("Content of the file: "+addImport.toString(), addImport.toString().contains("Assert.assertNull(null);"));
 	}
 }

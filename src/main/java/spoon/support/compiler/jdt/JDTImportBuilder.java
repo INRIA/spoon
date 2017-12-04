@@ -28,6 +28,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,7 +102,7 @@ class JDTImportBuilder {
 			}
 		}
 
-		spoonUnit.setImports(this.imports);
+		spoonUnit.setImports(new ArrayList<>(this.imports));
 	}
 
 	private CtType getOrLoadClass(String className) {

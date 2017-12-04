@@ -16,6 +16,7 @@
  */
 package spoon.reflect.cu;
 
+import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -141,12 +142,24 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Get the imports computed for this CU
 	 * @return All the imports from the original source code
 	 */
-	Collection<CtImport> getImports();
+	List<CtImport> getImports();
 
 	/**
 	 * Set the imports of this CU
 	 * @param imports All the imports of the original source code
 	 */
-	void setImports(Collection<CtImport> imports);
+	<T extends CompilationUnit> T setImports(List<CtImport> imports);
+
+	/**
+	 * Add a new import
+	 * @param newImport
+	 */
+	<T extends CompilationUnit> T addImport(CtImport newImport);
+
+	/**
+	 * Removes an import
+	 * @param oldImport
+	 */
+	<T extends CompilationUnit> T removeImport(CtImport oldImport);
 
 }

@@ -25,6 +25,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +45,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtPackage ctPackage;
 
-	Collection<CtImport> imports = new HashSet<>();
+	List<CtImport> imports = CtElementImpl.emptyList();
 
 	CtModule ctModule;
 
@@ -242,14 +243,41 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Collection<CtImport> getImports() {
-		return this.imports;
+	public List<CtImport> getImports() {
+		return Collections.unmodifiableList(this.imports);
 	}
 
 	@Override
-	public void setImports(Collection<CtImport> imports) {
-		this.imports = imports;
+	public <T extends CompilationUnit> T setImports(List<CtImport> imports) {
+		if (imports != null && imports.size() > 0) {
+			this.imports = new ArrayList<>(imports);
+		}
+
+		return (T) this;
 	}
+
+	@Override
+	public <T extends CompilationUnit> T addImport(CtImport newImport) {
+		if (newImport == null) {
+			return (T) this;
+		}
+		if (this.imports == CtElementImpl.<CtImport>emptyList()) {
+			this.imports = new ArrayList<>();
+		}
+
+		this.imports.add(newImport);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CompilationUnit> T removeImport(CtImport oldImport) {
+		if (oldImport == null || this.imports == CtElementImpl.<CtImport>emptyList()) {
+			return (T) this;
+		}
+		this.imports.remove(oldImport);
+		return (T) this;
+	}
+
 
 	public Factory getFactory() {
 		return factory;
@@ -257,16 +285,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-	}
-
-	boolean autoImport = true;
-
-	public boolean isAutoImport() {
-		return autoImport;
-	}
-
-	public void setAutoImport(boolean autoImport) {
-		this.autoImport = autoImport;
 	}
 
 
