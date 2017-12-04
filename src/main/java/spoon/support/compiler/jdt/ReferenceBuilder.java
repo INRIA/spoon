@@ -27,6 +27,7 @@ import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.ast.LambdaExpression;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
+import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
@@ -68,6 +69,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -77,6 +79,7 @@ import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -457,7 +460,10 @@ public class ReferenceBuilder {
 	}
 
 	private CtPackageReference getPackageReference(PackageBinding reference) {
-		String name = new String(reference.shortReadableName());
+		return getPackageReference(new String(reference.shortReadableName()));
+	}
+
+	public CtPackageReference getPackageReference(String name) {
 		if (name.length() == 0) {
 			return this.jdtTreeBuilder.getFactory().Package().topLevel();
 		}
@@ -1044,5 +1050,17 @@ public class ReferenceBuilder {
 			}
 		}
 		return null;
+	}
+
+	public CtModuleReference getModuleReference(ModuleReference moduleReference) {
+		String moduleName = new String(moduleReference.moduleName);
+		CtModule module = this.jdtTreeBuilder.getFactory().Module().getModule(moduleName);
+		if (module == null) {
+			CtModuleReference ctModuleReference = this.jdtTreeBuilder.getFactory().Core().createModuleReference();
+			ctModuleReference.setSimpleName(moduleName);
+			return ctModuleReference;
+		} else {
+			return module.getReference();
+		}
 	}
 }

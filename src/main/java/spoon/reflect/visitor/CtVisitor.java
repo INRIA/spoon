@@ -75,9 +75,14 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -85,6 +90,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -472,4 +478,16 @@ public interface CtVisitor {
 	 * Visits an import declaration
 	 */
 	void visitCtImport(CtImport ctImport);
+
+	void visitCtModule(CtModule module);
+
+	void visitCtModuleReference(CtModuleReference moduleReference);
+
+	void visitCtPackageExport(CtPackageExport moduleExport);
+
+	void visitCtModuleRequirement(CtModuleRequirement moduleRequirement);
+
+	void visitCtProvidedService(CtProvidedService moduleProvidedService);
+
+	void visitCtUsedService(CtUsedService usedService);
 }

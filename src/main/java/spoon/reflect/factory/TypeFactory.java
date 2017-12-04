@@ -479,7 +479,7 @@ public class TypeFactory extends SubFactory {
 	 * Gets the list of all top-level created types.
 	 */
 	public List<CtType<?>> getAll() {
-		return (List<CtType<?>>) factory.getModel().getAllTypes();
+		return new ArrayList<>(factory.getModel().getAllTypes());
 	}
 
 	/**

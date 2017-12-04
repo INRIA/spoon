@@ -350,6 +350,6 @@ public class IntercessionTest {
 			private String log(CtMethod<?> element, String message) {
 				return message + "\nin " + element.getSignature() + "\ndeclared in " + element.getDeclaringType().getQualifiedName();
 			}
-		}.scan(factory.getModel().getRootPackage());
+		}.scan(factory.getModel().getUnnamedModule());
 	}
 }

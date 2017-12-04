@@ -17,6 +17,7 @@
 package spoon.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
@@ -58,6 +59,16 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Sets the types declared in this compilation unit.
 	 */
 	void setDeclaredTypes(List<CtType<?>> types);
+
+	/**
+	 * Gets the declared module if the compilationUnit is "module-info.java"
+	 */
+	CtModule getDeclaredModule();
+
+	/**
+	 * Sets the declared module if the compilationUnit is "module-info.java"
+	 */
+	void setDeclaredModule(CtModule module);
 
 	/**
 	 * Gets the package declared in the top level type of the compilation unit.
