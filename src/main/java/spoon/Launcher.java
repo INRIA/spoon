@@ -621,6 +621,11 @@ public class Launcher implements SpoonAPI {
 		return new StandardEnvironment();
 	}
 
+	@Deprecated
+	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
+		return this.createOutputWriter();
+	}
+
 	public JavaOutputProcessor createOutputWriter() {
 		return new JavaOutputProcessor(createPrettyPrinter());
 	}

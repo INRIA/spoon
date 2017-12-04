@@ -82,12 +82,11 @@ public class PackageTest {
 	@Test
 	public void testAnnotationOnPackage() throws Exception {
 		Launcher launcher = new Launcher();
-		Factory factory = launcher.createFactory();
-		launcher.getEnvironment().setSourceOutputDirectory(new File("./target/spooned/"));
+		Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
+		launcher.setSourceOutputDirectory("./target/spooned/");
 		compiler.addInputSource(new File("./src/test/java/spoon/test/pkg/testclasses/"));
-		compiler.setSourceOutputDirectory(new File("./target/spooned/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 

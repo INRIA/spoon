@@ -51,11 +51,11 @@ public class MethodReferenceTest {
 	@Before
 	public void setUp() throws Exception {
 		final Launcher launcher = new Launcher();
-		final Factory factory = launcher.createFactory();
-		factory.getEnvironment().setComplianceLevel(8);
-		final File sourceOutputDir = new File("./target/spooned/");
-		factory.getEnvironment().setSourceOutputDirectory(sourceOutputDir);
+		final Factory factory = launcher.getFactory();
+		launcher.getEnvironment().setComplianceLevel(8);
+
 		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
+		launcher.setSourceOutputDirectory("./target/spooned/");
 		compiler.addInputSource(new File("./src/test/java/spoon/test/methodreference/testclasses/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
