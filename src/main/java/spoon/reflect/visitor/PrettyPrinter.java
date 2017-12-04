@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
@@ -33,6 +34,12 @@ public interface PrettyPrinter {
 	 * It always resets the printing context at the beginning of this process.
 	 */
 	String printPackageInfo(CtPackage pack);
+
+	/**
+	 * Prints the module info.
+	 * It always resets the printing context at the beginning of this process.
+	 */
+	String printModuleInfo(CtModule module);
 
 	/**
 	 * Gets the contents of the compilation unit.

@@ -87,10 +87,15 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
@@ -101,6 +106,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -159,6 +165,8 @@ public interface Factory {
 	ConstructorFactory Constructor(); // used 3 times
 
 	QueryFactory Query();
+
+	ModuleFactory Module();
 
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)
@@ -788,6 +796,11 @@ public interface Factory {
 	CtQuery createQuery(Object input);
 
 	/**
+	 * @see QueryFactory#createQuery(Object...)
+	 */
+	CtQuery createQuery(Object... input);
+
+	/**
 	 *
 	 * @see AnnotationFactory#create(String)
 	 */
@@ -919,11 +932,6 @@ public interface Factory {
 	CtElement createElement(Class<? extends CtElement> klass);
 
 	/**
-	 * @see QueryFactory#createQuery(Object...)
-	 */
-	CtQuery createQuery(Object... input);
-
-	/**
 	 * @see TypeFactory#createImport(CtReference)
 	 */
 	CtImport createImport(CtReference reference);
@@ -932,4 +940,34 @@ public interface Factory {
 	 * @see TypeFactory#createWildcardStaticTypeMemberReference(CtTypeReference)
 	 */
 	CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference);
+
+	/**
+	 * @see ModuleFactory#createPackageExport(CtPackageReference)
+	 */
+	CtPackageExport createPackageExport(CtPackageReference ctPackageReference);
+
+	/**
+	 * @see ModuleFactory#createProvidedService(CtTypeReference)
+	 */
+	CtProvidedService createProvidedService(CtTypeReference ctTypeReference);
+
+	/**
+	 * @see ModuleFactory#createModuleRequirement(CtModuleReference)
+	 */
+	CtModuleRequirement createModuleRequirement(CtModuleReference ctModuleReference);
+
+	/**
+	 * @see ModuleFactory#getOrCreate(String)
+	 */
+	CtModule createModule(String moduleName);
+
+	/**
+	 * @see ModuleFactory#createReference(CtModule)
+	 */
+	CtModuleReference createModuleReference(CtModule ctModule);
+
+	/**
+	 * @see ModuleFactory#createUsedService(CtTypeReference)
+	 */
+	CtUsedService createUsedService(CtTypeReference typeReference);
 }

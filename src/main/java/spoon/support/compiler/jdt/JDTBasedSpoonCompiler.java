@@ -129,7 +129,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	private void checkModel() {
 		if (!factory.getEnvironment().checksAreSkipped()) {
-			factory.getModel().getRootPackage().accept(new AstParentConsistencyChecker());
+			factory.getModel().getUnnamedModule().accept(new AstParentConsistencyChecker());
 		}
 	}
 
@@ -404,7 +404,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		unitLoop:
 		for (CompilationUnitDeclaration unit : units) {
-			if (!unit.isEmpty()) {
+			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				for (final CompilationUnitFilter cuf : compilationUnitFilters) {
 					if (cuf.exclude(unitPath)) {
@@ -434,9 +434,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			ProcessingManager processing = new QueueProcessingManager(factory);
 			processing.addProcessor(factory.getEnvironment().getDefaultFileGenerator());
 			if (typeFilter != null) {
-				processing.process(Query.getElements(factory.Package().getRootPackage(), typeFilter));
+				processing.process(Query.getElements(factory.getModel().getUnnamedModule(), typeFilter));
 			} else {
-				processing.process(factory.Package().getRootPackage());
+				processing.process(factory.getModel().getAllModules());
 			}
 		}
 	}

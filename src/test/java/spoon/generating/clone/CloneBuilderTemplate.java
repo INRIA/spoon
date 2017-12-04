@@ -23,7 +23,7 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 /**
  * Used to set all data in the cloned element.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 class CloneBuilderTemplate extends CtInheritanceScanner {
 	public static <T extends CtElement> T build(CtElement element, CtElement other) {

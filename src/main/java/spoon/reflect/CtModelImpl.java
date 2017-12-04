@@ -18,19 +18,18 @@ package spoon.reflect;
 
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
-import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 
 import java.util.ArrayList;
@@ -44,43 +43,22 @@ public class CtModelImpl implements CtModel {
 
 	@Override
 	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
-		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).filterChildren(filter);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).filterChildren(filter);
 	}
 
 	@Override
 	public <I, R> CtQuery map(CtFunction<I, R> function) {
-		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(function);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(function);
 	}
 
 	@Override
 	public <I> CtQuery map(CtConsumableFunction<I> queryStep) {
-		return getRootPackage().getFactory().Query().createQuery(this.getRootPackage()).map(queryStep);
+		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).map(queryStep);
 	}
 
 	public static class CtRootPackage extends CtPackageImpl {
 		{
 			this.setSimpleName(CtPackage.TOP_LEVEL_PACKAGE_NAME);
-			this.setParent(new CtElementImpl() {
-				@Override
-				public void accept(CtVisitor visitor) {
-
-				}
-
-				@Override
-				public CtElement getParent() throws ParentNotInitializedException {
-					return null;
-				}
-
-				@Override
-				public Factory getFactory() {
-					return CtRootPackage.this.getFactory();
-				}
-			});
-		}
-
-		@Override
-		public String getSimpleName() {
-			return super.getSimpleName();
 		}
 
 		@Override
@@ -105,18 +83,20 @@ public class CtModelImpl implements CtModel {
 		public String toString() {
 			return TOP_LEVEL_PACKAGE_NAME;
 		}
-
 	}
 
-	private final CtPackage rootPackage = new CtRootPackage();
+	private final CtModule unnamedModule;
 
 	public CtModelImpl(Factory f) {
-		rootPackage.setFactory(f);
+		this.unnamedModule = new ModuleFactory.CtUnnamedModule();
+		this.unnamedModule.setFactory(f);
+		this.unnamedModule.setRootPackage(new CtModelImpl.CtRootPackage());
+		getRootPackage().setFactory(f);
 	}
 
 	@Override
 	public CtPackage getRootPackage() {
-		return rootPackage;
+		return getUnnamedModule().getRootPackage();
 	}
 
 
@@ -135,12 +115,22 @@ public class CtModelImpl implements CtModel {
 		return Collections.unmodifiableCollection(getElements(new TypeFilter<>(CtPackage.class)));
 	}
 
+	@Override
+	public CtModule getUnnamedModule() {
+		return this.unnamedModule;
+	}
+
+	@Override
+	public Collection<CtModule> getAllModules() {
+		return ((ModuleFactory.CtUnnamedModule) this.unnamedModule).getAllModules();
+	}
+
 
 	@Override
 	public void processWith(Processor<?> processor) {
-		QueueProcessingManager processingManager = new QueueProcessingManager(getRootPackage().getFactory());
+		QueueProcessingManager processingManager = new QueueProcessingManager(getUnnamedModule().getFactory());
 		processingManager.addProcessor(processor);
-		processingManager.process(getRootPackage());
+		processingManager.process(getAllModules());
 	}
 
 	@Override

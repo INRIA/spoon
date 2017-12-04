@@ -390,7 +390,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public boolean hasParent(CtElement candidate) {
 		try {
-			return this != getFactory().getModel().getRootPackage() && (getParent() == candidate || getParent().hasParent(candidate));
+			return this != getFactory().getModel().getUnnamedModule() && (getParent() == candidate || getParent().hasParent(candidate));
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}

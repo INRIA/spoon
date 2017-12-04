@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
@@ -29,6 +30,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.parent.ParentContractTest.createCompatibleObject;
@@ -71,6 +73,9 @@ public class SetParentTest<T extends CtVisitable> {
 				) {
 			// contract: root package is the parent for those classes
 			assertTrue(receiver.getParent() instanceof CtModelImpl.CtRootPackage);
+		} else if ("CtModule".equals(toTest.getSimpleName())) {
+			// contract: module parent is necessarily the unnamedmodule
+			assertTrue(receiver.getParent() instanceof ModuleFactory.CtUnnamedModule);
 		} else {
 			// contract: there is no parent before
 			try {
