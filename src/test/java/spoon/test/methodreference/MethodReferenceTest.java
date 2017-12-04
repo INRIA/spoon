@@ -54,10 +54,8 @@ public class MethodReferenceTest {
 		final Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(8);
 		final File sourceOutputDir = new File("./target/spooned/");
-		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir, factory.getEnvironment()));
+		factory.getEnvironment().setSourceOutputDirectory(sourceOutputDir);
 		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
-
-		compiler.setSourceOutputDirectory(sourceOutputDir);
 		compiler.addInputSource(new File("./src/test/java/spoon/test/methodreference/testclasses/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);

@@ -33,6 +33,7 @@ public interface FileGenerator<T extends CtElement> extends Processor<T> {
 
 	/**
 	 * Sets the root directory where files should be created.
+	 *
 	 */
 	void setOutputDirectory(File directory);
 

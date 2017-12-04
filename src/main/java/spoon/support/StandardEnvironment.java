@@ -91,7 +91,9 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Charset encoding = Charset.defaultCharset();
 
-	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
+	private File sourceOutputDirectory = new File(Launcher.OUTPUTDIR);
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -494,6 +496,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public String getBinaryOutputDirectory() {
 		return binaryOutputDirectory;
+	}
+
+	@Override
+	public void setSourceOutputDirectory(File directory) {
+		this.sourceOutputDirectory = directory;
+	}
+
+	@Override
+	public File getSourceOutputDirectory() {
+		return this.sourceOutputDirectory;
 	}
 
 	@Override

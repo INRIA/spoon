@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -51,5 +52,10 @@ public interface PrettyPrinter {
 	 * code.
 	 */
 	Map<Integer, Integer> getLineNumberMapping();
+
+	/**
+	 * Returns the environment used by the pretty printer.
+	 */
+	Environment getEnvironment();
 
 }

@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.experimental.modelobs.FineModelChangeListener;
 
+import java.io.File;
 import java.nio.charset.Charset;
 
 /**
@@ -331,6 +332,16 @@ public interface Environment {
 
 	/** Set the directory where binary .class files are created */
 	String getBinaryOutputDirectory();
+
+	/**
+	 * Sets the directory where source files are written
+	 */
+	void setSourceOutputDirectory(File directory);
+
+	/**
+	 * Returns the directory where source files are written
+	 */
+	File getSourceOutputDirectory();
 
 	/**
 	 * get the model change listener that is used to follow the change of the AST.

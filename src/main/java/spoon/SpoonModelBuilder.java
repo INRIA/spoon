@@ -226,6 +226,7 @@ public interface SpoonModelBuilder {
 	 *
 	 * @param outputDirectory
 	 * 		{@link File} for output directory.
+	 *
 	 */
 	void setSourceOutputDirectory(File outputDirectory);
 
