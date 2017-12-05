@@ -1241,26 +1241,6 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAnnotationTypeAndFieldOnType() {
-		// contract: annotation on type should be written before the FQN in FQN mode
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/typeandfield");
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setSourceOutputDirectory("./target/spooned-typeandfield");
-		launcher.run();
-
-		CtType type = launcher.getFactory().Type().get(SimpleClass.class);
-		CtField field = type.getField("anotherField");
-		assertEquals(0, field.getAnnotations().size());
-
-		CtTypeReference typeField = field.getType();
-		assertEquals(1, typeField.getAnnotations().size());
-		assertEquals("java.lang.String", typeField.getQualifiedName());
-
-		assertEquals("@AnnotTypeAndField\njava.lang.String", typeField.toString());
-	}
-
-	@Test
 	public void testAnnotationTypeAndFieldOnField() throws IOException {
 		// contract: annotation on field with an annotation type which supports type and field, should remains on field
 		final Launcher launcher = new Launcher();
