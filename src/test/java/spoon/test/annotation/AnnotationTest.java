@@ -1,5 +1,6 @@
 package spoon.test.annotation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -66,11 +67,14 @@ import spoon.test.annotation.testclasses.repeatable.Tag;
 import spoon.test.annotation.testclasses.repeatandarrays.RepeatedArrays;
 import spoon.test.annotation.testclasses.repeatandarrays.TagArrays;
 import spoon.test.annotation.testclasses.spring.AliasFor;
+import spoon.test.annotation.testclasses.typeandfield.SimpleClass;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,6 +96,7 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 public class AnnotationTest {
 	private Launcher launcher;
 	private Factory factory;
+
 	@Before
 	public void setUp() throws Exception {
 		launcher = new Launcher();
@@ -1233,5 +1238,51 @@ public class AnnotationTest {
 			assertEquals("cannot assign an array to a non-array annotation element", e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void testAnnotationTypeAndFieldOnType() {
+		// contract: annotation on type should be written before the FQN in FQN mode
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/typeandfield");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/spooned-typeandfield");
+		launcher.run();
+
+		CtType type = launcher.getFactory().Type().get(SimpleClass.class);
+		CtField field = type.getField("anotherField");
+		assertEquals(0, field.getAnnotations().size());
+
+		CtTypeReference typeField = field.getType();
+		assertEquals(1, typeField.getAnnotations().size());
+		assertEquals("java.lang.String", typeField.getQualifiedName());
+
+		assertEquals("@AnnotTypeAndField\njava.lang.String", typeField.toString());
+	}
+
+	@Test
+	public void testAnnotationTypeAndFieldOnField() throws IOException {
+		// contract: annotation on field with an annotation type which supports type and field, should remains on field
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/typeandfield");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/spooned-typeandfield");
+		launcher.run();
+
+		CtType type = launcher.getFactory().Type().get(SimpleClass.class);
+
+		CtField field = type.getField("mandatoryField");
+		assertEquals(1, field.getAnnotations().size());
+		CtAnnotation annotation = field.getAnnotations().get(0);
+		assertEquals("spoon.test.annotation.testclasses.typeandfield.AnnotTypeAndField", annotation.getAnnotationType().getQualifiedName());
+
+		assertEquals("java.lang.String", field.getType().getQualifiedName());
+		assertEquals(0, field.getType().getAnnotations().size());
+
+		List<String> lines = Files.readAllLines(new File("./target/spooned-typeandfield/spoon/test/annotation/testclasses/typeandfield/SimpleClass.java").toPath());
+		String fileContent = StringUtils.join(lines, "\n");
+
+		assertTrue("Content :"+fileContent, fileContent.contains("@AnnotTypeAndField"));
+		assertTrue("Content :"+fileContent, fileContent.contains("public java.lang.String mandatoryField;"));
 	}
 }
