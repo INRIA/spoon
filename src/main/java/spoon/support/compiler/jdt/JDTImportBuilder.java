@@ -102,7 +102,7 @@ class JDTImportBuilder {
 			}
 		}
 
-		spoonUnit.setImports(new ArrayList<>(this.imports));
+		spoonUnit.getImportScanner().setOriginalImports(new ArrayList<>(this.imports));
 	}
 
 	private CtType getOrLoadClass(String className) {
