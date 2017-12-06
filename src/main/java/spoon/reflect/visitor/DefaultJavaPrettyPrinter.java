@@ -314,7 +314,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				}
 			}
 			if (this.sourceCompilationUnit == null) {
-				if (!(e.getPosition() instanceof NoSourcePosition)) {
+				if (e.getPosition().getCompilationUnit() != null) {
 					this.sourceCompilationUnit = e.getPosition().getCompilationUnit();
 					this.importScanner = this.sourceCompilationUnit.getImportScanner();
 					this.importScanner.computeImports(this.sourceCompilationUnit);
@@ -1701,14 +1701,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (this.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
+		// java.lang is always considered as imported but we still print it in FQN mode
+		if (!this.env.isAutoImports() && ref.getQualifiedName().startsWith("java.lang")) {
+			return true;
+		}
+		if (this.isImported(ref)) {
 			// If my.pkg.Something is imported, but
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
 			//	we should still use qualified version my.pkg.Something
 			for (TypeContext typeContext : context.currentThis) {
-				if (typeContext.getSimpleName().equals(ref.getSimpleName())
-						&& !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
+				if (typeContext.getSimpleName().equals(ref.getSimpleName()) && !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
 					return true;
 				}
 				if (typeContext.isNameConflict(ref.getSimpleName())) {
@@ -1869,12 +1872,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(pack);
 
 		this.sourceCompilationUnit = pack.getPosition().getCompilationUnit();
+		// we are creating a new compilation unit then.
+		if (this.sourceCompilationUnit == null) {
+			this.sourceCompilationUnit = pack.getFactory().createCompilationUnit();
+			this.sourceCompilationUnit.setFactory(pack.getFactory());
+			this.sourceCompilationUnit.setDeclaredPackage(pack);
+
+			this.importScanner = this.sourceCompilationUnit.getImportScanner();
+		}
 
 		// we need to compute imports only for annotations
-		// we don't want to get all imports coming from content of package
-		/*for (CtAnnotation annotation : pack.getAnnotations()) {
-			this.importsContext.computeImports(annotation);
-		}*/
+		this.sourceCompilationUnit.getImports();
 		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
@@ -1910,9 +1918,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// reset the importsContext to avoid errors with multiple CU
 		reset();
 
-		this.sourceCompilationUnit = sourceCompilationUnit;
-		this.importScanner = sourceCompilationUnit.getImportScanner();
-		elementPrinterHelper.writeHeader(types, this.sourceCompilationUnit.getImports());
+		if (sourceCompilationUnit != null) {
+			this.sourceCompilationUnit = sourceCompilationUnit;
+			this.importScanner = sourceCompilationUnit.getImportScanner();
+			elementPrinterHelper.writeHeader(types, this.sourceCompilationUnit.getImports());
+		} else {
+			elementPrinterHelper.writeHeader(types, null);
+		}
+
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {

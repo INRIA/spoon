@@ -160,7 +160,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean isTypeInCollision(CtReference reference) {
-		if (reference.getSimpleName().equals(targetType.getSimpleName())) {
+		if (targetType != null && reference.getSimpleName().equals(targetType.getSimpleName())) {
 			return true;
 		}
 
@@ -180,6 +180,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			}
 
+			if (targetType == null) {
+				return ctTypeReference.getModifiers().contains(ModifierKind.PUBLIC);
+			}
 			return targetType.canAccess(ctTypeReference);
 		}
 
@@ -225,7 +228,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				break;
 
 			case PACKAGE_DECLARATION:
-				this.scan(cu.getDeclaredPackage());
+				this.scan(cu.getDeclaredPackage().getAnnotations());
 				break;
 		}
 	}

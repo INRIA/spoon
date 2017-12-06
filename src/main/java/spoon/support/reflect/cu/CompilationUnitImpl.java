@@ -273,6 +273,14 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return (T) this;
 	}
 
+	private void initImportScanner() {
+		if (this.factory.getEnvironment().isAutoImports()) {
+			this.importScanner = new ImportScannerImpl(this.factory);
+		} else {
+			this.importScanner = new MinimalImportScanner(this.factory);
+		}
+	}
+
 	@Override
 	public ImportScanner getImportScanner() {
 		return this.importScanner;
@@ -285,11 +293,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-		if (this.factory.getEnvironment().isAutoImports()) {
-			this.importScanner = new ImportScannerImpl(factory);
-		} else {
-			this.importScanner = new MinimalImportScanner(factory);
-		}
+		this.initImportScanner();
 	}
 
 

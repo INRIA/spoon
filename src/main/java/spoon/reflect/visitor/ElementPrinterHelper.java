@@ -368,7 +368,9 @@ public class ElementPrinterHelper {
 			if (!types.get(0).getPackage().isUnnamedPackage()) {
 				writePackageLine(types.get(0).getPackage().getQualifiedName());
 			}
-			this.writeImports(imports);
+			if (imports != null) {
+				this.writeImports(imports);
+			}
 			printer.writeln();
 			printer.writeln();
 		}
