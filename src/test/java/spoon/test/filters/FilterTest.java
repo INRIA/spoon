@@ -756,6 +756,7 @@ public class FilterTest {
 	@Test
 	public void testQueryWithOptionalNumberOfInputs() throws Exception {
 		// contract: QueryFactory allows to create query with an optional number of inputs
+		// the input can be provided as Array or Iterable
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -768,13 +769,19 @@ public class FilterTest {
 		// here is the query
 		CtQuery q1 = launcher.getFactory().Query().createQuery(cls, cls2).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1.list().toArray());
+		CtQuery q1b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls2)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1b.list().toArray());
 
 		CtQuery q2 = launcher.getFactory().Query().createQuery(cls, cls3).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2.list().toArray());
+		CtQuery q2b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls3)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2b.list().toArray());
 
 		CtQuery q3 = launcher.getFactory().Query().createQuery(cls, cls2, cls3).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3.list().toArray());
-	}
+		CtQuery q3b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls2, cls3)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3b.list().toArray());
+}
 
 	// now testing map(CtConsumableFunction)
 
