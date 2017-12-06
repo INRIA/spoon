@@ -801,6 +801,11 @@ public interface Factory {
 	CtQuery createQuery(Object... input);
 
 	/**
+	 * @see QueryFactory#createQuery(Iterable)
+	 */
+	CtQuery createQuery(Iterable<?> input);
+
+	/**
 	 *
 	 * @see AnnotationFactory#create(String)
 	 */

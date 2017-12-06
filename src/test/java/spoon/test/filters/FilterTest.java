@@ -865,16 +865,16 @@ public class FilterTest {
 		
 		//contract: empty query returns no element
 		assertEquals(0, launcher.getFactory().createQuery().list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).list().size());
 		//contract: empty query returns no element
 		launcher.getFactory().createQuery().forEach(x->fail());
-		launcher.getFactory().createQuery(null).forEach(x->fail());
+		launcher.getFactory().createQuery((Object) null).forEach(x->fail());
 		//contract: empty query calls no mapping
 		assertEquals(0, launcher.getFactory().createQuery().map(x->{fail();return true;}).list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).map(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).map(x->{fail();return true;}).list().size());
 		//contract: empty query calls no filterChildren
 		assertEquals(0, launcher.getFactory().createQuery().filterChildren(x->{fail();return true;}).list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).filterChildren(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).filterChildren(x->{fail();return true;}).list().size());
 	}
 	
 	@Test
