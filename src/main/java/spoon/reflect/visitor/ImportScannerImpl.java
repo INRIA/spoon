@@ -212,8 +212,22 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void computeImports(CompilationUnit cu) {
-		this.targetType = cu.getMainType().getReference();
-		this.scan(cu.getDeclaredTypes());
+		switch (cu.getUnitType()) {
+			case TYPE_DECLARATION:
+				for (CtType type : cu.getDeclaredTypes()) {
+					this.targetType = type.getReference();
+					this.scan(type);
+				}
+				break;
+
+			case MODULE_DECLARATION:
+				this.scan(cu.getDeclaredModule());
+				break;
+
+			case PACKAGE_DECLARATION:
+				this.scan(cu.getDeclaredPackage());
+				break;
+		}
 	}
 
 	@Override
