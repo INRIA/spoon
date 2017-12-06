@@ -175,6 +175,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			}
 			if (!ctTypeReference.equals(ctTypeReference.getTopLevelType())) {
 				ctTypeReference = ctTypeReference.getTopLevelType();
+				if (isImported(ctTypeReference)) {
+					return false;
+				}
 			}
 
 			return targetType.canAccess(ctTypeReference);

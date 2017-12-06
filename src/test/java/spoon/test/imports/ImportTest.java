@@ -623,7 +623,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;")>=0);
+		assertTrue(mm.toString().contains("java.util.List<Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 
@@ -635,13 +635,15 @@ public class ImportTest {
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
+
 		try {
 			launcher.getModelBuilder().compile();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("List<Interners.WeakInterner.Dummy> list;")>=0);
+
+		assertTrue(mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 
