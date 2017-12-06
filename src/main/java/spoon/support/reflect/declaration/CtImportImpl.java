@@ -29,6 +29,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
+import java.util.ArrayList;
+
 public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
 	private CtReference localReference;
@@ -62,6 +64,9 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	public <T extends CtImport> T setReference(CtReference reference) {
 		if (reference != null) {
 			reference.setParent(this);
+		}
+		if (reference instanceof CtTypeReference) {
+			((CtTypeReference) reference).setActualTypeArguments(new ArrayList<>());
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_REFERENCE, reference, this.localReference);
 		this.localReference = reference;

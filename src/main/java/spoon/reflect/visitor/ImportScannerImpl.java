@@ -32,7 +32,9 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A scanner that calculates the imports for a given model.
@@ -41,7 +43,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	protected Factory factory;
 	protected List<CtImport> imports = CtElementImpl.emptyList();
-	protected List<CtImport> originalImports = CtElementImpl.emptyList();
+	protected Set<CtImport> removedImports = CtElementImpl.emptySet();
 
 
 	//top declaring type of that import
@@ -67,7 +69,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		if (reference.isStatic()) {
-			this.addImport(reference);
+			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
+				this.addImport(reference);
+			}
 		} else {
 			super.visitCtFieldReference(reference);
 		}
@@ -76,9 +80,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 		if (reference.isStatic()) {
-			this.addImport(reference);
+			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
+				this.addImport(reference);
+			}
 		} else if (reference.isConstructor()) {
 			super.visitCtExecutableReference(reference);
+		}
+
+		if (!reference.getActualTypeArguments().isEmpty()) {
+			this.scan(reference.getActualTypeArguments());
 		}
 	}
 
@@ -113,21 +123,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public void setOriginalImports(List<CtImport> imports) {
-		if (imports != null && !imports.isEmpty()) {
-			if (this.originalImports == CtElementImpl.<CtImport>emptyList()) {
-				this.originalImports = new ArrayList<>();
-			}
-
-			this.originalImports.clear();
-			this.originalImports.addAll(imports);
-			for (CtImport ctImport : this.originalImports) {
-				this.addImport(ctImport);
-			}
-		}
-	}
-
-	@Override
 	public void setImports(List<CtImport> importList) {
 		if (importList != null && !importList.isEmpty()) {
 			if (this.imports == CtElementImpl.<CtImport>emptyList()) {
@@ -154,9 +149,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 	}
 
-	public void addImport(CtReference reference) {
+	protected void addImport(CtReference reference) {
 		if (!isTypeInCollision(reference) && !isImported(reference) && isVisible(reference)) {
-			this.addImport(this.factory.Type().createImport(reference));
+			CtImport ctImport = this.factory.Type().createImport(reference);
+
+			if (!this.removedImports.contains(ctImport)) {
+				this.addImport(ctImport);
+			}
 		}
 	}
 
@@ -186,6 +185,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void removeImport(CtImport ctImport) {
+		if (this.removedImports == CtElementImpl.<CtImport>emptySet()) {
+			this.removedImports = new HashSet<>();
+		}
+
+		this.removedImports.add(ctImport);
 		this.imports.remove(ctImport);
 	}
 

@@ -49,8 +49,6 @@ public interface ImportScanner {
 	 */
 	List<CtImport> getAllImports();
 
-	void setOriginalImports(List<CtImport> imports);
-
 	void setImports(List<CtImport> importList);
 
 	void addImport(CtImport ctImport);

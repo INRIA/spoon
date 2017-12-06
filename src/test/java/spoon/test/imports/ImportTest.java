@@ -1,6 +1,7 @@
 package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
@@ -68,6 +69,7 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -274,8 +276,9 @@ public class ImportTest {
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(classWithInvocation);
-		// java.lang imports are also computed
-		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
+
+		// only GlobalAnnotation should be imported
+		assertEquals(1, importScanner.getAllImports().size());
 	}
 
 	@Test
@@ -367,14 +370,12 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
-		Collection<CtImport> imports = importContext.getAllImports();
-
-				// java.lang.Object is considered as imported but it will never be output
-		assertEquals(3, imports.size());
-		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
+		List<CtImport> imports = importContext.getAllImports();
 		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
-		assertEquals(expectedImports, actualImports);
+
+		String[] expectedImports = new String[] { "java.io.File", "spoon.test.imports.testclasses.internal3.Foo"};
+
+		assertArrayEquals("Actual imports: "+ StringUtils.join(actualImports, ","), expectedImports, actualImports.toArray());
 	}
 
 	@Test
@@ -386,10 +387,10 @@ public class ImportTest {
 		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(Pozole.class));
 
-		Collection<CtImport> imports = importContext.getAllImports();
+		List<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.get(0).toString());
 	}
 
 	@Test
@@ -1325,14 +1326,7 @@ public class ImportTest {
 		CtImport importAssert = launcher.getFactory().createImport(assertType.getReference());
 		cu.removeImport(importAssert);
 
-		assertEquals(0, cu.getImports().size());
-		assertTrue("Content of the file:"+addImport.toString(), addImport.toString().contains("org.junit.Assert.assertNull(null);"));
-
-		CtMethod assertNull = assertType.getMethod("assertNull", launcher.getFactory().Type().objectType());
-		CtImport importAssertMethod = launcher.getFactory().createImport(assertNull.getReference());
-		cu.addImport(importAssertMethod);
-
-		assertEquals(1, cu.getImports().size());
+		assertEquals("Content of the imports: "+StringUtils.join(cu.getImports()), 1, cu.getImports().size());
 		assertFalse("Content of the file: "+addImport.toString(), addImport.toString().contains("Assert.assertNull(null);"));
 	}
 }

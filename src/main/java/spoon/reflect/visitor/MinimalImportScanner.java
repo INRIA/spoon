@@ -16,14 +16,23 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A scanner dedicated to import only the necessary packages, @see spoon.test.variable.AccessFullyQualifiedTest
  *
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
+
+	private Set<String> scopedNames = CtElementImpl.emptySet();
 
 	public MinimalImportScanner(Factory factory) {
 		super(factory);
@@ -37,6 +46,23 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	}
 
+	@Override
+	public void enter(CtElement element) {
+		if (element instanceof CtNamedElement) {
+			if (this.scopedNames == CtElementImpl.<String>emptySet()) {
+				this.scopedNames = new HashSet<>();
+			}
+			this.scopedNames.add(((CtNamedElement) element).getSimpleName());
+		}
+	}
+
+	@Override
+	public void exit(CtElement element) {
+		if (element instanceof CtNamedElement) {
+			this.scopedNames.remove(((CtNamedElement) element).getSimpleName());
+		}
+	}
+
 	/**
 	 * This method use @link{ImportScannerImpl#isTypeInCollision} to import a ref only if there is a collision
 	 * @param ref: the type we are testing, it can be a CtTypeReference, a CtFieldReference or a CtExecutableReference
@@ -46,6 +72,14 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	private boolean shouldTypeBeImported(CtReference ref) {
 		if (ref.equals(targetType)) {
 			return true;
+		}
+
+		if (ref instanceof CtTypeReference) {
+			CtTypeReference ctTypeReference = (CtTypeReference) ref;
+			String[] splitName = ctTypeReference.getQualifiedName().split("\\.");
+			if (this.scopedNames.contains(splitName[0])) {
+				return true;
+			}
 		}
 
 		return false;
