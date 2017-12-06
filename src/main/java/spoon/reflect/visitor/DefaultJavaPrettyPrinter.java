@@ -77,6 +77,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -310,6 +311,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (env.isPreserveLineNumbers()) {
 				if (!(e instanceof CtNamedElement)) {
 					getPrinterHelper().adjustStartPosition(e);
+				}
+			}
+			if (this.sourceCompilationUnit == null) {
+				if (!(e.getPosition() instanceof NoSourcePosition)) {
+					this.sourceCompilationUnit = e.getPosition().getCompilationUnit();
+					this.importScanner = this.sourceCompilationUnit.getImportScanner();
+					this.importScanner.computeImports(this.sourceCompilationUnit);
 				}
 			}
 			try {
@@ -1893,16 +1901,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context = new PrintingContext();
 	}
 
-	private void initmportScanner() {
-		this.importScanner = this.sourceCompilationUnit.getImportScanner();
-		this.importScanner.computeImports(this.sourceCompilationUnit);
-	}
-
 	private boolean isImported(CtReference reference) {
-		if (this.importScanner == null) {
-			this.initmportScanner();
-		}
-		return this.importScanner.isImported(reference);
+		return this.importScanner != null && this.importScanner.isImported(reference);
 	}
 
 	@Override

@@ -16,8 +16,6 @@
  */
 package spoon.reflect.cu;
 
-import com.sun.tools.internal.ws.wsdl.document.Import;
-import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -26,7 +24,6 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.ImportScanner;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
 /**

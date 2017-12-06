@@ -102,7 +102,7 @@ public class ImportTest {
 
 		//test that acces path depends on the context
 		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class). 
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
 		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class) 
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClass.getSuperclass().getTypeDeclaration().getReference().toString());
 		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
@@ -184,6 +184,7 @@ public class ImportTest {
 
 	@Test
 	public void testNewInnerClassDefinesInItsClassAndSuperClass() throws Exception {
+		// contract: in FQN mode, classes from the same package should not be written with the full package name.
 		Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
@@ -195,10 +196,10 @@ public class ImportTest {
 		final CtClass<?> subClass = (CtClass<?>) factory.Type().get(SubClass.class);
 		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
-		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString());
-		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
+		assertEquals("new SubClass.Item(\"\")", ctConstructorCall.toString()); // the constructor call of the current class should not be written in FQN
+		final String expected = "public class SubClass extends SuperClass {" + System.lineSeparator() +   "    public static class Item extends SuperClass.Item {" + System.lineSeparator() + "        public Item(String s) {" + System
 				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
-				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
+				+ "        new SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
 		assertEquals(expected, subClass.toString());
 	}
 
@@ -260,18 +261,18 @@ public class ImportTest {
 		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
 		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
 
-		ImportScanner importScanner = new ImportScannerImpl();
+		ImportScanner importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(aClass);
 		assertEquals(2, importScanner.getAllImports().size());
 
-		importScanner = new ImportScannerImpl();
+		importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
 		assertEquals(2, importScanner.getAllImports().size());
 
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
-		importScanner = new ImportScannerImpl();
+		importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
 		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
@@ -347,7 +348,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(Mole.class));
 
 		Collection<CtImport> imports = importContext.getAllImports();
@@ -363,7 +364,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/internal3/Bar.java",
 				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
 		Collection<CtImport> imports = importContext.getAllImports();
@@ -382,7 +383,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(Pozole.class));
 
 		Collection<CtImport> imports = importContext.getAllImports();
@@ -471,7 +472,7 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString()); // here ChildClass has been imported
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
 	

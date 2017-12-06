@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
 /**
@@ -23,6 +24,19 @@ import spoon.reflect.reference.CtReference;
  *
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
+
+	public MinimalImportScanner(Factory factory) {
+		super(factory);
+	}
+
+	/**
+	 * @deprecated Use constructor with parameter factory instead
+	 */
+	@Deprecated
+	public MinimalImportScanner() {
+
+	}
+
 	/**
 	 * This method use @link{ImportScannerImpl#isTypeInCollision} to import a ref only if there is a collision
 	 * @param ref: the type we are testing, it can be a CtTypeReference, a CtFieldReference or a CtExecutableReference

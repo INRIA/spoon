@@ -286,9 +286,9 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 		if (this.factory.getEnvironment().isAutoImports()) {
-			this.importScanner = new ImportScannerImpl();
+			this.importScanner = new ImportScannerImpl(factory);
 		} else {
-			this.importScanner = new MinimalImportScanner();
+			this.importScanner = new MinimalImportScanner(factory);
 		}
 	}
 

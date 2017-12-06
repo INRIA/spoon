@@ -57,10 +57,10 @@ public class QualifiedThisRefTest {
 	public void testQualifiedThisRef() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		CtType<?> ctClass = factory.Type().get(QualifiedThisRef.class);
-		Collection<CtImport> imports = printer.computeImports(ctClass);
+		//Collection<CtImport> imports = printer.computeImports(ctClass);
 		final List<CtType<?>> ctTypes = new ArrayList<>();
 		ctTypes.add(ctClass);
-		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
+		//printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
 		Assert.assertTrue(printer.getResult().contains("Object o = this"));
 		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));

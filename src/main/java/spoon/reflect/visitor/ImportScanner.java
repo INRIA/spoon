@@ -19,6 +19,7 @@ package spoon.reflect.visitor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
 import java.util.Collection;
@@ -38,6 +39,8 @@ public interface ImportScanner {
 	 * Computes import of a {@link CompilationUnit}
 	 */
 	void computeImports(CompilationUnit cu);
+
+	void setFactory(Factory factory);
 
 	/**
 	 * Use computeImports or computeAllImports before getting the different imports.

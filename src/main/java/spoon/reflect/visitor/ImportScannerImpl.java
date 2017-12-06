@@ -19,7 +19,9 @@ package spoon.reflect.visitor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -45,6 +47,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
 
+	public ImportScannerImpl(Factory factory) {
+		this.factory = factory;
+	}
+
+	/**
+	 * @deprecated Use constructor with factory parameter
+	 */
+	@Deprecated
+	public ImportScannerImpl() {
+
+	}
+
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 	}
@@ -69,7 +84,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-		if (!(reference instanceof CtArrayTypeReference)) {
+		if (!(reference instanceof CtArrayTypeReference) &&
+				!reference.isPrimitive() &&
+				!CtTypeReference.NULL_TYPE_NAME.equals(reference.getSimpleName())) {
 			CtTypeReference typeReference;
 			if (reference.getDeclaringType() == null) {
 				typeReference = reference;
@@ -138,7 +155,33 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	public void addImport(CtReference reference) {
-		this.addImport(this.factory.Type().createImport(reference));
+		if (!isTypeInCollision(reference) && !isImported(reference) && isVisible(reference)) {
+			this.addImport(this.factory.Type().createImport(reference));
+		}
+	}
+
+	protected boolean isTypeInCollision(CtReference reference) {
+		if (reference.getSimpleName().equals(targetType.getSimpleName())) {
+			return true;
+		}
+
+		return false;
+	}
+
+	protected boolean isVisible(CtReference reference) {
+		if (reference instanceof CtTypeReference) {
+			CtTypeReference ctTypeReference = (CtTypeReference) reference;
+			if (ctTypeReference.isLocalType()) {
+				return false;
+			}
+			if (!ctTypeReference.equals(ctTypeReference.getTopLevelType())) {
+				ctTypeReference = ctTypeReference.getTopLevelType();
+			}
+
+			return targetType.canAccess(ctTypeReference);
+		}
+
+		return true;
 	}
 
 	@Override
