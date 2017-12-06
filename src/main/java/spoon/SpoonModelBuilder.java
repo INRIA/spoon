@@ -227,7 +227,9 @@ public interface SpoonModelBuilder {
 	 * @param outputDirectory
 	 * 		{@link File} for output directory.
 	 *
+	 * @deprecated Use {@link spoon.compiler.Environment#setSourceOutputDirectory(File)} instead.
 	 */
+	@Deprecated
 	void setSourceOutputDirectory(File outputDirectory);
 
 	/**

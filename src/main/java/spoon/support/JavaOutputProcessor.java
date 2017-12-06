@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
@@ -45,11 +46,13 @@ import java.util.Map;
  */
 public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> implements FileGenerator<CtNamedElement> {
 	PrettyPrinter printer;
+	private Environment environment;
 
 	List<File> printedFiles = new ArrayList<>();
 
 	public JavaOutputProcessor(PrettyPrinter printer) {
 		this.printer = printer;
+		this.environment = printer.getEnvironment();
 	}
 
 	/**
@@ -63,14 +66,27 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 */
 	@Deprecated
 	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
-		this.printer = printer;
-		this.printer.getEnvironment().setSourceOutputDirectory(outputDirectory);
+		this(printer);
+		this.setOutputDirectory(outputDirectory);
 	}
 
 	/**
 	 * usedful for testing
 	 */
 	public JavaOutputProcessor() {
+	}
+
+	@Override
+	public Environment getEnvironment() {
+		return this.environment;
+	}
+
+	@Override
+	public void setFactory(Factory factory) {
+		if (factory != null) {
+			this.environment = factory.getEnvironment();
+		}
+		super.setFactory(factory);
 	}
 
 	public PrettyPrinter getPrinter() {
@@ -82,7 +98,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	public File getOutputDirectory() {
-		return this.printer.getEnvironment().getSourceOutputDirectory();
+		return this.getEnvironment().getSourceOutputDirectory();
 	}
 
 	@Override
@@ -264,7 +280,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	public void setOutputDirectory(File directory) {
-		this.printer.getEnvironment().setSourceOutputDirectory(directory);
+		this.getEnvironment().setSourceOutputDirectory(directory);
 	}
 
 	public Map<String, Map<Integer, Integer>> getLineNumberMappings() {

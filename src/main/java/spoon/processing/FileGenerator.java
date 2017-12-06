@@ -34,7 +34,9 @@ public interface FileGenerator<T extends CtElement> extends Processor<T> {
 	/**
 	 * Sets the root directory where files should be created.
 	 *
+	 * @deprecated Use {@link spoon.compiler.Environment#setSourceOutputDirectory(File)} instead
 	 */
+	@Deprecated
 	void setOutputDirectory(File directory);
 
 	/**
