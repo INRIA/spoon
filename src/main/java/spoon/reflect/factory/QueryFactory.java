@@ -50,6 +50,15 @@ public class QueryFactory extends SubFactory {
 	}
 
 	/**
+	 * Creates a bound query. Use directly
+	 * {@link CtQuery#forEach(spoon.reflect.visitor.chain.CtConsumer)}
+	 * or {@link CtQuery#list()} to evaluate the query
+	 */
+	public CtQuery createQuery(Iterable<?> inputs) {
+		return new CtQueryImpl().addInput(inputs);
+	}
+
+	/**
 	 * Creates a bound query with an optional number
 	 * of inputs elements to the query (see {@link CtQuery#setInput(Object...)})
 	 */

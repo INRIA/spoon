@@ -1084,6 +1084,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public CtQuery createQuery(Iterable<?> input) {
+		return Query().createQuery(input);
+	}
+
+	@Override
 	public CtAnnotationType createAnnotationType(String qualifiedName) {
 		return Annotation().create(qualifiedName);
 	}
