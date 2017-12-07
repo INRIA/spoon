@@ -37,14 +37,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A scanner that calculates the imports for a given model.
+ * This scanner tries to optimize the imports in Spoon.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
-	protected Factory factory;
-	protected List<CtImport> imports = CtElementImpl.emptyList();
-	protected Set<CtImport> removedImports = CtElementImpl.emptySet();
-
+	private Factory factory;
+	private List<CtImport> imports = CtElementImpl.emptyList();
+	private Set<CtImport> removedImports = CtElementImpl.emptySet();
+	private Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
 
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
@@ -64,6 +64,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+	@Override
+	public Factory getFactory() {
+		return factory;
 	}
 
 	@Override
@@ -161,6 +166,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	protected boolean isTypeInCollision(CtReference reference) {
 		if (targetType != null && reference.getSimpleName().equals(targetType.getSimpleName())) {
+			this.addReferenceInCollision(reference);
 			return true;
 		}
 
@@ -234,8 +240,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
+	public boolean isEffectivelyImported(CtReference reference) {
+		return this.imports.contains(this.factory.createImport(reference));
+	}
+
+	@Override
 	public boolean isImported(CtReference ref) {
-		if (this.imports.contains(this.factory.createImport(ref))) {
+		if (this.isEffectivelyImported(ref)) {
 			return true;
 		}
 
@@ -257,6 +268,18 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 
 		return false;
+	}
+
+	protected void addReferenceInCollision(CtReference reference) {
+		if (this.referenceInCollision == CtElementImpl.<CtReference>emptySet()) {
+			this.referenceInCollision = new HashSet<>();
+		}
+		this.referenceInCollision.add(reference);
+	}
+
+	@Override
+	public boolean printQualifiedName(CtReference ref) {
+		return this.referenceInCollision.contains(ref);
 	}
 
 	/*private boolean isThereAnotherClassWithSameNameInAnotherPackage(CtTypeReference<?> ref) {

@@ -31,7 +31,7 @@ import java.util.List;
 public interface ImportScanner {
 
 	/**
-	 * Computes import of a {@link spoon.reflect.declaration.CtElement}
+	 * Computes all imports of a {@link spoon.reflect.declaration.CtElement}
 	 */
 	void computeImports(CtElement element);
 
@@ -42,21 +42,45 @@ public interface ImportScanner {
 
 	void setFactory(Factory factory);
 
+	Factory getFactory();
+
 	/**
-	 * Use computeImports or computeAllImports before getting the different imports.
+	 * Use computeImports before getting the different imports.
 	 *
 	 * @return the list of computed imports or an empty collection if not imports has been computed.
 	 */
 	List<CtImport> getAllImports();
 
+	/**
+	 * Sets the list of imports. Note that this list might be modified when getting the imports, by adding new imports.
+	 * @param importList A list of imports.
+	 */
 	void setImports(List<CtImport> importList);
 
+	/**
+	 * Add a new import
+	 * @param ctImport
+	 */
 	void addImport(CtImport ctImport);
 
 	void removeImport(CtImport ctImport);
 
 	/**
-	 * Checks if the type is already imported.
+	 * Returns true iff the given reference belongs to the list of imports.
+	 */
+	boolean isEffectivelyImported(CtReference reference);
+
+	/**
+	 * Returns true iff the given reference has been imported {@link #isEffectivelyImported(CtReference)}
+	 * OR if the given reference is considered as implicitely imported (e.g. a reference from java.lang or from
+	 * the current target type)
 	 */
 	boolean isImported(CtReference ref);
+
+	/**
+	 * Checks if the fully qualified name should be printed
+	 * This can return false even if {@link #isImported(CtReference)} return true:
+	 * for example, java.lang could be printed even if it's always considered as imported.
+	 */
+	boolean printQualifiedName(CtReference ref);
 }

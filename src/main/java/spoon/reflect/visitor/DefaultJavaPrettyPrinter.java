@@ -826,6 +826,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtExpression(f);
 	}
 
+	private boolean isImported(CtReference reference) {
+		return this.importScanner != null && this.importScanner.isImported(reference);
+	}
+
 	/**
 	 * Check if the target expression is a static final field initialized in a static anonymous block.
 	 */
@@ -1224,8 +1228,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			boolean isImported = this.isImported(invocation.getExecutable());
-			if (!isImported) {
+			boolean printQualified = this.printQualified(invocation.getExecutable());
+			if (printQualified) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);
@@ -1700,17 +1704,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	private boolean printQualified(CtTypeReference<?> ref) {
-		// java.lang is always considered as imported but we still print it in FQN mode
-		if (!this.env.isAutoImports() && ref.getQualifiedName().startsWith("java.lang")) {
-			return true;
-		}
-		if (this.isImported(ref)) {
+	private boolean printQualified(CtReference ref) {
 			// If my.pkg.Something is imported, but
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
 			//	we should still use qualified version my.pkg.Something
-			for (TypeContext typeContext : context.currentThis) {
+			/*for (TypeContext typeContext : context.currentThis) {
 				if (typeContext.getSimpleName().equals(ref.getSimpleName()) && !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
 					return true;
 				}
@@ -1718,7 +1717,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					return true;
 				}
 			}
-			return false;
+			return false;*/
+
+		if (this.importScanner != null) {
+			return this.importScanner.printQualifiedName(ref);
 		} else {
 			return true;
 		}
@@ -1907,10 +1909,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private void reset() {
 		printer.reset();
 		context = new PrintingContext();
-	}
-
-	private boolean isImported(CtReference reference) {
-		return this.importScanner != null && this.importScanner.isImported(reference);
 	}
 
 	@Override

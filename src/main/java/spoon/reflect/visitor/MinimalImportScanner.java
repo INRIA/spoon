@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A scanner dedicated to import only the necessary packages, @see spoon.test.variable.AccessFullyQualifiedTest
- *
+ * The default scanner in Spoon: it uses fully qualified name everywhere possible,
+ * except when there is a name collision which can not be resolved in other way except doing an import.
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
 
@@ -64,16 +64,9 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	}
 
 	/**
-	 * This method use @link{ImportScannerImpl#isTypeInCollision} to import a ref only if there is a collision
-	 * @param ref: the type we are testing, it can be a CtTypeReference, a CtFieldReference or a CtExecutableReference
-	 *
 	 * @return true if the ref should be imported.
 	 */
 	private boolean shouldTypeBeImported(CtReference ref) {
-		if (ref.equals(targetType)) {
-			return true;
-		}
-
 		if (ref instanceof CtTypeReference) {
 			CtTypeReference ctTypeReference = (CtTypeReference) ref;
 			String[] splitName = ctTypeReference.getQualifiedName().split("\\.");
@@ -88,7 +81,18 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	@Override
 	public void addImport(CtReference reference) {
 		if (this.shouldTypeBeImported(reference)) {
-			this.addImport(this.factory.Type().createImport(reference));
+			this.addImport(this.getFactory().Type().createImport(reference));
 		}
+	}
+
+	@Override
+	public boolean printQualifiedName(CtReference reference) {
+		if (reference instanceof CtTypeReference) {
+			CtTypeReference typeReference = (CtTypeReference) reference;
+			if (typeReference.getQualifiedName().startsWith("java.lang")) {
+				return true;
+			}
+		}
+		return !this.isEffectivelyImported(reference);
 	}
 }
