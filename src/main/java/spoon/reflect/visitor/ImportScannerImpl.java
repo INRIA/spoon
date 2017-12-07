@@ -16,8 +16,11 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
@@ -29,6 +32,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +73,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public Factory getFactory() {
 		return factory;
+	}
+
+	@Override
+	public void visitCtInvocation(CtInvocation invocation) {
+		if (!this.isImported(invocation.getExecutable())) {
+			super.visitCtInvocation(invocation);
+		}
+	}
+
+	@Override
+	public void visitCtFieldRead(CtFieldRead fieldRead) {
+		if (!this.isImported(fieldRead.getVariable())) {
+			super.visitCtFieldRead(fieldRead);
+		}
 	}
 
 	@Override
@@ -244,6 +262,36 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public boolean isEffectivelyImported(CtReference reference) {
+		if (reference instanceof CtTypeReference) {
+			// if the package is imported then the type is necessarily imported.
+			if (this.imports.contains(this.factory.createImport(((CtTypeReference)reference).getPackage()))) {
+				return true;
+			}
+		} else if (reference instanceof CtExecutableReference) {
+			CtExecutableReference executableReference = (CtExecutableReference) reference;
+
+			for (CtImport ctImport : this.imports) {
+				if (ctImport.getReference() instanceof CtWildcardStaticTypeMemberReferenceImpl) {
+					CtTypeReference ctWildcardStaticTypeMemberReference = ((CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference()).getOriginalTypeReference();
+					if (ctWildcardStaticTypeMemberReference.getAllExecutables().contains(executableReference)) {
+						return true;
+					}
+				}
+			}
+		} else if (reference instanceof CtFieldReference) {
+			CtFieldReference fieldReference = (CtFieldReference) reference;
+
+			for (CtImport ctImport : this.imports) {
+				if (ctImport.getReference() instanceof CtWildcardStaticTypeMemberReferenceImpl) {
+					CtTypeReference ctWildcardStaticTypeMemberReference = ((CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference()).getOriginalTypeReference();
+					if (ctWildcardStaticTypeMemberReference.getAllFields().contains(fieldReference)) {
+						return true;
+					}
+				}
+			}
+		}
+
+
 		return this.imports.contains(this.factory.createImport(reference));
 	}
 
@@ -267,6 +315,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				if (targetType.getPackage() != null && targetType.getPackage().equals(ctTypeReference.getPackage())) {
 					return true;
 				}
+			}
+		} else if (ref instanceof CtExecutableReference) {
+			if (targetType != null && targetType.getAllExecutables().contains((CtExecutableReference) ref)) {
+				return true;
+			}
+		} else if (ref instanceof CtFieldReference) {
+			if (targetType != null && targetType.getAllFields().contains((CtFieldReference) ref)) {
+				return true;
 			}
 		}
 

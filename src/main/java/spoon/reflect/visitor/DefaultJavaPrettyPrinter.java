@@ -1709,15 +1709,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
 			//	we should still use qualified version my.pkg.Something
-			/*for (TypeContext typeContext : context.currentThis) {
-				if (typeContext.getSimpleName().equals(ref.getSimpleName()) && !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
+
+		if (ref instanceof CtTypeReference) {
+			CtTypeReference typeReference = (CtTypeReference) ref;
+			for (TypeContext typeContext : context.currentThis) {
+				if (typeContext.getSimpleName().equals(typeReference.getSimpleName()) && !Objects.equals(typeContext.getPackage(), typeReference.getPackage())) {
 					return true;
 				}
-				if (typeContext.isNameConflict(ref.getSimpleName())) {
+				if (typeContext.isNameConflict(typeReference.getSimpleName())) {
 					return true;
 				}
 			}
-			return false;*/
+		}
 
 		if (this.importScanner != null) {
 			return this.importScanner.printQualifiedName(ref);
