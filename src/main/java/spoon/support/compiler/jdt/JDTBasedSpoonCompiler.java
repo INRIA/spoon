@@ -368,9 +368,14 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
 
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		List<SpoonFile> sourceFiles = Collections.unmodifiableList(sourcesFolder.getAllJavaFiles());
+		List<SpoonFile> sourceFiles = sourcesFolder.getAllJavaFiles();
 		if (sourceFiles.isEmpty()) {
 			return EMPTY_RESULT;
+		}
+
+		if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
+			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
+			keepOutdatedFiles(sourceFiles, outputFiles);
 		}
 
 		JDTBatchCompiler batchCompiler = createBatchCompiler(new FileCompilerConfig(sourceFiles));
@@ -389,11 +394,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
-
-		if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
-			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
-			keepOutdatedFiles(sourceFiles, outputFiles);
-		}
 
 		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
 
