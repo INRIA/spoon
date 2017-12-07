@@ -186,7 +186,7 @@ public class ImportTest {
 
 	@Test
 	public void testNewInnerClassDefinesInItsClassAndSuperClass() throws Exception {
-		// contract: in FQN mode, classes from the same package should not be written with the full package name.
+		// contract: in FQN mode, classes from the same package should be written with the full package name.
 		Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
@@ -198,10 +198,16 @@ public class ImportTest {
 		final CtClass<?> subClass = (CtClass<?>) factory.Type().get(SubClass.class);
 		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
-		assertEquals("new SubClass.Item(\"\")", ctConstructorCall.toString()); // the constructor call of the current class should not be written in FQN
-		final String expected = "public class SubClass extends SuperClass {" + System.lineSeparator() +   "    public static class Item extends SuperClass.Item {" + System.lineSeparator() + "        public Item(String s) {" + System
-				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
-				+ "        new SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
+		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString()); // the constructor call of the current class should not be written in FQN
+		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +
+				"    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() +
+				"        public Item(java.lang.String s) {" + System.lineSeparator() +
+				"            super(1, s);" + System.lineSeparator() +
+				"        }" + System.lineSeparator() +
+				"    }" + System.lineSeparator() + System.lineSeparator() +
+				"    public void aMethod() {" + System.lineSeparator() +
+				"        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() +
+				"    }" + System.lineSeparator() + "}";
 		assertEquals(expected, subClass.toString());
 	}
 
@@ -611,6 +617,7 @@ public class ImportTest {
 
 	@Test
 	public void testNestedStaticPathWithTypedParameter() throws Exception {
+		// contract: in FQN, everything is written in FQN
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java"
@@ -623,12 +630,13 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().contains("java.util.List<Interners.WeakInterner.Dummy> list;"));
+		assertTrue("Content of mm:"+mm.toString(), mm.toString().contains("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 
 	@Test
 	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
+		// contract: with imports, java.lang is not printed and intern classes are not FQN printed
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
@@ -643,7 +651,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 
-		assertTrue(mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
+		assertTrue("Content of mm: "+mm.toString(), mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 

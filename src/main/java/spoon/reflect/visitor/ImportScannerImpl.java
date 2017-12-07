@@ -106,7 +106,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			if (reference.getDeclaringType() == null) {
 				typeReference = reference;
 			} else {
-				typeReference = reference.getAccessType();
+				typeReference = reference.getTopLevelType();
 			}
 
 			this.addImport(typeReference);
@@ -165,6 +165,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean isTypeInCollision(CtReference reference) {
+		if (targetType.equals(reference)) {
+			return false;
+		}
 		if (targetType != null && reference.getSimpleName().equals(targetType.getSimpleName())) {
 			this.addReferenceInCollision(reference);
 			return true;

@@ -1228,8 +1228,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			boolean printQualified = this.printQualified(invocation.getExecutable());
-			if (printQualified) {
+			boolean isImported = this.isImported(invocation.getExecutable());
+			if (!isImported) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);

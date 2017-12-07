@@ -80,19 +80,13 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	@Override
 	public void addImport(CtReference reference) {
-		if (this.shouldTypeBeImported(reference)) {
+		if (!reference.equals(targetType) && this.shouldTypeBeImported(reference)) {
 			this.addImport(this.getFactory().Type().createImport(reference));
 		}
 	}
 
 	@Override
 	public boolean printQualifiedName(CtReference reference) {
-		if (reference instanceof CtTypeReference) {
-			CtTypeReference typeReference = (CtTypeReference) reference;
-			if (typeReference.getQualifiedName().startsWith("java.lang")) {
-				return true;
-			}
-		}
 		return !this.isEffectivelyImported(reference);
 	}
 }
