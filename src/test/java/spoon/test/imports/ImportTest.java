@@ -416,7 +416,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportStaticAndFieldAccessWithImport() throws Exception {
-		// contract: Qualified field access and an import static with import should import the type first, and not use static import
+		// contract: The same static import should be used, only one import should be called an the type should not be printed
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
@@ -425,8 +425,10 @@ public class ImportTest {
 
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+
+		assertEquals(1, aTacos.getPosition().getCompilationUnit().getImports().size());
 		assertTrue(assignment instanceof CtLocalVariable);
-		assertEquals("Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+		assertEquals("CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
 
 	@Test
@@ -606,9 +608,11 @@ public class ImportTest {
 		}
 
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
+		assertTrue("content: "+mm.toString(), mm.toString().contains("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}"));
+
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());

@@ -28,7 +28,7 @@ public class ImportBuilderTest {
 
     @Test
     public void testWithNoImport() {
-        // contract: when the source code has no import, none is created when building model
+        // contract: when the source code has no import, imports can be created afterwards
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/A.java");
         spoon.getEnvironment().setAutoImports(true);
@@ -36,7 +36,7 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(A.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        assertTrue(unitA.getImports().isEmpty());
+        assertEquals(1, unitA.getImports().size());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ImportBuilderTest {
 
     @Test
     public void testInternalImportWhenNoClasspath() {
-        // contract: in no-classpath anything which is not loaded cannot be imported, even if original source code has imports
+        // contract: in no-classpath we use the same imports as the original file
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/resources/noclasspath/Attachment.java");
         spoon.getEnvironment().setAutoImports(true);
@@ -85,7 +85,7 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get("it.feio.android.omninotes.models.Attachment");
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        assertTrue(unitA.getImports().isEmpty());
+        assertEquals(3, unitA.getImports().size());
     }
 
     @Test

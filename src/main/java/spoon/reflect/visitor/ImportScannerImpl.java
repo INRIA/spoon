@@ -84,7 +84,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void visitCtFieldRead(CtFieldRead fieldRead) {
-		if (!this.isImported(fieldRead.getVariable())) {
+		if (fieldRead.getTarget() instanceof CtFieldRead) {
+			this.visitCtFieldRead((CtFieldRead) fieldRead.getTarget());
+		} else if (!this.isImported(fieldRead.getVariable())) {
 			super.visitCtFieldRead(fieldRead);
 		}
 	}
@@ -102,12 +104,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-		if (reference.isStatic()) {
+		if (reference.isConstructor()) {
+			super.visitCtExecutableReference(reference);
+		} else if (reference.isStatic()) {
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
 				this.addImport(reference);
 			}
-		} else if (reference.isConstructor()) {
-			super.visitCtExecutableReference(reference);
 		}
 
 		if (!reference.getActualTypeArguments().isEmpty()) {
@@ -183,9 +185,16 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean isTypeInCollision(CtReference reference) {
-		if (targetType.equals(reference)) {
-			return false;
+
+		// we have to check reference and target type using qualified name
+		// and not simple equals, because the reference might contain type parameters.
+		if (reference instanceof CtTypeReference) {
+			CtTypeReference ctTypeReference = (CtTypeReference) reference;
+			if (targetType != null && targetType.getQualifiedName().equals(ctTypeReference.getQualifiedName())) {
+				return false;
+			}
 		}
+
 		if (targetType != null && reference.getSimpleName().equals(targetType.getSimpleName())) {
 			this.addReferenceInCollision(reference);
 			return true;
@@ -263,10 +272,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public boolean isEffectivelyImported(CtReference reference) {
 		if (reference instanceof CtTypeReference) {
-			// if the package is imported then the type is necessarily imported.
-			if (this.imports.contains(this.factory.createImport(((CtTypeReference)reference).getPackage()))) {
-				return true;
+			CtTypeReference typeReference = (CtTypeReference) reference;
+
+			if (typeReference.getPackage() != null) {
+				// if the package is imported then the type is necessarily imported.
+				if (this.imports.contains(this.factory.createImport(typeReference.getPackage()))) {
+					return true;
+				}
 			}
+
 		} else if (reference instanceof CtExecutableReference) {
 			CtExecutableReference executableReference = (CtExecutableReference) reference;
 
@@ -316,16 +330,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					return true;
 				}
 			}
-		} else if (ref instanceof CtExecutableReference) {
-			if (targetType != null && targetType.getAllExecutables().contains((CtExecutableReference) ref)) {
-				return true;
-			}
-		} else if (ref instanceof CtFieldReference) {
-			if (targetType != null && targetType.getAllFields().contains((CtFieldReference) ref)) {
-				return true;
-			}
 		}
-
 		return false;
 	}
 
