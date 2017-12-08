@@ -1242,7 +1242,9 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationTypeAndFieldOnField() throws IOException {
-		// contract: annotation on field with an annotation type which supports type and field, should remains on field
+		// contract: annotation on field with an annotation type which supports type and field, should be attached both on type and field
+		// see: https://docs.oracle.com/javase/specs/jls/se9/html/jls-9.html#jls-9.7.3
+		// in this case, we want to print it only once before the type
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/typeandfield");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -1255,6 +1257,11 @@ public class AnnotationTest {
 		assertEquals(1, field.getAnnotations().size());
 		CtAnnotation annotation = field.getAnnotations().get(0);
 		assertEquals("spoon.test.annotation.testclasses.typeandfield.AnnotTypeAndField", annotation.getAnnotationType().getQualifiedName());
+
+		CtTypeReference fieldType = field.getType();
+		assertEquals(1, fieldType.getAnnotations().size());
+		CtAnnotation anotherAnnotation = fieldType.getAnnotations().get(0);
+		assertEquals(annotation, anotherAnnotation);
 
 		assertEquals("java.lang.String", field.getType().getQualifiedName());
 		assertEquals(0, field.getType().getAnnotations().size());
