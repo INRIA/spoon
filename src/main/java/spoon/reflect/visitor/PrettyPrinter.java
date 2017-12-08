@@ -58,5 +58,4 @@ public interface PrettyPrinter {
 	 * code.
 	 */
 	Map<Integer, Integer> getLineNumberMapping();
-
 }

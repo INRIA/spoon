@@ -621,8 +621,15 @@ public class Launcher implements SpoonAPI {
 		return new StandardEnvironment();
 	}
 
+	@Deprecated
 	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter());
+		return this.createOutputWriter();
+	}
+
+	public JavaOutputProcessor createOutputWriter() {
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
+		outputProcessor.setFactory(this.getFactory());
+		return outputProcessor;
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
@@ -761,8 +768,8 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
-		modelBuilder.setSourceOutputDirectory(outputDirectory);
-		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
+		getEnvironment().setSourceOutputDirectory(outputDirectory);
+		getEnvironment().setDefaultFileGenerator(createOutputWriter());
 	}
 
 	@Override
