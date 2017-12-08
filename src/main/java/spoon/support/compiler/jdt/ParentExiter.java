@@ -136,7 +136,9 @@ public class ParentExiter extends CtInheritanceScanner {
 			// we check if the current element can have the annotation attached
 			CtAnnotatedElementType annotatedElementType = CtAnnotation.getAnnotatedElementTypeForCtElement(e);
 			annotatedElementType = (e instanceof CtTypeParameter || e instanceof CtTypeParameterReference) ? CtAnnotatedElementType.TYPE_USE : annotatedElementType;
-			if (annotatedElementType != null && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, annotatedElementType)) {
+
+			// in case of noclasspath, we can be 100% sure, so we guess it must be attached...
+			if (this.jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath() || (annotatedElementType != null && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, annotatedElementType))) {
 				e.addAnnotation((CtAnnotation<?>) child);
 			}
 
@@ -158,8 +160,16 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (annotationsMap.containsKey(ele)) {
 			List<CtAnnotation> annotations = annotationsMap.get(ele);
 			for (CtAnnotation annotation : annotations) {
+
+				// in case of noclasspath we attached previously the element:
+				// if we are here, we may have find an element for whom it's a better place
+				if (this.jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath() && annotation.isParentInitialized()) {
+					CtElement parent = annotation.getParent();
+					parent.removeAnnotation(annotation);
+				}
+
 				if (!ele.getType().getAnnotations().contains(annotation)) {
-					ele.getType().addAnnotation(annotation);
+					ele.getType().addAnnotation(annotation.clone());
 				}
 			}
 			annotationsMap.remove(ele);

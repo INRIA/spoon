@@ -170,8 +170,10 @@ class JDTTreeBuilderQuery {
 			return false;
 		}
 
-		// if the annotation does have a @Target then we must respect its rule
-		// else, the annotation can be attached to any type.
+		// JLS says:
+		//  "If an annotation of type java.lang.annotation.Target is not present on the declaration of an annotation type T,
+		// then T is applicable in all declaration contexts except type parameter declarations, and in no type contexts."
+		boolean shouldTargetAnnotationExists = (elementType == CtAnnotatedElementType.TYPE_USE || elementType == CtAnnotatedElementType.TYPE_PARAMETER);
 		boolean targetAnnotationExists = false;
 
 		for (AnnotationBinding annotation : a.resolvedType.getAnnotations()) {
@@ -195,7 +197,9 @@ class JDTTreeBuilderQuery {
 				}
 			}
 		}
-		return !targetAnnotationExists;
+
+		// true here means that the target annotation is not mandatory and we don't have found it
+		return !shouldTargetAnnotationExists && !targetAnnotationExists;
 	}
 
 	/**
