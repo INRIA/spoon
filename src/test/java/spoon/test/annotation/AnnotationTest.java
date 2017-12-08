@@ -734,10 +734,10 @@ public class AnnotationTest {
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
 		// we only write to disk here
-		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
+		launcher.setSourceOutputDirectory(new File("./target/spooned-annotation-output/"));
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 
-		canBeBuilt(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
+		canBeBuilt(new File("./target/spooned-annotation-output/spoon/test/annotation/testclasses/"), 8);
 	}
 
 	@Test
