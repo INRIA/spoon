@@ -43,6 +43,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
@@ -79,7 +80,7 @@ public class ElementPrinterHelper {
 	 */
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
-			if (element.isParentInitialized() && element instanceof CtTypeReference && (element.getParent() instanceof CtField || element.getParent() instanceof CtMethod) && element.getParent().getAnnotations().contains(annotation)) {
+			if (element.isParentInitialized() && element instanceof CtTypeReference && (element.getParent() instanceof CtTypedElement) && element.getParent().getAnnotations().contains(annotation)) {
 					continue;
 			}
 
