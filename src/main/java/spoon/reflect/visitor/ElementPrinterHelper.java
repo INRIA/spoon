@@ -80,12 +80,8 @@ public class ElementPrinterHelper {
 	 */
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
-			try {
-				if (element instanceof CtTypeReference && (element.getParent() instanceof CtField || element.getParent() instanceof CtMethod) && element.getParent().getAnnotations().contains(annotation)) {
+			if (element.isParentInitialized() && element instanceof CtTypeReference && (element.getParent() instanceof CtField || element.getParent() instanceof CtMethod) && element.getParent().getAnnotations().contains(annotation)) {
 					continue;
-				}
-			} catch (ParentNotInitializedException e) {
-				// do nothing
 			}
 
 			prettyPrinter.scan(annotation);
