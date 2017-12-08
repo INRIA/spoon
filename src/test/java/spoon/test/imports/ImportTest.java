@@ -756,6 +756,7 @@ public class ImportTest {
 
 	@Test
 	public void testWithInnerEnumDoesNotImportStaticInnerMethods() {
+		// contract: in case of name collision, only one method can be imported
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-innerenum";
@@ -771,8 +772,8 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertTrue("The file should not contain a static import to the inner enum method values",!output.contains("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"));
-		assertTrue("The file should not contain a static import to the inner enum method values of a distinct interface",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"));
+		assertTrue("The file should contain a static import to the inner enum method values",output.contains("import static spoon.test.imports.testclasses.StaticImportsFromEnum.DataElement.values;"));
+		assertTrue("The file should not contain a static import to the inner enum method values of a distinct interface",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum.Bar.values;"));
 		assertTrue("The file should not contain a static import to the inner enum value",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"));
 		canBeBuilt(outputDir, 7);
 	}
