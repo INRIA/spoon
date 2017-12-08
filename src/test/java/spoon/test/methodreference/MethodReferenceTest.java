@@ -13,7 +13,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -38,10 +37,10 @@ import java.util.function.Supplier;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class MethodReferenceTest {
@@ -51,16 +50,8 @@ public class MethodReferenceTest {
 	@Before
 	public void setUp() throws Exception {
 		final Launcher launcher = new Launcher();
-<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 		final Factory factory = launcher.getFactory();
 		launcher.getEnvironment().setComplianceLevel(8);
-=======
-		final Factory factory = launcher.createFactory();
-		factory.getEnvironment().setComplianceLevel(8);
-		final File sourceOutputDir = new File("./target/spooned/");
-		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir));
-		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
->>>>>>> wip
 
 		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		launcher.setSourceOutputDirectory("./target/spooned/");

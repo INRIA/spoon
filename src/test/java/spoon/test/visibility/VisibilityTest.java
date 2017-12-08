@@ -50,11 +50,7 @@ public class VisibilityTest {
 		final File sourceOutputDir = new File("target/spooned/spoon/test/visibility_package/testclasses");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
-<<<<<<< 3397fa48556646778611acfc33439a96a49b0598
 		launcher.getEnvironment().setSourceOutputDirectory(sourceOutputDir);
-=======
-		launcher.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir));
->>>>>>> wip
 		final Factory factory = launcher.getFactory();
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/visibility/testclasses/"));
