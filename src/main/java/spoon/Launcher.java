@@ -627,7 +627,9 @@ public class Launcher implements SpoonAPI {
 	}
 
 	public JavaOutputProcessor createOutputWriter() {
-		return new JavaOutputProcessor(createPrettyPrinter());
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
+		outputProcessor.setFactory(this.getFactory());
+		return outputProcessor;
 	}
 
 	public PrettyPrinter createPrettyPrinter() {

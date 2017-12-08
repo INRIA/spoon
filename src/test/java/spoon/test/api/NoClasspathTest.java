@@ -38,7 +38,7 @@ public class NoClasspathTest {
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.getEnvironment().setLevel("OFF");
 		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath/fields");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		CtClass<Object> clazz = factory.Class().get("Foo");
@@ -132,7 +132,7 @@ public class NoClasspathTest {
 		final Factory factory = spoon.getFactory();
 		factory.getEnvironment().setAutoImports(false);
 		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 
 		CtTypeReference<?> expectedType = factory.Type().createReference(javax.sound.sampled.AudioFormat.Encoding.class);
