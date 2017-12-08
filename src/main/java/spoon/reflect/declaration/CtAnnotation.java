@@ -19,7 +19,9 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
@@ -165,4 +167,42 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	@Override
 	@UnsettableProperty
 	<C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> types);
+
+	static CtAnnotatedElementType getAnnotatedElementTypeForCtElement(CtElement element) {
+		if (element == null) {
+			return null;
+		}
+
+		if (element instanceof CtMethod) {
+			return CtAnnotatedElementType.METHOD;
+		}
+		if (element instanceof CtAnnotation || element instanceof CtAnnotationType) {
+			return CtAnnotatedElementType.ANNOTATION_TYPE;
+		}
+		if (element instanceof CtType) {
+			return CtAnnotatedElementType.TYPE;
+		}
+		if (element instanceof CtField) {
+			return CtAnnotatedElementType.FIELD;
+		}
+		if (element instanceof CtConstructor) {
+			return CtAnnotatedElementType.CONSTRUCTOR;
+		}
+		if (element instanceof CtParameter) {
+			return CtAnnotatedElementType.PARAMETER;
+		}
+		if (element instanceof CtLocalVariable) {
+			return CtAnnotatedElementType.LOCAL_VARIABLE;
+		}
+		if (element instanceof CtPackage) {
+			return CtAnnotatedElementType.PACKAGE;
+		}
+		if (element instanceof CtTypeParameterReference) {
+			return CtAnnotatedElementType.TYPE_PARAMETER;
+		}
+		if (element instanceof CtTypeReference) {
+			return CtAnnotatedElementType.TYPE_USE;
+		}
+		return null;
+	}
 }

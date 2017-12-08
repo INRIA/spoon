@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -169,22 +170,33 @@ class JDTTreeBuilderQuery {
 		if (a.resolvedType == null) {
 			return false;
 		}
+
+		// if the annotation does have a @Target then we must respect its rule
+		// else, the annotation can be attached to any type.
+		boolean targetAnnotationExists = false;
+
 		for (AnnotationBinding annotation : a.resolvedType.getAnnotations()) {
 			if (!"Target".equals(CharOperation.charToString(annotation.getAnnotationType().sourceName()))) {
 				continue;
 			}
+			targetAnnotationExists = true;
 			Object value = annotation.getElementValuePairs()[0].value;
-			if (value == null || !value.getClass().isArray()) {
+			if (value == null) {
 				continue;
 			}
-			Object[] fields = (Object[]) value;
-			for (Object field : fields) {
-				if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
-					return true;
+			if (value instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) value).name))) {
+				return true;
+			}
+			if (value.getClass().isArray()) {
+				Object[] fields = (Object[]) value;
+				for (Object field : fields) {
+					if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
+						return true;
+					}
 				}
 			}
 		}
-		return false;
+		return !targetAnnotationExists;
 	}
 
 	/**

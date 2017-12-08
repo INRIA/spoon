@@ -34,7 +34,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
@@ -42,6 +44,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
@@ -77,6 +80,14 @@ public class ElementPrinterHelper {
 	 */
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
+			try {
+				if (element instanceof CtTypeReference && (element.getParent() instanceof CtField || element.getParent() instanceof CtMethod) && element.getParent().getAnnotations().contains(annotation)) {
+					continue;
+				}
+			} catch (ParentNotInitializedException e) {
+				// do nothing
+			}
+
 			prettyPrinter.scan(annotation);
 			printer.writeln();
 		}

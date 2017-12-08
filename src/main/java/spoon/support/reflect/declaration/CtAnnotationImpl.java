@@ -425,41 +425,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	public CtAnnotatedElementType getAnnotatedElementType() {
 		CtElement annotatedElement = this.getAnnotatedElement();
 
-		if (annotatedElement == null) {
-			return null;
-		}
-
-		if (annotatedElement instanceof CtMethod) {
-			return CtAnnotatedElementType.METHOD;
-		}
-		if (annotatedElement instanceof CtAnnotation || annotatedElement instanceof CtAnnotationType) {
-			return CtAnnotatedElementType.ANNOTATION_TYPE;
-		}
-		if (annotatedElement instanceof CtType) {
-			return CtAnnotatedElementType.TYPE;
-		}
-		if (annotatedElement instanceof CtField) {
-			return CtAnnotatedElementType.FIELD;
-		}
-		if (annotatedElement instanceof CtConstructor) {
-			return CtAnnotatedElementType.CONSTRUCTOR;
-		}
-		if (annotatedElement instanceof CtParameter) {
-			return CtAnnotatedElementType.PARAMETER;
-		}
-		if (annotatedElement instanceof CtLocalVariable) {
-			return CtAnnotatedElementType.LOCAL_VARIABLE;
-		}
-		if (annotatedElement instanceof CtPackage) {
-			return CtAnnotatedElementType.PACKAGE;
-		}
-		if (annotatedElement instanceof CtTypeParameterReference) {
-			return CtAnnotatedElementType.TYPE_PARAMETER;
-		}
-		if (annotatedElement instanceof CtTypeReference) {
-			return CtAnnotatedElementType.TYPE_USE;
-		}
-		return null;
+		return CtAnnotation.getAnnotatedElementTypeForCtElement(annotatedElement);
 	}
 
 	@SuppressWarnings("unchecked")
