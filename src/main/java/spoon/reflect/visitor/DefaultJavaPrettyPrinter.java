@@ -1986,11 +1986,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return getPrinterHelper().getLineNumberMapping();
 	}
 
-	@Override
-	public Environment getEnvironment() {
-		return this.env;
-	}
-
 	/**
 	 * Set {@link TokenWriter}, which has to be used to print tokens
 	 */

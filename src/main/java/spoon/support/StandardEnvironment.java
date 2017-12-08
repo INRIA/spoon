@@ -39,6 +39,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.compiler.FileSystemFolder;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -500,7 +501,19 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void setSourceOutputDirectory(File directory) {
-		this.sourceOutputDirectory = directory;
+		if (directory == null) {
+			throw new SpoonException("You must specify a directory.");
+		}
+		if (directory.isFile()) {
+			throw new SpoonException("Output must be a directory");
+		}
+
+		try {
+			this.sourceOutputDirectory = directory.getCanonicalFile();
+		} catch (IOException e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+			throw new SpoonException(e);
+		}
 	}
 
 	@Override

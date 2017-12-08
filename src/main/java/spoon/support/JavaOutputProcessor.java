@@ -17,6 +17,7 @@
 package spoon.support;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
@@ -26,7 +27,6 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
@@ -39,20 +39,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//import spoon.reflect.cu.CompilationUnit;
-
 /**
  * A processor that generates compilable Java source files from the meta-model.
  */
 public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> implements FileGenerator<CtNamedElement> {
 	PrettyPrinter printer;
-	private Environment environment;
 
 	List<File> printedFiles = new ArrayList<>();
 
 	public JavaOutputProcessor(PrettyPrinter printer) {
 		this.printer = printer;
-		this.environment = printer.getEnvironment();
 	}
 
 	/**
@@ -78,15 +74,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	@Override
 	public Environment getEnvironment() {
-		return this.environment;
-	}
-
-	@Override
-	public void setFactory(Factory factory) {
-		if (factory != null) {
-			this.environment = factory.getEnvironment();
-		}
-		super.setFactory(factory);
+		return this.getFactory().getEnvironment();
 	}
 
 	public PrettyPrinter getPrinter() {
@@ -110,22 +98,13 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 		// Check output directory
 		if (directory == null) {
-			throw new RuntimeException("You should set output directory before printing");
+			throw new SpoonException("You should set output directory before printing");
 		}
-		// Create spooned dir
-		if (directory.isFile()) {
-			throw new RuntimeException("Output must be a directory");
-		}
+
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
+				throw new SpoonException("Error creating output directory");
 			}
-		}
-		try {
-			this.getEnvironment().setSourceOutputDirectory(directory.getCanonicalFile());
-		} catch (IOException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-			throw new RuntimeException(e);
 		}
 	}
 
