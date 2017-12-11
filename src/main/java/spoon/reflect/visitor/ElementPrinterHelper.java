@@ -78,6 +78,12 @@ public class ElementPrinterHelper {
 	 */
 	public void writeAnnotations(CtElement element) {
 		for (CtAnnotation<?> annotation : element.getAnnotations()) {
+
+			// if element is a type reference and the parent is a typed element
+			// which contains exactly the same annotation, then we are certainly in this case:
+			// @myAnnotation String myField
+			// in which case the annotation is attached to the type and the variable
+			// in that case, we only print the annotation once.
 			if (element.isParentInitialized() && element instanceof CtTypeReference && (element.getParent() instanceof CtTypedElement) && element.getParent().getAnnotations().contains(annotation)) {
 					continue;
 			}

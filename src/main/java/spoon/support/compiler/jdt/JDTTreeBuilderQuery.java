@@ -198,7 +198,7 @@ class JDTTreeBuilderQuery {
 			}
 		}
 
-		// true here means that the target annotation is not mandatory and we don't have found it
+		// true here means that the target annotation is not mandatory and we have not found it
 		return !shouldTargetAnnotationExists && !targetAnnotationExists;
 	}
 
