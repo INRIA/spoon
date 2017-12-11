@@ -72,6 +72,8 @@ public interface CompilationUnit extends FactoryAccessor {
 	 */
 	void setDeclaredTypes(List<CtType<?>> types);
 
+	void addDeclaredTypes(CtType<?> type);
+
 	/**
 	 * Add a type to the list of declared types
 	 */
@@ -171,4 +173,5 @@ public interface CompilationUnit extends FactoryAccessor {
 	 */
 	ImportScanner getImportScanner();
 
+	void computeImports();
 }

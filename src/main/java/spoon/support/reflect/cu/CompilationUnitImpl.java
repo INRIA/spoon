@@ -119,6 +119,11 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
+	public void addDeclaredTypes(CtType<?> type) {
+		this.declaredTypes.add(type);
+	}
+
+	@Override
 	public CtModule getDeclaredModule() {
 		return this.ctModule;
 	}
@@ -286,6 +291,13 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return this.importScanner;
 	}
 
+	@Override
+	public void computeImports() {
+		if (this.getImportScanner() != null) {
+			this.getImportScanner().reset();
+			this.getImportScanner().computeImports(this);
+		}
+	}
 
 	public Factory getFactory() {
 		return factory;

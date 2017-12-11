@@ -83,4 +83,8 @@ public interface ImportScanner {
 	 * for example, java.lang could be printed even if it's always considered as imported.
 	 */
 	boolean printQualifiedName(CtReference ref);
+
+	void reset();
+
+	void setOriginalImports(List<CtImport> originalImports);
 }

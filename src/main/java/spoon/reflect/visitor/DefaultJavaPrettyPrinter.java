@@ -1930,6 +1930,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (sourceCompilationUnit != null) {
 			this.sourceCompilationUnit = sourceCompilationUnit;
+			sourceCompilationUnit.computeImports();
 			this.importScanner = sourceCompilationUnit.getImportScanner();
 			elementPrinterHelper.writeHeader(types, this.sourceCompilationUnit.getImports());
 		} else {

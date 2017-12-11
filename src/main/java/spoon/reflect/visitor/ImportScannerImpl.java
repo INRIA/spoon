@@ -50,16 +50,16 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private static final int MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS = 5;
 	private Factory factory;
 	private List<CtImport> imports = CtElementImpl.emptyList();
+	private List<CtImport> originalImports = CtElementImpl.emptyList();
 	private Set<CtImport> removedImports = CtElementImpl.emptySet();
 	private Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
-	protected Set<String> targetTypeNames;
+	protected Set<String> targetTypeNames = CtElementImpl.emptySet();
 
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
 
 	public ImportScannerImpl(Factory factory) {
 		this.factory = factory;
-		this.targetTypeNames = new HashSet<>();
 	}
 
 	/**
@@ -67,12 +67,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 */
 	@Deprecated
 	public ImportScannerImpl() {
-		this.targetTypeNames = new HashSet<>();
 	}
 
 	@Override
 	public void enter(CtElement ctElement) {
 		if (ctElement instanceof CtNamedElement) {
+			if (this.targetTypeNames == CtElementImpl.<String>emptySet()) {
+				this.targetTypeNames = new HashSet<>();
+			}
 			this.targetTypeNames.add(((CtNamedElement) ctElement).getSimpleName());
 		}
 	}
@@ -398,6 +400,21 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public boolean printQualifiedName(CtReference ref) {
 		return this.referenceInCollision.contains(ref);
+	}
+
+	@Override
+	public void reset() {
+		this.imports = CtElementImpl.emptyList();
+		this.removedImports = CtElementImpl.emptySet();
+		this.referenceInCollision = CtElementImpl.emptySet();
+		this.targetTypeNames = CtElementImpl.emptySet();
+		this.setImports(this.originalImports);
+	}
+
+	@Override
+	public void setOriginalImports(List<CtImport> originalImports) {
+		this.originalImports = new ArrayList<>(originalImports);
+		this.setImports(originalImports);
 	}
 
 }
