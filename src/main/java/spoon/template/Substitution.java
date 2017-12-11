@@ -23,7 +23,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -130,7 +129,7 @@ public abstract class Substitution {
 				ctType.setPosition(sourcePosition);
 			}
 		}
-		
+
 		return (T) typeRef.getTypeDeclaration();
 	}
 
