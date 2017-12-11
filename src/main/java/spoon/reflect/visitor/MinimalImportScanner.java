@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
@@ -25,6 +26,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.VariableScopeFunction;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayDeque;
@@ -60,35 +62,51 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	}
 
 	@Override
-	public void enter(CtElement element) {
-		if (element instanceof CtBlock) {
-			if (currentBlock != null) {
-				visitedBlocks.add(this.currentBlock);
-			}
-			this.currentBlock = (CtBlock) element;
+	public void visitCtLocalVariable(CtLocalVariable localVariable) {
+		if (!this.scopedNames.containsKey(this.currentBlock)) {
+			this.scopedNames.put(this.currentBlock, new HashSet<>());
 		}
 
-		if (element instanceof CtLocalVariable) {
+		Set<String> names = this.scopedNames.get(this.currentBlock);
+		names.add(localVariable.getSimpleName());
+		super.visitCtLocalVariable(localVariable);
+	}
+
+	@Override
+	public void visitCtCatchVariable(CtCatchVariable ctCatchVariable) {
+		if (this.currentBlock != null) {
 			if (!this.scopedNames.containsKey(this.currentBlock)) {
 				this.scopedNames.put(this.currentBlock, new HashSet<>());
 			}
 
 			Set<String> names = this.scopedNames.get(this.currentBlock);
-			names.add(((CtLocalVariable) element).getSimpleName());
+			names.add(ctCatchVariable.getSimpleName());
 		}
+		super.visitCtCatchVariable(ctCatchVariable);
 	}
 
 	@Override
-	public void exit(CtElement element) {
-		if (element instanceof CtBlock) {
-			if (this.scopedNames.containsKey(this.currentBlock)) {
-				this.scopedNames.remove(this.currentBlock);
-			}
-			if (this.visitedBlocks.isEmpty()) {
-				this.currentBlock = null;
-			} else {
-				this.currentBlock = this.visitedBlocks.poll();
-			}
+	public void visitCtBlock(CtBlock ctBlock) {
+		this.enterBlock(ctBlock);
+		super.visitCtBlock(ctBlock);
+		this.exitBlock(ctBlock);
+	}
+
+	private void enterBlock(CtBlock block) {
+		if (currentBlock != null) {
+			visitedBlocks.add(this.currentBlock);
+		}
+		this.currentBlock = block;
+	}
+
+	private void exitBlock(CtBlock block) {
+		if (this.scopedNames.containsKey(this.currentBlock)) {
+			this.scopedNames.remove(this.currentBlock);
+		}
+		if (this.visitedBlocks.isEmpty()) {
+			this.currentBlock = null;
+		} else {
+			this.currentBlock = this.visitedBlocks.poll();
 		}
 	}
 
@@ -116,11 +134,14 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	private boolean fqnCollideWithTypeMembers(String fqn) {
 		String[] splitFQN = fqn.split("\\.");
 		List<String> collidingNames = this.targetType.getAllFields().stream().map(CtFieldReference::getSimpleName).collect(Collectors.toList());
+		collidingNames.addAll(this.targetType.getAllExecutables().stream().map(CtExecutableReference::getSimpleName).collect(Collectors.toList()));
 		for (Set<String> names : this.scopedNames.values()) {
 			collidingNames.addAll(names);
 		}
 
-		return collidingNames.contains(splitFQN[0]);
+		// we cannot print in FQN if there is a collision with the first package name
+		// BUT we cannot print without FQN if the last name collide with a variable
+		return collidingNames.contains(splitFQN[0]) && !collidingNames.contains(splitFQN[splitFQN.length-1]);
 	}
 
 	@Override
@@ -133,6 +154,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	@Override
 	public boolean printQualifiedName(CtReference reference) {
 		if (this.isEffectivelyImported(reference)) {
+			return false;
+		}
+
+		if (this.isTypeInCollision(reference)) {
 			return false;
 		}
 

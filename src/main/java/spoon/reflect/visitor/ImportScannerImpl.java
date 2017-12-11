@@ -95,6 +95,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		if (reference.isStatic() && this.getFactory().getEnvironment().getComplianceLevel() >= MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS) {
+			// we want to check it in order to put the value
+			// in the list of reference in collision
+			// for the check when writing in FQN or not
+			this.isTypeInCollision(reference);
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
 				this.addImport(reference);
 				return;
@@ -110,6 +114,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (reference.isConstructor()) {
 			super.visitCtExecutableReference(reference);
 		} else if (reference.isStatic() && this.getFactory().getEnvironment().getComplianceLevel() >= MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS) {
+			// we want to check it in order to put the value
+			// in the list of reference in collision
+			// for the check when writing in FQN or not
+			this.isTypeInCollision(reference);
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
 				this.addImport(reference);
 				return;
@@ -194,6 +202,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (this.isEffectivelyImported(reference)) {
 			return false;
 		}
+		if (this.referenceInCollision.contains(reference)) {
+			return true;
+		}
+
 		// we have to check reference and target type using qualified name
 		// and not simple equals, because the reference might contain type parameters.
 		if (reference instanceof CtTypeReference) {
