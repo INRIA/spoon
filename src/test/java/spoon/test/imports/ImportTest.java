@@ -655,7 +655,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 
-		assertTrue("Content of mm: "+mm.toString(), mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
+		assertTrue("Content of mm: "+mm.toString(), mm.toString().contains("List<Dummy> list;"));
 		 								  
 	}
 
@@ -690,7 +690,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		assertTrue("new StaticNested2<K>();", mm.toString().indexOf("new StaticNested2<K>();")>=0);
 		 								  
 	}
 

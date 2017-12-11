@@ -16,9 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
@@ -26,17 +23,9 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.VariableScopeFunction;
-import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 /**
@@ -44,10 +33,6 @@ import java.util.stream.Collectors;
  * except when there is a name collision which can not be resolved in other way except doing an import.
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
-
-	private Map<CtBlock, Set<String>> scopedNames = new HashMap<>();
-	private Queue<CtBlock> visitedBlocks = new ArrayDeque<>();
-	private CtBlock currentBlock = null;
 
 	public MinimalImportScanner(Factory factory) {
 		super(factory);
@@ -58,56 +43,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	 */
 	@Deprecated
 	public MinimalImportScanner() {
-
-	}
-
-	@Override
-	public void visitCtLocalVariable(CtLocalVariable localVariable) {
-		if (!this.scopedNames.containsKey(this.currentBlock)) {
-			this.scopedNames.put(this.currentBlock, new HashSet<>());
-		}
-
-		Set<String> names = this.scopedNames.get(this.currentBlock);
-		names.add(localVariable.getSimpleName());
-		super.visitCtLocalVariable(localVariable);
-	}
-
-	@Override
-	public void visitCtCatchVariable(CtCatchVariable ctCatchVariable) {
-		if (this.currentBlock != null) {
-			if (!this.scopedNames.containsKey(this.currentBlock)) {
-				this.scopedNames.put(this.currentBlock, new HashSet<>());
-			}
-
-			Set<String> names = this.scopedNames.get(this.currentBlock);
-			names.add(ctCatchVariable.getSimpleName());
-		}
-		super.visitCtCatchVariable(ctCatchVariable);
-	}
-
-	@Override
-	public void visitCtBlock(CtBlock ctBlock) {
-		this.enterBlock(ctBlock);
-		super.visitCtBlock(ctBlock);
-		this.exitBlock(ctBlock);
-	}
-
-	private void enterBlock(CtBlock block) {
-		if (currentBlock != null) {
-			visitedBlocks.add(this.currentBlock);
-		}
-		this.currentBlock = block;
-	}
-
-	private void exitBlock(CtBlock block) {
-		if (this.scopedNames.containsKey(this.currentBlock)) {
-			this.scopedNames.remove(this.currentBlock);
-		}
-		if (this.visitedBlocks.isEmpty()) {
-			this.currentBlock = null;
-		} else {
-			this.currentBlock = this.visitedBlocks.poll();
-		}
+		super();
 	}
 
 	/**
@@ -124,8 +60,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			return this.fqnCollideWithTypeMembers(fqn);
 		} else if (ref instanceof CtExecutableReference) {
 			CtExecutableReference executableReference = (CtExecutableReference) ref;
-			String fqn = executableReference.getSignature();
-			return this.fqnCollideWithTypeMembers(fqn);
+			if (executableReference.getDeclaringType() != null) {
+				String fqn = executableReference.getDeclaringType().getQualifiedName();
+				return this.fqnCollideWithTypeMembers(fqn);
+			}
 		}
 
 		return false;
@@ -133,15 +71,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	private boolean fqnCollideWithTypeMembers(String fqn) {
 		String[] splitFQN = fqn.split("\\.");
-		List<String> collidingNames = this.targetType.getAllFields().stream().map(CtFieldReference::getSimpleName).collect(Collectors.toList());
-		collidingNames.addAll(this.targetType.getAllExecutables().stream().map(CtExecutableReference::getSimpleName).collect(Collectors.toList()));
-		for (Set<String> names : this.scopedNames.values()) {
-			collidingNames.addAll(names);
-		}
 
 		// we cannot print in FQN if there is a collision with the first package name
 		// BUT we cannot print without FQN if the last name collide with a variable
-		return collidingNames.contains(splitFQN[0]) && !collidingNames.contains(splitFQN[splitFQN.length-1]);
+		return targetTypeNames.contains(splitFQN[0]) && !targetTypeNames.contains(splitFQN[splitFQN.length-1]);
 	}
 
 	@Override
@@ -161,16 +94,18 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			return false;
 		}
 
-		if (reference instanceof CtFieldReference) {
+		/*if (reference instanceof CtFieldReference) {
 			CtFieldReference fieldReference = (CtFieldReference) reference;
 			String fqn = fieldReference.getQualifiedName();
 			return !this.fqnCollideWithTypeMembers(fqn);
 		}
 		if (reference instanceof CtExecutableReference) {
 			CtExecutableReference executableReference = (CtExecutableReference) reference;
-			String fqn = executableReference.getDeclaringType().getQualifiedName();
-			return !this.fqnCollideWithTypeMembers(fqn);
-		}
+			if (executableReference.getDeclaringType() != null) {
+				String fqn = executableReference.getDeclaringType().getQualifiedName();
+				return !this.fqnCollideWithTypeMembers(fqn);
+			}
+		}*/
 		return true;
 	}
 }

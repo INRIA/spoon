@@ -1778,7 +1778,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (!context.ignoreEnclosingClass() && !ref.isLocalType()) {
 				//compute visible type which can be used to print access path to ref
 				CtTypeReference<?> accessType = ref.getAccessType();
-				if (!accessType.isAnonymous()) {
+				if (!accessType.isAnonymous() && (!this.env.isAutoImports() || !accessType.equals(context.getCurrentTypeReference()))) {
 					try (Writable _context = context.modify()) {
 						if (!withGenerics) {
 							_context.ignoreGenerics(true);
@@ -1796,7 +1796,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeIdentifier(ref.getSimpleName());
 			}
 		} else {
-			if (!context.ignorePrintFQNType()) {
+			// we only ignore printing FQN when we are in no autoimport and we have a collision name
+			if (!context.ignorePrintFQNType() || this.env.isAutoImports()) {
 				if (ref.getPackage() != null && printQualified(ref)) {
 					if (!ref.getPackage().isUnnamedPackage()) {
 						scan(ref.getPackage());
@@ -1932,7 +1933,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			this.importScanner = sourceCompilationUnit.getImportScanner();
 			elementPrinterHelper.writeHeader(types, this.sourceCompilationUnit.getImports());
 		} else {
-			elementPrinterHelper.writeHeader(types, null);
+			Set<CtImport> setImports = new HashSet<>();
+			for (CtType type : types) {
+				CompilationUnit cu = type.getPosition().getCompilationUnit();
+				if (cu != null) {
+					setImports.addAll(cu.getImports());
+				}
+			}
+			elementPrinterHelper.writeHeader(types, setImports);
 		}
 
 		for (CtType<?> t : types) {

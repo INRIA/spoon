@@ -1,6 +1,7 @@
 package spoon.test.prettyprinter;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -25,6 +26,8 @@ import spoon.test.prettyprinter.testclasses.AClass;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -164,66 +167,17 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
+	public void testAutoImportWithAmbiguousClassWithEnums() throws IOException {
+		String inputFile = "/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java";
 		final Launcher launcher = new Launcher();
-		final Factory factory = launcher.getFactory();
-		factory.getEnvironment().setAutoImports(true);
-		final SpoonModelBuilder compiler = launcher.createCompiler();
-		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/sub/TypeIdentifierCollision.java"));
-		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
-		compiler.build();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.setSourceOutputDirectory("./target/spoon-import-ambiguous");
+		launcher.addInputResource("./src/test/java"+inputFile);
+		launcher.run();
 
-		final CtClass<?> aClass = (CtClass<?>) factory.Type().get( spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
-
-		String expected =
-			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" +nl+
-			"    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
-			"}"
-		;
-		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals( "We use FQN for E1", expected, computed );
-
-		expected = //This is correct however it could be more concise.
-			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
-			"    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
-			"}"
-		;
-		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).toString();
-		assertEquals( expected, computed );
-
-		expected =
-			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" +nl+
-			"    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" +nl+
-			"}"
-		;
-		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
-		assertEquals( "The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed );
-
-		expected = //This is correct however it could be more concise.
-			"public void referToTwoInnerClassesWithTheSameName() {" +nl+
-			"    TypeIdentifierCollision.Class0.ClassA.VAR0 = TypeIdentifierCollision.Class0.ClassA.getNum();" +nl+
-			"    TypeIdentifierCollision.Class1.ClassA.VAR1 = TypeIdentifierCollision.Class1.ClassA.getNum();" +nl+
-			"}"
-		;
-
-		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and it's identifier can be the short version.
-
-		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).toString();
-		assertEquals( "where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed );
-
-		expected =
-			"public enum ENUM {" +nl+
-			"    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField,spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
-			"    final int NUM;" +nl+nl+
-			"    final Enum<?> e;" +nl+nl+
-			"    private ENUM(int num, Enum<?> e) {" +nl+
-			"        NUM = num;" +nl+
-			"        this.e = e;" +nl+
-			"    }" +nl+
-			"}"
-		;
-		computed = aClass.getNestedType("ENUM").toString();
-		assertEquals( expected, computed );
+		List<String> linesInput = Files.readAllLines(new File("./src/test/java"+inputFile).toPath());
+		List<String> linesOutput = Files.readAllLines(new File("./target/spoon-import-ambiguous"+inputFile).toPath());
+		assertEquals(StringUtils.join(linesInput, "\n").replace("\n",""), StringUtils.join(linesOutput, "\n").replace("\n",""));
 	}
 
 	@Test
@@ -271,17 +225,18 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void importsFromMultipleTypesSupported() {
+		// contract: when printing types without compilation units,
+		// DJPP try to get CU from the given types and print imports accordingly
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
 		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/A.java");
 		launcher.run();
-		Environment env = launcher.getEnvironment();
-		env.setAutoImports(true);
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
 		printer.calculate(null, Arrays.asList(
 			launcher.getFactory().Class().get("spoon.test.prettyprinter.testclasses.A"),
 			launcher.getFactory().Class().get("spoon.test.prettyprinter.testclasses.B")
 		));
-		assertTrue(printer.getResult().contains("import java.util.ArrayList;"));
+		assertTrue("Content: "+printer.getResult(), printer.getResult().contains("import java.util.ArrayList;"));
 	}
 
 	@Test

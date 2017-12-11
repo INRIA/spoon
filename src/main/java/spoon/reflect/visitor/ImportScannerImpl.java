@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This scanner tries to optimize the imports in Spoon.
@@ -50,12 +52,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private List<CtImport> imports = CtElementImpl.emptyList();
 	private Set<CtImport> removedImports = CtElementImpl.emptySet();
 	private Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
+	protected Set<String> targetTypeNames;
 
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
 
 	public ImportScannerImpl(Factory factory) {
 		this.factory = factory;
+		this.targetTypeNames = new HashSet<>();
 	}
 
 	/**
@@ -63,7 +67,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 */
 	@Deprecated
 	public ImportScannerImpl() {
+		this.targetTypeNames = new HashSet<>();
+	}
 
+	@Override
+	public void enter(CtElement ctElement) {
+		if (ctElement instanceof CtNamedElement) {
+			this.targetTypeNames.add(((CtNamedElement) ctElement).getSimpleName());
+		}
 	}
 
 	@Override
@@ -132,6 +143,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
+
 		if (!(reference instanceof CtArrayTypeReference) &&
 				!reference.isPrimitive() &&
 				!CtTypeReference.NULL_TYPE_NAME.equals(reference.getSimpleName())) {
@@ -229,20 +241,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			}
 		}
 
-		CtType referenceParent;
-		if (reference instanceof CtExecutableReference) {
-			referenceParent = reference.getParent(CtType.class);
-
-			if (referenceParent != null) {
-				referenceParent = referenceParent.getTopLevelType();
-
-				for (CtMethod o : (Set<CtMethod>)referenceParent.getAllMethods()) {
-					if (reference.getSimpleName().equals(o.getSimpleName())) {
-						this.addReferenceInCollision(reference);
-						return true;
-					}
-				}
-			}
+		if (this.targetTypeNames.contains(referenceName)) {
+			this.addReferenceInCollision(reference);
+			return true;
 		}
 
 		return false;
@@ -285,13 +286,21 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		//look for top declaring type of that simpleType
 		if (element instanceof CtType) {
 			CtType simpleType = (CtType) element;
-			targetType = simpleType.getReference().getTopLevelType();
+			this.setTargetType(simpleType.getReference().getTopLevelType());
 			scan(simpleType);
 		} else {
 			CtType<?> type = element.getParent(CtType.class);
-			targetType = type == null ? null : type.getReference().getTopLevelType();
+			if (type != null) {
+				this.setTargetType(type.getReference().getTopLevelType());
+			}
 			scan(element);
 		}
+	}
+
+	protected void setTargetType(CtTypeReference targetType) {
+		this.targetType = targetType;
+		this.targetTypeNames.addAll(this.targetType.getAllFields().stream().map(CtFieldReference::getSimpleName).collect(Collectors.toList()));
+		this.targetTypeNames.addAll(this.targetType.getAllExecutables().stream().map(CtExecutableReference::getSimpleName).collect(Collectors.toList()));
 	}
 
 	@Override
