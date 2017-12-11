@@ -5,10 +5,10 @@ public class QualifiedThisRef<T> {
 	private Sub sub;
 	class Sub {
 		void foo() {
-			Object o = spoon.test.prettyprinter.testclasses.QualifiedThisRef.Sub.this;
+			Object o = this;
 		}
 		void foo2() {
-			Object o2 = spoon.test.prettyprinter.testclasses.QualifiedThisRef.this;
+			Object o2 = QualifiedThisRef.this;
 		}
 	}
 

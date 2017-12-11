@@ -794,6 +794,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				boolean isInitializeStaticFinalField = isInitializeStaticFinalField(f.getTarget());
 				boolean isStaticField = f.getVariable().isStatic();
 				boolean isImportedField = this.isImported(f.getVariable());
+				boolean printQualifiedName = this.printQualified(f.getVariable());
 
 				if (!isInitializeStaticFinalField && !(isStaticField && isImportedField)) {
 					if (target.isImplicit() && !(f.getVariable().getFieldDeclaration() == null && this.env.getNoClasspath())) {
@@ -815,6 +816,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 					// the implicit drives the separator
 					if (!target.isImplicit()) {
+						_context.ignorePrintFQNType(!printQualifiedName);
 						scan(target);
 						printer.writeSeparator(".");
 					}
@@ -1103,7 +1105,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		if (isStatic && printType && !context.ignoreStaticAccess()) {
-			try (Writable _context = context.modify().ignoreGenerics(true)) {
+			try (Writable _context = context.modify()) {
+				_context.ignoreGenerics(true);
 				scan(reference.getDeclaringType());
 			}
 			printer.writeSeparator(".");
@@ -1228,11 +1231,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
+			boolean printQualifiedName = this.printQualified(invocation.getExecutable());
 			boolean isImported = this.isImported(invocation.getExecutable());
 			if (!isImported) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);
+						_context.ignorePrintFQNType(!printQualifiedName);
 					}
 					if (invocation.getTarget() != null && !invocation.getTarget().isImplicit()) {
 						scan(invocation.getTarget());
@@ -1791,12 +1796,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeIdentifier(ref.getSimpleName());
 			}
 		} else {
-			if (ref.getPackage() != null && printQualified(ref)) {
-				if (!ref.getPackage().isUnnamedPackage()) {
-					scan(ref.getPackage());
-					printer.writeSeparator(CtPackage.PACKAGE_SEPARATOR);
+			if (!context.ignorePrintFQNType()) {
+				if (ref.getPackage() != null && printQualified(ref)) {
+					if (!ref.getPackage().isUnnamedPackage()) {
+						scan(ref.getPackage());
+						printer.writeSeparator(CtPackage.PACKAGE_SEPARATOR);
+					}
 				}
 			}
+
 			elementPrinterHelper.writeAnnotations(ref);
 			printer.writeIdentifier(ref.getSimpleName());
 		}
