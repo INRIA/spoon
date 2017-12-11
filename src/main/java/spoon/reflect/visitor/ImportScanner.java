@@ -66,7 +66,7 @@ public interface ImportScanner {
 	void removeImport(CtImport ctImport);
 
 	/**
-	 * Returns true iff the given reference belongs to the list of imports.
+	 * Returns true if and only if the given reference belongs to the list of imports.
 	 */
 	boolean isEffectivelyImported(CtReference reference);
 
@@ -79,7 +79,7 @@ public interface ImportScanner {
 
 	/**
 	 * Checks if the fully qualified name should be printed
-	 * This can return false even if {@link #isImported(CtReference)} return true:
+	 * This can return false even if {@link #isImported(CtReference)} returns true:
 	 * for example, java.lang could be printed even if it's always considered as imported.
 	 */
 	boolean printQualifiedName(CtReference ref);

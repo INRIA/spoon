@@ -22,6 +22,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -44,7 +45,7 @@ import java.util.Set;
  * This scanner tries to optimize the imports in Spoon.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
-
+	private static final int MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS = 5;
 	private Factory factory;
 	private List<CtImport> imports = CtElementImpl.emptyList();
 	private Set<CtImport> removedImports = CtElementImpl.emptySet();
@@ -93,25 +94,29 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		if (reference.isStatic()) {
+		if (reference.isStatic() && this.getFactory().getEnvironment().getComplianceLevel() >= MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS) {
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
 				this.addImport(reference);
+				return;
 			}
-		} else {
-			super.visitCtFieldReference(reference);
 		}
+		super.visitCtFieldReference(reference);
 	}
 
 	@Override
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+		// if it's a constructor, it's the only circumstance where we can call the super
+		// we don't want to call it for another executable as we don't want to import its declaring type
 		if (reference.isConstructor()) {
 			super.visitCtExecutableReference(reference);
-		} else if (reference.isStatic()) {
+		} else if (reference.isStatic() && this.getFactory().getEnvironment().getComplianceLevel() >= MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS) {
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
 				this.addImport(reference);
+				return;
 			}
 		}
 
+		// we must check if there is a type argument to call the right import
 		if (!reference.getActualTypeArguments().isEmpty()) {
 			this.scan(reference.getActualTypeArguments());
 		}
@@ -185,7 +190,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean isTypeInCollision(CtReference reference) {
-
+		// if it's imported, it cannot be in collision
+		if (this.isEffectivelyImported(reference)) {
+			return false;
+		}
 		// we have to check reference and target type using qualified name
 		// and not simple equals, because the reference might contain type parameters.
 		if (reference instanceof CtTypeReference) {
@@ -204,7 +212,24 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		for (CtImport ctImport : this.imports) {
 			if (ctImport.getReference().getSimpleName().equals(referenceName)) {
+				this.addReferenceInCollision(reference);
 				return true;
+			}
+		}
+
+		CtType referenceParent;
+		if (reference instanceof CtExecutableReference) {
+			referenceParent = reference.getParent(CtType.class);
+
+			if (referenceParent != null) {
+				referenceParent = referenceParent.getTopLevelType();
+
+				for (CtMethod o : (Set<CtMethod>)referenceParent.getAllMethods()) {
+					if (reference.getSimpleName().equals(o.getSimpleName())) {
+						this.addReferenceInCollision(reference);
+						return true;
+					}
+				}
 			}
 		}
 

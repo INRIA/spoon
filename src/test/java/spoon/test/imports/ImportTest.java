@@ -416,7 +416,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportStaticAndFieldAccessWithImport() throws Exception {
-		// contract: The same static import should be used, only one import should be called an the type should not be printed
+		// contract: The same static import should be used, only one import should be called and the type should not be printed
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
@@ -1030,7 +1030,7 @@ public class ImportTest {
 		assertTrue(code.contains("ArrayList<String> list = new ArrayList<>()"));
 
 		// cleaning
-		output.delete();
+		//output.delete();
 	}
 
 	@Test
