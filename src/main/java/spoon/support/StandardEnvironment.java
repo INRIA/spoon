@@ -19,6 +19,7 @@ package spoon.support;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
@@ -95,6 +96,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
 	private File sourceOutputDirectory = new File(Launcher.OUTPUTDIR);
+
+	private OutputType outputType = OutputType.CLASSES;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -539,5 +542,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public void setOutputType(OutputType outputType) {
+		this.outputType = outputType;
+	}
+
+	@Override
+	public OutputType getOutputType() {
+		return this.outputType;
 	}
 }
