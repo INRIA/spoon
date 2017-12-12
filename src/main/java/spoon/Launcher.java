@@ -445,7 +445,7 @@ public class Launcher implements SpoonAPI {
 		String outputString = jsapActualArgs.getString("output-type");
 		OutputType outputType = OutputType.fromString(outputString);
 		if (outputType == null) {
-			throw  new SpoonException("Unknown output type: "+outputString);
+			throw  new SpoonException("Unknown output type: " + outputString);
 		} else {
 			environment.setOutputType(outputType);
 		}
