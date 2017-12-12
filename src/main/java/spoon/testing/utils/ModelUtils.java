@@ -114,7 +114,7 @@ public final class ModelUtils {
 		try {
 			compiler.build();
 		} catch (Exception e) {
-			final AssertionError error = new AssertionError("Can't compile " + outputDirectoryFile.getName());
+			final AssertionError error = new AssertionError("Can't compile " + outputDirectoryFile.getName() + " because " + e.getMessage());
 			error.initCause(e);
 			throw error;
 		}
