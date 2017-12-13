@@ -4,9 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.test.api.testclasses.Bar;
 
 import java.io.File;
@@ -17,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -126,5 +132,25 @@ public class TestCompilationUnit {
         assertTrue(fullContent.contains("class Bar"));
         assertTrue(fullContent.contains("class Baz"));
         assertTrue(fullContent.contains("class Bla"));
+    }
+
+    @Test
+    public void testNewlyCreatedCUWouldGetAPartialPosition() throws IOException {
+        // contract: when a type is created, a CU can be created and added as partial position
+        final Launcher launcher = new Launcher();
+        assertTrue(launcher.getFactory().CompilationUnit().getMap().isEmpty());
+
+        CtClass myNewClass = launcher.getFactory().createClass("my.new.MyClass");
+        assertEquals(SourcePosition.NOPOSITION, myNewClass.getPosition());
+
+        CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(myNewClass);
+
+        assertNotNull(cu);
+        SourcePosition sourcePosition = myNewClass.getPosition();
+        assertTrue(sourcePosition instanceof PartialSourcePositionImpl);
+        assertEquals(cu, sourcePosition.getCompilationUnit());
+
+        File f = new File(Launcher.OUTPUTDIR, "my/new/MyClass.java");
+        assertEquals(f.getCanonicalFile(), cu.getFile());
     }
 }
