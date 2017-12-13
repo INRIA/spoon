@@ -21,8 +21,6 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -116,20 +114,9 @@ public abstract class Substitution {
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
 		extendedParams.put(templateOfType.getSimpleName(), typeRef);
 		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-
-		CompilationUnit cu = f.createCompilationUnit();
-		cu.setDeclaredPackage(targetPackage);
-		cu.setDeclaredTypes(generated);
-
 		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
-			if (ctType.getPosition() != SourcePosition.NOPOSITION) {
-				SourcePosition olderPosition = ctType.getPosition();
-				SourcePosition sourcePosition = f.createSourcePosition(cu, olderPosition.getSourceStart(), olderPosition.getSourceEnd(), null);
-				ctType.setPosition(sourcePosition);
-			}
 		}
-
 		return (T) typeRef.getTypeDeclaration();
 	}
 
