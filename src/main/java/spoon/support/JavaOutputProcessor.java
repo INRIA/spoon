@@ -124,16 +124,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			throw new IllegalArgumentException();
 		}
 
-		CompilationUnit cu = null;
-		if (element.getPosition() != null) {
-			cu = element.getPosition().getCompilationUnit();
-			// this is a top level type (see check above)
-			// if the compilation unit is not set, we use a default one
-			if (cu == null) {
-				cu = element.getFactory().CompilationUnit().getOrCreate(element.getQualifiedName());
-				cu.setDeclaredPackage(element.getPackage());
-			}
-		}
+		CompilationUnit cu = this.getFactory().CompilationUnit().getOrCreate(element);
 		List<CtType<?>> toBePrinted = new ArrayList<>();
 		toBePrinted.add(element);
 
