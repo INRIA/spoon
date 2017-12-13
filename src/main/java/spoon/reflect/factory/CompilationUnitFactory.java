@@ -89,6 +89,7 @@ public class CompilationUnitFactory extends SubFactory {
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredPackage(ctPackage);
 				ctPackage.setPosition(this.factory.createPartialSourcePosition(result));
 
 				return result;
@@ -111,6 +112,8 @@ public class CompilationUnitFactory extends SubFactory {
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredPackage(type.getPackage());
+				result.addDeclaredType(type);
 				type.setPosition(this.factory.createPartialSourcePosition(result));
 
 				return result;
@@ -130,6 +133,7 @@ public class CompilationUnitFactory extends SubFactory {
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredModule(module);
 				module.setPosition(this.factory.createPartialSourcePosition(result));
 
 				return result;
