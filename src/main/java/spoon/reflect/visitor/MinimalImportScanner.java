@@ -16,17 +16,12 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * The default scanner in Spoon: it uses fully qualified name everywhere possible,
@@ -74,7 +69,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 		// we cannot print in FQN if there is a collision with the first package name
 		// BUT we cannot print without FQN if the last name collide with a variable
-		return targetTypeNames.contains(splitFQN[0]) && !targetTypeNames.contains(splitFQN[splitFQN.length-1]);
+		return targetTypeNames.contains(splitFQN[0]) && !targetTypeNames.contains(splitFQN[splitFQN.length - 1]);
 	}
 
 	@Override

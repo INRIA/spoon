@@ -21,10 +21,7 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -48,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This scanner tries to optimize the imports in Spoon.
@@ -182,9 +178,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
 
-		if (!(reference instanceof CtArrayTypeReference) &&
-				!reference.isPrimitive() &&
-				!CtTypeReference.NULL_TYPE_NAME.equals(reference.getSimpleName())) {
+		if (!(reference instanceof CtArrayTypeReference)
+				&& !reference.isPrimitive()
+				&& !CtTypeReference.NULL_TYPE_NAME.equals(reference.getSimpleName())) {
 			CtTypeReference typeReference;
 			if (reference.getDeclaringType() == null) {
 				typeReference = reference;

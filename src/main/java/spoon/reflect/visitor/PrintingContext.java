@@ -54,7 +54,9 @@ public class PrintingContext {
 	public boolean forceWildcardGenerics() {
 		return (state & FORCE_WILDCARD_GENERICS) != 0L;
 	}
-	public boolean ignorePrintFQNType() { return (state & IGNORE_PRINT_FQN_TYPE) != 0L; }
+	public boolean ignorePrintFQNType() {
+		return (state & IGNORE_PRINT_FQN_TYPE) != 0L;
+	}
 
 	public class Writable implements AutoCloseable {
 		private long oldState;

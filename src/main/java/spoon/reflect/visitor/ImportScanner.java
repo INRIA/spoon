@@ -22,7 +22,6 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
