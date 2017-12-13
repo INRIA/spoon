@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
@@ -26,6 +27,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -36,10 +39,14 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,7 +60,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private List<CtImport> originalImports = CtElementImpl.emptyList();
 	private Set<CtImport> removedImports = CtElementImpl.emptySet();
 	private Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
-	protected Set<String> targetTypeNames = CtElementImpl.emptySet();
+
+	protected Map<CtElement, Set<String>> scopedNames = new HashMap<>();
+	protected Set<String> targetTypeNames = new HashSet<>();
+	protected Queue<CtElement> visitedBlocksOrTypes = new ArrayDeque<>();
+	protected CtElement currentBlockOrType;
 
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
@@ -71,11 +82,36 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void enter(CtElement ctElement) {
-		if (ctElement instanceof CtNamedElement) {
-			if (this.targetTypeNames == CtElementImpl.<String>emptySet()) {
-				this.targetTypeNames = new HashSet<>();
+		if (ctElement instanceof CtBlock || ctElement instanceof CtType) {
+			if (this.currentBlockOrType != null) {
+				this.visitedBlocksOrTypes.add(this.currentBlockOrType);
 			}
-			this.targetTypeNames.add(((CtNamedElement) ctElement).getSimpleName());
+			this.currentBlockOrType = ctElement;
+			this.scopedNames.put(this.currentBlockOrType, new HashSet<>());
+		}
+
+		if (this.currentBlockOrType != null && (ctElement instanceof CtVariable || ctElement instanceof CtTypeMember)) {
+			CtNamedElement variable = (CtNamedElement) ctElement;
+			this.scopedNames.get(this.currentBlockOrType).add(variable.getSimpleName());
+			this.targetTypeNames.add(variable.getSimpleName());
+		}
+	}
+
+	@Override
+	public void exit(CtElement ctElement) {
+		if (ctElement instanceof CtBlock || ctElement instanceof CtType) {
+			this.scopedNames.remove(this.currentBlockOrType);
+			this.targetTypeNames = new HashSet<>();
+
+			for (Set<String> names : this.scopedNames.values()) {
+				this.targetTypeNames.addAll(names);
+			}
+
+			if (this.visitedBlocksOrTypes.isEmpty()) {
+				this.currentBlockOrType = null;
+			} else {
+				this.currentBlockOrType = this.visitedBlocksOrTypes.poll();
+			}
 		}
 	}
 
@@ -301,8 +337,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	protected void setTargetType(CtTypeReference targetType) {
 		this.targetType = targetType;
-		this.targetTypeNames.addAll(this.targetType.getAllFields().stream().map(CtFieldReference::getSimpleName).collect(Collectors.toList()));
-		this.targetTypeNames.addAll(this.targetType.getAllExecutables().stream().map(CtExecutableReference::getSimpleName).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -407,7 +441,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		this.imports = CtElementImpl.emptyList();
 		this.removedImports = CtElementImpl.emptySet();
 		this.referenceInCollision = CtElementImpl.emptySet();
-		this.targetTypeNames = CtElementImpl.emptySet();
+		this.targetTypeNames = new HashSet<>();
+		this.currentBlockOrType = null;
+		this.visitedBlocksOrTypes = new ArrayDeque<>();
+		this.scopedNames = new HashMap<>();
 		this.setImports(this.originalImports);
 	}
 
