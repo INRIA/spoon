@@ -1,18 +1,24 @@
 package spoon.test.compilationunit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.support.JavaOutputProcessor;
 import spoon.test.api.testclasses.Bar;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by urli on 18/08/2017.
@@ -70,5 +76,55 @@ public class TestCompilationUnit {
 
         cu.setDeclaredTypes(Collections.singletonList(launcher.getFactory().createClass()));
         assertEquals(CompilationUnit.UNIT_TYPE.TYPE_DECLARATION, cu.getUnitType());
+    }
+
+    @Test
+    public void testCompilationUnitDeclaredTypes() throws IOException {
+        // contract: the list of declared types should be unmodifiable
+        File resource = new File("./src/test/java/spoon/test/model/Foo.java");
+        final Launcher launcher = new Launcher();
+        launcher.addInputResource(resource.getPath());
+        launcher.buildModel();
+
+        CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
+        assertEquals(3, cu.getDeclaredTypes().size());
+
+        List<CtType<?>> typeList = cu.getDeclaredTypes();
+        try {
+            typeList.remove(0);
+            fail();
+        } catch (UnsupportedOperationException e) {
+            // do nothing
+        }
+    }
+
+    @Test
+    public void testAddDeclaredTypeInCU() throws IOException {
+        // contract: when a type is added to a CU, it should also be pretty printed in cu mode
+        File resource = new File("./src/test/java/spoon/test/model/Foo.java");
+        final Launcher launcher = new Launcher();
+        launcher.setArgs(new String[]{  "--output-type", "compilationunits"});
+        launcher.addInputResource(resource.getPath());
+        launcher.setSourceOutputDirectory("./target/cu-onemoretype");
+        launcher.buildModel();
+
+        CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
+        assertEquals(3, cu.getDeclaredTypes().size());
+
+        CtType typeBla = launcher.getFactory().Class().create("spoon.test.model.Bla");
+        cu.addDeclaredType(typeBla);
+
+        assertEquals(4, cu.getDeclaredTypes().size());
+
+        launcher.prettyprint();
+
+        File output = new File("./target/cu-onemoretype/spoon/test/model/Foo.java");
+        List<String> lines = Files.readAllLines(output.toPath());
+
+        String fullContent = StringUtils.join(lines, "\n");
+        assertTrue(fullContent.contains("public class Foo"));
+        assertTrue(fullContent.contains("class Bar"));
+        assertTrue(fullContent.contains("class Baz"));
+        assertTrue(fullContent.contains("class Bla"));
     }
 }

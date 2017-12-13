@@ -75,6 +75,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -790,7 +791,10 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 			ctPackage.addType((CtType<?>) child);
 			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
-				child.getPosition().getCompilationUnit().getDeclaredTypes().add((CtType<?>) child);
+				CompilationUnit cu = child.getPosition().getCompilationUnit();
+				List<CtType<?>> declaredTypes = new ArrayList<>(cu.getDeclaredTypes());
+				declaredTypes.add((CtType<?>) child);
+				cu.setDeclaredTypes(declaredTypes);
 			}
 			return;
 		}
