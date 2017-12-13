@@ -57,13 +57,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Set<CtImport> removedImports = CtElementImpl.emptySet();
 	private Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
 
-	protected Map<CtElement, Set<String>> scopedNames = new HashMap<>();
-	protected Set<String> targetTypeNames = new HashSet<>();
-	protected Queue<CtElement> visitedBlocksOrTypes = new ArrayDeque<>();
-	protected CtElement currentBlockOrType;
+	private Map<CtElement, Set<String>> scopedNames = new HashMap<>();
+	private Queue<CtElement> visitedBlocksOrTypes = new ArrayDeque<>();
+	private CtElement currentBlockOrType;
 
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
+	protected Set<String> targetTypeNames = new HashSet<>();
 
 	public ImportScannerImpl(Factory factory) {
 		this.factory = factory;
@@ -429,6 +429,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			this.referenceInCollision = new HashSet<>();
 		}
 		this.referenceInCollision.add(reference);
+	}
+
+	protected boolean removeReferenceInCollision(CtReference reference) {
+		return this.referenceInCollision.remove(reference);
 	}
 
 	@Override

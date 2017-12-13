@@ -76,6 +76,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	public void addImport(CtReference reference) {
 		if (!reference.equals(targetType) && this.shouldTypeBeImported(reference)) {
 			this.addImport(this.getFactory().Type().createImport(reference));
+		} else {
+			// import scanner could have imported a reference considered in collision
+			// however if it's not imported, it's not in collision
+			this.removeReferenceInCollision(reference);
 		}
 	}
 

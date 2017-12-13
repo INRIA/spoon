@@ -28,7 +28,7 @@ public class ImportBuilderTest {
 
     @Test
     public void testWithNoImport() {
-        // contract: when the source code has no import, imports can be created afterwards
+        // contract: when the source code has no import, calling imports returns nothing
         Launcher spoon = new Launcher();
         spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/A.java");
         spoon.getEnvironment().setAutoImports(true);
@@ -36,7 +36,7 @@ public class ImportBuilderTest {
 
         CtClass classA = spoon.getFactory().Class().get(A.class);
         CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-        assertEquals(1, unitA.getImports().size());
+        assertEquals(0, unitA.getImports().size());
     }
 
     @Test
