@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -46,11 +47,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	Collection<CtImport> imports = new HashSet<>();
 
 	CtModule ctModule;
-
-
-	public List<CtType<?>> getDeclaredTypes() {
-		return declaredTypes;
-	}
 
 	File file;
 
@@ -81,10 +77,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		}
 	}
 
+	@Override
 	public File getFile() {
 		return file;
 	}
 
+	@Override
 	public CtType<?> getMainType() {
 		if (getFile() == null) {
 			return getDeclaredTypes().get(0);
@@ -103,8 +101,20 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 						+ getDeclaredTypes());
 	}
 
+	@Override
+	public List<CtType<?>> getDeclaredTypes() {
+		return Collections.unmodifiableList(declaredTypes);
+	}
+
+	@Override
 	public void setDeclaredTypes(List<CtType<?>> types) {
-		this.declaredTypes = types;
+		this.declaredTypes.clear();
+		this.declaredTypes.addAll(types);
+	}
+
+	@Override
+	public void addDeclaredType(CtType type) {
+		this.declaredTypes.add(type);
 	}
 
 	@Override

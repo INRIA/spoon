@@ -73,6 +73,11 @@ public interface CompilationUnit extends FactoryAccessor {
 	void setDeclaredTypes(List<CtType<?>> types);
 
 	/**
+	 * Add a type to the list of declared types
+	 */
+	void addDeclaredType(CtType type);
+
+	/**
 	 * Gets the declared module if the compilationUnit is "module-info.java"
 	 */
 	CtModule getDeclaredModule();
