@@ -183,7 +183,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * The printing context.
 	 */
-	public PrintingContext context = new PrintingContext();
+	public PrintingContext context;
 
 	/**
 	 * Environment which Spoon is executed.
@@ -213,9 +213,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Creates a new code generator visitor.
 	 */
+	public DefaultJavaPrettyPrinter(Environment env, boolean toString) {
+		this.env = env;
+		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
+		this.context = new PrintingContext(toString);
+	}
+
 	public DefaultJavaPrettyPrinter(Environment env) {
 		this.env = env;
 		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
+		this.context = new PrintingContext(false);
 	}
 
 	/**

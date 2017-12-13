@@ -260,7 +260,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment(), true);
 		String errorMessage = "";
 		try {
 			printer.scan(this);

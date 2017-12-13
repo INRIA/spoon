@@ -88,8 +88,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (this.currentBlockOrType != null && (ctElement instanceof CtVariable || ctElement instanceof CtTypeMember)) {
 			CtNamedElement variable = (CtNamedElement) ctElement;
-			this.scopedNames.get(this.currentBlockOrType).add(variable.getSimpleName());
-			this.targetTypeNames.add(variable.getSimpleName());
+			Set<String> setNames = this.scopedNames.get(this.currentBlockOrType);
+
+			if (setNames != null) {
+				setNames.add(variable.getSimpleName());
+				this.targetTypeNames.add(variable.getSimpleName());
+			}
 		}
 	}
 

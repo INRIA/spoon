@@ -94,7 +94,9 @@ public class PrintingContext {
 			return (T) this;
 		}
 		public <T extends Writable> T ignorePrintFQNType(boolean v) {
-			setState(IGNORE_PRINT_FQN_TYPE, v);
+			if (!toString) {
+				setState(IGNORE_PRINT_FQN_TYPE, v);
+			}
 			return (T) this;
 		}
 		private void setState(long mask, boolean v) {
@@ -142,6 +144,16 @@ public class PrintingContext {
 	Deque<CtExpression<?>> parenthesedExpression = new ArrayDeque<>();
 
 	CtType<?> currentTopLevel;
+
+	private boolean toString;
+
+	public PrintingContext() {
+		this(false);
+	}
+
+	public PrintingContext(boolean toString) {
+		this.toString = toString;
+	}
 
 	@Override
 	public String toString() {
