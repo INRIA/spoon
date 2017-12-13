@@ -18,10 +18,6 @@ package spoon.reflect.factory;
 
 import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -97,12 +93,15 @@ public class CompilationUnitFactory extends SubFactory {
 
 				return result;
 			} catch (IOException e) {
-				throw new SpoonException("Cannot get path for file: "+file.getAbsolutePath(), e);
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
 			}
 		}
 	}
 
 	public CompilationUnit getOrCreate(CtType type) {
+		if (type == null) {
+			return null;
+		}
 		if (type.getPosition().getCompilationUnit() != null) {
 			return type.getPosition().getCompilationUnit();
 		}
@@ -116,10 +115,10 @@ public class CompilationUnitFactory extends SubFactory {
 
 				return result;
 			} catch (IOException e) {
-				throw new SpoonException("Cannot get path for file: "+file.getAbsolutePath(), e);
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
 			}
 		} else {
-			return null;
+			return getOrCreate(type.getTopLevelType());
 		}
 	}
 
@@ -135,7 +134,7 @@ public class CompilationUnitFactory extends SubFactory {
 
 				return result;
 			} catch (IOException e) {
-				throw new SpoonException("Cannot get path for file: "+file.getAbsolutePath(), e);
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
 			}
 		}
 	}
