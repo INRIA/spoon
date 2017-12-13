@@ -17,6 +17,7 @@
 package spoon.compiler;
 
 import org.apache.log4j.Level;
+import spoon.OutputType;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -362,4 +363,14 @@ public interface Environment {
 	 * Set the encoding to use for parsing source code
 	 */
 	void setEncoding(Charset encoding);
+
+	/**
+	 * Set the output type used for processing files
+	 */
+	void setOutputType(OutputType outputType);
+
+	/**
+	 * Get the output type
+	 */
+	OutputType getOutputType();
 }
