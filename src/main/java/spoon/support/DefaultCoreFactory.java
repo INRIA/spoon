@@ -155,6 +155,7 @@ import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
+import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
@@ -683,6 +684,11 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	@Override
 	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
 		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
+	}
+
+	@Override
+	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
+		return new PartialSourcePositionImpl(compilationUnit);
 	}
 
 	@Override
