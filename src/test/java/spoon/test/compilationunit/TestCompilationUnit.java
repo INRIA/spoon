@@ -23,6 +23,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -146,9 +147,10 @@ public class TestCompilationUnit {
         CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(myNewClass);
 
         assertNotNull(cu);
+        assertSame(cu, launcher.getFactory().CompilationUnit().getOrCreate(myNewClass));
         SourcePosition sourcePosition = myNewClass.getPosition();
         assertTrue(sourcePosition instanceof PartialSourcePositionImpl);
-        assertEquals(cu, sourcePosition.getCompilationUnit());
+        assertSame(cu, sourcePosition.getCompilationUnit());
 
         File f = new File(Launcher.OUTPUTDIR, "my/new/MyClass.java");
         assertEquals(f.getCanonicalFile(), cu.getFile());
