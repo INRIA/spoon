@@ -38,6 +38,8 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 */
 	String PACKAGE_SEPARATOR = ".";
 
+	char PACKAGE_SEPARATOR_CHAR = '.';
+
 	/**
 	 * The name for the top level package.
 	 */

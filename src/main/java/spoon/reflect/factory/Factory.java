@@ -975,4 +975,9 @@ public interface Factory {
 	 * @see ModuleFactory#createUsedService(CtTypeReference)
 	 */
 	CtUsedService createUsedService(CtTypeReference typeReference);
+
+	/**
+	 * @see CoreFactory#createPartialSourcePosition(CompilationUnit)
+	 */
+	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
 }

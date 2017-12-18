@@ -1236,4 +1236,9 @@ public class FactoryImpl implements Factory, Serializable {
 	public CtUsedService createUsedService(CtTypeReference typeReference) {
 		return Module().createUsedService(typeReference);
 	}
+
+	@Override
+	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
+		return Core().createPartialSourcePosition(compilationUnit);
+	}
 }

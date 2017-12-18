@@ -395,6 +395,8 @@ public interface CoreFactory {
 			CompilationUnit compilationUnit,
 			int startSource, int end, int[] lineSeparatorPositions);
 
+	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+
 	/**
 	 * Creates a declaration source position.
 	 */
