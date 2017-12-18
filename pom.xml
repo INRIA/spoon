@@ -477,8 +477,8 @@
       <plugin>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-maven</artifactId>
-            <!--           We use the latest       -->
-            <!--          <version>LATEST</version>-->
+            <!--           We use the latest, so we don't specify an actual version number       -->
+            <!--          <version></version>-->
       </plugin>
     </plugins>
 
