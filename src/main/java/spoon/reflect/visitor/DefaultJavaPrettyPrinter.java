@@ -1783,7 +1783,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (!context.ignoreEnclosingClass() && !ref.isLocalType()) {
 				//compute visible type which can be used to print access path to ref
 				CtTypeReference<?> accessType = ref.getAccessType();
-				if (!accessType.isAnonymous() && (!this.env.isAutoImports() || !accessType.equals(context.getCurrentTypeReference()))) {
+				boolean scanAccessType = !accessType.isAnonymous() && !(this.env.isAutoImports() && accessType.equals(context.getCurrentTypeReference()) && !accessType.getActualTypeArguments().isEmpty());
+				if (scanAccessType) {
 					try (Writable _context = context.modify()) {
 						if (!withGenerics) {
 							_context.ignoreGenerics(true);

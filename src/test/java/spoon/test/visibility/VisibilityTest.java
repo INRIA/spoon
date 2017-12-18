@@ -51,11 +51,10 @@ public class VisibilityTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setSourceOutputDirectory(sourceOutputDir);
+		launcher.getEnvironment().setOutputType(OutputType.CLASSES);
+		launcher.addInputResource("./src/test/java/spoon/test/visibility/testclasses/");
+		launcher.run();
 		final Factory factory = launcher.getFactory();
-		final SpoonModelBuilder compiler = launcher.createCompiler();
-		compiler.addInputSource(new File("./src/test/java/spoon/test/visibility/testclasses/"));
-		compiler.build();
-		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 
 		// Class must be imported.
 		final CtClass<?> aDouble = (CtClass<?>) factory.Type().get(spoon.test.visibility.testclasses.internal.Double.class);
