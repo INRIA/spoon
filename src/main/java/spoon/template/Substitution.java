@@ -21,7 +21,6 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -115,12 +114,8 @@ public abstract class Substitution {
 		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
 		extendedParams.put(templateOfType.getSimpleName(), typeRef);
 		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-		CompilationUnit compilationUnit = templateOfType.getPosition().getCompilationUnit();
 		for (CtType<?> ctType : generated) {
 			targetPackage.addType(ctType);
-			if (compilationUnit != null) {
-				compilationUnit.addDeclaredTypes(ctType);
-			}
 		}
 		return (T) typeRef.getTypeDeclaration();
 	}
