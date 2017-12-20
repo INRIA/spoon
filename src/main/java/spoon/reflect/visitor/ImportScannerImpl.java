@@ -467,7 +467,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public boolean printQualifiedName(CtReference ref) {
 		if (ref instanceof CtPackageReference) {
-			return true;
+			return !(targetType.getPackage() != null && targetType.getPackage().equals(ref));
 		}
 
 		if (this.referenceInCollision.contains(ref)) {
