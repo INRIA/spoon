@@ -224,12 +224,12 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	private Path getElementPath(CtPackage type) {
 		return createFolders(getEnvironment().getOutputDestination()
-				.getOutputPath(type.getParent(CtModule.class), type, null));
+				.getOutputPath(type.getDeclaringModule(), type, null));
 	}
 
 	private Path getElementPath(CtType type) {
 		return createFolders(getEnvironment().getOutputDestination()
-				.getOutputPath(type.getParent(CtModule.class),
+				.getOutputPath(type.getPackage().getDeclaringModule(),
 						type.getPackage(), type));
 	}
 
