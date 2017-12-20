@@ -49,6 +49,11 @@ public class DefaultOutputDestination implements OutputDestination {
 		return Paths.get(directory.toString(), moduleDir.toString(), packagePath.toString(), fileName);
 	}
 
+	/**
+	 * @return return the filename of the current element
+	 * @param pack
+	 * @param type
+	 */
 	protected String getFileName(CtPackage pack, CtType type) {
 		String fileName;
 		if (type != null) {
@@ -61,6 +66,10 @@ public class DefaultOutputDestination implements OutputDestination {
 		return fileName;
 	}
 
+	/**
+	 * @return the path of the package
+	 * @param pack
+	 */
 	protected Path getPackagePath(CtPackage pack) {
 		Path packagePath = Paths.get(".");
 		if (pack != null && !pack.isUnnamedPackage()) {
@@ -69,6 +78,10 @@ public class DefaultOutputDestination implements OutputDestination {
 		return packagePath;
 	}
 
+	/**
+	 * @return return the path of the module
+	 * @param module
+	 */
 	protected Path getModulePath(CtModule module) {
 		Path moduleDir = Paths.get(".");
 		if (module != null && !module.isUnnamedModule() && environment.getComplianceLevel() > 8) {
@@ -77,6 +90,12 @@ public class DefaultOutputDestination implements OutputDestination {
 		return moduleDir;
 	}
 
+	/**
+	 * @return the root path of the destination
+	 * @param module
+	 * @param pack
+	 * @param type
+	 */
 	protected Path getDirectoryPath(CtModule module, CtPackage pack, CtType type) {
 		return Paths.get(getDefaultOutputDirectory().getAbsolutePath());
 	}
