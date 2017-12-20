@@ -16,9 +16,11 @@
  */
 package spoon.support;
 
+import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -30,18 +32,56 @@ import java.nio.file.Paths;
 public class DefaultOutputDestination implements OutputDestination {
 
 	private File defaultOutputDirectory;
+	private Environment environment;
 
-	public DefaultOutputDestination(File defaultOutputDirectory) {
+	public DefaultOutputDestination(File defaultOutputDirectory, Environment environment) {
 		this.defaultOutputDirectory = defaultOutputDirectory;
+		this.environment = environment;
 	}
 
 	@Override
-	public Path getOutputPath(CtModule module, CtPackage pack, CtType type, Path packagePath, String filename) {
-		return Paths.get(defaultOutputDirectory.getAbsolutePath(), packagePath.toString(), filename);
+	public Path getOutputPath(CtModule module, CtPackage pack, CtType type) {
+
+		String fileName;
+		if (type != null) {
+			fileName = type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
+		} else if (pack != null) {
+			fileName = DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION;
+		} else {
+			fileName = DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION;
+		}
+
+		Path moduleDir = getModulePath(module);
+		Path packagePath = getPackagePath(pack);
+
+		return Paths.get(moduleDir.toString(), packagePath.toString(), fileName);
+	}
+
+	protected Path getPackagePath(CtPackage pack) {
+		Path packagePath = Paths.get("./");
+		if (pack != null && !pack.isUnnamedPackage()) {
+			packagePath = Paths.get(pack.getQualifiedName().replace('.', File.separatorChar));
+		}
+		return packagePath;
+	}
+
+	protected Path getModulePath(CtModule module) {
+		Path moduleDir;
+		if (module == null || module.isUnnamedModule() || environment.getComplianceLevel() <= 8) {
+			moduleDir = Paths.get(defaultOutputDirectory.getAbsolutePath());
+		} else {
+			// Create current module dir
+			moduleDir = Paths.get(defaultOutputDirectory.getAbsolutePath(), module.getSimpleName());
+		}
+		return moduleDir;
 	}
 
 	@Override
 	public File getDefaultOutputDirectory() {
 		return defaultOutputDirectory;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
 	}
 }

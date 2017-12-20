@@ -27,7 +27,6 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
 import java.io.File;
@@ -35,7 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,11 +47,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	List<File> printedFiles = new ArrayList<>();
 
-	OutputDestination output;
-
-	public JavaOutputProcessor(PrettyPrinter printer, OutputDestination output) {
+	/**
+	 * @param printer  the PrettyPrinter to use for written the files
+	 */
+	public JavaOutputProcessor(PrettyPrinter printer) {
 		this.printer = printer;
-		this.output = output;
 	}
 
 	/**
@@ -61,14 +59,13 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 *
 	 * @param outputDirectory the root output directory
 	 * @param printer the PrettyPrinter to use for written the files
-	 * @param output the output destination
 	 *
 	 * @deprecated The outputDirectory should be get from the environment given to the pretty printer
 	 * (see {@link Environment#setSourceOutputDirectory(File)}. You should use the constructor with only one parameter.
 	 */
 	@Deprecated
-	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer, OutputDestination output) {
-		this(printer, output);
+	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
+		this(printer);
 		this.setOutputDirectory(outputDirectory);
 	}
 
@@ -201,7 +198,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	private void createModuleFile(CtModule module) {
 		if (getEnvironment().getComplianceLevel() > 8 && module != getFactory().getModel().getUnnamedModule()) {
-			File moduleFile = new File(getModuleFile(module).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			File moduleFile = getElementPath(module).toFile();
 			if (!printedFiles.contains(moduleFile)) {
 				printedFiles.add(moduleFile);
 			}
@@ -220,67 +217,20 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		}
 	}
 
-	private File getModuleFile(CtModule module) {
-		File moduleDir;
-		if (module == null || module.isUnnamedModule() || getEnvironment().getComplianceLevel() <= 8) {
-			moduleDir = new File(getOutputDirectory().getAbsolutePath());
-		} else {
-			// Create current package dir
-			moduleDir = new File(getOutputDirectory().getAbsolutePath() + File.separatorChar + module.getSimpleName());
-		}
-		if (!moduleDir.exists()) {
-			if (!moduleDir.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
-		}
-		return moduleDir;
-	}
-
-	private File getPackageFile(CtPackage pack) {
-		File packageDir;
-		if (pack.isUnnamedPackage()) {
-			packageDir = this.getModuleFile(pack.getDeclaringModule());
-		} else {
-			// Create current package dir
-			packageDir = new File(this.getModuleFile(pack.getDeclaringModule())
-					.getAbsolutePath() + File.separatorChar + pack
-					.getQualifiedName().replace('.', File.separatorChar));
-		}
-		return packageDir;
-	}
-
 	private Path getElementPath(CtModule type) {
-		File moduleDir;
-		if (type == null || type.isUnnamedModule() || getEnvironment().getComplianceLevel() <= 8) {
-			moduleDir = new File(getOutputDirectory().getAbsolutePath());
-		} else {
-			// Create current package dir
-			moduleDir = new File(getOutputDirectory().getAbsolutePath() + File.separatorChar + type.getSimpleName());
-		}
-		if (!moduleDir.exists()) {
-			if (!moduleDir.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
-		}
-		return createFolders(this.output.getOutputPath(type.getParent(CtModule.class), null, null, Paths.get("./"), type.getSimpleName()));
+		return createFolders(getEnvironment().getOutputDestination()
+				.getOutputPath(type.getParent(CtModule.class), null, null));
 	}
 
 	private Path getElementPath(CtPackage type) {
-		String filename = DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION;
-		Path packagePath = Paths.get("./");
-		if (!type.isUnnamedPackage()) {
-			packagePath = Paths.get(type.getQualifiedName().replace('.', File.separatorChar));
-		}
-		return createFolders(this.output.getOutputPath(type.getParent(CtModule.class), type, null, packagePath, filename));
+		return createFolders(getEnvironment().getOutputDestination()
+				.getOutputPath(type.getParent(CtModule.class), type, null));
 	}
 
 	private Path getElementPath(CtType type) {
-		String filename = type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
-		Path packagePath = Paths.get("./");
-		if (!type.getPackage().isUnnamedPackage()) {
-			packagePath = Paths.get(type.getPackage().getQualifiedName().replace('.', File.separatorChar));
-		}
-		return createFolders(this.output.getOutputPath(type.getParent(CtModule.class), type.getPackage(), type, packagePath, filename));
+		return createFolders(getEnvironment().getOutputDestination()
+				.getOutputPath(type.getParent(CtModule.class),
+						type.getPackage(), type));
 	}
 
 	private Path createFolders(Path outputPath) {

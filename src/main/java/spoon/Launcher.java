@@ -42,9 +42,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
-import spoon.support.DefaultOutputDestination;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.OutputDestination;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
@@ -632,14 +630,10 @@ public class Launcher implements SpoonAPI {
 		return this.createOutputWriter();
 	}
 
-	public JavaOutputProcessor createOutputWriter(OutputDestination output) {
-		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter(), output);
+	public JavaOutputProcessor createOutputWriter() {
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
 		outputProcessor.setFactory(this.getFactory());
 		return outputProcessor;
-	}
-
-	public JavaOutputProcessor createOutputWriter() {
-		return createOutputWriter(new DefaultOutputDestination(getEnvironment().getSourceOutputDirectory()));
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
@@ -778,12 +772,6 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
 		getEnvironment().setSourceOutputDirectory(outputDirectory);
-		getEnvironment().setDefaultFileGenerator(createOutputWriter());
-	}
-
-	public void setSourceOutputDirectory(OutputDestination outputDirectory) {
-		getEnvironment().setSourceOutputDirectory(outputDirectory.getDefaultOutputDirectory());
-		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory));
 		getEnvironment().setDefaultFileGenerator(createOutputWriter());
 	}
 

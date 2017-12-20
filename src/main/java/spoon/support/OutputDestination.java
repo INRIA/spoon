@@ -24,7 +24,8 @@ import java.io.File;
 import java.nio.file.Path;
 
 public interface OutputDestination {
-	Path getOutputPath(CtModule module, CtPackage pack, CtType type, Path packagePath, String filename);
+
+	Path getOutputPath(CtModule module, CtPackage pack, CtType type);
 
 	File getDefaultOutputDirectory();
 }
