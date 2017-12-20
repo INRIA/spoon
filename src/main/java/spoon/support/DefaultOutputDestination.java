@@ -41,7 +41,15 @@ public class DefaultOutputDestination implements OutputDestination {
 
 	@Override
 	public Path getOutputPath(CtModule module, CtPackage pack, CtType type) {
+		Path directory = getDirectoryPath(module, pack, type);
+		Path moduleDir = getModulePath(module);
+		Path packagePath = getPackagePath(pack);
+		String fileName = getFileName(pack, type);
 
+		return Paths.get(directory.toString(), moduleDir.toString(), packagePath.toString(), fileName);
+	}
+
+	protected String getFileName(CtPackage pack, CtType type) {
 		String fileName;
 		if (type != null) {
 			fileName = type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
@@ -50,11 +58,7 @@ public class DefaultOutputDestination implements OutputDestination {
 		} else {
 			fileName = DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION;
 		}
-
-		Path moduleDir = getModulePath(module);
-		Path packagePath = getPackagePath(pack);
-
-		return Paths.get(moduleDir.toString(), packagePath.toString(), fileName);
+		return fileName;
 	}
 
 	protected Path getPackagePath(CtPackage pack) {
@@ -66,14 +70,15 @@ public class DefaultOutputDestination implements OutputDestination {
 	}
 
 	protected Path getModulePath(CtModule module) {
-		Path moduleDir;
-		if (module == null || module.isUnnamedModule() || environment.getComplianceLevel() <= 8) {
-			moduleDir = Paths.get(defaultOutputDirectory.getAbsolutePath());
-		} else {
-			// Create current module dir
-			moduleDir = Paths.get(defaultOutputDirectory.getAbsolutePath(), module.getSimpleName());
+		Path moduleDir = Paths.get("./");
+		if (module != null && !module.isUnnamedModule() && environment.getComplianceLevel() < 8) {
+			moduleDir = Paths.get(getDefaultOutputDirectory().getAbsolutePath(), module.getSimpleName());
 		}
 		return moduleDir;
+	}
+
+	protected Path getDirectoryPath(CtModule module, CtPackage pack, CtType type) {
+		return Paths.get(getDefaultOutputDirectory().getAbsolutePath());
 	}
 
 	@Override
