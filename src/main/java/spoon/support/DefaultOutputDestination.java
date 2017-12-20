@@ -85,7 +85,7 @@ public class DefaultOutputDestination implements OutputDestination {
 	protected Path getModulePath(CtModule module) {
 		Path moduleDir = Paths.get(".");
 		if (module != null && !module.isUnnamedModule() && environment.getComplianceLevel() > 8) {
-			moduleDir = Paths.get(getDefaultOutputDirectory().getAbsolutePath(), module.getSimpleName());
+			moduleDir = Paths.get(module.getSimpleName());
 		}
 		return moduleDir;
 	}
