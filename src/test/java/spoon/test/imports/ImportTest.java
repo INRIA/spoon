@@ -640,7 +640,7 @@ public class ImportTest {
 
 	@Test
 	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
-		// contract: with imports, java.lang is not printed and intern classes are not FQN printed
+		// contract: with imports, java.lang is not printed and intern classes are FQN printed
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
@@ -655,7 +655,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 
-		assertTrue("Content of mm: "+mm.toString(), mm.toString().contains("List<Dummy> list;"));
+		assertTrue("Content of mm: "+mm.toString(), mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 
@@ -673,7 +673,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		assertTrue("Content of mm:"+mm+"\nnew spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
 		 								  
 	}
 	@Test
@@ -690,7 +690,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new StaticNested2<K>();", mm.toString().indexOf("new StaticNested2<K>();")>=0);
+		assertTrue("Content of mm: "+mm, mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
 		 								  
 	}
 
