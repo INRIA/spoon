@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -45,8 +46,6 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	public MinimalImportScanner() {
 		super();
 	}
-
-
 
 	/**
 	 * @return true if the ref should be imported.
@@ -92,6 +91,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 
 	@Override
 	public boolean printQualifiedName(CtReference reference) {
+		if (reference instanceof CtPackageReference) {
+			return !this.referenceInCollision.contains(reference);
+		}
+
 		if (this.isEffectivelyImported(reference)) {
 			return false;
 		}

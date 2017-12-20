@@ -33,6 +33,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -41,6 +42,7 @@ import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,6 +101,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				this.targetTypeNames.add(variable.getSimpleName());
 			}
 		}
+
+		if (ctElement instanceof CtType) {
+			CtType<?> type = (CtType) ctElement;
+			if (!type.isAnonymous()) {
+				this.targetTypeNames.addAll((type.getAllFields()).stream().map(CtFieldReference::getSimpleName).collect(Collectors.toList()));
+			}
+		}
 	}
 
 	@Override
@@ -127,6 +136,17 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public Factory getFactory() {
 		return factory;
+	}
+
+	@Override
+	public void visitCtPackageReference(CtPackageReference packageReference) {
+		String[] fqn = packageReference.getQualifiedName().split("\\.");
+
+		if (this.targetTypeNames.contains(fqn[0])) {
+			this.addReferenceInCollision(packageReference);
+		}
+
+		super.visitCtPackageReference(packageReference);
 	}
 
 	@Override
@@ -173,11 +193,14 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			this.isTypeInCollision(reference);
 
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
+				this.isTypeInCollision(reference.getDeclaringType());
 				this.addImport(reference);
 			// we must check if there is a type argument to call the right import
-			} else if (!reference.getActualTypeArguments().isEmpty()) {
-				this.scan(reference.getActualTypeArguments());
 			}
+		}
+
+		if (!reference.getActualTypeArguments().isEmpty()) {
+			this.scan(reference.getActualTypeArguments());
 		}
 	}
 
@@ -263,6 +286,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (reference instanceof CtTypeReference) {
 			CtTypeReference ctTypeReference = (CtTypeReference) reference;
 			if (targetType != null && targetType.getQualifiedName().equals(ctTypeReference.getQualifiedName())) {
+				if (this.targetTypeNames.contains(targetType.getSimpleName())) {
+					this.addReferenceInCollision(targetType);
+					return true;
+				}
 				return false;
 			}
 		}
@@ -412,8 +439,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		}
 
 		if (ref instanceof CtTypeReference) {
-			CtTypeReference ctTypeReference = (CtTypeReference) ref;
-			if (ctTypeReference.getPackage() != null && ((CtTypeReference) ref).getPackage().getSimpleName().equals("java.lang")) {
+			CtTypeReference ctTypeReference = ((CtTypeReference) ref).getTopLevelType();
+			if (ctTypeReference.getPackage() != null && ctTypeReference.getPackage().getSimpleName().equals("java.lang")) {
 				return true;
 			}
 
@@ -439,6 +466,10 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public boolean printQualifiedName(CtReference ref) {
+		if (ref instanceof CtPackageReference) {
+			return true;
+		}
+
 		if (this.referenceInCollision.contains(ref)) {
 			return true;
 		}

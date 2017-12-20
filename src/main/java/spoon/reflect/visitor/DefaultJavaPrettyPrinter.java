@@ -1802,7 +1802,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeIdentifier(ref.getSimpleName());
 			}
 		} else {
-			boolean packageToBePrinted = ref.getPackage() != null && !ref.getPackage().isUnnamedPackage();
+			boolean packageToBePrinted = ref.getPackage() != null && !ref.getPackage().isUnnamedPackage() && printQualified(ref.getPackage());
 			boolean forceIgnorePrintFQN = !context.ignorePrintFQNType();
 			boolean printFQN = printQualified(ref);
 
