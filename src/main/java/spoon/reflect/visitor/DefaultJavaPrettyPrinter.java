@@ -1783,7 +1783,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (!context.ignoreEnclosingClass() && !ref.isLocalType()) {
 				//compute visible type which can be used to print access path to ref
 				CtTypeReference<?> accessType = ref.getAccessType();
-				boolean scanAccessType = !accessType.isAnonymous() && !(this.env.isAutoImports() && accessType.equals(context.getCurrentTypeReference()) && !accessType.getActualTypeArguments().isEmpty());
+				boolean scanAccessType = !accessType.isAnonymous() && !(this.env.isAutoImports() && accessType.equals(context.getCurrentTypeReference()) && accessType.getDeclaration().getFormalCtTypeParameters().isEmpty()); //
 				if (scanAccessType) {
 					try (Writable _context = context.modify()) {
 						if (!withGenerics) {
@@ -1802,14 +1802,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeIdentifier(ref.getSimpleName());
 			}
 		} else {
-			// we only ignore printing FQN when we are in no autoimport and we have a collision name
-			if (!context.ignorePrintFQNType() || this.env.isAutoImports()) {
-				if (ref.getPackage() != null && printQualified(ref)) {
-					if (!ref.getPackage().isUnnamedPackage()) {
-						scan(ref.getPackage());
-						printer.writeSeparator(CtPackage.PACKAGE_SEPARATOR);
-					}
-				}
+			boolean packageToBePrinted = ref.getPackage() != null && !ref.getPackage().isUnnamedPackage();
+			boolean forceIgnorePrintFQN = !context.ignorePrintFQNType();
+			boolean printFQN = printQualified(ref);
+
+			boolean printPackageName = printFQN && forceIgnorePrintFQN && packageToBePrinted;
+
+			if (printPackageName) {
+				scan(ref.getPackage());
+				printer.writeSeparator(CtPackage.PACKAGE_SEPARATOR);
 			}
 
 			elementPrinterHelper.writeAnnotations(ref);

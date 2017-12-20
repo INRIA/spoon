@@ -16,11 +16,16 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 
 
 /**
@@ -40,6 +45,8 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	public MinimalImportScanner() {
 		super();
 	}
+
+
 
 	/**
 	 * @return true if the ref should be imported.
@@ -79,7 +86,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 		} else {
 			// import scanner could have imported a reference considered in collision
 			// however if it's not imported, it's not in collision
-			this.removeReferenceInCollision(reference);
+			this.removeReferenceInCollision(reference); //fqnCollideWithTypeMembers(targetType.getQualifiedName());
 		}
 	}
 
@@ -89,22 +96,10 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 			return false;
 		}
 
-		if (this.isTypeInCollision(reference)) {
+		if (this.isTypeInCollision(reference) && this.isImported(reference)) {
 			return false;
 		}
 
-		/*if (reference instanceof CtFieldReference) {
-			CtFieldReference fieldReference = (CtFieldReference) reference;
-			String fqn = fieldReference.getQualifiedName();
-			return !this.fqnCollideWithTypeMembers(fqn);
-		}
-		if (reference instanceof CtExecutableReference) {
-			CtExecutableReference executableReference = (CtExecutableReference) reference;
-			if (executableReference.getDeclaringType() != null) {
-				String fqn = executableReference.getDeclaringType().getQualifiedName();
-				return !this.fqnCollideWithTypeMembers(fqn);
-			}
-		}*/
 		return true;
 	}
 }

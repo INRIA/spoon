@@ -20,7 +20,9 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
@@ -33,6 +35,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
@@ -45,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This scanner tries to optimize the imports in Spoon.
@@ -52,10 +56,10 @@ import java.util.Set;
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private static final int MINIMAL_JAVA_VERSION_FOR_STATIC_IMPORTS = 5;
 	private Factory factory;
-	private List<CtImport> imports = CtElementImpl.emptyList();
+	protected List<CtImport> imports = CtElementImpl.emptyList();
 	private List<CtImport> originalImports = CtElementImpl.emptyList();
 	private Set<CtImport> removedImports = CtElementImpl.emptySet();
-	private Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
+	protected Set<CtReference> referenceInCollision = CtElementImpl.emptySet();
 
 	private Map<CtElement, Set<String>> scopedNames = new HashMap<>();
 	private Queue<CtElement> visitedBlocksOrTypes = new ArrayDeque<>();
@@ -86,7 +90,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			this.scopedNames.put(this.currentBlockOrType, new HashSet<>());
 		}
 
-		if (this.currentBlockOrType != null && (ctElement instanceof CtVariable || ctElement instanceof CtTypeMember)) {
+		if (this.targetType != null && !ctElement.equals(this.targetType) && this.currentBlockOrType != null && (ctElement instanceof CtVariable || ctElement instanceof CtTypeMember)) {
 			CtNamedElement variable = (CtNamedElement) ctElement;
 			Set<String> setNames = this.scopedNames.get(this.currentBlockOrType);
 
@@ -167,15 +171,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			// in the list of reference in collision
 			// for the check when writing in FQN or not
 			this.isTypeInCollision(reference);
+
 			if (reference.getDeclaringType() != null && !isImported(reference.getDeclaringType())) {
 				this.addImport(reference);
-				return;
+			// we must check if there is a type argument to call the right import
+			} else if (!reference.getActualTypeArguments().isEmpty()) {
+				this.scan(reference.getActualTypeArguments());
 			}
-		}
-
-		// we must check if there is a type argument to call the right import
-		if (!reference.getActualTypeArguments().isEmpty()) {
-			this.scan(reference.getActualTypeArguments());
 		}
 	}
 
@@ -344,7 +346,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		switch (cu.getUnitType()) {
 			case TYPE_DECLARATION:
 				for (CtType type : cu.getDeclaredTypes()) {
-					this.targetType = type.getReference();
+					this.setTargetType(type.getReference());
 					this.scan(type);
 				}
 				break;
@@ -437,7 +439,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public boolean printQualifiedName(CtReference ref) {
-		return this.referenceInCollision.contains(ref);
+		if (this.referenceInCollision.contains(ref)) {
+			return true;
+		}
+
+		if (ref instanceof CtExecutableReference) {
+			CtExecutableReference executableReference = (CtExecutableReference) ref;
+			CtTypeReference typeReference = executableReference.getDeclaringType();
+			if (typeReference != null && this.referenceInCollision.contains(typeReference)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
