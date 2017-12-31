@@ -17,7 +17,11 @@
 package spoon.reflect.meta.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -31,6 +35,8 @@ import spoon.reflect.path.CtRole;
 public class RoleHandlerHelper {
 	private RoleHandlerHelper() {
 	}
+
+	private static Map<Class<?>, List<RoleHandler>> roleHandlersByClass = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	private static final List<RoleHandler>[] roleHandlers = new List[CtRole.values().length];
@@ -56,6 +62,7 @@ public class RoleHandlerHelper {
 		}
 		return rh;
 	}
+
 	/**
 	 * @param targetClass the class of the to be manipulated node
 	 * @param role defines the to be manipulated attribute
@@ -70,5 +77,48 @@ public class RoleHandlerHelper {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param targetClass a Close whose handlers we are looking for
+	 * @return all RoleHandlers available for the `targetClass`
+	 */
+	public static List<RoleHandler> getRoleHandlers(Class<? extends CtElement> targetClass) {
+		List<RoleHandler> handlers = roleHandlersByClass.get(targetClass);
+		if (handlers == null) {
+			List<RoleHandler> modifiableHandlers = new ArrayList<>();
+			for (CtRole role : CtRole.values()) {
+				RoleHandler roleHandler = getOptionalRoleHandler(targetClass, role);
+				if (roleHandler != null) {
+					modifiableHandlers.add(roleHandler);
+				}
+			}
+			handlers = Collections.unmodifiableList(modifiableHandlers);
+			roleHandlersByClass.put(targetClass, handlers);
+		}
+		return handlers;
+	}
+
+	/**
+	 * @param consumer is called for each RoleHandler of SpoonModel
+	 */
+	public static void forEachRoleHandler(Consumer<RoleHandler> consumer) {
+		for (List<RoleHandler> list : roleHandlers) {
+			for (RoleHandler roleHandler : list) {
+				consumer.accept(roleHandler);
+			}
+		}
+	}
+
+	public static RoleHandler getParentRoleHandler(CtElement element) {
+		if (element.isParentInitialized() == false) {
+			return null;
+		}
+		CtElement parent = element.getParent();
+		CtRole roleInParent = element.getRoleInParent();
+		if (roleInParent == null) {
+			return null;
+		}
+		return RoleHandlerHelper.getRoleHandler(parent.getClass(), roleInParent);
 	}
 }

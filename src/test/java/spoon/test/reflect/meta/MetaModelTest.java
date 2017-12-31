@@ -3,9 +3,12 @@ package spoon.test.reflect.meta;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.Metamodel;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
@@ -67,6 +70,49 @@ public class MetaModelTest {
 		 * It is not a bug. It is useful to see how much is SpoonMetaModel covering real Spoon model.
 		 */
 //		assertTrue(String.join("\n", problems), problems.isEmpty());
+	}
+	@Test
+	public void testGetRoleHandlersOfClass() {
+		int countOfIfaces = 0;
+		for (CtType spoonIface : Metamodel.getAllMetamodelInterfaces()) {
+			countOfIfaces++;
+			checkRoleHandlersOfType(spoonIface);
+		}
+		assertTrue(countOfIfaces > 10);
+	}
+	
+	private void checkRoleHandlersOfType(CtType iface) {
+		Class ifaceClass =  iface.getActualClass();
+		//contract: check that for each Spoon model interface we have correct list of Role handlers
+		List<RoleHandler> roleHandlersOfIFace = new ArrayList<>(RoleHandlerHelper.getRoleHandlers(ifaceClass));
+		Set<RoleHandler> allRoleHandlers = new HashSet<>();
+		RoleHandlerHelper.forEachRoleHandler(rh -> allRoleHandlers.add(rh));
+		for (CtRole role : CtRole.values()) {
+			RoleHandler rh = RoleHandlerHelper.getOptionalRoleHandler(ifaceClass, role);
+			if (rh != null) {
+				assertTrue("RoleHandler for role " + role + " is missing for " + ifaceClass, roleHandlersOfIFace.remove(rh));
+				assertTrue("RoleHandler " + rh + " is not accessible by RoleHandlerHelper#forEachRoleHandler()", allRoleHandlers.contains(rh));
+			}
+		}
+		assertTrue("There are unexpected RoleHandlers " + roleHandlersOfIFace + " for " + ifaceClass, roleHandlersOfIFace.isEmpty());
+	}
+	
+	@Test
+	public void testGetParentRoleHandler() {
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+		CtClass<?> type = (CtClass) factory.Core().create(CtClass.class);
+		CtField<?> field = factory.Field().create(type, Collections.emptySet(), factory.Type().booleanPrimitiveType(), "someField");
+		assertSame(type, field.getDeclaringType());
+		//contract: RoleHandlerHelper#getParentRoleHandler returns role handler which handles it's relationship to parent
+		assertSame(CtRole.TYPE_MEMBER, RoleHandlerHelper.getParentRoleHandler(field).getRole());
+		assertSame(CtRole.TYPE_MEMBER, field.getRoleInParent());
+		//contract: RoleHandlerHelper#getParentRoleHandler returns null if there is no parent
+		field.setParent(null);
+		assertNull(RoleHandlerHelper.getParentRoleHandler(field));
+		//contract: RoleHandlerHelper#getParentRoleHandler returns null if parent relation cannot be handled in this case
+		//parent of new CtClass is root package - there is no way how to modify that
+		assertNull(RoleHandlerHelper.getParentRoleHandler(type));
 	}
 	@Test
 	public void elementAnnotationRoleHandlerTest() {
