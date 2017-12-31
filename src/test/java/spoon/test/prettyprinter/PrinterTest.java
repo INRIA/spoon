@@ -163,17 +163,7 @@ public class PrinterTest {
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
 		//contract: printer fails with descriptive exception and not with NPE
-		try {
-			type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString();
-			fail();
-		} catch (SpoonException e) {
-			//the name of the missing field declaration is part of exception
-			assertTrue(e.getMessage().indexOf("testedField")>=0);
-			//the name of the method where field declaration is missing is part of exception
-			assertTrue(e.getMessage().indexOf("failingMethod")>=0);
-			//the name of the class where field is missing is part of exception
-			assertTrue(e.getMessage().indexOf("MissingVariableDeclaration")>=0);
-		} //other exceptions are not OK
+		assertEquals("/* ERROR: Missing field: */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));
