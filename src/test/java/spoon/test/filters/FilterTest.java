@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
@@ -14,12 +15,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -1281,5 +1282,14 @@ public class FilterTest {
 		List<CtField> ctFields = type.getElements(new NamedElementFilter<>(CtField.class, "CONSTANT"));
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
+	}
+
+	@Test
+	public void testFilterAsPredicate() throws Exception {
+		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		//contract: Spoon Filter is compatible with java.util.function.Predicate
+		Predicate predicate = new NamedElementFilter<>(CtClass.class, "Foo");
+		assertTrue(predicate.test(foo));
+		assertFalse(predicate.test(foo.getTypeMembers().get(0)));
 	}
 }
