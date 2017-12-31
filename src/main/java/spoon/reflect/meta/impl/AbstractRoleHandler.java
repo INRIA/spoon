@@ -111,6 +111,11 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to Map for " + element.getClass().getSimpleName());
 	};
 
+	@Override
+	public String toString() {
+		return getTargetType().getName() + "#" + getRole().getCamelCaseName();
+	}
+
 //	protected abstract <V> Iterator<V> iterator(T element);
 //	protected abstract int size(T element);
 //	protected abstract <V> V get(T element, int index);
@@ -134,8 +139,64 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 			return asList(element);
 		};
 
-		public <W, X> java.util.List<X> asList(W element) {
-			return Collections.<X>singletonList(getValue(element));
+		public <W, X> java.util.List<X> asList(W e) {
+//			return Collections.<X>singletonList(getValue(element));
+			return new AbstractList<X>() {
+				T element = castTarget(e);
+
+				@Override
+				public int size() {
+					return SingleHandler.this.getValue(element) == null ? 0 : 1;
+				}
+
+				@SuppressWarnings("unchecked")
+				@Override
+				public X get(int index) {
+					if (index != 0) {
+						throw new IndexOutOfBoundsException("Index: " + index + ", Size: 1");
+					}
+					return (X) SingleHandler.this.getValue(element);
+				}
+
+				@Override
+				public X set(int index, X value) {
+					if (index != 0) {
+						throw new IndexOutOfBoundsException("Index: " + index + ", Size: 1");
+					}
+					X oldValue = get(0);
+					SingleHandler.this.setValue(element, value);
+					return (X) oldValue;
+				}
+				@Override
+				public boolean add(X value) {
+					if (value == null) {
+						return false;
+					}
+					X oldValue = get(0);
+					if (oldValue != null) {
+						if (oldValue.equals(value)) {
+							return false;
+						}
+						//single value cannot have more then one value
+						throw new SpoonException("Single value attribute cannot have more then one value");
+					}
+					SingleHandler.this.setValue(element, value);
+					return true;
+				}
+
+				@Override
+				public boolean remove(Object value) {
+					if (value == null) {
+						return false;
+					}
+					X oldValue = get(0);
+					if (value.equals(oldValue)) {
+						SingleHandler.this.setValue(element, null);
+						return true;
+					}
+					return false;
+				}
+			};
 		};
 
 		public <W, X> java.util.Set<X> asSet(W element) {
@@ -188,6 +249,17 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 				public X get(int index) {
 					return (X) ListHandler.this.get(element, index);
 				}
+
+				@Override
+				public X set(int index, X value) {
+					return (X) ListHandler.this.set(element, index, castItemValue(value));
+				}
+
+				@Override
+				public X remove(int index) {
+					return (X) ListHandler.this.remove(element, index);
+				}
+
 				@Override
 				public boolean add(X value) {
 					return ListHandler.this.add(element, castItemValue(value));
@@ -209,6 +281,13 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 			return ret;
 		}
 
+		protected V remove(T element, int index) {
+			List<V> values = new ArrayList<>(this.<T, List<V>>getValue(element));
+			V ret = values.remove(index);
+			setValue(element, values);
+			return ret;
+		}
+
 		protected boolean add(T element, V value) {
 			List<V> values = new ArrayList<>(this.<T, List<V>>getValue(element));
 			boolean ret = values.add(value);
@@ -218,6 +297,13 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 
 		protected V get(T element, int index) {
 			return this.<T, List<V>>getValue(element).get(index);
+		}
+
+		protected V set(T element, int index, V value) {
+			List<V> values = new ArrayList<>(this.<T, List<V>>getValue(element));
+			V ret = values.set(index, value);
+			setValue(element, values);
+			return ret;
 		}
 
 		protected int size(T element) {
