@@ -1124,6 +1124,8 @@ public class FilterTest {
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
 		//contract: if includingSelf(true), then input element is first element
 		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
+		//contract: do not fail on unitialized parent
+		assertNull(factory.Type().createReference("p.T").map(new ParentFunction()).first());
 	}
 	@Test
 	public void testCtScannerListener() throws Exception {
