@@ -124,4 +124,16 @@ public final class ModelUtils {
 		canBeBuilt(new File(outputDirectory), complianceLevel, noClasspath);
 	}
 
+	/**
+	 * Converts `obj` to String and all EOLs and TABs are removed and sequences of white spaces are replaced by single space
+	 * @param obj to be converted object
+	 * @return single line string optimized for comparation
+	 */
+	public static String getOptimizedString(Object obj) {
+		if (obj == null) {
+			return "null";
+		}
+		return obj.toString().replaceAll("[\\r\\n\\t]+", "").replaceAll("\\s{2,}", " ");
+	}
+
 }

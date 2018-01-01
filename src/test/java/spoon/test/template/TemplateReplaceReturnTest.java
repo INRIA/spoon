@@ -1,6 +1,7 @@
 package spoon.test.template;
 
 import static org.junit.Assert.assertEquals;
+import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 import java.io.File;
 
@@ -31,7 +32,7 @@ public class TemplateReplaceReturnTest {
 		
 		CtClass<?> resultKlass = factory.Class().create(factory.Package().getOrCreate("spoon.test.template"), "ReturnReplaceResult");
 		new ReturnReplaceTemplate(model).apply(resultKlass);
-		assertEquals("{ if (((java.lang.System.currentTimeMillis()) % 2L) == 0) { return \"Panna\"; }else { return \"Orel\"; }}", resultKlass.getMethod("method").getBody().toString().replaceAll("[\\r\\n\\t]+", "").replaceAll("\\s{2,}", " "));
+		assertEquals("{ if (((java.lang.System.currentTimeMillis()) % 2L) == 0) { return \"Panna\"; }else { return \"Orel\"; }}", getOptimizedString(resultKlass.getMethod("method").getBody()));
 		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 		ModelUtils.canBeBuilt(new File("./target/spooned/spoon/test/template/ReturnReplaceResult.java"), 8);
@@ -50,7 +51,7 @@ public class TemplateReplaceReturnTest {
 		
 		CtClass<?> resultKlass = factory.Class().create(factory.Package().getOrCreate("spoon.test.template"), "ReturnReplaceResult");
 		new ReturnReplaceTemplate(model).apply(resultKlass);
-		assertEquals("{ return \"AStringLiteral\";}", resultKlass.getMethod("method").getBody().toString().replaceAll("[\\r\\n\\t]+", "").replaceAll("\\s{2,}", " "));
+		assertEquals("{ return \"AStringLiteral\";}", getOptimizedString(resultKlass.getMethod("method").getBody()));
 		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 		ModelUtils.canBeBuilt(new File("./target/spooned/spoon/test/template/ReturnReplaceResult.java"), 8);
