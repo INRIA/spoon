@@ -174,14 +174,17 @@ public class TryCatchOutOfBoundTemplate extends BlockTemplate {
 Similarly, templated invocations require to declare a template parameter
 
 ```java
-@Parameter
 CtInvocation invocation;
 ```
 and then all `invocation.S()` will be replaced by the actual invocation.
 
+Note: All template fields whose type extends from `TemplateParameter` are automatically considered as template parameters.
+Other fields can be marked as template parameters using annotation `@Parameter`. 
+
 #### Inlining foreach expressions
 
 Foreach expressions can be inlined. They have to be declared as follows:
+
 ```java
 @Parameter
 CtExpression[] intValues;
