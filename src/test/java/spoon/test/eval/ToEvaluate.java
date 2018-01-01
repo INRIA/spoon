@@ -1,5 +1,7 @@
 package spoon.test.eval;
 
+import spoon.reflect.declaration.CtElement;
+
 public class ToEvaluate {
 
 	static final String S1 = "S1";
@@ -42,5 +44,32 @@ public class ToEvaluate {
 	public static void testDoNotSimplify(String className, String methodName) {
 		// this code must not be simplified
 		java.lang.System.out.println(((("enter: " + className) + " - ") + methodName));
+	}
+
+	public static <U> U testDoNotSimplifyCasts(CtElement element) {
+		// this code must not be simplified
+		return ((U) ((Object) (castTarget(element).getClass())));
+	}
+
+	private static <T> T castTarget(CtElement element) {
+		return (T) element;
+	}
+
+	private static String tryCatchAndStatement(CtElement element) {
+		try {
+			element.getClass();
+		} catch (RuntimeException e) {
+			throw e;
+		}
+		return "This must not be removed";
+	}
+
+	private static String simplifyOnlyWhenPossible(CtElement element) {
+		//this must not be simplified because literal is not a statement.
+		ToEvaluate.class.getName();
+		//this must not be simplified because ClassLoader instance is not a literal
+		System.out.println(ToEvaluate.class.getClassLoader());
+		//this can be simplified because return expects expression
+		return ToEvaluate.class.getName();
 	}
 }
