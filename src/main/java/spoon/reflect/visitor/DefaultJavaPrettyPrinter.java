@@ -1987,6 +1987,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
+	 * @return current {@link TokenWriter}, so the subclasses of {@link DefaultJavaPrettyPrinter} can print tokens too
+	 */
+	protected TokenWriter getPrinterTokenWriter() {
+		return printer;
+	}
+
+	/**
 	 * Set {@link TokenWriter}, which has to be used to print tokens
 	 */
 	public DefaultJavaPrettyPrinter setPrinterTokenWriter(TokenWriter tokenWriter) {
