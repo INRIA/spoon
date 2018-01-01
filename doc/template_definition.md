@@ -149,12 +149,33 @@ Template parameters
 ------------------
 
 #### AST elements
-All meta-model elements can be used as template parameter. For instance, one can
-template a try/catch block as shown in the class `TryCatchOutOfBoundTemplate`using a block as parameter.
+All meta-model elements can be used as template parameter. 
+There are two ways of defining such a template parameter.
+
+1) Using a subtype of TemplateParameter
+
+The following template uses a block as template parameter.
 This template type-checks, and can be used as input by the substitution
 engine to wrap a method body into a try/catch block. The substitution engine
 contains various methods that implement different substitution scenarios.
 
+
+```java
+public class TryCatchOutOfBoundTemplate extends BlockTemplate {
+        // CTBlock is a subtype of TemplateParameter as most metamodel elements
+	CtBlock _body_; // the body to surround
+
+	@Override
+	public void block() {
+		try {
+			_body_.S();
+		} catch (OutOfBoundException e) {
+			e.printStackTrace();
+		}
+	}
+}
+```
+One can also type the field directly with `TemplateParameter`:
 
 ```java
 public class TryCatchOutOfBoundTemplate extends BlockTemplate {
@@ -171,7 +192,10 @@ public class TryCatchOutOfBoundTemplate extends BlockTemplate {
 }
 ```
 
-Similarly, templated invocations require to declare a template parameter
+
+2) Using annotation `@Parameter`
+
+Fields annotated with `@Parameter` are template parameters. 
 
 ```java
 @Parameter
@@ -179,33 +203,7 @@ CtInvocation invocation;
 ```
 and then all `invocation.S()` will be replaced by the actual invocation.
 
-#### Inlining foreach expressions
 
-Foreach expressions can be inlined. They have to be declared as follows:
-```java
-@Parameter
-CtExpression[] intValues;
-...
-template.intValues = new CtExpression[2];
-template.intValues[0] = factory.Code().createLiteral(0);
-template.intValues[1] = factory.Code().createLiteral(1);
-```
-
-and then,
-
-```java
-for(Object x : intValues) {
-         System.out.println(x);
-}
-```
-is transformed into:
-
-```java
-{
-    java.lang.System.out.println(0);
-    java.lang.System.out.println(1);
-}
-```
 #### Literal template Parameters
 
 For literals, Spoon provides developers with  *literal template parameters*. When the parameter is known to
@@ -264,14 +262,31 @@ String someMethod() {
 }
 ```
 
-Note that AST elements can also be given as parameter using `@Parameter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/template/Parameter.html))
-annotation.
+#### Inlining foreach expressions
+
+Foreach expressions can be inlined. They have to be declared as follows:
 
 ```java
-class ATemplate extends BlockTemplate {
 @Parameter
-CtExpression<String> exp;
+CtExpression[] intValues;
 ...
-if ("er".equals(exp.S())) {...}
+template.intValues = new CtExpression[2];
+template.intValues[0] = factory.Code().createLiteral(0);
+template.intValues[1] = factory.Code().createLiteral(1);
+```
+
+and then,
+
+```java
+for(Object x : intValues) {
+         System.out.println(x);
+}
+```
+is transformed into:
+
+```java
+{
+    java.lang.System.out.println(0);
+    java.lang.System.out.println(1);
 }
 ```
