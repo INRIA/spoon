@@ -110,6 +110,10 @@ public class RoleHandlerHelper {
 		}
 	}
 
+	/**
+	 * @param element the {@link CtElement} whose {@link RoleHandler} in `element.getParent()` is needed.
+	 * @return {@link RoleHandler} of {@link CtRole} of parent's attribute, which contains `element`
+	 */
 	public static RoleHandler getParentRoleHandler(CtElement element) {
 		if (element.isParentInitialized() == false) {
 			return null;
