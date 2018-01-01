@@ -863,7 +863,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 							}
 						} else {
 							//There is a model inconsistency
-							printer.writeComment(f.getFactory().createComment("ERROR: Missing field:", CommentType.BLOCK)).writeSpace();
+							printer.writeComment(f.getFactory().createComment("ERROR: Missing field \"" + f.getVariable().getSimpleName() + "\", please check your model. The code may not compile.", CommentType.BLOCK)).writeSpace();
 						}
 					}
 					// the implicit drives the separator

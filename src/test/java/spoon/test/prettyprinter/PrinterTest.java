@@ -163,7 +163,7 @@ public class PrinterTest {
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
 		//contract: printer fails with descriptive exception and not with NPE
-		assertEquals("/* ERROR: Missing field: */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
+		assertEquals("/* ERROR: Missing field \"testedField\", please check your model. The code may not compile. */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));
