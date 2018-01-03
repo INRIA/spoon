@@ -32,6 +32,18 @@ import java.util.List;
  */
 public interface CompilationUnit extends FactoryAccessor {
 
+	enum UNIT_TYPE {
+		TYPE_DECLARATION,
+		PACKAGE_DECLARATION,
+		MODULE_DECLARATION,
+		UNKNOWN
+	}
+
+	/**
+	 * Returns the declaration type of the compilation unit.
+	 */
+	UNIT_TYPE getUnitType();
+
 	/**
 	 * Gets the file that corresponds to this compilation unit if any (contains
 	 * the source code).
@@ -59,6 +71,11 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Sets the types declared in this compilation unit.
 	 */
 	void setDeclaredTypes(List<CtType<?>> types);
+
+	/**
+	 * Add a type to the list of declared types
+	 */
+	void addDeclaredType(CtType type);
 
 	/**
 	 * Gets the declared module if the compilationUnit is "module-info.java"

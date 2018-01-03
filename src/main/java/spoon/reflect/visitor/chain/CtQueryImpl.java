@@ -86,6 +86,17 @@ public class CtQueryImpl implements CtQuery {
 		}
 		return this;
 	}
+	public CtQueryImpl addInput(Iterable<?> input) {
+		if (this.inputs == null) {
+			this.inputs = new ArrayList<>();
+		}
+		if (input != null) {
+			for (Object in : input) {
+				this.inputs.add(in);
+			}
+		}
+		return this;
+	}
 
 	@Override
 	public <R> void forEach(CtConsumer<R> consumer) {

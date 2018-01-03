@@ -85,7 +85,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	//The classpath used to build templates
 	protected String[] templateClasspath = new String[0];
 	protected boolean buildOnlyOutdatedFiles = false;
-	protected File outputDirectory = new File(Launcher.OUTPUTDIR);
 	protected List<SpoonResource> forceBuildList = new ArrayList<>();
 	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
 
@@ -280,12 +279,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
-		this.outputDirectory = outputDirectory;
+		this.getEnvironment().setSourceOutputDirectory(outputDirectory);
 	}
 
 	@Override
 	public File getSourceOutputDirectory() {
-		return outputDirectory;
+		return this.factory.getEnvironment().getSourceOutputDirectory();
 	}
 
 	@Override
@@ -392,8 +391,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
 
-		if (buildOnlyOutdatedFiles && outputDirectory.exists()) {
-			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(outputDirectory, new String[] { "java" }, true);
+		if (buildOnlyOutdatedFiles && getSourceOutputDirectory().exists()) {
+			@SuppressWarnings("unchecked") Collection<File> outputFiles = FileUtils.listFiles(getSourceOutputDirectory(), new String[] { "java" }, true);
 			keepOutdatedFiles(sourceFiles, outputFiles);
 		}
 
@@ -444,6 +443,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected void generateProcessedSourceFilesUsingCUs() {
+
+		File outputDirectory = getSourceOutputDirectory();
 
 		factory.getEnvironment().debugMessage("Generating source using compilation units...");
 		// Check output directory
@@ -516,7 +517,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected void keepOutdatedFiles(List<SpoonFile> files, Collection<File> outputFiles) {
-		int offset = outputDirectory.getAbsolutePath().length() + 1;
+		int offset = getSourceOutputDirectory().getAbsolutePath().length() + 1;
 		Collection<String> relativeOutputPaths = new ArrayList<>();
 		for (File f : outputFiles) {
 			relativeOutputPaths.add(f.getAbsolutePath().substring(offset));
@@ -528,7 +529,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			File f = sf.toFile();
 			for (String s : relativeOutputPaths) {
 				if (f.getAbsolutePath().endsWith(s)) {
-					if (f.lastModified() <= new File(outputDirectory, s).lastModified()) {
+					if (f.lastModified() <= new File(getSourceOutputDirectory(), s).lastModified()) {
 						files.remove(sf);
 					}
 				}

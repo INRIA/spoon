@@ -56,7 +56,7 @@ public class ParentFunction implements CtConsumableFunction<CtElement>, CtQueryA
 		}
 		CtElement parent = input;
 		CtModule topLevel = input.getFactory().getModel().getUnnamedModule();
-		while (parent != null && parent != topLevel && query.isTerminated() == false) {
+		while (parent != null && parent != topLevel && query.isTerminated() == false && parent.isParentInitialized()) {
 			parent = parent.getParent();
 			outputConsumer.accept(parent);
 		}

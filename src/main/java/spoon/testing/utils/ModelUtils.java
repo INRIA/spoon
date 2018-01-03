@@ -114,7 +114,7 @@ public final class ModelUtils {
 		try {
 			compiler.build();
 		} catch (Exception e) {
-			final AssertionError error = new AssertionError("Can't compile " + outputDirectoryFile.getName());
+			final AssertionError error = new AssertionError("Can't compile " + outputDirectoryFile.getName() + " because " + e.getMessage());
 			error.initCause(e);
 			throw error;
 		}
@@ -122,6 +122,18 @@ public final class ModelUtils {
 
 	public static void canBeBuilt(String outputDirectory, int complianceLevel, boolean noClasspath) {
 		canBeBuilt(new File(outputDirectory), complianceLevel, noClasspath);
+	}
+
+	/**
+	 * Converts `obj` to String and all EOLs and TABs are removed and sequences of white spaces are replaced by single space
+	 * @param obj to be converted object
+	 * @return single line string optimized for comparation
+	 */
+	public static String getOptimizedString(Object obj) {
+		if (obj == null) {
+			return "null";
+		}
+		return obj.toString().replaceAll("[\\r\\n\\t]+", "").replaceAll("\\s{2,}", " ");
 	}
 
 }

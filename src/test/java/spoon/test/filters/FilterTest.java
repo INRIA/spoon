@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
@@ -14,12 +15,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -756,6 +757,7 @@ public class FilterTest {
 	@Test
 	public void testQueryWithOptionalNumberOfInputs() throws Exception {
 		// contract: QueryFactory allows to create query with an optional number of inputs
+		// the input can be provided as Array or Iterable
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -768,13 +770,19 @@ public class FilterTest {
 		// here is the query
 		CtQuery q1 = launcher.getFactory().Query().createQuery(cls, cls2).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1.list().toArray());
+		CtQuery q1b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls2)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1b.list().toArray());
 
 		CtQuery q2 = launcher.getFactory().Query().createQuery(cls, cls3).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2.list().toArray());
+		CtQuery q2b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls3)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2b.list().toArray());
 
 		CtQuery q3 = launcher.getFactory().Query().createQuery(cls, cls2, cls3).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3.list().toArray());
-	}
+		CtQuery q3b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls2, cls3)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3b.list().toArray());
+}
 
 	// now testing map(CtConsumableFunction)
 
@@ -865,16 +873,16 @@ public class FilterTest {
 		
 		//contract: empty query returns no element
 		assertEquals(0, launcher.getFactory().createQuery().list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).list().size());
 		//contract: empty query returns no element
 		launcher.getFactory().createQuery().forEach(x->fail());
-		launcher.getFactory().createQuery(null).forEach(x->fail());
+		launcher.getFactory().createQuery((Object) null).forEach(x->fail());
 		//contract: empty query calls no mapping
 		assertEquals(0, launcher.getFactory().createQuery().map(x->{fail();return true;}).list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).map(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).map(x->{fail();return true;}).list().size());
 		//contract: empty query calls no filterChildren
 		assertEquals(0, launcher.getFactory().createQuery().filterChildren(x->{fail();return true;}).list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).filterChildren(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).filterChildren(x->{fail();return true;}).list().size());
 	}
 	
 	@Test
@@ -1117,6 +1125,8 @@ public class FilterTest {
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
 		//contract: if includingSelf(true), then input element is first element
 		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
+		//contract: do not fail on unitialized parent
+		assertNull(factory.Type().createReference("p.T").map(new ParentFunction()).first());
 	}
 	@Test
 	public void testCtScannerListener() throws Exception {
@@ -1274,5 +1284,14 @@ public class FilterTest {
 		List<CtField> ctFields = type.getElements(new NamedElementFilter<>(CtField.class, "CONSTANT"));
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
+	}
+
+	@Test
+	public void testFilterAsPredicate() throws Exception {
+		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		//contract: Spoon Filter is compatible with java.util.function.Predicate
+		Predicate predicate = new NamedElementFilter<>(CtClass.class, "Foo");
+		assertTrue(predicate.test(foo));
+		assertFalse(predicate.test(foo.getTypeMembers().get(0)));
 	}
 }

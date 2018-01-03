@@ -75,6 +75,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -113,7 +114,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
-	private Map<CtTypedElement<?>, List<CtTypeReference<? extends java.lang.annotation.Annotation>>> annotationsMap = new HashMap<>();
+	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
 	 * @param jdtTreeBuilder
@@ -133,29 +134,43 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void scanCtElement(CtElement e) {
 		if (child instanceof CtAnnotation && this.jdtTreeBuilder.getContextBuilder().annotationValueName.isEmpty()) {
-			e.addAnnotation((CtAnnotation<?>) child);
+			// we check if the current element can have the annotation attached
+			CtAnnotatedElementType annotatedElementType = CtAnnotation.getAnnotatedElementTypeForCtElement(e);
+			annotatedElementType = (e instanceof CtTypeParameter || e instanceof CtTypeParameterReference) ? CtAnnotatedElementType.TYPE_USE : annotatedElementType;
+
+			// in case of noclasspath, we cannot be 100% sure, so we guess it must be attached...
+			if (this.jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath() || (annotatedElementType != null && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, annotatedElementType))) {
+				e.addAnnotation((CtAnnotation<?>) child);
+			}
+
+			// in this case the annotation should be (also) attached to the type
 			if (e instanceof CtTypedElement && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, CtAnnotatedElementType.TYPE_USE)) {
-				List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = new ArrayList<>();
+				List<CtAnnotation> annotations = new ArrayList<>();
 				if (!annotationsMap.containsKey(e)) {
 					annotationsMap.put((CtTypedElement<?>) e, annotations);
 				} else {
 					annotations = annotationsMap.get(e);
 				}
-				annotations.add(((CtAnnotation) child).getType());
+				annotations.add((CtAnnotation) child.clone());
 				annotationsMap.put((CtTypedElement<?>) e, annotations);
 			}
-			return;
 		}
 	}
 
 	private void substituteAnnotation(CtTypedElement ele) {
 		if (annotationsMap.containsKey(ele)) {
-			List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = annotationsMap.get(ele);
-			for (CtTypeReference<? extends java.lang.annotation.Annotation> annotation : annotations) {
-				final CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = ele.getAnnotation(annotation);
-				ele.removeAnnotation(targetAnnotation);
-				if (!ele.getType().getAnnotations().contains(targetAnnotation)) {
-					ele.getType().addAnnotation(targetAnnotation);
+			List<CtAnnotation> annotations = annotationsMap.get(ele);
+			for (CtAnnotation annotation : annotations) {
+
+				// in case of noclasspath we attached previously the element:
+				// if we are here, we may have find an element for whom it's a better place
+				if (this.jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath() && annotation.isParentInitialized()) {
+					CtElement parent = annotation.getParent();
+					parent.removeAnnotation(annotation);
+				}
+
+				if (!ele.getType().getAnnotations().contains(annotation)) {
+					ele.getType().addAnnotation(annotation.clone());
 				}
 			}
 			annotationsMap.remove(ele);
@@ -776,7 +791,10 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 			ctPackage.addType((CtType<?>) child);
 			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
-				child.getPosition().getCompilationUnit().getDeclaredTypes().add((CtType<?>) child);
+				CompilationUnit cu = child.getPosition().getCompilationUnit();
+				List<CtType<?>> declaredTypes = new ArrayList<>(cu.getDeclaredTypes());
+				declaredTypes.add((CtType<?>) child);
+				cu.setDeclaredTypes(declaredTypes);
 			}
 			return;
 		}

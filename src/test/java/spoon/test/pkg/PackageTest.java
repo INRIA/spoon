@@ -82,13 +82,11 @@ public class PackageTest {
 	@Test
 	public void testAnnotationOnPackage() throws Exception {
 		Launcher launcher = new Launcher();
-		Factory factory = launcher.createFactory();
-
-		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(new File("./target/spooned/"), factory.getEnvironment()));
+		Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
+		launcher.setSourceOutputDirectory("./target/spooned/");
 		compiler.addInputSource(new File("./src/test/java/spoon/test/pkg/testclasses/"));
-		compiler.setSourceOutputDirectory(new File("./target/spooned/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 
@@ -232,6 +230,8 @@ public class PackageTest {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
 		spoon.getEnvironment().setAutoImports(true);
+		File outputDir = new File("./target/spoon-packageinfo");
+		spoon.getEnvironment().setSourceOutputDirectory(outputDir);
 
 		spoon.buildModel();
 
@@ -241,9 +241,8 @@ public class PackageTest {
 		CtPackage ctPackage = spoon.getFactory().Package().get("spoon.test.pkg.testclasses");
 		ctPackage.addAnnotation(annotation);
 
-		File outputDir = new File("./target/spoon-packageinfo");
 
-		JavaOutputProcessor outputProcessor = spoon.createOutputWriter(outputDir, spoon.getEnvironment());
+		JavaOutputProcessor outputProcessor = spoon.createOutputWriter();
 		outputProcessor.process(ctPackage);
 
 		File packageInfo = new File(outputDir, "spoon/test/pkg/testclasses/package-info.java");

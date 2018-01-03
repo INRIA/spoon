@@ -801,6 +801,11 @@ public interface Factory {
 	CtQuery createQuery(Object... input);
 
 	/**
+	 * @see QueryFactory#createQuery(Iterable)
+	 */
+	CtQuery createQuery(Iterable<?> input);
+
+	/**
 	 *
 	 * @see AnnotationFactory#create(String)
 	 */
@@ -970,4 +975,9 @@ public interface Factory {
 	 * @see ModuleFactory#createUsedService(CtTypeReference)
 	 */
 	CtUsedService createUsedService(CtTypeReference typeReference);
+
+	/**
+	 * @see CoreFactory#createPartialSourcePosition(CompilationUnit)
+	 */
+	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
 }

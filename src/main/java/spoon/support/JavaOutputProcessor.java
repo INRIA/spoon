@@ -17,6 +17,8 @@
 package spoon.support;
 
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
@@ -37,32 +39,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//import spoon.reflect.cu.CompilationUnit;
-
 /**
  * A processor that generates compilable Java source files from the meta-model.
  */
 public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> implements FileGenerator<CtNamedElement> {
 	PrettyPrinter printer;
 
-	File directory;
-
 	List<File> printedFiles = new ArrayList<>();
+
+	public JavaOutputProcessor(PrettyPrinter printer) {
+		this.printer = printer;
+	}
 
 	/**
 	 * Creates a new processor for generating Java source files.
 	 *
 	 * @param outputDirectory the root output directory
+	 * @param printer the PrettyPrinter to use for written the files
+	 *
+	 * @deprecated The outputDirectory should be get from the environment given to the pretty printer
+	 * (see {@link Environment#setSourceOutputDirectory(File)}. You should use the constructor with only one parameter.
 	 */
+	@Deprecated
 	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
-		this.directory = outputDirectory;
-		this.printer = printer;
+		this(printer);
+		this.setOutputDirectory(outputDirectory);
 	}
 
 	/**
 	 * usedful for testing
 	 */
 	public JavaOutputProcessor() {
+	}
+
+	@Override
+	public Environment getEnvironment() {
+		return this.getFactory().getEnvironment();
 	}
 
 	public PrettyPrinter getPrinter() {
@@ -74,7 +86,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	public File getOutputDirectory() {
-		return directory;
+		return this.getEnvironment().getSourceOutputDirectory();
 	}
 
 	@Override
@@ -82,24 +94,17 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		// Skip loading properties
 		// super.init();
 
+		File directory = getOutputDirectory();
+
 		// Check output directory
 		if (directory == null) {
-			throw new RuntimeException("You should set output directory before printing");
+			throw new SpoonException("You should set output directory before printing");
 		}
-		// Create spooned dir
-		if (directory.isFile()) {
-			throw new RuntimeException("Output must be a directory");
-		}
+
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
+				throw new SpoonException("Error creating output directory");
 			}
-		}
-		try {
-			directory = directory.getCanonicalFile();
-		} catch (IOException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -112,23 +117,14 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 */
 	public void createJavaFile(CtType<?> element) {
 
-		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + directory);
+		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + getOutputDirectory());
 
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
 			throw new IllegalArgumentException();
 		}
 
-		CompilationUnit cu = null;
-		if (element.getPosition() != null) {
-			cu = element.getPosition().getCompilationUnit();
-			// this is a top level type (see check above)
-			// if the compilation unit is not set, we use a default one
-			if (cu == null) {
-				cu = element.getFactory().CompilationUnit().getOrCreate(element.getQualifiedName());
-				cu.setDeclaredPackage(element.getPackage());
-			}
-		}
+		CompilationUnit cu = this.getFactory().CompilationUnit().getOrCreate(element);
 		List<CtType<?>> toBePrinted = new ArrayList<>();
 		toBePrinted.add(element);
 
@@ -224,10 +220,10 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	private File getModuleFile(CtModule module) {
 		File moduleDir;
 		if (module == null || module.isUnnamedModule() || getEnvironment().getComplianceLevel() <= 8) {
-			moduleDir = new File(directory.getAbsolutePath());
+			moduleDir = new File(getOutputDirectory().getAbsolutePath());
 		} else {
 			// Create current package dir
-			moduleDir = new File(directory.getAbsolutePath() + File.separatorChar + module.getSimpleName());
+			moduleDir = new File(getOutputDirectory().getAbsolutePath() + File.separatorChar + module.getSimpleName());
 		}
 		if (!moduleDir.exists()) {
 			if (!moduleDir.mkdirs()) {
@@ -254,7 +250,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	public void setOutputDirectory(File directory) {
-		this.directory = directory;
+		this.getEnvironment().setSourceOutputDirectory(directory);
 	}
 
 	public Map<String, Map<Integer, Integer>> getLineNumberMappings() {

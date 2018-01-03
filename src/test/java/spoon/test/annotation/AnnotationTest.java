@@ -1,5 +1,6 @@
 package spoon.test.annotation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -66,11 +67,14 @@ import spoon.test.annotation.testclasses.repeatable.Tag;
 import spoon.test.annotation.testclasses.repeatandarrays.RepeatedArrays;
 import spoon.test.annotation.testclasses.repeatandarrays.TagArrays;
 import spoon.test.annotation.testclasses.spring.AliasFor;
+import spoon.test.annotation.testclasses.typeandfield.SimpleClass;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,17 +94,6 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AnnotationTest {
-	private Launcher launcher;
-	private Factory factory;
-	@Before
-	public void setUp() throws Exception {
-		launcher = new Launcher();
-		launcher.run(new String[] {
-				"-i", "./src/test/java/spoon/test/annotation/testclasses/",
-				"--output-type", "nooutput"
-		});
-		factory = launcher.getFactory();
-	}
 
 	@Test
 	public void testAnnotationValueReflection() throws Exception {
@@ -115,21 +108,33 @@ public class AnnotationTest {
 
 	@Test
 	public void testModelBuildingAnnotationBound() throws Exception {
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Bound");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bound.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.Bound");
 		assertEquals("Bound", type.getSimpleName());
 		assertEquals(1, type.getAnnotations().size());
 	}
 
 	@Test
 	public void testWritingAnnotParamArray() throws Exception {
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotParam.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.AnnotParam");
 		assertEquals("@java.lang.SuppressWarnings({ \"unused\", \"rawtypes\" })",
 				type.getElements(new TypeFilter<>(CtAnnotation.class)).get(0).toString());
 	}
 
 	@Test
 	public void testModelBuildingAnnotationBoundUsage() throws Exception {
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.Main");
 		assertEquals("Main", type.getSimpleName());
 
 		CtParameter<?> param = type.getElements(new TypeFilter<CtParameter<?>>(CtParameter.class)).get(0);
@@ -145,7 +150,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testPersistenceProperty() throws Exception {
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.PersistenceProperty");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.PersistenceProperty");
 		assertEquals("PersistenceProperty", type.getSimpleName());
 		assertEquals(2, type.getAnnotations().size());
 
@@ -161,7 +170,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationParameterTypes() throws Exception {
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.Main");
 
 		CtMethod<?> m1 = type.getElements(new NamedElementFilter<>(CtMethod.class, "m1")).get(0);
 
@@ -242,8 +255,12 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotatedElementTypes() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
 		// load package of the test classes
-		CtPackage pkg = this.factory.Package().get("spoon.test.annotation.testclasses");
+		CtPackage pkg = factory.Package().get("spoon.test.annotation.testclasses");
 
 		// check annotated element type of the package annotation
 		List<CtAnnotation<?>> annotations = pkg.getAnnotations();
@@ -358,15 +375,20 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationWithDefaultArrayValue() throws Throwable {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArrayInnerClass.java");
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArray.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
 		final String res = "java.lang.Class<?>[] value() default {  };";
 
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
 		CtType<?> annotationInnerClass = type.getNestedType("Annotation");
 		assertEquals("Annotation", annotationInnerClass.getSimpleName());
 		assertEquals(1, annotationInnerClass.getAnnotations().size());
 		assertEquals(res, annotationInnerClass.getMethod("value").toString());
 
-		CtType<?> annotation = this.factory.Type().get("spoon.test.annotation.testclasses.AnnotArray");
+		CtType<?> annotation = factory.Type().get("spoon.test.annotation.testclasses.AnnotArray");
 		assertEquals("AnnotArray", annotation.getSimpleName());
 		assertEquals(1, annotation.getAnnotations().size());
 		assertEquals(res, annotation.getMethod("value").toString());
@@ -374,7 +396,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testInnerAnnotationsWithArray() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Foo");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Foo.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.Foo");
 		final CtMethod<?> testMethod = ctClass.getMethodsByName("test").get(0);
 		final List<CtAnnotation<? extends Annotation>> testMethodAnnotations = testMethod.getAnnotations();
 		assertEquals(1, testMethodAnnotations.size());
@@ -402,7 +428,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testAccessAnnotationValue() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.Main");
 		CtMethod<?> testMethod = ctClass.getMethodsByName("testValueWithArray").get(0);
 		Class<?>[] value = testMethod.getAnnotation(AnnotArray.class).value();
 		assertArrayEquals(new Class[] { RuntimeException.class }, value);
@@ -414,7 +444,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationInNewInstance() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtConstructorCall<?> ctConstructorCall = ctClass.getElements(new AbstractFilter<CtConstructorCall<?>>(CtConstructorCall.class) {
 			@Override
@@ -432,7 +466,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationInCast() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtReturn<?> returns = ctClass.getElements(new AbstractFilter<CtReturn<?>>(CtReturn.class) {
 			@Override
@@ -451,7 +489,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationBeforeExceptionInSignatureOfMethod() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m").get(0);
 		final CtTypeReference<?> thrownReference = method.getThrownTypes().toArray(new CtTypeReference<?>[0])[0];
@@ -466,7 +508,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationInReturnTypeInMethod() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m3").get(0);
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = method.getType().getAnnotations();
@@ -482,7 +528,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationOnParameterInMethod() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m6").get(0);
 		final CtParameter<?> ctParameter = method.getParameters().get(0);
@@ -496,7 +546,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationOnLocalVariableInMethod() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m6").get(0);
 		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
@@ -515,7 +569,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationInExtendsImplementsOfAClass() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtClass<?> innerClass = ctClass.getElements(new NamedElementFilter<>(CtClass.class,"DummyClass")).get(0);
 		final CtTypeReference<?> extendsActual = innerClass.getSuperclass();
@@ -558,7 +616,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationWithGenericTypesInClassDeclaration() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtClass<?> genericClass = ctClass.getElements(new NamedElementFilter<>(CtClass.class,"DummyGenericClass")).get(0);
 
@@ -575,7 +637,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfTypeAnnotationWithGenericTypesInStatements() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m4").get(0);
 
@@ -621,7 +687,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testUsageOfParametersInTypeAnnotation() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.AnnotationsAppliedOnAnyTypeInAClass");
 		final CtMethod<?> method = ctClass.getMethodsByName("m5").get(0);
 
 		final String integerParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(integer = 1)" + System.lineSeparator() + "T> list";
@@ -660,15 +730,23 @@ public class AnnotationTest {
 
 	@Test
 	public void testOutputGeneratedByTypeAnnotation() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
+		launcher.buildModel();
 		// we only write to disk here
-		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
+		launcher.setSourceOutputDirectory(new File("./target/spooned-annotation-output/"));
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
-		canBeBuilt(new File("./target/spooned/spoon/test/annotation/testclasses/"), 8);
+
+		canBeBuilt(new File("./target/spooned-annotation-output/spoon/test/annotation/testclasses/"), 8);
 	}
 
 	@Test
 	public void testRepeatSameAnnotationOnClass() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctClass.getAnnotations();
 		assertEquals("Class must to have multi annotation of the same type", 2, annotations.size());
@@ -680,7 +758,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testRepeatSameAnnotationOnField() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 		final CtField<?> field = ctClass.getField("field");
 
 		final List<CtAnnotation<? extends Annotation>> annotations = field.getAnnotations();
@@ -693,7 +775,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testRepeatSameAnnotationOnMethod() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 		final CtMethod<?> method = ctClass.getMethodsByName("method").get(0);
 
 		final List<CtAnnotation<? extends Annotation>> annotations = method.getAnnotations();
@@ -706,7 +792,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testRepeatSameAnnotationOnConstructor() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 		final CtConstructor<?> ctConstructor = ctClass.getConstructors().toArray(new CtConstructor<?>[0])[0];
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctConstructor.getAnnotations();
@@ -719,7 +809,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testRepeatSameAnnotationOnParameter() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 		final CtMethod<?> method = ctClass.getMethodsByName("methodWithParameter").get(0);
 		final CtParameter<?> ctParameter = method.getParameters().get(0);
 
@@ -733,7 +827,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testRepeatSameAnnotationOnLocalVariable() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get(AnnotationsRepeated.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 		final CtMethod<?> method = ctClass.getMethodsByName("methodWithLocalVariable").get(0);
 		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
 			@Override
@@ -752,7 +850,12 @@ public class AnnotationTest {
 
 	@Test
 	public void testRepeatSameAnnotationOnPackage() throws Exception {
-		final CtPackage pkg = this.factory.Package().get("spoon.test.annotation.testclasses");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/package-info.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtPackage pkg = factory.Package().get("spoon.test.annotation.testclasses");
 
 		final List<CtAnnotation<? extends Annotation>> annotations = pkg.getAnnotations();
 		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
@@ -764,6 +867,10 @@ public class AnnotationTest {
 
 	@Test
 	public void testDefaultValueInAnnotationsForAnnotationFields() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationDefaultAnnotation.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
 		final CtType<?> annotation = factory.Type().get(AnnotationDefaultAnnotation.class);
 
 		final CtAnnotationMethod<?> ctAnnotations = annotation.getMethods().toArray(new CtAnnotationMethod<?>[0])[0];
@@ -774,7 +881,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testGetAnnotationOuter() throws Exception {
-		final CtClass<?> ctClass = (CtClass<?>) this.factory.Type().get("spoon.test.annotation.testclasses.Foo");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Foo.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get("spoon.test.annotation.testclasses.Foo");
 		final CtMethod<?> testMethod = ctClass.getMethodsByName("test").get(0);
 		Foo.OuterAnnotation annot = testMethod.getAnnotation(Foo.OuterAnnotation.class);
 		assertNotNull(annot);
@@ -792,7 +903,7 @@ public class AnnotationTest {
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Inception.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TestAnnotation.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArrayInnerClass.java");
-		factory = spoon.getFactory();
+		Factory factory = spoon.getFactory();
 		spoon.buildModel();
 
 		// create the processor
@@ -814,7 +925,7 @@ public class AnnotationTest {
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Inception.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/GlobalAnnotation.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TestAnnotation.java");
-		factory = spoon.getFactory();
+		Factory factory = spoon.getFactory();
 		spoon.buildModel();
 
 		// create the processor
@@ -825,12 +936,16 @@ public class AnnotationTest {
 		p.addProcessor(methodProcessor);
 		p.process(factory.Class().getAll());
 
-		assertEquals(5, processor.elements.size());
+		assertEquals(7, processor.elements.size()); // GlobalAnnotation is also attached to the type
 		assertEquals(2, methodProcessor.elements.size());
 	}
 
 	@Test
 	public void testAnnotationIntrospection() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationIntrospection.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
 		CtClass<Object> aClass = factory.Class().get(AnnotationIntrospection.class);
 		CtMethod<?> mMethod = aClass.getMethod("m");
 		CtStatement statement = mMethod.getBody().getStatement(1);
@@ -857,7 +972,11 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationInterfacePreserveMethods() throws Exception {
-		final CtAnnotationType<?> ctAnnotationType = (CtAnnotationType<?>) this.factory.Type().get(PortRange.class);
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		final CtAnnotationType<?> ctAnnotationType = (CtAnnotationType) factory.Type().get(PortRange.class);
 		List<CtMethod<?>> ctMethodMin = ctAnnotationType.getMethodsByName("min");
 		assertEquals("Method min is preserved after transformation", 1, ctMethodMin.size());
 
@@ -928,7 +1047,7 @@ public class AnnotationTest {
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-firstspoon/";
 		spoon.setSourceOutputDirectory(output);
-		factory = spoon.getFactory();
+		Factory factory = spoon.getFactory();
 		spoon.run();
 
 		Launcher spoon2 = new Launcher();
@@ -960,7 +1079,7 @@ public class AnnotationTest {
 		String output = "target/spooned-" + this.getClass().getSimpleName() + "-firstspoon/";
 		spoon.setSourceOutputDirectory(output);
 		spoon.getEnvironment().setNoClasspath(true);
-		factory = spoon.getFactory();
+		Factory factory = spoon.getFactory();
 		spoon.buildModel();
 
 		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "setField"));
@@ -997,7 +1116,7 @@ public class AnnotationTest {
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bar.java");
 		spoon.buildModel();
 
-		factory = spoon.getFactory();
+		Factory factory = spoon.getFactory();
 
 		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "bidule"));
 
@@ -1013,7 +1132,7 @@ public class AnnotationTest {
 	@Test
 	public void annotationOverrideFQNIsOK() {
 		Launcher spoon = new Launcher();
-		factory = spoon.getFactory();
+		Factory factory = spoon.getFactory();
 		factory.getEnvironment().setNoClasspath(true);
 		spoon.addInputResource("./src/test/resources/noclasspath/annotation/issue1307/SpecIterator.java");
 		spoon.buildModel();
@@ -1032,6 +1151,8 @@ public class AnnotationTest {
 
 	@Test
 	public void testCreateAnnotation() throws Exception {
+		final Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
 		CtType<?> type = factory.Annotation().create("spoon.test.annotation.testclasses.NewAnnot");
 		assertTrue(type.isAnnotationType());
 		assertSame(type, type.getReference().getDeclaration());
@@ -1039,7 +1160,11 @@ public class AnnotationTest {
 	
 	@Test
 	public void testReplaceAnnotationValue() throws Exception {
-		CtType<?> type = this.factory.Type().get("spoon.test.annotation.testclasses.Main");
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.Main");
 
 		CtMethod<?> m1 = type.getElements(new NamedElementFilter<>(CtMethod.class,"m1")).get(0);
 
@@ -1233,5 +1358,38 @@ public class AnnotationTest {
 			assertEquals("cannot assign an array to a non-array annotation element", e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void testAnnotationTypeAndFieldOnField() throws IOException {
+		// contract: annotation on field with an annotation type which supports type and field, should be attached both on type and field
+		// see: https://docs.oracle.com/javase/specs/jls/se9/html/jls-9.html#jls-9.7.3
+		// in this case, we want to print it only once before the type
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/typeandfield");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.setSourceOutputDirectory("./target/spooned-typeandfield");
+		launcher.run();
+
+		CtType type = launcher.getFactory().Type().get(SimpleClass.class);
+
+		CtField field = type.getField("mandatoryField");
+		assertEquals(1, field.getAnnotations().size());
+		CtAnnotation annotation = field.getAnnotations().get(0);
+		assertEquals("spoon.test.annotation.testclasses.typeandfield.AnnotTypeAndField", annotation.getAnnotationType().getQualifiedName());
+
+		CtTypeReference fieldType = field.getType();
+		assertEquals(1, fieldType.getAnnotations().size());
+		CtAnnotation anotherAnnotation = fieldType.getAnnotations().get(0);
+		assertEquals(annotation, anotherAnnotation);
+
+		assertEquals("java.lang.String", field.getType().getQualifiedName());
+		assertEquals(1, field.getType().getAnnotations().size());
+
+		List<String> lines = Files.readAllLines(new File("./target/spooned-typeandfield/spoon/test/annotation/testclasses/typeandfield/SimpleClass.java").toPath());
+		String fileContent = StringUtils.join(lines, "\n");
+
+		assertTrue("Content :"+fileContent, fileContent.contains("@spoon.test.annotation.testclasses.typeandfield.AnnotTypeAndField"));
+		assertTrue("Content :"+fileContent, fileContent.contains("public java.lang.String mandatoryField;"));
 	}
 }

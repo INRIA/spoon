@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
@@ -30,13 +31,13 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
-
 	Factory factory;
 
 	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
@@ -47,17 +48,41 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtModule ctModule;
 
-
-	public List<CtType<?>> getDeclaredTypes() {
-		return declaredTypes;
-	}
-
 	File file;
 
+	@Override
+	public UNIT_TYPE getUnitType() {
+		// we try to guess based on the file name
+		if (file != null) {
+			if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION)) {
+				return UNIT_TYPE.MODULE_DECLARATION;
+			} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+				return UNIT_TYPE.PACKAGE_DECLARATION;
+			} else {
+				return UNIT_TYPE.TYPE_DECLARATION;
+			}
+		// else we just check if there is a declared type
+		} else {
+			if (getDeclaredTypes().isEmpty()) {
+				if (getDeclaredModule() != null) {
+					return UNIT_TYPE.MODULE_DECLARATION;
+				} else if (getDeclaredPackage() != null) {
+					return UNIT_TYPE.PACKAGE_DECLARATION;
+				} else {
+					return UNIT_TYPE.UNKNOWN;
+				}
+			} else {
+				return UNIT_TYPE.TYPE_DECLARATION;
+			}
+		}
+	}
+
+	@Override
 	public File getFile() {
 		return file;
 	}
 
+	@Override
 	public CtType<?> getMainType() {
 		if (getFile() == null) {
 			return getDeclaredTypes().get(0);
@@ -76,8 +101,20 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 						+ getDeclaredTypes());
 	}
 
+	@Override
+	public List<CtType<?>> getDeclaredTypes() {
+		return Collections.unmodifiableList(declaredTypes);
+	}
+
+	@Override
 	public void setDeclaredTypes(List<CtType<?>> types) {
-		this.declaredTypes = types;
+		this.declaredTypes.clear();
+		this.declaredTypes.addAll(types);
+	}
+
+	@Override
+	public void addDeclaredType(CtType type) {
+		this.declaredTypes.add(type);
 	}
 
 	@Override

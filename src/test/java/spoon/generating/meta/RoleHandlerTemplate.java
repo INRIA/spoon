@@ -88,32 +88,26 @@ class AbstractHandler<T, U> implements RoleHandler {
 	}
 	@Override
 	public Class<?> getValueClass() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public ContainerKind getContainerKind() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public <T, U> Collection<U> asCollection(T element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public <T, U> Set<U> asSet(T element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public <T, U> List<U> asList(T element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public <T, U> Map<String, U> asMap(T element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

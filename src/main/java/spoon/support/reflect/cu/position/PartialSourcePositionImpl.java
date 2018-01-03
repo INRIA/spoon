@@ -14,28 +14,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
+package spoon.support.reflect.cu.position;
 
-import java.util.function.Predicate;
-
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.cu.CompilationUnit;
 
 /**
- * This interface defines a filter for program elements.
- *
- * @param <T>
- * 		the type of the filtered elements (an element belonging to the
- * 		filtered element must be assignable from <code>T</code>).
+ * This class intends to create a source position containing only a compilation unit.
  */
-public interface Filter<T extends CtElement> extends Predicate<T> {
-	/**
-	 * Tells if the given element matches.
-	 * @param element - the element to be checked for a match. Parameter element is never null if {@link Query} is used.
-	 */
-	boolean matches(T element);
+public class PartialSourcePositionImpl extends SourcePositionImpl {
 
-	@Override
-	default boolean test(T element) {
-		return matches(element);
+	public PartialSourcePositionImpl(CompilationUnit compilationUnit) {
+		super(compilationUnit, -1, -1, null);
 	}
 }

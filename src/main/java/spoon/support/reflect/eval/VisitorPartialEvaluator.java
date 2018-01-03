@@ -20,6 +20,7 @@ import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -252,7 +253,12 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		for (CtStatement s : block.getStatements()) {
 			CtElement res = evaluate(s);
 			if (res != null) {
-				b.addStatement((CtStatement) res);
+				if (res instanceof CtStatement) {
+					b.addStatement((CtStatement) res);
+				} else {
+					//the context expectes statement. We cannot simplify in this case
+					b.addStatement(s);
+				}
 			}
 			// do not copy unreachable statements
 			if (flowEnded) {
@@ -383,6 +389,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		CtInvocation<T> i = invocation.getFactory().Core().createInvocation();
 		i.setExecutable(invocation.getExecutable());
+		i.setTypeCasts(invocation.getTypeCasts());
 		boolean constant = true;
 		i.setTarget(evaluate(invocation.getTarget()));
 		if ((i.getTarget() != null) && !(i.getTarget() instanceof CtLiteral)) {
@@ -423,15 +430,36 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				try {
 					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
-					CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
-					l.setValue(r);
-					setResult(l);
-					return;
+					if (isLiteralType(r)) {
+						CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
+						l.setValue(r);
+						setResult(l);
+						return;
+					}
 				} catch (Exception e) {
 				}
 			}
 		}
 		setResult(i);
+	}
+
+	private boolean isLiteralType(Object object) {
+		if (object == null) {
+			return true;
+		}
+		if (object instanceof String) {
+			return true;
+		}
+		if (object instanceof Number) {
+			return true;
+		}
+		if (object instanceof Character) {
+			return true;
+		}
+		if (object instanceof Class) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -472,6 +500,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		r.setThrownExpression(evaluate(throwStatement.getThrownExpression()));
 		setResult(r);
 		flowEnded = true;
+	}
+
+	@Override
+	public void visitCtCatch(CtCatch catchBlock) {
+		super.visitCtCatch(catchBlock);
+		//the flowEnded = true set by throw in catch block does not stops flow of parent
+		flowEnded = false;
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {

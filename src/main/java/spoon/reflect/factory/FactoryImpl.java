@@ -1084,6 +1084,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public CtQuery createQuery(Iterable<?> input) {
+		return Query().createQuery(input);
+	}
+
+	@Override
 	public CtAnnotationType createAnnotationType(String qualifiedName) {
 		return Annotation().create(qualifiedName);
 	}
@@ -1230,5 +1235,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtUsedService createUsedService(CtTypeReference typeReference) {
 		return Module().createUsedService(typeReference);
+	}
+
+	@Override
+	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
+		return Core().createPartialSourcePosition(compilationUnit);
 	}
 }

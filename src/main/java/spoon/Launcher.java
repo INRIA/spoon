@@ -442,6 +442,14 @@ public class Launcher implements SpoonAPI {
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
 		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
 
+		String outputString = jsapActualArgs.getString("output-type");
+		OutputType outputType = OutputType.fromString(outputString);
+		if (outputType == null) {
+			throw  new SpoonException("Unknown output type: " + outputString);
+		} else {
+			environment.setOutputType(outputType);
+		}
+
 		try {
 			Charset charset = Charset.forName(jsapActualArgs.getString("encoding"));
 			environment.setEncoding(charset);
@@ -621,8 +629,15 @@ public class Launcher implements SpoonAPI {
 		return new StandardEnvironment();
 	}
 
+	@Deprecated
 	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter());
+		return this.createOutputWriter();
+	}
+
+	public JavaOutputProcessor createOutputWriter() {
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
+		outputProcessor.setFactory(this.getFactory());
+		return outputProcessor;
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
@@ -721,15 +736,14 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void prettyprint() {
-		OutputType outputType = OutputType.fromString(jsapActualArgs.getString("output-type"));
 		long tstart = System.currentTimeMillis();
 		try {
-			modelBuilder.generateProcessedSourceFiles(outputType, typeFilter);
+			modelBuilder.generateProcessedSourceFiles(getEnvironment().getOutputType(), typeFilter);
 		} catch (Exception e) {
 			throw new SpoonException(e);
 		}
 
-		if (!outputType.equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
+		if (!getEnvironment().getOutputType().equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
 					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
@@ -761,8 +775,8 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
-		modelBuilder.setSourceOutputDirectory(outputDirectory);
-		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
+		getEnvironment().setSourceOutputDirectory(outputDirectory);
+		getEnvironment().setDefaultFileGenerator(createOutputWriter());
 	}
 
 	@Override

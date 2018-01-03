@@ -16,10 +16,16 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -52,6 +58,89 @@ public class CompilationUnitFactory extends SubFactory {
 	public CompilationUnit create() {
 		CompilationUnit cu = factory.Core().createCompilationUnit();
 		return cu;
+	}
+
+	private File getBaseDirectory() {
+		return this.factory.getEnvironment().getSourceOutputDirectory().getAbsoluteFile();
+	}
+
+	private File getModuleDirectory(CtModule module) {
+		return new File(this.getBaseDirectory(), module.getSimpleName() + File.separatorChar);
+	}
+
+	private File getPackageDirectory(CtPackage ctPackage) {
+		CtModule module = ctPackage.getParent(CtModule.class);
+		File baseDir;
+
+		if (module == null || module.isUnnamedModule() || factory.getEnvironment().getComplianceLevel() <= 8) {
+			baseDir = this.getBaseDirectory();
+		} else {
+			baseDir = this.getModuleDirectory(module);
+		}
+
+		return new File(baseDir, ctPackage.getQualifiedName().replace(CtPackage.PACKAGE_SEPARATOR_CHAR, File.separatorChar));
+	}
+
+	public CompilationUnit getOrCreate(CtPackage ctPackage) {
+		if (ctPackage.getPosition() != null && ctPackage.getPosition().getCompilationUnit() != null) {
+			return ctPackage.getPosition().getCompilationUnit();
+		} else {
+			File file = new File(this.getPackageDirectory(ctPackage), DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+			try {
+				String path = file.getCanonicalPath();
+				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredPackage(ctPackage);
+				ctPackage.setPosition(this.factory.createPartialSourcePosition(result));
+
+				return result;
+			} catch (IOException e) {
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
+			}
+		}
+	}
+
+	public CompilationUnit getOrCreate(CtType type) {
+		if (type == null) {
+			return null;
+		}
+		if (type.getPosition() != null && type.getPosition().getCompilationUnit() != null) {
+			return type.getPosition().getCompilationUnit();
+		}
+
+		if (type.isTopLevel()) {
+			File file = new File(this.getPackageDirectory(type.getPackage()), type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			try {
+				String path = file.getCanonicalPath();
+				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredPackage(type.getPackage());
+				result.addDeclaredType(type);
+				type.setPosition(this.factory.createPartialSourcePosition(result));
+
+				return result;
+			} catch (IOException e) {
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
+			}
+		} else {
+			return getOrCreate(type.getTopLevelType());
+		}
+	}
+
+	public CompilationUnit getOrCreate(CtModule module) {
+		if (module.getPosition() != null && module.getPosition().getCompilationUnit() != null) {
+			return module.getPosition().getCompilationUnit();
+		} else {
+			File file = new File(this.getModuleDirectory(module) + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			try {
+				String path = file.getCanonicalPath();
+				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredModule(module);
+				module.setPosition(this.factory.createPartialSourcePosition(result));
+
+				return result;
+			} catch (IOException e) {
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
+			}
+		}
 	}
 
 	/**

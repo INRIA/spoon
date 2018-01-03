@@ -17,6 +17,7 @@
 package spoon.compiler;
 
 import org.apache.log4j.Level;
+import spoon.OutputType;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -334,6 +335,16 @@ public interface Environment {
 	String getBinaryOutputDirectory();
 
 	/**
+	 * Sets the directory where source files are written
+	 */
+	void setSourceOutputDirectory(File directory);
+
+	/**
+	 * Returns the directory where source files are written
+	 */
+	File getSourceOutputDirectory();
+
+	/**
 	 * get the model change listener that is used to follow the change of the AST.
 	 */
 	FineModelChangeListener getModelChangeListener();
@@ -356,4 +367,14 @@ public interface Environment {
 	String getModuleSourcePath();
 
 	void setModuleSourcePath(String moduleSourcePath);
+
+	/**
+	 * Set the output type used for processing files
+	 */
+	void setOutputType(OutputType outputType);
+
+	/**
+	 * Get the output type
+	 */
+	OutputType getOutputType();
 }

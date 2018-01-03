@@ -19,6 +19,7 @@ package spoon.support;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
@@ -39,6 +40,7 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.compiler.FileSystemFolder;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,7 +93,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Charset encoding = Charset.defaultCharset();
 
-	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
+	private File sourceOutputDirectory = new File(Launcher.OUTPUTDIR);
+
+	private OutputType outputType = OutputType.CLASSES;
 
 	private String moduleSourcePath;
 
@@ -499,6 +505,28 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
+	public void setSourceOutputDirectory(File directory) {
+		if (directory == null) {
+			throw new SpoonException("You must specify a directory.");
+		}
+		if (directory.isFile()) {
+			throw new SpoonException("Output must be a directory");
+		}
+
+		try {
+			this.sourceOutputDirectory = directory.getCanonicalFile();
+		} catch (IOException e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+			throw new SpoonException(e);
+		}
+	}
+
+	@Override
+	public File getSourceOutputDirectory() {
+		return this.sourceOutputDirectory;
+	}
+
+	@Override
 	public FineModelChangeListener getModelChangeListener() {
 		return modelChangeListener;
 	}
@@ -526,5 +554,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setModuleSourcePath(String moduleSourcePath) {
 		this.moduleSourcePath = moduleSourcePath;
+	}
+
+	@Override
+	public void setOutputType(OutputType outputType) {
+		this.outputType = outputType;
+	}
+
+	@Override
+	public OutputType getOutputType() {
+		return this.outputType;
 	}
 }
