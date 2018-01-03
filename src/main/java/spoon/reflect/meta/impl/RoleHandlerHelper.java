@@ -53,7 +53,7 @@ public class RoleHandlerHelper {
 	 * @param targetClass the class of the to be manipulated node
 	 * @param role defines the to be manipulated attribute
 	 * @return {@link RoleHandler} implementation which knows how to manipulate the attribute of {@link CtRole} on `targetClass`
-	 * or throws exception if such role does not exists on the `targetClass`
+	 * or throws exception if such role doesn't exist on the `targetClass`
 	 */
 	public static RoleHandler getRoleHandler(Class<? extends CtElement> targetClass, CtRole role) {
 		RoleHandler rh = getOptionalRoleHandler(targetClass, role);
@@ -64,10 +64,10 @@ public class RoleHandlerHelper {
 	}
 
 	/**
-	 * @param targetClass the class of the to be manipulated node
+	 * @param targetClass the Class of the to be manipulated node
 	 * @param role defines the to be manipulated attribute
-	 * @return {@link RoleHandler} implementation which knows how to manipulate the attribute of {@link CtRole} on `targetClass`
-	 * or returns null if such role does not exists on the `targetClass`
+	 * @return {@link RoleHandler} implementation, which knows how to manipulate the attribute of {@link CtRole} on `targetClass`
+	 * or returns null if such role doesn't exist on the `targetClass`
 	 */
 	public static RoleHandler getOptionalRoleHandler(Class<? extends CtElement> targetClass, CtRole role) {
 		List<RoleHandler> handlers = roleHandlers[role.ordinal()];
@@ -80,8 +80,8 @@ public class RoleHandlerHelper {
 	}
 
 	/**
-	 * @param targetClass a Close whose handlers we are looking for
-	 * @return all RoleHandlers available for the `targetClass`
+	 * @param targetClass a Class whose handlers we are looking for
+	 * @return all {@link RoleHandler}s available for the `targetClass`
 	 */
 	public static List<RoleHandler> getRoleHandlers(Class<? extends CtElement> targetClass) {
 		List<RoleHandler> handlers = roleHandlersByClass.get(targetClass);
@@ -100,7 +100,7 @@ public class RoleHandlerHelper {
 	}
 
 	/**
-	 * @param consumer is called for each RoleHandler of SpoonModel
+	 * @param consumer is called for each {@link RoleHandler} of SpoonModel
 	 */
 	public static void forEachRoleHandler(Consumer<RoleHandler> consumer) {
 		for (List<RoleHandler> list : roleHandlers) {
@@ -111,8 +111,8 @@ public class RoleHandlerHelper {
 	}
 
 	/**
-	 * @param element the {@link CtElement} whose {@link RoleHandler} in `element.getParent()` is needed.
-	 * @return {@link RoleHandler} of {@link CtRole} of parent's attribute, which contains `element`
+	 * @param element the {@link CtElement} whose relation from `element.getParent()` to `element` is needed.
+	 * @return {@link RoleHandler} handling relation from `element.getParent()` to `element`
 	 */
 	public static RoleHandler getParentRoleHandler(CtElement element) {
 		if (element.isParentInitialized() == false) {
