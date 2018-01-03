@@ -23,8 +23,14 @@ import java.util.Iterator;
 import java.util.Set;
 
 import spoon.reflect.meta.ContainerKind;
+import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.path.CtRole;
 
+/**
+ * implementation of {@link RoleHandler}, which handles attributes of type Set&lt;V&gt;
+ * @param <T> the type of node whose attribute has to be manipulated
+ * @param <V> the type of item value of the attribute
+ */
 abstract class SetHandler<T, V> extends AbstractRoleHandler<T, Set<V>, V> {
 
 	protected SetHandler(CtRole role, Class<T> targetType, Class<?> valueClass) {

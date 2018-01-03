@@ -22,8 +22,14 @@ import java.util.Map;
 import java.util.Set;
 
 import spoon.reflect.meta.ContainerKind;
+import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.path.CtRole;
 
+/**
+ * implementation of {@link RoleHandler}, which handles attributes of type Map&lt;String, V&gt;
+ * @param <T> the type of node whose attribute has to be manipulated
+ * @param <V> the type of item value of the attribute
+ */
 abstract class MapHandler<T, V> extends AbstractRoleHandler<T, Map<String, V>, V> {
 
 	protected MapHandler(CtRole role, Class<T> targetType, Class<?> valueClass) {

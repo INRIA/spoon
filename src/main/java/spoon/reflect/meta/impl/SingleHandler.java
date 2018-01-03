@@ -21,8 +21,14 @@ import java.util.Collections;
 
 import spoon.SpoonException;
 import spoon.reflect.meta.ContainerKind;
+import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.path.CtRole;
 
+/**
+ * implementation of {@link RoleHandler}, which handles attributes of type &lt;V&gt;
+ * @param <T> the type of node whose attribute has to be manipulated
+ * @param <V> the type of value of the attribute
+ */
 abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 
 	protected SingleHandler(CtRole role, Class<T> targetType, Class<?> valueClass) {
