@@ -21,8 +21,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class EnumsTypeTest {
 
 	@Test
-	public void testEnumsType() throws Exception
-	{
+	public void testEnumsType() throws Exception {
+		// contract: shadow enum should still be considered as an enum
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/reference-test/EnumsRef.java");
 		
