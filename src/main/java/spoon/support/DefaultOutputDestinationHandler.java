@@ -29,12 +29,12 @@ import java.nio.file.Paths;
 /**
  * Default behavior for the destination of the spoon.
  */
-public class DefaultOutputDestination implements OutputDestination {
+public class DefaultOutputDestinationHandler implements OutputDestinationHandler {
 
 	private File defaultOutputDirectory;
 	private Environment environment;
 
-	public DefaultOutputDestination(File defaultOutputDirectory, Environment environment) {
+	public DefaultOutputDestinationHandler(File defaultOutputDirectory, Environment environment) {
 		this.defaultOutputDirectory = defaultOutputDirectory;
 		this.environment = environment;
 	}

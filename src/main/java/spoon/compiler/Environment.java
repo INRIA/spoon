@@ -26,7 +26,7 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.support.OutputDestination;
+import spoon.support.OutputDestinationHandler;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -348,12 +348,12 @@ public interface Environment {
 	/**
 	 * Set the output destination that handles where source files are written
 	 */
-	void setOutputDesination(OutputDestination outputDestination);
+	void setOutputDestinationHandler(OutputDestinationHandler outputDestinationHandler);
 
 	/**
 	 * Returns the output destination that handles where source files are written
 	 */
-	OutputDestination getOutputDestination();
+	OutputDestinationHandler getOutputDestinationHandler();
 
 	/**
 	 * get the model change listener that is used to follow the change of the AST.

@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtType;
 import java.io.File;
 import java.nio.file.Path;
 
-public interface OutputDestination {
+public interface OutputDestinationHandler {
 
 	Path getOutputPath(CtModule module, CtPackage pack, CtType type);
 
