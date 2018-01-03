@@ -189,9 +189,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.tycho</groupId>
+      <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.13.50.v20171007-0855</version>
+      <version>3.13.100</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
