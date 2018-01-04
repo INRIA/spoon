@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import java.lang.reflect.Method;
+import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -28,7 +29,7 @@ import spoon.support.util.RtHelper;
  *
  * Not necessary in simple cases thanks to the use of runtime reflection.
  */
-public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
+public abstract class AbstractFilter<T extends CtElement> implements Filter<T>,Predicate<T> {
 
 	private Class<T> type;
 
