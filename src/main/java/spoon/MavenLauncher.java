@@ -150,6 +150,15 @@ public class MavenLauncher extends Launcher {
 			this.model = model;
 			this.parent = parent;
 			this.directory = directory;
+			// if possible, build the parent model from the relative path
+			if (parent == null && model.getParent() != null) {
+				try {
+					File parentPath = new File(directory, model.getParent().getRelativePath());
+					this.parent = readPOM(parentPath.getPath(), null);
+				} catch (Exception e) {
+					LOGGER.debug("Parent model cannot be resolved: "+e.getMessage());
+				}
+			}
 		}
 
 		public void addModule(InheritanceModel module) {
@@ -268,6 +277,10 @@ public class MavenLauncher extends Launcher {
 				}
 				// TODO: Handle range version
 				String version = extractVariable(dependency.getVersion());
+				if (version == null) {
+					LOGGER.warn("A dependency version cannot be resolved: " + dependency.toString());
+					continue;
+				}
 				if (version.startsWith("[")) {
 					version = version.substring(1, version.indexOf(','));
 				}

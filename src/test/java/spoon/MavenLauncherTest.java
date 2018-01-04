@@ -1,5 +1,6 @@
 package spoon;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -57,13 +58,15 @@ public class MavenLauncherTest {
 		// contract: variables coming from parent should be resolved
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j/pac4j-config", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		List<String> classpath = Arrays.asList(launcher.getEnvironment().getSourceClasspath());
-		String lookingFor = "com/h2database/h2/1.4.194/h2-1.4.194.jar";
+		// in order to work on CI, make sure the version is the same in Spoon pom.xml
+		// else, we cannot guarantee that the dependency is present in .m2 cache and the test might fail
+		String lookingFor = "junit/junit/4.12/junit-4.12.jar";
 
 		boolean findIt = false;
 		for (String s : classpath) {
 			findIt = findIt || s.contains(lookingFor);
 		}
 
-		assertTrue(findIt);
+		assertTrue("Content of classpath: "+ StringUtils.join(classpath,":"), findIt);
 	}
 }
