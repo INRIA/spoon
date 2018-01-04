@@ -260,7 +260,7 @@ public class TestModule {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
-		launcher.getEnvironment().setModuleSourcePath("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.getEnvironment().setModuleSourcePath("./src/test/resources/spoon/test/module/simple_module_with_code/module-info.java");
 		launcher.run();
 
 		assertEquals(2, launcher.getModel().getAllModules().size());
@@ -274,9 +274,9 @@ public class TestModule {
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/foo");
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/bar");
+		launcher.getEnvironment().setModuleSourcePath("./src/test/resources/spoon/test/module/code-multiple-modules/foo/module-info.java:./src/test/resources/spoon/test/module/code-multiple-modules/bar/module-info.java");
 		launcher.addInputResource(MODULE_RESOURCES_PATH+"/code-multiple-modules");
+		launcher.setSourceOutputDirectory("target/multimodules/");
 		launcher.run();
 
 		assertEquals(3, launcher.getModel().getAllModules().size());
