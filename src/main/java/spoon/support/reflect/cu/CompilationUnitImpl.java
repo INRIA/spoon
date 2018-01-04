@@ -24,15 +24,16 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ImportScanner;
+import spoon.reflect.visitor.ImportScannerImpl;
+import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
@@ -44,9 +45,9 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtPackage ctPackage;
 
-	Collection<CtImport> imports = new HashSet<>();
-
 	CtModule ctModule;
+
+	private ImportScanner importScanner;
 
 	File file;
 
@@ -114,6 +115,11 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	@Override
 	public void addDeclaredType(CtType type) {
+		this.declaredTypes.add(type);
+	}
+
+	@Override
+	public void addDeclaredTypes(CtType<?> type) {
 		this.declaredTypes.add(type);
 	}
 
@@ -242,13 +248,55 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Collection<CtImport> getImports() {
-		return this.imports;
+	public List<CtImport> getImports() {
+		this.importScanner.computeImports(this);
+		return Collections.unmodifiableList(this.importScanner.getAllImports());
 	}
 
 	@Override
-	public void setImports(Collection<CtImport> imports) {
-		this.imports = imports;
+	public <T extends CompilationUnit> T setImports(List<CtImport> imports) {
+		this.importScanner.setImports(imports);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CompilationUnit> T addImport(CtImport newImport) {
+		this.importScanner.addImport(newImport);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CompilationUnit> T removeImport(CtImport oldImport) {
+		this.importScanner.removeImport(oldImport);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CompilationUnit> T setImportScanner(ImportScanner importScanner) {
+		this.importScanner = importScanner;
+
+		return (T) this;
+	}
+
+	private void initImportScanner() {
+		if (this.factory.getEnvironment().isAutoImports()) {
+			this.importScanner = new ImportScannerImpl(this.factory);
+		} else {
+			this.importScanner = new MinimalImportScanner(this.factory);
+		}
+	}
+
+	@Override
+	public ImportScanner getImportScanner() {
+		return this.importScanner;
+	}
+
+	@Override
+	public void computeImports() {
+		if (this.getImportScanner() != null) {
+			this.getImportScanner().reset();
+			this.getImportScanner().computeImports(this);
+		}
 	}
 
 	public Factory getFactory() {
@@ -257,16 +305,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-	}
-
-	boolean autoImport = true;
-
-	public boolean isAutoImport() {
-		return autoImport;
-	}
-
-	public void setAutoImport(boolean autoImport) {
-		this.autoImport = autoImport;
+		this.initImportScanner();
 	}
 
 

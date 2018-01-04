@@ -28,9 +28,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by urli on 08/08/2017.
@@ -42,7 +41,7 @@ class JDTImportBuilder {
 	private CompilationUnit spoonUnit;
 	private ICompilationUnit sourceUnit;
 	private Factory factory;
-	private Set<CtImport> imports;
+	private List<CtImport> imports;
 
 	JDTImportBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
 		this.declarationUnit = declarationUnit;
@@ -51,7 +50,7 @@ class JDTImportBuilder {
 		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
 		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
 		this.spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
-		this.imports = new HashSet<>();
+		this.imports = new ArrayList<>();
 	}
 
 	public void build() {
@@ -101,7 +100,7 @@ class JDTImportBuilder {
 			}
 		}
 
-		spoonUnit.setImports(this.imports);
+		spoonUnit.getImportScanner().setOriginalImports(new ArrayList<>(this.imports));
 	}
 
 	private CtType getOrLoadClass(String className) {

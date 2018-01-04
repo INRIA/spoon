@@ -111,7 +111,7 @@ public class ImplicitStaticFieldReferenceTest
         	CtClass<?> cls = launcher.getFactory().Class().get(ChildOfGenericsWithAmbiguousStaticField.class);
         	//The toString of the method does not have a context of class, so it different result 
 //        	assertEquals("spoon.test.staticFieldAccess2.GenericsWithAmbiguousStaticField.<V, C>genericMethod()", cls.getMethod("m1").getBody().getStatements().get(0).toString());
-        	assertTrue(cls.toString().indexOf("spoon.test.staticFieldAccess2.GenericsWithAmbiguousStaticField.<V, C>genericMethod()")>=0);
+        	assertTrue(cls.toString().contains("spoon.test.staticFieldAccess2.GenericsWithAmbiguousStaticField.<V, C>genericMethod()"));
         	assertEquals("genericMethod()", cls.getMethod("m1").getBody().getStatements().get(1).toString());
     	}
     }

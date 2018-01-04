@@ -44,23 +44,19 @@ public class QualifiedThisRefTest {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
 		factory.getEnvironment().setComplianceLevel(8);
+		factory.getEnvironment().setAutoImports(true);
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
 						.resources(
 								"./src/test/java/spoon/test/prettyprinter/testclasses/QualifiedThisRef.java"))
 				.build();
-		factory.getEnvironment().setAutoImports(true);
 	}
 
 	@Test
 	public void testQualifiedThisRef() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		CtType<?> ctClass = factory.Type().get(QualifiedThisRef.class);
-		Collection<CtImport> imports = printer.computeImports(ctClass);
-		final List<CtType<?>> ctTypes = new ArrayList<>();
-		ctTypes.add(ctClass);
-		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
 		Assert.assertTrue(printer.getResult().contains("Object o = this"));
 		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));

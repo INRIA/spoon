@@ -37,11 +37,11 @@ public class ImportScannerTest {
 		Factory aFactory = build(packageName, className).getFactory();
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
-		ImportScanner importContext = new MinimalImportScanner();
+		ImportScanner importContext = new MinimalImportScanner(aFactory);
 		importContext.computeImports(theClass);
 		Collection<CtImport> imports = importContext.getAllImports();
 
-		assertTrue(imports.isEmpty());
+		assertEquals(0, imports.size());
 	}
 
 	@Test
@@ -53,12 +53,11 @@ public class ImportScannerTest {
 		Factory aFactory = build(packageName, className).getFactory();
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(aFactory);
 		importContext.computeImports(theClass);
 		Collection<CtImport> imports = importContext.getAllImports();
 
-		// java.lang are also computed
-		assertEquals(4, imports.size());
+		assertEquals(2, imports.size());
 	}
 
 	@Test
@@ -73,7 +72,7 @@ public class ImportScannerTest {
 		Factory aFactory = spoon.getFactory();
 		CtType<?> theClass = aFactory.Type().get(qualifiedName);
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(aFactory);
 		importContext.computeImports(theClass);
 		Collection<CtImport> imports = importContext.getAllImports();
 
@@ -95,7 +94,7 @@ public class ImportScannerTest {
 
 		final List<CtClass> classes = Query.getElements(factory, new NamedElementFilter<>(CtClass.class,"MultiCatch"));
 
-		ImportScanner importScanner = new ImportScannerImpl();
+		ImportScanner importScanner = new ImportScannerImpl(factory);
 		importScanner.computeImports(classes.get(0));
 		// as ArithmeticException come from java.lang it is not imported anymore
 		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
@@ -109,7 +108,7 @@ public class ImportScannerTest {
 		CtFieldReference fieldRef = factory.createFieldReference();
 		fieldRef.setStatic(true);
 
-		ImportScanner importScanner = new MinimalImportScanner();
+		ImportScanner importScanner = new MinimalImportScanner(factory);
 		importScanner.computeImports(fieldRef);
 
 		Collection<CtImport> imports = importScanner.getAllImports();

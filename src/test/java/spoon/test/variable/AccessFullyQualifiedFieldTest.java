@@ -74,7 +74,7 @@ public class AccessFullyQualifiedFieldTest {
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 
-		assertTrue("The inner class should contain call using import", result.contains(" toto();"));
+		assertTrue("The inner class should contain no FQN call: BurritosStaticMethod.toto(); \nCurrent result: "+result, result.contains(" BurritosStaticMethod.toto();"));
 		canBeBuilt(output, 7);
 	}
 

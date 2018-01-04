@@ -65,8 +65,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	@Override
 	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-				getFactory().getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment(), true);
 		printer.scan(this);
 		return printer.toString();
 	}

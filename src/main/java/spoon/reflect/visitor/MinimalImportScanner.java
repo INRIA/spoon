@@ -16,101 +16,93 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
+
 
 /**
- * A scanner dedicated to import only the necessary packages, @see spoon.test.variable.AccessFullyQualifiedTest
- *
+ * The default scanner in Spoon: it uses fully qualified name everywhere possible,
+ * except when there is a name collision which can not be resolved in other way except doing an import.
  */
 public class MinimalImportScanner extends ImportScannerImpl implements ImportScanner {
+
+	public MinimalImportScanner(Factory factory) {
+		super(factory);
+	}
+
 	/**
-	 * This method use @link{ImportScannerImpl#isTypeInCollision} to import a ref only if there is a collision
-	 * @param ref: the type we are testing, it can be a CtTypeReference, a CtFieldReference or a CtExecutableReference
-	 *
+	 * @deprecated Use constructor with parameter factory instead
+	 */
+	@Deprecated
+	public MinimalImportScanner() {
+		super();
+	}
+
+	/**
 	 * @return true if the ref should be imported.
 	 */
 	private boolean shouldTypeBeImported(CtReference ref) {
-		// we import the targetType by default to simplify and avoid conclict in inner classes
-		if (ref.equals(targetType)) {
-			return true;
-		}
-
-		return isTypeInCollision(ref, true);
-	}
-
-	@Override
-	protected boolean addClassImport(CtTypeReference<?> ref) {
-		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
-
-		if (shouldTypeBeImported) {
-			return super.addClassImport(ref);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	protected boolean addFieldImport(CtFieldReference ref) {
-		if (ref.getDeclaringType() != null) {
-			if (isImportedInClassImports(ref.getDeclaringType())) {
-				return false;
+		if (ref instanceof CtTypeReference) {
+			CtTypeReference ctTypeReference = (CtTypeReference) ref;
+			String fqn = ctTypeReference.getQualifiedName();
+			return this.fqnCollideWithTypeMembers(fqn);
+		} else if (ref instanceof CtFieldReference) {
+			CtFieldReference fieldReference = (CtFieldReference) ref;
+			String fqn = fieldReference.getQualifiedName();
+			return this.fqnCollideWithTypeMembers(fqn);
+		} else if (ref instanceof CtExecutableReference) {
+			CtExecutableReference executableReference = (CtExecutableReference) ref;
+			if (executableReference.getDeclaringType() != null) {
+				String fqn = executableReference.getDeclaringType().getQualifiedName();
+				return this.fqnCollideWithTypeMembers(fqn);
 			}
 		}
 
-		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
-
-		if (shouldTypeBeImported) {
-			if (this.fieldImports.containsKey(ref.getSimpleName())) {
-				return isImportedInFieldImports(ref);
-			}
-
-			fieldImports.put(ref.getSimpleName(), ref);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	protected boolean addMethodImport(CtExecutableReference ref) {
-		if (ref.getDeclaringType() != null) {
-			if (isImportedInClassImports(ref.getDeclaringType())) {
-				return false;
-			}
-		}
-		boolean shouldTypeBeImported = this.shouldTypeBeImported(ref);
-
-		if (shouldTypeBeImported) {
-			if (this.methodImports.containsKey(ref.getSimpleName())) {
-				return isImportedInMethodImports(ref);
-			}
-
-			methodImports.put(ref.getSimpleName(), ref);
-
-			if (ref.getDeclaringType() != null) {
-				if (ref.getDeclaringType().getPackage() != null) {
-					if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
-						addClassImport(ref.getDeclaringType());
-					}
-				}
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
-		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
-			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
-			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-				return true;
-			}
-		}
 		return false;
+	}
+
+	private boolean fqnCollideWithTypeMembers(String fqn) {
+		String[] splitFQN = fqn.split("\\.");
+
+		// we cannot print in FQN if there is a collision with the first package name
+		// BUT we cannot print without FQN if the last name collide with a variable
+		return targetTypeNames.contains(splitFQN[0]) && !targetTypeNames.contains(splitFQN[splitFQN.length - 1]);
+	}
+
+	@Override
+	public void addImport(CtReference reference) {
+		if (!reference.equals(targetType) && this.shouldTypeBeImported(reference)) {
+			this.addImport(this.getFactory().Type().createImport(reference));
+		} else {
+			// import scanner could have imported a reference considered in collision
+			// however if it's not imported, it's not in collision
+			this.removeReferenceInCollision(reference); //fqnCollideWithTypeMembers(targetType.getQualifiedName());
+		}
+	}
+
+	@Override
+	public boolean printQualifiedName(CtReference reference) {
+		if (reference instanceof CtPackageReference) {
+			return !this.referenceInCollision.contains(reference);
+		}
+
+		if (this.isEffectivelyImported(reference)) {
+			return false;
+		}
+
+		if (this.isTypeInCollision(reference) && this.isImported(reference)) {
+			return false;
+		}
+
+		return true;
 	}
 }

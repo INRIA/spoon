@@ -30,7 +30,6 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
@@ -261,13 +260,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment(), true);
 		String errorMessage = "";
 		try {
-			// we do not want to compute imports of a CtImport as it may change the print of a reference
-			if (!(this instanceof CtImport)) {
-				printer.computeImports(this);
-			}
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);

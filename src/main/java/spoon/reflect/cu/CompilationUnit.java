@@ -21,9 +21,9 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.visitor.ImportScanner;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -71,6 +71,8 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Sets the types declared in this compilation unit.
 	 */
 	void setDeclaredTypes(List<CtType<?>> types);
+
+	void addDeclaredTypes(CtType<?> type);
 
 	/**
 	 * Add a type to the list of declared types
@@ -141,12 +143,35 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Get the imports computed for this CU
 	 * @return All the imports from the original source code
 	 */
-	Collection<CtImport> getImports();
+	List<CtImport> getImports();
 
 	/**
 	 * Set the imports of this CU
 	 * @param imports All the imports of the original source code
 	 */
-	void setImports(Collection<CtImport> imports);
+	<T extends CompilationUnit> T setImports(List<CtImport> imports);
 
+	/**
+	 * Add a new import
+	 * @param newImport
+	 */
+	<T extends CompilationUnit> T addImport(CtImport newImport);
+
+	/**
+	 * Removes an import
+	 * @param oldImport
+	 */
+	<T extends CompilationUnit> T removeImport(CtImport oldImport);
+
+	/**
+	 * Set the import scanner used
+	 */
+	<T extends CompilationUnit> T setImportScanner(ImportScanner importScanner);
+
+	/**
+	 * Returns the import scanner
+	 */
+	ImportScanner getImportScanner();
+
+	void computeImports();
 }

@@ -32,6 +32,7 @@ public class PrintingContext {
 	private long IGNORE_STATIC_ACCESS   = 1 << 3;
 	private long IGNORE_ENCLOSING_CLASS = 1 << 4;
 	private long FORCE_WILDCARD_GENERICS = 1 << 5;
+	private long IGNORE_PRINT_FQN_TYPE = 1 << 6;
 
 	private long state;
 
@@ -52,6 +53,9 @@ public class PrintingContext {
 	}
 	public boolean forceWildcardGenerics() {
 		return (state & FORCE_WILDCARD_GENERICS) != 0L;
+	}
+	public boolean ignorePrintFQNType() {
+		return (state & IGNORE_PRINT_FQN_TYPE) != 0L;
 	}
 
 	public class Writable implements AutoCloseable {
@@ -87,6 +91,12 @@ public class PrintingContext {
 		}
 		public <T extends Writable> T forceWildcardGenerics(boolean v) {
 			setState(FORCE_WILDCARD_GENERICS, v);
+			return (T) this;
+		}
+		public <T extends Writable> T ignorePrintFQNType(boolean v) {
+			if (!toString) {
+				setState(IGNORE_PRINT_FQN_TYPE, v);
+			}
 			return (T) this;
 		}
 		private void setState(long mask, boolean v) {
@@ -134,6 +144,16 @@ public class PrintingContext {
 	Deque<CtExpression<?>> parenthesedExpression = new ArrayDeque<>();
 
 	CtType<?> currentTopLevel;
+
+	private boolean toString;
+
+	public PrintingContext() {
+		this(false);
+	}
+
+	public PrintingContext(boolean toString) {
+		this.toString = toString;
+	}
 
 	@Override
 	public String toString() {

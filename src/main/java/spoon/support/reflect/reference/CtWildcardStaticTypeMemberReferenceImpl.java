@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * This class intends to be used only to represent the reference of a
@@ -41,5 +42,9 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl
 	@Override
 	public CtWildcardStaticTypeMemberReferenceImpl clone() {
 		return (CtWildcardStaticTypeMemberReferenceImpl) getFactory().Type().createWildcardStaticTypeMemberReference(this);
+	}
+
+	public CtTypeReference getOriginalTypeReference() {
+		return getFactory().Type().createReference(this.getQualifiedName().replace(".*", ""));
 	}
 }

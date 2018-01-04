@@ -1,6 +1,8 @@
 package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -41,6 +43,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
+import spoon.test.imports.testclasses.AddImport;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
@@ -66,6 +69,7 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -100,7 +104,7 @@ public class ImportTest {
 
 		//test that acces path depends on the context
 		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class). 
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
 		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class) 
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClass.getSuperclass().getTypeDeclaration().getReference().toString());
 		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
@@ -182,6 +186,7 @@ public class ImportTest {
 
 	@Test
 	public void testNewInnerClassDefinesInItsClassAndSuperClass() throws Exception {
+		// contract: in FQN mode, classes from the same package should be written with the full package name.
 		Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		Factory factory = spoon.createFactory();
@@ -193,10 +198,16 @@ public class ImportTest {
 		final CtClass<?> subClass = (CtClass<?>) factory.Type().get(SubClass.class);
 		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
-		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString());
-		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
-				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
-				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
+		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString()); // the constructor call of the current class should not be written in FQN
+		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +
+				"    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() +
+				"        public Item(java.lang.String s) {" + System.lineSeparator() +
+				"            super(1, s);" + System.lineSeparator() +
+				"        }" + System.lineSeparator() +
+				"    }" + System.lineSeparator() + System.lineSeparator() +
+				"    public void aMethod() {" + System.lineSeparator() +
+				"        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() +
+				"    }" + System.lineSeparator() + "}";
 		assertEquals(expected, subClass.toString());
 	}
 
@@ -258,21 +269,22 @@ public class ImportTest {
 		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
 		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
 
-		ImportScanner importScanner = new ImportScannerImpl();
+		ImportScanner importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(aClass);
 		assertEquals(2, importScanner.getAllImports().size());
 
-		importScanner = new ImportScannerImpl();
+		importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
 		assertEquals(2, importScanner.getAllImports().size());
 
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
-		importScanner = new ImportScannerImpl();
+		importScanner = new ImportScannerImpl(launcher.getFactory());
 		importScanner.computeImports(classWithInvocation);
-		// java.lang imports are also computed
-		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
+
+		// only GlobalAnnotation should be imported
+		assertEquals(1, importScanner.getAllImports().size());
 	}
 
 	@Test
@@ -345,7 +357,7 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(Mole.class));
 
 		Collection<CtImport> imports = importContext.getAllImports();
@@ -361,17 +373,15 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/internal3/Bar.java",
 				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
 
-		Collection<CtImport> imports = importContext.getAllImports();
-
-				// java.lang.Object is considered as imported but it will never be output
-		assertEquals(3, imports.size());
-		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
+		List<CtImport> imports = importContext.getAllImports();
 		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
-		assertEquals(expectedImports, actualImports);
+
+		String[] expectedImports = new String[] { "java.io.File", "spoon.test.imports.testclasses.internal3.Foo"};
+
+		assertArrayEquals("Actual imports: "+ StringUtils.join(actualImports, ","), expectedImports, actualImports.toArray());
 	}
 
 	@Test
@@ -380,13 +390,13 @@ public class ImportTest {
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
 
-		ImportScanner importContext = new ImportScannerImpl();
+		ImportScanner importContext = new ImportScannerImpl(factory);
 		importContext.computeImports(factory.Class().get(Pozole.class));
 
-		Collection<CtImport> imports = importContext.getAllImports();
+		List<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.get(0).toString());
 	}
 
 	@Test
@@ -406,7 +416,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportStaticAndFieldAccessWithImport() throws Exception {
-		// contract: Qualified field access and an import static with import should import the type first, and not use static import
+		// contract: The same static import should be used, only one import should be called and the type should not be printed
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal4/");
@@ -415,8 +425,10 @@ public class ImportTest {
 
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+
+		assertEquals(1, aTacos.getPosition().getCompilationUnit().getImports().size());
 		assertTrue(assignment instanceof CtLocalVariable);
-		assertEquals("Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+		assertEquals("CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
 
 	@Test
@@ -469,7 +481,7 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString()); // here ChildClass has been imported
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
 	
@@ -596,9 +608,11 @@ public class ImportTest {
 		}
 
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
+		assertTrue("content: "+mm.toString(), mm.toString().contains("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}"));
+
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
@@ -607,6 +621,7 @@ public class ImportTest {
 
 	@Test
 	public void testNestedStaticPathWithTypedParameter() throws Exception {
+		// contract: in FQN, everything is written in FQN
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java"
@@ -619,25 +634,28 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;")>=0);
+		assertTrue("Content of mm:"+mm.toString(), mm.toString().contains("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 
 	@Test
 	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
+		// contract: with imports, java.lang is not printed and intern classes are FQN printed
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
+		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
+
 		try {
 			launcher.getModelBuilder().compile();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("List<Interners.WeakInterner.Dummy> list;")>=0);
+
+		assertTrue("Content of mm: "+mm.toString(), mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
 		 								  
 	}
 
@@ -655,7 +673,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		assertTrue("Content of mm:"+mm+"\nnew spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
 		 								  
 	}
 	@Test
@@ -672,7 +690,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
+		assertTrue("Content of mm: "+mm, mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
 		 								  
 	}
 
@@ -738,6 +756,7 @@ public class ImportTest {
 
 	@Test
 	public void testWithInnerEnumDoesNotImportStaticInnerMethods() {
+		// contract: in case of name collision, only one method can be imported
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned-innerenum";
@@ -753,8 +772,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertTrue("The file should not contain a static import to the inner enum method values",!output.contains("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"));
-		assertTrue("The file should not contain a static import to the inner enum method values of a distinct interface",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"));
+		assertTrue("The file should not contain a static import to the inner enum method values of a distinct interface",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum.Bar.values;"));
 		assertTrue("The file should not contain a static import to the inner enum value",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"));
 		canBeBuilt(outputDir, 7);
 	}
@@ -1011,7 +1029,7 @@ public class ImportTest {
 		assertTrue(code.contains("ArrayList<String> list = new ArrayList<>()"));
 
 		// cleaning
-		output.delete();
+		//output.delete();
 	}
 
 	@Test
@@ -1301,5 +1319,28 @@ public class ImportTest {
 
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
+	}
+
+	@Test
+	public void testRemoveAndAddImports() {
+		// contract: the API authorize to add and remove imports
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/AddImport.java");
+		launcher.buildModel();
+
+		CtType addImport = launcher.getFactory().Type().get(AddImport.class);
+		CompilationUnit cu = addImport.getPosition().getCompilationUnit();
+
+		assertEquals(1, cu.getImports().size());
+		assertTrue(addImport.toString().contains("Assert.assertNull(null);"));
+
+		CtType assertType = launcher.getFactory().Type().get(Assert.class);
+		CtImport importAssert = launcher.getFactory().createImport(assertType.getReference());
+		cu.removeImport(importAssert);
+
+		assertEquals("Content of the imports: "+StringUtils.join(cu.getImports()), 1, cu.getImports().size());
+		assertFalse("Content of the file: "+addImport.toString(), addImport.toString().contains("Assert.assertNull(null);"));
 	}
 }
