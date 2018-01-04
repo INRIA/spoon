@@ -1285,13 +1285,4 @@ public class FilterTest {
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
 	}
-
-	@Test
-	public void testFilterAsPredicate() throws Exception {
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
-		//contract: Spoon Filter is compatible with java.util.function.Predicate
-		Predicate predicate = new NamedElementFilter<>(CtClass.class, "Foo");
-		assertTrue(predicate.test(foo));
-		assertFalse(predicate.test(foo.getTypeMembers().get(0)));
-	}
 }

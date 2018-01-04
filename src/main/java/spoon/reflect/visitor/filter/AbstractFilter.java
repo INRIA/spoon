@@ -60,9 +60,4 @@ public abstract class AbstractFilter<T extends CtElement> implements Filter<T> {
 	public boolean matches(T element) {
 		return type.isAssignableFrom(element.getClass());
 	}
-
-	@Override
-	public boolean test(T element) {
-		return matches(element);
-	}
 }
