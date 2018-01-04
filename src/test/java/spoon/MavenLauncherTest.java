@@ -2,6 +2,10 @@ package spoon;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -46,5 +50,20 @@ public class MavenLauncherTest {
 	public void mavenLauncherTestWithVerySimpleProject() {
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/very-simple", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
+	}
+
+	@Test
+	public void mavenLauncherTestMultiModulesAndVariables() {
+		// contract: variables coming from parent should be resolved
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j/pac4j-config", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		List<String> classpath = Arrays.asList(launcher.getEnvironment().getSourceClasspath());
+		String lookingFor = "com/h2database/h2/1.4.194/h2-1.4.194.jar";
+
+		boolean findIt = false;
+		for (String s : classpath) {
+			findIt = findIt || s.contains(lookingFor);
+		}
+
+		assertTrue(findIt);
 	}
 }
