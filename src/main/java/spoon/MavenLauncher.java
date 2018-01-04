@@ -156,7 +156,7 @@ public class MavenLauncher extends Launcher {
 					File parentPath = new File(directory, model.getParent().getRelativePath());
 					this.parent = readPOM(parentPath.getPath(), null);
 				} catch (Exception e) {
-					LOGGER.debug("Parent model cannot be resolved: "+e.getMessage());
+					LOGGER.debug("Parent model cannot be resolved: " + e.getMessage());
 				}
 			}
 		}
