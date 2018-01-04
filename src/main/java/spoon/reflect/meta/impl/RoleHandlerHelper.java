@@ -114,7 +114,7 @@ public class RoleHandlerHelper {
 	 * @param element the {@link CtElement} whose relation from `element.getParent()` to `element` is needed.
 	 * @return {@link RoleHandler} handling relation from `element.getParent()` to `element`
 	 */
-	public static RoleHandler getParentRoleHandler(CtElement element) {
+	public static RoleHandler getRoleHandlerWrtParent(CtElement element) {
 		if (element.isParentInitialized() == false) {
 			return null;
 		}

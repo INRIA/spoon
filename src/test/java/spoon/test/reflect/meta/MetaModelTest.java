@@ -105,14 +105,14 @@ public class MetaModelTest {
 		CtField<?> field = factory.Field().create(type, Collections.emptySet(), factory.Type().booleanPrimitiveType(), "someField");
 		assertSame(type, field.getDeclaringType());
 		//contract: RoleHandlerHelper#getParentRoleHandler returns role handler which handles it's relationship to parent
-		assertSame(CtRole.TYPE_MEMBER, RoleHandlerHelper.getParentRoleHandler(field).getRole());
+		assertSame(CtRole.TYPE_MEMBER, RoleHandlerHelper.getRoleHandlerWrtParent(field).getRole());
 		assertSame(CtRole.TYPE_MEMBER, field.getRoleInParent());
 		//contract: RoleHandlerHelper#getParentRoleHandler returns null if there is no parent
 		field.setParent(null);
-		assertNull(RoleHandlerHelper.getParentRoleHandler(field));
+		assertNull(RoleHandlerHelper.getRoleHandlerWrtParent(field));
 		//contract: RoleHandlerHelper#getParentRoleHandler returns null if parent relation cannot be handled in this case
 		//parent of new CtClass is root package - there is no way how to modify that
-		assertNull(RoleHandlerHelper.getParentRoleHandler(type));
+		assertNull(RoleHandlerHelper.getRoleHandlerWrtParent(type));
 	}
 	@Test
 	public void elementAnnotationRoleHandlerTest() {
