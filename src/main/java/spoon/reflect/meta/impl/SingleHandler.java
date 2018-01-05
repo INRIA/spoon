@@ -48,25 +48,26 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 //		return Collections.<X>singletonList(getValue(element));
 		return new AbstractList<X>() {
 			T element = castTarget(e);
+			boolean hasValue = SingleHandler.this.getValue(element) != null;
 
 			@Override
 			public int size() {
-				return SingleHandler.this.getValue(element) == null ? 0 : 1;
+				return hasValue ? 1 : 0;
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public X get(int index) {
-				if (index != 0) {
-					throw new IndexOutOfBoundsException("Index: " + index + ", Size: 1");
+				if (index < 0 || index >= size()) {
+					throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
 				}
 				return (X) SingleHandler.this.getValue(element);
 			}
 
 			@Override
 			public X set(int index, X value) {
-				if (index != 0) {
-					throw new IndexOutOfBoundsException("Index: " + index + ", Size: 1");
+				if (index < 0 || index >= size()) {
+					throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
 				}
 				X oldValue = get(0);
 				SingleHandler.this.setValue(element, value);
@@ -74,29 +75,53 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 			}
 			@Override
 			public boolean add(X value) {
-				if (value == null) {
-					return false;
-				}
-				X oldValue = get(0);
-				if (oldValue != null) {
-					if (oldValue.equals(value)) {
+				if (hasValue) {
+					if (value == null) {
 						return false;
 					}
-					//single value cannot have more then one value
-					throw new SpoonException("Single value attribute cannot have more then one value");
+					X oldValue = get(0);
+					if (oldValue != null) {
+						if (oldValue.equals(value)) {
+							return false;
+						}
+						//single value cannot have more then one value
+						throw new SpoonException("Single value attribute cannot have more then one value");
+					}
 				}
 				SingleHandler.this.setValue(element, value);
+				hasValue = true;
 				return true;
 			}
 
 			@Override
+			public X remove(int index) {
+				if (index < 0 || index >= size()) {
+					throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
+				}
+				X oldValue = get(0);
+				if (oldValue != null) {
+					SingleHandler.this.setValue(element, null);
+				}
+				hasValue = false;
+				return oldValue;
+			}
+			@Override
 			public boolean remove(Object value) {
-				if (value == null) {
+				if (hasValue == false) {
 					return false;
 				}
 				X oldValue = get(0);
-				if (value.equals(oldValue)) {
+				if (value == null) {
+					if (oldValue == null) {
+						hasValue = false;
+						return true;
+					} else {
+						return false;
+					}
+				}
+				if ((value == null && value == oldValue) || value.equals(oldValue)) {
 					SingleHandler.this.setValue(element, null);
+					hasValue = false;
 					return true;
 				}
 				return false;

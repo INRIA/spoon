@@ -236,18 +236,19 @@ public class MetaModelTest {
 		Factory factory = launcher.getFactory();
 		CtTypeReference<?> typeRef = factory.Type().createReference("some.test.package.TestType");
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(typeRef.getClass(), CtRole.PACKAGE_REF);
+
 		//contract: single value role provides a List
 		List<CtPackageReference> packages = rh.asList(typeRef);
-		assertEquals(1, packages.size());
-		assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
 		//contract: adding of existing value does nothing
 		assertFalse(packages.add(typeRef.getPackage()));
-		assertEquals(1, packages.size());
-		assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
 		//contract: adding of null does nothing
 		assertFalse(packages.add(null));
-		assertEquals(1, packages.size());
-		assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
 		//contract: adding of different value fails, and changes nothing
 		try {
 			packages.add(factory.Package().createReference("some.test.another_package"));
@@ -255,83 +256,108 @@ public class MetaModelTest {
 		} catch (SpoonException e) {
 			//OK
 		}
-		assertEquals(1, packages.size());
-		assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
 		//contract remove of different value changes nothing
 		assertFalse(packages.remove(factory.Package().createReference("some.test.another_package")));
-		assertEquals(1, packages.size());
-		assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
 		//contract remove of null value changes nothing
 		assertFalse(packages.remove(null));
-		assertEquals(1, packages.size());
-		assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
 		//contract remove of existing value sets value to null and size to 0
 		assertTrue(packages.remove(factory.Package().createReference("some.test.package")));
-		assertEquals(0, packages.size());
-		assertNull(typeRef.getPackage());
-		//contract add of null into empty collection changes nothing
-		//contract: adding of null does nothing
-		assertFalse(packages.add(null));
-		assertEquals(0, packages.size());
-		assertNull(typeRef.getPackage());
-		//contract: adding of new value into empty collection sets this value
+		assertListContracts(packages, typeRef, 0, null);
+		
+		//contract add of null into empty collection changes size to 1, but value is still null
+		assertTrue(packages.add(null));
+		assertListContracts(packages, typeRef, 1, null);
+		
+		//contract: adding of new value into collection with single null value adds value
 		assertTrue(packages.add(factory.Package().createReference("some.test.another_package")));
-		assertEquals(1, packages.size());
-		assertEquals("some.test.another_package", packages.get(0).getQualifiedName());
-		assertEquals(typeRef.getPackage(), packages.get(0));
-		//contract: set of new value replaces exising value
-		{
-			CtPackageReference oldValue = packages.set(0, factory.Package().createReference("some.test.package"));
-			assertEquals("some.test.another_package", oldValue.getQualifiedName());
-			assertEquals(1, packages.size());
-			assertEquals("some.test.package", packages.get(0).getQualifiedName());
-			assertEquals(typeRef.getPackage(), packages.get(0));
+		assertListContracts(packages, typeRef, 1, "some.test.another_package");
+		
+		//contract: set of new value replaces existing value
+		assertEquals("some.test.another_package", packages.set(0, factory.Package().createReference("some.test.package")).getQualifiedName());
+		assertListContracts(packages, typeRef, 1, "some.test.package");
+		
+		//contract: set of null value keeps size==1 even if value is replaced by null
+		CtPackageReference oldValue = packages.set(0, null);
+		assertListContracts(packages, typeRef, 1, null);
+		
+		//contract: remove of null value by index sets size==0 the value is still null
+		assertNull(packages.remove(0));
+		assertListContracts(packages, typeRef, 0, null);
+		
+		//contract: add of null value sets size==1 the value is still null
+		assertTrue(packages.add(null));
+		assertListContracts(packages, typeRef, 1, null);
+		
+		//contract: remove of null value by value sets size==0 the value is still null
+		assertTrue(packages.remove(null));
+		assertListContracts(packages, typeRef, 0, null);
+		
+		//contract: set of new value on empty collection fails with IndexOutOfBounds and changes nothing
+		try {
+			packages.set(0, factory.Package().createReference("some.test.another_package"));
+			fail();
+		} catch(IndexOutOfBoundsException e) {
+			//OK
 		}
-		//contract: set of null value removes existing value
-		{
-			CtPackageReference oldValue = packages.set(0, null);
-			assertEquals("some.test.package", oldValue.getQualifiedName());
+		assertListContracts(packages, typeRef, 0, null);
+		
+		//contract: adding of value into empty collection adds value
+		assertTrue(packages.add(factory.Package().createReference("some.test.another_package")));
+		assertListContracts(packages, typeRef, 1, "some.test.another_package");
+		
+		//contract: remove of value by index from collection removes that value
+		assertEquals("some.test.another_package", packages.remove(0).getQualifiedName());
+		assertListContracts(packages, typeRef, 0, null);
+	}
+	
+	private void assertListContracts(List<CtPackageReference> packages, CtTypeReference<?> typeRef, int expectedSize, String expectedValue) {
+		if (expectedSize == 0) {
 			assertEquals(0, packages.size());
 			assertNull(typeRef.getPackage());
-			//contract: get(0) can be called even on empty collection, because there is no way how to distinguish how that happened. Whether by remove(x) or by set(0, null)
-			assertNull(packages.get(0));
-		}
-		//contract: set of new value on empty collection sets this value
-		{
-			//contract: set(0) can be called even on empty collection, because there is no way how to distinguish how that happened. Whether by remove(x) or by set(0, null)
-			CtPackageReference oldValue = packages.set(0, factory.Package().createReference("some.test.another_package"));
-			assertNull(oldValue);
+			//contract: get(x) fails for each x when called on empty collection
+			for (int i = -1; i < 3; i++) {
+				try {
+					packages.get(i);
+					fail();
+				} catch(IndexOutOfBoundsException e) {
+					//OK
+				}
+			}
+		} else if (expectedSize == 1) {
 			assertEquals(1, packages.size());
-			assertEquals("some.test.another_package", packages.get(0).getQualifiedName());
-			assertEquals(typeRef.getPackage(), packages.get(0));
-		}
-		//contract: get(x) where x != 0 fails
-		try {
-			packages.get(1);
+			assertPackageName(expectedValue, typeRef.getPackage());
+			//contract: get(x) fails for each x when called on collection with one item, excluding for index == 0
+			for (int i = -1; i < 3; i++) {
+				if (i == 0) {
+					assertPackageName(expectedValue, packages.get(0));
+				} else {
+					try {
+						packages.get(i);
+						fail();
+					} catch(IndexOutOfBoundsException e) {
+						//OK
+					}
+				}
+			}
+		} else {
 			fail();
-		} catch(IndexOutOfBoundsException e) {
-			//OK
-		}
-		try {
-			packages.get(-1);
-			fail();
-		} catch(IndexOutOfBoundsException e) {
-			//OK
-		}
-		//contract: set(x) where x != 1 fails
-		try {
-			packages.set(1, null);
-			fail();
-		} catch(IndexOutOfBoundsException e) {
-			//OK
-		}
-		try {
-			packages.set(-1, null);
-			fail();
-		} catch(IndexOutOfBoundsException e) {
-			//OK
 		}
 	}
+	
+	private void assertPackageName(String expectedPackageName, CtPackageReference packageRef) {
+		if (expectedPackageName == null) {
+			assertNull(packageRef);
+		} else {
+			assertEquals(expectedPackageName, packageRef.getQualifiedName());
+		}
+	}
+	
 	@Test
 	public void listValueRoleSetOn() {
 		//contract: multi-value role supports set(int, Object)
