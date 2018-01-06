@@ -241,12 +241,22 @@ public class MetaModelTest {
 		List<CtPackageReference> packages = rh.asList(typeRef);
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 		
-		//contract: adding of existing value does nothing
-		assertFalse(packages.add(typeRef.getPackage()));
+		//contract: adding of existing value fails and changes nothing
+		try {
+			packages.add(typeRef.getPackage());
+			fail();
+		} catch (Exception e) {
+			//OK
+		}
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 		
-		//contract: adding of null does nothing
-		assertFalse(packages.add(null));
+		//contract: adding of null fails and changes nothing
+		try {
+			assertFalse(packages.add(null));
+			fail();
+		} catch (Exception e) {
+			//OK
+		}
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 		
 		//contract: adding of different value fails, and changes nothing
@@ -274,16 +284,21 @@ public class MetaModelTest {
 		assertTrue(packages.add(null));
 		assertListContracts(packages, typeRef, 1, null);
 		
-		//contract: adding of new value into collection with single null value adds value
-		assertTrue(packages.add(factory.Package().createReference("some.test.another_package")));
-		assertListContracts(packages, typeRef, 1, "some.test.another_package");
+		//contract: adding of new value into collection with single null value fails and changes nothing
+		try {
+			packages.add(factory.Package().createReference("some.test.another_package"));
+			fail();
+		} catch (SpoonException e) {
+			//OK
+		}
+		assertListContracts(packages, typeRef, 1, null);
 		
 		//contract: set of new value replaces existing value
-		assertEquals("some.test.another_package", packages.set(0, factory.Package().createReference("some.test.package")).getQualifiedName());
+		assertEquals(null, packages.set(0, factory.Package().createReference("some.test.package")));
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 		
 		//contract: set of null value keeps size==1 even if value is replaced by null
-		CtPackageReference oldValue = packages.set(0, null);
+		assertEquals("some.test.package", packages.set(0, null).getQualifiedName());
 		assertListContracts(packages, typeRef, 1, null);
 		
 		//contract: remove of null value by index sets size==0 the value is still null

@@ -76,17 +76,8 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 			@Override
 			public boolean add(X value) {
 				if (hasValue) {
-					if (value == null) {
-						return false;
-					}
-					X oldValue = get(0);
-					if (oldValue != null) {
-						if (oldValue.equals(value)) {
-							return false;
-						}
-						//single value cannot have more then one value
-						throw new SpoonException("Single value attribute cannot have more then one value");
-					}
+					//single value cannot have more then one value
+					throw new SpoonException("Single value attribute cannot have more then one value");
 				}
 				SingleHandler.this.setValue(element, value);
 				hasValue = true;
@@ -111,20 +102,23 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 					return false;
 				}
 				X oldValue = get(0);
-				if (value == null) {
-					if (oldValue == null) {
-						hasValue = false;
-						return true;
-					} else {
-						return false;
+				if (equals(oldValue, value)) {
+					if (oldValue != null) {
+						SingleHandler.this.setValue(element, null);
 					}
-				}
-				if ((value == null && value == oldValue) || value.equals(oldValue)) {
-					SingleHandler.this.setValue(element, null);
 					hasValue = false;
 					return true;
 				}
 				return false;
+			}
+			private boolean equals(Object v1, Object v2) {
+				if (v1 == v2) {
+					return true;
+				}
+				if (v1 == null) {
+					return false;
+				}
+				return v1.equals(v2);
 			}
 		};
 	};
