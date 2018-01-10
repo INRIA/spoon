@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.method.testclasses.Tacos;
 
@@ -83,6 +84,19 @@ public class MethodTest {
 		l.buildModel();
 		Set<CtMethod<?>> methods = l.getFactory().Class().get("A3").getAllMethods();
 		assertEquals(1, methods.stream().filter(method -> "foo".equals(method.getSimpleName())).count());
+	}
+
+	@Test
+	public void testGetAllMethodsAdaptingType() throws Exception {
+		// contract: ...
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("src/test/resources/noclasspath/spring/PropertyComparator.java");
+		l.buildModel();
+
+		CtType propertyComparator = l.getModel().getElements(new NamedElementFilter<CtType>(CtType.class, "PropertyComparator")).get(0);
+		propertyComparator.getAllMethods();
+
 	}
 
 }
