@@ -88,15 +88,16 @@ public class MethodTest {
 
 	@Test
 	public void testGetAllMethodsAdaptingType() throws Exception {
-		// contract: ...
+		// contract: AbstractTypingContext should not enter in recursive calls when resolving autoreferenced bounding type
+		// such as T extends Comparable<? super T>
 		Launcher l = new Launcher();
 		l.getEnvironment().setNoClasspath(true);
 		l.addInputResource("src/test/resources/noclasspath/spring/PropertyComparator.java");
 		l.buildModel();
 
-		CtType propertyComparator = l.getModel().getElements(new NamedElementFilter<CtType>(CtType.class, "PropertyComparator")).get(0);
-		propertyComparator.getAllMethods();
-
+		CtType<?> propertyComparator = l.getModel().getElements(new NamedElementFilter<CtType>(CtType.class, "PropertyComparator")).get(0);
+		CtMethod method = propertyComparator.getMethodsByName("compare").get(0);
+		assertEquals("compare(T,T)", method.getSignature());
 	}
 
 }
