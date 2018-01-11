@@ -60,25 +60,14 @@ public class CompilationUnitFactory extends SubFactory {
 		return cu;
 	}
 
-	private File getBaseDirectory() {
-		return this.factory.getEnvironment().getSourceOutputDirectory().getAbsoluteFile();
-	}
-
-	private File getModuleDirectory(CtModule module) {
-		return new File(this.getBaseDirectory(), module.getSimpleName() + File.separatorChar);
-	}
-
 	private File getPackageDirectory(CtPackage ctPackage) {
 		CtModule module = ctPackage.getParent(CtModule.class);
-		File baseDir;
 
 		if (module == null || module.isUnnamedModule() || factory.getEnvironment().getComplianceLevel() <= 8) {
-			baseDir = this.getBaseDirectory();
+			return this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(null, ctPackage, null).toFile();
 		} else {
-			baseDir = this.getModuleDirectory(module);
+			return this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, ctPackage, null).toFile();
 		}
-
-		return new File(baseDir, ctPackage.getQualifiedName().replace(CtPackage.PACKAGE_SEPARATOR_CHAR, File.separatorChar));
 	}
 
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {
@@ -129,7 +118,7 @@ public class CompilationUnitFactory extends SubFactory {
 		if (module.getPosition() != null && module.getPosition().getCompilationUnit() != null) {
 			return module.getPosition().getCompilationUnit();
 		} else {
-			File file = new File(this.getModuleDirectory(module) + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			File file = new File(this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile(), DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
