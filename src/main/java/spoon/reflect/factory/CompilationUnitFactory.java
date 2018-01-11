@@ -21,7 +21,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
