@@ -60,21 +60,18 @@ public class CompilationUnitFactory extends SubFactory {
 		return cu;
 	}
 
-	private File getPackageDirectory(CtPackage ctPackage) {
-		CtModule module = ctPackage.getParent(CtModule.class);
-
-		if (module == null || module.isUnnamedModule() || factory.getEnvironment().getComplianceLevel() <= 8) {
-			return this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(null, ctPackage, null).toFile();
-		} else {
-			return this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, ctPackage, null).toFile();
-		}
-	}
-
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {
 		if (ctPackage.getPosition() != null && ctPackage.getPosition().getCompilationUnit() != null) {
 			return ctPackage.getPosition().getCompilationUnit();
 		} else {
-			File file = new File(this.getPackageDirectory(ctPackage), DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+
+			CtModule module;
+			if (factory.getEnvironment().getComplianceLevel() > 8) {
+				module = ctPackage.getParent(CtModule.class);
+			} else {
+				module = null;
+			}
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, ctPackage, null).toFile();
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
@@ -97,7 +94,13 @@ public class CompilationUnitFactory extends SubFactory {
 		}
 
 		if (type.isTopLevel()) {
-			File file = new File(this.getPackageDirectory(type.getPackage()), type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			CtModule module;
+			if (type.getPackage() != null && factory.getEnvironment().getComplianceLevel() > 8) {
+				module = type.getPackage().getParent(CtModule.class);
+			} else {
+				module = null;
+			}
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, type.getPackage(), type).toFile();
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
@@ -118,7 +121,7 @@ public class CompilationUnitFactory extends SubFactory {
 		if (module.getPosition() != null && module.getPosition().getCompilationUnit() != null) {
 			return module.getPosition().getCompilationUnit();
 		} else {
-			File file = new File(this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile(), DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile();
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
