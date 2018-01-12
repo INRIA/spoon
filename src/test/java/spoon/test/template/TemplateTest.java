@@ -263,7 +263,7 @@ public class TemplateTest {
 		String docComment = e.getDocComment();
 		String generatedByMember = elementToGeneratedByMember.get(e);
 		if (generatedByMember == null) {
-			assertNull(docComment);
+			assertEquals("", docComment);
 //			assertTrue(e.getPosition()==null || e.getPosition() instanceof NoSourcePosition);
 		} else {
 			assertNotNull("Javadoc comment is missing for "+e.toString(), docComment);
