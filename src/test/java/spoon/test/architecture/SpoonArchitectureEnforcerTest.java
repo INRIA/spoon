@@ -70,6 +70,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.buildModel();
                 
 		for (CtMethod t : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
+                        // add check if overridden, check if @inheritdoc
 			if (t.hasModifier(ModifierKind.PUBLIC) && t.getDocComment() != null && t.getDocComment().length()<10) {
 				fail("no documentation for public methods "  + t.getSimpleName());
 			}
