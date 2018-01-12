@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -96,8 +97,17 @@ public class MethodTest {
 		l.buildModel();
 
 		CtType<?> propertyComparator = l.getModel().getElements(new NamedElementFilter<CtType>(CtType.class, "PropertyComparator")).get(0);
-		CtMethod method = propertyComparator.getMethodsByName("compare").get(0);
-		assertEquals("compare(T,T)", method.getSignature());
+		Set<CtMethod<?>> allMethods = propertyComparator.getAllMethods();
+
+		boolean compareFound = false;
+		for (CtMethod<?> method : allMethods) {
+			if (method.getSimpleName().equals("compare")) {
+				assertEquals("compare(T,T)", method.getSignature());
+				compareFound = true;
+			}
+		}
+
+		assertTrue(compareFound);
 	}
 
 }
