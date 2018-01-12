@@ -76,7 +76,7 @@ public class PackageTest {
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		Assert.assertEquals("", ctPackage.getDocComment());
 	}
 
 	@Test
