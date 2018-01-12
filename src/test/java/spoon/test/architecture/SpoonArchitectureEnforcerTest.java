@@ -6,6 +6,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -63,19 +64,39 @@ public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void documentedTest() throws Exception {
-		// the public methods should be documented
+		// the public methods should be documented with an API Javadoc comment
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
-                
+		List<String> notDocumented = new ArrayList<>();
 		for (CtMethod t : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
-                        // add check if overridden, check if @inheritdoc
-			if (t.hasModifier(ModifierKind.PUBLIC) && t.getDocComment() != null && t.getDocComment().length()<10) {
-				fail("no documentation for public methods "  + t.getSimpleName());
+			if (isCorrectlyDocumented(t)
+					) {
+				notDocumented.add(t.getParent(CtType.class).getQualifiedName()+"#"+t.getSimpleName());
 			}
 		}
+		if (!notDocumented.isEmpty()) {
+			fail("this method should be documented  ("+notDocumented.size()+"): "+notDocumented.toString());
+		}
 
+	}
+
+	private boolean isCorrectlyDocumented(CtMethod t) {
+		// pb: need getOverriddenMethod in CtMethod
+
+		// pb: need getAllSuperClasses
+		// need getAllSuperInterfaces
+		// need getAllSuperTypes
+
+		// pb: bug in getOverridingExecutable
+		return t.hasModifier(ModifierKind.PUBLIC)
+				&& t.getDocComment().length()<10 // less than 10 characters is indeed small
+				&& !t.getSimpleName().startsWith("get")
+				&& !t.getSimpleName().startsWith("set")
+				&& !t.getSimpleName().startsWith("is")
+				&& t.getReference().getOverridingExecutable() == null // only the top declaration should be documented
+				&& t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>50;  // not a trivial method
 	}
 
 
