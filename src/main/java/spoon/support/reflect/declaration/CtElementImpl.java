@@ -175,8 +175,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
 				StringBuffer result = new StringBuffer();
-				result.append(ctComment.getContent()+System.lineSeparator());
-				for (CtJavaDocTag tag: ((CtJavaDoc)ctComment).getTags()) {
+				result.append(ctComment.getContent() + System.lineSeparator());
+				for (CtJavaDocTag tag: ((CtJavaDoc) ctComment).getTags()) {
 					result.append(tag.toString()); // the tag already contains a new line
 				}
 				return result.toString();
