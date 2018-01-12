@@ -99,7 +99,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
-	 * element. The documentation is also accessible via {@link #getComments()}.
+	 * element. It contains the text of Javadoc together with the tags.
+	 *
+	 * If one only wants only the text without the tag, one can call `getComments().get(0).getContent()`
+	 *
+	 * If one wants to analyze the tags, one can call `getComments().get(0).asJavaDoc().getTags()`
+	 *
+	 * See also {@link #getComments()}.and {@link spoon.reflect.code.CtJavaDoc}
 	 */
 	@DerivedProperty
 	String getDocComment();
