@@ -23,7 +23,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +60,23 @@ public class SpoonArchitectureEnforcerTest {
 		}
 
 	}
+
+	@Test
+	public void documentedTest() throws Exception {
+		// the public methods should be documented
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setCommentEnabled(true);
+		spoon.addInputResource("src/main/java/");
+		spoon.buildModel();
+                
+		for (CtMethod t : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
+			if (t.hasModifier(ModifierKind.PUBLIC) && t.getDocComment() != null && t.getDocComment().length()<10) {
+				fail("no documentation for public methods "  + t.getSimpleName());
+			}
+		}
+
+	}
+
 
 	@Test
 	public void testFactorySubFactory() throws Exception {
