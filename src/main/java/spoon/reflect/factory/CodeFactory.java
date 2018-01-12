@@ -673,6 +673,9 @@ public class CodeFactory extends SubFactory {
 	 * @return a new CtComment
 	 */
 	public CtComment createComment(String content, CtComment.CommentType type) {
+		if (type == CtComment.CommentType.JAVADOC) {
+			return factory.Core().createJavaDoc().setContent(content);
+		}
 		return factory.Core().createComment().setContent(content).setCommentType(type);
 	}
 
