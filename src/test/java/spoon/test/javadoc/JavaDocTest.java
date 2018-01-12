@@ -40,6 +40,31 @@ public class JavaDocTest {
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}", aClass.toString());
+
+		// contract: getDocComment never returns null, it returns an empty string if no comment
+		assertEquals("", aClass.getDocComment());
+
+		// contract: getDocComment returns the comment content together with the tag content
+		assertEquals("Creates an annotation type." + System.lineSeparator()
+				+ "* @param owner" + System.lineSeparator()
+				+ " * \t\tthe package of the annotation type" + System.lineSeparator()
+				+ "* @param simpleName" + System.lineSeparator()
+				+ " * \t\tthe name of annotation" + System.lineSeparator()
+				, aClass.getMethodsByName("create").get(0).getDocComment());
+		assertEquals(2, aClass.getMethodsByName("create").get(0).getComments().get(0).asJavaDoc().getTags().size());
+
+		// JavaDocTest#testJavaDocReprint()
+		// good first bug to welcome new contributors
+		// uncomment the assertion and get it passing!
+		// there remains a minor problem with tags, they are printed with the "* " before the content
+		// and the spaces before the * are not consistently handled
+		// here is the correct assertion
+//		assertEquals("Creates an annotation type." + System.lineSeparator()
+//						+ "@param owner" + System.lineSeparator()
+//						+ " \t\tthe package of the annotation type" + System.lineSeparator()
+//						+ " @param simpleName" + System.lineSeparator()
+//						+ " \t\tthe name of annotation" + System.lineSeparator()
+//				, aClass.getMethodsByName("create").get(0).getDocComment());
 	}
 
 	@Test

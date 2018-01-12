@@ -19,6 +19,8 @@ package spoon.support.reflect.declaration;
 import org.apache.log4j.Logger;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -172,10 +174,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public String getDocComment() {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
-				return ctComment.getContent();
+				StringBuffer result = new StringBuffer();
+				result.append(ctComment.getContent()+System.lineSeparator());
+				for (CtJavaDocTag tag: ((CtJavaDoc)ctComment).getTags()) {
+					result.append(tag.toString()); // the tag already contains a new line
+				}
+				return result.toString();
 			}
 		}
-		return null;
+		return "";
 	}
 
 	public SourcePosition getPosition() {

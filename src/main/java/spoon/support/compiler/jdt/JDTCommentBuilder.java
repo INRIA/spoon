@@ -167,6 +167,7 @@ class JDTCommentBuilder {
 		String currentTagContent = "";
 		CtJavaDocTag.TagType currentTag = null;
 
+		// TODO: remove the " *", see spoon.test.javadoc.JavaDocTest.testJavaDocReprint()
 		String[] lines = commentContent.split("\n");
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i].trim();
