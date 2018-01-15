@@ -25,6 +25,8 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -34,9 +36,11 @@ import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -45,6 +49,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.SerializationModelStreamer;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
@@ -52,15 +57,26 @@ import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.gui.SpoonModelTree;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
 
@@ -94,6 +110,8 @@ public class Launcher implements SpoonAPI {
 
 	private List<String> processorTypes = new ArrayList<>();
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
+
+	private File incrementalCacheDirectory;
 
 	/**
 	 * A default program entry point (instantiates a launcher with the given
@@ -153,6 +171,145 @@ public class Launcher implements SpoonAPI {
 		}
 		factory = pFactory;
 		processArguments();
+	}
+
+	/**
+	 * Creates a {@link Launcher} for incremental build.
+	 *
+	 * @param inputResources
+	 * 		- Resources to be parsed to build the spoon model.
+	 * @param classpath
+	 * 		- Source classpath of the spoon model.
+	 * @param cacheDirectory
+	 * 		- The directory to store all incremental information. If it's empty, full rebuild will be performed.
+	 * @param forceRebuild
+	 * 		- Force to perform full rebuild, ignoring incremental cache.
+	 * @throws IllegalArgumentException
+	 */
+	public Launcher(Set<String> inputResources, Set<String> sourceClasspath, File cacheDirectory, boolean forceRebuild) {
+		if (cacheDirectory == null) {
+			throw new IllegalArgumentException("unable to create incremental launcher with null cache directory");
+		}
+
+		File modelFile = new File(cacheDirectory, "model");
+		File mapFile = new File(cacheDirectory, "map");
+		if (!cacheDirectory.exists() || !modelFile.exists() || !mapFile.exists()) {
+			forceRebuild = true;
+		}
+
+		incrementalCacheDirectory = cacheDirectory;
+
+		if (!forceRebuild) {
+			Factory oldFactory;
+			try {
+				oldFactory = loadFactory(modelFile);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("unable to load factory from cache directory");
+			}
+
+			Map<String, List<File>> oldBinaryFilesMap;
+			try {
+				oldBinaryFilesMap = loadBinaryFilesMap(mapFile);
+			} catch (ClassNotFoundException | IOException e) {
+				throw new IllegalArgumentException("unable to load binary files map from cache directory");
+			}
+
+			Set<File> inputFiles = new HashSet<>();
+			for (String s : inputResources) {
+				File f = new File(s);
+				if (!f.exists()) {
+					throw new IllegalArgumentException("unable to create incremental launcher with non-existent resource");
+				}
+				inputFiles.add(f);
+			}
+			IncrementalBuildTool incrementalTool = new IncrementalBuildTool(inputFiles, sourceClasspath, oldFactory, oldBinaryFilesMap, cacheDirectory);
+			factory = incrementalTool.getFactoryForIncrementalBuild();
+			processArguments();
+			setBinaryOutputDirectory(cacheDirectory);
+			Set<File> incrementalSources = incrementalTool.getInputSourcesForIncrementalBuild();
+			incrementalSources.forEach(f -> addInputResource(f.getAbsolutePath()));
+			Set<String> incrementalClasspath = incrementalTool.getClasspathForIncrementalBuild();
+			getEnvironment().setSourceClasspath(incrementalClasspath.toArray(new String[incrementalClasspath.size()]));
+
+		} else {
+			factory = createFactory();
+			processArguments();
+			setBinaryOutputDirectory(cacheDirectory);
+			inputResources.forEach(r -> addInputResource(r));
+			getEnvironment().setSourceClasspath(sourceClasspath.toArray(new String[sourceClasspath.size()]));
+		}
+	}
+
+	/**
+	 * Creates a {@link Launcher} for incremental build.
+	 *
+	 * @param inputResources
+	 * 		- Resources to be parsed to build the spoon model.
+	 * @param classpath
+	 * 		- Source classpath of the spoon model.
+	 * @param cacheDirectory
+	 * 		- The directory to store all incremental information. If it's empty, full rebuild will be performed.
+	 * @throws IllegalArgumentException
+	 */
+	public Launcher(Set<String> inputResources, Set<String> sourceClasspath, File cacheDirectory) {
+		this(inputResources, sourceClasspath, cacheDirectory, false);
+	}
+
+	/**
+	 * Updates incremental cache directory, i.e. saves all new binaries and model.
+	 *
+	 * @throws IllegalArgumentException
+	 */
+	public void updateCacheDirectory() {
+		if (incrementalCacheDirectory == null) {
+			throw new SpoonException("incremental cache directory is null");
+		}
+
+		getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+
+		Factory factory = getFactory();
+		if (factory == null) {
+			throw new SpoonException("factory is null");
+		}
+
+		try {
+			saveFactory(getFactory(), new File(incrementalCacheDirectory, "model"));
+			saveBinaryFilesMap(getFactory().CompilationUnit(), new File(incrementalCacheDirectory, "map"));
+		} catch (IOException e) {
+			throw new SpoonException("unable to save model");
+		}
+
+		// Remove all unused .class files
+		Set<File> classpathFiles = new HashSet<>();
+		for (String e : getEnvironment().getSourceClasspath()) {
+			classpathFiles.add(new File(e));
+		}
+		Set<File> usedClassFiles = IncrementalBuildTool.getAllFilesByExtention(classpathFiles, ".class");
+
+		getFactory().CompilationUnit().getMap().entrySet()
+			.forEach(e -> usedClassFiles.addAll(e.getValue().getBinaryFiles()));
+
+		Collection<File> allClassFiles = FileUtils.listFiles(incrementalCacheDirectory, new SuffixFileFilter(".class"), TrueFileFilter.INSTANCE);
+		for (File f : allClassFiles) {
+			boolean used = false;
+			for (File u : usedClassFiles) {
+				try {
+					if (u.getCanonicalPath().equals(f.getCanonicalPath())) {
+						used = true;
+						break;
+					}
+				} catch (IOException ex) {
+					throw new SpoonException("unable to get .class file");
+				}
+			}
+			if (!used) {
+				if (!f.delete()) {
+					throw new SpoonException("unable to remove unused .class file");
+				}
+			}
+		}
+
+		// TODO: Remove all empty directories as well
 	}
 
 	@Override
@@ -622,6 +779,39 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public Factory getFactory() {
 		return factory;
+	}
+
+	private static Factory loadFactory(File file) throws IOException {
+		return new SerializationModelStreamer().load(new FileInputStream(file));
+	}
+
+	private static void saveFactory(Factory factory, File file) throws IOException {
+		ByteArrayOutputStream outstr = new ByteArrayOutputStream();
+		new SerializationModelStreamer().save(factory, outstr);
+		OutputStream fileStream = new FileOutputStream(file);
+		outstr.writeTo(fileStream);
+	}
+
+	private static Map<String, List<File>> loadBinaryFilesMap(File file) throws IOException, ClassNotFoundException {
+		FileInputStream fileStream = new FileInputStream(file);
+		ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+		Map<String, List<File>> binaryFilesMap = (HashMap) objectStream.readObject();
+		objectStream.close();
+		return binaryFilesMap;
+	}
+
+	private static void saveBinaryFilesMap(CompilationUnitFactory factory, File file) throws IOException {
+		Map<String, List<File>> binaryFilesMap = new HashMap<>();
+		Map<String, CompilationUnit> map = factory.getMap();
+
+		for (Entry<String, CompilationUnit> e : map.entrySet()) {
+			binaryFilesMap.put(e.getKey(), e.getValue().getBinaryFiles());
+		}
+
+		FileOutputStream fileStream = new FileOutputStream(file);
+		ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
+		objectStream.writeObject(binaryFilesMap);
+		objectStream.close();
 	}
 
 	@Override
