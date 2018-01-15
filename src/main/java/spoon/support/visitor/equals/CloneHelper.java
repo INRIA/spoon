@@ -55,7 +55,7 @@ public class CloneHelper {
 		}
 		Collection<T> others = new ArrayList<>();
 		for (T element : elements) {
-			others.add(clone(element));
+			addClone(others, element);
 		}
 		return others;
 	}
@@ -69,7 +69,7 @@ public class CloneHelper {
 		}
 		List<T> others = new ArrayList<>();
 		for (T element : elements) {
-			others.add(clone(element));
+			addClone(others, element);
 		}
 		return others;
 	}
@@ -100,7 +100,7 @@ public class CloneHelper {
 
 		Set<T> others = createRightSet(elements);
 		for (T element : elements) {
-			others.add(clone(element));
+			addClone(others, element);
 		}
 		return others;
 	}
@@ -111,8 +111,27 @@ public class CloneHelper {
 		}
 		Map<String, T> others = new HashMap<>();
 		for (Map.Entry<String, T> tEntry : elements.entrySet()) {
-			others.put(tEntry.getKey(), clone(tEntry.getValue()));
+			addClone(others, tEntry.getKey(), tEntry.getValue());
 		}
 		return others;
+	}
+
+	/**
+	 * clones a element and adds it's clone as value into targetCollection
+	 * @param targetCollection - the collection which will receive a clone of element
+	 * @param element to be cloned element
+	 */
+	protected <T extends CtElement> void addClone(Collection<T> targetCollection, T element) {
+		targetCollection.add(clone(element));
+	}
+
+	/**
+	 * clones a value and adds it's clone as value into targetMap under key
+	 * @param targetMap - the Map which will receive a clone of value
+	 * @param key the target key, which has to be used to add cloned value into targetMap
+	 * @param value to be cloned element
+	 */
+	protected <T extends CtElement> void addClone(Map<String, T> targetMap, String key, T value) {
+		targetMap.put(key, clone(value));
 	}
 }

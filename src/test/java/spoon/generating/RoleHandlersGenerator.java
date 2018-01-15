@@ -192,13 +192,13 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	public String getRoleHandlerSuperTypeQName(MMField field) {
 		switch (field.getValueContainerType()) {
 			case LIST:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.ListHandler";
+				return "spoon.reflect.meta.impl.ListHandler";
 			case SET:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.SetHandler";
+				return "spoon.reflect.meta.impl.SetHandler";
 			case MAP:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.MapHandler";
+				return "spoon.reflect.meta.impl.MapHandler";
 			case SINGLE:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.SingleHandler";
+				return "spoon.reflect.meta.impl.SingleHandler";
 		}
 		throw new SpoonException("Unexpected value container type: " + field.getValueContainerType().name());
 	}

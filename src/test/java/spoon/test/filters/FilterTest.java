@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
@@ -14,12 +15,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -1124,6 +1125,8 @@ public class FilterTest {
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
 		//contract: if includingSelf(true), then input element is first element
 		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
+		//contract: do not fail on unitialized parent
+		assertNull(factory.Type().createReference("p.T").map(new ParentFunction()).first());
 	}
 	@Test
 	public void testCtScannerListener() throws Exception {

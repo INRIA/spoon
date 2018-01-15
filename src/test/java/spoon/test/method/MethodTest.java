@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.method.testclasses.Tacos;
 
@@ -33,6 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -83,6 +85,29 @@ public class MethodTest {
 		l.buildModel();
 		Set<CtMethod<?>> methods = l.getFactory().Class().get("A3").getAllMethods();
 		assertEquals(1, methods.stream().filter(method -> "foo".equals(method.getSimpleName())).count());
+	}
+
+	@Test
+	public void testGetAllMethodsAdaptingType() throws Exception {
+		// contract: AbstractTypingContext should not enter in recursive calls when resolving autoreferenced bounding type
+		// such as T extends Comparable<? super T>
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("src/test/resources/noclasspath/spring/PropertyComparator.java");
+		l.buildModel();
+
+		CtType<?> propertyComparator = l.getModel().getElements(new NamedElementFilter<CtType>(CtType.class, "PropertyComparator")).get(0);
+		Set<CtMethod<?>> allMethods = propertyComparator.getAllMethods();
+
+		boolean compareFound = false;
+		for (CtMethod<?> method : allMethods) {
+			if (method.getSimpleName().equals("compare")) {
+				assertEquals("compare(T,T)", method.getSignature());
+				compareFound = true;
+			}
+		}
+
+		assertTrue(compareFound);
 	}
 
 }

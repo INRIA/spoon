@@ -1,18 +1,20 @@
 package spoon.test.api;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
-import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
@@ -25,6 +27,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.OutputDestinationHandler;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.template.Local;
@@ -33,6 +36,9 @@ import spoon.template.TemplateParameter;
 import spoon.test.api.testclasses.Bar;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -416,5 +422,110 @@ public class APITest {
 		assertEquals(1, l.getMethods().size());
 		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
 		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+	}
+  
+	@Test
+	public void testOutputDestinationHandler() throws IOException {
+		// contract: files are created in the directory determined by the output destination handler
+
+		final File outputDest = Files.createTempDirectory("spoon").toFile();
+
+		final OutputDestinationHandler outputDestinationHandler = new OutputDestinationHandler() {
+			@Override
+			public Path getOutputPath(CtModule module, CtPackage pack, CtType type) {
+				String path = "";
+				if (module != null) {
+					path += module.getSimpleName()+"_";
+				}
+				if (pack != null) {
+					path += pack.getQualifiedName()+"_";
+				}
+				if (type != null) {
+					path += type.getSimpleName()+".java";
+				}
+				return new File(outputDest, path).toPath();
+			}
+
+			@Override
+			public File getDefaultOutputDiSetrectory() {
+				return outputDest;
+			}
+		};
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		launcher.getEnvironment().setOutputDestinationHandler(outputDestinationHandler);
+		launcher.run();
+
+		File generatedFile = new File(outputDest, "unnamed module_spoon.test.api.testclasses_Bar.java");
+		assertTrue(generatedFile.exists());
+	}
+
+	@Test
+	public void testOutputDestinationHandlerWithCUFactory() throws IOException {
+		// contract: when creating a new CU, its destination is consistent with output destination handler
+
+		final File outputDest = Files.createTempDirectory("spoon").toFile();
+
+		final OutputDestinationHandler outputDestinationHandler = new OutputDestinationHandler() {
+			@Override
+			public Path getOutputPath(CtModule module, CtPackage pack, CtType type) {
+				String path = "";
+				if (module != null) {
+					path += module.getSimpleName()+"_";
+
+					if (pack == null && type == null) {
+						path += "module-info.java";
+					}
+				}
+				if (pack != null) {
+					path += pack.getQualifiedName()+"_";
+
+					if (type == null) {
+						path += "package-info.java";
+					}
+				}
+				if (type != null) {
+					path += type.getSimpleName()+".java";
+				}
+				return new File(outputDest, path).toPath();
+			}
+
+			@Override
+			public File getDefaultOutputDirectory() {
+				return outputDest;
+			}
+		};
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.getEnvironment().setOutputDestinationHandler(outputDestinationHandler);
+		Factory factory = launcher.getFactory();
+
+		CtModule module = factory.Module().getOrCreate("simplemodule");
+		CompilationUnit cuModule = factory.CompilationUnit().getOrCreate(module);
+
+		CtPackage ctPackage = factory.Package().getOrCreate("my.beautiful.pack");
+		module.setRootPackage(factory.Package().get("my"));
+
+		CtType ctType = factory.Class().create("my.beautiful.pack.SuperClass");
+
+		CompilationUnit cuClass = factory.CompilationUnit().getOrCreate(ctType);
+		CompilationUnit cuPackage = factory.CompilationUnit().getOrCreate(ctPackage);
+
+		File moduleFile = new File(outputDest.getCanonicalPath(), "simplemodule_module-info.java");
+		File packageFile = new File(outputDest.getCanonicalPath(), "simplemodule_my.beautiful.pack_package-info.java");
+		File classFile = new File(outputDest.getCanonicalPath(), "simplemodule_my.beautiful.pack_SuperClass.java");
+
+		assertEquals(moduleFile, cuModule.getFile());
+		assertEquals(packageFile, cuPackage.getFile());
+		assertEquals(classFile, cuClass.getFile());
+
+		Set<String> units = launcher.getFactory().CompilationUnit().getMap().keySet();
+		assertEquals(3, units.size());
+
+		assertTrue("Module file not contained ("+moduleFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(moduleFile.getCanonicalPath()));
+		assertTrue("Package file not contained ("+packageFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(packageFile.getCanonicalPath()));
+		assertTrue("Class file not contained ("+classFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
 	}
 }

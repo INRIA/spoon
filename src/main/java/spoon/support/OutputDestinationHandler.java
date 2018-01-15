@@ -14,21 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
+package spoon.support;
 
-import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 
-/**
- * This interface defines a filter for program elements.
- *
- * @param <T>
- * 		the type of the filtered elements (an element belonging to the
- * 		filtered element must be assignable from <code>T</code>).
- */
-public interface Filter<T extends CtElement> {
-	/**
-	 * Tells if the given element matches.
-	 * @param element - the element to be checked for a match. Parameter element is never null if {@link Query} is used.
-	 */
-	boolean matches(T element);
+import java.io.File;
+import java.nio.file.Path;
+
+public interface OutputDestinationHandler {
+
+	Path getOutputPath(CtModule module, CtPackage pack, CtType type);
+
+	File getDefaultOutputDirectory();
 }

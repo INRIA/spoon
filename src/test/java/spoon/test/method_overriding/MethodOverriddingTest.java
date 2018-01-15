@@ -46,7 +46,7 @@ public class MethodOverriddingTest {
 
 	private void combine(List<CtMethod> value, int start, BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
 		CtMethod m1 = value.get(start);
-		if(start+1<value.size()) {
+		if(start+1 < value.size()) {
 			for (CtMethod m2 : value.subList(start+1, value.size())) {
 				if(m1.getDeclaringType().isSubtypeOf(m2.getDeclaringType().getReference())) {
 					checkOverride(m1, m2, isOverriding);

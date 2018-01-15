@@ -83,6 +83,7 @@ public class PackageTest {
 	public void testAnnotationOnPackage() throws Exception {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
+
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		launcher.setSourceOutputDirectory("./target/spooned/");

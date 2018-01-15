@@ -229,28 +229,28 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Returns a reference on the short type.
 	 */
-	public CtTypeReference<?> shortType() {
+	public CtTypeReference<Short> shortType() {
 		return SHORT.clone();
 	}
 
 	/**
 	 * Returns a reference on the short primitive type.
 	 */
-	public CtTypeReference<?> shortPrimitiveType() {
+	public CtTypeReference<Short> shortPrimitiveType() {
 		return SHORT_PRIMITIVE.clone();
 	}
 
 	/**
 	 * Returns a reference on the date type.
 	 */
-	public CtTypeReference<?> dateType() {
+	public CtTypeReference<Date> dateType() {
 		return DATE.clone();
 	}
 
 	/**
 	 * Returns a reference on the object type.
 	 */
-	public CtTypeReference<?> objectType() {
+	public CtTypeReference<Object> objectType() {
 		return OBJECT.clone();
 	}
 
