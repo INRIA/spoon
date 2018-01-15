@@ -447,7 +447,7 @@ public class APITest {
 			}
 
 			@Override
-			public File getDefaultOutputDiSetrectory() {
+			public File getDefaultOutputDirectory() {
 				return outputDest;
 			}
 		};
