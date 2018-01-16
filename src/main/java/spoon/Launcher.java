@@ -176,7 +176,7 @@ public class Launcher implements SpoonAPI {
 	 *
 	 * @param inputResources
 	 * 		- Resources to be parsed to build the spoon model.
-	 * @param classpath
+	 * @param sourceClasspath
 	 * 		- Source classpath of the spoon model.
 	 * @param cacheDirectory
 	 * 		- The directory to store all incremental information. If it's empty, full rebuild will be performed.
@@ -243,7 +243,7 @@ public class Launcher implements SpoonAPI {
 	 *
 	 * @param inputResources
 	 * 		- Resources to be parsed to build the spoon model.
-	 * @param classpath
+	 * @param sourceClasspath
 	 * 		- Source classpath of the spoon model.
 	 * @param cacheDirectory
 	 * 		- The directory to store all incremental information. If it's empty, full rebuild will be performed.
