@@ -19,7 +19,7 @@ public class IncrementalBuildTest {
 
 	@Test
 	public void testIncremental() throws Exception {
-		final File TEST_DIR = new File("./src/test/resources/inremental-test");
+		final File TEST_DIR = new File("./src/test/resources/incremental-test");
 		final File PROJECT_DIR = new File(TEST_DIR, "temp");
 
 		FileUtils.deleteDirectory(PROJECT_DIR);
