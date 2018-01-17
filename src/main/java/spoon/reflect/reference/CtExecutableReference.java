@@ -108,7 +108,9 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	boolean isOverriding(CtExecutableReference<?> executable);
 
 	/**
-	 * Returns the executable overridden by this one, if exists (null otherwise).
+	 * Returns the method overridden by this one, if exists (null otherwise).
+	 * The returned method is searched in the superclass hierarchy
+	 * (and not in the super-interfaces).
 	 */
 	@DerivedProperty
 	CtExecutableReference<?> getOverridingExecutable();
