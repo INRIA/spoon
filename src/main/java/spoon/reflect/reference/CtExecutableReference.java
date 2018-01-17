@@ -111,6 +111,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	 * Returns the method overridden by this one, if exists (null otherwise).
 	 * The returned method is searched in the superclass hierarchy
 	 * (and not in the super-interfaces).
+	 * The returned method can be an abstract method from an abstract class, a super implementation, or even a method from Object.
 	 */
 	@DerivedProperty
 	CtExecutableReference<?> getOverridingExecutable();
