@@ -48,6 +48,7 @@ import spoon.test.comment.testclasses.Comment2;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
+import spoon.test.comment.testclasses.OtherJavaDoc;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
 
@@ -128,6 +129,16 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocComment.class);
 		this.testJavaDocComment(type, EOL);
+	}
+
+	@Test
+	public void testJavadocShortAndLongComment() {
+		// contract: in case we cannot determine if it is a short comment, we take the whole content
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>)f.Type().get(OtherJavaDoc.class);
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		assertEquals("A short description without a proper end", classJavaDoc.getShortDescription());
+		assertEquals("A short description without a proper end", classJavaDoc.getLongDescription());
 	}
 
 	@Test
