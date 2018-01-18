@@ -26,6 +26,10 @@
       <mutator>""</mutator>
       <mutator>"A"</mutator>
     </mutators>
+    <excludedTests>
+      <excludedTest>spoon.test.intercession.IntercessionTest</excludedTest>
+      <excludedTest>spoon.test.template.TemplateTest</excludedTest>
+    </excludedTests>
   </configuration>
   <dependencies>
     <dependency>
