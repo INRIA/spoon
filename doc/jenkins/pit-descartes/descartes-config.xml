@@ -29,6 +29,7 @@
     <excludedClasses>
       <excludedClass>spoon.test.intercession.IntercessionTest</excludedClass>
       <excludedClass>spoon.test.template.TemplateTest</excludedClass>
+      <excludedClass>spoon.test.main.MainTest</excludedClass>
     </excludedClasses>
     <verbose>true</verbose>
   </configuration>
