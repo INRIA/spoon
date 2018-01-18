@@ -30,6 +30,7 @@
       <excludedTest>spoon.test.intercession.IntercessionTest</excludedTest>
       <excludedTest>spoon.test.template.TemplateTest</excludedTest>
     </excludedTests>
+    <verbose>true</verbose>
   </configuration>
   <dependencies>
     <dependency>
