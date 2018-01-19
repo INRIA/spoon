@@ -31,6 +31,7 @@
       <excludedClass>spoon.test.template.TemplateTest</excludedClass>
       <excludedClass>spoon.test.main.MainTest</excludedClass>
     </excludedClasses>
+    <timestampedReports>false</timestampedReports>
   </configuration>
   <dependencies>
     <dependency>
