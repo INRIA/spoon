@@ -23,6 +23,7 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -307,7 +308,11 @@ public class Launcher implements SpoonAPI {
 			}
 		}
 
-		// TODO: Remove all empty directories as well
+		// Remove all empty directories
+		Collection<File> dirs = FileUtils.listFilesAndDirs(incrementalCacheDirectory, DirectoryFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+		dirs.stream()
+			.filter(d -> d.exists() && FileUtils.listFiles(d, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).isEmpty())
+			.forEach(FileUtils::deleteQuietly);
 	}
 
 	@Override
