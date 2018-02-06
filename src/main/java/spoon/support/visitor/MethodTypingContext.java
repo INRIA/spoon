@@ -240,7 +240,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 		int idxOfScopeBoundTypeParam = getIndexOfTypeParam(scopeParam.getTypeParameterDeclarer(), scopeBound);
 		if (idxOfScopeBoundTypeParam >= 0) {
 			int idxOfSuperBoundTypeParam = getIndexOfTypeParam(superParam.getTypeParameterDeclarer(), superBound);
-			if (idxOfScopeBoundTypeParam >= 0) {
+			if (idxOfSuperBoundTypeParam >= 0) {
 				/*
 				 * Both type parameters have bound defined as sibling type parameter.
 				 * Do not try to adaptType, because it would end with StackOverflowError
