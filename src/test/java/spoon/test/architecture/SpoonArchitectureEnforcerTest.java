@@ -95,8 +95,11 @@ public class SpoonArchitectureEnforcerTest {
 				&& !t.getSimpleName().startsWith("get")
 				&& !t.getSimpleName().startsWith("set")
 				&& !t.getSimpleName().startsWith("is")
-				&& t.getReference().getOverridingExecutable() == null // only the top declaration should be documented
-				&& t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>50;  // not a trivial method
+				&& t.getTopDefinitions().size() == 0 // only the top declaration should be documented
+				&& (t.hasModifier(ModifierKind.ABSTRACT)
+				//|| t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>50
+				)  // not a trivial method
+		;
 	}
 
 
