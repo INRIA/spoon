@@ -688,7 +688,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
-		if (contextType != null && contextTypeRef.canAccess(declType) == false) {
+		if (contextTypeRef != null && contextTypeRef.canAccess(declType) == false) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
