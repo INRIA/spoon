@@ -95,9 +95,11 @@ public class SpoonArchitectureEnforcerTest {
 				&& !t.getSimpleName().startsWith("get")
 				&& !t.getSimpleName().startsWith("set")
 				&& !t.getSimpleName().startsWith("is")
-				&& t.getTopDefinitions().size() == 0 // only the top declaration should be documented
+				&& !t.getSimpleName().startsWith("add")
+				&& !t.getSimpleName().startsWith("remove")
+				&& t.getTopDefinitions().size() == 0 // only the top declarations should be documented
 				&& (t.hasModifier(ModifierKind.ABSTRACT)
-				//|| t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>50
+				 || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>30
 				)  // not a trivial method
 		;
 	}
