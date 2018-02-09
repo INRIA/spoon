@@ -17,7 +17,8 @@
 
 package spoon.test.filters.testclasses;
 
-public class Tostada extends AbstractTostada {
+
+public class Tostada extends AbstractTostada implements Honey {
 	@Override
 	public ITostada make() {
 		return new Tostada() {
@@ -32,4 +33,18 @@ public class Tostada extends AbstractTostada {
 	@Override
 	public void prepare() {
 	}
+
+	@Override
+	public String toString() {
+		return "";
+	}
+
+	@Override
+	public void honey() {
+
+	}
+}
+
+interface Honey {
+	void honey();
 }

@@ -27,11 +27,13 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -215,6 +217,35 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	@Override
 	public CtMethod<T> clone() {
 		return (CtMethod<T>) super.clone();
+	}
+
+	@Override
+	public Collection<CtMethod<?>> getTopDefinitions() {
+		List<CtMethod<?>> s = new ArrayList<>();
+
+		// first collect potential declarations of this method in the type hierarchy
+		ClassTypingContext context = new ClassTypingContext(this.getDeclaringType());
+		for (Object m : getDeclaringType().map(new AllTypeMembersFunction(CtMethod.class)).list()) {
+			if (m != this && context.isOverriding(this, (CtMethod<?>) m)) {
+				s.add((CtMethod) m);
+			}
+		}
+
+		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
+		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
+		for (CtMethod m1 : s) {
+			ClassTypingContext context2 = new ClassTypingContext(m1.getDeclaringType());
+			boolean m1IsIntermediate = false;
+			for (CtMethod m2 : s) {
+				if (context2.isOverriding(m1, m2)) {
+					m1IsIntermediate = true;
+				}
+			}
+			if (!m1IsIntermediate) {
+				finalMeths.add(m1);
+			}
+		}
+		return finalMeths;
 	}
 
 	@Override
