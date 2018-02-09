@@ -25,5 +25,6 @@ package spoon.reflect.visitor.chain;
  * @param <R> the type of the result of the function
  */
 public interface CtFunction<T, R> {
+	/** Implement this method to transform the input typed by T into an object of type R */
 	R apply(T input);
 }
