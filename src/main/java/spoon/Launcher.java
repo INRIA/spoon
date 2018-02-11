@@ -813,6 +813,7 @@ public class Launcher implements SpoonAPI {
 		ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
 		objectStream.writeObject(binaryFilesMap);
 		objectStream.close();
+		fileStream.close();
 	}
 
 	@Override
