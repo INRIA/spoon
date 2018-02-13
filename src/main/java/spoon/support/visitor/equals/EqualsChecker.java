@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.equals;
 
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtContinue;
@@ -106,6 +107,15 @@ public class EqualsChecker extends CtInheritanceScanner {
 			return;
 		}
 		super.scanCtModifiable(m);
+	}
+
+	@Override
+	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
+		if (!(assignment instanceof CtOperatorAssignment) && this.other instanceof CtOperatorAssignment) {
+			isNotEqual = true;
+			return;
+		}
+		super.visitCtAssignment(assignment);
 	}
 
 	@Override
