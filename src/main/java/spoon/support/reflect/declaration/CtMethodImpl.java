@@ -234,10 +234,9 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
 		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
 		for (CtMethod m1 : s) {
-			ClassTypingContext context2 = new ClassTypingContext(m1.getDeclaringType());
 			boolean m1IsIntermediate = false;
 			for (CtMethod m2 : s) {
-				if (context2.isOverriding(m1, m2)) {
+				if (context.isOverriding(m1, m2)) {
 					m1IsIntermediate = true;
 				}
 			}

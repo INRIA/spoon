@@ -43,6 +43,8 @@ public class Tostada extends AbstractTostada implements Honey {
 	public void honey() {
 
 	}
+
+	public void foo() {}
 }
 
 interface Honey {

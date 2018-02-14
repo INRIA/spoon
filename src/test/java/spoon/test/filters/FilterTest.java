@@ -388,7 +388,7 @@ public class FilterTest {
 
 	@Test
 	public void testgetTopDefinitions() throws Exception {
-		// contract: getTopDefinitions returns the correct answer
+		// contract: getTopDefinitions returns the correct number of definitions
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -415,6 +415,9 @@ public class FilterTest {
 		assertEquals(2, methods.size());
 		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
 		assertEquals("Honey", methods.get(1).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("foo").get(0).getTopDefinitions());
+		assertEquals(0, methods.size());
 	}
 
 	private List<CtMethod<?>> orderByName(Collection<CtMethod<?>> meths) {
