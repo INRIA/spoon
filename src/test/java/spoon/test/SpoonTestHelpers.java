@@ -11,6 +11,7 @@ import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
 import spoon.test.metamodel.SpoonMetaModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class SpoonTestHelpers {
 	}
 
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		return new SpoonMetaModel("src/main/java").getAllInstantiableMetamodelInterfaces();
+		return new SpoonMetaModel(new File("src/main/java")).getAllInstantiableMetamodelInterfaces();
 	}
 
 	/**
