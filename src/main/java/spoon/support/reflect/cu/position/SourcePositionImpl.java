@@ -107,7 +107,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 */
 	int[] lineSeparatorPositions;
 
-	/** The file for this position. */
+	/** The file for this position, same pointer as in the compilation unit, but required for serialization. */
 	private File file;
 
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
