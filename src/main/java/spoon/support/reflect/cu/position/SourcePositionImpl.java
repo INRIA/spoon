@@ -107,9 +107,15 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 */
 	int[] lineSeparatorPositions;
 
+	/** The file for this position, same pointer as in the compilation unit, but required for serialization. */
+	private File file;
+
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		this.compilationUnit = compilationUnit;
+		if (compilationUnit != null) {
+			this.file = compilationUnit.getFile();
+		}
 		this.sourceEnd = sourceEnd;
 		this.sourceStart = sourceStart;
 		this.lineSeparatorPositions = lineSeparatorPositions;
@@ -125,7 +131,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	public File getFile() {
 		if (compilationUnit == null) {
-			return null;
+			return file;
 		}
 		return compilationUnit.getFile();
 	}
