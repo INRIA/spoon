@@ -45,6 +45,8 @@ public class SourcePositionTest {
 
 		CtType<?> type = factory.Type().get("SomeClass");
 		CtType<?> typeFromFile = factoryFromFile.Type().get("SomeClass");
+
+		// Serialized model should have same valid source positions as the original model
 		assertTrue(type.getPosition().getFile().equals(typeFromFile.getPosition().getFile()));
 		assertTrue(type.getPosition().getLine() == typeFromFile.getPosition().getLine());
 		assertTrue(type.getPosition().getColumn() == typeFromFile.getPosition().getColumn());
