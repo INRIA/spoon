@@ -221,8 +221,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
-	interface OnAccessListener {
-		boolean onAccess(char[][] tokens, int index);
+	// an abstract class here is better because the method is actually package-protected, as the type, (and not public as in the case of interface methods in Java)
+	static abstract class OnAccessListener {
+		abstract boolean onAccess(char[][] tokens, int index);
 	}
 
 	class SpoonReferenceBinding extends ReferenceBinding {
