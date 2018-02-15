@@ -277,10 +277,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtExecutableReference setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
 			this.actualTypeArguments = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>();
@@ -290,7 +290,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -445,9 +445,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public CtExecutableReference addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArgument == null) {
-			return (C) this;
+			return this;
 		}
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -455,7 +455,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		actualTypeArgument.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_ARGUMENT, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
-		return (C) this;
+		return this;
 	}
 
 	@Override

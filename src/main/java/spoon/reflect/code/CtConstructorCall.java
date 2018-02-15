@@ -59,7 +59,7 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 	 */
 	@Override
 	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
+	CtConstructorCall setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Delegate to the executable reference of the constructor call.
@@ -68,7 +68,7 @@ public interface CtConstructorCall<T> extends CtTargetedExpression<T, CtExpressi
 	 */
 	@Override
 	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+	CtConstructorCall addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	@Override
 	CtConstructorCall<T> clone();

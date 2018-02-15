@@ -120,14 +120,14 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
-		return (C) this;
+	public CtTypeParameterReference setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return (C) this;
+	public CtTypeParameterReference addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		return this;
 	}
 
 	@Override

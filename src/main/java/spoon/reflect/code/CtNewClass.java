@@ -57,24 +57,6 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	List<CtTypeReference<?>> getActualTypeArguments();
 
 	/**
-	 * Delegate to the executable reference of the new class.
-	 *
-	 * @see CtExecutableReference#getActualTypeArguments()
-	 */
-	@Override
-	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
-
-	/**
-	 * Delegate to the executable reference of the new class.
-	 *
-	 * @see CtExecutableReference#getActualTypeArguments()
-	 */
-	@Override
-	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
-
-	/**
 	 * Gets the created class.
 	 */
 	@PropertyGetter(role = NESTED_TYPE)
