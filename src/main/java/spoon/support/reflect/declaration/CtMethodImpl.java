@@ -225,11 +225,11 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 		// first collect potential declarations of this method in the type hierarchy
 		ClassTypingContext context = new ClassTypingContext(this.getDeclaringType());
-		for (Object m : getDeclaringType().map(new AllTypeMembersFunction(CtMethod.class)).list()) {
-			if (m != this && context.isOverriding(this, (CtMethod<?>) m)) {
-				s.add((CtMethod) m);
+		getDeclaringType().map(new AllTypeMembersFunction(CtMethod.class)).forEach((CtMethod<?> m) -> {
+			if (m != this && context.isOverriding(this, m)) {
+				s.add(m);
 			}
-		}
+		});
 
 		// now removing the intermediate methods for which there exists a definition upper in the hierarchy
 		List<CtMethod<?>> finalMeths = new ArrayList<>(s);
