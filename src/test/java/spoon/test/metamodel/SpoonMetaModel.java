@@ -18,24 +18,29 @@ package spoon.test.metamodel;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
+import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
@@ -344,4 +349,29 @@ public class SpoonMetaModel {
 	public Factory getFactory() {
 		return factory;
 	}
+
+	public List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
+		SpoonAPI interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.buildModel();
+
+		SpoonAPI implementations = new Launcher();
+		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
+		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
+		implementations.addInputResource("src/main/java/spoon/support/reflect/reference");
+		implementations.buildModel();
+
+		List<CtType<? extends CtElement>> result = new ArrayList<>();
+		for(CtType<? > itf : interfaces.getModel().getAllTypes()) {
+			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect")+"Impl";
+			CtType implClass = implementations.getFactory().Type().get(impl);
+			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
+				result.add((CtType<? extends CtElement>) itf);
+			}
+		}
+		return result;
+	}
+
 }
