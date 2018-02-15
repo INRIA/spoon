@@ -44,7 +44,7 @@ class CommentHelper {
 	private CommentHelper() {
 	}
 
-	public static void printComment(PrinterHelper printer, CtComment comment) {
+	static void printComment(PrinterHelper printer, CtComment comment) {
 		List<CtJavaDocTag> tags = null;
 		if (comment instanceof CtJavaDoc) {
 			tags = ((CtJavaDoc) comment).getTags();
@@ -52,7 +52,7 @@ class CommentHelper {
 		printComment(printer, comment.getCommentType(), comment.getContent(), tags);
 	}
 
-	public static void printComment(PrinterHelper printer, CtComment.CommentType commentType, String content, Collection<CtJavaDocTag> javaDocTags) {
+	static void printComment(PrinterHelper printer, CtComment.CommentType commentType, String content, Collection<CtJavaDocTag> javaDocTags) {
 		switch (commentType) {
 		case FILE:
 			printer.write(JAVADOC_START).writeln();
@@ -109,7 +109,7 @@ class CommentHelper {
 		}
 	}
 
-	public static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag) {
+	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag) {
 		printer.write(COMMENT_STAR);
 		printer.write(CtJavaDocTag.JAVADOC_TAG_PREFIX);
 		printer.write(docTag.getType().name().toLowerCase());
