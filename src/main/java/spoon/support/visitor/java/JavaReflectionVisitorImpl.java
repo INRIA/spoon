@@ -187,7 +187,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		this.visitMethod(method, null);
 	}
 
-	public void visitMethod(RtMethod method, Annotation parent) {
+	protected void visitMethod(RtMethod method, Annotation parent) {
 		for (Annotation annotation : method.getDeclaredAnnotations()) {
 			if (parent == null || !annotation.annotationType().equals(parent.annotationType())) {
 				visitAnnotation(annotation);

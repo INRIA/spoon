@@ -173,6 +173,7 @@ public class ZipFolder implements SpoonFolder {
 		throw new UnsupportedOperationException("not possible a real folder");
 	}
 
+	/** physically extracts on disk all files of this zip file in the destinationDir `destDir` */
 	public void extract(File destDir) {
 		ZipInputStream zipInput = null;
 		try {
