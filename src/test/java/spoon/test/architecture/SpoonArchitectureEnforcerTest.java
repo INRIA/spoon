@@ -64,16 +64,16 @@ public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void documentedTest() throws Exception {
-		// the public methods should be documented with an API Javadoc comment
+		// contract: all non-trivial public methods should be documented with API Javadoc
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
 		List<String> notDocumented = new ArrayList<>();
-		for (CtMethod t : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
-			if (isCorrectlyDocumented(t)
+		for (CtMethod method : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
+			if (isNotDocumentedWhildShouldBe(method)
 					) {
-				notDocumented.add(t.getParent(CtType.class).getQualifiedName()+"#"+t.getSimpleName());
+				notDocumented.add(method.getParent(CtType.class).getQualifiedName()+"#"+method.getSimpleName());
 			}
 		}
 		if (!notDocumented.isEmpty()) {
@@ -85,26 +85,20 @@ public class SpoonArchitectureEnforcerTest {
 
 	}
 
-	private boolean isCorrectlyDocumented(CtMethod t) {
-		// pb: need getOverriddenMethod in CtMethod
-
-		// pb: need getAllSuperClasses
-		// need getAllSuperInterfaces
-		// need getAllSuperTypes
-
-		// pb: bug in getOverridingExecutable
+	private boolean isNotDocumentedWhildShouldBe(CtMethod t) {
 		return t.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
-				&& t.getDocComment().length()<10 // less than 10 characters
-				&& !t.getSimpleName().startsWith("get")
+				&& t.getDocComment().length()<10 // less than 10 characters of Javadoc API, that's too short, sorry!
+				&& !t.getSimpleName().startsWith("get") // setters can be undocumented
 				&& !t.getSimpleName().startsWith("set")
 				&& !t.getSimpleName().startsWith("is")
 				&& !t.getSimpleName().startsWith("add")
 				&& !t.getSimpleName().startsWith("remove")
 				&& t.getTopDefinitions().size() == 0 // only the top declarations should be documented
-				&& (t.hasModifier(ModifierKind.ABSTRACT) // all interface methods should be documented
-				 || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>40  // trivial methods can be skipped
+				&& (
+				     t.hasModifier(ModifierKind.ABSTRACT) // all interface methods should be documented
+				  || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>40  // only large methods should be documented, trivial methods can be skipped
 				)
-		;
+				;
 	}
 
 
