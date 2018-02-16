@@ -77,7 +77,10 @@ public class SpoonArchitectureEnforcerTest {
 			}
 		}
 		if (!notDocumented.isEmpty()) {
-			fail("this method should be documented  ("+notDocumented.size()+"): "+notDocumented.toString());
+			for (String m : notDocumented) {
+				System.err.println(m);
+			}
+			fail("some methods should be documented  ("+notDocumented.size()+")");
 		}
 
 	}
@@ -90,17 +93,17 @@ public class SpoonArchitectureEnforcerTest {
 		// need getAllSuperTypes
 
 		// pb: bug in getOverridingExecutable
-		return t.hasModifier(ModifierKind.PUBLIC)
-				&& t.getDocComment().length()<10 // less than 10 characters is indeed small
+		return t.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
+				&& t.getDocComment().length()<10 // less than 10 characters
 				&& !t.getSimpleName().startsWith("get")
 				&& !t.getSimpleName().startsWith("set")
 				&& !t.getSimpleName().startsWith("is")
 				&& !t.getSimpleName().startsWith("add")
 				&& !t.getSimpleName().startsWith("remove")
 				&& t.getTopDefinitions().size() == 0 // only the top declarations should be documented
-				&& (t.hasModifier(ModifierKind.ABSTRACT)
-				 || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>30
-				)  // not a trivial method
+				&& (t.hasModifier(ModifierKind.ABSTRACT) // all interface methods should be documented
+				 || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>40  // trivial methods can be skipped
+				)
 		;
 	}
 

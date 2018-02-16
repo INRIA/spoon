@@ -41,6 +41,7 @@ public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
 	public boolean biScan(Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 		return biScan(null,  elements, others);
 	}
+
 	public boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 		if (isNotEqual) {
 			return isNotEqual;
