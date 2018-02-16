@@ -33,4 +33,8 @@ public abstract class AbstractTostada implements ITostada {
 	}
 
 	public abstract void prepare();
+
+	public void honey() {
+
+	}
 }
