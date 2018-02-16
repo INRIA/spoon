@@ -804,9 +804,9 @@ public class Launcher implements SpoonAPI {
 	private static void saveBinaryFilesMap(CompilationUnitFactory factory, File file) throws IOException {
 		Map<String, List<File>> binaryFilesMap = new HashMap<>();
 		Map<String, CompilationUnit> map = factory.getMap();
-		
+
 		//TODO: Actually, here we need to merge the old map with current map.
-		
+
 		for (Entry<String, CompilationUnit> e : map.entrySet()) {
 			binaryFilesMap.put(e.getKey(), e.getValue().getBinaryFiles());
 		}
