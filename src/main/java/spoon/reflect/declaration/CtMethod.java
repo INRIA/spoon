@@ -19,6 +19,8 @@ package spoon.reflect.declaration;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.util.Collection;
+
 import static spoon.reflect.path.CtRole.IS_DEFAULT;
 
 
@@ -50,4 +52,11 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalType
 
 	@Override
 	CtMethod<T> clone();
+
+	/**
+	 * Returns the top-most methods in the hierarchy defining this method
+	 * (in super class and super interfaces).
+	 * Returns the empty collection if defined here for the first time.
+	 */
+	Collection<CtMethod<?>> getTopDefinitions();
 }
