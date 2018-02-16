@@ -19,81 +19,15 @@ package spoon.reflect.visitor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-
 /**
- * This abstract bi scanner class declares all scan methods useful for CtBiScannerDefault
+ * Defines the core bi-scan responsibility.
  */
 public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
-	protected Deque<CtElement> stack = new ArrayDeque<>();
 
-	protected void enter(CtElement e) {
-	}
+	/** This method is called to compare `element` and `other` when traversing two trees in parallel.*/
+	public abstract boolean biScan(CtElement element, CtElement other);
 
-	protected void exit(CtElement e) {
-	}
+	/** This method is called to compare `element` and `other` according to the role when traversing two trees in parallel. */
+	public abstract boolean biScan(CtRole role, CtElement element, CtElement other);
 
-	protected boolean isNotEqual = false;
-
-	public boolean biScan(Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
-		return biScan(null,  elements, others);
-	}
-	public boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (elements == null) {
-			if (others != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (others == null) {
-			return fail();
-		}
-		if ((elements.size()) != (others.size())) {
-			return fail();
-		}
-		for (Iterator<? extends CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
-			biScan(role, firstIt.next(), secondIt.next());
-		}
-		return isNotEqual;
-	}
-
-	public boolean biScan(CtRole role, CtElement element, CtElement other) {
-		return biScan(element, other);
-	}
-	public boolean biScan(CtElement element, CtElement other) {
-		if (isNotEqual) {
-			return isNotEqual;
-		}
-		if (element == null) {
-			if (other != null) {
-				return fail();
-			}
-			return isNotEqual;
-		} else if (other == null) {
-			return fail();
-		}
-		if (element == other) {
-			return isNotEqual;
-		}
-
-		stack.push(other);
-		try {
-			element.accept(this);
-		} catch (java.lang.ClassCastException e) {
-			return fail();
-		} finally {
-			stack.pop();
-		}
-		return isNotEqual;
-	}
-
-	public boolean fail() {
-		isNotEqual = true;
-		return true;
-	}
 }

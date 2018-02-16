@@ -19,7 +19,10 @@ package spoon.support.visitor.equals;
 
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtBiScannerDefault;
+
+import java.util.Collection;
 
 /**
  * Used to check equality between an element and another one.
@@ -41,5 +44,60 @@ public class EqualsVisitor extends CtBiScannerDefault {
 			fail();
 		}
 	}
+	protected boolean isNotEqual = false;
+
+	@Override
+	protected boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+		if (isNotEqual) {
+			return isNotEqual;
+		}
+		if (elements == null) {
+			if (others != null) {
+				return fail();
+			}
+			return isNotEqual;
+		} else if (others == null) {
+			return fail();
+		}
+		if ((elements.size()) != (others.size())) {
+			return fail();
+		}
+		super.biScan(role, elements, others);
+		return isNotEqual;
+	}
+
+	@Override
+	public boolean biScan(CtElement element, CtElement other) {
+		if (isNotEqual) {
+			return isNotEqual;
+		}
+		if (element == null) {
+			if (other != null) {
+				return fail();
+			}
+			return isNotEqual;
+		} else if (other == null) {
+			return fail();
+		}
+		if (element == other) {
+			return isNotEqual;
+		}
+
+		stack.push(other);
+		try {
+			element.accept(this);
+		} catch (java.lang.ClassCastException e) {
+			return fail();
+		} finally {
+			stack.pop();
+		}
+		return isNotEqual;
+	}
+
+	private boolean fail() {
+		isNotEqual = true;
+		return true;
+	}
+
 }
 

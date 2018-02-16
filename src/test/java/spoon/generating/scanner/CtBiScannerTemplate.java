@@ -16,7 +16,14 @@
  */
 package spoon.generating.scanner;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtAbstractBiScanner;
+
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Iterator;
 
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
@@ -28,5 +35,29 @@ import spoon.reflect.visitor.CtAbstractBiScanner;
  *
  * Is used by EqualsVisitor.
  */
-abstract class CtBiScannerTemplate extends CtAbstractBiScanner {
+class CtBiScannerTemplate extends CtAbstractBiScanner {
+	protected Deque<CtElement> stack = new ArrayDeque<>();
+
+	protected void enter(CtElement e) {
+	}
+
+	protected void exit(CtElement e) {
+	}
+
+	public boolean biScan(CtElement element, CtElement other) {
+		return true;
+	}
+
+	public boolean biScan(CtRole role, CtElement element, CtElement other) {
+		biScan(element, other);
+		return true;
+	}
+
+	protected boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+		for (Iterator<? extends CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
+			biScan(role, firstIt.next(), secondIt.next());
+		}
+		return true;
+	}
+
 }
