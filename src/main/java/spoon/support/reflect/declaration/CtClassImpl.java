@@ -104,6 +104,9 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		Set<CtConstructor<T>> constructors = new SignatureBasedSortedSet<>();
 		for (CtTypeMember typeMember : typeMembers) {
 			if (typeMember instanceof CtConstructor) {
+				if (constructors.contains(typeMember)) {
+					throw new SpoonException("ooops, impossible to have two constructors with the same signature");
+				}
 				constructors.add((CtConstructor<T>) typeMember);
 			}
 		}
