@@ -85,6 +85,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		return contexts.pop();
 	}
 
+	/** transforms a java.lang.Class into a CtType (ie a shadow type in Spoon's parlance) */
 	public <T, R extends CtType<T>> R scan(Class<T> clazz) {
 		CtPackage ctPackage;
 		CtType<?> ctEnclosingClass;
