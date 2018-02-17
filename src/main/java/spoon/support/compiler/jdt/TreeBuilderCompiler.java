@@ -36,7 +36,8 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
 	}
 
-	public CompilationUnitDeclaration[] buildUnits(CompilationUnit[] sourceUnits) {
+	// this method is not meant to be in the public API
+	protected CompilationUnitDeclaration[] buildUnits(CompilationUnit[] sourceUnits) {
 
 		// //////////////////////////////////////////////////////////////////////////
 		// This code is largely inspired from JDT's
