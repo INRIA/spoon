@@ -69,7 +69,7 @@ if (action in accepted_actions):
             # login is "spoon-bot" by default
             if comment.user.login == login:
                 comment.delete()
-        pr.create_comment(file_content)
+        pr.create_issue_comment(file_content)
     except GithubException as e:
         print "Error while creating the PR comment."
         print e
