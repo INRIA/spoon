@@ -66,9 +66,9 @@ if (action in accepted_actions):
 
         pr = repo.get_pull(pr_id)
         for comment in pr.get_issue_comments():
-            print comment.user.login, login
             # login is "spoon-bot" by default
             if comment.user.login == login:
+                print "deleted ",comment
                 comment.delete()
         pr.create_issue_comment(file_content)
     except GithubException as e:
