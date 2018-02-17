@@ -58,7 +58,7 @@ New API: **<#list analysis.newApi.archives as archive>${archive.name}<#sep>, </#
 
 <#list reports as report>
 <#list report.differences as diff>
-| Description | ${diff.description!"none"} |
+|     | ${diff.description!"none"} |
 | :---: | :---: |
 | Old | <#if report.oldElement??><@pretty element=report.oldElement/><#else>none</#if> |
 | New | <#if report.newElement??><@pretty element=report.newElement/><#else>none</#if> |
