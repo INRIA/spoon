@@ -45,13 +45,17 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 	protected void exit(CtElement e) {
 	}
 
-	public boolean biScan(CtElement element, CtElement other) {
-		return true;
+	public void biScan(CtElement element, CtElement other) {
+		stack.push(other);
+		try {
+			element.accept(this);
+		} finally {
+			stack.pop();
+		}
 	}
 
-	public boolean biScan(CtRole role, CtElement element, CtElement other) {
+	public void biScan(CtRole role, CtElement element, CtElement other) {
 		biScan(element, other);
-		return true;
 	}
 
 	protected boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {

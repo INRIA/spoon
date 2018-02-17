@@ -138,7 +138,7 @@ public class MainTest {
 	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
 		class ActualCounterScanner extends CtBiScannerDefault {
 			@Override
-			public boolean biScan(CtElement element, CtElement other) {
+			public void biScan(CtElement element, CtElement other) {
 				if (element == null) {
 					if (other != null) {
 						Assert.fail("element can't be null if other isn't null.");
@@ -149,7 +149,7 @@ public class MainTest {
 					assertEquals(element, other);
 					assertFalse(element == other);
 				}
-				return super.biScan(element, other);
+				super.biScan(element, other);
 			}
 		}
 		final ActualCounterScanner actual = new ActualCounterScanner();

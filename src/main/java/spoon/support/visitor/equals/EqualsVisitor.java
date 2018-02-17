@@ -30,7 +30,11 @@ import java.util.Collection;
  */
 public class EqualsVisitor extends CtBiScannerDefault {
 	public static boolean equals(CtElement element, CtElement other) {
-		return !new EqualsVisitor().biScan(element, other);
+		EqualsVisitor equalsVisitor = new EqualsVisitor();
+		equalsVisitor.biScan(element, other);
+
+		// double negation is always hard to understand, but this is legacy :-)
+		return !equalsVisitor.isNotEqual;
 	}
 
 	private final EqualsChecker checker = new EqualsChecker();
@@ -67,31 +71,31 @@ public class EqualsVisitor extends CtBiScannerDefault {
 	}
 
 	@Override
-	public boolean biScan(CtElement element, CtElement other) {
+	public void biScan(CtElement element, CtElement other) {
 		if (isNotEqual) {
-			return isNotEqual;
+			return;
 		}
 		if (element == null) {
 			if (other != null) {
-				return fail();
+				fail();
+				return;
 			}
-			return isNotEqual;
+			return;
 		} else if (other == null) {
-			return fail();
+			fail();
+			return;
 		}
 		if (element == other) {
-			return isNotEqual;
+			return;
 		}
 
-		stack.push(other);
 		try {
-			element.accept(this);
+			super.biScan(element, other);
 		} catch (java.lang.ClassCastException e) {
-			return fail();
-		} finally {
-			stack.pop();
+			fail();
 		}
-		return isNotEqual;
+
+		return;
 	}
 
 	private boolean fail() {

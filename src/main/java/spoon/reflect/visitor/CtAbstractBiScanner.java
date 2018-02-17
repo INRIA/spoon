@@ -25,9 +25,9 @@ import spoon.reflect.path.CtRole;
 public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
 
 	/** This method is called to compare `element` and `other` when traversing two trees in parallel.*/
-	public abstract boolean biScan(CtElement element, CtElement other);
+	public abstract void biScan(CtElement element, CtElement other);
 
 	/** This method is called to compare `element` and `other` according to the role when traversing two trees in parallel. */
-	public abstract boolean biScan(CtRole role, CtElement element, CtElement other);
+	public abstract void biScan(CtRole role, CtElement element, CtElement other);
 
 }
