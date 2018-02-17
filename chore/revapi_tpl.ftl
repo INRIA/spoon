@@ -24,8 +24,8 @@
 </#compress></#macro>
 <#--
     A short representation of an element (works directly on javax.lang.model.element.Element instances).
-    Types are represented by their simple names, methods like type#method(param, types), fields and enum constants
-    like type.name and method parameters like type#method(p1, ===p2===) where p2 is the parameter we want to reference.
+    Types are represented by their simple names, methods like type::method(param, types), fields and enum constants
+    like type.name and method parameters like type::method(p1, ===p2===) where p2 is the parameter we want to reference.
 
     This is mostly equivalent to the way Revapi formats the elements with the exception that the types are not fully
     qualified and type parameters are omitted.
@@ -36,11 +36,11 @@
         <#case "INTERFACE"><@typeName declaringElement=declaringElement/><#break>
         <#case "ANNOTATION_TYPE"><@typeName declaringElement=declaringElement/><#break>
         <#case "ENUM"><@typeName declaringElement=declaringElement/><#break>
-        <#case "METHOD"><@short declaringElement=declaringElement.enclosingElement/>#${declaringElement.simpleName}(<#list declaringElement.parameters as param><@typeName declaringElement=param?api.asType()?api.asElement()/><#sep>, </#list>)<#break>
-        <#case "CONSTRUCTOR"><@short declaringElement=declaringElement.enclosingElement/>#${declaringElement.simpleName}(<#list declaringElement.parameters as param><@typeName declaringElement=param?api.asType()?api.asElement()/><#sep>, </#list>)<#break>
+        <#case "METHOD"><@short declaringElement=declaringElement.enclosingElement/>::${declaringElement.simpleName}(<#list declaringElement.parameters as param><@typeName declaringElement=param?api.asType()?api.asElement()/><#sep>, </#list>)<#break>
+        <#case "CONSTRUCTOR"><@short declaringElement=declaringElement.enclosingElement/>::${declaringElement.simpleName}(<#list declaringElement.parameters as param><@typeName declaringElement=param?api.asType()?api.asElement()/><#sep>, </#list>)<#break>
         <#case "ENUM_CONSTANT"><@short declaringElement=declaringElement.enclosingElement/>.${declaringElement.simpleName}<#break>
         <#case "FIELD"><@short declaringElement=declaringElement.enclosingElement/>.${declaringElement.simpleName}<#break>
-        <#case "PARAMETER"><@short declaringElement=declaringElement.enclosingElement.enclosingElement/>#${declaringElement.enclosingElement.simpleName}(<#list declaringElement.enclosingElement.parameters as param><#if param==declaringElement>===<@typeName declaringElement=param?api.asType()?api.asElement()/>===<#else><@typeName declaringElement=param?api.asType()?api.asElement()/></#if><#sep>, </#list>)<#break>
+        <#case "PARAMETER"><@short declaringElement=declaringElement.enclosingElement.enclosingElement/>::${declaringElement.enclosingElement.simpleName}(<#list declaringElement.enclosingElement.parameters as param><#if param==declaringElement>===<@typeName declaringElement=param?api.asType()?api.asElement()/>===<#else><@typeName declaringElement=param?api.asType()?api.asElement()/></#if><#sep>, </#list>)<#break>
         <#default>${declaringElement.simpleName}
     </#switch>
 </#compress></#macro>
@@ -55,9 +55,7 @@
 -->
 API changes: ${reports?size} (Detected by [Revapi](https://github.com/revapi/revapi/))
 
-Old API: <#list analysis.oldApi.archives as archive>${archive.name}<#sep>, </#list>
-
-New API: <#list analysis.newApi.archives as archive>${archive.name}<#sep>, </#list>
+Old API: <#list analysis.oldApi.archives as archive>${archive.name}<#sep>, </#list> / New API: <#list analysis.newApi.archives as archive>${archive.name}<#sep>, </#list>
 
 <#list reports as report>
 <#list report.differences as diff>
