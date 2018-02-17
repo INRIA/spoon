@@ -45,6 +45,9 @@ class CtBiScannerTemplate extends CtAbstractBiScanner {
 	}
 
 	public void biScan(CtElement element, CtElement other) {
+		if (other == null) {
+			return;
+		}
 		stack.push(other);
 		try {
 			element.accept(this);
