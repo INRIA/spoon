@@ -233,6 +233,7 @@ public class PrinterHelper {
 		return (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 	}
 
+	/** writes as many newlines as needed to align the line number again between the element position and the current line number */
 	public PrinterHelper adjustStartPosition(CtElement e) {
 		if (e.getPosition() != null && !e.isImplicit() && !(e.getPosition() instanceof NoSourcePosition)) {
 			// we should add some lines

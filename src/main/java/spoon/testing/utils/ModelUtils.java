@@ -96,14 +96,17 @@ public final class ModelUtils {
 		return build(classToBuild).Type().get(classToBuild);
 	}
 
+	/** checks that the file `outputDirectoryFile` can be parsed with Spoon , given a compliance level. */
 	public static void canBeBuilt(File outputDirectoryFile, int complianceLevel) {
 		canBeBuilt(outputDirectoryFile, complianceLevel, false);
 	}
 
+	/** checks that the file at path `outputDirectory` can be parsed with Spoon , given a compliance level. */
 	public static void canBeBuilt(String outputDirectory, int complianceLevel) {
 		canBeBuilt(outputDirectory, complianceLevel, false);
 	}
 
+	/** checks that the file `outputDirectoryFile` can be parsed with Spoon , given a compliance level and the noclasspath option. */
 	public static void canBeBuilt(File outputDirectoryFile, int complianceLevel, boolean noClasspath) {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
@@ -120,6 +123,7 @@ public final class ModelUtils {
 		}
 	}
 
+	/** checks that the file at path `outputDirectory` can be parsed with Spoon , given a compliance level and noclasspath option. */
 	public static void canBeBuilt(String outputDirectory, int complianceLevel, boolean noClasspath) {
 		canBeBuilt(new File(outputDirectory), complianceLevel, noClasspath);
 	}

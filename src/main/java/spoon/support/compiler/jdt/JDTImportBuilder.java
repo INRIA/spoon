@@ -54,7 +54,10 @@ class JDTImportBuilder {
 		this.imports = new HashSet<>();
 	}
 
-	public void build() {
+	// package visible method in a package visible class, not in the public API
+	void build() {
+		// sets the imports of the Spoon compilation unit corresponding to `declarationUnit`
+
 		if (declarationUnit.imports == null || declarationUnit.imports.length == 0) {
 			return;
 		}
