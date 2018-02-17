@@ -93,6 +93,7 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**  writes the modifiers of this modifiable in a specific order */
 	public void writeModifiers(CtModifiable modifiable) {
 		// write the modifiers according to the convention on order
 		List<String> firstPosition = new ArrayList<>(); // visibility: public, private, protected
@@ -139,6 +140,7 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/** writes the implemented interfaces with a ListPrinter */
 	public void writeImplementsClause(CtType<?> type) {
 		if (type.getSuperInterfaces().size() > 0) {
 			printer.writeSpace().writeKeyword("implements").writeSpace();
@@ -160,6 +162,7 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/** writes the thrown exception with a ListPrinter */
 	public void writeThrowsClause(CtExecutable<?> executable) {
 		if (executable.getThrownTypes().size() > 0) {
 			printer.writeSpace().writeKeyword("throws").writeSpace();
@@ -286,6 +289,7 @@ public class ElementPrinterHelper {
 		return importType.matches("^(java\\.lang\\.)[^.]*$");
 	}
 
+	/** writes the imports in a specific order (eg all static imports together */
 	public void writeImports(Collection<CtImport> imports) {
 		Set<String> setImports = new HashSet<>();
 		Set<String> setStaticImports = new HashSet<>();
@@ -447,6 +451,7 @@ public class ElementPrinterHelper {
 		return commentsToPrint;
 	}
 
+	/** write all non-implicit parts of a block, with special care for indentation */
 	public void writeIfOrLoopBlock(CtStatement block) {
 		if (block != null) {
 			if (!block.isImplicit() && (block instanceof CtBlock || block instanceof CtIf)) {
