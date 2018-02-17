@@ -57,11 +57,10 @@ class CtBiScannerTemplate extends CtAbstractBiScanner {
 		biScan(element, other);
 	}
 
-	protected boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+	protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 		for (Iterator<? extends CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
 			biScan(role, firstIt.next(), secondIt.next());
 		}
-		return true;
 	}
 
 }

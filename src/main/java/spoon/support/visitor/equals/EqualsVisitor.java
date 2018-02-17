@@ -51,23 +51,25 @@ public class EqualsVisitor extends CtBiScannerDefault {
 	protected boolean isNotEqual = false;
 
 	@Override
-	protected boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+	protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+
 		if (isNotEqual) {
-			return isNotEqual;
+			return;
 		}
 		if (elements == null) {
 			if (others != null) {
-				return fail();
+				fail();
 			}
-			return isNotEqual;
+			return;
 		} else if (others == null) {
-			return fail();
+			fail();
+			return;
 		}
 		if ((elements.size()) != (others.size())) {
-			return fail();
+			fail();
+			return;
 		}
 		super.biScan(role, elements, others);
-		return isNotEqual;
 	}
 
 	@Override
