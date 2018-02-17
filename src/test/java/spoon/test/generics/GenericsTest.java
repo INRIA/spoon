@@ -809,7 +809,9 @@ public class GenericsTest {
 
 		// spoon.test.generics.testclasses.Tacos<K, java.lang.String>.Burritos<K, V>
 		CtTypeReference<?> burritosRef = factory.getModel().filterChildren(new NamedElementFilter(CtVariable.class, "burritos")).first(CtVariable.class).getType();
-		assertEquals(true, burritosRef.isGenerics());
+		// now that the order of type members is correct
+		// this burritos is indeed "IBurritos<?, ?> burritos = new Burritos<>()" with no generics
+		assertEquals(false, burritosRef.isGenerics());
 
 		// int
 		CtTypeReference<?> nbTacosRef = factory.getModel().filterChildren(new NamedElementFilter(CtVariable.class, "nbTacos")).first(CtVariable.class).getType();
