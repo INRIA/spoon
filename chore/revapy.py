@@ -65,7 +65,7 @@ if (action in accepted_actions):
         repo = gh.get_repo(repo_name,True)
 
         pr = repo.get_pull(pr_id)
-        for comment in pr.get_comments():
+        for comment in pr.get_issue_comments():
             # login is "spoon-bot" by default
             if comment.user.login == login:
                 comment.delete()
