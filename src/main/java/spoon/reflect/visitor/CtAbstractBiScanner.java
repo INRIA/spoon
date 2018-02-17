@@ -38,9 +38,10 @@ public abstract class CtAbstractBiScanner extends CtAbstractVisitor {
 
 	protected boolean isNotEqual = false;
 
-	public boolean biScan(Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
-		return biScan(null,  elements, others);
-	}
+	// deleting for triggering a revapi report
+	//public boolean biScan(Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+	//	return biScan(null,  elements, others);
+	//}
 	public boolean biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 		if (isNotEqual) {
 			return isNotEqual;
