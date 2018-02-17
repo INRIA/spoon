@@ -58,12 +58,10 @@ New API: **<#list analysis.newApi.archives as archive>${archive.name}<#sep>, </#
 
 <#list reports as report>
 <#list report.differences as diff>
-| Name | Change ${report?index+1} |
+| Description | ${diff.description!"none"} |
 | :---: | :---: |
 | Old | <#if report.oldElement??><@pretty element=report.oldElement/><#else>none</#if> |
 | New | <#if report.newElement??><@pretty element=report.newElement/><#else>none</#if> |
-| Code | ${diff.code} |
-| Description | ${diff.description!"none"} |
 | Breaking | <#list diff.classification?keys as compat><#if compat?lower_case=="binary">${compat?lower_case}: ${diff.classification?api.get(compat)?lower_case}<#sep>, </#if></#list> |
 </#list>
 <#sep>
