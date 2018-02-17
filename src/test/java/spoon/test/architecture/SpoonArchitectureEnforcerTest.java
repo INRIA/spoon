@@ -71,7 +71,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.buildModel();
 		List<String> notDocumented = new ArrayList<>();
 		for (CtMethod method : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
-			if (isNotDocumentedWhildShouldBe(method)
+			if (isNotDocumentedWhileItShouldBe(method)
 					) {
 				notDocumented.add(method.getParent(CtType.class).getQualifiedName()+"#"+method.getSimpleName());
 			}
@@ -80,15 +80,15 @@ public class SpoonArchitectureEnforcerTest {
 			for (String m : notDocumented) {
 				System.err.println(m);
 			}
-			fail("some methods should be documented  ("+notDocumented.size()+")");
+			fail(notDocumented.size()+" public methods should be documented with proper API documentation");
 		}
 
 	}
 
-	private boolean isNotDocumentedWhildShouldBe(CtMethod t) {
+	private boolean isNotDocumentedWhileItShouldBe(CtMethod t) {
 		return t.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
-				&& t.getDocComment().length()<10 // less than 10 characters of Javadoc API, that's too short, sorry!
-				&& !t.getSimpleName().startsWith("get") // setters can be undocumented
+				&& t.getDocComment().length()<5 // the Javadoc is too short, sorry!
+				&& !t.getSimpleName().startsWith("get") // all kinds of setters can be undocumented
 				&& !t.getSimpleName().startsWith("set")
 				&& !t.getSimpleName().startsWith("is")
 				&& !t.getSimpleName().startsWith("add")
@@ -96,7 +96,7 @@ public class SpoonArchitectureEnforcerTest {
 				&& t.getTopDefinitions().size() == 0 // only the top declarations should be documented
 				&& (
 				     t.hasModifier(ModifierKind.ABSTRACT) // all interface methods should be documented
-				  || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>40  // only large methods should be documented, trivial methods can be skipped
+				  || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>35  // only large methods should be documented, trivial methods can be skipped
 				)
 				;
 	}
