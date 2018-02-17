@@ -142,7 +142,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	// this test contains all the architectural rules that are valid for the whole src/main/java
-	// we put them in the same test in order to only build the full moedl once
+	// we put them in the same test in order to only build the full model once
 	@Test
 	public void testSrcMainJava() throws Exception {
 		Launcher spoon = new Launcher();
@@ -152,7 +152,7 @@ public class SpoonArchitectureEnforcerTest {
 		// contract: all non-trivial public methods should be documented with proper API Javadoc
 		spoon.buildModel();
 		List<String> notDocumented = new ArrayList<>();
-		for (CtMethod method : spoon.getFactory().Package().getRootPackage().filterChildren( x -> x instanceof CtMethod).list(CtMethod.class)) {
+		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
 			if (isNotDocumentedWhileItShouldBe(method)) {
 				notDocumented.add(method.getParent(CtType.class).getQualifiedName()+"#"+method.getSignature());
 			}
