@@ -37,6 +37,7 @@ public final class ModelUtils {
 		return new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 	}
 
+	/** Utility method for testing: creates the model of `packageName` from src/test/java and returns the CtType corresponding to `className` */
 	public static <T extends CtType<?>> T build(String packageName, String className) throws Exception {
 		SpoonModelBuilder comp = new Launcher().createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + packageName.replace('.', '/') + "/" + className + ".java"));
@@ -44,6 +45,7 @@ public final class ModelUtils {
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
 
+	/** Utility method for testing: creates the model of `packageName` and the factory from src/test/java and returns the CtType corresponding to `className` */
 	public static <T extends CtType<?>> T build(String packageName, String className, final Factory f) throws Exception {
 		Launcher launcher = new Launcher() {
 			@Override
@@ -57,6 +59,7 @@ public final class ModelUtils {
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
 
+	/** Utility method for testing: creates the model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
 		SpoonModelBuilder comp = new Launcher().createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
@@ -66,6 +69,7 @@ public final class ModelUtils {
 		return comp.getFactory();
 	}
 
+	/** Utility method for testing: creates the noclasspath model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory buildNoClasspath(Class<?>... classesToBuild) throws Exception {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -77,6 +81,7 @@ public final class ModelUtils {
 		return comp.getFactory();
 	}
 
+	/** Builds the Spoon mode of the `filesToBuild` given as parameter */
 	public static Factory build(File... filesToBuild) {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -92,6 +97,7 @@ public final class ModelUtils {
 		return comp.getFactory();
 	}
 
+	/** Builds and returns the Spoon model of `` classToBuild */
 	public static <T> CtType<T> buildClass(Class<T> classToBuild) throws Exception {
 		return build(classToBuild).Type().get(classToBuild);
 	}
