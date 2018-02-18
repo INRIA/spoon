@@ -154,7 +154,7 @@ public class SpoonArchitectureEnforcerTest {
 				// OK it should be properly documented
 
 				// is it really well documented?
-				if (method.getDocComment().length() < 1) { // the Javadoc is too short, sorry!
+				if (method.getDocComment().length() <= 15) { // the Javadoc must be at least at least 15 characters (still pretty short...)
 					notDocumented.add(method.getParent(CtType.class).getQualifiedName() + "#" + method.getSignature());
 				}
 			}

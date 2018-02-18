@@ -76,7 +76,7 @@ public void testDocumentation() throws Exception {
                 && method.getTopDefinitions().size() == 0 // optional: only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
             )) {
                     // is it really well documented?
-                    if (method.getDocComment().length() < 1) {
+                    if (method.getDocComment().length() < 20) { // at least 20 characters
                             notDocumented.add(method.getParent(CtType.class).getQualifiedName() + "#" + method.getSignature());
                     }
             }
