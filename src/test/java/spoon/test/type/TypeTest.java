@@ -31,7 +31,9 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -39,10 +41,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
+import spoon.test.type.testclasses.TypeMembersOrder;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -370,5 +375,35 @@ public class TypeTest {
 			assertTrue(ctMethod.getBody().getStatements().isEmpty());
 		}
 
+	}
+
+	@Test
+	public void testTypeMemberOrder() throws Exception {
+		// contract: The TypeMembers keeps order of members same like in source file 
+		final String target = "./target/type";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses/TypeMembersOrder.java");
+		launcher.setSourceOutputDirectory(target);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.run();
+
+		Factory f = launcher.getFactory();
+		final CtClass<?> aTypeMembersOrder = f.Class().get(TypeMembersOrder.class);
+		{
+			List<String> typeMemberNames = new ArrayList<>();
+			for (CtTypeMember typeMember : aTypeMembersOrder.getTypeMembers()) {
+				typeMemberNames.add(typeMember.getSimpleName());
+			}
+			assertEquals(Arrays.asList("<init>", "method1", "field2", "TypeMembersOrder", "method4", "field5", "", "nestedType6", "field7", "method8"), typeMemberNames);
+		}
+		{
+			//contract: newly added type member is at the end
+			f.createMethod(aTypeMembersOrder, Collections.singleton(ModifierKind.PUBLIC), f.Type().voidType(), "method9", Collections.emptyList(), Collections.emptySet());
+			List<String> typeMemberNames = new ArrayList<>();
+			for (CtTypeMember typeMember : aTypeMembersOrder.getTypeMembers()) {
+				typeMemberNames.add(typeMember.getSimpleName());
+			}
+			assertEquals(Arrays.asList("<init>", "method1", "field2", "TypeMembersOrder", "method4", "field5", "", "nestedType6", "field7", "method8", "method9"), typeMemberNames);
+		}
 	}
 }

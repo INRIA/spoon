@@ -46,6 +46,11 @@ public class SortedList<E> extends LinkedList<E> {
 	}
 
 	@Override
+	public void add(int index, E element) {
+		throw new IllegalArgumentException("cannot force a position with a sorted list that has its own ordering");
+	}
+
+	@Override
 	public boolean addAll(Collection<? extends E> c) {
 		boolean ret = true;
 		for (E e : c) {
