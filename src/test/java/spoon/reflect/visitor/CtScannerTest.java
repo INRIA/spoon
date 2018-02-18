@@ -173,7 +173,7 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && !mmField.getItemValueType().isSubtypeOf(ctRefRef)) {
+				if(getter.getName().equals("getComments") && leafMmType.getModelInterface().isSubtypeOf(ctRefRef)) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}

@@ -910,6 +910,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(ctImport);
 		scan(CtRole.IMPORT_REFERENCE, ctImport.getReference());
 		scan(CtRole.ANNOTATION, ctImport.getAnnotations());
+		scan(CtRole.COMMENT, ctImport.getComments());
 		exit(ctImport);
 	}
 
