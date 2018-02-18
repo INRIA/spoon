@@ -123,7 +123,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
 			this.typeMembers = new SortedList<>(new CtLineElementComparator());
 		}
-		if (!this.typeMembers.contains(member)) {
+		if (!this.typeMembers.stream().anyMatch(m -> m == member)) {
 			member.setParent(this);
 			CtRole role;
 			if (member instanceof CtMethod) {
