@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
@@ -112,7 +113,8 @@ public class CtScannerTest {
 		launcher.run();
 		
 		CtTypeReference<?> ctElementRef = launcher.getFactory().createCtTypeReference(CtElement.class);
-		
+		CtTypeReference<?> ctRefRef = launcher.getFactory().createCtTypeReference(CtReference.class);
+
 		CtClass<?> scannerCtClass = (CtClass<?>)launcher.getFactory().Type().get(CtScanner.class);
 		
 		List<String> problems = new ArrayList<>();
@@ -170,8 +172,9 @@ public class CtScannerTest {
 						return super.matches(element) && element.getExecutable().getSimpleName().equals(getter.getName());
 					}
 				}).first();
-				if(getter.getName().equals("getComments")) {
-					//ignore missing getComments ... until discussion about its contracts is finished
+
+				if(getter.getName().equals("getComments") && !mmField.getItemValueType().isSubtypeOf(ctRefRef)) {
+					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}
 
