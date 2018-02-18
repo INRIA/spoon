@@ -820,6 +820,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.declaration.CtImport aCtImport = spoon.support.visitor.clone.CloneBuilder.build(this.builder, ctImport, ctImport.getFactory().Core().createImport());
 		aCtImport.setReference(this.cloneHelper.clone(ctImport.getReference()));
 		aCtImport.setAnnotations(this.cloneHelper.clone(ctImport.getAnnotations()));
+		aCtImport.setComments(this.cloneHelper.clone(ctImport.getComments()));
 		this.other = aCtImport;
 	}
 
