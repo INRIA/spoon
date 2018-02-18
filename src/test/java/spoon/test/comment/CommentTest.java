@@ -430,7 +430,7 @@ public class CommentTest {
 		CtReturn ctReturn = m1.getBody().getStatement(14);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("// comment return" + newLine
-				+ "return ", ctReturn.toString());
+				+ "return", ctReturn.toString());
 
 
 		CtMethod m2 = type.getMethodsByName("m2").get(0);
@@ -592,7 +592,7 @@ public class CommentTest {
 		CtReturn ctReturn = m1.getBody().getStatement(10);
 		assertEquals(createFakeBlockComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("/* comment return */" + newLine
-				+ "return ", ctReturn.toString());
+				+ "return", ctReturn.toString());
 
 
 		CtMethod m2 = type.getMethodsByName("m2").get(0);
