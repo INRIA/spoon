@@ -70,13 +70,9 @@ public class CtClassTest {
 		// see https://github.com/INRIA/spoon/issues/1862
 		CtConstructor cons = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
 		foo.addConstructor(cons);
-		// we must change the signature, so that the model becomes a valid Java model with different signatures for all constructors
-		try {
-			foo.getConstructors();
-			fail();
-		} catch (SpoonException expected) {
-			assertEquals("ooops, impossible to have two constructors with the same signature", expected.getMessage());
-		}
+		// as long as we have not changed the signature, getConstructors, which is based on signatures,
+		// thinks there is one single constructor (and that's OK)
+		assertEquals(3, foo.getConstructors().size());
 		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT));
 		// now that we have changed the signature we can call getConstructors safely
 		assertEquals(4, foo.getConstructors().size());
