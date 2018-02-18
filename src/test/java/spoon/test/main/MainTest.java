@@ -106,9 +106,6 @@ public class MainTest {
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
-		// clone
-		checkEqualityBetweenOriginalAndClone(pack);
-
 		// parent
 		ParentTest.checkParentContract(pack);
 
@@ -133,27 +130,6 @@ public class MainTest {
 				super.visitCtTypeParameterReference(ref);
 			}
 		}.scan(pack);
-	}
-
-	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
-		class ActualCounterScanner extends CtBiScannerDefault {
-			@Override
-			public boolean biScan(CtElement element, CtElement other) {
-				if (element == null) {
-					if (other != null) {
-						Assert.fail("element can't be null if other isn't null.");
-					}
-				} else if (other == null) {
-					Assert.fail("other can't be null if element isn't null.");
-				} else {
-					assertEquals(element, other);
-					assertFalse(element == other);
-				}
-				return super.biScan(element, other);
-			}
-		}
-		final ActualCounterScanner actual = new ActualCounterScanner();
-		actual.biScan(pack, pack.clone());
 	}
 
 	private void checkShadow(CtPackage pack) {
@@ -285,11 +261,13 @@ public class MainTest {
 		}
 
 		final Counter counter = new Counter();
+		final Counter counterInclNull = new Counter();
 
 		new CtScanner() {
 
 			@Override
 			public void scan(CtElement element) {
+				counterInclNull.scan++;
 				if (element != null) {
 					counter.scan++;
 				}
@@ -308,11 +286,52 @@ public class MainTest {
 				super.exit(element);
 			}
 
-		}.visitCtPackage(pack);
+		}.scan(pack);
 
+		// contract: when enter is called, exit is also called
 		assertTrue(counter.enter == counter.exit);
-		// there is one scan less, because we start with visit
-		assertTrue(counter.enter == counter.scan + 1);
+
+		// contract: all scanned elements call enter
+		assertTrue(counter.enter == counter.scan);
+
+		Counter counterBiScan = new Counter();
+		class ActualCounterScanner extends CtBiScannerDefault {
+			@Override
+			public void biScan(CtElement element, CtElement other) {
+				counterBiScan.scan++;
+				if (element == null) {
+					if (other != null) {
+						Assert.fail("element can't be null if other isn't null.");
+					}
+				} else if (other == null) {
+					Assert.fail("other can't be null if element isn't null.");
+				} else {
+					// contract: all elements have been cloned and are still equal
+					assertEquals(element, other);
+					assertFalse(element == other);
+				}
+				super.biScan(element, other);
+			}
+		}
+		final ActualCounterScanner actual = new ActualCounterScanner();
+		actual.biScan(pack, pack.clone());
+
+		// contract: scan and biscan are executed the same number of times
+		assertEquals(counterInclNull.scan, counterBiScan.scan);
+
+		// for pure beauty: parallel visit of the same tree!
+		Counter counterBiScan2 = new Counter();
+		new CtBiScannerDefault() {
+			@Override
+			public void biScan(CtElement element, CtElement other) {
+				counterBiScan2.scan++;
+				// we have the exact same element
+				assertSame(element, other);
+				super.biScan(element, other);
+			}
+		}.biScan(pack, pack);
+		// contract: scan and biscan are executed the same number of times
+		assertEquals(counterInclNull.scan, counterBiScan2.scan);
 	}
 
 	public static void checkAssignmentContracts(CtElement pack) {
