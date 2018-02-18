@@ -1957,6 +1957,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
+
+	/**
+	 * Write the compilation unit header.
+	 */
+	public DefaultJavaPrettyPrinter writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
+		elementPrinterHelper.writeHeader(types, imports);
+		return this;
+	}
+
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		// reset the importsContext to avoid errors with multiple CU
@@ -1971,7 +1980,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}
-		elementPrinterHelper.writeHeader(types, imports);
+		this.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {
