@@ -39,7 +39,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 
 	public void biScan(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
 		if (other == null) {
-			return ;
+			return;
 		}
 		stack.push(other);
 		try {
