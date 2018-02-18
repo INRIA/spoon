@@ -62,33 +62,6 @@ public class SpoonArchitectureEnforcerTest {
 
 	}
 
-	private boolean isNotDocumentedWhileItShouldBe(CtMethod t) {
-		return t.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
-				&& t.getDocComment().length()<1 // the Javadoc is too short, sorry!
-				&& !t.getSimpleName().startsWith("get") // all kinds of setters can be undocumented
-				&& !t.getSimpleName().startsWith("set")
-				&& !t.getSimpleName().startsWith("is")
-				&& !t.getSimpleName().startsWith("add")
-				&& !t.getSimpleName().startsWith("remove")
-				&& t.getTopDefinitions().size() == 0 // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy) */
-				&& (
-				     t.hasModifier(ModifierKind.ABSTRACT) // all interface methods and abstract class methods must be documented
-
-					// GOOD FIRST ISSUE
-					// ideally we want that **all** public methods are documented
-					// so far, we have this arbitrary limit in the condition below (35)
-					// because it's a huge task to document everything at once
-					// so to contribute to Spoon, what you can do is
-					// 1) you lower the threshold (eg 33)
-					// 2) you run test `documentedTest`, it will output a list on undocumented methods
-					// 3) you document those methods
-					// 4) you run the test again to check that it passes
-					// 4) you commit your changes and create the corresponding pull requests
-				  || t.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size()>35  // means that only large methods must be documented
-				)
-				;
-	}
-
 
 	@Test
 	public void testFactorySubFactory() throws Exception {
@@ -153,15 +126,41 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.buildModel();
 		List<String> notDocumented = new ArrayList<>();
 		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
-			if (isNotDocumentedWhileItShouldBe(method)) {
-				notDocumented.add(method.getParent(CtType.class).getQualifiedName()+"#"+method.getSignature());
+
+			// now we see whether this should be documented
+			if (method.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
+					&& !method.getSimpleName().startsWith("get") // all kinds of setters can be undocumented
+					&& !method.getSimpleName().startsWith("set")
+					&& !method.getSimpleName().startsWith("is")
+					&& !method.getSimpleName().startsWith("add")
+					&& !method.getSimpleName().startsWith("remove")
+					&& method.getTopDefinitions().size() == 0 // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+					&& (
+							method.hasModifier(ModifierKind.ABSTRACT) // all interface methods and abstract class methods must be documented
+
+							// GOOD FIRST ISSUE
+							// ideally we want that **all** public methods are documented
+							// so far, we have this arbitrary limit in the condition below (35)
+							// because it's a huge task to document everything at once
+							// so to contribute to Spoon, what you can do is
+							// 1) you lower the threshold (eg 33)
+							// 2) you run test `documentedTest`, it will output a list on undocumented methods
+							// 3) you document those methods
+							// 4) you run the test again to check that it passes
+							// 4) you commit your changes and create the corresponding pull requests
+							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 35  // means that only large methods must be documented
+			)) {
+
+				// OK it should be properly documented
+
+				// is it really well documented?
+				if (method.getDocComment().length() < 1) { // the Javadoc is too short, sorry!
+					notDocumented.add(method.getParent(CtType.class).getQualifiedName() + "#" + method.getSignature());
+				}
 			}
 		}
 		if (notDocumented.size() > 0) {
-			for (String m : notDocumented) {
-				System.err.println(m);
-			}
-			fail(notDocumented.size()+" public methods should be documented with proper API documentation");
+			fail(notDocumented.size()+" public methods should be documented with proper API documentation: \n"+StringUtils.join(notDocumented, "\n"));
 		}
 
 
