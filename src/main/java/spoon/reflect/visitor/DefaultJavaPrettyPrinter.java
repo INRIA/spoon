@@ -1626,7 +1626,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		enterCtStatement(returnStatement);
-		printer.writeKeyword("return").writeSpace();
+		printer.writeKeyword("return");
+		// checkstyle wants "return;" and not "return ;"
+		if (returnStatement.getReturnedExpression() != null) {
+			printer.writeSpace();
+		}
 		scan(returnStatement.getReturnedExpression());
 	}
 
