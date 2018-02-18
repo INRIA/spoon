@@ -154,7 +154,7 @@ public class CompilationTest {
 				"class X implements spoon.test.compilation.Ifoo { public int foo() {int i=0; return i;} }").compile();
 		c.addModifier(ModifierKind.PUBLIC); // required otherwise java.lang.IllegalAccessException at runtime when instantiating
 
-		CtBlock body = c.getElements(new TypeFilter<>(CtMethod.class)).get(0).getBody();
+		CtBlock body = c.getElements(new TypeFilter<>(CtBlock.class)).get(1);
 		Ifoo o = c.newInstance();
 		assertEquals(0, o.foo());
 		for (int i = 1; i <= 10; i++) {

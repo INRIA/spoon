@@ -150,7 +150,6 @@ public class ClassesTest {
 		final CtType<Pozole> type = buildClass(Pozole.class);
 
 		final CtNewClass<?> anonymousClass = type.getField("CONFLICT_HOOK").getElements(new TypeFilter<>(CtNewClass.class)).get(1);
-		assertEquals("ColorModel", anonymousClass.getAnonymousClass().getSuperclass().getSimpleName());
 		final CtVariableRead<?> ctVariableRead = anonymousClass.getElements(new TypeFilter<>(CtVariableRead.class)).get(2);
 		final CtVariable<?> declaration = ctVariableRead.getVariable().getDeclaration();
 
