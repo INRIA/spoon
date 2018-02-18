@@ -8,9 +8,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -20,10 +22,12 @@ import java.util.Set;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -60,6 +64,21 @@ public class CtClassTest {
 		typeStringArrayArray.setComponentType(typeStringArray);
 		constructor = foo.getConstructor(typeStringArrayArray);
 		assertEquals(typeStringArrayArray, constructor.getParameters().get(0).getType());
+
+		// contract: one could add a type member that already exists (equals but not same) and modify it afterwards
+		// this adds some flexibility for client code
+		// see https://github.com/INRIA/spoon/issues/1862
+		CtConstructor cons = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
+		foo.addConstructor(cons);
+		// as long as we have not changed the signature, getConstructors, which is based on signatures,
+		// thinks there is one single constructor (and that's OK)
+		assertEquals(3, foo.getConstructors().size());
+		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT));
+		// now that we have changed the signature we can call getConstructors safely
+		assertEquals(4, foo.getConstructors().size());
+		assertSame(cons, foo.getTypeMembers().get(3));
+		// the parent is set (the core problem described in the issue has been fixed)
+		assertSame(foo, cons.getParent());
 	}
 
 	@Test
