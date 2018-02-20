@@ -33,9 +33,6 @@ import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
-	CtExecutableReference<?> executable;
-
 	public CtParameterReferenceImpl() {
 		super();
 	}
@@ -52,7 +49,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 		if (ctParameter != null) {
 			return ctParameter;
 		}
-		return fromDeclaringExecutable();
+		return null;
 	}
 
 	private CtParameter<T> lookupDynamically() {
@@ -76,20 +73,6 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 			return null;
 		}
 		return optional;
-	}
-
-	private CtParameter<T> fromDeclaringExecutable() {
-		CtExecutable<?> exec = executable.getDeclaration();
-		if (exec == null) {
-			return null;
-		}
-		List<CtParameter<?>> params = exec.getParameters();
-		for (CtParameter<?> p : params) {
-			if (this.getSimpleName().equals(p.getSimpleName())) {
-				return (CtParameter<T>) p;
-			}
-		}
-		return null;
 	}
 
 	@Override

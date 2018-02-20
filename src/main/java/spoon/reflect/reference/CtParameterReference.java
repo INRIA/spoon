@@ -25,7 +25,7 @@ import spoon.support.DerivedProperty;
 
 /**
  * This interface defines a reference to a
- * {@link spoon.reflect.declaration.CtParameter}.
+ * {@link spoon.reflect.declaration.CtParameter} of a method.
  */
 public interface CtParameterReference<T> extends CtVariableReference<T> {
 
