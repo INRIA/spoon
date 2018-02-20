@@ -667,7 +667,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(reference);
 		scan(CtRole.TYPE, reference.getType());
 		scan(CtRole.ANNOTATION, reference.getAnnotations());
-		scan(CtRole.EXECUTABLE_REF, reference.getDeclaringExecutable());
 		exit(reference);
 	}
 

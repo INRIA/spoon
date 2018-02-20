@@ -941,11 +941,6 @@ public class ReferenceBuilder {
 				ref.setSimpleName(new String(varbin.name));
 				ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
 				final ReferenceContext referenceContext = localVariableBinding.declaringScope.referenceContext();
-				if (referenceContext instanceof LambdaExpression) {
-					ref.setDeclaringExecutable(getExecutableReference(((LambdaExpression) referenceContext).binding));
-				} else {
-					ref.setDeclaringExecutable(getExecutableReference(((AbstractMethodDeclaration) referenceContext).binding));
-				}
 				return ref;
 			} else if (localVariableBinding.declaration.binding instanceof CatchParameterBinding) {
 				CtCatchVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createCatchVariableReference();

@@ -93,21 +93,6 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	}
 
 	@Override
-	public CtExecutableReference<?> getDeclaringExecutable() {
-		return executable;
-	}
-
-	@Override
-	public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
-		if (executable != null) {
-			executable.setParent(this);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE_REF, executable, this.executable);
-		this.executable = executable;
-		return (C) this;
-	}
-
-	@Override
 	public CtParameterReference<T> clone() {
 		return (CtParameterReference<T>) super.clone();
 	}

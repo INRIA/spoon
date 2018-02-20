@@ -29,18 +29,6 @@ import spoon.support.DerivedProperty;
  */
 public interface CtParameterReference<T> extends CtVariableReference<T> {
 
-	/**
-	 * Gets the declaring executable of the referenced parameter.
-	 */
-	@PropertyGetter(role = CtRole.EXECUTABLE_REF)
-	CtExecutableReference<?> getDeclaringExecutable();
-
-	/**
-	 * Sets the declaring executable of the referenced parameter.
-	 */
-	@PropertySetter(role = CtRole.EXECUTABLE_REF)
-	<C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable);
-
 	@Override
 	@DerivedProperty
 	CtParameter<T> getDeclaration();
