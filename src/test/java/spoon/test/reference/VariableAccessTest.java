@@ -50,10 +50,6 @@ public class VariableAccessTest {
 		}).get(0);
 
 		assertNotNull("Parameter can't be null", ref.getDeclaration());
-		assertNotNull("Declaring method reference can't be null", ref.getDeclaringExecutable());
-		assertNotNull("Declaring type of the method can't be null", ref.getDeclaringExecutable().getDeclaringType());
-		assertNotNull("Declaration of declaring type of the method can't be null", ref.getDeclaringExecutable().getDeclaringType().getDeclaration());
-		assertNotNull("Declaration of root class can't be null", ref.getDeclaringExecutable().getDeclaringType().getDeclaringType().getDeclaration());
 	}
 
 	@Test

@@ -81,7 +81,7 @@ public class ParameterTest {
 		for (final CtParameter param : parameters) {
 			for (final CtTypeReference refType :
 					(List<CtTypeReference>) param.getReference()
-							.getDeclaringExecutable()
+							.getDeclaration().getParent()
 							.getParameters()) {
 				assertEquals(launcher.getFactory().Type().STRING, refType);
 			}
@@ -96,7 +96,7 @@ public class ParameterTest {
 		for (final CtParameter param : parameters) {
 			for (final CtTypeReference refType :
 					(List<CtTypeReference>) param.getReference()
-					.getDeclaringExecutable()
+					.getDeclaration().getParent()
 					.getParameters()) {
 				assertEquals(launcher.getFactory().Type().INTEGER, refType);
 			}
@@ -111,7 +111,7 @@ public class ParameterTest {
 		for (final CtParameter param : parameters) {
 			for (final CtTypeReference refType :
 					(List<CtTypeReference>) param.getReference()
-							.getDeclaringExecutable()
+							.getDeclaration().getParent()
 							.getParameters()) {
 				assertEquals(launcher.getFactory().Type().OBJECT, refType);
 			}
