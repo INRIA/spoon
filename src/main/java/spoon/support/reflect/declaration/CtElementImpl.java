@@ -541,7 +541,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
-	public CtPath getPath() throws CtPathException {
-		return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
+	public CtPath getPath() {
+		try {
+			return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
+		} catch (CtPathException e) {
+		}
+		return null;
 	}
 }

@@ -355,6 +355,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Gets a unique path from models root to the CtElement.
 	 */
-	CtPath getPath() throws CtPathException;
+	CtPath getPath();
 
 }

@@ -445,11 +445,9 @@ public class MainTest {
 			public void scan(CtRole role, CtElement element) {
 				if (element != null) {
 					CtPath path = null;
-					try {
-						path = element.getPath();
-					} catch (CtPathException e) {
-						fail();
-					}
+
+					path = element.getPath();
+
 					List<CtElement> list = new LinkedList();
 					list.add(rootPackage);
 					Collection<CtElement> returnedElements = path.evaluateOn(list);
