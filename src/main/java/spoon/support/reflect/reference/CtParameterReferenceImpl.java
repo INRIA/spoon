@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -35,6 +36,11 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtParameterReference(this);
+	}
+
+	@Override
+	public CtExecutableReference<?> getDeclaringExecutable() {
+		return getDeclaration().getParent().getReference();
 	}
 
 	@Override

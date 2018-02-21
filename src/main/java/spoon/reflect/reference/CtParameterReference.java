@@ -16,7 +16,9 @@
  */
 package spoon.reflect.reference;
 
+import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 
 
@@ -25,6 +27,12 @@ import spoon.support.DerivedProperty;
  * {@link spoon.reflect.declaration.CtParameter} of a method.
  */
 public interface CtParameterReference<T> extends CtVariableReference<T> {
+
+	/**
+	 * Gets the declaring executable of the referenced parameter.
+	 */
+	@DerivedProperty
+	CtExecutableReference<?> getDeclaringExecutable();
 
 	@Override
 	@DerivedProperty
