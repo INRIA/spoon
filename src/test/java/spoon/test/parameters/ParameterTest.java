@@ -79,10 +79,12 @@ public class ParameterTest {
 						.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			// contract: getDeclaration is dynamic with a lookup based on the current context, so when we create a new reference
-			// it is nowhere and getDeclaration returns null
-				assertEquals(null, param.getReference()
-						.getDeclaration());
+			for (final CtTypeReference refType :
+					(List<CtTypeReference>) param.getReference()
+							.getDeclaringExecutable()
+							.getParameters()) {
+				assertEquals(launcher.getFactory().Type().STRING, refType);
+			}
 		}
 
 		// test integer parameters
@@ -92,7 +94,12 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-				assertEquals(launcher.getFactory().Type().INTEGER, param.getType());
+			for (final CtTypeReference refType :
+					(List<CtTypeReference>) param.getReference()
+					.getDeclaringExecutable()
+					.getParameters()) {
+				assertEquals(launcher.getFactory().Type().INTEGER, refType);
+			}
 		}
 
 		// test unknown parameters
@@ -102,8 +109,12 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-				// unknown parameters have no known types
-				assertEquals(null, param.getType());
+			for (final CtTypeReference refType :
+					(List<CtTypeReference>) param.getReference()
+							.getDeclaringExecutable()
+							.getParameters()) {
+				assertEquals(launcher.getFactory().Type().OBJECT, refType);
+			}
 		}
 	}
 }
