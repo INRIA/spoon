@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
+import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
@@ -31,6 +32,9 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
+import spoon.reflect.path.CtElementPathBuilder;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
@@ -535,5 +539,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
 		rh.setValue(this, value);
 		return (E) this;
+	}
+
+	public CtPath getPath() throws CtPathException {
+		return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
 	}
 }

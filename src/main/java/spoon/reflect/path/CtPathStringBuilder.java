@@ -16,11 +16,7 @@
  */
 package spoon.reflect.path;
 
-import spoon.reflect.path.impl.CtNamedPathElement;
-import spoon.reflect.path.impl.CtPathElement;
-import spoon.reflect.path.impl.CtPathImpl;
-import spoon.reflect.path.impl.CtRolePathElement;
-import spoon.reflect.path.impl.CtTypedNameElement;
+import spoon.reflect.path.impl.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,6 +76,8 @@ public class CtPathStringBuilder {
 			} else if (CtTypedNameElement.STRING.equals(kind)) {
 				pathElement = new CtTypedNameElement(load(matcher.group(2)));
 			} else if (CtRolePathElement.STRING.equals(kind)) {
+				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
+			} else if (CtUniqueRolePathElement.STRING.equals(kind)) {
 				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
 			}
 
