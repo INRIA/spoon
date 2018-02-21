@@ -40,7 +40,11 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 
 	@Override
 	public CtExecutableReference<?> getDeclaringExecutable() {
-		return getDeclaration().getParent().getReference();
+		CtParameter<T> declaration = getDeclaration();
+		if (declaration == null) {
+			return null;
+		}
+		return declaration.getParent().getReference();
 	}
 
 	@Override
