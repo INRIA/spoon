@@ -17,7 +17,6 @@
 package spoon.reflect.meta.impl;
 
 
-import java.lang.annotation.Annotation;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
@@ -104,11 +103,12 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+
+import java.lang.annotation.Annotation;
 
 
 /**
