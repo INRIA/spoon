@@ -40,12 +40,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -433,6 +428,16 @@ public class MainTest {
 				if (element != null) {
 					//contract: getMyRoleInParent returns the expected parent
 					assertSame(role, element.getRoleInParent());
+					//contract: getParent.getValueByRole(getMyRoleInParent()) contains the element
+					CtElement parent = element.getParent();
+					if(parent != null) {
+						if(parent.getValueByRole(role) instanceof CtElement) {
+							assertEquals(parent.getValueByRole(role),element);
+						} else if (parent.getValueByRole(role) instanceof Collection) {
+							Collection c = parent.getValueByRole(role);
+							assertTrue(c.contains(element));
+						}
+					}
 				}
 				super.scan(role, element);
 			}
