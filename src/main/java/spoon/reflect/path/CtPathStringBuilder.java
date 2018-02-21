@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class CtPathStringBuilder {
 
-	private final Pattern pathPattern = Pattern.compile("([/.#])([^/.#\\[]+)(\\[([^/.#]*)\\])?");
+	private final Pattern pathPattern = Pattern.compile("([/.#@])([^/.#@\\[]+)(\\[([^/.#@]*)\\])?");
 	private final Pattern argumentPattern = Pattern.compile("(\\w+)=([^=\\]]+)");
 
 
@@ -62,6 +62,7 @@ public class CtPathStringBuilder {
 	 * . :  match with the given name
 	 * # : match with a CtPathRole
 	 * / : match with a element type (for example, to match all classes, use /CtClass
+	 * @ : match with a CtUniqueRolePath
 	 */
 	public CtPath fromString(String pathStr) throws CtPathException {
 		Matcher matcher = pathPattern.matcher(pathStr);
@@ -78,7 +79,7 @@ public class CtPathStringBuilder {
 			} else if (CtRolePathElement.STRING.equals(kind)) {
 				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
 			} else if (CtUniqueRolePathElement.STRING.equals(kind)) {
-				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
+				pathElement = new CtUniqueRolePathElement(CtRole.fromName(matcher.group(2)));
 			}
 
 			String args = matcher.group(4);

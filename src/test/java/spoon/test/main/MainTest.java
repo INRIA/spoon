@@ -23,10 +23,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtElementPathBuilder;
-import spoon.reflect.path.CtPath;
-import spoon.reflect.path.CtPathException;
-import spoon.reflect.path.CtRole;
+import spoon.reflect.path.*;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -444,16 +441,20 @@ public class MainTest {
 			@Override
 			public void scan(CtRole role, CtElement element) {
 				if (element != null) {
-					CtPath path = null;
+					CtPath path = element.getPath();
+					String pathStr = path.toString();
+					try {
+						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
 
-					path = element.getPath();
-
-					List<CtElement> list = new LinkedList();
-					list.add(rootPackage);
-					Collection<CtElement> returnedElements = path.evaluateOn(list);
-					assertEquals(returnedElements.size(), 1);
-					CtElement actualElement = (CtElement) returnedElements.toArray()[0];
-					assertEquals(element, actualElement);
+						List<CtElement> list = new LinkedList<>();
+						list.add(rootPackage);
+						Collection<CtElement> returnedElements = pathRead.evaluateOn(list);
+						assertEquals(returnedElements.size(), 1);
+						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
+						assertEquals(element, actualElement);
+					} catch (CtPathException e) {
+						fail();
+					}
 				}
 				super.scan(role, element);
 			}
