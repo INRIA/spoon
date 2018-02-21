@@ -23,6 +23,9 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtElementPathBuilder;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -40,13 +43,9 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -433,6 +432,30 @@ public class MainTest {
 				if (element != null) {
 					//contract: getMyRoleInParent returns the expected parent
 					assertSame(role, element.getRoleInParent());
+				}
+				super.scan(role, element);
+			}
+		});
+	}
+
+	@Test
+	public void testElementToPathToElementEquivalency() {
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtRole role, CtElement element) {
+				if (element != null) {
+					CtPath path = null;
+					try {
+						path = element.getPath();
+					} catch (CtPathException e) {
+						fail();
+					}
+					List<CtElement> list = new LinkedList();
+					list.add(rootPackage);
+					Collection<CtElement> returnedElements = path.evaluateOn(list);
+					assertEquals(returnedElements.size(), 1);
+					CtElement actualElement = (CtElement) returnedElements.toArray()[0];
+					assertEquals(element, actualElement);
 				}
 				super.scan(role, element);
 			}
