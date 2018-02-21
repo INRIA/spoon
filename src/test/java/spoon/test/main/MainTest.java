@@ -437,6 +437,10 @@ public class MainTest {
 
 	@Test
 	public void testElementToPathToElementEquivalency() {
+
+		List<CtElement> list = new LinkedList<>();
+		list.add(rootPackage);
+
 		rootPackage.accept(new CtScanner() {
 			@Override
 			public void scan(CtRole role, CtElement element) {
@@ -445,12 +449,11 @@ public class MainTest {
 					String pathStr = path.toString();
 					try {
 						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
-
-						List<CtElement> list = new LinkedList<>();
-						list.add(rootPackage);
 						Collection<CtElement> returnedElements = pathRead.evaluateOn(list);
+						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
 						assertEquals(returnedElements.size(), 1);
 						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
+						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertEquals(element, actualElement);
 					} catch (CtPathException e) {
 						fail();

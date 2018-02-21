@@ -37,34 +37,24 @@ public class CtUniqueRolePathElement extends CtRolePathElement {
     public Collection<CtElement> getElements(Collection<CtElement> roots) {
         Collection<CtElement> matchs = new LinkedList<>();
         for (CtElement root : roots) {
-            //if(root.getValueByRole(getRole()) instanceof Collection) {
             if(root.getValueByRole(getRole()) instanceof List) {
                 if(getArguments().containsKey("index")) {
                     int index = Integer.parseInt(getArguments().get("index"));
                     matchs.add((CtElement) ((List) root.getValueByRole(getRole())).get(index));
-                } else {
-                    //Either trhow an exception or add the collection to matches
-                    //matchs.add(el);
                 }
             } else  if(root.getValueByRole(getRole()) instanceof Set) {
                 if(getArguments().containsKey("name")) {
                     String name = getArguments().get("name");
                     try {
-                        matchs.add(getFromSet((Set) root.getValueByRole(getRole()), name));
+                        matchs.add(getFromSet(root.getValueByRole(getRole()), name));
                     } catch (Exception e) {
                         System.err.println("[ERROR] Element not found for name: " + name);
                     }
-                } else {
-                    //Either trhow an exception or add the collection to matches
-                    //matchs.add(el);
                 }
             } else if(root.getValueByRole(getRole()) instanceof Map) {
                 if(getArguments().containsKey("key")) {
                     String name = getArguments().get("key");
                     matchs.add((CtElement) ((Map) root.getValueByRole(getRole())).get(name));
-                } else {
-                    //Either trhow an exception or add the collection to matches
-                    //matchs.add(el);
                 }
             } else {
                 CtElement el = root.getValueByRole(getRole());
