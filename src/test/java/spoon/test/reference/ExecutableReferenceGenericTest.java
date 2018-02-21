@@ -244,7 +244,8 @@ public class ExecutableReferenceGenericTest {
 					}
 				});
 
-		assertEquals(11, refsExecutableClass1.size());
+		// 11->10 because parameter references do not contain anymore an exec reference
+		assertEquals(10, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
 			if (!ref.toString().equals("java.lang.Object()")) {

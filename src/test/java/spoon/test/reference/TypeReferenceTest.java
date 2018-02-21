@@ -620,9 +620,7 @@ public class TypeReferenceTest {
 		CtParameterReference<?> parameterRef1 = parameter.getReference();
 		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)->ref.getSimpleName().equals("param")).get(0);
 
-		assertEquals(aClass.getReference(), parameterRef1.getDeclaration().getType());
-		assertEquals(aClass.getReference(), parameterRef2.getDeclaration().getType());
-
+		// contract: the references are equal
 		assertEquals(parameterRef1, parameterRef2);
 	}
 
