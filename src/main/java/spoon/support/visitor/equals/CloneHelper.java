@@ -18,6 +18,8 @@ package spoon.support.visitor.equals;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.clone.CloneVisitor;
@@ -134,4 +136,24 @@ public class CloneHelper {
 	protected <T extends CtElement> void addClone(Map<String, T> targetMap, String key, T value) {
 		targetMap.put(key, clone(value));
 	}
+
+	private CtElement initialTopLevel;
+	private CtElement cloneTopLevel;
+
+	public void tailor(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+		this.initialTopLevel = element;
+		this.cloneTopLevel = other;
+		// this scanner visit certain nodes to done some additional work after cloning
+		new CtScanner(){
+			@Override
+			public <T> void visitCtExecutableReference(CtExecutableReference<T> clone) {
+				// for instance, here we can do additional things
+				// after cloning an executable reference
+
+				// super must be called to visit the subelements
+				super.visitCtExecutableReference(clone);
+			}
+		}.scan(other);
+	}
+
 }
