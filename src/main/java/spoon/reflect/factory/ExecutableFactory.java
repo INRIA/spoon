@@ -85,9 +85,6 @@ public class ExecutableFactory extends SubFactory {
 	 */
 	public <T> CtParameterReference<T> createParameterReference(CtParameter<T> parameter) {
 		CtParameterReference<T> ref = factory.Core().createParameterReference();
-		if (parameter.getParent() != null) {
-			ref.setDeclaringExecutable(factory.Executable().createReference((CtExecutable<?>) parameter.getParent()));
-		}
 		ref.setSimpleName(parameter.getSimpleName());
 		ref.setType(parameter.getType());
 		return ref;

@@ -285,7 +285,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 	 */
 	protected void createParameterUsedIssue(CtParameter<?> usedParameter, CtParameterReference<?> parameterUsage) {
 		throw new RefactoringException("The parameter " + usedParameter.getSimpleName()
-		+ " of method: " + parameterUsage.getDeclaringExecutable() + " cannot be removed because it is used (" + parameterUsage.getPosition() + ")");
+		+ " cannot be removed because it is used (" + parameterUsage.getPosition() + ")");
 	}
 
 	/**
