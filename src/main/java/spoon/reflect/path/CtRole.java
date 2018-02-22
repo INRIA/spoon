@@ -26,6 +26,7 @@ import java.util.List;
 public enum CtRole {
 	NAME,
 	TYPE,
+	MULTI_TYPE,
 	DECLARING_TYPE,
 	CONTAINED_TYPE,
 	BODY,
