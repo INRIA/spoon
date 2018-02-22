@@ -454,7 +454,7 @@ public class MainTest {
 						assertEquals(returnedElements.size(), 1);
 						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
-						assertEquals(element, actualElement);
+						assertSame(element, actualElement);
 					} catch (CtPathException e) {
 						fail();
 					}
