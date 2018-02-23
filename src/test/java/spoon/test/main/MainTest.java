@@ -41,7 +41,15 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import java.util.*;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.IdentityHashMap;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -463,7 +471,7 @@ public class MainTest {
 		});
 	}
 
-
+	@Test
 	public void testElementIsContainedInAttributeOfItsParent() {
 		rootPackage.accept(new CtScanner() {
 			@Override
