@@ -43,7 +43,7 @@ import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.TYPE;
+import static spoon.reflect.path.CtRole.MULTI_TYPE;
 
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
@@ -51,7 +51,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@MetamodelPropertyField(role = CtRole.NAME)
 	String name = "";
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = MULTI_TYPE)
 	List<CtTypeReference<?>> types = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
@@ -138,7 +138,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			types = new ArrayList<>(CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE, this.types, type);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, MULTI_TYPE, this.types, type);
 		types.add(type);
 		return (T) this;
 	}
@@ -148,7 +148,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (this.types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			return false;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE, types, types.indexOf(ref), ref);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, MULTI_TYPE, types, types.indexOf(ref), ref);
 		return types.remove(ref);
 	}
 
@@ -159,7 +159,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types) {
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE, this.types, new ArrayList<>(this.types));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, MULTI_TYPE, this.types, new ArrayList<>(this.types));
 		if (types == null || types.isEmpty()) {
 			this.types = CtElementImpl.emptyList();
 			return (T) this;
