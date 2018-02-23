@@ -8,6 +8,11 @@ import spoon.reflect.reference.CtReference;
 
 import java.util.*;
 
+/**
+ * A CtPathElement that define all roles for matching a unique CtElement from a given root.
+ *
+ * Created by nharrand on 21/02/2018.
+ */
 public class CtUniqueRolePathElement extends CtRolePathElement {
     public static final String STRING = "@";
 

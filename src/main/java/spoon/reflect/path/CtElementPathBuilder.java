@@ -12,7 +12,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This builder allow to create some CtPath from CtElements
+ *
+ * Created by nharrand on 21/02/2018.
+ */
 public class CtElementPathBuilder {
+    /**
+     * Build path to a CtElement el, from one of its parent.
+     *
+     * @throws CtPathException is thrown when root is not a parent of el.
+     *
+     * @param el : the element to which the CtPath leads to
+     * @param root : Starting point of the CtPath
+     * @return CtPath from root to el
+     */
     public CtPath fromElement(CtElement el, CtElement root) throws CtPathException {
         CtPathImpl path = new CtPathImpl();
         CtElement cur = el;
