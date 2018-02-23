@@ -144,7 +144,7 @@ public class CloneHelper {
 		this.initialTopLevel = element;
 		this.cloneTopLevel = other;
 		// this scanner visit certain nodes to done some additional work after cloning
-		new CtScanner(){
+		new CtScanner() {
 			@Override
 			public <T> void visitCtExecutableReference(CtExecutableReference<T> clone) {
 				// for instance, here we can do additional things
