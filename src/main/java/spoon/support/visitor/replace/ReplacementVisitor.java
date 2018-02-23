@@ -878,20 +878,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtParameterReferenceDeclaringExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
-		private final spoon.reflect.reference.CtParameterReference element;
-
-		CtParameterReferenceDeclaringExecutableReplaceListener(spoon.reflect.reference.CtParameterReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtExecutableReference replace) {
-			this.element.setDeclaringExecutable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtReturnReturnedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtReturn element;
 
@@ -1851,7 +1837,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	public <T> void visitCtParameterReference(final spoon.reflect.reference.CtParameterReference<T> reference) {
 		replaceElementIfExist(reference.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtVariableReferenceTypeReplaceListener(reference));
 		replaceInListIfExist(reference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(reference));
-		replaceElementIfExist(reference.getDeclaringExecutable(), new spoon.support.visitor.replace.ReplacementVisitor.CtParameterReferenceDeclaringExecutableReplaceListener(reference));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator

@@ -463,7 +463,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		enter(catchVariable);
 		biScan(spoon.reflect.path.CtRole.COMMENT, catchVariable.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, catchVariable.getAnnotations(), other.getAnnotations());
-		biScan(spoon.reflect.path.CtRole.TYPE, catchVariable.getMultiTypes(), other.getMultiTypes());
+		biScan(spoon.reflect.path.CtRole.MULTI_TYPE, catchVariable.getMultiTypes(), other.getMultiTypes());
 		exit(catchVariable);
 	}
 
@@ -622,7 +622,6 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		enter(reference);
 		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
-		biScan(spoon.reflect.path.CtRole.EXECUTABLE_REF, reference.getDeclaringExecutable(), other.getDeclaringExecutable());
 		exit(reference);
 	}
 

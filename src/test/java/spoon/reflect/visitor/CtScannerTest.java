@@ -253,9 +253,10 @@ public class CtScannerTest {
 		// interesting, this is never called because of covariance, only CtElement or Collection is called
 		assertEquals(0, counter.nObject);
 		// this is a coarse-grain check to see if the scanner changes
-		assertEquals(3972, counter.nElement);
-		assertEquals(2599, counter.nEnter);
-		assertEquals(2599, counter.nExit);
+		// no more exec ref in paramref
+		assertEquals(3616, counter.nElement);
+		assertEquals(2396, counter.nEnter);
+		assertEquals(2396, counter.nExit);
 
 	}
 }

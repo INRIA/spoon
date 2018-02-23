@@ -6,6 +6,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -23,7 +24,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +61,7 @@ public class SpoonArchitectureEnforcerTest {
 		}
 
 	}
+
 
 	@Test
 	public void testFactorySubFactory() throws Exception {
@@ -113,13 +114,57 @@ public class SpoonArchitectureEnforcerTest {
 		assertTrue(sanityCheck.val > 100);
 	}
 
+	// this test contains all the architectural rules that are valid for the whole src/main/java
+	// we put them in the same test in order to only build the full model once
 	@Test
-	public void noTreeSetInSpoon() throws Exception {
-		// we don't use TreeSet, because they implicitly depend on Comparable (no static check, only dynamic checks)
-		SpoonAPI spoon = new Launcher();
+	public void testSrcMainJava() throws Exception {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.addInputResource("src/main/java/");
-		spoon.buildModel();
 
+		// contract: all non-trivial public methods should be documented with proper API Javadoc
+		spoon.buildModel();
+		List<String> notDocumented = new ArrayList<>();
+		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
+
+			// now we see whether this should be documented
+			if (method.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
+					&& !method.getSimpleName().startsWith("get") // all kinds of setters can be undocumented
+					&& !method.getSimpleName().startsWith("set")
+					&& !method.getSimpleName().startsWith("is")
+					&& !method.getSimpleName().startsWith("add")
+					&& !method.getSimpleName().startsWith("remove")
+					&& method.getTopDefinitions().size() == 0 // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+					&& (
+							method.hasModifier(ModifierKind.ABSTRACT) // all interface methods and abstract class methods must be documented
+
+							// GOOD FIRST ISSUE
+							// ideally we want that **all** public methods are documented
+							// so far, we have this arbitrary limit in the condition below (35)
+							// because it's a huge task to document everything at once
+							// so to contribute to Spoon, what you can do is
+							// 1) you lower the threshold (eg 33)
+							// 2) you run test `documentedTest`, it will output a list on undocumented methods
+							// 3) you document those methods
+							// 4) you run the test again to check that it passes
+							// 4) you commit your changes and create the corresponding pull requests
+							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 35  // means that only large methods must be documented
+			)) {
+
+				// OK it should be properly documented
+
+				// is it really well documented?
+				if (method.getDocComment().length() <= 15) { // the Javadoc must be at least at least 15 characters (still pretty short...)
+					notDocumented.add(method.getParent(CtType.class).getQualifiedName() + "#" + method.getSignature());
+				}
+			}
+		}
+		if (notDocumented.size() > 0) {
+			fail(notDocumented.size()+" public methods should be documented with proper API documentation: \n"+StringUtils.join(notDocumented, "\n"));
+		}
+
+
+		// contract: Spoon's code never uses TreeSet constructor, because they implicitly depend on Comparable (no static check, only dynamic checks)
 		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {

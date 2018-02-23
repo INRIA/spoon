@@ -40,14 +40,15 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 import java.util.*;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MainTest {
 	
@@ -440,7 +441,6 @@ public class MainTest {
 
 		List<CtElement> list = new LinkedList<>();
 		list.add(rootPackage);
-
 		rootPackage.accept(new CtScanner() {
 			@Override
 			public void scan(CtRole role, CtElement element) {
@@ -456,7 +456,38 @@ public class MainTest {
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertSame(element, actualElement);
 					} catch (CtPathException e) {
-						fail();
+						fail("Path is either incorreclty generated or incorrectly read");
+					}
+				}
+			}
+		});
+	}
+
+
+	public void testElementIsContainedInAttributeOfItsParent() {
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtRole role, CtElement element) {
+				if (element != null) {
+					//contract: element is contained in attribute of element's parent
+					CtElement parent = element.getParent();
+					Object attributeOfParent = parent.getValueByRole(role);
+					if(attributeOfParent instanceof CtElement) {
+						assertSame("Element of type " + element.getClass().getName()
+								+ " is not the value of attribute of role " + role.name()
+								+ " of parent type " + parent.getClass().getName(), element, attributeOfParent);
+					} else if (attributeOfParent instanceof Collection) {
+						assertTrue("Element of type " + element.getClass().getName()
+								+ " not found in Collection value of attribute of role " + role.name() 
+								+ " of parent type " + parent.getClass().getName(), 
+								((Collection<CtElement>) attributeOfParent).stream().anyMatch(e -> e == element));
+					} else if (attributeOfParent instanceof Map){
+						assertTrue("Element of type " + element.getClass().getName()
+								+ " not found in Map#values of attribute of role " + role.name() 
+								+ " of parent type " + parent.getClass().getName(), 
+								((Map<String, ?>) attributeOfParent).values().stream().anyMatch(e -> e == element));
+					} else {
+						fail("Attribute of Role " + role + " not checked");
 					}
 				}
 				super.scan(role, element);

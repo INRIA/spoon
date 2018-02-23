@@ -534,7 +534,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(catchVariable);
 		scan(CtRole.COMMENT, catchVariable.getComments());
 		scan(CtRole.ANNOTATION, catchVariable.getAnnotations());
-		scan(CtRole.TYPE, catchVariable.getMultiTypes());
+		scan(CtRole.MULTI_TYPE, catchVariable.getMultiTypes());
 		exit(catchVariable);
 	}
 
@@ -667,7 +667,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(reference);
 		scan(CtRole.TYPE, reference.getType());
 		scan(CtRole.ANNOTATION, reference.getAnnotations());
-		scan(CtRole.EXECUTABLE_REF, reference.getDeclaringExecutable());
 		exit(reference);
 	}
 
