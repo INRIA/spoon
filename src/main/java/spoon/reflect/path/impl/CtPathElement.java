@@ -17,7 +17,6 @@
 package spoon.reflect.path.impl;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtPathException;
 
 import java.util.Collection;
 

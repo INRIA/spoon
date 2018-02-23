@@ -16,7 +16,13 @@
  */
 package spoon.reflect.path;
 
-import spoon.reflect.path.impl.*;
+
+import spoon.reflect.path.impl.CtNamedPathElement;
+import spoon.reflect.path.impl.CtPathElement;
+import spoon.reflect.path.impl.CtPathImpl;
+import spoon.reflect.path.impl.CtTypedNameElement;
+import spoon.reflect.path.impl.CtUniqueRolePathElement;
+import spoon.reflect.path.impl.CtRolePathElement;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
