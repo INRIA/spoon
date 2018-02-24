@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -276,4 +277,10 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
 	}
+
+	@Override
+	public CtMethod<?> copyMethod() {
+		return Refactoring.copyMethod(this);
+	}
+
 }

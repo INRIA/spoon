@@ -330,6 +330,10 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Clone the element which calls this method in a new object.
+	 *
+	 * Note that that references are kept as is, and thus, so if you clone whole classes
+	 * or methods, some parts of the cloned element (eg executable references) may still point to the initial element.
+	 * In this case, consider using methods {@link spoon.refactoring.Refactoring#copyType(CtType)} and {@link spoon.refactoring.Refactoring#copyMethod(CtMethod)} instead which does additional work beyond cloning.
 	 */
 	CtElement clone();
 
