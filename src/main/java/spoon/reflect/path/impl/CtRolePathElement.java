@@ -16,15 +16,22 @@
  */
 package spoon.reflect.path.impl;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A CtPathElement that define some roles for matching.
@@ -40,60 +47,6 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 
 	public static final String STRING = "#";
 
-	private class RoleVisitor extends CtInheritanceScanner {
-		private Collection<CtElement> matchs = new LinkedList<>();
-
-		private RoleVisitor() {
-		}
-
-		@Override
-		public <R> void scanCtExecutable(CtExecutable<R> e) {
-			super.scanCtExecutable(e);
-
-			switch (role) {
-			case BODY:
-				if (e.getBody() != null) {
-					if (getArguments().containsKey("index")
-							&& e.getBody()
-								.getStatements()
-								.size() > Integer.parseInt(
-							getArguments().get("index"))) {
-						matchs.add(e.getBody().getStatements().get(Integer
-								.parseInt(getArguments().get("index"))));
-					} else {
-						matchs.addAll(e.getBody().getStatements());
-					}
-				}
-			}
-
-		}
-
-		@Override
-		public <T> void visitCtField(CtField<T> e) {
-			super.visitCtField(e);
-
-			if (role == CtRole.DEFAULT_EXPRESSION && e.getDefaultExpression() != null) {
-				matchs.add(e.getDefaultExpression());
-			}
-		}
-
-		@Override
-		public void visitCtIf(CtIf e) {
-			super.visitCtIf(e);
-
-			switch (role) {
-			case THEN:
-				if (e.getThenStatement() != null) {
-					matchs.add(e.getThenStatement());
-				}
-			case ELSE:
-				if (e.getElseStatement() != null) {
-					matchs.add(e.getElseStatement());
-				}
-			}
-		}
-	}
-
 	private final CtRole role;
 
 	public CtRolePathElement(CtRole role) {
@@ -106,14 +59,58 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 
 	@Override
 	public String toString() {
-		return STRING + role.toString() + getParamString();
+		return STRING + getRole().toString() + getParamString();
+	}
+
+	public CtElement getFromSet(Set set, String name) throws CtPathException {
+		for (Object o: set) {
+			if (o instanceof CtNamedElement) {
+				if (((CtNamedElement) o).getSimpleName().equals(name)) {
+					return (CtElement) o;
+				}
+			} else if (o instanceof CtReference) {
+				if (((CtReference) o).getSimpleName().equals(name)) {
+					return (CtElement) o;
+				}
+			} else {
+				throw new CtPathException();
+			}
+		}
+		throw new CtPathException();
 	}
 
 	@Override
 	public Collection<CtElement> getElements(Collection<CtElement> roots) {
-		RoleVisitor visitor = new RoleVisitor();
-		visitor.scan(roots);
-		return visitor.matchs;
+		Collection<CtElement> matchs = new LinkedList<>();
+		for (CtElement root : roots) {
+			CtRole role = null;
+			try {
+				if (root.getValueByRole(getRole()) instanceof List) {
+					if (getArguments().containsKey("index")) {
+						int index = Integer.parseInt(getArguments().get("index"));
+						matchs.add((CtElement) ((List) root.getValueByRole(getRole())).get(index));
+					}
+				} else if (root.getValueByRole(getRole()) instanceof Set) {
+					if (getArguments().containsKey("name")) {
+						String name = getArguments().get("name");
+						try {
+							matchs.add(getFromSet(root.getValueByRole(getRole()), name));
+						} catch (CtPathException e) {
+							//System.err.println("[ERROR] Element not found for name: " + name);
+							//No element found for name.
+						}
+					}
+				} else if (root.getValueByRole(getRole()) instanceof Map) {
+					if (getArguments().containsKey("key")) {
+						String name = getArguments().get("key");
+						matchs.add((CtElement) ((Map) root.getValueByRole(getRole())).get(name));
+					}
+				} else {
+					CtElement el = root.getValueByRole(getRole());
+					matchs.add(el);
+				}
+			} catch (SpoonException e) {}
+		}
+		return matchs;
 	}
-
 }

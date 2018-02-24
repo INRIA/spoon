@@ -4,7 +4,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
-import spoon.reflect.path.impl.CtUniqueRolePathElement;
+import spoon.reflect.path.impl.CtRolePathElement;
 import spoon.reflect.reference.CtReference;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class CtElementPathBuilder {
 			if (parent == null || role == null) {
 				throw new CtPathException();
 			}
-			CtPathElement pathElement = new CtUniqueRolePathElement(role);
+			CtPathElement pathElement = new CtRolePathElement(role);
 			if (parent.getValueByRole(role) instanceof List) {
 				//Element needs to be differentiated from its brothers
 				List list = parent.getValueByRole(role);

@@ -21,7 +21,6 @@ import spoon.reflect.path.impl.CtNamedPathElement;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.path.impl.CtTypedNameElement;
-import spoon.reflect.path.impl.CtUniqueRolePathElement;
 import spoon.reflect.path.impl.CtRolePathElement;
 
 import java.util.regex.Matcher;
@@ -32,7 +31,7 @@ import java.util.regex.Pattern;
  */
 public class CtPathStringBuilder {
 
-	private final Pattern pathPattern = Pattern.compile("([/.#@])([^/.#@\\[]+)(\\[([^/.#@]*)\\])?");
+	private final Pattern pathPattern = Pattern.compile("([/.#])([^/.#\\[]+)(\\[([^/.#]*)\\])?");
 	private final Pattern argumentPattern = Pattern.compile("(\\w+)=([^=\\]]+)");
 
 
@@ -84,8 +83,6 @@ public class CtPathStringBuilder {
 				pathElement = new CtTypedNameElement(load(matcher.group(2)));
 			} else if (CtRolePathElement.STRING.equals(kind)) {
 				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
-			} else if (CtUniqueRolePathElement.STRING.equals(kind)) {
-				pathElement = new CtUniqueRolePathElement(CtRole.fromName(matcher.group(2)));
 			}
 
 			String args = matcher.group(4);

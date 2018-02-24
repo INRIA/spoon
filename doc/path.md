@@ -30,7 +30,7 @@ For instance, if we want the first statement in the body of method `foo`, declar
 in the class `spoon.test.path.Foo`. 
 
 ```java
-new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body[index=0]");
+new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=0]");
 ```
 
 ## CtPathBuilder

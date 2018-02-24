@@ -23,7 +23,10 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.*;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
+import spoon.reflect.path.CtPathStringBuilder;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -41,6 +44,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
@@ -447,11 +451,10 @@ public class MainTest {
 	@Test
 	public void testElementToPathToElementEquivalency() {
 
-		List<CtElement> list = new LinkedList<>();
-		list.add(rootPackage);
+		List<CtElement> list = Arrays.asList(rootPackage);
 		rootPackage.accept(new CtScanner() {
 			@Override
-			public void scan(CtRole role, CtElement element) {
+			public void scan(CtElement element) {
 				if (element != null) {
 					CtPath path = element.getPath();
 					String pathStr = path.toString();
@@ -464,7 +467,7 @@ public class MainTest {
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertSame(element, actualElement);
 					} catch (CtPathException e) {
-						fail("Path is either incorreclty generated or incorrectly read");
+						fail("Path is either incorrectly generated or incorrectly read");
 					}
 				}
 			}

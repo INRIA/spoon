@@ -18,6 +18,8 @@ import spoon.reflect.path.CtPathStringBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -83,7 +85,7 @@ public class PathTest {
 	public void testPathFromString() throws Exception {
 		// match the first statement of Foo.foo() method
 		equals(
-				new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body[index=0]"),
+				new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=0]"),
 				factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
 						.getStatement(0));
 
@@ -103,7 +105,9 @@ public class PathTest {
 	@Test
 	public void testWildcards() throws Exception {
 		// get the first statements of all Foo methods
-		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.*#body[index=0]"),
+		List<CtElement> list = new LinkedList<>();
+		list.add(factory.getModel().getRootPackage());
+		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.*#body#statement[index=0]"),
 				((CtClass) factory.Package().get("spoon.test.path").getType("Foo")).getConstructor().getBody()
 						.getStatement(0),
 				factory.Package().get("spoon.test.path").getType("Foo").getMethod("foo").getBody()
@@ -130,10 +134,10 @@ public class PathTest {
 	@Test
 	public void toStringTest() throws Exception {
 		comparePath(".spoon.test.path.Foo/CtMethod");
-		comparePath(".spoon.test.path.Foo.foo#body[index=0]");
+		comparePath(".spoon.test.path.Foo.foo#body#statement[index=0]");
 		comparePath(".spoon.test.path.Foo.bar/CtParameter");
 		comparePath(".spoon.test.path.Foo.toto#defaultExpression");
-		comparePath(".spoon.test.path.Foo.*#body[index=0]");
+		comparePath(".spoon.test.path.Foo.*#body#statement[index=0]");
 		comparePath(".**/CtIf#else");
 		comparePath(".**#else");
 	}
