@@ -67,7 +67,6 @@ public class CtPathStringBuilder {
 	 * . :  match with the given name
 	 * # : match with a CtPathRole
 	 * / : match with a element type (for example, to match all classes, use /CtClass
-	 * "at" sign : match with a CtUniqueRolePath
 	 */
 	public CtPath fromString(String pathStr) throws CtPathException {
 		Matcher matcher = pathPattern.matcher(pathStr);
