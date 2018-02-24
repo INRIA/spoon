@@ -17,15 +17,11 @@
 package spoon.reflect.path.impl;
 
 import spoon.SpoonException;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -83,7 +79,6 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 	public Collection<CtElement> getElements(Collection<CtElement> roots) {
 		Collection<CtElement> matchs = new LinkedList<>();
 		for (CtElement root : roots) {
-			CtRole role = null;
 			try {
 				if (root.getValueByRole(getRole()) instanceof List) {
 					if (getArguments().containsKey("index")) {
@@ -109,7 +104,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 					CtElement el = root.getValueByRole(getRole());
 					matchs.add(el);
 				}
-			} catch (SpoonException e) {}
+			} catch (SpoonException e) { } //When no element are found for a given role, return empty list.
 		}
 		return matchs;
 	}
