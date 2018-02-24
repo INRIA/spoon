@@ -137,23 +137,22 @@ public class CloneHelper {
 		targetMap.put(key, clone(value));
 	}
 
-	private CtElement initialTopLevel;
-	private CtElement cloneTopLevel;
 
-	public void tailor(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
-		this.initialTopLevel = element;
-		this.cloneTopLevel = other;
+	/** Is called by {@link CloneVisitor} at the end of the cloning for each element. */
+	public void tailor(final spoon.reflect.declaration.CtElement topLevelElement, final spoon.reflect.declaration.CtElement topLevelClone) {
 		// this scanner visit certain nodes to done some additional work after cloning
 		new CtScanner() {
 			@Override
 			public <T> void visitCtExecutableReference(CtExecutableReference<T> clone) {
 				// for instance, here we can do additional things
 				// after cloning an executable reference
+				// we have access here to "topLevelElement" and "topLevelClone"
+				// if we want to analyze them as well.
 
 				// super must be called to visit the subelements
 				super.visitCtExecutableReference(clone);
 			}
-		}.scan(other);
+		}.scan(topLevelClone);
 	}
 
 }
