@@ -49,7 +49,7 @@ public class CtElementPathBuilder {
 					//Can't be replaced by list.indexOf(cur)
 					//Because objects must be the same (and not just equals)
 					int index = 0;
-					for (Object o : list) { 
+					for (Object o : list) {
 						if (o == cur) {
 							break;
 						}
