@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -15,6 +16,7 @@ import spoon.test.reference.testclasses.Bar;
 import spoon.test.reference.testclasses.Burritos;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Kuu;
+import spoon.test.reference.testclasses.Stream;
 import spoon.test.reference.testclasses.SuperFoo;
 
 import java.util.List;
@@ -204,4 +206,23 @@ public class ExecutableReferenceTest {
 
 		assertNotEquals(hashCode1, hashCode2);
 	}
+
+	@Test
+	public void testPbWithStream() {
+		// contract: WWW
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Stream.java");
+		launcher.buildModel();
+
+		CtClass klass = launcher.getFactory().Class().get(Stream.class);
+		new CtScanner() {
+			@Override
+			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+				assertNotNull(reference.toString(), reference.getExecutableDeclaration());
+			}
+		}.scan(klass);
+
+	}
+
 }
