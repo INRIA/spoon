@@ -352,7 +352,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
 
 	/**
-	 * Gets a unique path from models root to the CtElement.
+	 * Return the path from the model root to this CtElement, eg `.spoon.test.path.Foo.foo#body#statement[index=0]`
 	 */
 	CtPath getPath();
 
