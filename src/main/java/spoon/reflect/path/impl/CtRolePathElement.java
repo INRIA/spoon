@@ -16,17 +16,16 @@
  */
 package spoon.reflect.path.impl;
 
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -79,7 +78,41 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 	public Collection<CtElement> getElements(Collection<CtElement> roots) {
 		Collection<CtElement> matchs = new LinkedList<>();
 		for (CtElement root : roots) {
-			try {
+			RoleHandler roleHandler = RoleHandlerHelper.getOptionalRoleHandler(root.getClass(), getRole());
+			if (roleHandler != null) {
+				switch (roleHandler.getContainerKind()) {
+					case SINGLE:
+						matchs.add(roleHandler.getValue(root));
+						break;
+
+					case LIST:
+						if (getArguments().containsKey("index")) {
+							int index = Integer.parseInt(getArguments().get("index"));
+							matchs.add((CtElement) roleHandler.asList(root).get(index));
+						}
+						break;
+
+					case SET:
+						if (getArguments().containsKey("name")) {
+							String name = getArguments().get("name");
+							try {
+								matchs.add(getFromSet(roleHandler.asSet(root), name));
+							} catch (CtPathException e) {
+								//System.err.println("[ERROR] Element not found for name: " + name);
+								//No element found for name.
+							}
+						}
+						break;
+
+					case MAP:
+						if (getArguments().containsKey("key")) {
+							String name = getArguments().get("key");
+							matchs.add((CtElement) roleHandler.asMap(root).get(name));
+						}
+						break;
+				}
+			}
+			/*try {
 				if (root.getValueByRole(getRole()) instanceof List) {
 					if (getArguments().containsKey("index")) {
 						int index = Integer.parseInt(getArguments().get("index"));
@@ -104,7 +137,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 					CtElement el = root.getValueByRole(getRole());
 					matchs.add(el);
 				}
-			} catch (SpoonException e) { } //When no element are found for a given role, return empty list.
+			} catch (SpoonException e) { } //When no element are found for a given role, return empty list.*/
 		}
 		return matchs;
 	}
