@@ -112,32 +112,6 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 						break;
 				}
 			}
-			/*try {
-				if (root.getValueByRole(getRole()) instanceof List) {
-					if (getArguments().containsKey("index")) {
-						int index = Integer.parseInt(getArguments().get("index"));
-						matchs.add((CtElement) ((List) root.getValueByRole(getRole())).get(index));
-					}
-				} else if (root.getValueByRole(getRole()) instanceof Set) {
-					if (getArguments().containsKey("name")) {
-						String name = getArguments().get("name");
-						try {
-							matchs.add(getFromSet(root.getValueByRole(getRole()), name));
-						} catch (CtPathException e) {
-							//System.err.println("[ERROR] Element not found for name: " + name);
-							//No element found for name.
-						}
-					}
-				} else if (root.getValueByRole(getRole()) instanceof Map) {
-					if (getArguments().containsKey("key")) {
-						String name = getArguments().get("key");
-						matchs.add((CtElement) ((Map) root.getValueByRole(getRole())).get(name));
-					}
-				} else {
-					CtElement el = root.getValueByRole(getRole());
-					matchs.add(el);
-				}
-			} catch (SpoonException e) { } //When no element are found for a given role, return empty list.*/
 		}
 		return matchs;
 	}
