@@ -470,6 +470,7 @@ public class MainTest {
 						fail("Path is either incorrectly generated or incorrectly read");
 					}
 				}
+				super.scan(element);
 			}
 		});
 	}
