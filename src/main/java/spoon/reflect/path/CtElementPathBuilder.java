@@ -46,7 +46,15 @@ public class CtElementPathBuilder {
 					//Element needs to be differentiated from its brothers
 					List list = roleHandler.asList(parent);
 					//Assumes that List's order is deterministic.
-					int index = list.indexOf(cur);
+					//Can't be replaced by list.indexOf(cur)
+					//Because objects must be the same (and not just equals)
+					int index = 0;
+					for (Object o : list) { 
+						if (o == cur) {
+							break;
+						}
+						index++;
+					}
 					pathElement.addArgument("index", index + "");
 					break;
 
