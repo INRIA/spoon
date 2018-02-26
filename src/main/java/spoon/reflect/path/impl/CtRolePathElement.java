@@ -58,7 +58,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 		return STRING + getRole().toString() + getParamString();
 	}
 
-	public CtElement getFromSet(Set set, String name) throws CtPathException {
+	private CtElement getFromSet(Set set, String name) throws CtPathException {
 		for (Object o: set) {
 			if (o instanceof CtNamedElement) {
 				if (((CtNamedElement) o).getSimpleName().equals(name)) {
@@ -72,7 +72,8 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 				throw new CtPathException();
 			}
 		}
-		throw new CtPathException();
+		//Element is not found in set.
+		return null;
 	}
 
 	@Override
@@ -103,7 +104,10 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 						if (getArguments().containsKey("name")) {
 							String name = getArguments().get("name");
 							try {
-								matchs.add(getFromSet(roleHandler.asSet(root), name));
+								CtElement match = getFromSet(roleHandler.asSet(root), name);
+								if (match != null) {
+									matchs.add(match);
+								}
 							} catch (CtPathException e) {
 								//System.err.println("[ERROR] Element not found for name: " + name);
 								//No element found for name.
