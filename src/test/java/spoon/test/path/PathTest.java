@@ -105,6 +105,23 @@ public class PathTest {
 	}
 
 	@Test
+	public void testMultiPathFromString() throws Exception {
+		// When role match a list but no index is provided, all of them must be returned
+		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 3);
+		// When role match a set but no name is provided, all of them must be returned
+		results = new CtPathStringBuilder().fromString("#subPackage")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 1);
+		// When role match a map but no key is provided, all of them must be returned
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.bar##annotation[index=0]#value")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 1);
+
+	}
+
+	@Test
 	public void testIncorrectPathFromString() throws Exception {
 		// match the else part of the if in Foo.bar() method which does not exist (Test non existing unique element)
 		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.bar#body#statement[index=2]#else")

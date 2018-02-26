@@ -26,6 +26,7 @@ import spoon.reflect.reference.CtReference;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -107,6 +108,8 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 								//System.err.println("[ERROR] Element not found for name: " + name);
 								//No element found for name.
 							}
+						} else {
+							matchs.addAll(roleHandler.asSet(root));
 						}
 						break;
 
@@ -116,6 +119,9 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 							if (roleHandler.asMap(root).containsKey(name)) {
 								matchs.add((CtElement) roleHandler.asMap(root).get(name));
 							}
+						} else {
+							Map<String, CtElement> map = roleHandler.asMap(root);
+							matchs.addAll(map.values());
 						}
 						break;
 				}
