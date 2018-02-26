@@ -10,6 +10,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtElementPathBuilder;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathBuilder;
 import spoon.reflect.path.CtPathException;
@@ -25,6 +26,7 @@ import java.util.Set;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by nicolas on 10/06/2015.
@@ -100,6 +102,40 @@ public class PathTest {
 		literal.setValue("salut");
 		literal.setType(literal.getFactory().Type().STRING);
 		equals(new CtPathStringBuilder().fromString(".spoon.test.path.Foo.toto#defaultExpression"), literal);
+	}
+
+	@Test
+	public void testIncorrectPathFromString() throws Exception {
+		// match the else part of the if in Foo.bar() method which does not exist (Test non existing unique element)
+		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.bar#body#statement[index=2]#else")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 0);
+		// match the third statement of Foo.foo() method which does not exist (Test non existing element of a list)
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=3]")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 0);
+		// match an non existing package (Test non existing element of a set)
+		results = new CtPathStringBuilder().fromString("#subPackage[name=nonExistingPackage]")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 0);
+		//match a non existing field of an annotation (Test non existing element of a map)
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.bar##annotation[index=0]#value[key=misspelled]")
+				.evaluateOn(factory.getModel().getRootPackage());
+		assertEquals(results.size(), 0);
+	}
+
+	@Test
+	public void testGetPathFromNonParent() throws Exception {
+		CtMethod fooMethod = (CtMethod) new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo")
+				.evaluateOn(factory.getModel().getRootPackage()).iterator().next();
+		CtMethod barMethod = (CtMethod) new CtPathStringBuilder().fromString(".spoon.test.path.Foo.bar")
+				.evaluateOn(factory.getModel().getRootPackage()).iterator().next();
+		try {
+			new CtElementPathBuilder().fromElement(fooMethod,barMethod);
+			fail("No path should be found to .spoon.test.path.Foo.foo from .spoon.test.path.Foo.bar");
+		} catch (CtPathException e) {
+
+		}
 	}
 
 	@Test

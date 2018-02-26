@@ -33,8 +33,11 @@ public class CtElementPathBuilder {
 		while (cur != root) {
 			CtElement parent = cur.getParent();
 			CtRole role = cur.getRoleInParent();
+			if (role == null) {
+				throw new CtPathException();
+			}
 			RoleHandler roleHandler = RoleHandlerHelper.getOptionalRoleHandler(parent.getClass(), role);
-			if (role == null || roleHandler == null) {
+			if (roleHandler == null) {
 				throw new CtPathException();
 			}
 			CtPathElement pathElement = new CtRolePathElement(role);

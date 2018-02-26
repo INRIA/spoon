@@ -546,7 +546,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		try {
 			return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
 		} catch (CtPathException e) {
-			throw new SpoonException();
+			throw new SpoonException(e);
 		}
 	}
 }

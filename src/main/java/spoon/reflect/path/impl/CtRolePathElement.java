@@ -82,13 +82,19 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 			if (roleHandler != null) {
 				switch (roleHandler.getContainerKind()) {
 					case SINGLE:
-						matchs.add(roleHandler.getValue(root));
+						if (roleHandler.getValue(root) != null) {
+							matchs.add(roleHandler.getValue(root));
+						}
 						break;
 
 					case LIST:
 						if (getArguments().containsKey("index")) {
 							int index = Integer.parseInt(getArguments().get("index"));
-							matchs.add((CtElement) roleHandler.asList(root).get(index));
+							if (index < roleHandler.asList(root).size()) {
+								matchs.add((CtElement) roleHandler.asList(root).get(index));
+							}
+						} else {
+							matchs.addAll(roleHandler.asList(root));
 						}
 						break;
 
@@ -107,7 +113,9 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 					case MAP:
 						if (getArguments().containsKey("key")) {
 							String name = getArguments().get("key");
-							matchs.add((CtElement) roleHandler.asMap(root).get(name));
+							if (roleHandler.asMap(root).containsKey(name)) {
+								matchs.add((CtElement) roleHandler.asMap(root).get(name));
+							}
 						}
 						break;
 				}
