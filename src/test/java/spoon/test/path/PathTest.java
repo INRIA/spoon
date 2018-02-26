@@ -45,13 +45,13 @@ public class PathTest {
 	}
 
 	private void equals(CtPath path, CtElement... elements) {
-		Collection<CtElement> result = path.evaluateOn(Arrays.asList(factory.Package().getRootPackage()));
+		Collection<CtElement> result = path.evaluateOn(factory.Package().getRootPackage());
 		assertEquals(elements.length, result.size());
 		assertArrayEquals(elements, result.toArray(new CtElement[0]));
 	}
 
 	private void equalsSet(CtPath path, Set<? extends CtElement> elements) {
-		Collection<CtElement> result = path.evaluateOn(Arrays.asList(factory.Package().getRootPackage()));
+		Collection<CtElement> result = path.evaluateOn(factory.Package().getRootPackage());
 		assertEquals(elements.size(), result.size());
 		assertTrue(result.containsAll(elements));
 	}

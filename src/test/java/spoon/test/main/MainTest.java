@@ -451,7 +451,6 @@ public class MainTest {
 	@Test
 	public void testElementToPathToElementEquivalency() {
 
-		List<CtElement> list = Arrays.asList(rootPackage);
 		rootPackage.accept(new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
@@ -460,7 +459,7 @@ public class MainTest {
 					String pathStr = path.toString();
 					try {
 						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
-						Collection<CtElement> returnedElements = pathRead.evaluateOn(list);
+						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
 						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
 						assertEquals(returnedElements.size(), 1);
 						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
