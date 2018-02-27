@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -11,18 +12,18 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -148,4 +149,72 @@ public class CloneTest {
 		//contract: each visitable elements was cloned exactly once.  No more no less.
 		assertTrue(cl.sourceToTarget.isEmpty());
 	}
+
+	@Test
+	public void testCopyMethod() throws Exception {
+		// contract: the copied method is well-formed, lookup of executable references is preserved after copying, esp for recursive methods
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("./src/test/resources/noclasspath/A2.java");
+		l.buildModel();
+		CtClass<Object> klass = l.getFactory().Class().get("A2");
+		CtMethod<?> method = klass.getMethodsByName("c").get(0);
+		List<CtExecutableReference> elements = method.getElements(new TypeFilter<>(CtExecutableReference.class));
+		CtExecutableReference methodRef = elements.get(0);
+		
+		// the lookup is OK in the original node
+		assertSame(method, methodRef.getDeclaration());
+
+		assertEquals("A2", methodRef.getDeclaringType().toString());
+
+		// we copy the method
+		CtMethod<?> methodClone = method.copyMethod();
+		assertEquals("cCopy", methodClone.getSimpleName());
+
+		// useful for debug
+		methodClone.getBody().insertBegin(l.getFactory().createCodeSnippetStatement("// debug info"));
+
+		CtExecutableReference reference = methodClone.getElements(new TypeFilter<>(CtExecutableReference.class)).get(0);
+		// all references have been updated
+		assertEquals("cCopy", reference.getSimpleName());
+		assertSame(methodClone, reference.getDeclaration());
+		assertEquals("A2", methodClone.getDeclaringType().getQualifiedName());
+
+		// now we may want to rename the copied method
+		Refactoring.changeMethodName(methodClone, "foo");
+		assertEquals("foo", methodClone.getSimpleName()); // the method has been changed
+		assertEquals("foo", reference.getSimpleName());  // the reference has been changed
+		assertSame(methodClone, reference.getDeclaration()); // the lookup still works
+		assertEquals("A2", methodClone.getDeclaringType().getQualifiedName());
+
+		// one can even copy the method several times
+		methodClone = Refactoring.copyMethod(method);
+		assertEquals("cCopy", methodClone.getSimpleName());
+		methodClone = Refactoring.copyMethod(method);
+		assertEquals("cCopyX", methodClone.getSimpleName());
+	}
+
+
+
+	@Test
+	public void testCopyType() throws Exception {
+		// contract: the copied type is well formed, it never points to the initial type
+		Factory factory = ModelUtils.build(new File("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java"));
+		CtType<?> intialElement = factory.Type().get(DefaultJavaPrettyPrinter.class);
+		CtType<?> cloneTarget = intialElement.copyType();
+		assertEquals("spoon.reflect.visitor.DefaultJavaPrettyPrinterCopy", cloneTarget.getQualifiedName());
+		// we go over all references
+		for (CtReference reference: cloneTarget.getElements(new TypeFilter<>(CtReference.class))) {
+			CtElement declaration = reference.getDeclaration();
+			if (declaration == null) {
+				continue;
+			}
+
+			// the core assertion: not a single reference points to the initial element
+			if (declaration.hasParent(intialElement)) {
+				fail();
+			}
+		}
+	}
+
 }
