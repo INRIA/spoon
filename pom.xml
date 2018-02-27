@@ -292,7 +292,7 @@
           <testTarget>${java.test.version}</testTarget>
           <showWarnings>true</showWarnings>
           <compilerArgs>
-              <arg>-Xlint:deprecation</arg>
+              <arg>-Xlint:deprecation,unchecked</arg>
           </compilerArgs>
         </configuration>
       </plugin>
