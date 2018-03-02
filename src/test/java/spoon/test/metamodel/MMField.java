@@ -543,10 +543,15 @@ public class MMField {
 		});
 		int idx = 0;
 		if (potentialRootSuperFields.size() > 1) {
+			boolean needsSetter = getMethod(MMMethodKind.SET) != null;
 			CtTypeReference<?> expectedValueType = this.getValueType().getTypeErasure();
 			for (int i = 1; i < potentialRootSuperFields.size(); i++) {
 				MMField superField = potentialRootSuperFields.get(i);
 				if (superField.getValueType().getTypeErasure().equals(expectedValueType) == false) {
+					break;
+				}
+				if (needsSetter && superField.getMethod(MMMethodKind.SET) == null) {
+					//this field has setter but the superField has no setter. We cannot used it as super
 					break;
 				}
 				idx = i;
