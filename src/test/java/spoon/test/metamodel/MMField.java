@@ -35,6 +35,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * Represents a field of Spoon model type.
@@ -67,6 +68,7 @@ public class MMField {
 	private CtTypeReference<?> itemValueType;
 
 	private Boolean derived;
+	private Boolean unsettable;
 
 	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new HashMap<>();
 
@@ -472,6 +474,43 @@ public class MMField {
 			}
 		}
 		return derived;
+	}
+
+	public boolean isUnsettable() {
+		if (unsettable == null) {
+			//if UnsettablePropertyis found on any setter of this type, then this field is unsettable
+			MMMethod setter = getMethod(MMMethodKind.SET);
+			if (setter == null) {
+				unsettable = Boolean.TRUE;
+				return true;
+			}
+			CtTypeReference<UnsettableProperty> unsettableProperty = setter.getMethod().getFactory().createCtTypeReference(UnsettableProperty.class);
+
+			boolean isConreteMethod = false;
+			for (CtMethod<?> ctMethod : setter.getOwnMethods()) {
+				if (ctMethod.getAnnotation(unsettableProperty) != null) {
+					unsettable = Boolean.TRUE;
+					return true;
+				}
+				isConreteMethod = isConreteMethod || ctMethod.getBody() != null;
+			}
+			if (isConreteMethod) {
+				//there exists a implementation of setter for this field in this type and there is no  UnsettableProperty here, so it is settable!
+				unsettable = Boolean.FALSE;
+				return false;
+			}
+			//inherit unsettable property from super type
+			//if UnsettableProperty annotation is not found on any set method, then it is settable
+			unsettable = Boolean.FALSE;
+			//check all super fields. If any of them is derived then this field is derived too
+			for (MMField superField : superFields) {
+				if (superField.isUnsettable()) {
+					unsettable = Boolean.TRUE;
+					break;
+				}
+			}
+		}
+		return unsettable;
 	}
 
 	public List<MMMethod> getRoleMethods() {

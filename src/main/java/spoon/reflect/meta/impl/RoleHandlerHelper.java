@@ -18,6 +18,7 @@ package spoon.reflect.meta.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,11 @@ public class RoleHandlerHelper {
 			roleHandlers[i] = new ArrayList<>();
 		}
 		for (RoleHandler rh : ModelRoleHandlers.roleHandlers) {
-			roleHandlers[rh.getRole().ordinal()].add(0, rh);
+			roleHandlers[rh.getRole().ordinal()].add(rh);
+		}
+		Comparator<RoleHandler> cmp = (a, b) -> a.getTargetType().isAssignableFrom(b.getTargetType())?1:-1;
+		for (RoleHandler rh : ModelRoleHandlers.roleHandlers) {
+			roleHandlers[rh.getRole().ordinal()].sort(cmp);
 		}
 	}
 
