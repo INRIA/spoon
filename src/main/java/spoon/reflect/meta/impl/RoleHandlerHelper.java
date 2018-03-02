@@ -48,7 +48,7 @@ public class RoleHandlerHelper {
 		for (RoleHandler rh : ModelRoleHandlers.roleHandlers) {
 			roleHandlers[rh.getRole().ordinal()].add(rh);
 		}
-		Comparator<RoleHandler> cmp = (a, b) -> a.getTargetType().isAssignableFrom(b.getTargetType())?1:-1;
+		Comparator<RoleHandler> cmp = (a, b) -> a.getTargetType().isAssignableFrom(b.getTargetType()) ? 1 : -1;
 		for (RoleHandler rh : ModelRoleHandlers.roleHandlers) {
 			roleHandlers[rh.getRole().ordinal()].sort(cmp);
 		}
