@@ -113,7 +113,13 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 				if (argumentsRoleInParent == mmField.getRole()) {
 					problems.add("UnsettableProperty " + mmField + " sets the value");
 				} else {
-					problems.add("UnsettableProperty " + mmField + " sets the value into different role " + argumentsRoleInParent);
+					if (mmField.isDerived()) {
+						//it is OK, that setting of value into derived unsettable field influences other field
+						//Example 1: CtCatchVariable.setType(x) influences result of getMultitype()
+						//Example 2: CtEnumValue.setAssignment(x) influences result of getDefaultExpression()
+					} else {
+						problems.add("UnsettableProperty " + mmField + " sets the value into different role " + argumentsRoleInParent);
+					}
 				}
 				continue;
 			} 
