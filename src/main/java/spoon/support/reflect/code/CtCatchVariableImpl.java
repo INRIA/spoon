@@ -124,6 +124,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		setMultiTypes(type == null ? emptyList() : Collections.singletonList(type));
 		return (C) this;
