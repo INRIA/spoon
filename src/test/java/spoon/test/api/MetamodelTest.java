@@ -26,16 +26,26 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.metamodel.MMField;
+import spoon.test.metamodel.MMType;
+import spoon.test.metamodel.MMTypeKind;
+import spoon.test.metamodel.SpoonMetaModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class MetamodelTest {
@@ -50,6 +60,30 @@ public class MetamodelTest {
 		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet())));
 	}
 
+	@Test
+	public void testRuntimeMetamodel() {
+		// contract: Spoon supports runtime introspection on the metamodel - all (non abstract) Spoon classes and their fields are accessible by Metamodel
+		SpoonMetaModel testMetaModel = new SpoonMetaModel(new File("src/main/java"));
+		Map<String, MMType> expectedTypesByName = new HashMap<>();
+		testMetaModel.getMMTypes().forEach(t -> {
+			if (t.getKind() == MMTypeKind.LEAF) {
+				expectedTypesByName.put(t.getName(), t);	
+			}
+		});
+		for (Metamodel.Type type : Metamodel.getAllMetamodelTypes()) {
+			MMType expectedType = expectedTypesByName.remove(type.getName());
+			assertSame(expectedType.getModelClass().getActualClass(), type.getModelClass());
+			assertSame(expectedType.getModelInterface().getActualClass(), type.getModelInterface());
+			Map<CtRole, MMField> expectedRoleToField = new HashMap<>(expectedType.getRole2field());
+			for (Metamodel.Field field : type.getFields()) {
+				MMField expectedField = expectedRoleToField.remove(field.getRole());
+				assertSame(expectedField.isDerived(), field.isDerived());
+				assertSame(expectedField.isUnsettable(), field.isUnsettable());
+			}
+			assertTrue("These Metamodel.Field instances are missing on Type " + type.getName() +": " + expectedRoleToField.keySet(), expectedRoleToField.isEmpty());
+		}
+		assertTrue("These Metamodel.Type instances are missing: " + expectedTypesByName.keySet(), expectedTypesByName.isEmpty());
+	}
 
 
 	@Test
@@ -162,4 +196,6 @@ public class MetamodelTest {
 		}
 
 	}
+	
+	
 }
