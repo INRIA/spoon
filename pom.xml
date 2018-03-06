@@ -548,7 +548,9 @@
         <configuration>
           <quiet>true</quiet>
           <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
+          <!--maven-javadoc-plugin version 2.9 onwards uses additionalJOption, see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin/48511911#48511911 -->
+          <additionalJOption>-Xdoclint:none</additionalJOption>
+      </configuration>
         <reportSets>
           <reportSet>
             <id>html</id>
