@@ -293,7 +293,13 @@
           <showWarnings>true</showWarnings>
           <compilerArgs>
               <arg>-Xlint:deprecation</arg>
+              <!-- always generate class files for package-info -->
+              <arg>-Xpkginfo:always</arg>
           </compilerArgs>
+          <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
+          <!-- useIncrementalCompilation=false actually means that we won't recompile everything each time -->
+          <!-- it's not a joka, test by yourself :-) -->
+          <useIncrementalCompilation>false</useIncrementalCompilation>
         </configuration>
       </plugin>
 
