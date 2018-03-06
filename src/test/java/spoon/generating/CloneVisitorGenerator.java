@@ -79,9 +79,10 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		final CtTypeReference<Object> cloneBuilder = factory.Type().createReference("spoon.support.visitor.clone.CloneBuilder");
 		final CtTypeAccess<Object> cloneBuilderType = factory.Code().createTypeAccess(cloneBuilder);
 		final CtVariableAccess<Object> builderFieldAccess = factory.Code().createVariableRead(factory.Field().createReference(target.getReference(), cloneBuilder, "builder"), false);
+		final CtVariableAccess<Object> tailorerFieldAccess = factory.Code().createVariableRead(factory.Field().createReference(target.getReference(), cloneBuilder, "tailorer"), false);
 		final CtVariableAccess<Object> cloneHelperFieldAccess = factory.Code().createVariableRead(factory.Field().createReference(target.getReference(), cloneBuilder, "cloneHelper"), false);
 		final CtFieldReference<Object> other = factory.Field().createReference((CtField) target.getField("other"));
-		final CtVariableAccess<Object> otherRead = factory.Code().createVariableRead(other, true);
+		final CtVariableAccess otherRead = factory.Code().createVariableRead(other, true);
 
 		new CtScanner() {
 			private final List<String> internals = Collections.singletonList("CtCircularTypeReference");
@@ -96,8 +97,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				// Variables used by the visit method.
 				final CtParameter<CtElement> ctParameter = (CtParameter<CtElement>) element.getParameters().get(0);
 				final CtVariableAccess<CtElement> elementVarRead = factory.Code().createVariableRead(ctParameter.getReference(), false);
-				final CtInvocation cloneBuilderInvocation = createCloneBuilderInvocation(elementVarRead);
-				final CtLocalVariable localCloningElement = createLocalCloningElement(ctParameter.getType(), cloneBuilderInvocation);
+				final CtInvocation cloneBuilderInvocation = createCloneBuilderBuildInvocation(elementVarRead);
+				final CtLocalVariable localCloningElement = createLocalCloningElement(ctParameter.getType(), createFactoryInvocation(elementVarRead));
+				final CtVariableAccess localVarRead = factory.Code().createVariableRead(localCloningElement.getReference(), false);
 
 				// Changes body of the cloned method.
 				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
@@ -111,18 +113,18 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						continue;
 					}
 					clone.getBody().getStatement(i) //
-							.replace(createSetter((CtInvocation) clone.getBody().getStatement(i), factory.Code().createVariableRead(localCloningElement.getReference(), false)));
+							.replace(createSetter((CtInvocation) clone.getBody().getStatement(i), localVarRead));
 				}
 
 				// Delete enter and exit methods.
 				clone.getBody().getStatement(0).delete();
 				clone.getBody().getStatement(clone.getBody().getStatements().size() - 1).delete();
 
-				// Inserts cloning element at the beginning of the method.
-				clone.getBody().insertBegin(localCloningElement);
+				clone.getBody().insertBegin(localCloningElement); // declaration of local variable
+				clone.getBody().insertEnd(createCloneBuilderCopyInvocation(elementVarRead, localVarRead)); // call to copy
+				clone.getBody().insertEnd(createTailorerScanInvocation(elementVarRead,localVarRead)); // call to tailor
+				clone.getBody().insertEnd(factory.Code().createVariableAssignment(other, false, localVarRead)); // final assignment
 
-				// Updates cloning element into result.
-				clone.getBody().insertEnd(createAssignment(factory.Code().createVariableRead(localCloningElement.getReference(), false)));
 
 				// Add auto-generated comment.
 				final CtComment comment = factory.Core().createComment();
@@ -150,15 +152,6 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			}
 
 			/**
-			 * Creates <code>other = anElement</code>.
-			 *
-			 * @param assignment <code>anElement</code>.
-			 */
-			private CtAssignment createAssignment(CtVariableAccess assignment) {
-				return factory.Code().createVariableAssignment(other, false, assignment);
-			}
-
-			/**
 			 * Creates <code>CtElement anElement = CloneBuilder.build(builder, element, element.getFactory().Core().createElement())</code>.
 			 *
 			 * @param typeReference <code>CtElement</code>.
@@ -173,9 +166,19 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 *
 			 * @param elementAccess <code>element</code>.
 			 */
-			private CtInvocation<CloneBuilder> createCloneBuilderInvocation(CtVariableAccess<CtElement> elementAccess) {
+			private CtInvocation<CloneBuilder> createCloneBuilderBuildInvocation(CtVariableAccess<CtElement> elementAccess) {
 				final CtExecutableReference<CloneBuilder> buildExecRef = factory.Executable().createReference("CloneBuilder CtElement#build()");
 				return factory.Code().createInvocation(cloneBuilderType, buildExecRef, builderFieldAccess, elementAccess, createFactoryInvocation(elementAccess.clone()));
+			}
+
+			private CtInvocation<CloneBuilder> createCloneBuilderCopyInvocation(CtVariableAccess<CtElement> elementVarRead, CtVariableAccess<CtElement> elementVarRead2) {
+				final CtExecutableReference<CloneBuilder> buildExecRef = factory.Executable().createReference("CloneBuilder #copy()");
+				return factory.Code().createInvocation(builderFieldAccess, buildExecRef, elementVarRead, elementVarRead2);
+			}
+
+			private CtInvocation<CloneBuilder> createTailorerScanInvocation(CtVariableAccess elementVarRead, CtVariableAccess localVarRead) {
+				final CtExecutableReference<CloneBuilder> buildExecRef = factory.Executable().createReference("CloneHelper #tailor()");
+				return factory.Code().createInvocation(cloneHelperFieldAccess, buildExecRef, elementVarRead, localVarRead);
 			}
 
 			/**
@@ -183,7 +186,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 *
 			 * @param elementAccess <code>element</code>.
 			 */
-			private CtInvocation<Object> createFactoryInvocation(CtVariableAccess<CtElement> elementAccess) {
+			private CtInvocation createFactoryInvocation(CtVariableAccess<CtElement> elementAccess) {
 				final String typeName = elementAccess.getType().getSimpleName();
 				// #getFactory()
 				final CtInvocation<Object> getFactory = factory.Code().createInvocation(null, factory.Executable().createReference("Factory CtElement#getFactory()"));

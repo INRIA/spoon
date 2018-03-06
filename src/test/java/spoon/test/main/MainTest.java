@@ -23,6 +23,9 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
+import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -40,13 +43,17 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.IdentityHashMap;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -437,6 +444,32 @@ public class MainTest {
 					assertSame(role, element.getRoleInParent());
 				}
 				super.scan(role, element);
+			}
+		});
+	}
+
+	@Test
+	public void testElementToPathToElementEquivalency() {
+
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					CtPath path = element.getPath();
+					String pathStr = path.toString();
+					try {
+						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
+						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
+						assertEquals(returnedElements.size(), 1);
+						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
+						//contract: Element -> Path -> String -> Path -> Element leads to the original element
+						assertSame(element, actualElement);
+					} catch (CtPathException e) {
+						fail("Path is either incorrectly generated or incorrectly read");
+					}
+				}
+				super.scan(element);
 			}
 		});
 	}

@@ -26,8 +26,9 @@ import spoon.reflect.visitor.CtInheritanceScanner;
  * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 class CloneBuilderTemplate extends CtInheritanceScanner {
-	public static <T extends CtElement> T build(CtElement element, CtElement other) {
-		return build(new CloneBuilderTemplate(), element, other);
+	public void copy(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+		this.setOther(other);
+		this.scan(element);
 	}
 
 	public static <T extends CtElement> T build(CloneBuilderTemplate builder, CtElement element, CtElement other) {

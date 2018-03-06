@@ -18,8 +18,12 @@ class Foo {
 		}
 	}
 
+	@java.lang.SuppressWarnings("unchecked")
 	void bar(int i, int j) {
 		int x = 3;
 		x = x + 1;
+		if (i > 5) {
+			x += 1;
+		}
 	}
 }

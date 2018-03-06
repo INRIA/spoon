@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
@@ -1052,5 +1053,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
+	}
+
+	@Override
+	public CtType<?> copyType() {
+		return Refactoring.copyType(this);
 	}
 }

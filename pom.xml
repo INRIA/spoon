@@ -293,7 +293,13 @@
           <showWarnings>true</showWarnings>
           <compilerArgs>
               <arg>-Xlint:deprecation,unchecked</arg>
+              <!-- always generate class files for package-info -->
+              <arg>-Xpkginfo:always</arg>
           </compilerArgs>
+          <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
+          <!-- useIncrementalCompilation=false actually means that we won't recompile everything each time -->
+          <!-- it's not a joka, test by yourself :-) -->
+          <useIncrementalCompilation>false</useIncrementalCompilation>
         </configuration>
       </plugin>
 
@@ -548,7 +554,9 @@
         <configuration>
           <quiet>true</quiet>
           <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
+          <!--maven-javadoc-plugin version 2.9 onwards uses additionalJOption, see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin/48511911#48511911 -->
+          <additionalJOption>-Xdoclint:none</additionalJOption>
+      </configuration>
         <reportSets>
           <reportSet>
             <id>html</id>

@@ -149,6 +149,16 @@ public abstract class CtScanner implements CtVisitor {
 			}
 		}
 	}
+	/**
+	 * Generically scans a Map of meta-model elements.
+	 */
+	public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
+		if (elements != null) {
+			for (CtElement obj : elements.values()) {
+				scan(role, obj);
+			}
+		}
+	}
 
 	/**
 	 * Generically scans a collection of meta-model elements.
@@ -199,14 +209,10 @@ public abstract class CtScanner implements CtVisitor {
 			scan(role, ((CtElement) (o)));
 		}
 		if (o instanceof Collection<?>) {
-			for (Object obj : ((Collection<?>) (o))) {
-				scan(role, obj);
-			}
+			scan(role, (Collection<? extends CtElement>) o);
 		}
 		if (o instanceof Map<?, ?>) {
-			for (Object obj : ((Map) (o)).values()) {
-				scan(role, obj);
-			}
+			scan(role, (Map<String, ? extends CtElement>) o);
 		}
 	}
 
