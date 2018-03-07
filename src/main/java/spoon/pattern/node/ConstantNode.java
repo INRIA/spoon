@@ -14,56 +14,62 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern.matcher;
+package spoon.pattern.node;
 
 import java.util.function.BiConsumer;
 
-import spoon.pattern.Node;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;
 
 /**
- * Represents a ValueResolver of one Map.Entry
+ * Generates/Matches a copy of single template object
  */
-public class MapEntryNode implements Node {
-	private final Node key;
-	private final Node value;
+public class ConstantNode<T> extends AbstractPrimitiveMatcher {
+	protected final T template;
 
-	public MapEntryNode(Node key, Node value) {
+	public ConstantNode(T template) {
 		super();
-		this.key = key;
-		this.value = value;
+		this.template = template;
 	}
 
-	public Node getKey() {
-		return key;
-	}
-	public Node getValue() {
-		return value;
+	public T getTemplateNode() {
+		return template;
 	}
 
 	@Override
 	public boolean replaceNode(Node oldNode, Node newNode) {
-		//TODO
-		throw new UnsupportedOperationException("TODO");
+		return false;
 	}
 
-	@Override
-	public TobeMatched matchTargets(TobeMatched targets, Matchers nextMatchers) {
-		//TODO
-		throw new UnsupportedOperationException("TODO");
-	}
 	@Override
 	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
-		// TODO
-		throw new UnsupportedOperationException("TODO");
+		//it has no parameters
 	}
 
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
-		// TODO
-		throw new UnsupportedOperationException("TODO");
+	public <U> void generateTargets(Factory factory, ResultHolder<U> result, ParameterValueProvider parameters) {
+		result.addResult((U) template);
+	}
+
+	@Override
+	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+		if (target == null && template == null) {
+			return parameters;
+		}
+		if (target == null || template == null) {
+			return null;
+		}
+		if (target.getClass() != template.getClass()) {
+			return null;
+		}
+		return target.equals(template) ? parameters : null;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(template);
 	}
 }
+

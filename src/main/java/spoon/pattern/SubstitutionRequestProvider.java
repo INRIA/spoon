@@ -16,6 +16,8 @@
  */
 package spoon.pattern;
 
+import spoon.pattern.node.Node;
+
 /**
  * Maps AST model object to the {@link Node}
  */

@@ -27,6 +27,7 @@ import java.util.Map;
 import spoon.SpoonException;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.MatchingScanner;
+import spoon.pattern.node.ModelNode;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.pattern.parameter.ParameterValueProviderFactory;

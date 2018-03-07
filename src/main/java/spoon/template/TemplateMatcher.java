@@ -18,11 +18,11 @@ package spoon.template;
 
 import java.util.List;
 
-import spoon.pattern.ModelNode;
 import spoon.pattern.Pattern;
 import spoon.pattern.TemplateBuilder;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.TobeMatched;
+import spoon.pattern.node.ModelNode;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.pattern.parameter.ParameterValueProviderFactory;
 import spoon.pattern.parameter.UnmodifiableParameterValueProvider;

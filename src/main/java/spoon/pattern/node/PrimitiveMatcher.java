@@ -14,25 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern.matcher;
-//TODO move to spoon.pattern.matcher
-
-import java.util.List;
+package spoon.pattern.node;
 
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.declaration.CtElement;
 
 /**
- * Marks the SubstitutionRequest which has to match whole AST node (not only some attribute of node)
+ * Defines API of a primitive matcher - matcher for single target object
  */
-public interface NodeListMatcher {
+public interface PrimitiveMatcher extends RepeatableMatcher {
+
 	/**
-	 * matches this {@link NodeListMatcher} with `nextTargets` and `nextTemplates` storing the matched values into `parameters`
-	 * @param parameters the collector of matched parameters
-	 * @param nextTargets the List of
-	 * @param nextTemplates
-	 * @return if this {@link NodeListMatcher} matched and all `nextTemplates` matched, then return number of matching items from `nextTargets`
-	 * if something doesn't match, then return -1
+	 * @param target - to be matched element
+	 * @param parameters will receive the matching parameter values
+	 * @return true if `element` matches with pattern of this matcher
 	 */
-	int matches(ParameterValueProvider parameters, List<CtElement> nextTargets, List<CtElement> nextTemplates);
+	ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters);
 }

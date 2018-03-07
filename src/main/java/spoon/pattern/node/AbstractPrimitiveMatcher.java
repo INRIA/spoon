@@ -14,19 +14,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.node;
 
-import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.pattern.matcher.TobeMatched;
 
 /**
- * Defines API of a primitive matcher - matcher for single target object
+ * Delivers to be substituted value
+ * Matches value
  */
-public interface PrimitiveMatcher extends RepeatableMatcher {
+abstract class AbstractPrimitiveMatcher extends AbstractRepeatableMatcher implements PrimitiveMatcher {
 
-	/**
-	 * @param target - to be matched element
-	 * @param parameters will receive the matching parameter values
-	 * @return true if `element` matches with pattern of this matcher
-	 */
-	ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters);
+	protected AbstractPrimitiveMatcher() {
+	}
+
+
+	@Override
+	public TobeMatched matchAllWith(TobeMatched tobeMatched) {
+		//we are matching single CtElement or attribute value
+		return tobeMatched.matchNext((target, parameters) -> {
+			return matchTarget(target, tobeMatched.getParameters());
+		});
+	}
 }

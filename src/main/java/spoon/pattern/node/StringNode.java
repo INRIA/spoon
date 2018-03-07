@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.node;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import spoon.SpoonException;
+import spoon.pattern.ResultHolder;
+import spoon.pattern.ResultHolder.Single;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;

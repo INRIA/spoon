@@ -23,6 +23,11 @@ import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.pattern.matcher.Quantifier;
+import spoon.pattern.node.ConstantNode;
+import spoon.pattern.node.ModelNode;
+import spoon.pattern.node.Node;
+import spoon.pattern.node.ParameterNode;
+import spoon.pattern.node.StringNode;
 import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ListParameterInfo;
 import spoon.pattern.parameter.MapParameterInfo;

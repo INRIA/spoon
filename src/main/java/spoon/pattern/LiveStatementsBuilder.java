@@ -21,6 +21,12 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import spoon.SpoonException;
+import spoon.pattern.node.ForEachNode;
+import spoon.pattern.node.ListOfNodes;
+import spoon.pattern.node.Node;
+import spoon.pattern.node.ParameterNode;
+import spoon.pattern.node.PrimitiveMatcher;
+import spoon.pattern.node.SwitchNode;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;

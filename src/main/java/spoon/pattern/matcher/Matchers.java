@@ -16,7 +16,7 @@
  */
 package spoon.pattern.matcher;
 
-import spoon.pattern.Node;
+import spoon.pattern.node.Node;
 
 /**
  * A container of {@link Node}s.

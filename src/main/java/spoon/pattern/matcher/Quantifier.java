@@ -16,7 +16,7 @@
  */
 package spoon.pattern.matcher;
 
-import spoon.pattern.Node;
+import spoon.pattern.node.Node;
 
 /**
  * Defines a strategy used to resolve conflict between two {@link Node}s

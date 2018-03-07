@@ -14,11 +14,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.node;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;

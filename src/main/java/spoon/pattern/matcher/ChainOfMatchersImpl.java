@@ -19,7 +19,7 @@ package spoon.pattern.matcher;
 import java.util.List;
 
 import spoon.SpoonException;
-import spoon.pattern.Node;
+import spoon.pattern.node.Node;
 
 /**
  * Chain of {@link Node}s. {@link Node}s are processed in the same order as they were added into chain

@@ -16,10 +16,10 @@
  */
 package spoon.pattern.parameter;
 
-import spoon.pattern.Node;
 import spoon.pattern.Pattern;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
+import spoon.pattern.node.Node;
 import spoon.reflect.factory.Factory;
 
 /**

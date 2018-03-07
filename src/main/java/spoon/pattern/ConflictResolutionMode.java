@@ -17,6 +17,7 @@
 package spoon.pattern;
 
 import spoon.SpoonException;
+import spoon.pattern.node.Node;
 
 /**
  * Defines what happens when before explicitly added {@link Node} has to be replaced by another {@link Node}

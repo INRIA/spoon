@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
+import spoon.pattern.node.Node;
 import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtInvocation;

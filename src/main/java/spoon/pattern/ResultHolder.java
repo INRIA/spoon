@@ -116,7 +116,7 @@ public abstract class ResultHolder<T> {
 
 		List<T> result = new ArrayList<>();
 
-		Multiple(Class<T> requiredClass) {
+		public Multiple(Class<T> requiredClass) {
 			super(requiredClass);
 		}
 
