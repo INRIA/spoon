@@ -18,7 +18,6 @@ package spoon.pattern;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -166,8 +165,6 @@ public class PatternBuilder {
 		return nodes;
 	}
 
-	private final Set<CtRole> IGNORED_ROLES = Collections.unmodifiableSet((new HashSet<>(Arrays.asList(CtRole.POSITION))));
-
 	private RootNode createImplicitNode(Object object) {
 		if (object instanceof CtElement) {
 			//it is a spoon element
@@ -179,7 +176,7 @@ public class PatternBuilder {
 			}
 			//iterate over all attributes of that element
 			for (Metamodel.Field  mmField : mmConcept.getFields()) {
-				if (mmField.isDerived() || IGNORED_ROLES.contains(mmField.getRole())) {
+				if (mmField.isDerived()) {
 					//skip derived fields, they are not relevant for matching or generating
 					continue;
 				}
