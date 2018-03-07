@@ -18,12 +18,12 @@ package spoon.pattern.node;
 
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
 
 /**
  * Represents pattern model variable
@@ -44,8 +44,8 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
-		parameterInfo.getValueAs(factory, result, parameters);
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		generator.getValueAs(parameterInfo, result, parameters);
 	}
 
 	@Override

@@ -19,6 +19,7 @@ package spoon.pattern.node;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.ResultHolder.Multiple;
 import spoon.pattern.ResultHolder.Single;
@@ -44,37 +45,11 @@ public interface Node extends Matchers {
 
 	/**
 	 * Generates zero, one or more target depending on kind of this {@link Node}, expected `result` and input `parameters`
-	 * @param factory TODO
+	 * @param generator {@link Generator} which drives generation process
+	 * @param result holder for the generated objects
+	 * @param parameters a {@link ParameterValueProvider} holding parameters
 	 */
-	<T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters);
-
-	/**
-	 * Generates one target depending on kind of this {@link Node}, expected `expectedType` and input `parameters`
-	 * @param factory TODO
-	 * @param parameters {@link ParameterValueProvider}
-	 * @param expectedType defines {@link Class} of returned value
-	 *
-	 * @return a generate value or null
-	 */
-	default <T> T generateTarget(Factory factory, ParameterValueProvider parameters, Class<T> expectedType) {
-		ResultHolder.Single<T> result = new ResultHolder.Single<>(expectedType);
-		generateTargets(factory, result, parameters);
-		return result.getResult();
-	}
-
-	/**
-	 * Generates zero, one or more targets depending on kind of this {@link Node}, expected `expectedType` and input `parameters`
-	 * @param factory TODO
-	 * @param parameters {@link ParameterValueProvider}
-	 * @param expectedType defines {@link Class} of returned value
-	 *
-	 * @return a {@link List} of generated targets
-	 */
-	default <T> List<T> generateTargets(Factory factory, ParameterValueProvider parameters, Class<T> expectedType) {
-		ResultHolder.Multiple<T> result = new ResultHolder.Multiple<>(expectedType);
-		generateTargets(factory, result, parameters);
-		return result.getResult();
-	}
+	<T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
 
 	/**
 	 * @param targets to be matched target nodes and input parameters

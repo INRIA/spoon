@@ -33,11 +33,16 @@ import spoon.support.StandardEnvironment;
 
 /**
  */
-public class PatternPrinter {
+public class PatternPrinter extends DefaultGenerator {
+
 	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 
+	public PatternPrinter() {
+		super(DEFAULT_FACTORY);
+	}
+
 	public String printNode(Node node) {
-		List<CtElement> generated = node.generateTargets(DEFAULT_FACTORY, new Params(), null);
+		List<CtElement> generated = generateTargets(node, new Params(), null);
 		StringBuilder sb = new StringBuilder();
 		for (CtElement ele : generated) {
 			sb.append(ele.toString()).append('\n');

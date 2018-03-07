@@ -18,12 +18,12 @@ package spoon.pattern.node;
 
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
  * Represents a ValueResolver of one Map.Entry
@@ -63,7 +63,7 @@ public class MapEntryNode implements Node {
 	}
 
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		// TODO
 		throw new UnsupportedOperationException("TODO");
 	}

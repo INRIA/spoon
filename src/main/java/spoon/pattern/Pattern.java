@@ -102,7 +102,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 	 * @return one generated element
 	 */
 	public <T extends CtElement> T substituteSingle(Factory factory, Class<T> valueType, ParameterValueProvider params) {
-		return modelValueResolver.generateTarget(factory, params, valueType);
+		return new DefaultGenerator(factory).generateTarget(modelValueResolver, params, valueType);
 	}
 	/**
 	 * generates a new AST made by cloning of `patternModel` and by substitution of parameters by values in `params`
@@ -122,7 +122,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 	 * @return List of generated elements
 	 */
 	public <T extends CtElement> List<T> substituteList(Factory factory, Class<T> valueType, ParameterValueProvider params) {
-		return modelValueResolver.generateTargets(factory, params, valueType);
+		return new DefaultGenerator(factory).generateTargets(modelValueResolver, params, valueType);
 	}
 
 

@@ -19,13 +19,13 @@ package spoon.pattern.node;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.ChainOfMatchersImpl;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
  * List of {@link Node}s. The {@link Node}s are processed in same order like they were inserted in the list
@@ -46,9 +46,9 @@ public class ListOfNodes implements Node {
 	}
 
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		for (Node node : nodes) {
-			node.generateTargets(factory, result, parameters);
+			generator.generateTargets(node, result, parameters);
 		}
 	}
 

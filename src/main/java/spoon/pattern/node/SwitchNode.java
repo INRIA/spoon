@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
@@ -66,9 +67,9 @@ public class SwitchNode implements Node {
 	}
 
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		for (CaseNode case1 : cases) {
-			case1.generateTargets(factory, result, parameters);
+			generator.generateTargets(case1, result, parameters);
 		}
 	}
 
@@ -170,18 +171,18 @@ public class SwitchNode implements Node {
 			SwitchNode.this.forEachParameterInfo(consumer);
 		}
 		@Override
-		public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
+		public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 			if (statement != null) {
-				if (isCaseSelected(factory, parameters)) {
-					statement.generateTargets(factory, result, parameters);
+				if (isCaseSelected(generator, parameters)) {
+					generator.generateTargets(statement, result, parameters);
 				}
 			}
 		}
-		private boolean isCaseSelected(Factory factory, ParameterValueProvider parameters) {
+		private boolean isCaseSelected(Generator generator, ParameterValueProvider parameters) {
 			if (vrOfExpression == null) {
 				return true;
 			}
-			Boolean value = vrOfExpression.generateTarget(factory, parameters, Boolean.class);
+			Boolean value = generator.generateTarget(vrOfExpression, parameters, Boolean.class);
 			return value == null ? false : value.booleanValue();
 		}
 	}

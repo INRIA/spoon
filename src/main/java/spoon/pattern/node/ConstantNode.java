@@ -18,10 +18,10 @@ package spoon.pattern.node;
 
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
  * Generates/Matches a copy of single template object
@@ -49,7 +49,7 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <U> void generateTargets(Factory factory, ResultHolder<U> result, ParameterValueProvider parameters) {
+	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ParameterValueProvider parameters) {
 		result.addResult((U) template);
 	}
 

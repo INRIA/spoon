@@ -27,11 +27,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import spoon.SpoonException;
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.ResultHolder.Single;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
  * Delivers single String value, which is created by replacing string markers in constant String template
@@ -55,7 +55,7 @@ public class StringNode extends ConstantNode<String> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		Class<?> requiredClass = result.getRequiredClass();
 		if (requiredClass != null && requiredClass.isAssignableFrom(String.class) == false) {
 			throw new SpoonException("StringValueResolver provides only String values. It doesn't support: " + requiredClass);
@@ -69,7 +69,7 @@ public class StringNode extends ConstantNode<String> {
 			ParameterInfo param = requests.getValue();
 			String replaceMarker = requests.getKey();
 			ResultHolder.Single<String> ctx = new ResultHolder.Single<>(String.class);
-			param.getValueAs(factory, ctx, parameters);
+			generator.getValueAs(param, ctx, parameters);
 			String substrValue = ctx.getResult() == null ? "" : ctx.getResult();
 			stringValue = substituteSubstring(stringValue, replaceMarker, substrValue);
 		}

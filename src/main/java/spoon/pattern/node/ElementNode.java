@@ -26,12 +26,12 @@ import java.util.function.BiConsumer;
 
 import spoon.Metamodel;
 import spoon.SpoonException;
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 
@@ -99,28 +99,28 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U> void generateTargets(Factory factory, ResultHolder<U> result, ParameterValueProvider parameters) {
+	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ParameterValueProvider parameters) {
 		//TODO implement create on Metamodel.Type
-		CtElement clone = factory.Core().create(elementType.getModelInterface());
-		generateSingleNodeAttributes(clone, parameters);
+		CtElement clone = generator.getFactory().Core().create(elementType.getModelInterface());
+		generateSingleNodeAttributes(generator, clone, parameters);
 		result.addResult((U) clone);
 	}
 
-	protected void generateSingleNodeAttributes(CtElement clone, ParameterValueProvider parameters) {
+	protected void generateSingleNodeAttributes(Generator generator, CtElement clone, ParameterValueProvider parameters) {
 		for (Map.Entry<Metamodel.Field, Node> e : getAttributeSubstititionRequests().entrySet()) {
 			Metamodel.Field mmField = e.getKey();
 			switch (mmField.getContainerKind()) {
 			case SINGLE:
-				mmField.setValue(clone, e.getValue().generateTarget(clone.getFactory(), parameters, mmField.getValueClass()));
+				mmField.setValue(clone, generator.generateTarget(e.getValue(), parameters, mmField.getValueClass()));
 				break;
 			case LIST:
-				mmField.setValue(clone, e.getValue().generateTargets(clone.getFactory(), parameters, mmField.getValueClass()));
+				mmField.setValue(clone, generator.generateTargets(e.getValue(), parameters, mmField.getValueClass()));
 				break;
 			case SET:
-				mmField.setValue(clone, new LinkedHashSet<>(e.getValue().generateTargets(clone.getFactory(), parameters, mmField.getValueClass())));
+				mmField.setValue(clone, new LinkedHashSet<>(generator.generateTargets(e.getValue(), parameters, mmField.getValueClass())));
 				break;
 			case MAP:
-				mmField.setValue(clone, entriesToMap(e.getValue().generateTargets(clone.getFactory(), parameters, Map.Entry.class)));
+				mmField.setValue(clone, entriesToMap(generator.generateTargets(e.getValue(), parameters, Map.Entry.class)));
 				break;
 			}
 		}

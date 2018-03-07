@@ -19,12 +19,12 @@ package spoon.pattern.node;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
  * Pattern node of multiple occurrences of the same model, just with different parameters.
@@ -66,9 +66,9 @@ public class ForEachNode extends AbstractRepeatableMatcher {
 	}
 
 	@Override
-	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
-		for (Object parameterValue : iterableParameter.generateTargets(factory, parameters, Object.class)) {
-			nestedModel.generateTargets(factory, result, parameters.putValueToCopy(localParameter.getName(), parameterValue));
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		for (Object parameterValue : generator.generateTargets(iterableParameter, parameters, Object.class)) {
+			generator.generateTargets(nestedModel, result, parameters.putValueToCopy(localParameter.getName(), parameterValue));
 		}
 	}
 
