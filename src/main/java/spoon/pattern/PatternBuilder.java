@@ -257,38 +257,6 @@ public class PatternBuilder {
 		return new ListOfNodes((List) nodes);
 	}
 
-//	private static final Map<CtRole, Class[]> roleToSkippedClass = new HashMap<>();
-//	static {
-//		roleToSkippedClass.put(CtRole.COMMENT, new Class[]{Object.class});
-//		roleToSkippedClass.put(CtRole.POSITION, new Class[]{Object.class});
-//		roleToSkippedClass.put(CtRole.TYPE, new Class[]{CtInvocation.class, CtExecutableReference.class});
-//		roleToSkippedClass.put(CtRole.DECLARING_TYPE, new Class[]{CtExecutableReference.class});
-//		roleToSkippedClass.put(CtRole.INTERFACE, new Class[]{CtTypeReference.class});
-//		roleToSkippedClass.put(CtRole.MODIFIER, new Class[]{CtTypeReference.class});
-//		roleToSkippedClass.put(CtRole.SUPER_TYPE, new Class[]{CtTypeReference.class});
-//	}
-//
-//	/**
-//	 * @param roleHandler the to be checked role
-//	 * @param targetClass the class which is going to be checked
-//	 * @return true if the role is relevant for matching process
-//	 */
-//	private static boolean isMatchingRole(RoleHandler roleHandler, Class<?> targetClass) {
-//		//match on super roles only. Ignore derived roles
-//		if (roleHandler.getRole().getSuperRole() != null) {
-//			return false;
-//		}
-//		Class<?>[] classes = roleToSkippedClass.get(roleHandler.getRole());
-//		if (classes != null) {
-//			for (Class<?> cls : classes) {
-//				if (cls.isAssignableFrom(targetClass)) {
-//					return false;
-//				}
-//			}
-//		}
-//		return true;
-//	}
-
 	/**
 	 * @param element a CtElement
 	 * @return {@link RootNode}, which handles matching/generation of an `object` from the source spoon AST.

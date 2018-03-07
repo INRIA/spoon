@@ -34,6 +34,7 @@ import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtExecutableReference;
 
 import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
 
@@ -156,6 +157,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	protected ParameterValueProvider matchesRole(ParameterValueProvider parameters, CtElement target, Metamodel.Field mmField, RootNode attrNode) {
+		if (isMatchingRole(mmField.getRole(), elementType.getModelInterface()) == false) {
+			return parameters;
+		}
 		TobeMatched tobeMatched;
 		if (attrNode instanceof ParameterNode) {
 			//whole attribute value (whole List/Set/Map) has to be stored in parameter
@@ -166,6 +170,32 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		}
 		return getMatchedParameters(attrNode.matchTargets(tobeMatched, RootNode.MATCH_ALL));
 	}
+
+	private static final Map<CtRole, Class[]> roleToSkippedClass = new HashMap<>();
+	static {
+		roleToSkippedClass.put(CtRole.COMMENT, new Class[]{Object.class});
+		roleToSkippedClass.put(CtRole.POSITION, new Class[]{Object.class});
+		roleToSkippedClass.put(CtRole.TYPE, new Class[]{CtExecutableReference.class});
+		roleToSkippedClass.put(CtRole.DECLARING_TYPE, new Class[]{CtExecutableReference.class});
+	}
+
+	/**
+	 * @param roleHandler the to be checked role
+	 * @param targetClass the class which is going to be checked
+	 * @return true if the role is relevant for matching process
+	 */
+	private static boolean isMatchingRole(CtRole role, Class<?> targetClass) {
+		Class<?>[] classes = roleToSkippedClass.get(role);
+		if (classes != null) {
+			for (Class<?> cls : classes) {
+				if (cls.isAssignableFrom(targetClass)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 
 	@Override
 	public String toString() {
