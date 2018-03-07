@@ -51,12 +51,12 @@ public class PatternPrinter {
 		}
 
 		@Override
-		public Object get(String parameterName) {
+		public Object getValue(String parameterName) {
 			return new ParameterMarker(parameterName);
 		}
 
 		@Override
-		public ParameterValueProvider putIntoCopy(String parameterName, Object value) {
+		public ParameterValueProvider putValueToCopy(String parameterName, Object value) {
 			throw new SpoonException("This provider is just for printing");
 		}
 

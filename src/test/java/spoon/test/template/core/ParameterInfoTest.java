@@ -18,12 +18,12 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import spoon.pattern.UnmodifiableParameterValueProvider;
 import spoon.pattern.parameter.ListParameterInfo;
 import spoon.pattern.parameter.MapParameterInfo;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.pattern.parameter.SetParameterInfo;
+import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
 import spoon.reflect.meta.ContainerKind;
 
 public class ParameterInfoTest {
@@ -75,7 +75,7 @@ public class ParameterInfoTest {
 	public void testSingleValueParameterByNameWhenAlreadyExists() {
 		ParameterInfo namedParam = new MapParameterInfo("year");
 		{//adding value into container, which already contains that value changes nothing and returns origin container
-			ParameterValueProvider oldContainer = new UnmodifiableParameterValueProvider().putIntoCopy("year", 2018);
+			ParameterValueProvider oldContainer = new UnmodifiableParameterValueProvider().putValueToCopy("year", 2018);
 			assertEquals(map().put("year", 2018), oldContainer.asMap());
 			//it returned the same container
 			assertSame(oldContainer, namedParam.addValueAs(oldContainer, 2018));
@@ -86,7 +86,7 @@ public class ParameterInfoTest {
 	public void testSingleValueParameterByNameWhenDifferentExists() {
 		ParameterInfo namedParam = new MapParameterInfo("year");
 		{//adding a value into container, which already contains a different value returns null - no match
-			ParameterValueProvider oldContainer = new UnmodifiableParameterValueProvider().putIntoCopy("year", 2018);
+			ParameterValueProvider oldContainer = new UnmodifiableParameterValueProvider().putValueToCopy("year", 2018);
 			assertNull(namedParam.addValueAs(oldContainer, 2111));
 			assertNull(namedParam.addValueAs(oldContainer, 0));
 			assertNull(namedParam.addValueAs(oldContainer, null));
@@ -100,7 +100,7 @@ public class ParameterInfoTest {
 				.setMinOccurences(0);
 		{//adding null value into an container with minCount == 0, returns unchanged container.
 			//because minCount == 0 means that value is optional
-			ParameterValueProvider container = new UnmodifiableParameterValueProvider().putIntoCopy("a", "b");
+			ParameterValueProvider container = new UnmodifiableParameterValueProvider().putValueToCopy("a", "b");
 			assertSame(container, namedParam.addValueAs(container, null));
 			assertEquals(map().put("a", "b"), container.asMap());
 		}
@@ -112,7 +112,7 @@ public class ParameterInfoTest {
 		ParameterInfo namedParam = new MapParameterInfo("year")
 				.setMinOccurences(1);
 		{
-			ParameterValueProvider container = new UnmodifiableParameterValueProvider().putIntoCopy("a", "b");
+			ParameterValueProvider container = new UnmodifiableParameterValueProvider().putValueToCopy("a", "b");
 			assertNull(namedParam.addValueAs(container, null));
 			assertEquals(map().put("a", "b"), container.asMap());
 		}
@@ -129,7 +129,7 @@ public class ParameterInfoTest {
 		assertNull(namedParam.addValueAs(null, 1000));
 		assertNull(namedParam.addValueAs(null, "3000"));
 		//even matching value is STILL not accepted when there is already a different value
-		assertNull(namedParam.addValueAs(new UnmodifiableParameterValueProvider().putIntoCopy("year", 3000), 2018));
+		assertNull(namedParam.addValueAs(new UnmodifiableParameterValueProvider().putValueToCopy("year", 3000), 2018));
 	}
 	
 	@Test
@@ -157,7 +157,7 @@ public class ParameterInfoTest {
 	public void testListParameterByNameIntoEmptyContainerWithEmptyList() {
 		Consumer<ParameterInfo> check = (namedParam) ->
 		{//adding value into container, which already contains a empty list, creates a new container with List which contains that value
-			ParameterValueProvider empty = new UnmodifiableParameterValueProvider().putIntoCopy("year", Collections.emptyList());
+			ParameterValueProvider empty = new UnmodifiableParameterValueProvider().putValueToCopy("year", Collections.emptyList());
 			
 			ParameterValueProvider val = namedParam.addValueAs(empty, 2018);
 			//adding same value - adds the second value again
@@ -193,11 +193,11 @@ public class ParameterInfoTest {
 			assertNull(parameter.addValueAs(params, null));
 		};
 		ParameterValueProvider empty = new UnmodifiableParameterValueProvider();
-		checker.accept(new MapParameterInfo("year"), empty.putIntoCopy("year", "x"));
-		checker.accept(new ListParameterInfo(0, new MapParameterInfo("year")), empty.putIntoCopy("year", Collections.singletonList("x")));
-		checker.accept(new ListParameterInfo(1, new MapParameterInfo("year")), empty.putIntoCopy("year", Arrays.asList("zz","x")));
-		checker.accept(new MapParameterInfo("key", new ListParameterInfo(1, new MapParameterInfo("year"))), empty.putIntoCopy("year", Arrays.asList("zz",empty.putIntoCopy("key", "x"))));
-		checker.accept(new MapParameterInfo("key", new MapParameterInfo("year")), empty.putIntoCopy("year", empty.putIntoCopy("key", "x")));
+		checker.accept(new MapParameterInfo("year"), empty.putValueToCopy("year", "x"));
+		checker.accept(new ListParameterInfo(0, new MapParameterInfo("year")), empty.putValueToCopy("year", Collections.singletonList("x")));
+		checker.accept(new ListParameterInfo(1, new MapParameterInfo("year")), empty.putValueToCopy("year", Arrays.asList("zz","x")));
+		checker.accept(new MapParameterInfo("key", new ListParameterInfo(1, new MapParameterInfo("year"))), empty.putValueToCopy("year", Arrays.asList("zz",empty.putValueToCopy("key", "x"))));
+		checker.accept(new MapParameterInfo("key", new MapParameterInfo("year")), empty.putValueToCopy("year", empty.putValueToCopy("key", "x")));
 	}
 
 	@Test
@@ -264,7 +264,7 @@ public class ParameterInfoTest {
 
 			final ParameterValueProvider val = namedParam.addValueAs(empty, entry("year", 2018));
 			assertNotNull(val);
-			assertEquals(map().put("map", new UnmodifiableParameterValueProvider().putIntoCopy("year", 2018)), val.asMap());
+			assertEquals(map().put("map", new UnmodifiableParameterValueProvider().putValueToCopy("year", 2018)), val.asMap());
 
 			//adding null entry changes nothing
 			assertSame(val, namedParam.addValueAs(val, null));
@@ -276,19 +276,19 @@ public class ParameterInfoTest {
 			ParameterValueProvider val2 = namedParam.addValueAs(val, entry("age", "best"));
 			assertNotNull(val2);
 			assertEquals(map().put("map", new UnmodifiableParameterValueProvider()
-					.putIntoCopy("year", 2018)
-					.putIntoCopy("age", "best")), val2.asMap());
+					.putValueToCopy("year", 2018)
+					.putValueToCopy("age", "best")), val2.asMap());
 			
 			//after all the once returned val is still the same - unmodified
-			assertEquals(map().put("map", new UnmodifiableParameterValueProvider().putIntoCopy("year", 2018)), val.asMap());
+			assertEquals(map().put("map", new UnmodifiableParameterValueProvider().putValueToCopy("year", 2018)), val.asMap());
 		};
 		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider());
-		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putIntoCopy("map", null));
-		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putIntoCopy("map", Collections.emptyMap()));
+		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putValueToCopy("map", null));
+		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putValueToCopy("map", Collections.emptyMap()));
 		//the map container is detected automatically from the type of value
-		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putIntoCopy("map", Collections.emptyMap()));
+		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putValueToCopy("map", Collections.emptyMap()));
 		//the map container is detected automatically from the type of value
-		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putIntoCopy("map", new UnmodifiableParameterValueProvider()));
+		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putValueToCopy("map", new UnmodifiableParameterValueProvider()));
 	}
 	@Test
 	public void testAddMapIntoParameterByName() {
@@ -297,11 +297,11 @@ public class ParameterInfoTest {
 			ParameterValueProvider val = namedParam.addValueAs(empty, Collections.emptyMap());
 			assertEquals(map().put("map", new UnmodifiableParameterValueProvider()), val.asMap());
 			val = namedParam.addValueAs(empty, map().put("year", 2018));
-			assertEquals(map().put("map", new UnmodifiableParameterValueProvider().putIntoCopy("year", 2018)), val.asMap());
+			assertEquals(map().put("map", new UnmodifiableParameterValueProvider().putValueToCopy("year", 2018)), val.asMap());
 			val = namedParam.addValueAs(empty, map().put("year", 2018).put("age", 1111));
 			assertEquals(map().put("map", new UnmodifiableParameterValueProvider()
-					.putIntoCopy("year", 2018)
-					.putIntoCopy("age", 1111)), val.asMap());
+					.putValueToCopy("year", 2018)
+					.putValueToCopy("age", 1111)), val.asMap());
 
 			//adding null entry changes nothing
 			assertSame(val, namedParam.addValueAs(val, null));
@@ -311,12 +311,12 @@ public class ParameterInfoTest {
 			assertNull(namedParam.addValueAs(val, entry("year", 1111)));
 		};
 		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider());
-		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putIntoCopy("map", null));
-		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putIntoCopy("map", Collections.emptyMap()));
+		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putValueToCopy("map", null));
+		checker.accept(new MapParameterInfo("map").setContainerKind(ContainerKind.MAP), new UnmodifiableParameterValueProvider().putValueToCopy("map", Collections.emptyMap()));
 		//the map container is detected automatically from the type of value
-		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putIntoCopy("map", Collections.emptyMap()));
+		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putValueToCopy("map", Collections.emptyMap()));
 		//the map container is detected automatically from the type of value
-		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putIntoCopy("map", new UnmodifiableParameterValueProvider()));
+		checker.accept(new MapParameterInfo("map"), new UnmodifiableParameterValueProvider().putValueToCopy("map", new UnmodifiableParameterValueProvider()));
 		//the map container is detected automatically from the type of new value
 		checker.accept(new MapParameterInfo("map"), null);
 	}
@@ -336,12 +336,12 @@ public class ParameterInfoTest {
 			assertSame(val, namedParam.addValueAs(val, null));
 		};
 		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider());
-		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider().putIntoCopy("list", null));
-		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider().putIntoCopy("list", Collections.emptyList()));
+		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider().putValueToCopy("list", null));
+		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider().putValueToCopy("list", Collections.emptyList()));
 		//Set can be converted to List
-		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider().putIntoCopy("list", Collections.emptySet()));
+		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.LIST), new UnmodifiableParameterValueProvider().putValueToCopy("list", Collections.emptySet()));
 		//the list container is detected automatically from the type of value
-		checker.accept(new MapParameterInfo("list"), new UnmodifiableParameterValueProvider().putIntoCopy("list", Collections.emptyList()));
+		checker.accept(new MapParameterInfo("list"), new UnmodifiableParameterValueProvider().putValueToCopy("list", Collections.emptyList()));
 		//the list container is detected automatically from the type of new value
 		checker.accept(new MapParameterInfo("list"), null);
 	}
@@ -366,12 +366,12 @@ public class ParameterInfoTest {
 			assertSame(val, namedParam.addValueAs(val, asSet(2018, 1111)));
 		};
 		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider());
-		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider().putIntoCopy("list", null));
-		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider().putIntoCopy("list", Collections.emptySet()));
+		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider().putValueToCopy("list", null));
+		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider().putValueToCopy("list", Collections.emptySet()));
 		//The container kind has higher priority, so List will be converted to Set
-		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider().putIntoCopy("list", Collections.emptyList()));
+		checker.accept(new MapParameterInfo("list").setContainerKind(ContainerKind.SET), new UnmodifiableParameterValueProvider().putValueToCopy("list", Collections.emptyList()));
 		//the list container is detected automatically from the type of value
-		checker.accept(new MapParameterInfo("list"), new UnmodifiableParameterValueProvider().putIntoCopy("list", Collections.emptySet()));
+		checker.accept(new MapParameterInfo("list"), new UnmodifiableParameterValueProvider().putValueToCopy("list", Collections.emptySet()));
 		//the list container is detected automatically from the type of new value
 		checker.accept(new MapParameterInfo("list"), null);
 	}
@@ -379,7 +379,7 @@ public class ParameterInfoTest {
 	public void testFailOnUnpectedContainer() {
 		ParameterInfo namedParam = new MapParameterInfo("year").setContainerKind(ContainerKind.LIST);
 		try {
-			namedParam.addValueAs(new UnmodifiableParameterValueProvider().putIntoCopy("year", "unexpected"), 1);
+			namedParam.addValueAs(new UnmodifiableParameterValueProvider().putValueToCopy("year", "unexpected"), 1);
 			fail();
 		} catch (Exception e) {
 			//OK

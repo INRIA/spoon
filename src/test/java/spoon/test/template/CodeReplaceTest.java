@@ -38,22 +38,22 @@ public class CodeReplaceTest {
 		p.forEachMatch(classDJPP, (match) -> {
 			ParameterValueProvider params = match.getParameters();
 			if (context.count == 0) {
-				assertEquals("\"extends\"", params.get("startKeyword").toString());
-				assertEquals(Boolean.TRUE, params.get("useStartKeyword"));
+				assertEquals("\"extends\"", params.getValue("startKeyword").toString());
+				assertEquals(Boolean.TRUE, params.getValue("useStartKeyword"));
 			} else {
-				assertEquals(null, params.get("startKeyword"));
-				assertEquals(Boolean.FALSE, params.get("useStartKeyword"));
+				assertEquals(null, params.getValue("startKeyword"));
+				assertEquals(Boolean.FALSE, params.getValue("useStartKeyword"));
 			}
-			assertEquals("false", params.get("startPrefixSpace").toString());
-			assertEquals("null", params.get("start").toString());
-			assertEquals("false", params.get("startSuffixSpace").toString());
-			assertEquals("false", params.get("nextPrefixSpace").toString());
-			assertEquals("\",\"", params.get("next").toString());
-			assertEquals("true", params.get("nextSuffixSpace").toString());
-			assertEquals("false", params.get("endPrefixSpace").toString());
-			assertEquals("\";\"", params.get("end").toString());
-			assertEquals("ctEnum.getEnumValues()", params.get("getIterable").toString());
-			assertEquals("[scan(enumValue)]", params.get("statements").toString());
+			assertEquals("false", params.getValue("startPrefixSpace").toString());
+			assertEquals("null", params.getValue("start").toString());
+			assertEquals("false", params.getValue("startSuffixSpace").toString());
+			assertEquals("false", params.getValue("nextPrefixSpace").toString());
+			assertEquals("\",\"", params.getValue("next").toString());
+			assertEquals("true", params.getValue("nextSuffixSpace").toString());
+			assertEquals("false", params.getValue("endPrefixSpace").toString());
+			assertEquals("\";\"", params.getValue("end").toString());
+			assertEquals("ctEnum.getEnumValues()", params.getValue("getIterable").toString());
+			assertEquals("[scan(enumValue)]", params.getValue("statements").toString());
 			context.count++;
 		});
 		assertEquals(2, context.count);

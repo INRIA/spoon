@@ -67,7 +67,7 @@ public class ForEachNode extends AbstractRepeatableMatcher {
 	@Override
 	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
 		for (Object parameterValue : iterableParameter.generateTargets(factory, parameters, Object.class)) {
-			nestedModel.generateTargets(factory, result, parameters.putIntoCopy(localParameter.getName(), parameterValue));
+			nestedModel.generateTargets(factory, result, parameters.putValueToCopy(localParameter.getName(), parameterValue));
 		}
 	}
 
@@ -99,7 +99,7 @@ public class ForEachNode extends AbstractRepeatableMatcher {
 				}
 			} else {
 				//it is new global parameter value. Just set it
-				newParameters = newParameters.putIntoCopy(name, value);
+				newParameters = newParameters.putValueToCopy(name, value);
 			}
 		}
 		//all local parameters were applied to newParameters. We can use newParameters as result of this iteration for next iteration

@@ -30,6 +30,7 @@ import spoon.pattern.matcher.MatchingScanner;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.pattern.parameter.ParameterValueProviderFactory;
+import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;

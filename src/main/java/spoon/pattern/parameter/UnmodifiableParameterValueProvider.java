@@ -14,16 +14,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.pattern.parameter.ParameterValueProviderFactory;
 
 /**
  * Provides value of parameter
@@ -83,16 +80,16 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 	}
 
 	@Override
-	public Object get(String parameterName) {
+	public Object getValue(String parameterName) {
 		Object v = map.get(parameterName);
 		if (v == null && parent != null) {
-			v = parent.get(parameterName);
+			v = parent.getValue(parameterName);
 		}
 		return v;
 	}
 
 	@Override
-	public ParameterValueProvider putIntoCopy(String parameterName, Object value) {
+	public ParameterValueProvider putValueToCopy(String parameterName, Object value) {
 		return new UnmodifiableParameterValueProvider(parent, map, parameterName, value);
 	}
 

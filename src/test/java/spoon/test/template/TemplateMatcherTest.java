@@ -60,7 +60,7 @@ public class TemplateMatcherTest {
 			Match match = matches.get(0);
 			assertEquals(Arrays.asList("java.lang.System.out.println(value)"), listToListOfStrings(match.getMatchingElements()));
 			//FIX IT
-//			assertEquals(Arrays.asList(""), listToListOfStrings((List) match.getParameters().get("values")));
+//			assertEquals(Arrays.asList(""), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
 		{
 			Match match = matches.get(1);
@@ -73,7 +73,7 @@ public class TemplateMatcherTest {
 					"\"a\"",
 					"\"Xxxx\"",
 					"((java.lang.String) (null))",
-					"java.lang.Long.class.toString()"), listToListOfStrings((List) match.getParameters().get("values")));
+					"java.lang.Long.class.toString()"), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
 	}
 	
@@ -91,7 +91,7 @@ public class TemplateMatcherTest {
 			Match match = matches.get(0);
 			assertEquals(Arrays.asList("int var = 0"), listToListOfStrings(match.getMatchingElements()));
 			//FIX IT
-//			assertEquals(Arrays.asList(""), listToListOfStrings((List) match.getParameters().get("values")));
+//			assertEquals(Arrays.asList(""), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
 		{
 			Match match = matches.get(1);
@@ -103,7 +103,7 @@ public class TemplateMatcherTest {
 					"cc++"), listToListOfStrings(match.getMatchingElements()));
 			assertEquals(Arrays.asList(
 					"\"Xxxx\"",
-					"((java.lang.String) (null))"), listToListOfStrings((List) match.getParameters().get("values")));
+					"((java.lang.String) (null))"), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
 		{
 			Match match = matches.get(2);
@@ -112,7 +112,7 @@ public class TemplateMatcherTest {
 					"java.lang.System.out.println(java.lang.Long.class.toString())",
 					"dd++"), listToListOfStrings(match.getMatchingElements()));
 			assertEquals(Arrays.asList(
-					"java.lang.Long.class.toString()"), listToListOfStrings((List) match.getParameters().get("values")));
+					"java.lang.Long.class.toString()"), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
 	}
 
@@ -129,51 +129,51 @@ public class TemplateMatcherTest {
 		{
 			Match match = matches.get(0);
 			assertEquals(Arrays.asList("java.lang.System.out.println(i)"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(false, match.getParameters().get("option"));
-			assertEquals(true, match.getParameters().get("option2"));
-			assertEquals("i", match.getParameters().get("value").toString());
+			assertEquals(false, match.getParameters().getValue("option"));
+			assertEquals(true, match.getParameters().getValue("option2"));
+			assertEquals("i", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(1);
 			assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(true, match.getParameters().get("option"));
-			assertEquals(false, match.getParameters().get("option2"));
-			assertEquals("\"a\"", match.getParameters().get("value").toString());
+			assertEquals(true, match.getParameters().getValue("option"));
+			assertEquals(false, match.getParameters().getValue("option2"));
+			assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(2);
 			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(true, match.getParameters().get("option"));
-			assertEquals(false, match.getParameters().get("option2"));
-			assertEquals("\"Xxxx\"", match.getParameters().get("value").toString());
+			assertEquals(true, match.getParameters().getValue("option"));
+			assertEquals(false, match.getParameters().getValue("option2"));
+			assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(3);
 			assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(true, match.getParameters().get("option"));
-			assertEquals(false, match.getParameters().get("option2"));
-			assertEquals("((java.lang.String) (null))", match.getParameters().get("value").toString());
+			assertEquals(true, match.getParameters().getValue("option"));
+			assertEquals(false, match.getParameters().getValue("option2"));
+			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(4);
 			assertEquals(Arrays.asList("java.lang.System.out.println(2018)"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(false, match.getParameters().get("option"));
-			assertEquals(true, match.getParameters().get("option2"));
-			assertEquals("2018", match.getParameters().get("value").toString());
+			assertEquals(false, match.getParameters().getValue("option"));
+			assertEquals(true, match.getParameters().getValue("option2"));
+			assertEquals("2018", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(5);
 			assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(true, match.getParameters().get("option"));
-			assertEquals(false, match.getParameters().get("option2"));
-			assertEquals("java.lang.Long.class.toString()", match.getParameters().get("value").toString());
+			assertEquals(true, match.getParameters().getValue("option"));
+			assertEquals(false, match.getParameters().getValue("option2"));
+			assertEquals("java.lang.Long.class.toString()", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(6);
 			assertEquals(Arrays.asList("java.lang.System.out.println(3.14)"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(false, match.getParameters().get("option"));
-			assertEquals(false, match.getParameters().get("option2"));
-			assertEquals("3.14", match.getParameters().get("value").toString());
+			assertEquals(false, match.getParameters().getValue("option"));
+			assertEquals(false, match.getParameters().getValue("option2"));
+			assertEquals("3.14", match.getParameters().getValue("value").toString());
 		}
 	}
 	@Test
@@ -216,10 +216,10 @@ public class TemplateMatcherTest {
 				"i++",
 				"java.lang.System.out.println(i)",
 				"java.lang.System.out.println(\"Xxxx\")",
-				"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().get("statements")));
+				"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 		//last statement is matched by last template, which saves printed value
-		assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-		assertEquals("\"last one\"", match.getParameters().get("printedValue").toString());
+		assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+		assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 	}
 	
 	@Test
@@ -245,10 +245,10 @@ public class TemplateMatcherTest {
 			assertEquals(Arrays.asList(
 					"int i = 0",
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().get("statements")));
+					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//4th statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"Xxxx\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
 		}
 		{
 			Match match = matches.get(1);
@@ -259,10 +259,10 @@ public class TemplateMatcherTest {
 	
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
-					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().get("statements")));
+					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"last one\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
 
@@ -291,10 +291,10 @@ public class TemplateMatcherTest {
 			assertEquals(Arrays.asList(
 					"int i = 0",
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().get("statements")));
+					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"Xxxx\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
 		}
 		{
 			Match match = matches.get(1);
@@ -303,10 +303,10 @@ public class TemplateMatcherTest {
 					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
 	
 			//check all statements excluding last are stored as value of "statements" parameter
-			assertEquals(Arrays.asList(), listToListOfStrings((List) match.getParameters().get("statements")));
+			assertEquals(Arrays.asList(), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("((java.lang.String) (null))", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("printedValue").toString());
 		}
 		{
 			Match match = matches.get(2);
@@ -315,10 +315,10 @@ public class TemplateMatcherTest {
 					"java.lang.System.out.println(\"last one\")"), listToListOfStrings(match.getMatchingElements()));
 	
 			//check all statements excluding last are stored as value of "statements" parameter
-			assertEquals(Arrays.asList(), listToListOfStrings((List) match.getParameters().get("statements")));
+			assertEquals(Arrays.asList(), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"last one\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}	
 	@Test
@@ -345,10 +345,10 @@ public class TemplateMatcherTest {
 			assertEquals(Arrays.asList(
 					"int i = 0",
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().get("statements")));
+					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"Xxxx\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
 		}
 		{
 			Match match = matches.get(1);
@@ -359,10 +359,10 @@ public class TemplateMatcherTest {
 	
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
-					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().get("statements")));
+					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"last one\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}	
 	@Test
@@ -387,10 +387,10 @@ public class TemplateMatcherTest {
 			//check 2 statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().get("statements")));
+					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
-			assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-			assertEquals("\"Xxxx\"", match.getParameters().get("printedValue").toString());
+			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
 	
@@ -429,10 +429,10 @@ public class TemplateMatcherTest {
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
-				"java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings((List) match.getParameters().get("statements")));
+				"java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings((List) match.getParameters().getValue("statements")));
 		//last statement is matched by last template, which saves printed value
-		assertTrue(match.getParameters().get("printedValue") instanceof CtLiteral);
-		assertEquals("((java.lang.String) (null))", match.getParameters().get("printedValue").toString());
+		assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
+		assertEquals("((java.lang.String) (null))", match.getParameters().getValue("printedValue").toString());
 	}
 	@Test
 	public void testMatchPossesiveMultiValueMinCount() throws Exception {
@@ -449,8 +449,8 @@ public class TemplateMatcherTest {
 			if (count < 6) {
 				//the last template has nothing to match -> no match
 				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, 5-count, getSize(matches.get(0).getParameters().get("statements1")));
-				assertEquals("count="+count, count, getSize(matches.get(0).getParameters().get("statements2")));
+				assertEquals("count="+count, 5-count, getSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count="+count, count, getSize(matches.get(0).getParameters().getValue("statements2")));
 			} else {
 				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 				assertEquals("count="+count, 0, matches.size());
@@ -474,9 +474,9 @@ public class TemplateMatcherTest {
 			if (count < 5) {
 				//the last template has nothing to match -> no match
 				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, 4-count, getSize(matches.get(0).getParameters().get("statements1")));
-				assertEquals("count="+count, count, getSize(matches.get(0).getParameters().get("statements2")));
-				assertEquals("count="+count, 2, getSize(matches.get(0).getParameters().get("printedValue")));
+				assertEquals("count="+count, 4-count, getSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count="+count, count, getSize(matches.get(0).getParameters().getValue("statements2")));
+				assertEquals("count="+count, 2, getSize(matches.get(0).getParameters().getValue("printedValue")));
 			} else {
 				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 				assertEquals("count="+count, 0, matches.size());
@@ -499,9 +499,9 @@ public class TemplateMatcherTest {
 			if (count < 7) {
 				//the last template has nothing to match -> no match
 				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, Math.max(0, 3-count), getSize(matches.get(0).getParameters().get("statements1")));
-				assertEquals("count="+count, count - Math.max(0, count-4), getSize(matches.get(0).getParameters().get("statements2")));
-				assertEquals("count="+count, Math.max(2, 3 - Math.max(0, count-3)), getSize(matches.get(0).getParameters().get("printedValue")));
+				assertEquals("count="+count, Math.max(0, 3-count), getSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count="+count, count - Math.max(0, count-4), getSize(matches.get(0).getParameters().getValue("statements2")));
+				assertEquals("count="+count, Math.max(2, 3 - Math.max(0, count-3)), getSize(matches.get(0).getParameters().getValue("printedValue")));
 			} else {
 				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 				assertEquals("count="+count, 0, matches.size());
@@ -533,7 +533,7 @@ public class TemplateMatcherTest {
 		{
 			Match match = matches.get(0);
 			assertEquals(Arrays.asList("java.lang.System.out.println(value)"), listToListOfStrings(match.getMatchingElements()));
-			Object value = match.getParameters().get("value");
+			Object value = match.getParameters().getValue("value");
 			assertTrue(value instanceof CtVariableRead);
 			assertEquals("value", value.toString());
 			//contract: the value is reference to found node (not a clone)
@@ -543,26 +543,26 @@ public class TemplateMatcherTest {
 		{
 			Match match = matches.get(1);
 			assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-			assertEquals("\"a\"", match.getParameters().get("value").toString());
+			assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+			assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(2);
 			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-			assertEquals("\"Xxxx\"", match.getParameters().get("value").toString());
+			assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+			assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(3);
 			assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-			assertEquals("((java.lang.String) (null))", match.getParameters().get("value").toString());
+			assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(4);
 			assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().get("value") instanceof CtInvocation);
-			assertEquals("java.lang.Long.class.toString()", match.getParameters().get("value").toString());
+			assertTrue(match.getParameters().getValue("value") instanceof CtInvocation);
+			assertEquals("java.lang.Long.class.toString()", match.getParameters().getValue("value").toString());
 		}
 	}
 
@@ -579,20 +579,20 @@ public class TemplateMatcherTest {
 			{
 				Match match = matches.get(0);
 				assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-				assertEquals("\"a\"", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+				assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(1);
 				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-				assertEquals("\"Xxxx\"", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+				assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(2);
 				assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-				assertEquals("((java.lang.String) (null))", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+				assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 			}
 		}
 		{
@@ -604,8 +604,8 @@ public class TemplateMatcherTest {
 			{
 				Match match = matches.get(0);
 				assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtInvocation);
-				assertEquals("java.lang.Long.class.toString()", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtInvocation);
+				assertEquals("java.lang.Long.class.toString()", match.getParameters().getValue("value").toString());
 			}
 			
 		}
@@ -625,20 +625,20 @@ public class TemplateMatcherTest {
 			{
 				Match match = matches.get(0);
 				assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-				assertEquals("\"a\"", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+				assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(1);
 				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-				assertEquals("\"Xxxx\"", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+				assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(2);
 				assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
-				assertTrue(match.getParameters().get("value") instanceof CtLiteral);
-				assertEquals("((java.lang.String) (null))", match.getParameters().get("value").toString());
+				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
+				assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 			}
 		}
 	}

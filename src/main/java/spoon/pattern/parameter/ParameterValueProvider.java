@@ -19,9 +19,9 @@ package spoon.pattern.parameter;
 import java.util.Map;
 
 /**
- * During substitution process it provides values of parameters from underlying storage (e.g. from Map or an instance of an class)
- * During matching process it sets values of matched parameters into underlying storage
- * TODO: create ParameterValueProviderFactory which creates appropriate instances of ParameterValueProviders during matching process
+ * It is unmodifiable storage of parameter name-value pairs.
+ * The values may be primitive values or List,Set,Map of values.
+ * All internal containers are unmodifiable too.
  */
 public interface ParameterValueProvider {
 
@@ -30,11 +30,32 @@ public interface ParameterValueProvider {
 	 * @return true if there is defined some value for the parameter. null can be a value too
 	 */
 	boolean hasValue(String parameterName);
-	Object get(String parameterName);
-	ParameterValueProvider putIntoCopy(String parameterName, Object value);
+	/**
+	 * @param parameterName the name of the parameter
+	 * @return a value of the parameter under the name `parameterNamer
+	 */
+	Object getValue(String parameterName);
+	/**
+	 * @param parameterName to be set parameter name
+	 * @param value the new value
+	 * @return copies this {@link ParameterValueProvider}, sets the new value there and returns that copy
+	 */
+	ParameterValueProvider putValueToCopy(String parameterName, Object value);
 
+	/**
+	 * @return underlying unmodifiable Map&lt;String, Object&gt;
+	 */
 	Map<String, Object> asMap();
 
+	/**
+	 * @return a new instance of {@link ParameterValueProvider}, which inherits all values from this {@link ParameterValueProvider}
+	 * Any call of {@link #putValueToCopy(String, Object)} is remembered in local Map of parameters.
+	 * At the end of process the {@link #asLocalMap()} can be used to return all the parameters which were changed
+	 * after local {@link ParameterValueProvider} was created
+	 */
 	ParameterValueProvider createLocalParameterValueProvider();
+	/**
+	 * @return {@link Map} with all modified parameters after {@link #createLocalParameterValueProvider()} has been called
+	 */
 	Map<String, Object> asLocalMap();
 }

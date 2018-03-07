@@ -19,8 +19,6 @@ package spoon.pattern.parameter;
 import java.util.Map;
 import java.util.function.Function;
 
-import spoon.pattern.UnmodifiableParameterValueProvider;
-
 /**
  * A kind of {@link ParameterInfo} which returns value by the named parameter
  * From a container of type {@link ParameterValueProvider} or {@link Map}
@@ -72,7 +70,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 			if (newValue instanceof Map.Entry<?, ?>) {
 				Map.Entry<?, ?> newEntry = (Map.Entry<?, ?>) newValue;
 				String newEntryKey = (String) newEntry.getKey();
-				Object existingValue = parameters.get(newEntryKey);
+				Object existingValue = parameters.getValue(newEntryKey);
 				Object newEntryValue = merge(existingValue, newEntry.getValue());
 				if (newEntryValue == NO_MERGE) {
 					return NO_MERGE;
@@ -81,20 +79,20 @@ public class MapParameterInfo extends AbstractParameterInfo {
 					//it is already there
 					return parameters;
 				}
-				return parameters.putIntoCopy(newEntryKey, newEntryValue);
+				return parameters.putValueToCopy(newEntryKey, newEntryValue);
 			}
 			if (newValue instanceof Map) {
 				Map<String, Object> newMap = (Map) newValue;
 				for (Map.Entry<String, Object> newEntry : newMap.entrySet()) {
 					String newEntryKey = newEntry.getKey();
-					Object existingValue = parameters.get(newEntryKey);
+					Object existingValue = parameters.getValue(newEntryKey);
 					Object newEntryValue = merge(existingValue, newEntry.getValue());
 					if (newEntryValue == NO_MERGE) {
 						return NO_MERGE;
 					}
 					if (existingValue != newEntryValue) {
 						//it is not there yet. Add it
-						parameters = parameters.putIntoCopy(newEntryKey, newEntryValue);
+						parameters = parameters.putValueToCopy(newEntryKey, newEntryValue);
 					}
 					//it is there, continue to check next entry
 				}
@@ -103,7 +101,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 			//only Map.Entries can be added to the Map if there is missing key
 			return NO_MERGE;
 		}
-		Object existingValue = parameters.get(name);
+		Object existingValue = parameters.getValue(name);
 		Object newValue = merger.apply(existingValue);
 		if (newValue == NO_MERGE) {
 			return NO_MERGE;
@@ -112,13 +110,13 @@ public class MapParameterInfo extends AbstractParameterInfo {
 			//it is already there.
 			return parameters;
 		}
-		return parameters.putIntoCopy(name, newValue);
+		return parameters.putValueToCopy(name, newValue);
 	}
 
 	@Override
 	protected Object getValue(ParameterValueProvider parameters) {
 		ParameterValueProvider map = castTo(super.getValue(parameters), ParameterValueProvider.class);
-		return name == null ? map : map.get(name);
+		return name == null ? map : map.getValue(name);
 	}
 
 	@Override

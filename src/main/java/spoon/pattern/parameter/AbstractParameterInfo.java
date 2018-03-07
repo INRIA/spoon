@@ -324,7 +324,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		if (parameters.hasValue(getName()) == false) {
 			return 0;
 		}
-		Object value = parameters.get(getName());
+		Object value = parameters.getValue(getName());
 		if (value instanceof Collection) {
 			return ((Collection) value).size();
 		}
@@ -339,7 +339,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		return this;
 	}
 	protected ContainerKind getContainerKind(ParameterValueProvider params) {
-		return getContainerKind(params.get(getName()), null);
+		return getContainerKind(params.getValue(getName()), null);
 	}
 	protected ContainerKind getContainerKind(Object existingValue, Object value) {
 		if (containerKind != null) {
