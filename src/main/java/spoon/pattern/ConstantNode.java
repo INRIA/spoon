@@ -63,4 +63,10 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 		}
 		return target.equals(template) ? parameters : null;
 	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(template);
+	}
 }
+

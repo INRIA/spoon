@@ -16,10 +16,12 @@
  */
 package spoon.pattern;
 
+import spoon.reflect.factory.Factory;
+
 /**
  * Converts the individual parameter values to required type after substitution
  * Converts the matching model values to parameter values during matching process
  */
 public interface ValueConvertor {
-	<T> T getValueAs(Object value, Class<T> valueClass);
+	<T> T getValueAs(Factory factory, Object value, Class<T> valueClass);
 }

@@ -40,14 +40,11 @@ import spoon.support.visitor.SignaturePrinter;
  */
 public class ValueConvertorImpl implements ValueConvertor {
 
-	private final Factory factory;
-
-	public ValueConvertorImpl(Factory factory) {
-		this.factory = factory;
+	public ValueConvertorImpl() {
 	}
 
 	@Override
-	public <T> T getValueAs(Object value, Class<T> valueClass) {
+	public <T> T getValueAs(Factory factory, Object value, Class<T> valueClass) {
 		if (valueClass.isInstance(value)) {
 			return cloneIfNeeded(valueClass.cast(value));
 		}
@@ -99,7 +96,7 @@ public class ValueConvertorImpl implements ValueConvertor {
 				if (list.size() == 1) {
 					return (T) list.get(0);
 				}
-				CtBlock block = getFactory().createBlock();
+				CtBlock block = factory.createBlock();
 				block.setImplicit(true);
 				for (CtStatement statement : ((Iterable<CtStatement>) value)) {
 					block.addStatement(statement);
@@ -163,9 +160,5 @@ public class ValueConvertorImpl implements ValueConvertor {
 			return (T) ((CtElement) value).clone();
 		}
 		return value;
-	}
-
-	public Factory getFactory() {
-		return factory;
 	}
 }

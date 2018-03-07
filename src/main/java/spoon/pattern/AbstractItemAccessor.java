@@ -27,6 +27,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.pattern.matcher.Quantifier;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -375,7 +376,7 @@ abstract class AbstractItemAccessor implements ParameterInfo {
 	}
 
 	@Override
-	public <T> void getValueAs(ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void getValueAs(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
 		//get raw parameter value
 		Object rawValue = getValue(parameters);
 		if (isMultiple() && rawValue instanceof CtBlock<?>)  {
@@ -385,7 +386,7 @@ abstract class AbstractItemAccessor implements ParameterInfo {
 			 */
 			rawValue = ((CtBlock<?>) rawValue).getStatements();
 		}
-		convertValue(result, rawValue);
+		convertValue(factory, result, rawValue);
 	}
 
 	protected Object getValue(ParameterValueProvider parameters) {
@@ -395,20 +396,24 @@ abstract class AbstractItemAccessor implements ParameterInfo {
 		return parameters;
 	}
 
-	protected <T> void convertValue(ResultHolder<T> result, Object rawValue) {
-		ValueConvertor valueConvertor = getValueConvertor();
+	protected <T> void convertValue(Factory factory, ResultHolder<T> result, Object rawValue) {
 		//convert raw parameter value to expected type
 		if (result.isMultiple()) {
 			AbstractPrimitiveMatcher.forEachItem(rawValue, singleValue -> {
-				T convertedValue = (T) valueConvertor.getValueAs(singleValue, result.getRequiredClass());
+				T convertedValue = convertSingleValue(factory, singleValue, result.getRequiredClass());
 				if (convertedValue != null) {
 					result.addResult(convertedValue);
 				}
 			});
 		} else {
 			//single value converts arrays in rawValues into single value
-			result.addResult((T) valueConvertor.getValueAs(rawValue, result.getRequiredClass()));
+			result.addResult(convertSingleValue(factory, rawValue, result.getRequiredClass()));
 		}
+	}
+
+	protected <T> T convertSingleValue(Factory factory, Object value, Class<T> type) {
+		ValueConvertor valueConvertor = getValueConvertor();
+		return (T) valueConvertor.getValueAs(factory, value, type);
 	}
 
 	@Override

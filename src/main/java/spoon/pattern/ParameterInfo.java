@@ -17,6 +17,7 @@
 package spoon.pattern;
 
 import spoon.pattern.matcher.Quantifier;
+import spoon.reflect.factory.Factory;
 
 /**
  * Represents the parameter of {@link Pattern}
@@ -41,7 +42,7 @@ public interface ParameterInfo {
 	 */
 	ParameterValueProvider addValueAs(ParameterValueProvider parameters, Object value);
 
-	<T> void getValueAs(ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void getValueAs(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters);
 
 	/**
 	 * @return true if the value container has to be a List, otherwise the container will be a single value

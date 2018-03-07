@@ -142,7 +142,7 @@ public class PatternBuilder {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
 		this.factory = templateTypeRef.getFactory();
-		this.valueConvertor = new ValueConvertorImpl(factory);
+		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = new ListOfNodes(createImplicitNodes(template));
 		patternQuery = new PatternBuilder.PatternQuery(factory.Query(), patternModel);
 		configureParameters(pb -> {

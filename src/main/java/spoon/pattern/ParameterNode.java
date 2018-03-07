@@ -42,7 +42,7 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public <T> void generateTargets(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
-		parameterInfo.getValueAs(result, parameters);
+		parameterInfo.getValueAs(factory, result, parameters);
 	}
 
 	@Override

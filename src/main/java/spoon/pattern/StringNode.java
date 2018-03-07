@@ -65,7 +65,7 @@ public class StringNode extends ConstantNode<String> {
 			ParameterInfo param = requests.getValue();
 			String replaceMarker = requests.getKey();
 			ResultHolder.Single<String> ctx = new ResultHolder.Single<>(String.class);
-			param.getValueAs(ctx, parameters);
+			param.getValueAs(factory, ctx, parameters);
 			String substrValue = ctx.getResult() == null ? "" : ctx.getResult();
 			stringValue = substituteSubstring(stringValue, replaceMarker, substrValue);
 		}
