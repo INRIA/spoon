@@ -22,7 +22,6 @@ import static spoon.test.metamodel.SpoonMetaModel.getOrCreate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +30,7 @@ import java.util.function.Consumer;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -57,7 +57,7 @@ public class MetamodelProperty {
 	/**
 	 * Type of value container [single, list, set, map]
 	 */
-	private MMContainerType valueContainerType;
+	private ContainerKind valueContainerType;
 	/**
 	 * The type of value of this property - can be Set, List, Map or any non collection type
 	 */
@@ -146,7 +146,7 @@ public class MetamodelProperty {
 		return ownerConcept;
 	}
 
-	public MMContainerType getValueContainerType() {
+	public ContainerKind getValueContainerType() {
 		return valueContainerType;
 	}
 
@@ -171,7 +171,7 @@ public class MetamodelProperty {
 		if (getterValueType.equals(setterValueType)) {
 			return mmGetMethod.getReturnType();
 		}
-		if (MMContainerType.valueOf(getterValueType.getActualClass()) != MMContainerType.SINGLE) {
+		if (containerKindOf(getterValueType.getActualClass()) != ContainerKind.SINGLE) {
 			getterValueType = getItemValueType(getterValueType);
 			setterValueType = getItemValueType(setterValueType);
 		}
@@ -206,8 +206,8 @@ public class MetamodelProperty {
 			valueType.setImplicit(false);
 		}
 		this.valueType = valueType;
-		this.valueContainerType = MMContainerType.valueOf(valueType.getActualClass());
-		if (valueContainerType != MMContainerType.SINGLE) {
+		this.valueContainerType = containerKindOf(valueType.getActualClass());
+		if (valueContainerType != ContainerKind.SINGLE) {
 			itemValueType = getItemValueType(valueType);
 		} else {
 			itemValueType = valueType;
@@ -370,12 +370,12 @@ public class MetamodelProperty {
 	}
 
 	private static CtTypeReference<?> getItemValueType(CtTypeReference<?> valueType) {
-		MMContainerType valueContainerType = MMContainerType.valueOf(valueType.getActualClass());
-		if (valueContainerType == MMContainerType.SINGLE) {
+		ContainerKind valueContainerType = containerKindOf(valueType.getActualClass());
+		if (valueContainerType == ContainerKind.SINGLE) {
 			return null;
 		}
 		CtTypeReference<?> itemValueType;
-		if (valueContainerType == MMContainerType.MAP) {
+		if (valueContainerType == ContainerKind.MAP) {
 			if (String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName()) == false) {
 				throw new SpoonException("Unexpected container of type: " + valueType.toString());
 			}
@@ -564,4 +564,18 @@ public class MetamodelProperty {
 		}
 		return potentialRootSuperFields.get(idx);
 	}
+	
+	private	static ContainerKind containerKindOf(Class<?> valueClass) {
+		if (List.class.isAssignableFrom(valueClass)) {
+			return ContainerKind.LIST;
+		}
+		if (Map.class.isAssignableFrom(valueClass)) {
+			return ContainerKind.MAP;
+		}
+		if (Set.class.isAssignableFrom(valueClass)) {
+			return ContainerKind.SET;
+		}
+		return ContainerKind.SINGLE;
+	}
+
 }
