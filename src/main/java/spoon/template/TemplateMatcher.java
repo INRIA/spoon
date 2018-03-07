@@ -19,13 +19,13 @@ package spoon.template;
 import java.util.List;
 
 import spoon.pattern.ModelNode;
-import spoon.pattern.ParameterValueProvider;
-import spoon.pattern.ParameterValueProviderFactory;
 import spoon.pattern.Pattern;
 import spoon.pattern.TemplateBuilder;
 import spoon.pattern.UnmodifiableParameterValueProvider;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.TobeMatched;
+import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.pattern.parameter.ParameterValueProviderFactory;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;

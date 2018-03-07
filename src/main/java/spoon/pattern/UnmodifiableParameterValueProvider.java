@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.pattern.parameter.ParameterValueProviderFactory;
+
 /**
  * Provides value of parameter
  */

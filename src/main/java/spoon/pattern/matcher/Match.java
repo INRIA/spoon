@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
-import spoon.pattern.ParameterValueProvider;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 
 /**

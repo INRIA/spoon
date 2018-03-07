@@ -18,12 +18,12 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import spoon.pattern.ListAccessor;
-import spoon.pattern.NamedItemAccessor;
-import spoon.pattern.ParameterInfo;
-import spoon.pattern.ParameterValueProvider;
-import spoon.pattern.SetAccessor;
 import spoon.pattern.UnmodifiableParameterValueProvider;
+import spoon.pattern.parameter.ListAccessor;
+import spoon.pattern.parameter.NamedItemAccessor;
+import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.pattern.parameter.SetAccessor;
 import spoon.reflect.meta.ContainerKind;
 
 public class ParameterInfoTest {

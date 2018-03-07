@@ -27,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import spoon.SpoonException;
+import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;
 
 /**

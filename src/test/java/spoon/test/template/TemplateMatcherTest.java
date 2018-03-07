@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import spoon.pattern.ParameterValueProvider;
 import spoon.pattern.Pattern;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.Quantifier;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;

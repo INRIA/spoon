@@ -17,6 +17,7 @@
 package spoon.pattern;
 
 import spoon.pattern.matcher.Quantifier;
+import spoon.pattern.parameter.ParameterValueProvider;
 
 /**
  * Defines API of a repeatable matcher.

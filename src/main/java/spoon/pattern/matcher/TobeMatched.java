@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import spoon.SpoonException;
-import spoon.pattern.ParameterValueProvider;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.meta.ContainerKind;
 
 /**

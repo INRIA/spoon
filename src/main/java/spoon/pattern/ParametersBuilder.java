@@ -23,6 +23,10 @@ import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.pattern.matcher.Quantifier;
+import spoon.pattern.parameter.AbstractItemAccessor;
+import spoon.pattern.parameter.ListAccessor;
+import spoon.pattern.parameter.NamedItemAccessor;
+import spoon.pattern.parameter.ParameterInfo;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;

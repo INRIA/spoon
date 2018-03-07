@@ -16,10 +16,7 @@
  */
 package spoon.pattern;
 
-import java.util.function.Consumer;
-
 import spoon.pattern.matcher.TobeMatched;
-import spoon.reflect.code.CtStatementList;
 
 /**
  * Delivers to be substituted value
@@ -30,35 +27,6 @@ abstract class AbstractPrimitiveMatcher extends AbstractRepeatableMatcher implem
 	protected AbstractPrimitiveMatcher() {
 	}
 
-
-	/**
-	 * calls consumer.accept(Object) once for each item of the `multipleValues` collection or array.
-	 * If it is not a collection or array then it calls consumer.accept(Object) once with `multipleValues`
-	 * If `multipleValues` is null then consumer.accept(Object) is not called
-	 * @param multipleValues to be iterated potential collection of items
-	 * @param consumer the receiver of items
-	 */
-	@SuppressWarnings("unchecked")
-	static void forEachItem(Object multipleValues, Consumer<Object> consumer) {
-		if (multipleValues instanceof CtStatementList) {
-			//CtStatementList extends Iterable, but we want to handle it as one node.
-			consumer.accept(multipleValues);
-			return;
-		}
-		if (multipleValues instanceof Iterable) {
-			for (Object item : (Iterable<Object>) multipleValues) {
-				consumer.accept(item);
-			}
-			return;
-		}
-		if (multipleValues instanceof Object[]) {
-			for (Object item : (Object[]) multipleValues) {
-				consumer.accept(item);
-			}
-			return;
-		}
-		consumer.accept(multipleValues);
-	}
 
 	@Override
 	public TobeMatched matchAllWith(TobeMatched tobeMatched) {

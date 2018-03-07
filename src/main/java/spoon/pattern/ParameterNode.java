@@ -19,6 +19,8 @@ package spoon.pattern;
 import java.util.function.BiConsumer;
 
 import spoon.pattern.matcher.Quantifier;
+import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 

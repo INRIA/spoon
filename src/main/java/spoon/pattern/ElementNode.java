@@ -27,6 +27,8 @@ import java.util.function.BiConsumer;
 import spoon.Metamodel;
 import spoon.SpoonException;
 import spoon.pattern.matcher.TobeMatched;
+import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;

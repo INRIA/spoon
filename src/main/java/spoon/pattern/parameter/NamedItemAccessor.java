@@ -14,10 +14,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.parameter;
 
 import java.util.Map;
 import java.util.function.Function;
+
+import spoon.pattern.UnmodifiableParameterValueProvider;
 
 /**
  * A kind of {@link ParameterInfo} which returns value by the named parameter

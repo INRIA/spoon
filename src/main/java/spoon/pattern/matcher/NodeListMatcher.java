@@ -19,7 +19,7 @@ package spoon.pattern.matcher;
 
 import java.util.List;
 
-import spoon.pattern.ParameterValueProvider;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 
 /**

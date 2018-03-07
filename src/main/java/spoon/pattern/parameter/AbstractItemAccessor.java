@@ -14,26 +14,30 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.parameter;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.pattern.ResultHolder;
+import spoon.pattern.ValueConvertor;
 import spoon.pattern.matcher.Quantifier;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
  */
-abstract class AbstractItemAccessor implements ParameterInfo {
+public abstract class AbstractItemAccessor implements ParameterInfo {
 
 	/**
 	 * is used as return value when value cannot be added
@@ -237,7 +241,7 @@ abstract class AbstractItemAccessor implements ParameterInfo {
 		return isMultiple() ? maxOccurences : Math.min(maxOccurences, 1);
 	}
 
-	void setMaxOccurences(int maxOccurences) {
+	public void setMaxOccurences(int maxOccurences) {
 		this.maxOccurences = maxOccurences;
 	}
 
@@ -399,7 +403,7 @@ abstract class AbstractItemAccessor implements ParameterInfo {
 	protected <T> void convertValue(Factory factory, ResultHolder<T> result, Object rawValue) {
 		//convert raw parameter value to expected type
 		if (result.isMultiple()) {
-			AbstractPrimitiveMatcher.forEachItem(rawValue, singleValue -> {
+			forEachItem(rawValue, singleValue -> {
 				T convertedValue = convertSingleValue(factory, singleValue, result.getRequiredClass());
 				if (convertedValue != null) {
 					result.addResult(convertedValue);
@@ -414,6 +418,35 @@ abstract class AbstractItemAccessor implements ParameterInfo {
 	protected <T> T convertSingleValue(Factory factory, Object value, Class<T> type) {
 		ValueConvertor valueConvertor = getValueConvertor();
 		return (T) valueConvertor.getValueAs(factory, value, type);
+	}
+
+	/**
+	 * calls consumer.accept(Object) once for each item of the `multipleValues` collection or array.
+	 * If it is not a collection or array then it calls consumer.accept(Object) once with `multipleValues`
+	 * If `multipleValues` is null then consumer.accept(Object) is not called
+	 * @param multipleValues to be iterated potential collection of items
+	 * @param consumer the receiver of items
+	 */
+	@SuppressWarnings("unchecked")
+	static void forEachItem(Object multipleValues, Consumer<Object> consumer) {
+		if (multipleValues instanceof CtStatementList) {
+			//CtStatementList extends Iterable, but we want to handle it as one node.
+			consumer.accept(multipleValues);
+			return;
+		}
+		if (multipleValues instanceof Iterable) {
+			for (Object item : (Iterable<Object>) multipleValues) {
+				consumer.accept(item);
+			}
+			return;
+		}
+		if (multipleValues instanceof Object[]) {
+			for (Object item : (Object[]) multipleValues) {
+				consumer.accept(item);
+			}
+			return;
+		}
+		consumer.accept(multipleValues);
 	}
 
 	@Override

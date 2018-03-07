@@ -11,8 +11,8 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import spoon.pattern.ParameterInfo;
 import spoon.pattern.Pattern;
+import spoon.pattern.parameter.ParameterInfo;
 import spoon.reflect.factory.Factory;
 import spoon.test.template.testclasses.replace.OldPattern;
 import spoon.testing.utils.ModelUtils;
@@ -40,7 +40,6 @@ public class PatternTest {
 	}
 
 	@Test
-	@Ignore
 	public void testPatternToString() {
 		//contract: Pattern can be printed to String and each parameter is defined there
 		Factory f = ModelUtils.build(

@@ -37,6 +37,8 @@ import spoon.SpoonException;
 import spoon.pattern.ParametersBuilder.ParameterElementPair;
 import spoon.pattern.matcher.MapEntryNode;
 import spoon.pattern.matcher.Matchers;
+import spoon.pattern.parameter.AbstractItemAccessor;
+import spoon.pattern.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;

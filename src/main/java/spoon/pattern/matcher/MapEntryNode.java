@@ -18,10 +18,10 @@ package spoon.pattern.matcher;
 
 import java.util.function.BiConsumer;
 
-import spoon.pattern.ParameterInfo;
-import spoon.pattern.ParameterValueProvider;
 import spoon.pattern.Node;
 import spoon.pattern.ResultHolder;
+import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;
 
 /**

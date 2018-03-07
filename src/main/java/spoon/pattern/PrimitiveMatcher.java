@@ -16,6 +16,8 @@
  */
 package spoon.pattern;
 
+import spoon.pattern.parameter.ParameterValueProvider;
+
 /**
  * Defines API of a primitive matcher - matcher for single target object
  */

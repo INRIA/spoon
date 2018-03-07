@@ -24,7 +24,7 @@ import java.util.Set;
 
 import spoon.SpoonException;
 import spoon.pattern.ModelNode;
-import spoon.pattern.ParameterValueProviderFactory;
+import spoon.pattern.parameter.ParameterValueProviderFactory;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;

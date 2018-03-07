@@ -18,6 +18,8 @@ package spoon.pattern;
 
 import java.util.function.BiConsumer;
 
+import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;
 
 /**

@@ -14,8 +14,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.parameter;
 
+import spoon.pattern.Node;
+import spoon.pattern.Pattern;
+import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.reflect.factory.Factory;
 
