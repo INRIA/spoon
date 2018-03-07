@@ -803,7 +803,7 @@ public class PatternBuilder {
 					multiple = true;
 				}
 			}
-			pb.parameter(parameterName).setValueType(valueType).setContainerKind(ContainerKind.LIST)
+			pb.parameter(parameterName).setValueType(valueType).setContainerKind(multiple ? ContainerKind.LIST : ContainerKind.SINGLE)
 				.byTemplateParameterReference(field);
 
 			if (templateParameters != null) {
