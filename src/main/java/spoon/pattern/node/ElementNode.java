@@ -167,6 +167,10 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return getMatchedParameters(attrNode.matchTargets(tobeMatched, RootNode.MATCH_ALL));
 	}
 
+	@Override
+	public String toString() {
+		return elementType.getName() + ": " + super.toString();
+	}
 //	@Override
 //	public String toString() {
 //		PrinterHelper printer = new PrinterHelper(getTemplateNode().getFactory().getEnvironment());
