@@ -14,37 +14,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.node;
 
-import spoon.pattern.node.RootNode;
-import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.Generator;
+import spoon.pattern.ResultHolder;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
- * Drives generation process
+ * Represents a kind of {@link RootNode},
+ * whose AST statements are understood as pattern statements.
+ * For example CtForEach statement is handled as repeated generation of pattern
+ * Or CtIf statement is handled as optionally generated pattern
  */
-public class DefaultGenerator implements Generator {
-	protected final Factory factory;
-
-	public DefaultGenerator(Factory factory) {
-		super();
-		this.factory = factory;
-	}
-
-	@Override
-	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
-		node.generateTargets(this, result, parameters);
-	}
-
-	@Override
-	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters) {
-		parameterInfo.getValueAs(factory, result, parameters);
-	}
-
-	@Override
-	public Factory getFactory() {
-		return factory;
-	}
-
+public interface LiveNode extends RootNode {
+	/**
+	 * Generates Live statements of this live {@link RootNode}.
+	 * This method is used when sources of pattern have to be printed
+	 * @param generator
+	 * @param result holder of the result
+	 * @param parameters
+	 */
+	<T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
 }

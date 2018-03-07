@@ -17,11 +17,11 @@
 package spoon.pattern;
 
 import java.util.List;
-import java.util.Map;
 
 import spoon.SpoonException;
+import spoon.pattern.node.LiveNode;
 import spoon.pattern.node.RootNode;
-import spoon.pattern.parameter.AbstractParameterInfo;
+import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
@@ -42,7 +42,7 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	public String printNode(RootNode node) {
-		List<CtElement> generated = generateTargets(node, new Params(), null);
+		List<CtElement> generated = generateTargets(node, (ParameterValueProvider) null, null);
 		StringBuilder sb = new StringBuilder();
 		for (CtElement ele : generated) {
 			sb.append(ele.toString()).append('\n');
@@ -50,45 +50,19 @@ public class PatternPrinter extends DefaultGenerator {
 		return sb.toString();
 	}
 
-	private static class Params implements ParameterValueProvider {
-		@Override
-		public boolean hasValue(String parameterName) {
-			return true;
+	@Override
+	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
+		if (node instanceof LiveNode) {
+			//this is a Live node. Do not generated nodes normally, but generate origin live statements
+			((LiveNode) node).generateLiveTargets(this, result, parameters);
+			return;
 		}
-
-		@Override
-		public Object getValue(String parameterName) {
-			return new ParameterMarker(parameterName);
-		}
-
-		@Override
-		public ParameterValueProvider putValueToCopy(String parameterName, Object value) {
-			throw new SpoonException("This provider is just for printing");
-		}
-
-		@Override
-		public Map<String, Object> asMap() {
-			throw new SpoonException("This provider is just for printing");
-		}
-
-		@Override
-		public ParameterValueProvider createLocalParameterValueProvider() {
-			throw new SpoonException("This provider is just for printing");
-		}
-
-		@Override
-		public Map<String, Object> asLocalMap() {
-			throw new SpoonException("This provider is just for printing");
-		}
+		super.generateTargets(node, result, parameters);
 	}
 
-	private static class ParameterMarker {
-		final String name;
-
-		ParameterMarker(String name) {
-			super();
-			this.name = name;
-		}
+	@Override
+	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters) {
+		result.addResult(generatePatternParameterElement(parameterInfo, result.getRequiredClass()));
 	}
 
 	/**
@@ -99,20 +73,15 @@ public class PatternPrinter extends DefaultGenerator {
 	 * @return dummy template element, which represents a template type in source of generated Pattern.
 	 * Or null if potentialParameterMarker is not a marker of parameter
 	 */
-	public static <T> T generatePatternParameterElement(Factory factory, Object potentialParameterMarker, Class<T> type, AbstractParameterInfo parameterInfo) {
-		if (potentialParameterMarker instanceof ParameterMarker == false) {
-			return null;
-		}
-		ParameterMarker paramMarker = (ParameterMarker) potentialParameterMarker;
+	private <T> T generatePatternParameterElement(ParameterInfo parameterInfo, Class<T> type) {
 		if (type != null) {
 			if (type.isAssignableFrom(CtInvocation.class)) {
-				return (T) factory.createInvocation(factory.createThisAccess(factory.Type().objectType(), true), factory.createExecutableReference().setSimpleName(paramMarker.name));
+				return (T) factory.createInvocation(factory.createThisAccess(factory.Type().objectType(), true), factory.createExecutableReference().setSimpleName(parameterInfo.getName()));
 			}
 			if (type.isAssignableFrom(CtLocalVariable.class)) {
-				return (T) factory.createLocalVariable(factory.Type().objectType(), paramMarker.name, null);
+				return (T) factory.createLocalVariable(factory.Type().objectType(), parameterInfo.getName(), null);
 			}
 		}
-		PatternPrinter.class.getClass();
-		return null;
+		throw new SpoonException("Pattern Parameter is on Unsupported place");
 	}
 }

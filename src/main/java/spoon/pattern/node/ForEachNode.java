@@ -25,6 +25,11 @@ import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.factory.Factory;
 
 /**
  * Pattern node of multiple occurrences of the same model, just with different parameters.
@@ -36,7 +41,7 @@ import spoon.pattern.parameter.ParameterValueProvider;
  * </code></pre>
  * where parameter values are _x_ = ["a", "b", getStringOf(p1, p2)]
  */
-public class ForEachNode extends AbstractRepeatableMatcher {
+public class ForEachNode extends AbstractRepeatableMatcher implements LiveNode {
 
 	private PrimitiveMatcher iterableParameter;
 	private RootNode nestedModel;
@@ -138,5 +143,17 @@ public class ForEachNode extends AbstractRepeatableMatcher {
 	@Override
 	public boolean isTryNextMatch(ParameterValueProvider parameters) {
 		return iterableParameter.isTryNextMatch(parameters);
+	}
+
+	@Override
+	public <T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		Factory f = generator.getFactory();
+		CtForEach forEach = f.Core().createForEach();
+		forEach.setVariable(f.Code().createLocalVariable(f.Type().objectType(), localParameter.getName(), null));
+		forEach.setExpression(generator.generateTarget(iterableParameter, parameters, CtExpression.class));
+		CtBlock<?> body = f.createBlock();
+		body.setStatements(generator.generateTargets(nestedModel, parameters, CtStatement.class));
+		forEach.setBody(body);
+		result.addResult((T) forEach);
 	}
 }

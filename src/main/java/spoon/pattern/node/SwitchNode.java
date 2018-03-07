@@ -20,12 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -39,7 +45,7 @@ import spoon.reflect.factory.Factory;
  *  ... someStatements in other cases ...
  * }
  */
-public class SwitchNode extends AbstractNode {
+public class SwitchNode extends AbstractNode implements LiveNode {
 
 	private List<CaseNode> cases = new ArrayList<>();
 
@@ -111,7 +117,7 @@ public class SwitchNode extends AbstractNode {
 		return new CaseNode(null, null).matchTargets(targets, nextMatchers);
 	}
 
-	private class CaseNode extends AbstractNode {
+	private class CaseNode extends AbstractNode implements LiveNode {
 		/*
 		 * is null for the default case
 		 */
@@ -185,5 +191,64 @@ public class SwitchNode extends AbstractNode {
 			Boolean value = generator.generateTarget(vrOfExpression, parameters, Boolean.class);
 			return value == null ? false : value.booleanValue();
 		}
+
+		@Override
+		public <T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+			Factory f = generator.getFactory();
+			CoreFactory cf = f.Core();
+			CtBlock<?> block = cf.createBlock();
+			if (statement != null) {
+				block.setStatements(generator.generateTargets(statement, parameters, CtStatement.class));
+			}
+			if (vrOfExpression != null) {
+				//There is if expression
+				CtIf ifStmt = cf.createIf();
+				ifStmt.setCondition(generator.generateTarget(vrOfExpression, parameters, CtExpression.class));
+				ifStmt.setThenStatement(block);
+				result.addResult((T) ifStmt);
+			} else {
+				//There is no expression. It represents the last else block
+				result.addResult((T) block);
+			}
+		}
+	}
+
+	@Override
+	public <T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		CtStatement resultStmt = null;
+		CtStatement lastElse = null;
+		CtIf lastIf = null;
+		for (CaseNode caseNode : cases) {
+			CtStatement stmt = generator.generateTarget(caseNode, parameters, CtStatement.class);
+			if (stmt instanceof CtIf) {
+				CtIf ifStmt = (CtIf) stmt;
+				if (lastIf == null) {
+					//it is first IF
+					resultStmt = ifStmt;
+					lastIf = ifStmt;
+				} else {
+					//it is next IF. Append it as else into last IF
+					lastIf.setElseStatement(ifStmt);
+					lastIf = ifStmt;
+				}
+			} else {
+				if (lastElse != null) {
+					throw new SpoonException("Only one SwitchNode can have no expression.");
+				}
+				lastElse = stmt;
+			}
+		}
+		if (lastIf == null) {
+			//there is no IF
+			if (lastElse != null) {
+				result.addResult((T) lastElse);
+			}
+			return;
+		} 
+		if (lastElse != null) {
+			//append last else into lastIf
+			lastIf.setElseStatement(lastElse);
+		}
+		result.addResult((T) resultStmt);
 	}
 }
