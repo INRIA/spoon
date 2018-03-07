@@ -50,17 +50,17 @@ public class MetaModelTest {
 		//detect unused CtRoles
 		Set<CtRole> unhandledRoles = new HashSet<>(Arrays.asList(CtRole.values()));
 
-		mm.getMMTypes().forEach(mmType -> {
-			mmType.getRole2field().forEach((role, mmField) -> {
+		mm.getConcepts().forEach(mmConcept -> {
+			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 				unhandledRoles.remove(role);
 				if (mmField.getMethod(MMMethodKind.GET) == null) {
-					problems.add("Missing getter for " + mmField.getOwnerType().getName() + " and CtRole." + mmField.getRole());
+					problems.add("Missing getter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
-                	if (mmType.getTypeContext().isSubtypeOf(mm.getFactory().Type().createReference(CtReference.class)) == false
-                			&& mmType.getName().equals("CtTypeInformation") == false) {
+                	if (mmConcept.getTypeContext().isSubtypeOf(mm.getFactory().Type().createReference(CtReference.class)) == false
+                			&& mmConcept.getName().equals("CtTypeInformation") == false) {
                 		//only NON references needs a setter
-                		problems.add("Missing setter for " + mmField.getOwnerType().getName() + " and CtRole." + mmField.getRole());
+                		problems.add("Missing setter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
                 	}
 				}
 				//contract: type of field value is never implicit

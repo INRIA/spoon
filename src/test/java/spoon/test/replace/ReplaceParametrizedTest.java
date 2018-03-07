@@ -32,8 +32,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
-import spoon.test.metamodel.MMField;
-import spoon.test.metamodel.MMType;
+import spoon.test.metamodel.MetamodelProperty;
+import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.MMTypeKind;
 import spoon.test.metamodel.SpoonMetaModel;
 
@@ -49,7 +49,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		factory = metaModel.getFactory();
 
 		List<Object[]> values = new ArrayList<>();
-		for (MMType t : metaModel.getMMTypes()) {
+		for (MetamodelConcept t : metaModel.getConcepts()) {
 			if(t.getKind()==MMTypeKind.LEAF) {
 				values.add(new Object[] { t });
 			}
@@ -58,7 +58,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 	}
 
 	@Parameterized.Parameter(0)
-	public MMType typeToTest;
+	public MetamodelConcept typeToTest;
 	
 
 	@Test
@@ -69,7 +69,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		// this test puts them at all possible locations
 		CtType<?> toTest = typeToTest.getModelInterface();
 		CtElement o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
-		for (MMField mmField : typeToTest.getRole2field().values()) {
+		for (MetamodelProperty mmField : typeToTest.getRoleToProperty().values()) {
 			Class<?> argType = mmField.getItemValueType().getActualClass();
 
 			if (!CtElement.class.isAssignableFrom(argType)) {
