@@ -16,20 +16,26 @@
  */
 package spoon.pattern.parameter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 /**
  */
-public class SetAccessor extends AbstractItemAccessor {
+public class ListParameterInfo extends AbstractParameterInfo {
 
-	public SetAccessor(AbstractItemAccessor next) {
+	private final int idx;
+
+	public ListParameterInfo(ParameterInfo next) {
+		this(-1, next);
+	}
+	public ListParameterInfo(int idx, ParameterInfo next) {
 		super(next);
+		this.idx = idx;
 	}
 
 	@Override
@@ -39,52 +45,72 @@ public class SetAccessor extends AbstractItemAccessor {
 
 	@Override
 	protected String getWrappedName(String containerName) {
-		return containerName;
+		if (idx < 0) {
+			return containerName;
+		}
+		return containerName + "[" + idx + "]";
 	}
 
 	@Override
 	protected Object addValueAs(Object container, Function<Object, Object> merger) {
-		Set<Object> set = castTo(container, Set.class);
-		Object newValue = merger.apply(null);
+		List<Object> list = castTo(container, List.class);
+		Object existingValue = getExistingValue(list);
+		Object newValue = merger.apply(existingValue);
 		if (newValue == NO_MERGE) {
 			return NO_MERGE;
 		}
+		if (existingValue == newValue) {
+			//the value is already there. Keep existing list
+			return list;
+		}
 		if (newValue == null) {
-			//nothing to add. Keep existing set
-			return set;
+			//nothing to add. Keep existing list
+			return list;
 		}
-		if (set.contains(newValue)) {
-			//the value is already there
-			return set;
-		}
-		Set<Object> newSet = new LinkedHashSet<>(set.size() + 1);
-		newSet.addAll(set);
-		if (newValue instanceof Collection) {
-			if (newSet.addAll((Collection) newValue) == false) {
-				//all the values were already there. Return original set
-				return set;
+		List<Object> newList = new ArrayList<>(list.size() + 1);
+		newList.addAll(list);
+		if (idx >= 0) {
+			while (idx >= newList.size()) {
+				newList.add(null);
 			}
+			newList.set(idx, newValue);
 		} else {
-			newSet.add(newValue);
+			if (newValue instanceof Collection) {
+				newList.addAll((Collection) newValue);
+			} else {
+				newList.add(newValue);
+			}
 		}
-		return Collections.unmodifiableSet(newSet);
+		return Collections.unmodifiableList(newList);
 	}
 
+	protected Object getExistingValue(List<Object> list) {
+		if (list == null || idx < 0 || idx >= list.size()) {
+			return null;
+		}
+		return list.get(idx);
+	}
 	@Override
-	protected Set<Object> getEmptyContainer() {
-		return Collections.emptySet();
+	protected List<Object> getEmptyContainer() {
+		return Collections.emptyList();
 	}
 	@Override
 	protected Object getValue(ParameterValueProvider parameters) {
-		return castTo(super.getValue(parameters), Set.class);
+		List<Object> list = castTo(super.getValue(parameters), List.class);
+		if (idx < 0) {
+			return list;
+		}
+		if (idx < list.size()) {
+			return list.get(idx);
+		}
+		return null;
 	}
-
 	@Override
 	protected <T> T castTo(Object o, Class<T> type) {
-		if (o instanceof List) {
-			o = new LinkedHashSet<>((List) o);
+		if (o instanceof Set) {
+			o = new ArrayList<>((Set) o);
 		} else if (o instanceof Object[]) {
-			o = new LinkedHashSet<>(Arrays.asList((Object[]) o));
+			o = Arrays.asList((Object[]) o);
 		}
 		return super.castTo(o, type);
 	}

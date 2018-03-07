@@ -37,7 +37,7 @@ import spoon.SpoonException;
 import spoon.pattern.ParametersBuilder.ParameterElementPair;
 import spoon.pattern.matcher.MapEntryNode;
 import spoon.pattern.matcher.Matchers;
-import spoon.pattern.parameter.AbstractItemAccessor;
+import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
@@ -110,7 +110,7 @@ public class PatternBuilder {
 
 	private CtTypeReference<?> templateTypeRef;
 	private final Factory factory;
-	private final Map<String, AbstractItemAccessor> parameterInfos = new HashMap<>();
+	private final Map<String, AbstractParameterInfo> parameterInfos = new HashMap<>();
 //	ModelNode pattern;
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;

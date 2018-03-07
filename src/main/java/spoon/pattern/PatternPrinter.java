@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
-import spoon.pattern.parameter.AbstractItemAccessor;
+import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
@@ -93,7 +93,7 @@ public class PatternPrinter {
 	 * @return dummy template element, which represents a template type in source of generated Pattern.
 	 * Or null if potentialParameterMarker is not a marker of parameter
 	 */
-	public static <T> T generatePatternParameterElement(Factory factory, Object potentialParameterMarker, Class<T> type, AbstractItemAccessor parameterInfo) {
+	public static <T> T generatePatternParameterElement(Factory factory, Object potentialParameterMarker, Class<T> type, AbstractParameterInfo parameterInfo) {
 		if (potentialParameterMarker instanceof ParameterMarker == false) {
 			return null;
 		}

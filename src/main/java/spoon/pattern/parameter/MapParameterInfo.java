@@ -25,17 +25,17 @@ import spoon.pattern.UnmodifiableParameterValueProvider;
  * A kind of {@link ParameterInfo} which returns value by the named parameter
  * From a container of type {@link ParameterValueProvider} or {@link Map}
  */
-public class NamedItemAccessor extends AbstractItemAccessor {
+public class MapParameterInfo extends AbstractParameterInfo {
 
 	private final String name;
 
-	public NamedItemAccessor(String name) {
+	public MapParameterInfo(String name) {
 		this(name, null);
 	}
-	public NamedItemAccessor(AbstractItemAccessor next) {
+	public MapParameterInfo(AbstractParameterInfo next) {
 		this(null, next);
 	}
-	public NamedItemAccessor(String name, AbstractItemAccessor next) {
+	public MapParameterInfo(String name, AbstractParameterInfo next) {
 		super(next);
 		this.name = name;
 	}

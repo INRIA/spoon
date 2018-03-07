@@ -23,9 +23,9 @@ import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.pattern.matcher.Quantifier;
-import spoon.pattern.parameter.AbstractItemAccessor;
-import spoon.pattern.parameter.ListAccessor;
-import spoon.pattern.parameter.NamedItemAccessor;
+import spoon.pattern.parameter.AbstractParameterInfo;
+import spoon.pattern.parameter.ListParameterInfo;
+import spoon.pattern.parameter.MapParameterInfo;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
@@ -64,11 +64,11 @@ import static spoon.pattern.PatternBuilder.getLocalTypeRefBySimpleName;
  */
 public class ParametersBuilder {
 	private final PatternBuilder patternBuilder;
-	private final Map<String, AbstractItemAccessor> parameterInfos;
-	private AbstractItemAccessor currentParameter;
+	private final Map<String, AbstractParameterInfo> parameterInfos;
+	private AbstractParameterInfo currentParameter;
 	private ConflictResolutionMode conflictResolutionMode = ConflictResolutionMode.FAIL;
 
-	ParametersBuilder(PatternBuilder patternBuilder, Map<String, AbstractItemAccessor> parameterInfos) {
+	ParametersBuilder(PatternBuilder patternBuilder, Map<String, AbstractParameterInfo> parameterInfos) {
 		this.patternBuilder = patternBuilder;
 		this.parameterInfos = parameterInfos;
 	}
@@ -94,10 +94,10 @@ public class ParametersBuilder {
 		return patternBuilder.patternQuery;
 	}
 
-	private AbstractItemAccessor getParameterInfo(String parameterName, boolean createIfNotExist) {
-		AbstractItemAccessor pi = parameterInfos.get(parameterName);
+	private AbstractParameterInfo getParameterInfo(String parameterName, boolean createIfNotExist) {
+		AbstractParameterInfo pi = parameterInfos.get(parameterName);
 		if (pi == null) {
-			pi = new NamedItemAccessor(parameterName).setValueConvertor(patternBuilder.getDefaultValueConvertor());
+			pi = new MapParameterInfo(parameterName).setValueConvertor(patternBuilder.getDefaultValueConvertor());
 			parameterInfos.put(parameterName, pi);
 		}
 		return pi;
@@ -587,7 +587,7 @@ public class ParametersBuilder {
 
 	/**
 	 * for input `element` expression `X` in expression `X[Y]` it returns expression `X[Y]`
-	 * and registers extra {@link ListAccessor} to the parameter assigned to `X`
+	 * and registers extra {@link ListParameterInfo} to the parameter assigned to `X`
 	 * @param parameter TODO
 	 * @param valueResolver
 	 * @param element
@@ -604,7 +604,7 @@ public class ParametersBuilder {
 					CtLiteral<?> idxLiteral = (CtLiteral<?>) expr;
 					Object idx = idxLiteral.getValue();
 					if (idx instanceof Number) {
-						return new ParameterElementPair(new ListAccessor(((Number) idx).intValue(), pep.parameter), arrayAccess);
+						return new ParameterElementPair(new ListParameterInfo(((Number) idx).intValue(), pep.parameter), arrayAccess);
 					}
 				}
 			}

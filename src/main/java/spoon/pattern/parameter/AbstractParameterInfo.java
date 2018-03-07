@@ -37,14 +37,14 @@ import spoon.reflect.reference.CtTypeReference;
 
 /**
  */
-public abstract class AbstractItemAccessor implements ParameterInfo {
+public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	/**
 	 * is used as return value when value cannot be added
 	 */
 	protected static final Object NO_MERGE = new Object();
 
-	private final AbstractItemAccessor containerItemAccessor;
+	private final AbstractParameterInfo containerItemAccessor;
 
 	private ContainerKind containerKind = null;
 	private Boolean repeatable = null;
@@ -56,9 +56,9 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 	private Predicate<Object> matchCondition;
 	private Class<?> parameterValueType;
 
-	protected AbstractItemAccessor(ParameterInfo containerItemAccessor) {
+	protected AbstractParameterInfo(ParameterInfo containerItemAccessor) {
 		super();
-		this.containerItemAccessor = (AbstractItemAccessor) containerItemAccessor;
+		this.containerItemAccessor = (AbstractParameterInfo) containerItemAccessor;
 	}
 
 	protected String getContainerName() {
@@ -70,7 +70,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 
 	@Override
 	public final String getName() {
-		AbstractItemAccessor cca = getContainerKindAccessor(getContainerKind(null, null));
+		AbstractParameterInfo cca = getContainerKindAccessor(getContainerKind(null, null));
 		if (cca != null) {
 			return cca.getWrappedName(getPlainName());
 		}
@@ -110,7 +110,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 
 	protected Object merge(Object existingValue, Object newValue) {
 		ContainerKind cc = getContainerKind(existingValue, newValue);
-		AbstractItemAccessor cca = getContainerKindAccessor(cc);
+		AbstractParameterInfo cca = getContainerKindAccessor(cc);
 		if (cca == null) {
 			return mergeSingle(existingValue, newValue);
 		}
@@ -118,16 +118,16 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 				existingListItemValue -> mergeSingle(existingListItemValue, newValue));
 	}
 
-	protected AbstractItemAccessor getContainerKindAccessor(ContainerKind containerKind) {
+	protected AbstractParameterInfo getContainerKindAccessor(ContainerKind containerKind) {
 		switch (containerKind) {
 		case SINGLE:
 			return null;
 		case LIST:
-			return new ListAccessor(this);
+			return new ListParameterInfo(this);
 		case SET:
-			return new SetAccessor(this);
+			return new SetParameterInfo(this);
 		case MAP:
-			return new NamedItemAccessor(this);
+			return new MapParameterInfo(this);
 		}
 		throw new SpoonException("Unexpected ContainerKind " + containerKind);
 	}
@@ -180,7 +180,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 
 	protected abstract <T> T getEmptyContainer();
 
-	public <T> AbstractItemAccessor setMatchCondition(Class<T> requiredType, Predicate<T> matchCondition) {
+	public <T> AbstractParameterInfo setMatchCondition(Class<T> requiredType, Predicate<T> matchCondition) {
 		this.parameterValueType = requiredType;
 		this.matchCondition = (Predicate) matchCondition;
 		return this;
@@ -207,7 +207,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 		return parameterValueType;
 	}
 
-	public AbstractItemAccessor setParameterValueType(Class<?> parameterValueType) {
+	public AbstractParameterInfo setParameterValueType(Class<?> parameterValueType) {
 		this.parameterValueType = parameterValueType;
 		return this;
 	}
@@ -218,7 +218,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 		return getContainerKind(null, null) != ContainerKind.SINGLE;
 	}
 
-	public AbstractItemAccessor setRepeatable(boolean repeatable) {
+	public AbstractParameterInfo setRepeatable(boolean repeatable) {
 		this.repeatable = repeatable;
 		return this;
 	}
@@ -228,7 +228,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 		return minOccurences;
 	}
 
-	public AbstractItemAccessor setMinOccurences(int minOccurences) {
+	public AbstractParameterInfo setMinOccurences(int minOccurences) {
 		this.minOccurences = minOccurences;
 		return this;
 	}
@@ -269,7 +269,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 	/**
 	 * @param valueConvertor the {@link ValueConvertor} used by reading and writing into parameter values defined by this {@link ParameterInfo}
 	 */
-	public AbstractItemAccessor setValueConvertor(ValueConvertor valueConvertor) {
+	public AbstractParameterInfo setValueConvertor(ValueConvertor valueConvertor) {
 		if (valueConvertor == null) {
 			throw new SpoonException("valueConvertor must not be null");
 		}
@@ -334,7 +334,7 @@ public abstract class AbstractItemAccessor implements ParameterInfo {
 		return containerKind;
 	}
 
-	public AbstractItemAccessor setContainerKind(ContainerKind containerKind) {
+	public AbstractParameterInfo setContainerKind(ContainerKind containerKind) {
 		this.containerKind = containerKind;
 		return this;
 	}
