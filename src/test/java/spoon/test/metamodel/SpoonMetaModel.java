@@ -65,9 +65,9 @@ public class SpoonMetaModel {
 	private final Factory factory;
 	
 	/**
-	 * {@link MMType}s by name
+	 * {@link MetamodelConcept}s by name
 	 */
-	private final Map<String, MMType> name2mmType = new HashMap<>();
+	private final Map<String, MetamodelConcept> nameToConcept = new HashMap<>();
 
 	/**
 	 * Parses spoon sources and creates factory with spoon model.
@@ -95,27 +95,27 @@ public class SpoonMetaModel {
 			}
 		}
 		
-		//search for all interfaces of spoon model and create MMTypes for them
+		//search for all interfaces of spoon model and create MetamodelConcepts for them
 		factory.getModel().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
 				if (MODEL_IFACE_PACKAGES.contains(iface.getPackage().getQualifiedName())) {
-					getOrCreateMMType(iface);
+					getOrCreateConcept(iface);
 				}
 			});
 	}
 
 	/**
-	 * @return all {@link MMType}s of spoon meta model
+	 * @return all {@link MetamodelConcept}s of spoon meta model
 	 */
-	public Collection<MMType> getMMTypes() {
-		return Collections.unmodifiableCollection(name2mmType.values());
+	public Collection<MetamodelConcept> getConcepts() {
+		return Collections.unmodifiableCollection(nameToConcept.values());
 	}
 	
 	/**
-	 * @param type a spoon model type
-	 * @return name of {@link MMType}, which represents Spoon model {@link CtType}
+	 * @param type a spoon model class or interface, whose concept name has to be returned
+	 * @return name of {@link MetamodelConcept}, which represents Spoon model {@link CtType}
 	 */
-	public static String getMMTypeIntefaceName(CtType<?> type) {
+	public static String getConceptName(CtType<?> type) {
 		String name = type.getSimpleName();
 		if (name.endsWith(CLASS_SUFFIX)) {
 			name = name.substring(0, name.length() - CLASS_SUFFIX.length());
@@ -175,48 +175,48 @@ public class SpoonMetaModel {
 
 	/**
 	 * @param type can be class or interface of Spoon model element
-	 * @return existing or creates and initializes new {@link MMType} which represents `type`, which 
+	 * @return existing or creates and initializes new {@link MetamodelConcept} which represents the `type` 
 	 */
-	private MMType getOrCreateMMType(CtType<?> type) {
-		String mmTypeName = getMMTypeIntefaceName(type);
-		MMType mmType = getOrCreate(name2mmType, mmTypeName, () -> new MMType());
-		if (mmType.name == null) {
-			mmType.name = mmTypeName;
-			initializeMMType(type, mmType);
+	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
+		String conceptName = getConceptName(type);
+		MetamodelConcept mmConcept = getOrCreate(nameToConcept, conceptName, () -> new MetamodelConcept());
+		if (mmConcept.name == null) {
+			mmConcept.name = conceptName;
+			initializeConcept(type, mmConcept);
 		}
-		return mmType;
+		return mmConcept;
 	}
 	
 	/**
-	 * is called once for each MMType, to initialize it.
+	 * is called once for each {@link MetamodelConcept}, to initialize it.
 	 * @param type a class or inteface of the spoon model element
-	 * @param mmType to be initialize MMType
+	 * @param mmConcept to be initialize {@link MetamodelConcept}
 	 */
-	private void initializeMMType(CtType<?> type, MMType mmType) {
+	private void initializeConcept(CtType<?> type, MetamodelConcept mmConcept) {
 		//it is not initialized yet. Do it now
 		if (type instanceof CtInterface<?>) {
 			CtInterface<?> iface = (CtInterface<?>) type;
-			mmType.setModelClass(getImplementationOfInterface(iface));
-			mmType.setModelInterface(iface);
+			mmConcept.setModelClass(getImplementationOfInterface(iface));
+			mmConcept.setModelInterface(iface);
 		} else if (type instanceof CtClass<?>) {
 			CtClass<?> clazz = (CtClass<?>) type;
-			mmType.setModelClass(clazz);
-			mmType.setModelInterface(getInterfaceOfImplementation(clazz));
+			mmConcept.setModelClass(clazz);
+			mmConcept.setModelInterface(getInterfaceOfImplementation(clazz));
 		} else {
 			throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
 		}
 
 		//add fields of class
-		if (mmType.getModelClass() != null) {
-			addFieldsOfType(mmType, mmType.getModelClass());
+		if (mmConcept.getModelClass() != null) {
+			addFieldsOfType(mmConcept, mmConcept.getModelClass());
 		}
 		//add fields of interface
-		if (mmType.getModelInterface() != null) {
-			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MMType already exists in name2mmType
-			addFieldsOfType(mmType, mmType.getModelInterface());
+		if (mmConcept.getModelInterface() != null) {
+			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MetamodelConcept already exists in nameToConcept
+			addFieldsOfType(mmConcept, mmConcept.getModelInterface());
 		}
 		//initialize all fields
-		mmType.getRole2field().forEach((role, mmField) -> {
+		mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 			//if there are more methods for the same field then choose the one which best matches the field type
 			mmField.sortByBestMatch();
 			//finally initialize value type of this field
@@ -225,25 +225,25 @@ public class SpoonMetaModel {
 	}
 
 	/**
-	 * adds all {@link MMField}s of `ctType`
-	 * @param mmType the owner of to be created fields
+	 * adds all {@link MetamodelProperty}s of `ctType`
+	 * @param mmConcept the owner of to be created fields
 	 * @param ctType to be scanned {@link CtType}
 	 */
-	private void addFieldsOfType(MMType mmType, CtType<?> ctType) {
+	private void addFieldsOfType(MetamodelConcept mmConcept, CtType<?> ctType) {
 		ctType.getTypeMembers().forEach(typeMember -> {
 			if (typeMember instanceof CtMethod<?>) {
 				CtMethod<?> method = (CtMethod<?>) typeMember;
 				CtRole role = getRoleOfMethod(method);
 				if (role != null) {
-					MMField field = mmType.getOrCreateMMField(role);
+					MetamodelProperty field = mmConcept.getOrCreateMMField(role);
 					field.addMethod(method);
 				} else {
-					mmType.otherMethods.add(method);
+					mmConcept.otherMethods.add(method);
 				}
 			}
 		});
-		addFieldsOfSuperType(mmType, ctType.getSuperclass());
-		ctType.getSuperInterfaces().forEach(superIfaceRef -> addFieldsOfSuperType(mmType, superIfaceRef));
+		addFieldsOfSuperType(mmConcept, ctType.getSuperclass());
+		ctType.getSuperInterfaces().forEach(superIfaceRef -> addFieldsOfSuperType(mmConcept, superIfaceRef));
 	}
 
 	private static Set<String> EXPECTED_TYPES_NOT_IN_CLASSPATH = new HashSet<>(Arrays.asList(
@@ -257,11 +257,11 @@ public class SpoonMetaModel {
 
 
 	/**
-	 * add all fields of `superTypeRef` into `mmType`
-	 * @param mmType sub type
+	 * add all fields of `superTypeRef` into `mmConcept`
+	 * @param concept sub type
 	 * @param superTypeRef super type
 	 */
-	private void addFieldsOfSuperType(MMType mmType, CtTypeReference<?> superTypeRef) {
+	private void addFieldsOfSuperType(MetamodelConcept concept, CtTypeReference<?> superTypeRef) {
 		if (superTypeRef == null) {
 			return;
 		}
@@ -272,10 +272,10 @@ public class SpoonMetaModel {
 			}
 			return;
 		}
-		//call getOrCreateMMType recursively for super types
-		MMType superMMType = getOrCreateMMType(superType);
-		if (superMMType != mmType) {
-			mmType.addSuperType(superMMType);
+		//call getOrCreateConcept recursively for super concepts
+		MetamodelConcept superConcept = getOrCreateConcept(superType);
+		if (superConcept != concept) {
+			concept.addSuperConcept(superConcept);
 		}
 	}
 

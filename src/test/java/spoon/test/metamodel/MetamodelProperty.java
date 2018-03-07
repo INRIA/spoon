@@ -22,7 +22,6 @@ import static spoon.test.metamodel.SpoonMetaModel.getOrCreate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +30,7 @@ import java.util.function.Consumer;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -38,10 +38,10 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 /**
- * Represents a field of Spoon model type.
- * Each MMField belongs to one MMType
+ * Represents a property of Spoon model concept.
+ * Each {@link MetamodelProperty} belongs to one {@link MetamodelConcept}
  */
-public class MMField {
+public class MetamodelProperty {
 	/**
 	 * Name of the field
 	 */
@@ -51,19 +51,19 @@ public class MMField {
 	 */
 	private final CtRole role;
 	/**
-	 * The list of {@link MMType}s which contains this field
+	 * The list of {@link MetamodelConcept}s which contains this field
 	 */
-	private final MMType ownerType;
+	private final MetamodelConcept ownerConcept;
 	/**
 	 * Type of value container [single, list, set, map]
 	 */
-	private MMContainerType valueContainerType;
+	private ContainerKind valueContainerType;
 	/**
-	 * The type of value of this field - can be Set, List, Map or any non collection type
+	 * The type of value of this property - can be Set, List, Map or any non collection type
 	 */
 	private CtTypeReference<?> valueType;
 	/**
-	 * The item type of value of this field - can be non collection type
+	 * The item type of value of this property - can be non collection type
 	 */
 	private CtTypeReference<?> itemValueType;
 
@@ -74,28 +74,27 @@ public class MMField {
 
 	/**
 	 * methods of this field defined directly on ownerType.
-	 * There is PropertyGetter or PropertySetter annotation with `role` of this {@link MMField}
+	 * There is PropertyGetter or PropertySetter annotation with `role` of this {@link MetamodelProperty}
 	 */
 	private final List<MMMethod> roleMethods = new ArrayList<>();
 	/**
 	 * methods of this field grouped by signature defined directly on ownerType.
-	 * There is PropertyGetter or PropertySetter annotation with `role` of this {@link MMField}
+	 * There is PropertyGetter or PropertySetter annotation with `role` of this {@link MetamodelProperty}
 	 * note: There can be up to 2 methods in this list. 1) declaration from interface, 2) implementation from class
 	 */
 	private final Map<String, MMMethod> roleMethodsBySignature = new HashMap<>();
 	/**
-	 * List of fields with same `role`, from super type of `ownerType` {@link MMType}
+	 * List of {@link MetamodelProperty} with same `role`, from super type of `ownerConcept` {@link MetamodelConcept}
 	 */
-	private final List<MMField> superFields = new ArrayList<>();
+	private final List<MetamodelProperty> superProperties = new ArrayList<>();
 
 	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
-
-	MMField(String name, CtRole role, MMType ownerType) {
+	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
 		super();
 		this.name = name;
 		this.role = role;
-		this.ownerType = ownerType;
+		this.ownerConcept = ownerConcept;
 	}
 
 	void addMethod(CtMethod<?> method) {
@@ -120,17 +119,17 @@ public class MMField {
 			getOrCreate(methodsByKind, mmMethod.getMethodKind(), () -> new ArrayList<>()).add(mmMethod);
 			MMMethod conflict = roleMethodsBySignature.put(mmMethod.getSignature(), mmMethod);
 			if (conflict != null) {
-				throw new SpoonException("Conflict on " + getOwnerType().getName() + "." + name + " method signature: " + mmMethod.getSignature());
+				throw new SpoonException("Conflict on " + getOwnerConcept().getName() + "." + name + " method signature: " + mmMethod.getSignature());
 			}
 			return mmMethod;
 		}
 		return null;
 	}
 
-	void addSuperField(MMField superMMField) {
-		if (addUniqueObject(superFields, superMMField)) {
+	void addSuperField(MetamodelProperty superMMField) {
+		if (addUniqueObject(superProperties, superMMField)) {
 			for (MMMethod superMethod : superMMField.getRoleMethods()) {
-				getOwnMethod(superMethod.getFirstOwnMethod(getOwnerType()), true).addSuperMethod(superMethod);
+				getOwnMethod(superMethod.getFirstOwnMethod(getOwnerConcept()), true).addSuperMethod(superMethod);
 			}
 		}
 	}
@@ -143,11 +142,11 @@ public class MMField {
 		return role;
 	}
 
-	public MMType getOwnerType() {
-		return ownerType;
+	public MetamodelConcept getOwnerConcept() {
+		return ownerConcept;
 	}
 
-	public MMContainerType getValueContainerType() {
+	public ContainerKind getValueContainerType() {
 		return valueContainerType;
 	}
 
@@ -161,7 +160,7 @@ public class MMField {
 	CtTypeReference<?> detectValueType() {
 		MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
 		if (mmGetMethod == null) {
-			throw new SpoonException("No getter exists for " + getOwnerType().getName() + "." + getName());
+			throw new SpoonException("No getter exists for " + getOwnerConcept().getName() + "." + getName());
 		}
 		MMMethod mmSetMethod = getMethod(MMMethodKind.SET);
 		if (mmSetMethod == null) {
@@ -172,7 +171,7 @@ public class MMField {
 		if (getterValueType.equals(setterValueType)) {
 			return mmGetMethod.getReturnType();
 		}
-		if (MMContainerType.valueOf(getterValueType.getActualClass()) != MMContainerType.SINGLE) {
+		if (containerKindOf(getterValueType.getActualClass()) != ContainerKind.SINGLE) {
 			getterValueType = getItemValueType(getterValueType);
 			setterValueType = getItemValueType(setterValueType);
 		}
@@ -190,7 +189,7 @@ public class MMField {
 			 */
 			return mmSetMethod.getValueType();
 		}
-		throw new SpoonException("Incompatible getter and setter for " + getOwnerType().getName() + "." + getName());
+		throw new SpoonException("Incompatible getter and setter for " + getOwnerConcept().getName() + "." + getName());
 	}
 
 	void setValueType(CtTypeReference<?> valueType) {
@@ -207,8 +206,8 @@ public class MMField {
 			valueType.setImplicit(false);
 		}
 		this.valueType = valueType;
-		this.valueContainerType = MMContainerType.valueOf(valueType.getActualClass());
-		if (valueContainerType != MMContainerType.SINGLE) {
+		this.valueContainerType = containerKindOf(valueType.getActualClass());
+		if (valueContainerType != ContainerKind.SINGLE) {
 			itemValueType = getItemValueType(valueType);
 		} else {
 			itemValueType = valueType;
@@ -371,12 +370,12 @@ public class MMField {
 	}
 
 	private static CtTypeReference<?> getItemValueType(CtTypeReference<?> valueType) {
-		MMContainerType valueContainerType = MMContainerType.valueOf(valueType.getActualClass());
-		if (valueContainerType == MMContainerType.SINGLE) {
+		ContainerKind valueContainerType = containerKindOf(valueType.getActualClass());
+		if (valueContainerType == ContainerKind.SINGLE) {
 			return null;
 		}
 		CtTypeReference<?> itemValueType;
-		if (valueContainerType == MMContainerType.MAP) {
+		if (valueContainerType == ContainerKind.MAP) {
 			if (String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName()) == false) {
 				throw new SpoonException("Unexpected container of type: " + valueType.toString());
 			}
@@ -440,6 +439,9 @@ public class MMField {
 		return null;
 	}
 
+	/**
+	 * @return true if this {@link MetamodelProperty} is derived in owner concept
+	 */
 	public boolean isDerived() {
 		if (derived == null) {
 			//if DerivedProperty is found on any getter of this type, then this field is derived
@@ -466,7 +468,7 @@ public class MMField {
 			//if DerivedProperty annotation is not found on any get method, then it is not derived
 			derived = Boolean.FALSE;
 			//check all super fields. If any of them is derived then this field is derived too
-			for (MMField superField : superFields) {
+			for (MetamodelProperty superField : superProperties) {
 				if (superField.isDerived()) {
 					derived = Boolean.TRUE;
 					break;
@@ -476,6 +478,9 @@ public class MMField {
 		return derived;
 	}
 
+	/**
+	 * @return true if this {@link MetamodelProperty} is unsettable in owner concept
+	 */
 	public boolean isUnsettable() {
 		if (unsettable == null) {
 			//if UnsettablePropertyis found on any setter of this type, then this field is unsettable
@@ -503,7 +508,7 @@ public class MMField {
 			//if UnsettableProperty annotation is not found on any set method, then it is settable
 			unsettable = Boolean.FALSE;
 			//check all super fields. If any of them is derived then this field is derived too
-			for (MMField superField : superFields) {
+			for (MetamodelProperty superField : superProperties) {
 				if (superField.isUnsettable()) {
 					unsettable = Boolean.TRUE;
 					break;
@@ -521,24 +526,24 @@ public class MMField {
 		return Collections.unmodifiableMap(roleMethodsBySignature);
 	}
 
-	public List<MMField> getSuperFields() {
-		return Collections.unmodifiableList(superFields);
+	public List<MetamodelProperty> getSuperFields() {
+		return Collections.unmodifiableList(superProperties);
 	}
 
 	@Override
 	public String toString() {
-		return ownerType.getName() + "#" + getName() + "<" + valueType + ">";
+		return ownerConcept.getName() + "#" + getName() + "<" + valueType + ">";
 	}
 
 	/**
 	 * @return the super MMField which has same valueType and which is in root of the most implementations
 	 */
-	public MMField getRootSuperField() {
-		List<MMField> potentialRootSuperFields = new ArrayList<>();
+	public MetamodelProperty getRootSuperField() {
+		List<MetamodelProperty> potentialRootSuperFields = new ArrayList<>();
 		if (roleMethods.size() > 0) {
 			potentialRootSuperFields.add(this);
 		}
-		superFields.forEach(superField -> {
+		superProperties.forEach(superField -> {
 			addUniqueObject(potentialRootSuperFields, superField.getRootSuperField());
 		});
 		int idx = 0;
@@ -546,7 +551,7 @@ public class MMField {
 			boolean needsSetter = getMethod(MMMethodKind.SET) != null;
 			CtTypeReference<?> expectedValueType = this.getValueType().getTypeErasure();
 			for (int i = 1; i < potentialRootSuperFields.size(); i++) {
-				MMField superField = potentialRootSuperFields.get(i);
+				MetamodelProperty superField = potentialRootSuperFields.get(i);
 				if (superField.getValueType().getTypeErasure().equals(expectedValueType) == false) {
 					break;
 				}
@@ -559,4 +564,18 @@ public class MMField {
 		}
 		return potentialRootSuperFields.get(idx);
 	}
+	
+	private	static ContainerKind containerKindOf(Class<?> valueClass) {
+		if (List.class.isAssignableFrom(valueClass)) {
+			return ContainerKind.LIST;
+		}
+		if (Map.class.isAssignableFrom(valueClass)) {
+			return ContainerKind.MAP;
+		}
+		if (Set.class.isAssignableFrom(valueClass)) {
+			return ContainerKind.SET;
+		}
+		return ContainerKind.SINGLE;
+	}
+
 }

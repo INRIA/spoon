@@ -28,11 +28,11 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.MethodTypingContext;
 
 /**
- * Represents a method of a {@link MMField} of a {@link MMType}.
+ * Represents a method of a {@link MetamodelProperty} of a {@link MetamodelConcept}.
  * Each MMMethod belongs to one MMField
  */
 public class MMMethod {
-	private final MMField ownerField;
+	private final MetamodelProperty ownerField;
 	private final CtMethod<?> method;
 	private final List<CtMethod<?>> ownMethods = new ArrayList<>();
 	private final List<MMMethod> superMethods = new ArrayList<>();
@@ -40,14 +40,14 @@ public class MMMethod {
 	private final MMMethodKind methodKind;
 
 	/**
-	 * Creates a {@link MMMethod} of a {@link MMField}
+	 * Creates a {@link MMMethod} of a {@link MetamodelProperty}
 	 * @param field a owner field
 	 * @param method a method from ownerType or nearest super type
 	 */
-	MMMethod(MMField field, CtMethod<?> method) {
+	MMMethod(MetamodelProperty field, CtMethod<?> method) {
 		this.ownerField = field;
 		//adapt method to scope of field.ownType
-		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(field.getOwnerType().getTypeContext()).setMethod(method);
+		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(field.getOwnerConcept().getTypeContext()).setMethod(method);
 		this.method = (CtMethod<?>) mtc.getAdaptationScope();
 		signature = this.method.getSignature();
 		methodKind = MMMethodKind.valueOf(this.method);
@@ -84,7 +84,7 @@ public class MMMethod {
 	/**
 	 * @return first own method in super type hierarchy of `targetType`
 	 */
-	public CtMethod<?> getFirstOwnMethod(MMType targetType) {
+	public CtMethod<?> getFirstOwnMethod(MetamodelConcept targetType) {
 		for (CtMethod<?> ctMethod : ownMethods) {
 			if (targetType.getTypeContext().isSubtypeOf(ctMethod.getDeclaringType().getReference())) {
 				return ctMethod;
@@ -104,7 +104,7 @@ public class MMMethod {
 	 * @return true of this {@link MMMethod} overrides `method`. In different words, if it represents the same method
 	 */
 	public boolean overrides(CtMethod<?> method) {
-		return ownerField.getOwnerType().getTypeContext().isOverriding(this.method, method);
+		return ownerField.getOwnerConcept().getTypeContext().isOverriding(this.method, method);
 	}
 
 	/**
@@ -116,17 +116,17 @@ public class MMMethod {
 	}
 
 	/**
-	 * @return {@link MMField} which owns this {@link MMMethod}
+	 * @return {@link MetamodelProperty} which owns this {@link MMMethod}
 	 */
-	public MMField getOwnerField() {
+	public MetamodelProperty getOwnerField() {
 		return ownerField;
 	}
 	
 	/**
-	 * @return {@link MMType} where this {@link MMMethod} belongs to
+	 * @return {@link MetamodelConcept} where this {@link MMMethod} belongs to
 	 */
-	public MMType getOwnerType() {
-		return getOwnerField().getOwnerType();
+	public MetamodelConcept getOwnerType() {
+		return getOwnerField().getOwnerConcept();
 	}
 
 	/**

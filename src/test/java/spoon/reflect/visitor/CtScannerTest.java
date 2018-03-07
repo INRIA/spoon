@@ -37,7 +37,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 import spoon.test.metamodel.MMMethod;
 import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.MMType;
+import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.MMTypeKind;
 import spoon.test.metamodel.SpoonMetaModel;
 
@@ -140,20 +140,20 @@ public class CtScannerTest {
 
 		class Counter  { int nbChecks = 0; }
 		Counter c = new Counter();
-		for (MMType leafMmType : metaModel.getMMTypes()) {
+		for (MetamodelConcept leafConcept : metaModel.getConcepts()) {
 
 			// we only consider leaf, actual classes of the metamodel (eg CtInvocation) and not abstract ones (eg CtModifiable)
-			if (leafMmType.getKind() != MMTypeKind.LEAF) {
+			if (leafConcept.getKind() != MMTypeKind.LEAF) {
 				continue;
 			}
 
-			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafMmType.getName());
-			assertNotNull("CtScanner#" + "visit"+leafMmType.getName() + "(...) not found", visitMethod);
+			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafConcept.getName());
+			assertNotNull("CtScanner#" + "visit"+leafConcept.getName() + "(...) not found", visitMethod);
 			Set<String> calledMethods = new HashSet<>();
 			Set<String> checkedMethods = new HashSet<>();
 
 			// go over the roles and the corresponding fields of this type
-			leafMmType.getRole2field().forEach((role, mmField) -> {
+			leafConcept.getRoleToProperty().forEach((role, mmField) -> {
 
 				if (mmField.isDerived()) {
 					//ignore derived fields
@@ -181,7 +181,7 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && leafMmType.getModelInterface().isSubtypeOf(ctRefRef)) {
+				if(getter.getName().equals("getComments") && leafConcept.getModelInterface().isSubtypeOf(ctRefRef)) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}
