@@ -29,16 +29,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import spoon.Metamodel;
 import spoon.SpoonException;
 import spoon.pattern.ParametersBuilder.ParameterElementPair;
-import spoon.pattern.matcher.Matchers;
-import spoon.pattern.node.ConstantNode;
 import spoon.pattern.node.ElementNode;
 import spoon.pattern.node.ListOfNodes;
-import spoon.pattern.node.MapEntryNode;
 import spoon.pattern.node.ModelNode;
 import spoon.pattern.node.RootNode;
 import spoon.pattern.node.ParameterNode;
@@ -119,6 +114,7 @@ public class PatternBuilder {
 //	ModelNode pattern;
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;
+	private boolean addGeneratedBy = false;
 	private boolean built = false;
 
 	static class PatternQuery implements CtQueryable {
@@ -150,108 +146,11 @@ public class PatternBuilder {
 		}
 		this.factory = templateTypeRef.getFactory();
 		this.valueConvertor = new ValueConvertorImpl();
-		patternNodes = new ListOfNodes(createImplicitNodes(template));
+		patternNodes = ElementNode.create(template, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(factory.Query(), patternModel);
 		configureParameters(pb -> {
 			pb.parameter(TARGET_TYPE).byType(templateTypeRef).setValueType(CtTypeReference.class);
 		});
-	}
-
-	private List<RootNode> createImplicitNodes(List<CtElement> elements) {
-		List<RootNode> nodes = new ArrayList<>(elements.size());
-		for (CtElement element : elements) {
-			nodes.add(createImplicitNode(element));
-		}
-		return nodes;
-	}
-
-	private RootNode createImplicitNode(Object object) {
-		if (object instanceof CtElement) {
-			//it is a spoon element
-			CtElement element = (CtElement) object;
-			Metamodel.Type mmConcept = Metamodel.getMetamodelTypeByClass(element.getClass());
-			ElementNode elementNode = new ElementNode(mmConcept);
-			if (patternElementToSubstRequests.put(element, elementNode) != null) {
-				throw new SpoonException("Each pattern element can have only one implicit Node.");
-			}
-			//iterate over all attributes of that element
-			for (Metamodel.Field  mmField : mmConcept.getFields()) {
-				if (mmField.isDerived()) {
-					//skip derived fields, they are not relevant for matching or generating
-					continue;
-				}
-				elementNode.setNodeOfRole(mmField.getRole(), createImplicitNode(mmField.getContainerKind(), mmField.getValue(element)));
-			}
-			return elementNode;
-		}
-		//TODO share instances of ConstantNode between equal `object`s - e.g. null, booleans, Strings, ...
-		return new ConstantNode<Object>(object);
-	}
-
-	private RootNode createImplicitNode(ContainerKind containerKind, Object templates) {
-		switch (containerKind) {
-		case LIST:
-			return createImplicitNode((List) templates);
-		case SET:
-			return createImplicitNode((Set) templates);
-		case MAP:
-			return createImplicitNode((Map) templates);
-		case SINGLE:
-			return createImplicitNode(templates);
-		}
-		throw new SpoonException("Unexpected RoleHandler containerKind: " + containerKind);
-	}
-
-	private RootNode createImplicitNode(List<?> objects) {
-		return listOfNodesToNode(objects.stream().map(i -> createImplicitNode(i)).collect(Collectors.toList()));
-	}
-
-	private RootNode createImplicitNode(Set<?> templates) {
-		//collect plain template nodes without any substitution request as List, because Spoon Sets have predictable order.
-		List<RootNode> constantMatchers = new ArrayList<>(templates.size());
-		//collect template nodes with a substitution request
-		List<RootNode> variableMatchers = new ArrayList<>();
-		for (Object template : templates) {
-			RootNode matcher = createImplicitNode(template);
-			if (matcher instanceof ElementNode) {
-				constantMatchers.add(matcher);
-			} else {
-				variableMatchers.add(matcher);
-			}
-		}
-		//first match the Set with constant matchers and then with variable matchers
-		constantMatchers.addAll(variableMatchers);
-		return listOfNodesToNode(constantMatchers);
-	}
-
-	private RootNode createImplicitNode(Map<String, ?> map) {
-		//collect Entries with constant matcher keys
-		List<MapEntryNode> constantMatchers = new ArrayList<>(map.size());
-		//collect Entries with variable matcher keys
-		List<MapEntryNode> variableMatchers = new ArrayList<>();
-		Matchers last = null;
-		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			MapEntryNode mem = new MapEntryNode(
-					createImplicitNode(entry.getKey()),
-					createImplicitNode(entry.getValue()));
-			if (mem.getKey() == entry.getKey()) {
-				constantMatchers.add(mem);
-			} else {
-				variableMatchers.add(mem);
-			}
-		}
-		//first match the Map.Entries with constant matchers and then with variable matchers
-		constantMatchers.addAll(variableMatchers);
-		return listOfNodesToNode(constantMatchers);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static RootNode listOfNodesToNode(List<? extends RootNode> nodes) {
-		//The attribute is matched different if there is List of one ParameterizedNode and when there is one ParameterizedNode
-//		if (nodes.size() == 1) {
-//			return nodes.get(0);
-//		}
-		return new ListOfNodes((List) nodes);
 	}
 
 	/**
@@ -264,7 +163,7 @@ public class PatternBuilder {
 		for (CtRole role : roles) {
 			if (node instanceof ElementNode) {
 				ElementNode elementNode = (ElementNode) node;
-				node = elementNode.getAttributeSubstititionRequest(role);
+				node = elementNode.getNodeOfRole(role);
 				if (node == null) {
 					throw new SpoonException("The role " + role + " resolved to null Node");
 				}
@@ -301,7 +200,7 @@ public class PatternBuilder {
 		modifyNodeOfElement(element, conflictMode, node -> {
 			if (node instanceof ElementNode) {
 				ElementNode elementNode = (ElementNode) node;
-				RootNode oldAttrNode = elementNode.getAttributeSubstititionRequest(role);
+				RootNode oldAttrNode = elementNode.getNodeOfRole(role);
 				RootNode newAttrNode = elementNodeChanger.apply(oldAttrNode);
 				if (newAttrNode == null) {
 					throw new SpoonException("Removing of Node is not supported");
@@ -365,6 +264,10 @@ public class PatternBuilder {
 	public Pattern build() {
 		if (built) {
 			throw new SpoonException("The Pattern may be built only once");
+		}
+		if (addGeneratedBy) {
+			//add generated by comments
+			addGeneratedByComments();
 		}
 		built = true;
 		//clean the mapping so it is not possible to further modify built pattern using this builder
@@ -904,5 +807,29 @@ public class PatternBuilder {
 				consumer.accept(vr);
 			}
 		});
+	}
+	/**
+	 * @return true if produced Pattern will append generated by comments
+	 */
+	public boolean isAddGeneratedBy() {
+		return addGeneratedBy;
+	}
+	/**
+	 * @param addGeneratedBy true when generated by comments have to be appended to each generated type member
+	 * @return this to support fluent API
+	 */
+	public PatternBuilder setAddGeneratedBy(boolean addGeneratedBy) {
+		this.addGeneratedBy = addGeneratedBy;
+		return this;
+	}
+	private void addGeneratedByComments() {
+		GeneratedByProvider gbp = new GeneratedByProvider();
+//		patternQuery.filterChildren(new TypeFilter<>(CtTypeMember.class)).forEach((CtTypeMember tm) -> {
+//			String generateByComment = gbp.getGeneratedByComment(tm);
+//			if (generateByComment != null) {
+//				RootNode node = getPatternNode(tm);
+//				gbp.addGeneratedByComment(node, generateByComment);
+//			}
+//		});
 	}
 }

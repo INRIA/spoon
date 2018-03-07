@@ -105,6 +105,11 @@ public class TemplateBuilder {
 		return patternBuilder.build();
 	}
 
+	public TemplateBuilder setAddGeneratedBy(boolean addGeneratedBy) {
+		patternBuilder.setAddGeneratedBy(addGeneratedBy);
+		return this;
+	}
+
 	/**
 	 * @return Map of template parameters from `template`
 	 */

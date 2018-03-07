@@ -65,7 +65,7 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 	@SuppressWarnings("unchecked")
 	public CtExpression<T> apply(CtType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c = Substitution.getTemplateCtClass(targetType, this);
-		CtBlock<?> block = TemplateBuilder.createPattern(getExpressionBlock(c), this).substituteSingle(targetType, CtBlock.class);
+		CtBlock<?> block = TemplateBuilder.createPattern(getExpressionBlock(c), this).setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtBlock.class);
 		if (block == null || block.getStatements().isEmpty()) {
 			return null;
 		}

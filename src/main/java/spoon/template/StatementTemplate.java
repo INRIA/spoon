@@ -46,7 +46,9 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement
 		CtStatement patternModel = c.getMethod("statement").getBody().getStatements().get(0);
-		List<CtStatement> statements = TemplateBuilder.createPattern(patternModel, this).substituteList(c.getFactory(), targetType, CtStatement.class);
+		List<CtStatement> statements = TemplateBuilder.createPattern(patternModel, this)
+				.setAddGeneratedBy(isAddGeneratedBy())
+				.substituteList(c.getFactory(), targetType, CtStatement.class);
 		if (statements.isEmpty()) {
 			return null;
 		}

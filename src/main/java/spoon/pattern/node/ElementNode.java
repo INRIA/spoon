@@ -16,18 +16,22 @@
  */
 package spoon.pattern.node;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import spoon.Metamodel;
 import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
+import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
@@ -43,8 +47,107 @@ import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
  */
 public class ElementNode extends AbstractPrimitiveMatcher {
 
+	public static ElementNode create(CtElement element, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		Metamodel.Type mmConcept = Metamodel.getMetamodelTypeByClass(element.getClass());
+		ElementNode elementNode = new ElementNode(mmConcept);
+		if (patternElementToSubstRequests.put(element, elementNode) != null) {
+			throw new SpoonException("Each pattern element can have only one implicit Node.");
+		}
+		//iterate over all attributes of that element
+		for (Metamodel.Field  mmField : mmConcept.getFields()) {
+			if (mmField.isDerived()) {
+				//skip derived fields, they are not relevant for matching or generating
+				continue;
+			}
+			elementNode.setNodeOfRole(mmField.getRole(), create(mmField.getContainerKind(), mmField.getValue(element), patternElementToSubstRequests));
+		}
+		return elementNode;
+	}
+
+	private static RootNode create(Object object, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		if (object instanceof CtElement) {
+			return create((CtElement) object, patternElementToSubstRequests);
+		}
+		return new ConstantNode<Object>(object);
+	}
+
+	private static RootNode create(ContainerKind containerKind, Object templates, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		switch (containerKind) {
+		case LIST:
+			return create((List) templates, patternElementToSubstRequests);
+		case SET:
+			return create((Set) templates, patternElementToSubstRequests);
+		case MAP:
+			return create((Map) templates, patternElementToSubstRequests);
+		case SINGLE:
+			return create(templates, patternElementToSubstRequests);
+		}
+		throw new SpoonException("Unexpected RoleHandler containerKind: " + containerKind);
+	}
+
+	public static ListOfNodes create(List<?> objects, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		if (objects == null) {
+			objects = Collections.emptyList();
+		}
+		return listOfNodesToNode(objects.stream().map(i -> create(i, patternElementToSubstRequests)).collect(Collectors.toList()));
+	}
+
+	public static ListOfNodes create(Set<?> templates, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		if (templates == null) {
+			templates = Collections.emptySet();
+		}
+		//collect plain template nodes without any substitution request as List, because Spoon Sets have predictable order.
+		List<RootNode> constantMatchers = new ArrayList<>(templates.size());
+		//collect template nodes with a substitution request
+		List<RootNode> variableMatchers = new ArrayList<>();
+		for (Object template : templates) {
+			RootNode matcher = create(template, patternElementToSubstRequests);
+			if (matcher instanceof ElementNode) {
+				constantMatchers.add(matcher);
+			} else {
+				variableMatchers.add(matcher);
+			}
+		}
+		//first match the Set with constant matchers and then with variable matchers
+		constantMatchers.addAll(variableMatchers);
+		return listOfNodesToNode(constantMatchers);
+	}
+
+	public static ListOfNodes create(Map<String, ?> map, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		if (map == null) {
+			map = Collections.emptyMap();
+		}
+		//collect Entries with constant matcher keys
+		List<MapEntryNode> constantMatchers = new ArrayList<>(map.size());
+		//collect Entries with variable matcher keys
+		List<MapEntryNode> variableMatchers = new ArrayList<>();
+		Matchers last = null;
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			MapEntryNode mem = new MapEntryNode(
+					create(entry.getKey(), patternElementToSubstRequests),
+					create(entry.getValue(), patternElementToSubstRequests));
+			if (mem.getKey() == entry.getKey()) {
+				constantMatchers.add(mem);
+			} else {
+				variableMatchers.add(mem);
+			}
+		}
+		//first match the Map.Entries with constant matchers and then with variable matchers
+		constantMatchers.addAll(variableMatchers);
+		return listOfNodesToNode(constantMatchers);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static ListOfNodes listOfNodesToNode(List<? extends RootNode> nodes) {
+		//The attribute is matched different if there is List of one ParameterizedNode and when there is one ParameterizedNode
+//		if (nodes.size() == 1) {
+//			return nodes.get(0);
+//		}
+		return new ListOfNodes((List) nodes);
+	}
+
 	private Metamodel.Type elementType;
-	private Map<Metamodel.Field, RootNode> attributeSubstititionRequests = new HashMap<>();
+	private Map<Metamodel.Field, RootNode> roleToNode = new HashMap<>();
 
 	public ElementNode(Metamodel.Type elementType) {
 		super();
@@ -53,7 +156,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
-		for (Map.Entry<Metamodel.Field, RootNode> e : attributeSubstititionRequests.entrySet()) {
+		for (Map.Entry<Metamodel.Field, RootNode> e : roleToNode.entrySet()) {
 			RootNode node = e.getValue();
 			if (node == oldNode) {
 				e.setValue(newNode);
@@ -66,16 +169,50 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return false;
 	}
 
-	public Map<Metamodel.Field, RootNode> getAttributeSubstititionRequests() {
-		return attributeSubstititionRequests == null ? Collections.emptyMap() : Collections.unmodifiableMap(attributeSubstititionRequests);
+	public Map<Metamodel.Field, RootNode> getRoleToNode() {
+		return roleToNode == null ? Collections.emptyMap() : Collections.unmodifiableMap(roleToNode);
 	}
 
-	public RootNode getAttributeSubstititionRequest(CtRole attributeRole) {
-		return attributeSubstititionRequests.get(getFieldOfRole(attributeRole));
+	public RootNode getNodeOfRole(CtRole attributeRole) {
+		return roleToNode.get(getFieldOfRole(attributeRole));
 	}
 
 	public RootNode setNodeOfRole(CtRole role, RootNode newAttrNode) {
-		return attributeSubstititionRequests.put(getFieldOfRole(role), newAttrNode);
+		return roleToNode.put(getFieldOfRole(role), newAttrNode);
+	}
+
+	/**
+	 * @param role
+	 * @return a {@link RootNode}, which exists on the `role` or creates implicit container for that role
+	 */
+	public RootNode getOrCreateNodeOfRole(CtRole role, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		RootNode node = getNodeOfRole(role);
+		if (node == null) {
+			Metamodel.Field mmField = elementType.getField(role);
+			if (mmField == null || mmField.isDerived()) {
+				throw new SpoonException("The role " + role + " doesn't exist or is derived for " + elementType);
+			}
+			node = create(mmField.getContainerKind(), null, patternElementToSubstRequests);
+			setNodeOfRole(role, node);
+		}
+		return node;
+	}
+
+	/**
+	 * @param role to be returned {@link CtRole}
+	 * @param type required type of returned value
+	 * @return value of {@link ConstantNode} on the `role` attribute of this {@link ElementNode} or null if there is none or has different type
+	 */
+	public <T> T getValueOfRole(CtRole role, Class<T> type) {
+		RootNode node = getNodeOfRole(role);
+		if (node instanceof ConstantNode) {
+//			FIX it delivers value of StringNode too ... generated by must be added into produced elements
+			ConstantNode cn = (ConstantNode) node;
+			if (type.isInstance(cn.getTemplateNode())) {
+				return (T) cn.getTemplateNode();
+			}
+		}
+		return null;
 	}
 
 	private Metamodel.Field getFieldOfRole(CtRole role) {
@@ -91,8 +228,8 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
-		if (attributeSubstititionRequests != null) {
-			for (RootNode node : attributeSubstititionRequests.values()) {
+		if (roleToNode != null) {
+			for (RootNode node : roleToNode.values()) {
 				node.forEachParameterInfo(consumer);
 			}
 		}
@@ -108,7 +245,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	protected void generateSingleNodeAttributes(Generator generator, CtElement clone, ParameterValueProvider parameters) {
-		for (Map.Entry<Metamodel.Field, RootNode> e : getAttributeSubstititionRequests().entrySet()) {
+		for (Map.Entry<Metamodel.Field, RootNode> e : getRoleToNode().entrySet()) {
 			Metamodel.Field mmField = e.getKey();
 			switch (mmField.getContainerKind()) {
 			case SINGLE:
@@ -147,7 +284,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		//it is spoon element, it matches if to be matched attributes matches
 		//to be matched attributes must be same or substituted
 		//iterate over all attributes of to be matched class
-		for (Map.Entry<Metamodel.Field, RootNode> e : attributeSubstititionRequests.entrySet()) {
+		for (Map.Entry<Metamodel.Field, RootNode> e : roleToNode.entrySet()) {
 			parameters = matchesRole(parameters, (CtElement) target, e.getKey(), e.getValue());
 			if (parameters == null) {
 				return null;
@@ -228,4 +365,12 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 //			}
 //		}
 //	}
+
+	public Metamodel.Type getElementType() {
+		return elementType;
+	}
+
+	public void setElementType(Metamodel.Type elementType) {
+		this.elementType = elementType;
+	}
 }

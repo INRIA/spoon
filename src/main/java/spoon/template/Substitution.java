@@ -526,7 +526,11 @@ public abstract class Substitution {
 		if (targetType == null) {
 			throw new RuntimeException("target is null in substitution");
 		}
-		return (E) TemplateBuilder.createPattern(code, template).substituteSingle(targetType, CtElement.class);
+		TemplateBuilder tb = TemplateBuilder.createPattern(code, template);
+		if (template instanceof AbstractTemplate) {
+			tb.setAddGeneratedBy(((AbstractTemplate) template).isAddGeneratedBy());
+		}
+		return (E) tb.substituteSingle(targetType, CtElement.class);
 	}
 
 	/**
