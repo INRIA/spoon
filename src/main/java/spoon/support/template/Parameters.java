@@ -17,6 +17,7 @@
 package spoon.support.template;
 
 import spoon.SpoonException;
+import spoon.pattern.PatternBuilder;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
@@ -98,6 +99,7 @@ public abstract class Parameters {
 			if (Modifier.isFinal(rtField.getModifiers())) {
 				Map<String, Object> m = finals.get(template);
 				if (m == null) {
+					//BUG: parameters marked as final will always return null, even if they have a value!
 					return null;
 				}
 				return m.get(parameterName);
@@ -237,12 +239,29 @@ public abstract class Parameters {
 	 */
 	public static Map<String, Object> getTemplateParametersAsMap(Factory f, CtType<?> targetType, Template<?> template) {
 		Map<String, Object> params = new HashMap<>(Parameters.getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
-		if (targetType != null) {
-			/*
-			 * there is required to replace all template model references by target type reference.
-			 * Handle that request as template parameter too
-			 */
-			params.put(template.getClass().getSimpleName(), targetType.getReference());
+		//detect reference to to be generated type
+		CtTypeReference<?> targetTypeRef = targetType == null ? null : targetType.getReference();
+		if (targetType == null) {
+			//legacy templates has target type stored under variable whose name was equal to simple name of template type
+			Object targetTypeObject = params.get(template.getClass().getSimpleName());
+			if (targetTypeObject != null) {
+				if (targetTypeObject instanceof CtTypeReference<?>) {
+					targetTypeRef = (CtTypeReference<?>) targetTypeObject;
+				} else if (targetTypeObject instanceof String) {
+					targetTypeRef = f.Type().createReference((String) targetTypeObject);
+				} else if (targetTypeObject instanceof Class) {
+					targetTypeRef = f.Type().createReference((Class<?>) targetTypeObject);
+				} else  {
+					throw new SpoonException("Unsupported definition of target type by value of class " + targetTypeObject.getClass());
+				}
+			}
+		}
+		/*
+		 * there is required to replace all template model references by target type reference.
+		 * Handle that request as template parameter too
+		 */
+		if (targetTypeRef != null) {
+			params.put(PatternBuilder.TARGET_TYPE, targetTypeRef);
 		}
 		return params;
 	}

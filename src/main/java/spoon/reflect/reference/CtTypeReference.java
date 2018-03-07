@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
@@ -144,6 +145,10 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@Override
 	@DerivedProperty
 	CtTypeReference<?> getSuperclass();
+
+	@Override
+	@DerivedProperty
+	Set<ModifierKind> getModifiers();
 
 	/**
 	 * Checks visibility based on public, protected, package protected and private modifiers of type

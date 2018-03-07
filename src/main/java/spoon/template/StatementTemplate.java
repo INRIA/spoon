@@ -18,11 +18,11 @@ package spoon.template;
 
 import java.util.List;
 
-import spoon.SpoonException;
+import spoon.pattern.TemplateBuilder;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-import spoon.support.template.SubstitutionVisitor;
 
 /**
  * This class represents a template parameter that defines a statement list
@@ -45,12 +45,20 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 	public CtStatement apply(CtType<?> targetType) {
 		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement
-		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
-		List<CtStatement> statements = new SubstitutionVisitor(c.getFactory(), targetType, this).substitute(result);
-		if (statements.size() > 1) {
-			throw new SpoonException("StatementTemplate cannot return more then one statement");
+		CtStatement patternModel = c.getMethod("statement").getBody().getStatements().get(0);
+		List<CtStatement> statements = TemplateBuilder.createPattern(patternModel, this).substituteList(c.getFactory(), targetType, CtStatement.class);
+		if (statements.isEmpty()) {
+			return null;
 		}
-		return statements.isEmpty() ? null : statements.get(0);
+		if (statements.size() == 1) {
+			return statements.get(0);
+		}
+		CtBlock<?> block = patternModel.getFactory().createBlock();
+		block.setImplicit(true);
+		for (CtStatement stmt : statements) {
+			block.addStatement(stmt);
+		}
+		return block;
 	}
 
 	public Void S() {

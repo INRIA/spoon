@@ -4,11 +4,15 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.pattern.ParameterValueProvider;
+import spoon.pattern.PatternBuilder;
+import spoon.pattern.matcher.Match;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
@@ -27,7 +31,6 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
-import spoon.support.template.SubstitutionVisitor;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
@@ -45,6 +48,7 @@ import spoon.test.template.testclasses.SimpleTemplate;
 import spoon.test.template.testclasses.SubStringTemplate;
 import spoon.test.template.testclasses.SubstituteLiteralTemplate;
 import spoon.test.template.testclasses.SubstituteRootTemplate;
+import spoon.test.template.testclasses.ToBeMatched;
 import spoon.test.template.testclasses.TypeReferenceClassAccessTemplate;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
@@ -89,6 +93,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static java.util.Arrays.asList;
+import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 public class TemplateTest {
 
@@ -434,7 +439,12 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
+			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(checkParameters("foo", match, "_col_", "new java.util.ArrayList<>()")
+						|| checkParameters("fbar", match, "_col_", "l")
+				);
+			});
 		}
 
 		{// testing matcher2
@@ -443,7 +453,10 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
-			assertThat(asList("bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
+			assertThat(asList("bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(checkParameters("bov", match, "_col_", "new java.util.ArrayList<>()"));
+			});
 		}
 
 		{// testing matcher3
@@ -452,7 +465,12 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
+			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(checkParameters("foo", match, "_x_", "(new java.util.ArrayList<>().size())")
+						||checkParameters("fbar", match, "_x_", "(l.size())")
+				);
+			});
 		}
 
 		{// testing matcher4
@@ -461,7 +479,20 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
-			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
+			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(
+						checkParameters("foo", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10")
+						||checkParameters("foo2", match, 
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "11")
+						||checkParameters("fbar", match,
+								"_x_", "(l.size())",
+								"_y_", "10")
+				);
+			});
 		}
 
 		{// testing matcher5
@@ -470,7 +501,35 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
-			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
+			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(
+						checkParameters("foo", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+						||checkParameters("foo2", match, 
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "11",
+								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+						||checkParameters("fbar", match,
+								"_x_", "(l.size())",
+								"_y_", "10",
+								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+						||checkParameters("baz", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_block_", "{}")
+						||checkParameters("bou", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_block_", "{ java.lang.System.out.println();}")
+						||checkParameters("bov", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_block_", "java.lang.System.out.println();")
+				);
+			});
 		}
 
 		{// testing matcher6
@@ -479,9 +538,36 @@ public class TemplateTest {
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("baz","bou"), is(klass.filterChildren(matcher).map((CtElement e)->e.getParent(CtMethod.class).getSimpleName()).list())) ;
+			assertThat(asList("baz","bou"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(
+						checkParameters("baz", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_stmt_", "null")
+						||checkParameters("bou", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_stmt_", "java.lang.System.out.println()")
+				);
+			});
 		}
 
+		{// testing matcher7
+			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> klass = factory.Class().get(CheckBound.class);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher7")).get(0)).getBody().getStatement(0);
+			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
+			assertEquals(1, matcher.find(klass).size());
+			assertThat(asList("bos"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			matcher.forEachMatch(klass, (match) -> {
+				assertTrue(
+						checkParameters("bos", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_block_", "java.lang.System.out.println();")
+				);
+			});
+		}
 
 		// testing with named elements, at the method level
 		{
@@ -514,6 +600,27 @@ public class TemplateTest {
 			assertEquals("fbar", ctElements.get(2).getSimpleName());
 		}
 	}
+	
+	private boolean checkParameters(String methodName, Match match, String... keyValues) {
+		if (methodName.equals(getMethodName(match.getMatchingElement()))) {
+			assertEquals("The arguments of keyValues must be in pairs", 0, keyValues.length % 2);
+			Map<String, Object> allParams = new HashMap<>(match.getParameters().asMap());
+			int count = keyValues.length / 2;
+			for (int i = 0; i < count; i++) {
+				String key = keyValues[i * 2];
+				String expectedValue = keyValues[i * 2 + 1];
+				Object realValue = allParams.remove(key);
+				assertEquals(expectedValue, getOptimizedString(realValue));
+			}
+			assertTrue("Unexpected parameter values: " + allParams, allParams.isEmpty());
+			return true;
+		}
+		return false;
+	}
+
+	private String getMethodName(CtElement e) {
+		return e.getParent(CtMethod.class).getSimpleName();
+	}
 
 	@Test
 	public void testExtensionBlock() throws Exception {
@@ -538,6 +645,7 @@ public class TemplateTest {
 		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
 		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
+		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", aTry.getBody().getStatement(1).toString());
 	}
 
 	@Test
@@ -551,8 +659,6 @@ public class TemplateTest {
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
 
-		final CtClass<?> aTemplateModelType = launcher.getFactory().Class().get(LoggerModel.class);
-		final CtMethod<?> aTemplateModel = aTemplateModelType.getMethod("block");
 		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
 		final CtMethod<?> toBeLoggedMethod = aTargetType.getMethodsByName("enter").get(0);
 
@@ -561,7 +667,9 @@ public class TemplateTest {
 		params.put("_classname_", factory.Code().createLiteral(aTargetType.getSimpleName()));
 		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
 		params.put("_block_", toBeLoggedMethod.getBody());
-		final List<CtMethod<?>> aMethods = new SubstitutionVisitor(factory, params).substitute(aTemplateModel.clone());
+		final List<CtMethod> aMethods = PatternBuilder.create(launcher.getFactory(), LoggerModel.class, model -> model.setTypeMember("block"))
+				.configureAutomaticParameters()
+				.build().applyToType(aTargetType, CtMethod.class, params);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
@@ -1030,7 +1138,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		//contract: String value is substituted in substring of literal, named element and reference
-		CtTypeReference<?> typeRef = factory.Type().createReference(TypeReferenceClassAccessTemplate.Example.class);
+		CtTypeReference<?> typeRef = factory.Type().createReference("spoon.test.template.TypeReferenceClassAccess$Example");
 		typeRef.addActualTypeArgument(factory.Type().DATE);
 		
 		final CtClass<?> result = (CtClass<?>) new TypeReferenceClassAccessTemplate(typeRef).apply(factory.Class().create("spoon.test.template.TypeReferenceClassAccess"));
@@ -1045,5 +1153,75 @@ public class TemplateTest {
 		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.class", method.getBody().getStatement(3).toString());
 		assertEquals("o = (o) instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
 		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
+	}
+	
+	@Test
+	public void testTemplateMatchOfMultipleElements() throws Exception {
+		CtType type = ModelUtils.buildClass(ToBeMatched.class);
+		
+		List<CtLiteral<String>> literals1 = getFirstStmt(type, "match1", CtInvocation.class).getArguments();
+		List<CtLiteral<String>> literals2 = getFirstStmt(type, "match2", CtInvocation.class).getArguments();
+		assertEquals("a", literals1.get(0).getValue());
+		
+		{	//contract: matches one element
+			List<List<CtElement>> found = new ArrayList<>();
+			ToBeMatched.patternOfStringLiterals(type.getFactory(), "a").forEachMatch(type, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			assertEquals(3, found.size());
+			assertSequenceOn(literals1, 0, 1, found.get(0));
+			assertSequenceOn(literals1, 6, 1, found.get(1));
+			assertSequenceOn(literals2, 0, 1, found.get(2));
+		}
+		{	//contract: matches sequence of elements
+			List<List<CtElement>> found = new ArrayList<>();
+			ToBeMatched.patternOfStringLiterals(type.getFactory(), "a", "b", "c").forEachMatch(type, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			assertEquals(2, found.size());
+			assertSequenceOn(literals1, 0, 3, found.get(0));
+			assertSequenceOn(literals1, 6, 3, found.get(1));
+		}
+		{	//contract: matches sequence of elements not starting at the beginning
+			List<List<CtElement>> found = new ArrayList<>();
+			ToBeMatched.patternOfStringLiterals(type.getFactory(), "b", "c").forEachMatch(type, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			assertEquals(3, found.size());
+			assertSequenceOn(literals1, 1, 2, found.get(0));
+			assertSequenceOn(literals1, 7, 2, found.get(1));
+			assertSequenceOn(literals2, 3, 2, found.get(2));
+		}
+		{	//contract: matches sequence of repeated elements, but match each element only once
+			List<List<CtElement>> found = new ArrayList<>();
+			ToBeMatched.patternOfStringLiterals(type.getFactory(), "d", "d").forEachMatch(type, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			assertEquals(2, found.size());
+			assertSequenceOn(literals2, 6, 2, found.get(0));
+			assertSequenceOn(literals2, 8, 2, found.get(1));
+		}
+	}
+	
+	private void assertSequenceOn(List<? extends CtElement> source, int expectedOffset, int expectedSize, List<CtElement> matches) {
+		//check the number of matches
+		assertEquals(expectedSize, matches.size());
+		//check that each match fits to source collection on the expected offset
+		for (int i = 0; i < expectedSize; i++) {
+			assertSame(source.get(expectedOffset + i), matches.get(i));
+		}
+	}
+	
+	private <T extends CtElement> T getFirstStmt(CtType type, String methodName, Class<T> stmtType) {
+		return (T) type.filterChildren((CtMethod m) -> m.getSimpleName().equals(methodName)).first(CtMethod.class).getBody().getStatement(0);
+	}
+	
+	private int indexOf(List list, Object o) {
+		for(int i=0; i<list.size(); i++) {
+			if (list.get(i)==o) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

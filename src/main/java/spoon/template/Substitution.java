@@ -17,6 +17,8 @@
 package spoon.template;
 
 import spoon.SpoonException;
+import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateBuilder;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -29,7 +31,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
@@ -38,10 +39,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
-import spoon.support.template.SubstitutionVisitor;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,18 +105,12 @@ public abstract class Substitution {
 	 * @param templateParameters
 	 * 		the substitution parameters
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends CtType<?>> T createTypeFromTemplate(String qualifiedTypeName, CtType<?> templateOfType, Map<String, Object> templateParameters) {
-		final Factory f = templateOfType.getFactory();
-		CtTypeReference<T> typeRef = f.Type().createReference(qualifiedTypeName);
-		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
-		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
-		extendedParams.put(templateOfType.getSimpleName(), typeRef);
-		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-		for (CtType<?> ctType : generated) {
-			targetPackage.addType(ctType);
-		}
-		return (T) typeRef.getTypeDeclaration();
+		return PatternBuilder
+				.create(templateOfType)
+				.configureTemplateParameters(templateParameters)
+				.build()
+				.createType(templateOfType.getFactory(), qualifiedTypeName, templateParameters);
 	}
 
 	/**
@@ -525,6 +518,7 @@ public abstract class Substitution {
 	 * @return the code where all the template parameters has been substituted
 	 * by their values
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E extends CtElement> E substitute(CtType<?> targetType, Template<?> template, E code) {
 		if (code == null) {
 			return null;
@@ -532,12 +526,7 @@ public abstract class Substitution {
 		if (targetType == null) {
 			throw new RuntimeException("target is null in substitution");
 		}
-		E result = (E) code.clone();
-		List<E> results = new SubstitutionVisitor(targetType.getFactory(), targetType, template).substitute(result);
-		if (results.size() > 1) {
-			throw new SpoonException("StatementTemplate cannot return more then one statement");
-		}
-		return results.isEmpty() ? null : results.get(0);
+		return (E) TemplateBuilder.createPattern(code, template).substituteSingle(targetType, CtElement.class);
 	}
 
 	/**
@@ -580,12 +569,13 @@ public abstract class Substitution {
 	 * @return a copy of the template type where all the parameters has been
 	 * substituted
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T extends CtType<?>> T substitute(Template<?> template, T templateType) {
-		T result = (T) templateType.clone();
-		result.setPositions(null);
 		// result.setParent(templateType.getParent());
-		new SubstitutionVisitor(templateType.getFactory(), result, template).substitute(result);
-		return result;
+		CtType<?> result = TemplateBuilder.createPattern(templateType, template).substituteSingle(null, CtType.class);
+		//TODO check if it is still needed
+		result.setPositions(null);
+		return (T) result;
 	}
 
 	/**
@@ -657,7 +647,7 @@ public abstract class Substitution {
 	 *
 	 * @return - CtClass from the already built spoon model, which represents the template
 	 */
-	static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
+	public static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
 		CtClass<T> c = factory.Class().get(template.getClass());
 		if (c.isShadow()) {
 			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");

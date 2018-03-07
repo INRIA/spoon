@@ -75,6 +75,7 @@ class DoNotFurtherTemplateThisElement extends SpoonException {
 /**
  * This visitor implements the substitution engine of Spoon templates.
  */
+@Deprecated
 public class SubstitutionVisitor extends CtScanner {
 
 	private static final Object NULL_VALUE = new Object();

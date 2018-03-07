@@ -16,6 +16,7 @@
  */
 package spoon.template;
 
+import spoon.pattern.TemplateBuilder;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -48,7 +49,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 
 	public CtBlock<?> apply(CtType<?> targetType) {
 		CtClass<? extends BlockTemplate> c = Substitution.getTemplateCtClass(targetType, this);
-		return Substitution.substitute(targetType, this, getBlock(c));
+		return TemplateBuilder.createPattern(getBlock(c), this).substituteSingle(targetType, CtBlock.class);
 	}
 
 	public Void S() {

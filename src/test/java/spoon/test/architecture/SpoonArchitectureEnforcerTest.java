@@ -310,6 +310,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.experimental.modelobs");
 		officialPackages.add("spoon.experimental");
 		officialPackages.add("spoon.legacy");
+		officialPackages.add("spoon.pattern");
+		officialPackages.add("spoon.pattern.matcher");
 		officialPackages.add("spoon.processing");
 		officialPackages.add("spoon.refactoring");
 		officialPackages.add("spoon.reflect.annotations");

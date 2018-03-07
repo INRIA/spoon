@@ -40,4 +40,9 @@ public class CheckBound {
       System.out.println();
   }
 
+  public void bos() {
+	  if (new ArrayList<>().size() == new ArrayList<>().size()) // same expressions
+	      System.out.println();
+  }
+
 }
