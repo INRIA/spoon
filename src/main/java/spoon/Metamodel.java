@@ -197,11 +197,11 @@ public class Metamodel {
 		private final String name;
 
 		/**
-		 * The {@link CtClass} linked to this {@link MMType}. Is null in case of class without interface
+		 * The {@link CtClass} linked to this {@link MetamodelConcept}. Is null in case of class without interface
 		 */
 		private final Class<? extends CtElement> modelClass;
 		/**
-		 * The {@link CtInterface} linked to this {@link MMType}. Is null in case of interface without class
+		 * The {@link CtInterface} linked to this {@link MetamodelConcept}. Is null in case of interface without class
 		 */
 		private final Class<? extends CtElement> modelInterface;
 

@@ -26,8 +26,8 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.metamodel.MMField;
-import spoon.test.metamodel.MMType;
+import spoon.test.metamodel.MetamodelProperty;
+import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.MMTypeKind;
 import spoon.test.metamodel.SpoonMetaModel;
 
@@ -64,19 +64,19 @@ public class MetamodelTest {
 	public void testRuntimeMetamodel() {
 		// contract: Spoon supports runtime introspection on the metamodel - all (non abstract) Spoon classes and their fields are accessible by Metamodel
 		SpoonMetaModel testMetaModel = new SpoonMetaModel(new File("src/main/java"));
-		Map<String, MMType> expectedTypesByName = new HashMap<>();
-		testMetaModel.getMMTypes().forEach(t -> {
+		Map<String, MetamodelConcept> expectedTypesByName = new HashMap<>();
+		testMetaModel.getConcepts().forEach(t -> {
 			if (t.getKind() == MMTypeKind.LEAF) {
 				expectedTypesByName.put(t.getName(), t);	
 			}
 		});
 		for (Metamodel.Type type : Metamodel.getAllMetamodelTypes()) {
-			MMType expectedType = expectedTypesByName.remove(type.getName());
+			MetamodelConcept expectedType = expectedTypesByName.remove(type.getName());
 			assertSame(expectedType.getModelClass().getActualClass(), type.getModelClass());
 			assertSame(expectedType.getModelInterface().getActualClass(), type.getModelInterface());
-			Map<CtRole, MMField> expectedRoleToField = new HashMap<>(expectedType.getRole2field());
+			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
 			for (Metamodel.Field field : type.getFields()) {
-				MMField expectedField = expectedRoleToField.remove(field.getRole());
+				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
 				assertSame(expectedField.isDerived(), field.isDerived());
 				assertSame(expectedField.isUnsettable(), field.isUnsettable());
 			}

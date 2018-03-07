@@ -17,8 +17,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
-import spoon.test.metamodel.MMField;
-import spoon.test.metamodel.MMType;
+import spoon.test.metamodel.MetamodelProperty;
+import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.MMTypeKind;
 import spoon.test.metamodel.SpoonMetaModel;
 
@@ -28,7 +28,7 @@ public class MetamodelGenerator {
 		SpoonMetaModel mm = new SpoonMetaModel(new File("src/main/java"));
 		mm.getFactory().getEnvironment().useTabulations(true);
 		StringBuilder sb = new StringBuilder();
-		for (MMType type : mm.getMMTypes()) {
+		for (MetamodelConcept type : mm.getConcepts()) {
 			if (type.getKind()==MMTypeKind.LEAF) {
 				sb.append(printType(mm.getFactory(), type));
 			}
@@ -37,7 +37,7 @@ public class MetamodelGenerator {
 	}
 	
 
-	private static String printType(Factory factory, MMType type) {
+	private static String printType(Factory factory, MetamodelConcept type) {
 		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("typeName", type.getName());
 		valuesMap.put("ifaceName", type.getModelInterface().getQualifiedName());
@@ -52,18 +52,18 @@ public class MetamodelGenerator {
 		
 	}
 
-	private static String printFields(Factory factory, MMType type) {
-		Map<CtRole, MMField> allFields = new LinkedHashMap<>(type.getRole2field());
+	private static String printFields(Factory factory, MetamodelConcept type) {
+		Map<CtRole, MetamodelProperty> allFields = new LinkedHashMap<>(type.getRoleToProperty());
 		List<CtRole> rolesByScanner = getRoleScanningOrderOfType(factory, (Class) type.getModelInterface().getActualClass());
 		List<String> elementFields = new ArrayList<>();
 		for (CtRole ctRole : rolesByScanner) {
-			MMField field = allFields.remove(ctRole);
+			MetamodelProperty field = allFields.remove(ctRole);
 			elementFields.add(printField(field));
 		}
 		//generate remaining primitive fields, sorted by Enum#ordinal of CtRole - just to have a stable order
 		List<String> primitiveFields = new ArrayList<>();
 		new ArrayList(allFields.keySet()).stream().sorted().forEach(role -> {
-			MMField field = allFields.remove(role);
+			MetamodelProperty field = allFields.remove(role);
 			primitiveFields.add(printField(field));
 		});
 		if (allFields.isEmpty() == false) {
@@ -75,7 +75,7 @@ public class MetamodelGenerator {
 		return sb.toString();
 	}
 	
-	private static String printField(MMField field) {
+	private static String printField(MetamodelProperty field) {
 		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("role", field.getRole().name());
 		valuesMap.put("derived", String.valueOf(field.isDerived()));
