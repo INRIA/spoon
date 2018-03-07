@@ -39,7 +39,7 @@ import spoon.reflect.factory.Factory;
  *  ... someStatements in other cases ...
  * }
  */
-public class SwitchNode implements RootNode {
+public class SwitchNode extends AbstractNode {
 
 	private List<CaseNode> cases = new ArrayList<>();
 
@@ -111,7 +111,7 @@ public class SwitchNode implements RootNode {
 		return new CaseNode(null, null).matchTargets(targets, nextMatchers);
 	}
 
-	private class CaseNode implements RootNode {
+	private class CaseNode extends AbstractNode {
 		/*
 		 * is null for the default case
 		 */

@@ -28,7 +28,7 @@ import spoon.pattern.parameter.ParameterValueProvider;
 /**
  * Represents a ValueResolver of one Map.Entry
  */
-public class MapEntryNode implements RootNode {
+public class MapEntryNode extends AbstractNode {
 	private final RootNode key;
 	private final RootNode value;
 

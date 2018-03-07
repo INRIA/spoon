@@ -23,7 +23,7 @@ import spoon.pattern.matcher.TobeMatched;
 /**
  * Defines algorithm of repeatable matcher.
  */
-abstract class AbstractRepeatableMatcher implements RepeatableMatcher {
+abstract class AbstractRepeatableMatcher extends AbstractNode implements RepeatableMatcher {
 
 	@Override
 	public TobeMatched matchTargets(TobeMatched targets, Matchers next) {

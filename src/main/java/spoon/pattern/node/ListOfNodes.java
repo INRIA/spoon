@@ -30,7 +30,7 @@ import spoon.pattern.parameter.ParameterValueProvider;
 /**
  * List of {@link RootNode}s. The {@link RootNode}s are processed in same order like they were inserted in the list
  */
-public class ListOfNodes implements RootNode {
+public class ListOfNodes extends AbstractNode {
 	protected List<RootNode> nodes;
 
 	public ListOfNodes(List<RootNode> nodes) {
