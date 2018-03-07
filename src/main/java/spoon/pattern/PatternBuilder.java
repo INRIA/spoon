@@ -164,13 +164,13 @@ public class PatternBuilder {
 		if (object instanceof CtElement) {
 			//it is a spoon element
 			CtElement element = (CtElement) object;
-			Metamodel.Type mmType = Metamodel.getMetamodelTypeByClass(element.getClass());
-			ElementNode elementNode = new ElementNode(mmType);
+			Metamodel.Type mmConcept = Metamodel.getMetamodelTypeByClass(element.getClass());
+			ElementNode elementNode = new ElementNode(mmConcept);
 			if (patternElementToSubstRequests.put(element, elementNode) != null) {
 				throw new SpoonException("Each pattern element can have only one implicit Node.");
 			}
 			//iterate over all attributes of that element
-			for (Metamodel.Field  mmField : mmType.getFields()) {
+			for (Metamodel.Field  mmField : mmConcept.getFields()) {
 				if (mmField.isDerived() || IGNORED_ROLES.contains(mmField.getRole())) {
 					//skip derived fields, they are not relevant for matching or generating
 					continue;
