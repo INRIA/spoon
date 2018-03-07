@@ -39,7 +39,7 @@ import spoon.pattern.parameter.ParameterValueProvider;
 public class ForEachNode extends AbstractRepeatableMatcher {
 
 	private PrimitiveMatcher iterableParameter;
-	private Node nestedModel;
+	private RootNode nestedModel;
 	private ParameterInfo localParameter;
 
 	public ForEachNode() {
@@ -47,7 +47,7 @@ public class ForEachNode extends AbstractRepeatableMatcher {
 	}
 
 	@Override
-	public boolean replaceNode(Node oldNode, Node newNode) {
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		if (iterableParameter == oldNode) {
 			oldNode = newNode;
 			return true;
@@ -108,12 +108,12 @@ public class ForEachNode extends AbstractRepeatableMatcher {
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		iterableParameter.forEachParameterInfo(consumer);
 		consumer.accept(localParameter, this);
 	}
 
-	public void setNestedModel(Node valueResolver) {
+	public void setNestedModel(RootNode valueResolver) {
 		this.nestedModel = valueResolver;
 	}
 

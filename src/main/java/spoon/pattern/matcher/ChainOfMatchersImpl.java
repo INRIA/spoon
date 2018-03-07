@@ -19,23 +19,23 @@ package spoon.pattern.matcher;
 import java.util.List;
 
 import spoon.SpoonException;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 
 /**
- * Chain of {@link Node}s. {@link Node}s are processed in the same order as they were added into chain
+ * Chain of {@link RootNode}s. {@link RootNode}s are processed in the same order as they were added into chain
  */
 public class ChainOfMatchersImpl implements Matchers {
-	private final Node firstMatcher;
+	private final RootNode firstMatcher;
 	private final Matchers next;
 
-	public static Matchers create(List<? extends Node> items, Matchers next) {
+	public static Matchers create(List<? extends RootNode> items, Matchers next) {
 		return createFromList(next, items, 0);
 	}
-	public static Matchers create(Node firstNode, Matchers next) {
+	public static Matchers create(RootNode firstNode, Matchers next) {
 		return new ChainOfMatchersImpl(firstNode, next);
 	}
-	private static Matchers createFromList(Matchers next, List<? extends Node> items, int idx) {
-		Node matcher;
+	private static Matchers createFromList(Matchers next, List<? extends RootNode> items, int idx) {
+		RootNode matcher;
 		while (true) {
 			if (idx >= items.size()) {
 				return next;
@@ -49,7 +49,7 @@ public class ChainOfMatchersImpl implements Matchers {
 		return new ChainOfMatchersImpl(matcher, createFromList(next, items, idx + 1));
 	}
 
-	private ChainOfMatchersImpl(Node firstMatcher, Matchers next) {
+	private ChainOfMatchersImpl(RootNode firstMatcher, Matchers next) {
 		super();
 		if (firstMatcher == null) {
 			throw new SpoonException("The firstMatcher Node MUST NOT be null");

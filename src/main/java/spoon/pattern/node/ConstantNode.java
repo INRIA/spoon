@@ -39,12 +39,12 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean replaceNode(Node oldNode, Node newNode) {
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		return false;
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		//it has no parameters
 	}
 

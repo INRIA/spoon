@@ -16,17 +16,17 @@
  */
 package spoon.pattern.matcher;
 
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 
 /**
- * A container of {@link Node}s.
+ * A container of {@link RootNode}s.
  */
 public interface Matchers {
 
 	/**
 	 * Matches all matchers of this {@link Matchers} instance with `targets`
 	 * @param targets to be matched target nodes and input parameters
-	 * @return {@link TobeMatched} with targets which remained after all {@link Node}s were matched + matched parameters
+	 * @return {@link TobeMatched} with targets which remained after all {@link RootNode}s were matched + matched parameters
 	 */
 	TobeMatched matchAllWith(TobeMatched targets);
 }

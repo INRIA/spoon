@@ -16,10 +16,10 @@
  */
 package spoon.pattern.matcher;
 
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 
 /**
- * Defines a strategy used to resolve conflict between two {@link Node}s
+ * Defines a strategy used to resolve conflict between two {@link RootNode}s
  */
 public enum Quantifier {
 	/**

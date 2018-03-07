@@ -28,25 +28,25 @@ import spoon.pattern.parameter.ParameterValueProvider;
 /**
  * Represents a ValueResolver of one Map.Entry
  */
-public class MapEntryNode implements Node {
-	private final Node key;
-	private final Node value;
+public class MapEntryNode implements RootNode {
+	private final RootNode key;
+	private final RootNode value;
 
-	public MapEntryNode(Node key, Node value) {
+	public MapEntryNode(RootNode key, RootNode value) {
 		super();
 		this.key = key;
 		this.value = value;
 	}
 
-	public Node getKey() {
+	public RootNode getKey() {
 		return key;
 	}
-	public Node getValue() {
+	public RootNode getValue() {
 		return value;
 	}
 
 	@Override
-	public boolean replaceNode(Node oldNode, Node newNode) {
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		//TODO
 		throw new UnsupportedOperationException("TODO");
 	}
@@ -57,7 +57,7 @@ public class MapEntryNode implements Node {
 		throw new UnsupportedOperationException("TODO");
 	}
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		// TODO
 		throw new UnsupportedOperationException("TODO");
 	}

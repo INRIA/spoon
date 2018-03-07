@@ -17,10 +17,10 @@
 package spoon.pattern;
 
 import spoon.SpoonException;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 
 /**
- * Defines what happens when before explicitly added {@link Node} has to be replaced by another {@link Node}
+ * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
  */
 public enum ConflictResolutionMode {
 	/**

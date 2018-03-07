@@ -43,7 +43,7 @@ import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
 public class ElementNode extends AbstractPrimitiveMatcher {
 
 	private Metamodel.Type elementType;
-	private Map<Metamodel.Field, Node> attributeSubstititionRequests = new HashMap<>();
+	private Map<Metamodel.Field, RootNode> attributeSubstititionRequests = new HashMap<>();
 
 	public ElementNode(Metamodel.Type elementType) {
 		super();
@@ -51,9 +51,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean replaceNode(Node oldNode, Node newNode) {
-		for (Map.Entry<Metamodel.Field, Node> e : attributeSubstititionRequests.entrySet()) {
-			Node node = e.getValue();
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
+		for (Map.Entry<Metamodel.Field, RootNode> e : attributeSubstititionRequests.entrySet()) {
+			RootNode node = e.getValue();
 			if (node == oldNode) {
 				e.setValue(newNode);
 				return true;
@@ -65,15 +65,15 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return false;
 	}
 
-	public Map<Metamodel.Field, Node> getAttributeSubstititionRequests() {
+	public Map<Metamodel.Field, RootNode> getAttributeSubstititionRequests() {
 		return attributeSubstititionRequests == null ? Collections.emptyMap() : Collections.unmodifiableMap(attributeSubstititionRequests);
 	}
 
-	public Node getAttributeSubstititionRequest(CtRole attributeRole) {
+	public RootNode getAttributeSubstititionRequest(CtRole attributeRole) {
 		return attributeSubstititionRequests.get(getFieldOfRole(attributeRole));
 	}
 
-	public Node setNodeOfRole(CtRole role, Node newAttrNode) {
+	public RootNode setNodeOfRole(CtRole role, RootNode newAttrNode) {
 		return attributeSubstititionRequests.put(getFieldOfRole(role), newAttrNode);
 	}
 
@@ -89,9 +89,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		if (attributeSubstititionRequests != null) {
-			for (Node node : attributeSubstititionRequests.values()) {
+			for (RootNode node : attributeSubstititionRequests.values()) {
 				node.forEachParameterInfo(consumer);
 			}
 		}
@@ -107,7 +107,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	protected void generateSingleNodeAttributes(Generator generator, CtElement clone, ParameterValueProvider parameters) {
-		for (Map.Entry<Metamodel.Field, Node> e : getAttributeSubstititionRequests().entrySet()) {
+		for (Map.Entry<Metamodel.Field, RootNode> e : getAttributeSubstititionRequests().entrySet()) {
 			Metamodel.Field mmField = e.getKey();
 			switch (mmField.getContainerKind()) {
 			case SINGLE:
@@ -146,7 +146,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		//it is spoon element, it matches if to be matched attributes matches
 		//to be matched attributes must be same or substituted
 		//iterate over all attributes of to be matched class
-		for (Map.Entry<Metamodel.Field, Node> e : attributeSubstititionRequests.entrySet()) {
+		for (Map.Entry<Metamodel.Field, RootNode> e : attributeSubstititionRequests.entrySet()) {
 			parameters = matchesRole(parameters, (CtElement) target, e.getKey(), e.getValue());
 			if (parameters == null) {
 				return null;
@@ -155,7 +155,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return parameters;
 	}
 
-	protected ParameterValueProvider matchesRole(ParameterValueProvider parameters, CtElement target, Metamodel.Field mmField, Node attrNode) {
+	protected ParameterValueProvider matchesRole(ParameterValueProvider parameters, CtElement target, Metamodel.Field mmField, RootNode attrNode) {
 		TobeMatched tobeMatched;
 		if (attrNode instanceof ParameterNode) {
 			//whole attribute value (whole List/Set/Map) has to be stored in parameter
@@ -164,7 +164,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 			//each item of attribute value (item of List/Set/Map) has to be matched individually
 			tobeMatched = TobeMatched.create(parameters, mmField.getContainerKind(), mmField.getValue(target));
 		}
-		return getMatchedParameters(attrNode.matchTargets(tobeMatched, Node.MATCH_ALL));
+		return getMatchedParameters(attrNode.matchTargets(tobeMatched, RootNode.MATCH_ALL));
 	}
 
 //	@Override

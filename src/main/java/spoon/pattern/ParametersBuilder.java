@@ -25,7 +25,7 @@ import spoon.SpoonException;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.node.ConstantNode;
 import spoon.pattern.node.ModelNode;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.pattern.node.ParameterNode;
 import spoon.pattern.node.StringNode;
 import spoon.pattern.parameter.AbstractParameterInfo;
@@ -86,7 +86,7 @@ public class ParametersBuilder {
 	}
 
 	/**
-	 * Defines what happens when before explicitly added {@link Node} has to be replaced by another {@link Node}
+	 * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
 	 * @param conflictResolutionMode to be applied mode
 	 * @return this to support fluent API
 	 */

@@ -21,9 +21,9 @@ import spoon.pattern.parameter.ParameterValueProvider;
 
 /**
  * Defines API of a repeatable matcher.
- * It is kind of {@link Node}, where one {@link Node} may match 0, 1 or more `target` nodes.
+ * It is kind of {@link RootNode}, where one {@link RootNode} may match 0, 1 or more `target` nodes.
  */
-public interface RepeatableMatcher extends Node {
+public interface RepeatableMatcher extends RootNode {
 	/**
 	 * If two {@link RepeatableMatcher}s in a list are matching the same element,
 	 * then returned {@link Quantifier} defines how resolve this conflict

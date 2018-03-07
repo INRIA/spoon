@@ -28,26 +28,26 @@ import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 
 /**
- * List of {@link Node}s. The {@link Node}s are processed in same order like they were inserted in the list
+ * List of {@link RootNode}s. The {@link RootNode}s are processed in same order like they were inserted in the list
  */
-public class ListOfNodes implements Node {
-	protected List<Node> nodes;
+public class ListOfNodes implements RootNode {
+	protected List<RootNode> nodes;
 
-	public ListOfNodes(List<Node> nodes) {
+	public ListOfNodes(List<RootNode> nodes) {
 		super();
 		this.nodes = nodes;
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
-		for (Node node : nodes) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
+		for (RootNode node : nodes) {
 			node.forEachParameterInfo(consumer);
 		}
 	}
 
 	@Override
 	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
-		for (Node node : nodes) {
+		for (RootNode node : nodes) {
 			generator.generateTargets(node, result, parameters);
 		}
 	}
@@ -58,13 +58,13 @@ public class ListOfNodes implements Node {
 	}
 
 	/**
-	 * @param oldNode a {@link CtElement} whose {@link Node} we are looking for
+	 * @param oldNode a {@link CtElement} whose {@link RootNode} we are looking for
 	 * @return a {@link NodeContainer} of an {@link ElementNode}, whose {@link ElementNode#getTemplateNode()} == `element`
 	 * null if element is not referred by any node of this {@link ListOfNodes}
 	 */
-	public boolean replaceNode(Node oldNode, Node newNode) {
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		for (int i = 0; i < nodes.size(); i++) {
-			Node node = nodes.get(i);
+			RootNode node = nodes.get(i);
 			if (node == oldNode) {
 				nodes.set(i, newNode);
 				return true;
@@ -77,9 +77,9 @@ public class ListOfNodes implements Node {
 	}
 
 	/**
-	 * @return {@link List} of {@link Node}s of this {@link ListOfNodes}
+	 * @return {@link List} of {@link RootNode}s of this {@link ListOfNodes}
 	 */
-	public List<Node> getNodes() {
+	public List<RootNode> getNodes() {
 		return nodes;
 	}
 }

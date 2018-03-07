@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtInvocation;
@@ -41,7 +41,7 @@ public class PatternPrinter extends DefaultGenerator {
 		super(DEFAULT_FACTORY);
 	}
 
-	public String printNode(Node node) {
+	public String printNode(RootNode node) {
 		List<CtElement> generated = generateTargets(node, new Params(), null);
 		StringBuilder sb = new StringBuilder();
 		for (CtElement ele : generated) {

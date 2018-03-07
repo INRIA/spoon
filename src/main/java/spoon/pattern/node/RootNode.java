@@ -36,15 +36,15 @@ import spoon.reflect.factory.Factory;
  * <li>to match zero, one or more instances of model and deliver a matching parameters</li>
  * </ul>
  */
-public interface Node extends Matchers {
+public interface RootNode extends Matchers {
 	/**
-	 * Calls consumer for each pair of parameter definition ({@link ParameterInfo}) and {@link Node}, which uses it
-	 * @param consumer the receiver of pairs of {@link ParameterInfo} and {@link Node}
+	 * Calls consumer for each pair of parameter definition ({@link ParameterInfo}) and {@link RootNode}, which uses it
+	 * @param consumer the receiver of pairs of {@link ParameterInfo} and {@link RootNode}
 	 */
-	void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer);
+	void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer);
 
 	/**
-	 * Generates zero, one or more target depending on kind of this {@link Node}, expected `result` and input `parameters`
+	 * Generates zero, one or more target depending on kind of this {@link RootNode}, expected `result` and input `parameters`
 	 * @param generator {@link Generator} which drives generation process
 	 * @param result holder for the generated objects
 	 * @param parameters a {@link ParameterValueProvider} holding parameters
@@ -53,13 +53,13 @@ public interface Node extends Matchers {
 
 	/**
 	 * @param targets to be matched target nodes and input parameters
-	 * @param nextMatchers Chain of matchers which has to be processed after this {@link Node}
+	 * @param nextMatchers Chain of matchers which has to be processed after this {@link RootNode}
 	 * @return new parameters and container with remaining targets
 	 */
 	TobeMatched matchTargets(TobeMatched targets, Matchers nextMatchers);
 
 	/**
-	 * The special implementation of {@link Matchers}, which is used as last {@link Node} in case when ALL target nodes must match with all template nodes
+	 * The special implementation of {@link Matchers}, which is used as last {@link RootNode} in case when ALL target nodes must match with all template nodes
 	 */
 	Matchers MATCH_ALL = new Matchers() {
 		@Override
@@ -69,7 +69,7 @@ public interface Node extends Matchers {
 		}
 	};
 	/**
-	 * The special implementation of {@link Matchers}, which is used as last {@link Node} in case when SOME target nodes must match with all template nodes
+	 * The special implementation of {@link Matchers}, which is used as last {@link RootNode} in case when SOME target nodes must match with all template nodes
 	 */
 	Matchers MATCH_PART = new Matchers() {
 		@Override
@@ -85,10 +85,10 @@ public interface Node extends Matchers {
 	}
 
 	/**
-	 * @param oldNode old {@link Node}
-	 * @param newNode new {@link Node}
-	 * @return a true if `oldNode` was found in this {@link Node} or it's children and replaced by `newNode`
+	 * @param oldNode old {@link RootNode}
+	 * @param newNode new {@link RootNode}
+	 * @return a true if `oldNode` was found in this {@link RootNode} or it's children and replaced by `newNode`
 	 * false if `oldNode` was not found
 	 */
-	boolean replaceNode(Node oldNode, Node newNode);
+	boolean replaceNode(RootNode oldNode, RootNode newNode);
 }

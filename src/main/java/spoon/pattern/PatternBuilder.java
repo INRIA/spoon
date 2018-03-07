@@ -41,7 +41,7 @@ import spoon.pattern.node.ElementNode;
 import spoon.pattern.node.ListOfNodes;
 import spoon.pattern.node.MapEntryNode;
 import spoon.pattern.node.ModelNode;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.pattern.node.ParameterNode;
 import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ParameterInfo;
@@ -111,8 +111,8 @@ public class PatternBuilder {
 
 	private final List<CtElement> patternModel;
 	private final ListOfNodes patternNodes;
-	private final Map<CtElement, Node> patternElementToSubstRequests = new IdentityHashMap<>();
-	private final Set<Node> explicitNodes = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final Map<CtElement, RootNode> patternElementToSubstRequests = new IdentityHashMap<>();
+	private final Set<RootNode> explicitNodes = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	private CtTypeReference<?> templateTypeRef;
 	private final Factory factory;
@@ -158,8 +158,8 @@ public class PatternBuilder {
 		});
 	}
 
-	private List<Node> createImplicitNodes(List<CtElement> elements) {
-		List<Node> nodes = new ArrayList<>(elements.size());
+	private List<RootNode> createImplicitNodes(List<CtElement> elements) {
+		List<RootNode> nodes = new ArrayList<>(elements.size());
 		for (CtElement element : elements) {
 			nodes.add(createImplicitNode(element));
 		}
@@ -168,7 +168,7 @@ public class PatternBuilder {
 
 	private final Set<CtRole> IGNORED_ROLES = Collections.unmodifiableSet((new HashSet<>(Arrays.asList(CtRole.POSITION))));
 
-	private Node createImplicitNode(Object object) {
+	private RootNode createImplicitNode(Object object) {
 		if (object instanceof CtElement) {
 			//it is a spoon element
 			CtElement element = (CtElement) object;
@@ -191,7 +191,7 @@ public class PatternBuilder {
 		return new ConstantNode<Object>(object);
 	}
 
-	private Node createImplicitNode(ContainerKind containerKind, Object templates) {
+	private RootNode createImplicitNode(ContainerKind containerKind, Object templates) {
 		switch (containerKind) {
 		case LIST:
 			return createImplicitNode((List) templates);
@@ -205,17 +205,17 @@ public class PatternBuilder {
 		throw new SpoonException("Unexpected RoleHandler containerKind: " + containerKind);
 	}
 
-	private Node createImplicitNode(List<?> objects) {
+	private RootNode createImplicitNode(List<?> objects) {
 		return listOfNodesToNode(objects.stream().map(i -> createImplicitNode(i)).collect(Collectors.toList()));
 	}
 
-	private Node createImplicitNode(Set<?> templates) {
+	private RootNode createImplicitNode(Set<?> templates) {
 		//collect plain template nodes without any substitution request as List, because Spoon Sets have predictable order.
-		List<Node> constantMatchers = new ArrayList<>(templates.size());
+		List<RootNode> constantMatchers = new ArrayList<>(templates.size());
 		//collect template nodes with a substitution request
-		List<Node> variableMatchers = new ArrayList<>();
+		List<RootNode> variableMatchers = new ArrayList<>();
 		for (Object template : templates) {
-			Node matcher = createImplicitNode(template);
+			RootNode matcher = createImplicitNode(template);
 			if (matcher instanceof ElementNode) {
 				constantMatchers.add(matcher);
 			} else {
@@ -227,7 +227,7 @@ public class PatternBuilder {
 		return listOfNodesToNode(constantMatchers);
 	}
 
-	private Node createImplicitNode(Map<String, ?> map) {
+	private RootNode createImplicitNode(Map<String, ?> map) {
 		//collect Entries with constant matcher keys
 		List<MapEntryNode> constantMatchers = new ArrayList<>(map.size());
 		//collect Entries with variable matcher keys
@@ -249,7 +249,7 @@ public class PatternBuilder {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Node listOfNodesToNode(List<? extends Node> nodes) {
+	private static RootNode listOfNodesToNode(List<? extends RootNode> nodes) {
 		//The attribute is matched different if there is List of one ParameterizedNode and when there is one ParameterizedNode
 //		if (nodes.size() == 1) {
 //			return nodes.get(0);
@@ -291,11 +291,11 @@ public class PatternBuilder {
 
 	/**
 	 * @param element a CtElement
-	 * @return {@link Node}, which handles matching/generation of an `object` from the source spoon AST.
+	 * @return {@link RootNode}, which handles matching/generation of an `object` from the source spoon AST.
 	 * or null, if there is none
 	 */
-	public Node getPatternNode(CtElement element, CtRole... roles) {
-		Node node = patternElementToSubstRequests.get(element);
+	public RootNode getPatternNode(CtElement element, CtRole... roles) {
+		RootNode node = patternElementToSubstRequests.get(element);
 		for (CtRole role : roles) {
 			if (node instanceof ElementNode) {
 				ElementNode elementNode = (ElementNode) node;
@@ -313,9 +313,9 @@ public class PatternBuilder {
 		return node;
 	}
 
-	void modifyNodeOfElement(CtElement element, ConflictResolutionMode conflictMode, Function<Node, Node> elementNodeChanger) {
-		Node oldNode = patternElementToSubstRequests.get(element);
-		Node newNode = elementNodeChanger.apply(oldNode);
+	void modifyNodeOfElement(CtElement element, ConflictResolutionMode conflictMode, Function<RootNode, RootNode> elementNodeChanger) {
+		RootNode oldNode = patternElementToSubstRequests.get(element);
+		RootNode newNode = elementNodeChanger.apply(oldNode);
 		if (newNode == null) {
 			throw new SpoonException("Removing of Node is not supported");
 		}
@@ -332,12 +332,12 @@ public class PatternBuilder {
 		});
 	}
 
-	void modifyNodeOfAttributeOfElement(CtElement element, CtRole role, ConflictResolutionMode conflictMode, Function<Node, Node> elementNodeChanger) {
+	void modifyNodeOfAttributeOfElement(CtElement element, CtRole role, ConflictResolutionMode conflictMode, Function<RootNode, RootNode> elementNodeChanger) {
 		modifyNodeOfElement(element, conflictMode, node -> {
 			if (node instanceof ElementNode) {
 				ElementNode elementNode = (ElementNode) node;
-				Node oldAttrNode = elementNode.getAttributeSubstititionRequest(role);
-				Node newAttrNode = elementNodeChanger.apply(oldAttrNode);
+				RootNode oldAttrNode = elementNode.getAttributeSubstititionRequest(role);
+				RootNode newAttrNode = elementNodeChanger.apply(oldAttrNode);
 				if (newAttrNode == null) {
 					throw new SpoonException("Removing of Node is not supported");
 				}
@@ -353,7 +353,7 @@ public class PatternBuilder {
 		});
 	}
 
-	private void handleConflict(ConflictResolutionMode conflictMode, Node oldNode, Node newNode, Runnable applyNewNode) {
+	private void handleConflict(ConflictResolutionMode conflictMode, RootNode oldNode, RootNode newNode, Runnable applyNewNode) {
 		if (oldNode != newNode) {
 			if (explicitNodes.contains(oldNode)) {
 				//the oldNode was explicitly added before
@@ -370,13 +370,13 @@ public class PatternBuilder {
 		}
 	}
 
-	public void setNodeOfElement(CtElement element, Node node, ConflictResolutionMode conflictMode) {
+	public void setNodeOfElement(CtElement element, RootNode node, ConflictResolutionMode conflictMode) {
 		modifyNodeOfElement(element, conflictMode, oldNode -> {
 			return node;
 		});
 	}
 
-	public void setNodeOfAttributeOfElement(CtElement element, CtRole role, Node node, ConflictResolutionMode conflictMode) {
+	public void setNodeOfAttributeOfElement(CtElement element, CtRole role, RootNode node, ConflictResolutionMode conflictMode) {
 		modifyNodeOfAttributeOfElement(element, role, conflictMode, oldAttrNode -> {
 			return node;
 		});
@@ -929,11 +929,11 @@ public class PatternBuilder {
 		return patternModel;
 	}
 	/**
-	 * Calls `consumer` once for each {@link Node} element which uses `parameter`
+	 * Calls `consumer` once for each {@link RootNode} element which uses `parameter`
 	 * @param parameter to be checked {@link ParameterInfo}
 	 * @param consumer receiver of calls
 	 */
-	public void forEachNodeOfParameter(ParameterInfo parameter, Consumer<Node> consumer) {
+	public void forEachNodeOfParameter(ParameterInfo parameter, Consumer<RootNode> consumer) {
 		patternNodes.forEachParameterInfo((paramInfo, vr) -> {
 			if (paramInfo == parameter) {
 				consumer.accept(vr);

@@ -125,7 +125,7 @@ public class StringNode extends ConstantNode<String> {
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		Map<ParameterInfo, Boolean> visitedParams = new IdentityHashMap<>(tobeReplacedSubstrings.size());
 		for (ParameterInfo parameterInfo : tobeReplacedSubstrings.values()) {
 			//assure that each parameterInfo is called only once

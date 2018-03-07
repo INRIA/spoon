@@ -19,7 +19,7 @@ package spoon.pattern.parameter;
 import spoon.pattern.Pattern;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.reflect.factory.Factory;
 
 /**
@@ -64,7 +64,7 @@ public interface ParameterInfo {
 	Class<?> getParameterValueType();
 
 	/**
-	 * @return the strategy used to resolve conflict between two {@link Node}s
+	 * @return the strategy used to resolve conflict between two {@link RootNode}s
 	 */
 	Quantifier getMatchingStrategy();
 

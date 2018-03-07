@@ -16,7 +16,7 @@
  */
 package spoon.pattern;
 
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;
@@ -33,7 +33,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	@Override
-	public <T> void generateTargets(Node node, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
 		node.generateTargets(this, result, parameters);
 	}
 

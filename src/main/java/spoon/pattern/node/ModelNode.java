@@ -27,7 +27,7 @@ import spoon.pattern.PatternBuilder;
  */
 public class ModelNode extends ListOfNodes {
 
-	public ModelNode(List<Node> nodes) {
+	public ModelNode(List<RootNode> nodes) {
 		super(nodes);
 	}
 

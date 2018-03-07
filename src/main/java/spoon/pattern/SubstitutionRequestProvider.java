@@ -16,15 +16,15 @@
  */
 package spoon.pattern;
 
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 
 /**
- * Maps AST model object to the {@link Node}
+ * Maps AST model object to the {@link RootNode}
  */
 public interface SubstitutionRequestProvider {
 	/**
 	 * @param object a node from the Pattern model to be matched
-	 * @return {@link Node}, which has to be used to match `object` from model of {@link SubstitutionRequestProvider}
+	 * @return {@link RootNode}, which has to be used to match `object` from model of {@link SubstitutionRequestProvider}
 	 */
-	Node getTemplateValueResolver(Object object);
+	RootNode getTemplateValueResolver(Object object);
 }

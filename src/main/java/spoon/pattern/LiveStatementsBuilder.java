@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import spoon.SpoonException;
 import spoon.pattern.node.ForEachNode;
 import spoon.pattern.node.ListOfNodes;
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.pattern.node.ParameterNode;
 import spoon.pattern.node.PrimitiveMatcher;
 import spoon.pattern.node.SwitchNode;
@@ -80,7 +80,7 @@ public class LiveStatementsBuilder {
 	}
 
 	/**
-	 * Defines what happens when before explicitly added {@link Node} has to be replaced by another {@link Node}
+	 * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
 	 * @param conflictResolutionMode to be applied mode
 	 * @return this to support fluent API
 	 */
@@ -112,7 +112,7 @@ public class LiveStatementsBuilder {
 
 	public LiveStatementsBuilder markLive(CtForEach foreach) {
 		//detect meta elements by different way - e.g. comments?
-		Node vr = patternBuilder.getPatternNode(foreach.getExpression());
+		RootNode vr = patternBuilder.getPatternNode(foreach.getExpression());
 		if ((vr instanceof PrimitiveMatcher) == false) {
 			throw new SpoonException("Each live `for(x : iterable)` statement must have defined pattern parameter for `iterable` expression");
 		}
@@ -145,7 +145,7 @@ public class LiveStatementsBuilder {
 			//detect meta elements by different way - e.g. comments?
 			if (expression != null) {
 				//expression is not null, it is: if(expression) {}
-				Node vrOfExpression = patternBuilder.getPatternNode(expression);
+				RootNode vrOfExpression = patternBuilder.getPatternNode(expression);
 				if (vrOfExpression instanceof ParameterNode == false) {
 					if (failOnMissingParameter) {
 						throw new SpoonException("Each live `if` statement must have defined pattern parameter in expression. If you want to ignore this, then call LiveStatementsBuilder#setFailOnMissingParameter(false) first.");
@@ -175,7 +175,7 @@ public class LiveStatementsBuilder {
 	}
 
 	private ListOfNodes getPatternNode(List<? extends CtElement> template) {
-		List<Node> nodes = new ArrayList<>(template.size());
+		List<RootNode> nodes = new ArrayList<>(template.size());
 		for (CtElement element : template) {
 			nodes.add(patternBuilder.getPatternNode(element));
 		}

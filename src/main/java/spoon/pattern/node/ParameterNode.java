@@ -39,7 +39,7 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean replaceNode(Node oldNode, Node newNode) {
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		return false;
 	}
 
@@ -78,7 +78,7 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		consumer.accept(parameterInfo, this);
 	}
 

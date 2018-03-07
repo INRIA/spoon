@@ -18,7 +18,7 @@ package spoon.pattern;
 
 import java.util.List;
 
-import spoon.pattern.node.Node;
+import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.factory.Factory;
@@ -32,10 +32,10 @@ public interface Generator {
 	 */
 	Factory getFactory();
 	/**
-	 * Generates zero, one or more target depending on kind of this {@link Node}, expected `result` and input `parameters`
+	 * Generates zero, one or more target depending on kind of this {@link RootNode}, expected `result` and input `parameters`
 	 * @param factory TODO
 	 */
-	<T> void generateTargets(Node node, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters);
 
 	/**
 	 * Returns zero, one or more values into `result`. The value comes from `parameters` from the location defined by `parameterInfo`
@@ -46,28 +46,28 @@ public interface Generator {
 	<T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters);
 
 	/**
-	 * Generates one target depending on kind of this {@link Node}, expected `expectedType` and input `parameters`
+	 * Generates one target depending on kind of this {@link RootNode}, expected `expectedType` and input `parameters`
 	 * @param factory TODO
 	 * @param parameters {@link ParameterValueProvider}
 	 * @param expectedType defines {@link Class} of returned value
 	 *
 	 * @return a generate value or null
 	 */
-	default <T> T generateTarget(Node node, ParameterValueProvider parameters, Class<T> expectedType) {
+	default <T> T generateTarget(RootNode node, ParameterValueProvider parameters, Class<T> expectedType) {
 		ResultHolder.Single<T> result = new ResultHolder.Single<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();
 	}
 
 	/**
-	 * Generates zero, one or more targets depending on kind of this {@link Node}, expected `expectedType` and input `parameters`
+	 * Generates zero, one or more targets depending on kind of this {@link RootNode}, expected `expectedType` and input `parameters`
 	 * @param factory TODO
 	 * @param parameters {@link ParameterValueProvider}
 	 * @param expectedType defines {@link Class} of returned value
 	 *
 	 * @return a {@link List} of generated targets
 	 */
-	default <T> List<T> generateTargets(Node node, ParameterValueProvider parameters, Class<T> expectedType) {
+	default <T> List<T> generateTargets(RootNode node, ParameterValueProvider parameters, Class<T> expectedType) {
 		ResultHolder.Multiple<T> result = new ResultHolder.Multiple<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();

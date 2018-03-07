@@ -39,7 +39,7 @@ import spoon.reflect.factory.Factory;
  *  ... someStatements in other cases ...
  * }
  */
-public class SwitchNode implements Node {
+public class SwitchNode implements RootNode {
 
 	private List<CaseNode> cases = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public class SwitchNode implements Node {
 	}
 
 	@Override
-	public boolean replaceNode(Node oldNode, Node newNode) {
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		for (CaseNode caseNode : cases) {
 			if (caseNode.replaceNode(oldNode, newNode)) {
 				return true;
@@ -62,7 +62,7 @@ public class SwitchNode implements Node {
 	 * @param vrOfExpression if value of this parameter is true then statement has to be used. If vrOfExpression is null, then statement is always used
 	 * @param statement optional statement
 	 */
-	public void addCase(PrimitiveMatcher vrOfExpression, Node statement) {
+	public void addCase(PrimitiveMatcher vrOfExpression, RootNode statement) {
 		cases.add(new CaseNode(vrOfExpression, statement));
 	}
 
@@ -74,7 +74,7 @@ public class SwitchNode implements Node {
 	}
 
 	@Override
-	public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 		for (CaseNode case1 : cases) {
 			if (case1.vrOfExpression != null) {
 				case1.vrOfExpression.forEachParameterInfo(consumer);
@@ -111,20 +111,20 @@ public class SwitchNode implements Node {
 		return new CaseNode(null, null).matchTargets(targets, nextMatchers);
 	}
 
-	private class CaseNode implements Node {
+	private class CaseNode implements RootNode {
 		/*
 		 * is null for the default case
 		 */
 		private PrimitiveMatcher vrOfExpression;
-		private Node statement;
-		private CaseNode(PrimitiveMatcher vrOfExpression, Node statement) {
+		private RootNode statement;
+		private CaseNode(PrimitiveMatcher vrOfExpression, RootNode statement) {
 			super();
 			this.vrOfExpression = vrOfExpression;
 			this.statement = statement;
 		}
 
 		@Override
-		public boolean replaceNode(Node oldNode, Node newNode) {
+		public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 			if (vrOfExpression != null) {
 				if (vrOfExpression == oldNode) {
 					vrOfExpression = (PrimitiveMatcher) newNode;
@@ -167,7 +167,7 @@ public class SwitchNode implements Node {
 			return nextMatchers.matchAllWith(targets);
 		}
 		@Override
-		public void forEachParameterInfo(BiConsumer<ParameterInfo, Node> consumer) {
+		public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
 			SwitchNode.this.forEachParameterInfo(consumer);
 		}
 		@Override
