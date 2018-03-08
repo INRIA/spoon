@@ -26,8 +26,17 @@ import spoon.pattern.PatternPrinter;
  * </ul>
  */
 public abstract class AbstractNode implements RootNode {
+	private boolean simplifyGenerated = false;
 	@Override
 	public String toString() {
 		return new PatternPrinter().printNode(this);
+	}
+	@Override
+	public boolean isSimplifyGenerated() {
+		return simplifyGenerated;
+	}
+	@Override
+	public void setSimplifyGenerated(boolean simplifyGenerated) {
+		this.simplifyGenerated = simplifyGenerated;
 	}
 }

@@ -531,7 +531,14 @@ public class ParametersBuilder {
 	void addSubstitutionRequest(ParameterInfo parameter, CtElement element) {
 		ParameterElementPair pep = getSubstitutedNodeOfElement(parameter, element);
 		patternBuilder.setNodeOfElement(pep.element, new ParameterNode(pep.parameter), conflictResolutionMode);
+		if (patternBuilder.isAutoSimplifySubstitutions() && pep.element.isParentInitialized()) {
+			RootNode node = patternBuilder.getOptionalPatternNode(pep.element.getParent());
+			if (node != null) {
+				node.setSimplifyGenerated(true);
+			}
+		}
 	}
+
 	/**
 	 * Adds request to substitute value of `attributeRole` of `element`, by the value of this {@link ModelNode} parameter {@link ParameterInfo} value
 	 * @param element whose attribute of {@link CtRole} `attributeRole` have to be replaced

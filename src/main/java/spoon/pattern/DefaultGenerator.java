@@ -19,6 +19,7 @@ package spoon.pattern;
 import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -26,6 +27,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
+import spoon.support.SpoonClassNotFoundException;
 
 /**
  * Drives generation process
@@ -42,6 +44,30 @@ public class DefaultGenerator implements Generator {
 	@Override
 	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
 		node.generateTargets(this, result, parameters);
+		if (node.isSimplifyGenerated()) {
+			// simplify this element, it contains a substituted element
+			result.mapEachResult(element -> {
+				if (element instanceof CtCodeElement) {
+					CtCodeElement code = (CtCodeElement) element;
+					try {
+						code = code.partiallyEvaluate();
+						if (result.getRequiredClass().isInstance(code)) {
+							return (T) code;
+						}
+						/*
+						 * else the simplified code is not matching with required type. For example
+						 * statement String.class.getName() was converted to expression
+						 * "java.lang.String"
+						 */
+					} catch (SpoonClassNotFoundException e) {
+						// ignore it. Do not simplify this element
+						getFactory().getEnvironment()
+								.debugMessage("Partial evaluation was skipped because of: " + e.getMessage());
+					}
+				}
+				return element;
+			});
+		}
 	}
 
 	@Override

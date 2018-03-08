@@ -16,18 +16,14 @@
  */
 package spoon.pattern.node;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
-import spoon.pattern.ResultHolder.Multiple;
-import spoon.pattern.ResultHolder.Single;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.reflect.factory.Factory;
 
 /**
  * Represents a parameterized Pattern ValueResolver, which can be used
@@ -50,6 +46,16 @@ public interface RootNode extends Matchers {
 	 * @param parameters a {@link ParameterValueProvider} holding parameters
 	 */
 	<T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
+
+	/**
+	 * @return true if generated result has to be evaluated to apply simplifications.
+	 * e.g. ("a" + "b") id simplified to "ab"
+	 */
+	boolean isSimplifyGenerated();
+	/**
+	 * @param simplifyGenerated true if generated result of this {@link RootNode} has to be evaluated to apply simplifications.
+	 */
+	void setSimplifyGenerated(boolean simplifyGenerated);
 
 	/**
 	 * @param targets to be matched target nodes and input parameters

@@ -31,12 +31,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import spoon.SpoonException;
-import spoon.pattern.ParametersBuilder.ParameterElementPair;
 import spoon.pattern.node.ElementNode;
 import spoon.pattern.node.ListOfNodes;
 import spoon.pattern.node.ModelNode;
 import spoon.pattern.node.RootNode;
-import spoon.pattern.node.ParameterNode;
 import spoon.pattern.parameter.AbstractParameterInfo;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
@@ -115,6 +113,7 @@ public class PatternBuilder {
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;
 	private boolean addGeneratedBy = false;
+	private boolean autoSimplifySubstitutions = false;
 	private boolean built = false;
 
 	static class PatternQuery implements CtQueryable {
@@ -158,20 +157,35 @@ public class PatternBuilder {
 	 * @return {@link RootNode}, which handles matching/generation of an `object` from the source spoon AST.
 	 * or null, if there is none
 	 */
+	public RootNode getOptionalPatternNode(CtElement element, CtRole... roles) {
+		return getPatternNode(true, element, roles);
+	}
 	public RootNode getPatternNode(CtElement element, CtRole... roles) {
+		return getPatternNode(false, element, roles);
+	}
+	private RootNode getPatternNode(boolean optional, CtElement element, CtRole... roles) {
 		RootNode node = patternElementToSubstRequests.get(element);
 		for (CtRole role : roles) {
 			if (node instanceof ElementNode) {
 				ElementNode elementNode = (ElementNode) node;
 				node = elementNode.getNodeOfRole(role);
 				if (node == null) {
+					if (optional) {
+						return null;
+					}
 					throw new SpoonException("The role " + role + " resolved to null Node");
 				}
 			} else {
+				if (optional) {
+					return null;
+				}
 				throw new SpoonException("The role " + role + " can't be resolved on Node of class " + node.getClass());
 			}
 		}
 		if (node == null) {
+			if (optional) {
+				return null;
+			}
 			throw new SpoonException("There is no Node for element");
 		}
 		return node;
@@ -296,6 +310,8 @@ public class PatternBuilder {
 
 	public PatternBuilder configureAutomaticParameters() {
 		configureParameters(pb -> {
+			//add this substitution request only if there isn't another one yet
+			pb.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE);
 			/*
 			 * detect other parameters.
 			 * contract: All variable references, which are declared outside of template are automatically considered as template parameters
@@ -306,9 +322,7 @@ public class PatternBuilder {
 					if (var == null || isInModel(var) == false) {
 						//the varRef has declaration out of the scope of the template. It must be a template parameter.
 						ParameterInfo parameter = pb.parameter(varRef.getSimpleName()).getCurrentParameter();
-						ParameterElementPair pep = pb.getSubstitutedNodeOfElement(parameter, varRef);
-						//add this substitution request only if there is no one yet
-						setNodeOfElement(pep.element, new ParameterNode(pep.parameter), ConflictResolutionMode.KEEP_OLD_NODE);
+						pb.addSubstitutionRequest(parameter, varRef);
 					}
 				});
 		});
@@ -816,6 +830,22 @@ public class PatternBuilder {
 	 */
 	public PatternBuilder setAddGeneratedBy(boolean addGeneratedBy) {
 		this.addGeneratedBy = addGeneratedBy;
+		return this;
+	}
+
+	/**
+	 * @return true if generated result has to be evaluated to apply simplifications.
+	 */
+	public boolean isAutoSimplifySubstitutions() {
+		return autoSimplifySubstitutions;
+	}
+	/**
+	 * @param autoSimplifySubstitutions true if generated result of each substituted has to be evaluated to apply simplifications.
+	 * 	The rule is applied only to substitutions defined after this call
+	 * @return this to support fluent API
+	 */
+	public PatternBuilder setAutoSimplifySubstitutions(boolean autoSimplifySubstitutions) {
+		this.autoSimplifySubstitutions = autoSimplifySubstitutions;
 		return this;
 	}
 }
