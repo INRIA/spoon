@@ -780,7 +780,6 @@ public class TemplateMatcherTest {
 	}
 
 	@Test
-	@Ignore	//TODO allow partial matching of children by template and remaining elements by ParameterValueProvider
 	public void testMatchOfMapAttributeAndOtherAnnotations() throws Exception {
 		//contract: match attribute of type Map - annotations
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMap.class);

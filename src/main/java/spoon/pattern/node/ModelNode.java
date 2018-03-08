@@ -113,54 +113,5 @@ public class ModelNode extends ListOfNodes {
 		}
 	}
 
-	private String getSubstitutionRequestsDescription(CtElement ele, int sourceStart, List<SubstReqOnPosition> requestsOnPos) {
-		//sort requestsOnPos by their path
-		Map<String, SubstReqOnPosition> reqByPath = new TreeMap<>();
-		StringBuilder sb = new StringBuilder();
-		for (SubstReqOnPosition reqPos : requestsOnPos) {
-			sb.setLength(0);
-			appendPathIn(sb, reqPos.sourceElement, ele);
-			String path = sb.toString();
-			reqByPath.put(path, reqPos);
-		}
-
-		PrinterHelper printer = new PrinterHelper(getFactory().getEnvironment());
-		//all comments in Spoon are using \n as separator
-		printer.setLineSeparator("\n");
-		printer.write(getElementTypeName(ele)).incTab();
-		for (Map.Entry<String, SubstReqOnPosition> e : reqByPath.entrySet()) {
-			printer.writeln();
-			boolean isLate = e.getValue().sourceStart != sourceStart;
-			if (isLate) {
-				printer.write("!").write(String.valueOf(e.getValue().sourceStart)).write("!=").write(String.valueOf(sourceStart)).write("!");
-			}
-			printer.write(e.getKey()).write('/');
-			printer.write(" <= ").write(e.getValue().valueResolver.toString());
-		}
-		return printer.toString();
-	}
-
-	private boolean appendPathIn(StringBuilder sb, CtElement element, CtElement parent) {
-		if (element != parent && element != null) {
-			CtRole roleInParent = element.getRoleInParent();
-			if (roleInParent == null) {
-				return false;
-			}
-			if (appendPathIn(sb, element.getParent(), parent)) {
-				sb.append("/").append(getElementTypeName(element.getParent()));
-			}
-			sb.append(".").append(roleInParent.getCamelCaseName());
-			return true;
-		}
-		return false;
-	};
-
-	static String getElementTypeName(CtElement element) {
-		String name = element.getClass().getSimpleName();
-		if (name.endsWith("Impl")) {
-			return name.substring(0, name.length() - 4);
-		}
-		return name;
-	}
 */
 }

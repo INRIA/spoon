@@ -17,6 +17,7 @@
 package spoon.pattern;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Function;
@@ -66,6 +67,10 @@ public abstract class ResultHolder<T> {
 	 * @param consumer
 	 */
 	public abstract void mapEachResult(Function<T, T> consumer);
+	/**
+	 * @return List of actually stored results
+	 */
+	public abstract List<T> getResults();
 
 	/**
 	 * Container of single value of required type
@@ -102,6 +107,11 @@ public abstract class ResultHolder<T> {
 			result = consumer.apply(result);
 		};
 
+		@Override
+		public List<T> getResults() {
+			return result == null ? Collections.emptyList() : Collections.singletonList(result);
+		}
+
 		public <U> ResultHolder.Single<U> setRequiredClass(Class<U> requiredClass) {
 			return (ResultHolder.Single<U>) super.setRequiredClass(requiredClass);
 		}
@@ -130,6 +140,11 @@ public abstract class ResultHolder<T> {
 		}
 
 		public List<T> getResult() {
+			return result;
+		}
+
+		@Override
+		public List<T> getResults() {
 			return result;
 		}
 
