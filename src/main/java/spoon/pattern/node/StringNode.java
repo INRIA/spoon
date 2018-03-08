@@ -37,7 +37,8 @@ import spoon.pattern.parameter.ParameterValueProvider;
  * Delivers single String value, which is created by replacing string markers in constant String template
  * by String value of appropriate parameter.
  */
-public class StringNode extends ConstantNode<String> {
+public class StringNode extends AbstractPrimitiveMatcher {
+	private final String stringValueWithMarkers;
 	/*
 	 * Use LinkedHashMap to assure defined replacement order
 	 */
@@ -46,11 +47,11 @@ public class StringNode extends ConstantNode<String> {
 	private Pattern regExpPattern;
 
 	public StringNode(String stringValueWithMarkers) {
-		super(stringValueWithMarkers);
+		this.stringValueWithMarkers = stringValueWithMarkers;
 	}
 
 	private String getStringValueWithMarkers() {
-		return getTemplateNode();
+		return stringValueWithMarkers;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -218,8 +219,14 @@ public class StringNode extends ConstantNode<String> {
 	private String escapeRegExp(String str) {
 		return "\\Q" + str + "\\E";
 	}
+
 	private String escapeRegReplace(String str) {
 		return str.replaceAll("\\$", "\\\\\\$");
+	}
+
+	@Override
+	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
+		return false;
 	}
 
 	@Override

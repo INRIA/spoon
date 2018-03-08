@@ -49,7 +49,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	public static ElementNode create(CtElement element, Map<CtElement, RootNode> patternElementToSubstRequests) {
 		Metamodel.Type mmConcept = Metamodel.getMetamodelTypeByClass(element.getClass());
-		ElementNode elementNode = new ElementNode(mmConcept);
+		ElementNode elementNode = new ElementNode(mmConcept, element);
 		if (patternElementToSubstRequests.put(element, elementNode) != null) {
 			throw new SpoonException("Each pattern element can have only one implicit Node.");
 		}
@@ -146,12 +146,19 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return new ListOfNodes((List) nodes);
 	}
 
+	private CtElement templateElement;
 	private Metamodel.Type elementType;
 	private Map<Metamodel.Field, RootNode> roleToNode = new HashMap<>();
 
-	public ElementNode(Metamodel.Type elementType) {
+	/**
+	 * @param elementType The type of Spoon node which has to be generated/matched by this {@link ElementNode}
+	 * @param templateElement - optional ref to template element which was used to created this {@link ElementNode}.
+	 * 	It is used e.g. to generate generatedBy comment
+	 */
+	public ElementNode(Metamodel.Type elementType, CtElement templateElement) {
 		super();
 		this.elementType = elementType;
+		this.templateElement = templateElement;
 	}
 
 	@Override
@@ -241,6 +248,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		//TODO implement create on Metamodel.Type
 		CtElement clone = generator.getFactory().Core().create(elementType.getModelInterface());
 		generateSingleNodeAttributes(generator, clone, parameters);
+		generator.applyGeneratedBy(clone, templateElement);
 		result.addResult((U) clone);
 	}
 

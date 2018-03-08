@@ -53,6 +53,7 @@ import spoon.reflect.visitor.chain.CtConsumer;
 public class Pattern implements CtConsumableFunction<Object> {
 	private ParameterValueProviderFactory parameterValueProviderFactory = UnmodifiableParameterValueProvider.Factory.INSTANCE;
 	private ModelNode modelValueResolver;
+	private boolean addGeneratedBy = false;
 
 	Pattern(ModelNode modelValueResolver) {
 		this.modelValueResolver = modelValueResolver;
@@ -102,7 +103,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 	 * @return one generated element
 	 */
 	public <T extends CtElement> T substituteSingle(Factory factory, Class<T> valueType, ParameterValueProvider params) {
-		return new DefaultGenerator(factory).generateTarget(modelValueResolver, params, valueType);
+		return new DefaultGenerator(factory).setAddGeneratedBy(isAddGeneratedBy()).generateTarget(modelValueResolver, params, valueType);
 	}
 	/**
 	 * generates a new AST made by cloning of `patternModel` and by substitution of parameters by values in `params`
@@ -122,7 +123,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 	 * @return List of generated elements
 	 */
 	public <T extends CtElement> List<T> substituteList(Factory factory, Class<T> valueType, ParameterValueProvider params) {
-		return new DefaultGenerator(factory).generateTargets(modelValueResolver, params, valueType);
+		return new DefaultGenerator(factory).setAddGeneratedBy(isAddGeneratedBy()).generateTargets(modelValueResolver, params, valueType);
 	}
 
 
@@ -267,5 +268,14 @@ public class Pattern implements CtConsumableFunction<Object> {
 			return simpleName;
 		}
 		return pckg.getQualifiedName() + CtPackage.PACKAGE_SEPARATOR + simpleName;
+	}
+
+	public boolean isAddGeneratedBy() {
+		return addGeneratedBy;
+	}
+
+	public Pattern setAddGeneratedBy(boolean addGeneratedBy) {
+		this.addGeneratedBy = addGeneratedBy;
+		return this;
 	}
 }
