@@ -95,11 +95,11 @@ Snapshot version:
 </dependencies>
 <repositories>
 	<repository>
-		<id>gforge.inria.fr-snapshot</id>
-		<name>Maven Repository for Spoon Snapshot</name>
-		<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
-		<snapshots />
-	</repository>
+      <snapshots />
+      <id>maven-inria-spoon-snapshots</id>
+      <name>public-snapshot</name>
+      <url>http://maven.inria.fr/artifactory/public-snapshot</url>
+    </repository>
 </repositories>
 ```
 
