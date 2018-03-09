@@ -20,10 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import spoon.Metamodel;
-import spoon.SpoonException;
+import spoon.pattern.node.ConstantNode;
+import spoon.pattern.node.ElementNode;
+import spoon.pattern.node.ListOfNodes;
 import spoon.pattern.node.LiveNode;
+import spoon.pattern.node.ParameterNode;
 import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
@@ -73,7 +77,35 @@ public class PatternPrinter extends DefaultGenerator {
 		}
 		T firstResult = getFirstResult(result, firstResultIdx);
 		if (firstResult instanceof CtElement) {
-			addParameterCommentTo((CtElement) firstResult, null);
+			if (node instanceof ElementNode) {
+				ElementNode elementNode = (ElementNode) node;
+				List<ParamOnElement> paramsOnElement = new ArrayList<>();
+				for (Map.Entry<Metamodel.Field, RootNode> e : elementNode.getRoleToNode().entrySet()) {
+					Metamodel.Field mmField = e.getKey();
+					foreachNode(e.getValue(), attrNode -> {
+						if (attrNode instanceof ConstantNode || attrNode instanceof ElementNode) {
+							return;
+						}
+						//it is an attribute with an substitution
+						//it will be added only if it is not already added linked to an CtElement
+						paramsOnElement.add(new ParamOnElement((CtElement) firstResult, mmField.getRole(), attrNode));
+					});
+				}
+				addParameterCommentTo((CtElement) firstResult, paramsOnElement.toArray(new ParamOnElement[paramsOnElement.size()]));
+			} else if (node instanceof ParameterNode) {
+				addParameterCommentTo((CtElement) firstResult, new ParamOnElement((CtElement) firstResult, node));
+			}
+		}
+	}
+
+	private void foreachNode(RootNode rootNode, Consumer<RootNode> consumer) {
+		if (rootNode instanceof ListOfNodes) {
+			ListOfNodes list = (ListOfNodes) rootNode;
+			for (RootNode node : list.getNodes()) {
+				foreachNode(node, consumer);
+			}
+		} else {
+			consumer.accept(rootNode);
 		}
 	}
 
@@ -98,19 +130,31 @@ public class PatternPrinter extends DefaultGenerator {
 
 	@Override
 	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters) {
-		CtElement ele = (CtElement) generatePatternParameterElement(parameterInfo, result.getRequiredClass());
-		addParameterCommentTo(ele, parameterInfo);
-		result.addResult((T) ele);
+		Object obj = generatePatternParameterElement(parameterInfo, result.getRequiredClass());
+		if (obj != null) {
+			result.addResult((T) obj);
+		}
 	}
 
-	private void addParameterCommentTo(CtElement ele, ParameterInfo parameterInfo) {
-		if (parameterInfo != null) {
-			params.add(new ParamOnElement((CtElement) ele, parameterInfo));
+	private void addParameterCommentTo(CtElement ele, ParamOnElement... paramsOnElement) {
+		for (ParamOnElement paramOnElement : paramsOnElement) {
+			if (isNodeContained(paramOnElement.node) == false) {
+				params.add(paramOnElement);
+			}
 		}
 		if (isCommentVisible(ele) && params.size() > 0) {
 			ele.addComment(ele.getFactory().Code().createComment(getSubstitutionRequestsDescription(ele, params), CommentType.BLOCK));
 			params.clear();
 		}
+	}
+
+	private boolean isNodeContained(RootNode node) {
+		for (ParamOnElement paramOnElement : params) {
+			if (paramOnElement.node == node) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -129,21 +173,33 @@ public class PatternPrinter extends DefaultGenerator {
 			if (type.isAssignableFrom(CtLocalVariable.class)) {
 				return (T) factory.createLocalVariable(factory.Type().objectType(), parameterInfo.getName(), null);
 			}
+			if (type.isAssignableFrom(String.class)) {
+				return (T) parameterInfo.getName();
+			}
 		}
-		throw new SpoonException("Pattern Parameter is on Unsupported place");
+		return null;
 	}
 
 	private static class ParamOnElement {
 		final CtElement sourceElement;
-		final ParameterInfo param;
-		ParamOnElement(CtElement sourceElement, ParameterInfo param) {
+		final RootNode node;
+		final CtRole role;
+		ParamOnElement(CtElement sourceElement, RootNode node) {
+			this(sourceElement, null, node);
+		}
+		ParamOnElement(CtElement sourceElement, CtRole role, RootNode node) {
 			this.sourceElement = sourceElement;
-			this.param = param;
+			this.role = role;
+			this.node = node;
 		}
 
 		@Override
 		public String toString() {
-			return sourceElement.getClass().getName() + ": ${" + param.getName() + "}";
+			if (role == null) {
+				return sourceElement.getClass().getName() + ": ${" + node.toString() + "}";
+			} else {
+				return sourceElement.getClass().getName() + "/" + role + ": " + node.toString();
+			}
 		}
 	}
 	private String getSubstitutionRequestsDescription(CtElement ele, List<ParamOnElement> requestsOnPos) {
@@ -153,6 +209,9 @@ public class PatternPrinter extends DefaultGenerator {
 		for (ParamOnElement reqPos : requestsOnPos) {
 			sb.setLength(0);
 			appendPathIn(sb, reqPos.sourceElement, ele);
+			if (reqPos.role != null) {
+				sb.append("/").append(reqPos.role.getCamelCaseName());
+			}
 			String path = sb.toString();
 			reqByPath.put(path, reqPos);
 		}
@@ -164,7 +223,7 @@ public class PatternPrinter extends DefaultGenerator {
 		for (Map.Entry<String, ParamOnElement> e : reqByPath.entrySet()) {
 			printer.writeln();
 			printer.write(e.getKey()).write('/');
-			printer.write(" <= ${").write(e.getValue().param.getName() + "}");
+			printer.write(" <= ").write(e.getValue().node.toString());
 		}
 		return printer.toString();
 	}

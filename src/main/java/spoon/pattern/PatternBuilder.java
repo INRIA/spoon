@@ -18,6 +18,7 @@ package spoon.pattern;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -197,8 +198,8 @@ public class PatternBuilder {
 		if (newNode == null) {
 			throw new SpoonException("Removing of Node is not supported");
 		}
-		handleConflict(conflictMode, oldNode, newNode, () -> {
-			if (patternNodes.replaceNode(oldNode, newNode) == false) {
+		handleConflict(conflictMode, oldNode, newNode, (tobeUsedNode) -> {
+			if (patternNodes.replaceNode(oldNode, tobeUsedNode) == false) {
 				if (conflictMode == ConflictResolutionMode.KEEP_OLD_NODE) {
 					//The parent of oldNode was already replaced. OK - Keep that parent old node
 					return;
@@ -206,7 +207,7 @@ public class PatternBuilder {
 				throw new SpoonException("Old node was not found");
 			}
 			//update element to node mapping
-			patternElementToSubstRequests.put(element, newNode);
+			patternElementToSubstRequests.put(element, tobeUsedNode);
 		});
 	}
 
@@ -219,8 +220,8 @@ public class PatternBuilder {
 				if (newAttrNode == null) {
 					throw new SpoonException("Removing of Node is not supported");
 				}
-				handleConflict(conflictMode, oldAttrNode, newAttrNode, () -> {
-					elementNode.setNodeOfRole(role, newAttrNode);
+				handleConflict(conflictMode, oldAttrNode, newAttrNode, (tobeUsedNode) -> {
+					elementNode.setNodeOfRole(role, tobeUsedNode);
 				});
 				return node;
 			}
@@ -231,8 +232,22 @@ public class PatternBuilder {
 		});
 	}
 
-	private void handleConflict(ConflictResolutionMode conflictMode, RootNode oldNode, RootNode newNode, Runnable applyNewNode) {
+	private void handleConflict(ConflictResolutionMode conflictMode, RootNode oldNode, RootNode newNode, Consumer<RootNode> applyNewNode) {
 		if (oldNode != newNode) {
+			if (conflictMode == ConflictResolutionMode.APPEND) {
+				if (oldNode instanceof ListOfNodes == false) {
+					oldNode = new ListOfNodes(new ArrayList<>(Arrays.asList(oldNode)));
+				}
+				if (newNode instanceof ListOfNodes) {
+					((ListOfNodes) oldNode).getNodes().addAll(((ListOfNodes) newNode).getNodes());
+				} else {
+					((ListOfNodes) oldNode).getNodes().add(newNode);
+				}
+				explicitNodes.add(oldNode);
+				explicitNodes.add(newNode);
+				applyNewNode.accept(oldNode);
+				return;
+			}
 			if (explicitNodes.contains(oldNode)) {
 				//the oldNode was explicitly added before
 				if (conflictMode == ConflictResolutionMode.FAIL) {
@@ -244,7 +259,7 @@ public class PatternBuilder {
 			}
 			explicitNodes.remove(oldNode);
 			explicitNodes.add(newNode);
-			applyNewNode.run();
+			applyNewNode.accept(newNode);
 		}
 	}
 

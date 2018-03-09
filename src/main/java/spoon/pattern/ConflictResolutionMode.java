@@ -32,7 +32,11 @@ public enum ConflictResolutionMode {
 	 */
 	USE_NEW_NODE,
 	/**
-	 * keep old {@link Node} and ignore try to add any new {@link Node}
+	 * keep old {@link Node} and ignore requests to add new {@link Node}
 	 */
-	KEEP_OLD_NODE
+	KEEP_OLD_NODE,
+	/**
+	 * add new {@link RootNode} after existing nodes
+	 */
+	APPEND
 }

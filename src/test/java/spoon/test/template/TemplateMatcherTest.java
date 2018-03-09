@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import spoon.pattern.Pattern;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
@@ -746,7 +748,7 @@ public class TemplateMatcherTest {
 				assertEquals("matcher1", match.getMatchingElement(CtMethod.class).getSimpleName());
 				assertEquals(2, match.getParametersMap().size());
 				assertEquals("matcher1", match.getParametersMap().get("methodName"));
-				Map<String, Object> values = getMap(match, "testAnnotations");
+				Map<String, Object> values = getMap(match, "CheckAnnotationValues");
 				assertEquals(0, values.size());
 			}
 			{
@@ -755,7 +757,7 @@ public class TemplateMatcherTest {
 				assertEquals("m1", match.getMatchingElement(CtMethod.class).getSimpleName());
 				assertEquals(2, match.getParametersMap().size());
 				assertEquals("m1", match.getParametersMap().get("methodName"));
-				Map<String, Object> values = getMap(match, "testAnnotations");
+				Map<String, Object> values = getMap(match, "CheckAnnotationValues");
 				assertEquals(1, values.size());
 				assertEquals("\"xyz\"", values.get("value").toString());
 			}
@@ -765,7 +767,7 @@ public class TemplateMatcherTest {
 				assertEquals("m2", match.getMatchingElement(CtMethod.class).getSimpleName());
 				assertEquals(2, match.getParametersMap().size());
 				assertEquals("m2", match.getParametersMap().get("methodName"));
-				Map<String, Object> values = getMap(match, "testAnnotations");
+				Map<String, Object> values = getMap(match, "CheckAnnotationValues");
 				assertEquals(2, values.size());
 				assertEquals("\"abc\"", values.get("value").toString());
 				assertEquals("123", values.get("timeout").toString());
@@ -787,14 +789,14 @@ public class TemplateMatcherTest {
 			//match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void 
 			Pattern pattern = MatchMap.createPattern(ctClass.getFactory(), true);
 			List<Match> matches = pattern.getMatches(ctClass);
-			assertEquals(5, matches.size());
+			assertEquals(4, matches.size());
 			{
 				Match match = matches.get(0);
 				assertEquals(1, match.getMatchingElements().size());
 				assertEquals("matcher1", match.getMatchingElement(CtMethod.class).getSimpleName());
 				assertEquals(2, match.getParametersMap().size());
 				assertEquals("matcher1", match.getParametersMap().get("methodName"));
-				assertTrue(match.getParametersMap().get("allAnnotations") instanceof List);
+				assertEquals(map(), getMap(match, "CheckAnnotationValues"));
 			}
 			{
 				Match match = matches.get(1);
@@ -802,9 +804,7 @@ public class TemplateMatcherTest {
 				assertEquals("m1", match.getMatchingElement(CtMethod.class).getSimpleName());
 				assertEquals(2, match.getParametersMap().size());
 				assertEquals("m1", match.getParametersMap().get("methodName"));
-				Map<String, Object> values = getMap(match, "testAnnotations");
-				assertEquals(1, values.size());
-				assertEquals("java.lang.Exception.class", values.get("expected").toString());
+				assertEquals("{value=\"xyz\"}", getMap(match, "CheckAnnotationValues").toString());
 			}
 			{
 				Match match = matches.get(2);
@@ -812,10 +812,16 @@ public class TemplateMatcherTest {
 				assertEquals("m2", match.getMatchingElement(CtMethod.class).getSimpleName());
 				assertEquals(2, match.getParametersMap().size());
 				assertEquals("m2", match.getParametersMap().get("methodName"));
-				Map<String, Object> values = getMap(match, "testAnnotations");
-				assertEquals(2, values.size());
-				assertEquals("java.lang.RuntimeException.class", values.get("expected").toString());
-				assertEquals("123", values.get("timeout").toString());
+				assertEquals("{value=\"abc\", timeout=123}", getMap(match, "CheckAnnotationValues").toString());
+			}
+			{
+				Match match = matches.get(3);
+				assertEquals(1, match.getMatchingElements().size());
+				assertEquals("deprecatedTestAnnotation2", match.getMatchingElement(CtMethod.class).getSimpleName());
+				assertEquals(3, match.getParametersMap().size());
+				assertEquals("deprecatedTestAnnotation2", match.getParametersMap().get("methodName"));
+				assertEquals("{timeout=4567}", getMap(match, "CheckAnnotationValues").toString());
+				assertEquals("@java.lang.Deprecated", match.getParameters().getValue("allAnnotations").toString());
 			}
 		}
 	}
@@ -830,5 +836,15 @@ public class TemplateMatcherTest {
 		}
 		return strings;
 	}
+	
+	private MapBuilder map() {
+		return new MapBuilder();
+	}
 
-}
+	class MapBuilder extends LinkedHashMap<String, Object> {
+		public MapBuilder put(String key, Object value) {
+			super.put(key, value);
+			return this;
+		}
+	}
+} 
