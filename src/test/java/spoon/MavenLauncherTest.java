@@ -17,8 +17,8 @@ public class MavenLauncherTest {
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
 		assertEquals(7, launcher.getEnvironment().getSourceClasspath().length);
-		// 52 because of the sub folders of src/main/java
-		assertEquals(54, launcher.getModelBuilder().getInputSources().size());
+		// 56 because of the sub folders of src/main/java
+		assertEquals(56, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);

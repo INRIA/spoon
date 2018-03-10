@@ -89,6 +89,11 @@ public class LiveStatementsBuilder {
 		return this;
 	}
 
+	/**
+	 * marks all CtIf and CtForEach whose expression contains a variable refrence named `variableName` as live statement.
+	 * @param variableName to be searched variable name
+	 * @return this to support fluent API
+	 */
 	public LiveStatementsBuilder byVariableName(String variableName) {
 		patternBuilder.patternQuery
 			.filterChildren(new TypeFilter<>(CtVariableReference.class))
@@ -110,6 +115,11 @@ public class LiveStatementsBuilder {
 		return this;
 	}
 
+	/**
+	 * marks {@link CtForEach} as live statement.
+	 * @param foreach to be marked {@link CtForEach} element
+	 * @return this to support fluent API
+	 */
 	public LiveStatementsBuilder markLive(CtForEach foreach) {
 		//detect meta elements by different way - e.g. comments?
 		RootNode vr = patternBuilder.getPatternNode(foreach.getExpression());
@@ -138,6 +148,11 @@ public class LiveStatementsBuilder {
 		return this;
 	}
 
+	/**
+	 * marks {@link CtIf} as live statement.
+	 * @param ifElement to be marked {@link CtIf} element
+	 * @return this to support fluent API
+	 */
 	public LiveStatementsBuilder markLive(CtIf ifElement) {
 		SwitchNode osp = new SwitchNode();
 		boolean[] canBeLive = new boolean[]{true};

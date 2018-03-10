@@ -17,8 +17,11 @@
 package spoon.pattern.parameter;
 
 /**
- * Creates appropriate instances of {@link ParameterValueProvider} during matching process
+ * Creates instances of {@link ParameterValueProvider}
  */
 public interface ParameterValueProviderFactory {
+	/**
+	 * @return new instance of empty {@link ParameterValueProvider}
+	 */
 	ParameterValueProvider createParameterValueProvider();
 }

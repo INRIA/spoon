@@ -286,6 +286,11 @@ public class ParametersBuilder {
 		}
 		return this;
 	}
+	/**
+	 * Add parameters for each variable reference of `variable`
+	 * @param variable to be substituted variable
+	 * @return this to support fluent API
+	 */
 	public ParametersBuilder parametersByVariable(CtVariable<?> variable) {
 		CtQueryable searchScope;
 		if (patternBuilder.isInModel(variable)) {

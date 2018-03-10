@@ -323,6 +323,11 @@ public class PatternBuilder {
 		return this;
 	}
 
+	/**
+	 * All the variable references, whose variables are out of the template model
+	 * are automatically marked as pattern parameters
+	 * @return this to support fluent API
+	 */
 	public PatternBuilder configureAutomaticParameters() {
 		configureParameters(pb -> {
 			//add this substitution request only if there isn't another one yet

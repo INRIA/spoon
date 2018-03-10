@@ -47,6 +47,13 @@ import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
  */
 public class ElementNode extends AbstractPrimitiveMatcher {
 
+	/**
+	 * Creates an implicit {@link ElementNode}, which contains all non derived attributes of `element` and all it's children
+	 * @param element source element, which is used to initialize {@link ElementNode}
+	 * @param patternElementToSubstRequests the {@link Map}, which will receive mapping between `element` and it's children
+	 * and newly created tree of {@link ElementNode}s
+	 * @return a tree of {@link ElementNode}s, which reflects tree of `element`
+	 */
 	public static ElementNode create(CtElement element, Map<CtElement, RootNode> patternElementToSubstRequests) {
 		Metamodel.Type mmConcept = Metamodel.getMetamodelTypeByClass(element.getClass());
 		ElementNode elementNode = new ElementNode(mmConcept, element);
@@ -64,27 +71,13 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return elementNode;
 	}
 
-	private static RootNode create(Object object, Map<CtElement, RootNode> patternElementToSubstRequests) {
-		if (object instanceof CtElement) {
-			return create((CtElement) object, patternElementToSubstRequests);
-		}
-		return new ConstantNode<Object>(object);
-	}
-
-	private static RootNode create(ContainerKind containerKind, Object templates, Map<CtElement, RootNode> patternElementToSubstRequests) {
-		switch (containerKind) {
-		case LIST:
-			return create((List) templates, patternElementToSubstRequests);
-		case SET:
-			return create((Set) templates, patternElementToSubstRequests);
-		case MAP:
-			return create((Map) templates, patternElementToSubstRequests);
-		case SINGLE:
-			return create(templates, patternElementToSubstRequests);
-		}
-		throw new SpoonException("Unexpected RoleHandler containerKind: " + containerKind);
-	}
-
+	/**
+	 * Same like {@link #create(CtElement, Map)} but with {@link List} of elements or primitive objects
+	 *
+	 * @param objects List of objects which has to be transformed to nodes
+	 * @param patternElementToSubstRequests mapping between {@link CtElement} from `objects` to created `node`
+	 * @return a list of trees of nodes, which reflects list of `objects`
+	 */
 	public static ListOfNodes create(List<?> objects, Map<CtElement, RootNode> patternElementToSubstRequests) {
 		if (objects == null) {
 			objects = Collections.emptyList();
@@ -92,6 +85,13 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return listOfNodesToNode(objects.stream().map(i -> create(i, patternElementToSubstRequests)).collect(Collectors.toList()));
 	}
 
+	/**
+	 * Same like {@link #create(CtElement, Map)} but with {@link Set} of elements or primitive objects
+	 *
+	 * @param templates Set of objects which has to be transformed to nodes
+	 * @param patternElementToSubstRequests mapping between {@link CtElement} from `templates` to created `node`
+	 * @return a list of trees of nodes, which reflects Set of `templates`
+	 */
 	public static ListOfNodes create(Set<?> templates, Map<CtElement, RootNode> patternElementToSubstRequests) {
 		if (templates == null) {
 			templates = Collections.emptySet();
@@ -113,6 +113,13 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return listOfNodesToNode(constantMatchers);
 	}
 
+	/**
+	 * Same like {@link #create(CtElement, Map)} but with {@link Map} of String to elements or primitive objects
+	 *
+	 * @param map Map of objects which has to be transformed to nodes
+	 * @param patternElementToSubstRequests mapping between {@link CtElement} from `map` to created `node`
+	 * @return a list of {@link MapEntryNode}s, which reflects `map`
+	 */
 	public static ListOfNodes create(Map<String, ?> map, Map<CtElement, RootNode> patternElementToSubstRequests) {
 		if (map == null) {
 			map = Collections.emptyMap();
@@ -135,6 +142,27 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		//first match the Map.Entries with constant matchers and then with variable matchers
 		constantMatchers.addAll(variableMatchers);
 		return listOfNodesToNode(constantMatchers);
+	}
+
+	private static RootNode create(Object object, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		if (object instanceof CtElement) {
+			return create((CtElement) object, patternElementToSubstRequests);
+		}
+		return new ConstantNode<Object>(object);
+	}
+
+	private static RootNode create(ContainerKind containerKind, Object templates, Map<CtElement, RootNode> patternElementToSubstRequests) {
+		switch (containerKind) {
+		case LIST:
+			return create((List) templates, patternElementToSubstRequests);
+		case SET:
+			return create((Set) templates, patternElementToSubstRequests);
+		case MAP:
+			return create((Map) templates, patternElementToSubstRequests);
+		case SINGLE:
+			return create(templates, patternElementToSubstRequests);
+		}
+		throw new SpoonException("Unexpected RoleHandler containerKind: " + containerKind);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
