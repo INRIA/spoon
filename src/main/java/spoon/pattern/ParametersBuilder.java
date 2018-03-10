@@ -23,7 +23,8 @@ import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.pattern.matcher.Quantifier;
-import spoon.pattern.node.ConstantNode;
+import spoon.pattern.node.ListOfNodes;
+import spoon.pattern.node.MapEntryNode;
 import spoon.pattern.node.ModelNode;
 import spoon.pattern.node.RootNode;
 import spoon.pattern.node.ParameterNode;
@@ -378,6 +379,18 @@ public class ParametersBuilder {
 					addSubstitutionRequest(pi, element, roleHandler.getRole());
 				}
 			}
+			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
+				if (stringMarker.equals(mapEntryKey)) {
+					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
+						if (oldAttrNode instanceof MapEntryNode) {
+							MapEntryNode mapEntryNode = (MapEntryNode) oldAttrNode;
+							return new MapEntryNode(new ParameterNode(pi), ((MapEntryNode) oldAttrNode).getValue());
+						}
+						return oldAttrNode;
+					});
+
+				}
+			};
 		}.scan(patternBuilder.getPatternModel());
 		return this;
 	}
@@ -397,6 +410,21 @@ public class ParametersBuilder {
 					addSubstitutionRequest(pi, element, roleHandler.getRole(), stringMarker);
 				}
 			}
+			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
+				if (mapEntryKey != null && mapEntryKey.indexOf(stringMarker) >= 0) {
+					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
+						List<RootNode> nodes = ((ListOfNodes) oldAttrNode).getNodes();
+						for (int i = 0; i < nodes.size(); i++) {
+							RootNode node = nodes.get(i);
+							if (node instanceof MapEntryNode) {
+								MapEntryNode mapEntryNode = (MapEntryNode) node;
+								nodes.set(i, new MapEntryNode(StringNode.setReplaceMarker(mapEntryNode.getKey(), stringMarker, pi), mapEntryNode.getValue()));
+							}
+						}
+						return oldAttrNode;
+					});
+			}
+			};
 		}.scan(patternBuilder.getPatternModel());
 		return this;
 	}
@@ -416,6 +444,10 @@ public class ParametersBuilder {
 					//accept String and Object class
 					stringAttributeRoleHandlers.add(rh);
 				}
+				if (rh.getContainerKind() == ContainerKind.MAP) {
+					//accept Map where key is String too
+					stringAttributeRoleHandlers.add(rh);
+				}
 			});
 		}
 
@@ -430,12 +462,17 @@ public class ParametersBuilder {
 					Object value = roleHandler.getValue(element);
 					if (value instanceof String) {
 						visitStringAttribute(roleHandler, element, (String) value);
+					} else if (value instanceof Map) {
+						for (Map.Entry<String, CtElement> e : ((Map<String, CtElement>) value).entrySet()) {
+							visitStringAttribute(roleHandler, element, (String) e.getKey(), e.getValue());
+						}
 					}
 					//else it is a CtLiteral with non string value
 				}
 			}
 		}
 		protected abstract void visitStringAttribute(RoleHandler roleHandler, CtElement element, String value);
+		protected abstract void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue);
 	}
 
 
@@ -552,20 +589,7 @@ public class ParametersBuilder {
 	 */
 	void addSubstitutionRequest(ParameterInfo parameter, CtElement element, CtRole attributeRole, String subStringMarker) {
 		patternBuilder.modifyNodeOfAttributeOfElement(element, attributeRole, conflictResolutionMode, oldAttrNode -> {
-			StringNode stringNode = null;
-			if (oldAttrNode instanceof ConstantNode) {
-				ConstantNode constantNode = (ConstantNode) oldAttrNode;
-				if (constantNode.getTemplateNode() instanceof String) {
-					stringNode = new StringNode((String) constantNode.getTemplateNode());
-				}
-			} else if (oldAttrNode instanceof StringNode) {
-				stringNode = (StringNode) oldAttrNode;
-			}
-			if (stringNode == null) {
-				throw new SpoonException("Cannot add StringNode");
-			}
-			stringNode.setReplaceMarker(subStringMarker, parameter);
-			return stringNode;
+			return StringNode.setReplaceMarker(oldAttrNode, subStringMarker, parameter);
 		});
 	}
 

@@ -16,21 +16,26 @@
  */
 package spoon.pattern.node;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 
+import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
-import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.meta.ContainerKind;
+
+import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
 
 /**
  * Represents a ValueResolver of one Map.Entry
  */
-public class MapEntryNode extends AbstractNode {
-	private final RootNode key;
-	private final RootNode value;
+public class MapEntryNode extends AbstractPrimitiveMatcher {
+	private RootNode key;
+	private RootNode value;
 
 	public MapEntryNode(RootNode key, RootNode value) {
 		super();
@@ -47,24 +52,75 @@ public class MapEntryNode extends AbstractNode {
 
 	@Override
 	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
-		//TODO
-		throw new UnsupportedOperationException("TODO");
+		if (key == oldNode) {
+			key = newNode;
+			return true;
+		}
+		if (value == oldNode) {
+			value = newNode;
+			return true;
+		}
+		if (key.replaceNode(oldNode, newNode)) {
+			return true;
+		}
+		if (value.replaceNode(oldNode, newNode)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
-	public TobeMatched matchTargets(TobeMatched targets, Matchers nextMatchers) {
-		//TODO
-		throw new UnsupportedOperationException("TODO");
-	}
-	@Override
 	public void forEachParameterInfo(BiConsumer<ParameterInfo, RootNode> consumer) {
-		// TODO
-		throw new UnsupportedOperationException("TODO");
+		key.forEachParameterInfo(consumer);
+		value.forEachParameterInfo(consumer);
+	}
+
+	private static class Entry implements Map.Entry<String, CtElement> {
+		private final String key;
+		private CtElement value;
+
+		Entry(String key, CtElement value) {
+			super();
+			this.key = key;
+			this.value = value;
+		}
+
+		@Override
+		public String getKey() {
+			return key;
+		}
+
+		@Override
+		public CtElement getValue() {
+			return value;
+		}
+
+		@Override
+		public CtElement setValue(CtElement value) {
+			CtElement oldV = this.value;
+			this.value = value;
+			return oldV;
+		}
 	}
 
 	@Override
 	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
-		// TODO
-		throw new UnsupportedOperationException("TODO");
+		String entryKey = generator.generateTarget(key, parameters, String.class);
+		CtElement entryValue = generator.generateTarget(value, parameters, CtElement.class);
+		if (entryKey != null && entryValue != null) {
+			result.addResult((T) new Entry(entryKey, entryValue));
+		}
+	}
+	@Override
+	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+		if (target instanceof Map.Entry) {
+			Map.Entry<String, CtElement> targetEntry = (Map.Entry<String, CtElement>) target;
+			parameters = getMatchedParameters(getKey().matchAllWith(TobeMatched.create(parameters, ContainerKind.SINGLE, targetEntry.getKey())));
+			if (parameters == null) {
+				return null;
+			}
+			return getMatchedParameters(getValue().matchAllWith(TobeMatched.create(parameters, ContainerKind.SINGLE, targetEntry.getValue())));
+		}
+		throw new SpoonException("Unexpected target type " + target.getClass().getName());
 	}
 }

@@ -826,6 +826,38 @@ public class TemplateMatcherTest {
 		}
 	}
 
+	@Test
+	public void testMatchOfMapKeySubstring() throws Exception {
+		//contract: match substring in key of Map Entry - match key of annotation value
+		CtType<?> ctClass = ModelUtils.buildClass(MatchMap.class);
+		{
+			//match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void 
+			Pattern pattern = MatchMap.createMatchKeyPattern(ctClass.getFactory());
+			List<Match> matches = pattern.getMatches(ctClass);
+			String str = pattern.toString();
+			assertEquals(2, matches.size());
+			{
+				Match match = matches.get(0);
+				assertEquals(1, match.getMatchingElements().size());
+				assertEquals("m1", match.getMatchingElement(CtMethod.class).getSimpleName());
+				assertEquals(3, match.getParametersMap().size());
+				assertEquals("m1", match.getParametersMap().get("methodName"));
+				assertEquals("value", match.getParameters().getValue("CheckKey").toString());
+				assertEquals("\"xyz\"", match.getParameters().getValue("CheckValue").toString());
+			}
+			{
+				Match match = matches.get(1);
+				assertEquals(1, match.getMatchingElements().size());
+				assertEquals("deprecatedTestAnnotation2", match.getMatchingElement(CtMethod.class).getSimpleName());
+				assertEquals(4, match.getParametersMap().size());
+				assertEquals("deprecatedTestAnnotation2", match.getParametersMap().get("methodName"));
+				assertEquals("timeout", match.getParameters().getValue("CheckKey").toString());
+				assertEquals("4567", match.getParameters().getValue("CheckValue").toString());
+				assertEquals("@java.lang.Deprecated", match.getParameters().getValue("allAnnotations").toString());
+			}
+		}
+	}
+
 	private List<String> listToListOfStrings(List<? extends Object> list) {
 		if (list == null) {
 			return Collections.emptyList();

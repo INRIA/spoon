@@ -58,9 +58,9 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	public String printNode(RootNode node) {
-		List<CtElement> generated = generateTargets(node, (ParameterValueProvider) null, null);
+		List<Object> generated = generateTargets(node, (ParameterValueProvider) null, null);
 		StringBuilder sb = new StringBuilder();
-		for (CtElement ele : generated) {
+		for (Object ele : generated) {
 			sb.append(ele.toString()).append('\n');
 		}
 		return sb.toString();

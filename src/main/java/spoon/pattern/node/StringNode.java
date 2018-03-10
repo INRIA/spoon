@@ -245,4 +245,28 @@ public class StringNode extends AbstractPrimitiveMatcher {
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * Applies substring substitution to `targetNode`. Converts old node to {@link StringNode} if needed.
+	 * @param targetNode
+	 * @param replaceMarker
+	 * @param param
+	 * @return {@link StringNode} which contains all the data of origin `targetNode` and new replaceMarker request
+	 */
+	public static StringNode setReplaceMarker(RootNode targetNode, String replaceMarker, ParameterInfo param) {
+		StringNode stringNode = null;
+		if (targetNode instanceof ConstantNode) {
+			ConstantNode constantNode = (ConstantNode) targetNode;
+			if (constantNode.getTemplateNode() instanceof String) {
+				stringNode = new StringNode((String) constantNode.getTemplateNode());
+			}
+		} else if (targetNode instanceof StringNode) {
+			stringNode = (StringNode) targetNode;
+		}
+		if (stringNode == null) {
+			throw new SpoonException("Cannot add StringNode");
+		}
+		stringNode.setReplaceMarker(replaceMarker, param);
+		return stringNode;
+	}
 }
