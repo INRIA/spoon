@@ -431,8 +431,6 @@ public class StandardEnvironment implements Serializable, Environment {
 				if (javaFiles.size() > 0) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
-			} else if (classOrJarFolder.getName().endsWith(".class")) {
-				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}
 		}
 	}

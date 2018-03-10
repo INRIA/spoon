@@ -423,26 +423,7 @@ public class APITest {
 		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
 		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
 	}
-
-	@Test
-	public void testSourceClasspathDoesNotAcceptDotClass() {
-		// contract: setSourceClassPath does not accept .class files
-		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
-		launcher.setBinaryOutputDirectory("./target/spoon-setscp");
-		launcher.getEnvironment().setShouldCompile(true);
-		launcher.run();
-
-		final Launcher launcher2 = new Launcher();
-		try {
-			launcher2.getEnvironment().setSourceClasspath(new String[] {"./target/spoon-setscp/spoon/test/api/testclasses/Bar.class"});
-			fail();
-		} catch (Exception e) {
-			assertTrue(e instanceof InvalidClassPathException);
-			assertTrue(e.getMessage().contains(".class files are not accepted in source classpath."));
-		}
-	}
-
+  
 	@Test
 	public void testOutputDestinationHandler() throws IOException {
 		// contract: files are created in the directory determined by the output destination handler
@@ -547,6 +528,4 @@ public class APITest {
 		assertTrue("Package file not contained ("+packageFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(packageFile.getCanonicalPath()));
 		assertTrue("Class file not contained ("+classFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
 	}
-
-
 }
