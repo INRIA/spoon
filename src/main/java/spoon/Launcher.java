@@ -75,7 +75,7 @@ public class Launcher implements SpoonAPI {
 
 	public static final String OUTPUTDIR = "spooned";
 
-	private final Factory factory;
+	protected Factory factory;
 
 	private SpoonModelBuilder modelBuilder;
 
