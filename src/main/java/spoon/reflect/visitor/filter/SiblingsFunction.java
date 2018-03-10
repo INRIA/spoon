@@ -73,7 +73,7 @@ public class SiblingsFunction implements CtConsumableFunction<CtElement> {
 			boolean visitNext = mode == Mode.ALL || mode == Mode.NEXT;
 			@Override
 			public void scan(CtElement element) {
-				if (element != null && element.getParent() == parent) {
+				if (element != null && element.isParentInitialized() && element.getParent() == parent) {
 					//visit only elements whose parent is same
 					boolean canVisit = hasVisitedInput ? visitNext : visitPrev;
 					if (input == element) {
