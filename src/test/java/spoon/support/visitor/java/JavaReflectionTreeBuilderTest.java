@@ -1,6 +1,8 @@
 package spoon.support.visitor.java;
 
 import org.junit.Test;
+
+import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -11,7 +13,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.test.generics.ComparableComparatorBug;
 
 import java.io.ObjectInputStream;
@@ -132,4 +136,21 @@ public class JavaReflectionTreeBuilderTest {
 		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
 		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
+	
+	@Test
+	public void testSuperInterfaceActualTypeArgumentsByJavaReflectionTreeBuilder() {
+		final CtType<CtConditionalImpl> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CtConditionalImpl.class);
+		CtTypeReference<?> ifaceRef = aType.getSuperInterfaces().iterator().next();
+		assertEquals(CtConditional.class.getName(), ifaceRef.getQualifiedName());
+		assertEquals(1, ifaceRef.getActualTypeArguments().size());
+	}
+	
+	@Test
+	public void testSuperInterfaceActualTypeArgumentsByCtTypeReferenceImpl() {
+		CtTypeReference<?> aTypeRef = createFactory().Type().createReference(CtConditionalImpl.class);
+		CtTypeReference<?> ifaceRef = aTypeRef.getSuperInterfaces().iterator().next();
+		assertEquals(CtConditional.class.getName(), ifaceRef.getQualifiedName());
+		assertEquals(1, ifaceRef.getActualTypeArguments().size());
+	}
+	
 }
