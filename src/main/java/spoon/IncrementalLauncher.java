@@ -151,7 +151,7 @@ public class IncrementalLauncher extends Launcher {
 		if (!mIncrementalCacheDirectory.exists() && !mIncrementalCacheDirectory.mkdirs()) {
 				throw new SpoonException("unable to create cache directory");
 		}
-			
+
 		if (!mClassFilesDir.exists() && !mClassFilesDir.mkdirs()) {
 				throw new SpoonException("unable to create class files directory");
 		}
@@ -189,13 +189,14 @@ public class IncrementalLauncher extends Launcher {
 				}
 			}
 
-			for (CtType<?>  type : oldTypes) {
+			for (CtType<?> type : oldTypes) {
 				File typeFile = type.getPosition().getFile();
 				if (mRemovedSources.contains(typeFile)) {
 					type.delete();
 					continue;
 				}
 				for (CtType<?> changedType : changedTypes) {
+					// We should also rebuild types, that refer to changed types.
 					if (type.getReferencedTypes().contains(changedType.getReference())) {
 						incrementalSources.add(typeFile);
 						type.delete();
