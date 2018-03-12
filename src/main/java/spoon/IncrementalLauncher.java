@@ -148,13 +148,12 @@ public class IncrementalLauncher extends Launcher {
 			}
 		}
 
-		if (!mIncrementalCacheDirectory.exists()) {
-			if (!mIncrementalCacheDirectory.mkdirs()) {
+		if (!mIncrementalCacheDirectory.exists() && !mIncrementalCacheDirectory.mkdirs()) {
 				throw new SpoonException("unable to create cache directory");
-			}
-			if (!mClassFilesDir.mkdirs()) {
+		}
+			
+		if (!mClassFilesDir.exists() && !mClassFilesDir.mkdirs()) {
 				throw new SpoonException("unable to create class files directory");
-			}
 		}
 
 		if (forceRebuild) {
