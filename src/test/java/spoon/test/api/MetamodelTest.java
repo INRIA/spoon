@@ -77,8 +77,8 @@ public class MetamodelTest {
 			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
 			for (Metamodel.Field field : type.getFields()) {
 				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
-				assertSame(expectedField.isDerived(), field.isDerived());
-				assertSame(expectedField.isUnsettable(), field.isUnsettable());
+				assertSame("Field " + expectedField + ".derived", expectedField.isDerived(), field.isDerived());
+				assertSame("Field " + expectedField + ".unsettable", expectedField.isUnsettable(), field.isUnsettable());
 			}
 			assertTrue("These Metamodel.Field instances are missing on Type " + type.getName() +": " + expectedRoleToField.keySet(), expectedRoleToField.isEmpty());
 		}
