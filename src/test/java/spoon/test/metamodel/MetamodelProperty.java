@@ -444,6 +444,11 @@ public class MetamodelProperty {
 	 */
 	public boolean isDerived() {
 		if (derived == null) {
+			if (isUnsettable()) {
+				//all unsettable properties are derived too 
+				derived = true;
+				return true;
+			}
 			//if DerivedProperty is found on any getter of this type, then this field is derived
 			MMMethod getter = getMethod(MMMethodKind.GET);
 			if (getter == null) {

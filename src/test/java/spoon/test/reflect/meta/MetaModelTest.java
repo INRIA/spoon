@@ -52,6 +52,10 @@ public class MetaModelTest {
 
 		mm.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
+				if (mmField.isUnsettable()) {
+					//contract: all unsettable fields are derived too
+					assertTrue("Unsettable field " + mmField + " must be derived too", mmField.isDerived());
+				}
 				unhandledRoles.remove(role);
 				if (mmField.getMethod(MMMethodKind.GET) == null) {
 					problems.add("Missing getter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
