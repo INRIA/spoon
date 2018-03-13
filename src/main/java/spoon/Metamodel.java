@@ -1386,7 +1386,7 @@ public class Metamodel {
 
 			types.add(new Type("CtCatchVariable", spoon.reflect.code.CtCatchVariable.class, spoon.support.reflect.code.CtCatchVariableImpl.class, fm -> fm
 				.field(CtRole.NAME, false, false)
-				.field(CtRole.TYPE, true, false)
+				.field(CtRole.TYPE, true, true)
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.DEFAULT_EXPRESSION, true, true)
 				.field(CtRole.MODIFIER, false, false)
