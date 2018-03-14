@@ -36,15 +36,22 @@ public interface ParameterInfo {
 
 	/**
 	 * Matches `value` into `parameters` under the name/structure defined by this ParameterInfo.
-	 * 1) checks that value matches with the {@link #matchCondition}
+	 * 1) checks that value matches with optional internal rules of this {@link ParameterInfo}
 	 * 2) creates new copy of {@link ParameterValueProvider} which contains the new `value` and returns that copy
 	 *
-	 * @param parameters
-	 * @param value
+	 * @param parameters the existing parameters
+	 * @param value the new, to be stored value
 	 * @return copy of `parameters` with new value or existing `parameters` if value is already there or null if value doesn't fit into these parameters
 	 */
 	ParameterValueProvider addValueAs(ParameterValueProvider parameters, Object value);
 
+	/**
+	 * Takes the value of parameter identified by this {@link ParameterInfo} from the `parameters`
+	 * and adds that 0, 1 or more values into result (depending on type of result)
+	 * @param factory the factory used to create new entities if conversion of value is needed before it can be added into `result`
+	 * @param result the receiver of the result value. It defined required type of returned value and multiplicity of returned value
+	 * @param parameters here are stored all the parameter values
+	 */
 	<T> void getValueAs(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters);
 
 	/**

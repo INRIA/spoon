@@ -57,11 +57,7 @@ public class ListOfNodes extends AbstractNode {
 		return ChainOfMatchersImpl.create(nodes, nextMatchers).matchAllWith(targets);
 	}
 
-	/**
-	 * @param oldNode a {@link CtElement} whose {@link RootNode} we are looking for
-	 * @return a {@link NodeContainer} of an {@link ElementNode}, whose {@link ElementNode#getTemplateNode()} == `element`
-	 * null if element is not referred by any node of this {@link ListOfNodes}
-	 */
+	@Override
 	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		for (int i = 0; i < nodes.size(); i++) {
 			RootNode node = nodes.get(i);

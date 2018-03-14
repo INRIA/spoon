@@ -549,6 +549,11 @@ public class ParametersBuilder {
 		return this;
 	}
 
+	/**
+	 * @param type a required type of the value which matches as value of this parameter
+	 * @param matchCondition a {@link Predicate} which selects matching values
+	 * @return this to support fluent API
+	 */
 	public <T> ParametersBuilder matchCondition(Class<T> type, Predicate<T> matchCondition) {
 		currentParameter.setMatchCondition(type, matchCondition);
 		return this;

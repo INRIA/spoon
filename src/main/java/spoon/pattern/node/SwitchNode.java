@@ -244,7 +244,7 @@ public class SwitchNode extends AbstractNode implements LiveNode {
 				result.addResult((T) lastElse);
 			}
 			return;
-		} 
+		}
 		if (lastElse != null) {
 			//append last else into lastIf
 			lastIf.setElseStatement(lastElse);

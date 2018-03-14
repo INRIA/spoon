@@ -28,11 +28,11 @@ public enum ConflictResolutionMode {
 	 */
 	FAIL,
 	/**
-	 * get rid of old {@link Node} and use new {@link Node} instead
+	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
 	 */
 	USE_NEW_NODE,
 	/**
-	 * keep old {@link Node} and ignore requests to add new {@link Node}
+	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
 	 */
 	KEEP_OLD_NODE,
 	/**

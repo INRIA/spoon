@@ -180,13 +180,26 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	protected abstract <T> T getEmptyContainer();
 
+	/**
+	 * @param requiredType a required type of the value which matches as value of this parameter
+	 * @param matchCondition a {@link Predicate} which selects matching values
+	 * @return
+	 */
 	public <T> AbstractParameterInfo setMatchCondition(Class<T> requiredType, Predicate<T> matchCondition) {
 		this.parameterValueType = requiredType;
 		this.matchCondition = (Predicate) matchCondition;
 		return this;
 	}
 
-	public boolean matches(Object value) {
+	/**
+	 * Checks whether `value` matches with required type and match condition.
+	 * @param value
+	 * @return
+	 */
+	protected boolean matches(Object value) {
+		if (parameterValueType != null && (value == null || parameterValueType.isAssignableFrom(value.getClass()) == false)) {
+			return false;
+		}
 		if (matchCondition == null) {
 			//there is no matching condition. Everything matches
 			return true;
@@ -207,6 +220,10 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		return parameterValueType;
 	}
 
+	/**
+	 * @param parameterValueType a type of the value which is acceptable by this parameter
+	 * @return this to support fluent API
+	 */
 	public AbstractParameterInfo setParameterValueType(Class<?> parameterValueType) {
 		this.parameterValueType = parameterValueType;
 		return this;
@@ -218,6 +235,11 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		return getContainerKind(null, null) != ContainerKind.SINGLE;
 	}
 
+	/**
+	 * @param repeatable if this matcher can be applied more then once in the same container of targets
+	 * Note: even if false, it may be applied again to another container and to match EQUAL value.
+	 * @return this to support fluent API
+	 */
 	public AbstractParameterInfo setRepeatable(boolean repeatable) {
 		this.repeatable = repeatable;
 		return this;

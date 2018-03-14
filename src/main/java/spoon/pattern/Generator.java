@@ -58,7 +58,7 @@ public interface Generator {
 
 	/**
 	 * Generates one target depending on kind of this {@link RootNode}, expected `expectedType` and input `parameters`
-	 * @param factory TODO
+	 * @param node to be generated node
 	 * @param parameters {@link ParameterValueProvider}
 	 * @param expectedType defines {@link Class} of returned value
 	 *
@@ -72,7 +72,7 @@ public interface Generator {
 
 	/**
 	 * Generates zero, one or more targets depending on kind of this {@link RootNode}, expected `expectedType` and input `parameters`
-	 * @param factory TODO
+	 * @param node to be generated node
 	 * @param parameters {@link ParameterValueProvider}
 	 * @param expectedType defines {@link Class} of returned value
 	 *
