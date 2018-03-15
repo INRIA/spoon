@@ -100,7 +100,7 @@ Snapshot version:
 	<repository>
       <id>maven.inria.fr-snapshot</id>
       <name>Maven Repository for Spoon Snapshots</name>
-      <url>http://maven.inria.fr/artifactory/repo/spoon-public-snapshot</url>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
     </repository>
 </repositories>
 ```
