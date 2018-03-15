@@ -275,20 +275,6 @@ public interface SpoonModelBuilder {
 	void setTemplateClasspath(String... classpath);
 
 	/**
-	 * Sets this compiler to optimize the model building process by ignoring
-	 * files that has not be modified since the latest source code generation.
-	 */
-	void setBuildOnlyOutdatedFiles(boolean buildOnlyOutdatedFiles);
-
-	/**
-	 * When {@link #setBuildOnlyOutdatedFiles(boolean)} is true, adds a resource
-	 * to the forced-to-be-built list. All the files added here will be build
-	 * even if no changes are detected on the file system. This list has no
-	 * impacts if @link #setBuildOnlyOutdatedFiles(boolean)} is false.
-	 */
-	void forceBuild(SpoonResource source);
-
-	/**
 	 * Returns the working factory
 	 */
 	Factory getFactory();
