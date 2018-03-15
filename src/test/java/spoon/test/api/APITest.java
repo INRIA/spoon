@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
@@ -45,6 +46,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -546,6 +548,22 @@ public class APITest {
 		assertTrue("Module file not contained ("+moduleFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(moduleFile.getCanonicalPath()));
 		assertTrue("Package file not contained ("+packageFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(packageFile.getCanonicalPath()));
 		assertTrue("Class file not contained ("+classFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
+	}
+
+	@Test
+	public void testOutputWithNoOutputProduceNoFolder() {
+		// contract: when using "NO_OUTPUT" output type, no output folder shoud be created
+		String destPath = "./target/nooutput_" + UUID.randomUUID().toString();
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		launcher.setSourceOutputDirectory(destPath);
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.run();
+		File outputDir = new File(destPath);
+		System.out.println(destPath);
+		assertFalse("Output dir should not exist: "+outputDir.getAbsolutePath(), outputDir.exists());
 	}
 
 
