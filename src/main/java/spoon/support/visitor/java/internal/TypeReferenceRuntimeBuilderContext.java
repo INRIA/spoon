@@ -18,6 +18,7 @@ package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -53,5 +54,10 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 	@Override
 	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
 		typeReference.addAnnotation(ctAnnotation);
+	}
+
+	@Override
+	public void addFormalType(CtTypeParameter parameterRef) {
+		typeReference.addActualTypeArgument(parameterRef.getReference());
 	}
 }

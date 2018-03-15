@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -147,7 +148,8 @@ public class JavaReflectionTreeBuilderTest {
 	
 	@Test
 	public void testSuperInterfaceActualTypeArgumentsByCtTypeReferenceImpl() {
-		CtTypeReference<?> aTypeRef = createFactory().Type().createReference(CtConditionalImpl.class);
+		TypeFactory typeFactory = createFactory().Type();
+		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtConditionalImpl.class);
 		CtTypeReference<?> ifaceRef = aTypeRef.getSuperInterfaces().iterator().next();
 		assertEquals(CtConditional.class.getName(), ifaceRef.getQualifiedName());
 		assertEquals(1, ifaceRef.getActualTypeArguments().size());

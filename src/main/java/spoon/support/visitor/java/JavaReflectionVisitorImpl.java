@@ -356,6 +356,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (type.getEnclosingClass() != null) {
 			visitClassReference(type.getEnclosingClass());
 		}
+
+		for (TypeVariable<Class<T>> generic : type.getTypeParameters()) {
+			visitTypeParameter(generic);
+		}
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {

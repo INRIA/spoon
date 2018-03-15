@@ -516,7 +516,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			if ((sis != null) && (sis.length > 0)) {
 				Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
 				for (Class<?> si : sis) {
-					set.add(getFactory().Type().createReference(si));
+					set.add(getFactory().Type().createReference(si, true));
 				}
 				return set;
 			}
