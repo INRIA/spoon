@@ -144,6 +144,9 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeReference<?> ifaceRef = aType.getSuperInterfaces().iterator().next();
 		assertEquals(CtConditional.class.getName(), ifaceRef.getQualifiedName());
 		assertEquals(1, ifaceRef.getActualTypeArguments().size());
+		CtTypeReference<?> typeArg = ifaceRef.getActualTypeArguments().get(0);
+		assertEquals("T", typeArg.getSimpleName());
+		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
 	
 	@Test
@@ -153,6 +156,9 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeReference<?> ifaceRef = aTypeRef.getSuperInterfaces().iterator().next();
 		assertEquals(CtConditional.class.getName(), ifaceRef.getQualifiedName());
 		assertEquals(1, ifaceRef.getActualTypeArguments().size());
+		CtTypeReference<?> typeArg = ifaceRef.getActualTypeArguments().get(0);
+		assertEquals("T", typeArg.getSimpleName());
+		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
 	
 }
