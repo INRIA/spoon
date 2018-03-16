@@ -17,9 +17,4 @@ public class ToBeMatched {
 		Arrays.asList("a", "b", "b", "b", "c", "c", "d", "d", "d", "d", "d");
 	}
 	
-	public static Pattern patternOfStringLiterals(Factory f, String... strs) {
-		return PatternBuilder.create(f, ToBeMatched.class, ts -> ts.setTemplateModel(
-				Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList()))
-			).build();
-	}
 }

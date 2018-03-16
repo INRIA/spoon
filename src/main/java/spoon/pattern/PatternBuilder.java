@@ -78,17 +78,23 @@ public class PatternBuilder {
 	public static PatternBuilder create(Factory factory, Class<?> templateClass) {
 		return create(factory, templateClass, null);
 	}
+
+	/**
+	 * Creates a pattern builder.
+	 *
+	 * @param factory
+	 * @param templateClass
+	 * @param selector TODO explain what the selector is?
+	 * @return
+	 */
 	public static PatternBuilder create(Factory factory, Class<?> templateClass, Consumer<TemplateModelBuilder> selector) {
 		return create(factory.Type().get(templateClass), selector);
-	}
-
-	public static PatternBuilder create(CtTypeReference<?> templateTypeRef, Consumer<TemplateModelBuilder> selector) {
-		return create(templateTypeRef.getTypeDeclaration(), selector);
 	}
 
 	public static PatternBuilder create(CtType<?> templateType) {
 		return create(templateType, null);
 	}
+
 	public static PatternBuilder create(CtType<?> templateType, Consumer<TemplateModelBuilder> selector) {
 		checkTemplateType(templateType);
 		List<CtElement> templateModel;

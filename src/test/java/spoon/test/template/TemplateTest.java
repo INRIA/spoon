@@ -74,6 +74,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -82,6 +83,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1157,25 +1159,41 @@ public class TemplateTest {
 	
 	@Test
 	public void testTemplateMatchOfMultipleElements() throws Exception {
-		CtType type = ModelUtils.buildClass(ToBeMatched.class);
-		
-		List<CtLiteral<String>> literals1 = getFirstStmt(type, "match1", CtInvocation.class).getArguments();
-		List<CtLiteral<String>> literals2 = getFirstStmt(type, "match2", CtInvocation.class).getArguments();
+		CtType toBeMatchedtype = ModelUtils.buildClass(ToBeMatched.class);
+
+		// getting the list of literals defined in method match1
+		List<CtLiteral<String>> literals1 = getFirstStmt(toBeMatchedtype, "match1", CtInvocation.class).getArguments();
+		List<CtLiteral<String>> literals2 = getFirstStmt(toBeMatchedtype, "match2", CtInvocation.class).getArguments();
 		assertEquals("a", literals1.get(0).getValue());
-		
-		{	//contract: matches one element
+
+		Factory f = toBeMatchedtype.getFactory();
+
+		{	//contract: matches one exact literal
 			List<List<CtElement>> found = new ArrayList<>();
-			ToBeMatched.patternOfStringLiterals(type.getFactory(), "a").forEachMatch(type, (match) -> {
+
+			// creating a Pattern from ToBeMatched, with one or two pattern parameters?
+			// TODO: is the pattern the whole class or only the "a"?
+			// TODO: if it is "a" can we create a Pattern directly from a CtLiteral
+			spoon.pattern.Pattern p = PatternBuilder.create(f, ToBeMatched.class, ts -> ts.setTemplateModel(
+					Arrays.asList(new String[]{"a"}).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList()))
+			).build();
+
+			// todo: why do we have actually 0 here? (related to previous question)
+			//assertEquals (2, p.getParameterInfos().size());
+
+			// when we apply the pattern to the initial type, we find three instances of "a"?
+			p.forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
+
 			assertEquals(3, found.size());
-			assertSequenceOn(literals1, 0, 1, found.get(0));
-			assertSequenceOn(literals1, 6, 1, found.get(1));
-			assertSequenceOn(literals2, 0, 1, found.get(2));
+			assertEquals(literals1.get(0)/* first "a" in match1 */, found.get(0).get(0));
+			assertEquals(literals1.get(6)/* 2nd "a" in match1 */, found.get(1).get(0));
+			assertEquals(literals1.get(0)/* 1st "a" in match 2 */, found.get(2).get(0));
 		}
 		{	//contract: matches sequence of elements
 			List<List<CtElement>> found = new ArrayList<>();
-			ToBeMatched.patternOfStringLiterals(type.getFactory(), "a", "b", "c").forEachMatch(type, (match) -> {
+			patternOfStringLiterals(toBeMatchedtype.getFactory(), "a", "b", "c").forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
 			assertEquals(2, found.size());
@@ -1184,7 +1202,7 @@ public class TemplateTest {
 		}
 		{	//contract: matches sequence of elements not starting at the beginning
 			List<List<CtElement>> found = new ArrayList<>();
-			ToBeMatched.patternOfStringLiterals(type.getFactory(), "b", "c").forEachMatch(type, (match) -> {
+			patternOfStringLiterals(toBeMatchedtype.getFactory(), "b", "c").forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
 			assertEquals(3, found.size());
@@ -1194,7 +1212,7 @@ public class TemplateTest {
 		}
 		{	//contract: matches sequence of repeated elements, but match each element only once
 			List<List<CtElement>> found = new ArrayList<>();
-			ToBeMatched.patternOfStringLiterals(type.getFactory(), "d", "d").forEachMatch(type, (match) -> {
+			patternOfStringLiterals(toBeMatchedtype.getFactory(), "d", "d").forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
 			assertEquals(2, found.size());
@@ -1202,7 +1220,14 @@ public class TemplateTest {
 			assertSequenceOn(literals2, 8, 2, found.get(1));
 		}
 	}
-	
+
+	private static spoon.pattern.Pattern patternOfStringLiterals(Factory f, String... strs) {
+		return PatternBuilder.create(f, ToBeMatched.class, ts -> ts.setTemplateModel(
+				Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList()))
+		).build();
+	}
+
+
 	private void assertSequenceOn(List<? extends CtElement> source, int expectedOffset, int expectedSize, List<CtElement> matches) {
 		//check the number of matches
 		assertEquals(expectedSize, matches.size());

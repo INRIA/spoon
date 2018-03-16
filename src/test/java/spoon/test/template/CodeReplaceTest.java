@@ -6,9 +6,11 @@ import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
 import spoon.pattern.Pattern;
+import spoon.pattern.PatternBuilder;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.test.template.testclasses.replace.DPPSample1;
 import spoon.test.template.testclasses.replace.NewPattern;
@@ -20,7 +22,25 @@ import static org.junit.Assert.*;
 import java.io.File;
 
 public class CodeReplaceTest {
-	
+	/**
+	 * @param factory a to be used factory
+	 * @return a Pattern instance of this Pattern
+	 */
+	public static Pattern createPattern(Factory factory) {
+		return PatternBuilder
+				//Create a pattern from all statements of OldPattern_ParamsInNestedType#patternModel
+				.create(factory, OldPattern.class, model->model.setBodyOfMethod("patternModel"))
+				.configureParameters(pb->pb
+						.parametersByVariable("params", "item")
+						.parameter("statements").setContainerKind(ContainerKind.LIST)
+				)
+				.configureAutomaticParameters()
+				.configureLiveStatements(ls -> ls.byVariableName("useStartKeyword"))
+				.build();
+	}
+
+
+
 	@Test
 	public void testMatchSample1() throws Exception {
 		Factory f = ModelUtils.build(
@@ -30,7 +50,7 @@ public class CodeReplaceTest {
 		CtClass<?> classDJPP = f.Class().get(DPPSample1.class);
 		assertNotNull(classDJPP);
 		assertFalse(classDJPP.isShadow());
-		Pattern p = OldPattern.createPattern(f);
+		Pattern p = createPattern(f);
 		class Context {
 			int count = 0;
 		}

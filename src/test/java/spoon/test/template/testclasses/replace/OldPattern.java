@@ -72,7 +72,7 @@ public class OldPattern {
 			.configureLiveStatements(ls -> ls.byVariableName("useStartKeyword"))
 			.build();
 	}
-	
+
 	private ElementPrinterHelper elementPrinterHelper;
 	private TokenWriter printer;
 }
