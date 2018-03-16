@@ -351,7 +351,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
 	 * @return true if the model has been built without errors
 	 *
-	 * @Deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 * @deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
 	 */
 	@Deprecated
 	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
@@ -385,7 +385,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param debugMessagePrefix Useful to help debugging
 	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
 	 * @return All compilationUnitDeclaration from JDT found in source folder
-	 * @Deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 * @deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
 	 */
 	@Deprecated
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
