@@ -144,14 +144,18 @@ public class SpoonMetaModel {
 	 */
 	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
-		Class implClass;
+		return (CtClass<?>) getType(impl, iface);
+	}
+	
+	private static CtType<?> getType(String qualifiedName, CtElement anElement) {
+		Class aClass;
 		try {
-			implClass = iface.getClass().getClassLoader().loadClass(impl);
+			aClass = anElement.getClass().getClassLoader().loadClass(qualifiedName);
 		} catch (ClassNotFoundException e) {
 			//OK, that interface has no implementation class
 			return null;
 		}
-		return (CtClass<?>) iface.getFactory().Type().get(implClass);
+		return anElement.getFactory().Type().get(aClass);
 	}
 
 	private static final String modelApiPackage = "spoon.reflect";
@@ -174,7 +178,7 @@ public class SpoonMetaModel {
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
 		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
-		return (CtInterface<?>) impl.getFactory().Type().get(iface);
+		return (CtInterface<?>) getType(iface, impl);
 	}
 
 	private static Factory createFactory(File spoonJavaSourcesDirectory) {
