@@ -179,6 +179,15 @@
     </site>
   </distributionManagement>
 
+  <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
+  <repositories>
+    <repository>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.eclipse.tycho</groupId>
