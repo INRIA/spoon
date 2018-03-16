@@ -335,7 +335,7 @@ public class TypeFactory extends SubFactory {
 
 		if (includingFormalTypeParameter) {
 			for (TypeVariable<Class<T>> generic : type.getTypeParameters()) {
-				typeReference.addActualTypeArgument(createReference(generic.getName()));
+				typeReference.addActualTypeArgument(createTypeParameterReference(generic.getName()));
 			}
 		}
 
