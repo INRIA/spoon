@@ -232,7 +232,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
 		} else {
-			if (! (e instanceof CtFormalTypeDeclarer) ) {
+			if (!(e instanceof CtFormalTypeDeclarer)) {
 				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
 		}
