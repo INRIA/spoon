@@ -342,6 +342,14 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		return buildUnitsAndModel(jdtBuilder, templates, getTemplateClasspath(), "template ");
 	}
 
+	/**
+	 * @Deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 */
+	@Deprecated
+	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
+		return buildUnitsAndModel(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
+	}
+
 	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix) {
 		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
 
@@ -352,6 +360,14 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
+
+	/**
+	 * @Deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 */
+	@Deprecated
+	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
+		return this.buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
+	}
 
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix) {
 		List<SpoonFile> sourceFiles = Collections.unmodifiableList(sourcesFolder.getAllJavaFiles());
