@@ -20,11 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
+import spoon.pattern.Pattern;
 import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Represents a Match of TemplateMatcher
+ * Represents a single match of {@link Pattern}
  */
 public class Match {
 	private final List<? extends Object> matchingElements;
@@ -34,10 +35,19 @@ public class Match {
 		this.parameters = parameters;
 		this.matchingElements = matches;
 	}
-
+	/**
+	 * @return {@link List} of elements, which match to the Pattern.
+	 * Use {@link #getMatchingElement()} if the {@link Pattern} matches single root element.
+	 * But when {@link Pattern} contains sequence of root elements, then this is the right way how to get them all
+	 */
 	public List<CtElement> getMatchingElements() {
 		return getMatchingElements(CtElement.class);
 	}
+	/**
+	 * Same like {@link #getMatchingElement()} but additionally it checks that each matching element is instance of `clazz`
+	 * @param clazz the required type of all elements.
+	 * @return a {@link List} typed to `clazz` or throws {@link SpoonException} if Pattern matched different elements
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getMatchingElements(Class<T> clazz) {
 		for (Object object : matchingElements) {
@@ -47,10 +57,19 @@ public class Match {
 		}
 		return (List<T>) matchingElements;
 	}
+
+	/**
+	 * @return a matching element of a {@link Pattern}
+	 * It fails if {@link Pattern} is designed to match sequence of elements. In such case use {@link #getMatchingElements()}
+	 */
 	public CtElement getMatchingElement() {
 		return getMatchingElement(CtElement.class, true);
 	}
-
+	/**
+	 * Same like {@link #getMatchingElement()}, but checks that matching element is expected class and casts returned value to that type
+	 * @param clazz required type
+	 * @return matched element cast to `clazz`
+	 */
 	public <T> T getMatchingElement(Class<T> clazz) {
 		return getMatchingElement(clazz, true);
 	}
@@ -94,10 +113,15 @@ public class Match {
 		last.replace(newElements);
 	}
 
+	/**
+	 * @return {@link ParameterValueProvider} with values of {@link Pattern} parameters, which fits to current match
+	 */
 	public ParameterValueProvider getParameters() {
 		return parameters;
 	}
-
+	/**
+	 * @return {@link Map} with values of {@link Pattern} parameters, which fits to current match
+	 */
 	public Map<String, Object> getParametersMap() {
 		return parameters.asMap();
 	}

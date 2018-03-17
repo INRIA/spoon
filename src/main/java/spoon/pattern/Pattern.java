@@ -221,7 +221,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 
 	/**
 	 * Finds all target program sub-trees that correspond to a template
-	 * and calls consumer.accept(matchingElement, parameterValues)
+	 * and calls consumer.accept(Match)
 	 * @param input the root of to be searched AST
 	 * @param consumer the receiver of matches
 	 */
