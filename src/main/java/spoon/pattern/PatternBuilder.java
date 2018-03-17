@@ -121,7 +121,7 @@ public class PatternBuilder {
 	}
 
 	public static PatternBuilder create(CtElement patternModel) {
-		return new PatternBuilder(	null, Collections.singletonList(patternModel));
+		return new PatternBuilder(null, Collections.singletonList(patternModel));
 	}
 
 	private final List<CtElement> patternModel;
