@@ -84,8 +84,8 @@ public class PatternBuilder {
 	 *
 	 * @param factory
 	 * @param templateClass
-	 * @param selector TODO explain what the selector is?
-	 * @return
+	 * @param selector the code which selects part of templateClass AST, which has to be used as template model
+	 * @return new instance of {@link PatternBuilder}
 	 */
 	public static PatternBuilder create(Factory factory, Class<?> templateClass, Consumer<TemplateModelBuilder> selector) {
 		return create(factory.Type().get(templateClass), selector);
