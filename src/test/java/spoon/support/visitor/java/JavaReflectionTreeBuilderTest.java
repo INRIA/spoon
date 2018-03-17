@@ -7,6 +7,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -161,4 +163,21 @@ public class JavaReflectionTreeBuilderTest {
 		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
 	
+	@Test
+	public void testSuperInterfaceCorrectActualTypeArgumentsByCtTypeReferenceImpl() {
+		TypeFactory typeFactory = createFactory().Type();
+		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtField.class);
+		CtType aType = aTypeRef.getTypeDeclaration();
+		for (CtTypeReference<?> ifaceRef : aType.getSuperInterfaces()) {
+			for (CtTypeReference<?> actTypeRef : ifaceRef.getActualTypeArguments()) {
+				if (actTypeRef instanceof CtTypeParameterReference) {
+					//contract: the type parameters of super interfaces are using correct parameters from owner type
+					CtTypeParameterReference actTypeParamRef = (CtTypeParameterReference) actTypeRef;
+					CtTypeParameter typeParam = actTypeParamRef.getDeclaration();
+					assertNotNull(typeParam);
+					assertSame(aType, typeParam.getTypeParameterDeclarer());
+				}
+			}
+		}
+	}
 }
