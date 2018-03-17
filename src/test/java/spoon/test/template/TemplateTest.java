@@ -75,6 +75,7 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -1171,25 +1172,24 @@ public class TemplateTest {
 		{	//contract: matches one exact literal
 			List<List<CtElement>> found = new ArrayList<>();
 
-			// creating a Pattern from ToBeMatched, with one or two pattern parameters?
-			// TODO: is the pattern the whole class or only the "a"?
-			// TODO: if it is "a" can we create a Pattern directly from a CtLiteral
-			spoon.pattern.Pattern p = PatternBuilder.create(f, ToBeMatched.class, ts -> ts.setTemplateModel(
-					Arrays.asList(new String[]{"a"}).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList()))
-			).build();
+			// creating a Pattern from a Literal, with zero pattern parameters
+			// The pattern model consists of one CtLIteral only
+			// there is not needed any type reference, because CtLiteral has no reference to a type where it is defined
+			spoon.pattern.Pattern p = PatternBuilder.create(null, Collections.singletonList(f.createLiteral("a"))).build();
 
-			// todo: why do we have actually 0 here? (related to previous question)
-			//assertEquals (2, p.getParameterInfos().size());
+			//The pattern has no parameters. There is just one constant CtLiteral
+			assertEquals (0, p.getParameterInfos().size());
 
-			// when we apply the pattern to the initial type, we find three instances of "a"?
+			// when we match the pattern agains AST of toBeMatchedtype, we find three instances of "a",
+			//because there are 3 instances of CtLiteral "a" in toBeMatchedtype
 			p.forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
 
 			assertEquals(3, found.size());
-			assertEquals(literals1.get(0)/* first "a" in match1 */, found.get(0).get(0));
-			assertEquals(literals1.get(6)/* 2nd "a" in match1 */, found.get(1).get(0));
-			assertEquals(literals1.get(0)/* 1st "a" in match 2 */, found.get(2).get(0));
+			assertSame(literals1.get(0)/* first "a" in match1 */, found.get(0).get(0)); assertEquals(1, found.get(0).size());
+			assertSame(literals1.get(6)/* 2nd "a" in match1 */, found.get(1).get(0)); assertEquals(1, found.get(1).size());
+			assertSame(literals2.get(0)/* 1st "a" in match 2 */, found.get(2).get(0)); assertEquals(1, found.get(2).size());
 		}
 		{	//contract: matches sequence of elements
 			List<List<CtElement>> found = new ArrayList<>();
@@ -1222,8 +1222,7 @@ public class TemplateTest {
 	}
 
 	private static spoon.pattern.Pattern patternOfStringLiterals(Factory f, String... strs) {
-		return PatternBuilder.create(f, ToBeMatched.class, ts -> ts.setTemplateModel(
-				Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList()))
+		return PatternBuilder.create(null, Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList())
 		).build();
 	}
 

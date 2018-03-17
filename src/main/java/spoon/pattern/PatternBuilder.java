@@ -105,7 +105,19 @@ public class PatternBuilder {
 		} else {
 			templateModel = Collections.singletonList(templateType);
 		}
-		return new PatternBuilder(templateType.getReference(), templateModel);
+		return create(templateType.getReference(), templateModel);
+	}
+
+	/**
+	 * Creates a {@link PatternBuilder} from the List of template elements
+	 * @param templateTypeRef the reference to {@link CtType}, which contains a patternModel elements.
+	 * 	These type references have to be replaced by references to type, which receives generated code.
+	 * 	If patternModel contains no type references, then `templateTypeRef` may be null
+	 * @param patternModel a List of Spoon AST nodes, which represents a template of to be generated or to be matched code
+	 * @return new instance of {@link PatternBuilder}
+	 */
+	public static PatternBuilder create(CtTypeReference<?> templateTypeRef, List<CtElement> patternModel) {
+		return new PatternBuilder(templateTypeRef, patternModel);
 	}
 
 	private final List<CtElement> patternModel;
@@ -114,7 +126,6 @@ public class PatternBuilder {
 	private final Set<RootNode> explicitNodes = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	private CtTypeReference<?> templateTypeRef;
-	private final Factory factory;
 	private final Map<String, AbstractParameterInfo> parameterInfos = new HashMap<>();
 //	ModelNode pattern;
 	CtQueryable patternQuery;
@@ -150,13 +161,14 @@ public class PatternBuilder {
 		if (template == null) {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
-		this.factory = templateTypeRef.getFactory();
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(template, patternElementToSubstRequests);
-		patternQuery = new PatternBuilder.PatternQuery(factory.Query(), patternModel);
-		configureParameters(pb -> {
-			pb.parameter(TARGET_TYPE).byType(templateTypeRef).setValueType(CtTypeReference.class);
-		});
+		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
+		if (templateTypeRef != null) {
+			configureParameters(pb -> {
+				pb.parameter(TARGET_TYPE).byType(templateTypeRef).setValueType(CtTypeReference.class);
+			});
+		}
 	}
 
 	/**
@@ -818,7 +830,13 @@ public class PatternBuilder {
 	}
 
 	protected Factory getFactory() {
-		return factory;
+		if (templateTypeRef != null) {
+			return templateTypeRef.getFactory();
+		}
+		if (patternModel.size() > 0) {
+			return patternModel.get(0).getFactory();
+		}
+		throw new SpoonException("PatternBuilder has no CtElement to provide a Factory");
 	}
 
 	private static void checkTemplateType(CtType<?> type) {
