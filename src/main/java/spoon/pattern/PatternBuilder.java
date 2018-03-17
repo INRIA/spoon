@@ -367,20 +367,41 @@ public class PatternBuilder {
 		return this;
 	}
 
+	/**
+	 * Builder which allows to define which part of AST of template {@link CtType}
+	 * has to be used as a model of the {@link Pattern}
+	 */
 	public static class TemplateModelBuilder {
-
+		/**
+		 * The original type, which contains the AST of pattern model
+		 */
 		private final CtType<?> templateType;
+		/**
+		 * optional clone of templateType. It is created when AST of CtType has to be modified
+		 * before it can become a model of {@link Pattern}
+		 */
 		private CtType<?> clonedTemplateType;
+		/**
+		 * holds the built pattern model
+		 */
 		private List<CtElement> templateModel = null;
 
-		public TemplateModelBuilder(CtType<?> templateTemplate) {
+		TemplateModelBuilder(CtType<?> templateTemplate) {
 			this.templateType = templateTemplate;
 		}
 
+		/**
+		 * @return origin {@link CtType}, which is the source of the pattern model
+		 */
 		public CtType<?> getTemplateType() {
 			return templateType;
 		}
 
+		/**
+		 * Returns clone of the templateType.
+		 * The clone is done only once. Later calls returns cached clone.
+		 * @return
+		 */
 		private CtType<?> getClonedTemplateType() {
 			if (clonedTemplateType == null) {
 				clonedTemplateType = templateType.clone();
@@ -409,6 +430,11 @@ public class PatternBuilder {
 			return this;
 		}
 
+		/**
+		 * removes all annotations of type defined by `classes` from the clone of the source {@link CtType}
+		 * @param classes list of classes which defines types of to be removed annotations
+		 * @return this to support fluent API
+		 */
 		public TemplateModelBuilder removeTag(Class... classes) {
 			List<CtElement> elements = getClonedTemplateModel();
 			for (Class class1 : classes) {
@@ -490,7 +516,7 @@ public class PatternBuilder {
 			return elements.get(0);
 		}
 		/**
-		 * @param filter whose matches will be removed from the template
+		 * @param filter whose matches will be removed from the template model
 		 */
 		public TemplateModelBuilder removeTypeMembers(Filter<CtTypeMember> filter) {
 			for (CtTypeMember ctTypeMember : new ArrayList<>(getClonedTemplateType().getTypeMembers())) {
@@ -576,13 +602,23 @@ public class PatternBuilder {
 			return this;
 		}
 
+		/**
+		 * @return a List of {@link CtElement}s, which has to be used as pattern model
+		 */
 		public List<CtElement> getTemplateModel() {
 			return templateModel;
 		}
 
+		/**
+		 * @param template a {@link CtElement}, which has to be used as pattern model
+		 */
 		public void setTemplateModel(CtElement template) {
 			this.templateModel = Collections.singletonList(template);
 		}
+
+		/**
+		 * @param template a List of {@link CtElement}s, which has to be used as pattern model
+		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public void setTemplateModel(List<? extends CtElement> template) {
 			this.templateModel = (List) template;
