@@ -42,7 +42,13 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 
 /**
- * Represents a pattern. It means an AST model, where some parts of that model are substituted by pattern parameters.
+ * Represents a pattern for matching or transformation. It means an AST model, where some parts of that model are substituted by pattern parameters.
+ *
+ * Differences with {@link spoon.template.TemplateMatcher}:
+ * - it can match sequences of elements
+ *
+ * Instances can created with {@link PatternBuilder}.
+ *
  * The {@link Pattern} can be used to process these two "itself opposite" operations
  * <ul>
  * <li>Generation of code from pattern. It means (Pattern) + (pattern parameters) =&gt; (copy of pattern where parameters are replaced by parameter values)</li>

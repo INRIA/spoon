@@ -1170,12 +1170,12 @@ public class TemplateTest {
 		Factory f = toBeMatchedtype.getFactory();
 
 		{	//contract: matches one exact literal
-			List<List<CtElement>> found = new ArrayList<>();
+			List<CtElement> found = new ArrayList<>();
 
 			// creating a Pattern from a Literal, with zero pattern parameters
 			// The pattern model consists of one CtLIteral only
 			// there is not needed any type reference, because CtLiteral has no reference to a type where it is defined
-			spoon.pattern.Pattern p = PatternBuilder.create(f.createLiteral("a")).build();
+			spoon.pattern.Pattern p = PatternBuilder.create(null, f.createLiteral("a")).build();
 
 			//The pattern has no parameters. There is just one constant CtLiteral
 			assertEquals (0, p.getParameterInfos().size());
@@ -1183,20 +1183,33 @@ public class TemplateTest {
 			// when we match the pattern agains AST of toBeMatchedtype, we find three instances of "a",
 			//because there are 3 instances of CtLiteral "a" in toBeMatchedtype
 			p.forEachMatch(toBeMatchedtype, (match) -> {
-				found.add(match.getMatchingElements());
+				found.add(match.getMatchingElement());
 			});
 
 			assertEquals(3, found.size());
-			assertSame(literals1.get(0)/* first "a" in match1 */, found.get(0).get(0)); assertEquals(1, found.get(0).size());
-			assertSame(literals1.get(6)/* 2nd "a" in match1 */, found.get(1).get(0)); assertEquals(1, found.get(1).size());
-			assertSame(literals2.get(0)/* 1st "a" in match 2 */, found.get(2).get(0)); assertEquals(1, found.get(2).size());
+			assertSame(literals1.get(0)/* first "a" in match1 */, found.get(0));
+			assertSame(literals1.get(6)/* 2nd "a" in match1 */, found.get(1));
+			assertSame(literals2.get(0)/* 1st "a" in match 2 */, found.get(2));
 		}
 		{	//contract: matches sequence of elements
 			List<List<CtElement>> found = new ArrayList<>();
-			patternOfStringLiterals(toBeMatchedtype.getFactory(), "a", "b", "c").forEachMatch(toBeMatchedtype, (match) -> {
+			// now we match a sequence of "a", "b", "c"
+			spoon.pattern.Pattern pattern = patternOfStringLiterals(toBeMatchedtype.getFactory(), "a", "b", "c");
+			pattern.forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
 			assertEquals(2, found.size());
+
+			assertEquals(3, found.get(1).size());
+			// it starts with the first "a" in the match1
+			assertEquals("\"a\"", found.get(0).get(0).toString());
+			assertEquals(17, found.get(0).get(0).getPosition().getColumn());
+			assertEquals("\"b\"", found.get(0).get(1).toString());
+			assertEquals(22, found.get(0).get(1).getPosition().getColumn());
+			assertEquals("\"c\"", found.get(0).get(2).toString());
+			assertEquals(27, found.get(0).get(2).getPosition().getColumn());
+
+			// more generic asserts
 			assertSequenceOn(literals1, 0, 3, found.get(0));
 			assertSequenceOn(literals1, 6, 3, found.get(1));
 		}
@@ -1205,6 +1218,7 @@ public class TemplateTest {
 			patternOfStringLiterals(toBeMatchedtype.getFactory(), "b", "c").forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
+			// we have three times a sequence ["b", "c"]
 			assertEquals(3, found.size());
 			assertSequenceOn(literals1, 1, 2, found.get(0));
 			assertSequenceOn(literals1, 7, 2, found.get(1));
@@ -1212,9 +1226,12 @@ public class TemplateTest {
 		}
 		{	//contract: matches sequence of repeated elements, but match each element only once
 			List<List<CtElement>> found = new ArrayList<>();
+			// we search for ["d", "d"]
 			patternOfStringLiterals(toBeMatchedtype.getFactory(), "d", "d").forEachMatch(toBeMatchedtype, (match) -> {
 				found.add(match.getMatchingElements());
 			});
+			// in ToBeMatched there is ["d", "d", "d", "d", "d]
+			// so there are only two sequences, starting at first and third "d"
 			assertEquals(2, found.size());
 			assertSequenceOn(literals2, 6, 2, found.get(0));
 			assertSequenceOn(literals2, 8, 2, found.get(1));
