@@ -670,9 +670,15 @@ public class TemplateTest {
 		params.put("_classname_", factory.Code().createLiteral(aTargetType.getSimpleName()));
 		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
 		params.put("_block_", toBeLoggedMethod.getBody());
-		final List<CtMethod> aMethods = PatternBuilder.create(launcher.getFactory(), LoggerModel.class, model -> model.setTypeMember("block"))
+		//create a patter from the LoggerModel#block
+		spoon.pattern.Pattern pattern = PatternBuilder.create(launcher.getFactory(), LoggerModel.class,
+				//type member named "block" of LoggerModel is used as pattern model of this pattern
+				model -> model.setTypeMember("block"))
+				//all the variable references which are declared out of type member "block" are automatically considered
+				//as pattern parameters
 				.configureAutomaticParameters()
-				.build().applyToType(aTargetType, CtMethod.class, params);
+				.build();
+		final List<CtMethod> aMethods = pattern.applyToType(aTargetType, CtMethod.class, params);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
