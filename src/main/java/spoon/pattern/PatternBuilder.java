@@ -120,6 +120,10 @@ public class PatternBuilder {
 		return new PatternBuilder(templateTypeRef, patternModel);
 	}
 
+	public static PatternBuilder create(CtElement patternModel) {
+		return new PatternBuilder(	null, Collections.singletonList(patternModel));
+	}
+
 	private final List<CtElement> patternModel;
 	private final ListOfNodes patternNodes;
 	private final Map<CtElement, RootNode> patternElementToSubstRequests = new IdentityHashMap<>();
