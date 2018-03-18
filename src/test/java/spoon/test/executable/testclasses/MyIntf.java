@@ -1,4 +1,4 @@
-package spoon.test.executable;
+package spoon.test.executable.testclasses;
 
 import java.io.IOException;
 

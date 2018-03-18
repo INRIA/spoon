@@ -196,7 +196,7 @@ public class FilterTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void filteredElementsAreOfTheCorrectType() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		Class<CtMethod> filterClass = CtMethod.class;
 		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(filterClass);
 		List<CtMethod> elements = Query.getElements(factory, statementFilter);
@@ -208,7 +208,7 @@ public class FilterTest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void intersectionOfTwoFilters() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(CtMethod.class);
 		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<CtMethodImpl>(CtMethodImpl.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, statementFilter, statementImplFilter);
@@ -228,7 +228,7 @@ public class FilterTest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void unionOfTwoFilters() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<CtNewClass>(CtNewClass.class);
 		TypeFilter<CtMethod> methodFilter = new TypeFilter<CtMethod>(CtMethod.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.UNION, methodFilter, newClassFilter);
@@ -249,7 +249,7 @@ public class FilterTest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void classCastExceptionIsNotThrown() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		NamedElementFilter<CtVariable> nameFilterA = new NamedElementFilter<>(CtVariable.class,"j");
 		NamedElementFilter<CtVariable> nameFilterB = new NamedElementFilter<>(CtVariable.class,"k");
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, nameFilterA, nameFilterB);

@@ -30,7 +30,7 @@ public class ImportScannerTest {
 
 	@Test
 	public void testComputeMinimalImportsInClass() throws Exception {
-		String packageName = "spoon.test";
+		String packageName = "spoon.test.testclasses";
 		String className = "SampleImportClass";
 		String qualifiedName = packageName + "." + className;
 
@@ -46,7 +46,7 @@ public class ImportScannerTest {
 
 	@Test
 	public void testComputeImportsInClass() throws Exception {
-		String packageName = "spoon.test";
+		String packageName = "spoon.test.testclasses";
 		String className = "SampleImportClass";
 		String qualifiedName = packageName + "." + className;
 
