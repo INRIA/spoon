@@ -32,6 +32,7 @@ import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Matchers;
+import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
@@ -408,5 +409,16 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	public void setElementType(Metamodel.Type elementType) {
 		this.elementType = elementType;
+	}
+
+	@Override
+	public Quantifier getMatchingStrategy() {
+		return Quantifier.POSSESSIVE;
+	}
+
+	@Override
+	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+		//it always matches only once
+		return false;
 	}
 }

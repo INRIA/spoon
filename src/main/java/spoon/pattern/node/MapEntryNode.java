@@ -22,6 +22,7 @@ import java.util.function.BiConsumer;
 import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
+import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
@@ -122,5 +123,22 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 			return getMatchedParameters(getValue().matchAllWith(TobeMatched.create(parameters, ContainerKind.SINGLE, targetEntry.getValue())));
 		}
 		throw new SpoonException("Unexpected target type " + target.getClass().getName());
+	}
+
+	@Override
+	public Quantifier getMatchingStrategy() {
+		if (key instanceof ParameterNode) {
+			return ((ParameterNode) key).getMatchingStrategy();
+		}
+		return Quantifier.POSSESSIVE;
+	}
+
+	@Override
+	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+		if (key instanceof ParameterNode) {
+			return ((ParameterNode) key).isTryNextMatch(parameters);
+		}
+		//it is not a parameterized node, so it matches only once
+		return false;
 	}
 }

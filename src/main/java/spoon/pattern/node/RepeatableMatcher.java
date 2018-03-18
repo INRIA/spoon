@@ -29,9 +29,8 @@ public interface RepeatableMatcher extends RootNode {
 	 * then returned {@link Quantifier} defines how resolve this conflict
 	 * @return {@link Quantifier}
 	 */
-	default Quantifier getMatchingStrategy() {
-		return Quantifier.POSSESSIVE;
-	}
+	Quantifier getMatchingStrategy();
+
 	/**
 	 * @return true if this matcher can be applied more then once in the same container of targets
 	 * Note: even if false, it may be applied again to another container and to match EQUAL value
@@ -51,7 +50,5 @@ public interface RepeatableMatcher extends RootNode {
 	 * @param parameters matching parameters
 	 * @return true if this ValueResolver should be processed again to match next target in the state defined by current `parameters`.
 	 */
-	default boolean isTryNextMatch(ParameterValueProvider parameters) {
-		return false;
-	}
+	boolean isTryNextMatch(ParameterValueProvider parameters);
 }

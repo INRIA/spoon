@@ -30,6 +30,7 @@ import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.ResultHolder.Single;
+import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 
@@ -268,5 +269,16 @@ public class StringNode extends AbstractPrimitiveMatcher {
 		}
 		stringNode.setReplaceMarker(replaceMarker, param);
 		return stringNode;
+	}
+
+	@Override
+	public Quantifier getMatchingStrategy() {
+		return Quantifier.POSSESSIVE;
+	}
+
+	@Override
+	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+		//it always matches only once
+		return false;
 	}
 }

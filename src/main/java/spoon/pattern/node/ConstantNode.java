@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
+import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterInfo;
 import spoon.pattern.parameter.ParameterValueProvider;
 
@@ -70,6 +71,17 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	@Override
 	public String toString() {
 		return String.valueOf(template);
+	}
+
+	@Override
+	public Quantifier getMatchingStrategy() {
+		return Quantifier.POSSESSIVE;
+	}
+
+	@Override
+	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+		//it always matches only once
+		return false;
 	}
 }
 
