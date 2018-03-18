@@ -28,7 +28,7 @@ import spoon.SpoonException;
  * Container for single or multiple values of required type
  */
 public abstract class ResultHolder<T> {
-	private Class<T> requiredClass;
+	private final Class<T> requiredClass;
 
 	public ResultHolder(Class<T> requiredClass) {
 		this.requiredClass = requiredClass;
@@ -39,16 +39,6 @@ public abstract class ResultHolder<T> {
 	 */
 	public Class<T> getRequiredClass() {
 		return requiredClass;
-	}
-
-	/**
-	 * @param requiredClass only the values of this class are acceptable by this result holder
-	 * @return this to support fluent API
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <U> ResultHolder<U> setRequiredClass(Class<U> requiredClass) {
-		this.requiredClass = (Class) requiredClass;
-		return (ResultHolder<U>) this;
 	}
 
 	/**
@@ -111,10 +101,6 @@ public abstract class ResultHolder<T> {
 		public List<T> getResults() {
 			return result == null ? Collections.emptyList() : Collections.singletonList(result);
 		}
-
-		public <U> ResultHolder.Single<U> setRequiredClass(Class<U> requiredClass) {
-			return (ResultHolder.Single<U>) super.setRequiredClass(requiredClass);
-		}
 	}
 
 	/**
@@ -153,10 +139,6 @@ public abstract class ResultHolder<T> {
 			for (ListIterator<T> iter = result.listIterator(); iter.hasNext();) {
 				iter.set(consumer.apply(iter.next()));
 			}
-		}
-
-		public <U> ResultHolder.Multiple<U> setRequiredClass(Class<U> requiredClass) {
-			return (ResultHolder.Multiple<U>) super.setRequiredClass(requiredClass);
 		}
 	}
 }

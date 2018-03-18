@@ -14,16 +14,18 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Pattern;
+import spoon.pattern.PatternBuilder;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
@@ -32,8 +34,11 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.template.testclasses.match.MatchForEach;
 import spoon.test.template.testclasses.match.MatchForEach2;
 import spoon.test.template.testclasses.match.MatchIfElse;
@@ -42,6 +47,7 @@ import spoon.test.template.testclasses.match.MatchModifiers;
 import spoon.test.template.testclasses.match.MatchMultiple;
 import spoon.test.template.testclasses.match.MatchMultiple2;
 import spoon.test.template.testclasses.match.MatchMultiple3;
+import spoon.test.template.testclasses.match.MatchThrowables;
 import spoon.test.template.testclasses.match.MatchWithParameterCondition;
 import spoon.test.template.testclasses.match.MatchWithParameterType;
 import spoon.testing.utils.ModelUtils;
@@ -834,7 +840,6 @@ public class TemplateMatcherTest {
 			//match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void 
 			Pattern pattern = MatchMap.createMatchKeyPattern(ctClass.getFactory());
 			List<Match> matches = pattern.getMatches(ctClass);
-			String str = pattern.toString();
 			assertEquals(2, matches.size());
 			{
 				Match match = matches.get(0);
@@ -855,6 +860,70 @@ public class TemplateMatcherTest {
 				assertEquals("4567", match.getParameters().getValue("CheckValue").toString());
 				assertEquals("@java.lang.Deprecated", match.getParameters().getValue("allAnnotations").toString());
 			}
+		}
+	}
+	
+	@Test
+	public void testMatchInSet() throws Exception {
+		//contract: match elements in container of type Set - e.g method throwables
+		CtType<?> ctClass = ModelUtils.buildClass(MatchThrowables.class);
+		Factory f = ctClass.getFactory();
+		Pattern pattern = PatternBuilder.create(f, MatchThrowables.class, tmb -> tmb.setTypeMember("matcher1"))
+			.configureParameters(pb -> {
+				pb.parameter("otherThrowables")
+					//add matcher for other arbitrary throwables
+					.setConflictResolutionMode(ConflictResolutionMode.APPEND)
+					.setContainerKind(ContainerKind.SET)
+					.setMinOccurence(0)
+					.attributeOfElementByFilter(CtRole.THROWN, new TypeFilter(CtMethod.class));
+			})
+			.configureParameters(pb -> {
+				//define other parameters too to match all kinds of methods
+				pb.parameter("modifiers").attributeOfElementByFilter(CtRole.MODIFIER, new TypeFilter(CtMethod.class));
+				pb.parameter("methodName").byString("matcher1");
+				pb.parameter("parameters").attributeOfElementByFilter(CtRole.PARAMETER, new TypeFilter(CtMethod.class));
+				pb.parameter("statements").attributeOfElementByFilter(CtRole.STATEMENT, new TypeFilter(CtBlock.class));
+			})
+			.build();
+		String str = pattern.toString();
+		List<Match> matches = pattern.getMatches(ctClass);
+		assertEquals(4, matches.size());
+		{
+			Match match = matches.get(0);
+			assertEquals(1, match.getMatchingElements().size());
+			assertEquals("matcher1", match.getMatchingElement(CtMethod.class).getSimpleName());
+			assertEquals(new HashSet(Arrays.asList(
+					"modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
+		}
+		{
+			Match match = matches.get(1);
+			assertEquals(1, match.getMatchingElements().size());
+			assertEquals("sample2", match.getMatchingElement(CtMethod.class).getSimpleName());
+			assertEquals(new HashSet(Arrays.asList(
+					"otherThrowables", "modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
+			assertEquals(new HashSet(Arrays.asList(
+					"java.lang.UnsupportedOperationException", 
+					"java.lang.IllegalArgumentException")), 
+					((Set<CtTypeReference<?>>) match.getParameters().getValue("otherThrowables"))
+						.stream().map(e->e.toString()).collect(Collectors.toSet()));
+		}
+		{
+			Match match = matches.get(2);
+			assertEquals(1, match.getMatchingElements().size());
+			assertEquals("sample3", match.getMatchingElement(CtMethod.class).getSimpleName());
+			assertEquals(new HashSet(Arrays.asList(
+					"otherThrowables", "modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
+			assertEquals(new HashSet(Arrays.asList(
+					"java.lang.IllegalArgumentException")), 
+					((Set<CtTypeReference<?>>) match.getParameters().getValue("otherThrowables"))
+						.stream().map(e->e.toString()).collect(Collectors.toSet()));
+		}
+		{
+			Match match = matches.get(3);
+			assertEquals(1, match.getMatchingElements().size());
+			assertEquals("sample4", match.getMatchingElement(CtMethod.class).getSimpleName());
+			assertEquals(new HashSet(Arrays.asList(
+					"modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
 		}
 	}
 

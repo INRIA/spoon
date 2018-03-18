@@ -28,11 +28,13 @@ public class ChainOfMatchersImpl implements Matchers {
 	private final RootNode firstMatcher;
 	private final Matchers next;
 
+	/**
+	 * @param items
+	 * @param next
+	 * @return new {@link ChainOfMatchersImpl} which starts with items nodes and continues with `next` {@link Matchers}
+	 */
 	public static Matchers create(List<? extends RootNode> items, Matchers next) {
 		return createFromList(next, items, 0);
-	}
-	public static Matchers create(RootNode firstNode, Matchers next) {
-		return new ChainOfMatchersImpl(firstNode, next);
 	}
 	private static Matchers createFromList(Matchers next, List<? extends RootNode> items, int idx) {
 		RootNode matcher;
