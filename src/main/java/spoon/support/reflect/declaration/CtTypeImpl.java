@@ -285,7 +285,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				fields.add((CtField<?>) typeMember);
 			}
 		}
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	@Override
@@ -457,7 +457,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				nestedTypes.add((CtType<?>) typeMember);
 			}
 		}
-		return nestedTypes;
+		return Collections.unmodifiableSet(nestedTypes);
 	}
 
 	@Override
@@ -828,7 +828,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				methods.add((CtMethod<?>) typeMember);
 			}
 		}
-		return methods;
+		return Collections.unmodifiableSet(methods);
 	}
 
 	@Override

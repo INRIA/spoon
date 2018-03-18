@@ -76,7 +76,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 				anonymousExecutables.add((CtAnonymousExecutable) typeMember);
 			}
 		}
-		return anonymousExecutables;
+		return Collections.unmodifiableList(anonymousExecutables);
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 				constructors.add((CtConstructor<T>) typeMember);
 			}
 		}
-		return constructors;
+		return Collections.unmodifiableSet(constructors);
 	}
 
 	@Override
