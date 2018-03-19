@@ -92,20 +92,23 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		if (indexEndSentence == -1) {
 			indexEndSentence = this.getContent().indexOf("\n");
 		}
-		if (indexEndSentence == -1) {
-			indexEndSentence = this.getContent().length();
-		}
 		if (indexEndSentence != -1) {
 			return this.getContent().substring(0, indexEndSentence + 1).trim();
+		} else {
+			return this.getContent().trim();
 		}
-		return "";
 	}
 
 	@Override
 	public String getLongDescription() {
 		int indexStartLongDescription = getShortDescription().length();
 
-		return this.getContent().substring(indexStartLongDescription).trim();
+		if (indexStartLongDescription < this.getContent().trim().length()) {
+			return this.getContent().substring(indexStartLongDescription).trim();
+		} else {
+			return this.getContent().trim();
+		}
+
 	}
 
 	@Override

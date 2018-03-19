@@ -61,7 +61,15 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			if (aClass.isAnnotation()) {
+				visitAnnotationClass((Class<Annotation>) aClass);
+			} else if (aClass.isInterface()) {
+				visitInterface(aClass);
+			} else if (aClass.isEnum()) {
+				visitEnum(aClass);
+			} else {
+				visitClass(aClass);
+			}
 		}
 		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 			visitTypeParameter(generic);
@@ -179,7 +187,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		this.visitMethod(method, null);
 	}
 
-	public void visitMethod(RtMethod method, Annotation parent) {
+	protected void visitMethod(RtMethod method, Annotation parent) {
 		for (Annotation annotation : method.getDeclaredAnnotations()) {
 			if (parent == null || !annotation.annotationType().equals(parent.annotationType())) {
 				visitAnnotation(annotation);

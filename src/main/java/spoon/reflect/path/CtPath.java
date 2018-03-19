@@ -21,16 +21,13 @@ import spoon.reflect.declaration.CtElement;
 import java.util.Collection;
 
 /**
- * A CtPath allow top define the path to a CtElement in the Spoon Model.
+ * A CtPath allows to define the path to a CtElement in the Spoon model, eg ".spoon.test.path.Foo.foo#body#statement[index=0]"
  */
 public interface CtPath {
 
 	/**
-	 * Search some element matching this CtPatch from given nodes.
-	 *
-	 * @param startNode
-	 * @return
+	 * Search for elements matching this CtPatch from start nodes given as parameters.
 	 */
-	<T extends CtElement> Collection<T> evaluateOn(Collection<? extends CtElement> startNode);
+	<T extends CtElement> Collection<T> evaluateOn(CtElement... startNode);
 
 }

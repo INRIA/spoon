@@ -28,63 +28,61 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
- * Represents a type of Spoon model AST node
+ * Represents a concept of Spoon model AST node
  */
-public class MMType {
+public class MetamodelConcept {
 	/**
-	 * Kind of this type
+	 * Kind of this concept
 	 */
 	MMTypeKind kind;
 	/**
-	 * Name of the type
+	 * Name of the concept
 	 */
 	String name;
 	/**
-	 * List of fields ordered same like CtScanner scans them
+	 * Map of {@link CtRole} to {@link MetamodelProperty}s with values ordered same like CtScanner scans these properties when visiting this {@link MetamodelConcept}
 	 */
-	final Map<CtRole, MMField> role2field = new LinkedHashMap<>();
+	final Map<CtRole, MetamodelProperty> role2Property = new LinkedHashMap<>();
 
 	/**
-	 * List of super types of this type
+	 * List of super concepts of this concept
 	 */
-	private final List<MMType> superTypes = new ArrayList<>();
+	private final List<MetamodelConcept> superConcepts = new ArrayList<>();
 	/**
-	 * List of sub types of this type
+	 * List of sub concepts of this concept
 	 */
-	private final List<MMType> subTypes = new ArrayList<>();
+	private final List<MetamodelConcept> subConcepts = new ArrayList<>();
 
 	/**
-	 * The {@link CtClass} linked to this {@link MMType}. Is null in case of class without interface
+	 * The {@link CtClass} linked to this {@link MetamodelConcept}. Is null in case of class without interface
 	 */
 	private CtClass<?> modelClass;
 	/**
-	 * The {@link CtInterface} linked to this {@link MMType}. Is null in case of interface without class
+	 * The {@link CtInterface} linked to this {@link MetamodelConcept}. Is null in case of interface without class
 	 */
 	private CtInterface<?> modelInterface;
 
 	/**
-	 * {@link ClassTypingContext} of this type used to adapt methods from super type implementations to this {@link MMType}
+	 * {@link ClassTypingContext} of this concept used to adapt methods from super type implementations to this {@link MetamodelConcept}
 	 */
 	private ClassTypingContext typeContext;
 
 	/**
-	 * own methods of MMType, which does not belong to any role
+	 * own methods of {@link MetamodelConcept}, which does not belong to any role
 	 */
 	final List<CtMethod<?>> otherMethods = new ArrayList<>();
 
-	MMType() {
+	MetamodelConcept() {
 		super();
 	}
 
 	/**
-	 * @return interface name of {@link MMType}. For example CtClass, CtForEach, ...
+	 * @return interface name of {@link MetamodelConcept}. For example CtClass, CtForEach, ...
 	 * It is never followed by xxxImpl
 	 */
 	public String getName() {
@@ -92,12 +90,12 @@ public class MMType {
 	}
 
 
-	MMField getOrCreateMMField(CtRole role) {
-		return SpoonMetaModel.getOrCreate(role2field, role, () -> new MMField(role.getCamelCaseName(), role, this));
+	MetamodelProperty getOrCreateMMField(CtRole role) {
+		return SpoonMetaModel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
 	}
 
 	/**
-	 * @return kind of this {@link MMType}. Is it helper type or type of real AST node?
+	 * @return kind of this {@link MetamodelConcept}. Is it abstract concept or concept of leaf AST node?
 	 */
 	public MMTypeKind getKind() {
 		if (kind == null) {
@@ -120,34 +118,34 @@ public class MMType {
 	}
 
 	/**
-	 * @return map of {@link MMField}s by their {@link CtRole}
+	 * @return map of {@link MetamodelProperty}s by their {@link CtRole}
 	 */
-	public Map<CtRole, MMField> getRole2field() {
-		return Collections.unmodifiableMap(role2field);
+	public Map<CtRole, MetamodelProperty> getRoleToProperty() {
+		return Collections.unmodifiableMap(role2Property);
 	}
 
 	/**
 	 * @return super types
 	 */
-	public List<MMType> getSuperTypes() {
-		return superTypes;
+	public List<MetamodelConcept> getSuperConcepts() {
+		return superConcepts;
 	}
 
-	void addSuperType(MMType superType) {
+	void addSuperConcept(MetamodelConcept superType) {
 		if (superType == this) {
 			throw new SpoonException("Cannot add supertype to itself");
 		}
-		if (addUniqueObject(superTypes, superType)) {
-			superType.subTypes.add(this);
-			superType.role2field.forEach((role, superMMField) -> {
-				MMField mmField = getOrCreateMMField(role);
+		if (addUniqueObject(superConcepts, superType)) {
+			superType.subConcepts.add(this);
+			superType.role2Property.forEach((role, superMMField) -> {
+				MetamodelProperty mmField = getOrCreateMMField(role);
 				mmField.addSuperField(superMMField);
 			});
 		}
 	}
 
 	/**
-	 * @return {@link CtClass} which represents this {@link MMType}
+	 * @return {@link CtClass} which represents this {@link MetamodelConcept}
 	 */
 	public CtClass<?> getModelClass() {
 		return modelClass;
@@ -158,7 +156,7 @@ public class MMType {
 	}
 
 	/**
-	 * @return {@link CtInterface} which represents this {@link MMType}
+	 * @return {@link CtInterface} which represents this {@link MetamodelConcept}
 	 */
 	public CtInterface<?> getModelInterface() {
 		return modelInterface;
@@ -169,7 +167,7 @@ public class MMType {
 	}
 
 	/**
-	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MMType}
+	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MetamodelConcept}
 	 */
 	public ClassTypingContext getTypeContext() {
 		if (typeContext == null) {

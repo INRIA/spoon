@@ -19,7 +19,10 @@ package spoon.support.visitor.equals;
 
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtBiScannerDefault;
+
+import java.util.Collection;
 
 /**
  * Used to check equality between an element and another one.
@@ -27,7 +30,11 @@ import spoon.reflect.visitor.CtBiScannerDefault;
  */
 public class EqualsVisitor extends CtBiScannerDefault {
 	public static boolean equals(CtElement element, CtElement other) {
-		return !new EqualsVisitor().biScan(element, other);
+		EqualsVisitor equalsVisitor = new EqualsVisitor();
+		equalsVisitor.biScan(element, other);
+
+		// double negation is always hard to understand, but this is legacy :-)
+		return !equalsVisitor.isNotEqual;
 	}
 
 	private final EqualsChecker checker = new EqualsChecker();
@@ -41,5 +48,62 @@ public class EqualsVisitor extends CtBiScannerDefault {
 			fail();
 		}
 	}
+	protected boolean isNotEqual = false;
+
+	@Override
+	protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+
+		if (isNotEqual) {
+			return;
+		}
+		if (elements == null) {
+			if (others != null) {
+				fail();
+			}
+			return;
+		} else if (others == null) {
+			fail();
+			return;
+		}
+		if ((elements.size()) != (others.size())) {
+			fail();
+			return;
+		}
+		super.biScan(role, elements, others);
+	}
+
+	@Override
+	public void biScan(CtElement element, CtElement other) {
+		if (isNotEqual) {
+			return;
+		}
+		if (element == null) {
+			if (other != null) {
+				fail();
+				return;
+			}
+			return;
+		} else if (other == null) {
+			fail();
+			return;
+		}
+		if (element == other) {
+			return;
+		}
+
+		try {
+			super.biScan(element, other);
+		} catch (java.lang.ClassCastException e) {
+			fail();
+		}
+
+		return;
+	}
+
+	private boolean fail() {
+		isNotEqual = true;
+		return true;
+	}
+
 }
 

@@ -95,7 +95,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
-	private File sourceOutputDirectory = new File(Launcher.OUTPUTDIR);
+	private OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
 
@@ -514,7 +514,8 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 
 		try {
-			this.sourceOutputDirectory = directory.getCanonicalFile();
+			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(),
+					this);
 		} catch (IOException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 			throw new SpoonException(e);
@@ -523,7 +524,17 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public File getSourceOutputDirectory() {
-		return this.sourceOutputDirectory;
+		return this.outputDestinationHandler.getDefaultOutputDirectory();
+	}
+
+	@Override
+	public void setOutputDestinationHandler(OutputDestinationHandler outputDestinationHandler) {
+		this.outputDestinationHandler = outputDestinationHandler;
+	}
+
+	@Override
+	public OutputDestinationHandler getOutputDestinationHandler() {
+		return outputDestinationHandler;
 	}
 
 	@Override

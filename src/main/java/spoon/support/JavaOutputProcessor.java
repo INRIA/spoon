@@ -27,13 +27,13 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +47,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	List<File> printedFiles = new ArrayList<>();
 
+	/**
+	 * @param printer  the PrettyPrinter to use for written the files
+	 */
 	public JavaOutputProcessor(PrettyPrinter printer) {
 		this.printer = printer;
 	}
@@ -93,7 +96,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	public void init() {
 		// Skip loading properties
 		// super.init();
-
 		File directory = getOutputDirectory();
 
 		// Check output directory
@@ -116,8 +118,8 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 * original sources).
 	 */
 	public void createJavaFile(CtType<?> element) {
-
-		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + getOutputDirectory());
+		Path typePath = getElementPath(element);
+		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + typePath);
 
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
@@ -130,13 +132,11 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 		printer.calculate(cu, toBePrinted);
 
-		CtPackage pack = element.getPackage();
-
 		PrintStream stream = null;
 
 		// print type
 		try {
-			File file = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			File file = typePath.toFile();
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
@@ -178,7 +178,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	private void createPackageFile(CtPackage pack) {
 		// Create package annotation file
-		File packageAnnot = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+		File packageAnnot = getElementPath(pack).toFile();
 		if (!printedFiles.contains(packageAnnot)) {
 			printedFiles.add(packageAnnot);
 		}
@@ -198,7 +198,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	private void createModuleFile(CtModule module) {
 		if (getEnvironment().getComplianceLevel() > 8 && module != getFactory().getModel().getUnnamedModule()) {
-			File moduleFile = new File(getModuleFile(module).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			File moduleFile = getElementPath(module).toFile();
 			if (!printedFiles.contains(moduleFile)) {
 				printedFiles.add(moduleFile);
 			}
@@ -217,38 +217,32 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		}
 	}
 
-	private File getModuleFile(CtModule module) {
-		File moduleDir;
-		if (module == null || module.isUnnamedModule() || getEnvironment().getComplianceLevel() <= 8) {
-			moduleDir = new File(getOutputDirectory().getAbsolutePath());
-		} else {
-			// Create current package dir
-			moduleDir = new File(getOutputDirectory().getAbsolutePath() + File.separatorChar + module.getSimpleName());
-		}
-		if (!moduleDir.exists()) {
-			if (!moduleDir.mkdirs()) {
+	private Path getElementPath(CtModule type) {
+		return createFolders(getEnvironment().getOutputDestinationHandler()
+				.getOutputPath(type, null, null));
+	}
+
+	private Path getElementPath(CtPackage type) {
+		return createFolders(getEnvironment().getOutputDestinationHandler()
+				.getOutputPath(type.getDeclaringModule(), type, null));
+	}
+
+	private Path getElementPath(CtType type) {
+		return createFolders(getEnvironment().getOutputDestinationHandler()
+				.getOutputPath(type.getPackage().getDeclaringModule(),
+						type.getPackage(), type));
+	}
+
+	private Path createFolders(Path outputPath) {
+		if (!outputPath.getParent().toFile().exists()) {
+			if (!outputPath.getParent().toFile().mkdirs()) {
 				throw new RuntimeException("Error creating output directory");
 			}
 		}
-		return moduleDir;
+		return outputPath;
 	}
 
-	private File getPackageFile(CtPackage pack) {
-		File packageDir;
-		if (pack.isUnnamedPackage()) {
-			packageDir = this.getModuleFile(pack.getDeclaringModule());
-		} else {
-			// Create current package dir
-			packageDir = new File(this.getModuleFile(pack.getDeclaringModule()).getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
-		}
-		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
-			}
-		}
-		return packageDir;
-	}
-
+	@Override
 	public void setOutputDirectory(File directory) {
 		this.getEnvironment().setSourceOutputDirectory(directory);
 	}

@@ -9,7 +9,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
+import spoon.test.metamodel.SpoonMetaModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,27 +21,7 @@ public class SpoonTestHelpers {
 	}
 
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		List<CtType<? extends CtElement>> result = new ArrayList<>();
-		SpoonAPI interfaces = new Launcher();
-		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
-		interfaces.addInputResource("src/main/java/spoon/reflect/code");
-		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
-		interfaces.buildModel();
-
-		SpoonAPI implementations = new Launcher();
-		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
-		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
-		implementations.addInputResource("src/main/java/spoon/support/reflect/reference");
-		implementations.buildModel();
-
-		for(CtType<? > itf : interfaces.getModel().getAllTypes()) {
-			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect")+"Impl";
-			CtType implClass = implementations.getFactory().Type().get(impl);
-			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
-				result.add((CtType<? extends CtElement>) itf);
-			}
-		}
-		return result;
+		return new SpoonMetaModel(new File("src/main/java")).getAllInstantiableMetamodelInterfaces();
 	}
 
 	/**

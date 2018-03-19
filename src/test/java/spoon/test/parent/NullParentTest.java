@@ -109,6 +109,6 @@ public class NullParentTest {
 		CtReturn<?> ret = get(CtReturn.class);
 		assertEquals("return 0", ret.toString());
 		ret.setReturnedExpression(null);
-		assertEquals("return ", ret.toString());
+		assertEquals("return", ret.toString());
 	}
 }

@@ -57,3 +57,32 @@ public void testGoodTestClassNames() throws Exception {
     }
 }
 ```
+
+Example rule: all public methods must be documented
+----------------------------
+
+How to check that all public methods of the API contain proper Javadoc? One can also use Spoon to check documentation rules like this one.
+
+```java
+@Test
+public void testDocumentation() throws Exception {
+    SpoonAPI spoon = new Launcher();
+    spoon.addInputResource("src/main/java/");
+    spoon.buildModel();
+    List<String> notDocumented = new ArrayList<>();
+    for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
+            // now we see whether this should be documented
+            if (method.hasModifier(ModifierKind.PUBLIC)
+                && method.getTopDefinitions().size() == 0 // optional: only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+            )) {
+                    // is it really well documented?
+                    if (method.getDocComment().length() < 20) { // at least 20 characters
+                            notDocumented.add(method.getParent(CtType.class).getQualifiedName() + "#" + method.getSignature());
+                    }
+            }
+    }
+    if (notDocumented.size() > 0) {
+            fail(notDocumented.size()+" public methods should be documented with proper API documentation: \n"+StringUtils.join(notDocumented, "\n"));
+    }
+}
+```

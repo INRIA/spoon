@@ -18,6 +18,7 @@ package spoon.compiler;
 
 import org.apache.log4j.Level;
 import spoon.OutputType;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -25,7 +26,7 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.OutputDestinationHandler;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -343,6 +344,16 @@ public interface Environment {
 	 * Returns the directory where source files are written
 	 */
 	File getSourceOutputDirectory();
+
+	/**
+	 * Set the output destination that handles where source files are written
+	 */
+	void setOutputDestinationHandler(OutputDestinationHandler outputDestinationHandler);
+
+	/**
+	 * Returns the output destination that handles where source files are written
+	 */
+	OutputDestinationHandler getOutputDestinationHandler();
 
 	/**
 	 * get the model change listener that is used to follow the change of the AST.

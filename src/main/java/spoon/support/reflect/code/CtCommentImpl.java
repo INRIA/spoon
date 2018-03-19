@@ -18,6 +18,7 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -104,5 +105,13 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	@Override
 	public CtComment clone() {
 		return (CtComment) super.clone();
+	}
+
+	@Override
+	public CtJavaDoc asJavaDoc() {
+		if (this instanceof CtJavaDoc) {
+			return (CtJavaDoc) this;
+		}
+		throw new IllegalStateException("not a javadoc comment");
 	}
 }

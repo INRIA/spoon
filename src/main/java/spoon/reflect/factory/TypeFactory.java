@@ -419,6 +419,21 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(final String qualifiedName) {
+		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
+		CtPackage pack;
+		if (packageIndex > 0) {
+			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
+		} else {
+			pack = factory.Package().getRootPackage();
+		}
+
+		if (pack != null) {
+			CtType<T> type = pack.getType(qualifiedName.substring(packageIndex + 1));
+			if (type != null) {
+				return type;
+			}
+		}
+
 		int inertTypeIndex = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
@@ -459,20 +474,7 @@ public class TypeFactory extends SubFactory {
 				return t.getNestedType(className);
 			}
 		}
-
-		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-		CtPackage pack;
-		if (packageIndex > 0) {
-			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
-		} else {
-			pack = factory.Package().getRootPackage();
-		}
-
-		if (pack == null) {
-			return null;
-		}
-
-		return (CtType<T>) pack.getType(qualifiedName.substring(packageIndex + 1));
+		return null;
 	}
 
 	/**

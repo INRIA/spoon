@@ -23,6 +23,9 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
+import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -40,18 +43,24 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.IdentityHashMap;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MainTest {
 	
@@ -106,9 +115,6 @@ public class MainTest {
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
-		// clone
-		checkEqualityBetweenOriginalAndClone(pack);
-
 		// parent
 		ParentTest.checkParentContract(pack);
 
@@ -133,27 +139,6 @@ public class MainTest {
 				super.visitCtTypeParameterReference(ref);
 			}
 		}.scan(pack);
-	}
-
-	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
-		class ActualCounterScanner extends CtBiScannerDefault {
-			@Override
-			public boolean biScan(CtElement element, CtElement other) {
-				if (element == null) {
-					if (other != null) {
-						Assert.fail("element can't be null if other isn't null.");
-					}
-				} else if (other == null) {
-					Assert.fail("other can't be null if element isn't null.");
-				} else {
-					assertEquals(element, other);
-					assertFalse(element == other);
-				}
-				return super.biScan(element, other);
-			}
-		}
-		final ActualCounterScanner actual = new ActualCounterScanner();
-		actual.biScan(pack, pack.clone());
 	}
 
 	private void checkShadow(CtPackage pack) {
@@ -285,11 +270,13 @@ public class MainTest {
 		}
 
 		final Counter counter = new Counter();
+		final Counter counterInclNull = new Counter();
 
 		new CtScanner() {
 
 			@Override
 			public void scan(CtElement element) {
+				counterInclNull.scan++;
 				if (element != null) {
 					counter.scan++;
 				}
@@ -308,11 +295,52 @@ public class MainTest {
 				super.exit(element);
 			}
 
-		}.visitCtPackage(pack);
+		}.scan(pack);
 
+		// contract: when enter is called, exit is also called
 		assertTrue(counter.enter == counter.exit);
-		// there is one scan less, because we start with visit
-		assertTrue(counter.enter == counter.scan + 1);
+
+		// contract: all scanned elements call enter
+		assertTrue(counter.enter == counter.scan);
+
+		Counter counterBiScan = new Counter();
+		class ActualCounterScanner extends CtBiScannerDefault {
+			@Override
+			public void biScan(CtElement element, CtElement other) {
+				counterBiScan.scan++;
+				if (element == null) {
+					if (other != null) {
+						Assert.fail("element can't be null if other isn't null.");
+					}
+				} else if (other == null) {
+					Assert.fail("other can't be null if element isn't null.");
+				} else {
+					// contract: all elements have been cloned and are still equal
+					assertEquals(element, other);
+					assertFalse(element == other);
+				}
+				super.biScan(element, other);
+			}
+		}
+		final ActualCounterScanner actual = new ActualCounterScanner();
+		actual.biScan(pack, pack.clone());
+
+		// contract: scan and biscan are executed the same number of times
+		assertEquals(counterInclNull.scan, counterBiScan.scan);
+
+		// for pure beauty: parallel visit of the same tree!
+		Counter counterBiScan2 = new Counter();
+		new CtBiScannerDefault() {
+			@Override
+			public void biScan(CtElement element, CtElement other) {
+				counterBiScan2.scan++;
+				// we have the exact same element
+				assertSame(element, other);
+				super.biScan(element, other);
+			}
+		}.biScan(pack, pack);
+		// contract: scan and biscan are executed the same number of times
+		assertEquals(counterInclNull.scan, counterBiScan2.scan);
 	}
 
 	public static void checkAssignmentContracts(CtElement pack) {
@@ -414,6 +442,64 @@ public class MainTest {
 				if (element != null) {
 					//contract: getMyRoleInParent returns the expected parent
 					assertSame(role, element.getRoleInParent());
+				}
+				super.scan(role, element);
+			}
+		});
+	}
+
+	@Test
+	public void testElementToPathToElementEquivalency() {
+
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					CtPath path = element.getPath();
+					String pathStr = path.toString();
+					try {
+						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
+						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
+						assertEquals(returnedElements.size(), 1);
+						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
+						//contract: Element -> Path -> String -> Path -> Element leads to the original element
+						assertSame(element, actualElement);
+					} catch (CtPathException e) {
+						fail("Path is either incorrectly generated or incorrectly read");
+					}
+				}
+				super.scan(element);
+			}
+		});
+	}
+
+	@Test
+	public void testElementIsContainedInAttributeOfItsParent() {
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtRole role, CtElement element) {
+				if (element != null) {
+					//contract: element is contained in attribute of element's parent
+					CtElement parent = element.getParent();
+					Object attributeOfParent = parent.getValueByRole(role);
+					if(attributeOfParent instanceof CtElement) {
+						assertSame("Element of type " + element.getClass().getName()
+								+ " is not the value of attribute of role " + role.name()
+								+ " of parent type " + parent.getClass().getName(), element, attributeOfParent);
+					} else if (attributeOfParent instanceof Collection) {
+						assertTrue("Element of type " + element.getClass().getName()
+								+ " not found in Collection value of attribute of role " + role.name() 
+								+ " of parent type " + parent.getClass().getName(), 
+								((Collection<CtElement>) attributeOfParent).stream().anyMatch(e -> e == element));
+					} else if (attributeOfParent instanceof Map){
+						assertTrue("Element of type " + element.getClass().getName()
+								+ " not found in Map#values of attribute of role " + role.name() 
+								+ " of parent type " + parent.getClass().getName(), 
+								((Map<String, ?>) attributeOfParent).values().stream().anyMatch(e -> e == element));
+					} else {
+						fail("Attribute of Role " + role + " not checked");
+					}
 				}
 				super.scan(role, element);
 			}

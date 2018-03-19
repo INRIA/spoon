@@ -59,6 +59,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		new InsertVisitor(target, statements, InsertType.AFTER).scan(e);
 	}
 
+	/** insert `statement` just before target */
 	public static void insertBefore(CtStatement target, CtStatement statement)
 	throws ParentNotInitializedException {
 		CtStatementList sts = target.getFactory().Core().createStatementList();
@@ -66,6 +67,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		insertBefore(target, sts);
 	}
 
+	/** inserts all statements of `statementsToBeInserted` just before `target` */
 	public static void insertBefore(CtStatement target, CtStatementList statementsToBeInserted)
 	throws ParentNotInitializedException {
 		CtElement targetParent = target.getParent();

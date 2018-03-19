@@ -23,10 +23,9 @@ package spoon.support.visitor.clone;
  * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
-	private spoon.reflect.declaration.CtElement other;
-
-	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
-		return spoon.support.visitor.clone.CloneBuilder.build(new spoon.support.visitor.clone.CloneBuilder(), element, other);
+	public void copy(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+		this.setOther(other);
+		this.scan(element);
 	}
 
 	public static <T extends spoon.reflect.declaration.CtElement> T build(spoon.support.visitor.clone.CloneBuilder builder, spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
@@ -34,6 +33,8 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		builder.scan(element);
 		return ((T) (builder.other));
 	}
+
+	private spoon.reflect.declaration.CtElement other;
 
 	public void setOther(spoon.reflect.declaration.CtElement other) {
 		this.other = other;

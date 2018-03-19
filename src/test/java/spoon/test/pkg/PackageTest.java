@@ -56,7 +56,7 @@ public class PackageTest {
 
 		CtPackage ctPackage = clazz.getPackage();
 		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		Assert.assertEquals("", ctPackage.getDocComment());
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
@@ -76,13 +76,14 @@ public class PackageTest {
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		Assert.assertEquals("", ctPackage.getDocComment());
 	}
 
 	@Test
 	public void testAnnotationOnPackage() throws Exception {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
+
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		launcher.setSourceOutputDirectory("./target/spooned/");

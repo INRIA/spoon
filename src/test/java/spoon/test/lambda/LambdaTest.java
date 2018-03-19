@@ -358,7 +358,6 @@ public class LambdaTest {
 		CtParameter<?> param = (CtParameter<?>)lambda.getParameters().get(0);
 		CtParameterReference paramRef1 = param.getReference();
 		CtParameterReference paramRef2 = lambda.filterChildren(new TypeFilter<>(CtParameterReference.class)).first();
-		assertTrue(paramRef1.getDeclaringExecutable().getType().equals(paramRef2.getDeclaringExecutable().getType())); 
 		assertTrue(paramRef1.equals(paramRef2));
 	}
 

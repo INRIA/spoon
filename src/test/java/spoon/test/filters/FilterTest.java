@@ -12,10 +12,13 @@ import static spoon.testing.utils.ModelUtils.build;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +77,7 @@ import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
+import spoon.support.comparator.QualifiedNameComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.visitor.SubInheritanceHierarchyResolver;
 import spoon.test.filters.testclasses.AbstractTostada;
@@ -380,6 +384,51 @@ public class FilterTest {
 		assertEquals(2, overridenMethodsFromSub.size());
 		assertEquals(AbstractTostada.class, overridenMethodsFromSub.get(0).getParent(CtClass.class).getActualClass());
 		assertEquals(Tostada.class, overridenMethodsFromSub.get(1).getParent(CtClass.class).getActualClass());
+	}
+
+	@Test
+	public void testgetTopDefinitions() throws Exception {
+		// contract: getTopDefinitions returns the correct number of definitions
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+
+		// start with ToStatda
+		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
+		List<CtMethod<?>> methods;
+
+		methods = orderByName(aTostada.getMethodsByName("make").get(0).getTopDefinitions());
+		assertEquals(2, methods.size());
+		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
+		assertEquals("ITostada", methods.get(1).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("prepare").get(0).getTopDefinitions());
+		assertEquals(1, methods.size());
+		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("toString").get(0).getTopDefinitions());
+		assertEquals(1, methods.size());
+		assertEquals("Object", methods.get(0).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("honey").get(0).getTopDefinitions());
+		assertEquals(2, methods.size());
+		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
+		assertEquals("Honey", methods.get(1).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("foo").get(0).getTopDefinitions());
+		assertEquals(0, methods.size());
+	}
+
+	private List<CtMethod<?>> orderByName(Collection<CtMethod<?>> meths) {
+		List<CtMethod<?>> ordered = new ArrayList<>(meths);
+		ordered.sort(new Comparator<CtMethod<?>>() {
+			@Override
+			public int compare(CtMethod<?> o1, CtMethod<?> o2) {
+				return o1.getParent(CtType.class).getQualifiedName().compareTo(o2.getParent(CtType.class).getQualifiedName());
+			}
+		});
+		return ordered;
 	}
 
 	@Test
@@ -1284,14 +1333,5 @@ public class FilterTest {
 		List<CtField> ctFields = type.getElements(new NamedElementFilter<>(CtField.class, "CONSTANT"));
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
-	}
-
-	@Test
-	public void testFilterAsPredicate() throws Exception {
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
-		//contract: Spoon Filter is compatible with java.util.function.Predicate
-		Predicate predicate = new NamedElementFilter<>(CtClass.class, "Foo");
-		assertTrue(predicate.test(foo));
-		assertFalse(predicate.test(foo.getTypeMembers().get(0)));
 	}
 }

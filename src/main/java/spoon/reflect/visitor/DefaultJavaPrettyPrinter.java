@@ -1626,7 +1626,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		enterCtStatement(returnStatement);
-		printer.writeKeyword("return").writeSpace();
+		printer.writeKeyword("return");
+		// checkstyle wants "return;" and not "return ;"
+		if (returnStatement.getReturnedExpression() != null) {
+			printer.writeSpace();
+		}
 		scan(returnStatement.getReturnedExpression());
 	}
 
@@ -1957,6 +1961,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
+
+	/**
+	 * Write the compilation unit header.
+	 */
+	public DefaultJavaPrettyPrinter writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
+		elementPrinterHelper.writeHeader(types, imports);
+		return this;
+	}
+
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		// reset the importsContext to avoid errors with multiple CU
@@ -1971,7 +1984,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}
-		elementPrinterHelper.writeHeader(types, imports);
+		this.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {

@@ -35,6 +35,7 @@ You have different options:
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon). :-)
 
 <!-- .* Marker comment. -->
+- March 8, 2018: Spoon 6.2.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.2.0)
 - December 20, 2017: Spoon 6.1.0 is released, merry christmas! :christmas_tree: [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.1.0)
 - November 17, 2017: Spoon 6.0.0 is released! Check the [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.0.0) as there are few non backward-compatible changes :warning:
 - September 6, 2017: Spoon 5.9.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-5.9.0) *back-to-work* release!
@@ -97,11 +98,10 @@ Snapshot version:
 </dependencies>
 <repositories>
 	<repository>
-		<id>gforge.inria.fr-snapshot</id>
-		<name>Maven Repository for Spoon Snapshot</name>
-		<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
-		<snapshots />
-	</repository>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/repo/spoon-public-snapshot</url>
+    </repository>
 </repositories>
 ```
 

@@ -181,9 +181,12 @@ public class RtMethod {
 		return methods;
 	}
 
-	public static <T> RtMethod[] sameMethodsWithDifferentTypeOf(Class<T> superClass, List<RtMethod> comparedMethods) {
+	/** Returns the methods of `klass` that have the same signature (according to runtime reflection) but a different return type of at least one of the methods
+	 * in `comparedMethods` given as parameter.
+	 */
+	public static <T> RtMethod[] sameMethodsWithDifferentTypeOf(Class<T> klass, List<RtMethod> comparedMethods) {
 		final List<RtMethod> methods = new ArrayList<>();
-		for (Method method : superClass.getDeclaredMethods()) {
+		for (Method method : klass.getDeclaredMethods()) {
 			final RtMethod rtMethod = create(method);
 			for (RtMethod potential : comparedMethods) {
 				if (potential.isLightEquals(rtMethod) && !rtMethod.returnType.equals(potential.returnType)) {

@@ -17,8 +17,12 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
+import spoon.SpoonException;
+import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -29,6 +33,9 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
+import spoon.reflect.path.CtElementPathBuilder;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
@@ -172,10 +179,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public String getDocComment() {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
-				return ctComment.getContent();
+				StringBuffer result = new StringBuffer();
+				result.append(ctComment.getContent() + System.lineSeparator());
+				for (CtJavaDocTag tag: ((CtJavaDoc) ctComment).getTags()) {
+					result.append(tag.toString()); // the tag already contains a new line
+				}
+				return result.toString();
 			}
 		}
-		return null;
+		return "";
 	}
 
 	public SourcePosition getPosition() {
@@ -528,5 +540,13 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
 		rh.setValue(this, value);
 		return (E) this;
+	}
+
+	public CtPath getPath() {
+		try {
+			return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
+		} catch (CtPathException e) {
+			throw new SpoonException(e);
+		}
 	}
 }
