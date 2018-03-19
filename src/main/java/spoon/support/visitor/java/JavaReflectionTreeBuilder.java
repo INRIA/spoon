@@ -462,6 +462,18 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		contexts.peek().addInterfaceReference(typeReference);
 	}
 
+	@Override
+	public <T> void visitInterfaceReference(ParameterizedType anInterface) {
+		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+		typeReference.setSimpleName(anInterface.getRawType().getTypeName());
+
+		enter(new TypeReferenceRuntimeBuilderContext(typeReference));
+		super.visitInterfaceReference(anInterface);
+		exit();
+
+		contexts.peek().addInterfaceReference(typeReference);
+	}
+
 	private void setModifier(CtModifiable ctModifiable, int modifiers) {
 		if (Modifier.isAbstract(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.ABSTRACT);

@@ -82,7 +82,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Class<?> anInterface : clazz.getInterfaces()) {
+		for (Type anInterface : clazz.getGenericInterfaces()) {
 			visitInterfaceReference(anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
@@ -359,6 +359,40 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 		for (TypeVariable<Class<T>> generic : type.getTypeParameters()) {
 			visitTypeParameter(generic);
+		}
+	}
+
+	@Override
+	public <T> void visitInterfaceReference(ParameterizedType type) {
+		Type rawType = type.getRawType();
+
+		if (!(rawType instanceof Class)) {
+			throw new UnsupportedOperationException("Rawtype of the parameterized type should be a class.");
+		}
+
+		@SuppressWarnings("unchecked")
+		Class<T> classRaw = (Class<T>) rawType;
+
+		if (classRaw.getPackage() != null) {
+			visitPackage(classRaw.getPackage());
+		}
+		if (classRaw.getEnclosingClass() != null) {
+			visitClassReference(classRaw.getEnclosingClass());
+		}
+
+		for (Type generic : type.getActualTypeArguments()) {
+			visitTypeParameter((TypeVariable) generic);
+		}
+	}
+
+	@Override
+	public <T> void visitInterfaceReference(Type type) {
+		if (type instanceof Class) {
+			visitInterfaceReference((Class) type);
+		} else if (type instanceof ParameterizedType) {
+			visitInterfaceReference((ParameterizedType) type);
+		} else {
+			throw new UnsupportedOperationException("Only type with class or ParameterizedType are supported.");
 		}
 	}
 
