@@ -93,5 +93,6 @@ interface JavaReflectionVisitor {
 	/** Visits a {@link ParameterizedType} representing an interface with a type parameter. */
 	<T> void visitInterfaceReference(ParameterizedType parameterizedType);
 
+	/** Visits a {@link Type} representing an interface. */
 	<T> void visitInterfaceReference(Type type);
 }

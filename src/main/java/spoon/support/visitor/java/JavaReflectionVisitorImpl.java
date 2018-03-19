@@ -381,7 +381,11 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 
 		for (Type generic : type.getActualTypeArguments()) {
-			visitTypeParameter((TypeVariable) generic);
+			if (generic instanceof TypeVariable) {
+				visitTypeParameter((TypeVariable<?>) generic);
+			} else {
+				visitType(generic);
+			}
 		}
 	}
 
