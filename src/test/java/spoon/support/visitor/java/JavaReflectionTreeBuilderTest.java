@@ -3,6 +3,7 @@ package spoon.support.visitor.java;
 import org.junit.Test;
 
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -178,6 +179,17 @@ public class JavaReflectionTreeBuilderTest {
 					assertSame(aType, typeParam.getTypeParameterDeclarer());
 				}
 			}
+		}
+	}
+	
+	@Test
+	public void testSuperInterfaceQName() {
+		//contract: the qualified names of super interfaces are correct
+		TypeFactory typeFactory = createFactory().Type();
+		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtExpression.class);
+		CtType aType = aTypeRef.getTypeDeclaration();
+		for (CtTypeReference<?> ifaceRef : aType.getSuperInterfaces()) {
+			assertNotNull(ifaceRef.getQualifiedName() + " doesn't exist?", ifaceRef.getActualClass());
 		}
 	}
 }
