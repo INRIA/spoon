@@ -4,9 +4,52 @@ tags: [template]
 keywords: template, definition, code, java
 ---
 
-Spoon provides developers a way of writing code transformations called
-**code templates**. Those templates are statically type-checked, in
-order to ensure statically that the generated code will be correct.
+Spoon provides developers a way to define so called
+**Spoon templates**. **Spoon template** is a part of code (for example  
+expression, statement, block, method, constuctor, type member, 
+interface, type, ... any Spoon model subtree),
+where parts of that code may be **template parameters**.
+
+**Spoon template** can be used in two ways:
+A) **to generate new code**. The generated code is a copy of code
+of **Spoon template**, where each **template parameter** is substituted
+by it's value. We call this operation **Generating**.
+```java
+Factory spoonFactory = ...
+//build a Spoon template
+Pattern spoonTemplate = ... build a spoon template. For example for an method ...
+//define values for parameters
+Map<String, Object> parameters = new HashMap<>();
+parameters.put("methodName", "i_am_an_generated_method");
+//generate a code using spoon template and parameters
+CtMethod<?> generatedMethod = spoonTemplate.substituteSingle(spoonFactory, CtMethod.class, parameters);
+```
+B) **to search for a code**. The found code is same like code of **Spoon template**,
+where code on position of **template parameter** may be arbitrary and is copied
+as value of **template parameter**. We call this operation **Matching**.
+```java
+Factory spoonFactory = ...
+//build a Spoon template
+Pattern spoonTemplate = ... build a spoon template. For example for an method ...
+//search for all occurences of the method like spoonTemplate in whole model
+spoonTemplate.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
+	//this Consumer is called once for each method which matches with spoonTemplate
+	Map<String, Object> parameters = match.getParametersAsMap();
+	CtMethod<?> matchingMethod = match.getMatchingElement(CtMethod.class);
+	String aNameOfMatchedMethod = parameters.get("methodName");
+	...
+});
+```
+There are several ways how to build a **spoon template**
+A) Using a regular java class, which implements `Template` interface
+B) Using PatternBuilder, which takes any part of code and where you 
+define which parts of that code are **template parameters** by calling PatternBuilder methods.
+
+The `Template` based are statically type-checked, in order to ensure statically that the generated code will be correct.
+Both template definitions are normal compiled java source code,
+which is part of your sources, so:
+* if the template source is compilable then generated code will be compilable too - when you use correct parameter values of course.
+* the refactoring applied to your source code is automatically applied to your templates too
 
 A Spoon template is a regular Java class that taken as input by the Spoon templating engine to perform a transformation.
 This is summarized in Figure below. A Spoon template can be seen as a
