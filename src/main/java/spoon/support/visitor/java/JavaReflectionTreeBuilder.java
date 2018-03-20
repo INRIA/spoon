@@ -465,7 +465,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	@Override
 	public <T> void visitInterfaceReference(ParameterizedType anInterface) {
 		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName(anInterface.getRawType().getTypeName());
+		typeReference.setSimpleName(((Class) anInterface.getRawType()).getSimpleName());
 
 		enter(new TypeReferenceRuntimeBuilderContext(typeReference));
 		super.visitInterfaceReference(anInterface);
