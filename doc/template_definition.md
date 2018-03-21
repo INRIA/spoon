@@ -15,6 +15,7 @@ where parts of that code may be **template parameters**.
 A) **to generate new code**. The generated code is a copy of code
 of **Spoon template**, where each **template parameter** is substituted
 by it's value. We call this operation **Generating**.
+
 ```java
 Factory spoonFactory = ...
 //build a Spoon template
@@ -25,6 +26,7 @@ parameters.put("methodName", "i_am_an_generated_method");
 //generate a code using spoon template and parameters
 CtMethod<?> generatedMethod = spoonTemplate.substituteSingle(spoonFactory, CtMethod.class, parameters);
 ```
+
 This is summarized in Figure below. A Spoon template can be seen as a
 higher-order program, which takes program elements as arguments, and returns a
 transformed program. Like any function, a template can be used in different
@@ -35,6 +37,7 @@ contexts and give different results, depending on its parameters.
 B) **to search for a code**. The found code is same like code of **Spoon template**,
 where code on position of **template parameter** may be arbitrary and is copied
 as value of **template parameter**. We call this operation **Matching**.
+
 ```java
 Factory spoonFactory = ...
 //build a Spoon template
@@ -48,7 +51,9 @@ spoonTemplate.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
 	...
 });
 ```
+
 There are several ways how to build a **spoon template**
+
 A) Using a regular java class, which implements a `Template` interface
 B) Using PatternBuilder, which takes any part of code and where you 
 define which parts of that code are **template parameters** by calling PatternBuilder methods.
@@ -141,6 +146,7 @@ public class CheckBoundTemplate /*it doesn't matter what it extends or implement
 ```
 
 The code, which creates a Spoon template using `PatternBuilder` looks like this:
+
 ```java
 Pattern t = PatternBuilder.create(factory,
 	//defines template class.
@@ -156,7 +162,7 @@ Pattern t = PatternBuilder.create(factory,
 
 
 This template specifies a
-statements (all statmenets of body of method `statement`) that is a precondition to check that a list 
+statements (all statements of body of method `statement`) that is a precondition to check that a list 
 is smaller than a certain size. This piece of code will be injected at the 
 beginning of all methods dealing with size-bounded lists. This template has 
 one single template parameter called `_col_`. 
@@ -380,6 +386,7 @@ String someMethod() {
 The `PatternBuilder` takes all the Template parameters mentioned in the chapters above
 and understands them as template parameters, when `PatternBuilder#configureTemplateParameters()`
 is called.
+
 ```java
 Pattern t = PatternBuilder.create(...select template model...)
 	.configureTemplateParameters()
@@ -388,13 +395,21 @@ Pattern t = PatternBuilder.create(...select template model...)
 
 Next to the ways of parameter definitions mentioned above the `PatternBuilder`
 allows to define parameters like this:
+
 ```java
+//a template model 
+void method(String _x_) {
+	zeroOneOrMoreStatements();
+	System.out.println(_x_);
+}
+
+//a pattern definition
 Pattern t = PatternBuilder.create(...select template model...)
 	.configureParameters(pb -> 
 		pb.parameter("firstParamName")
 			//...select which AST nodes are parameters...
 			//e.g. using parameter selector
-			.byType(Request.class)
+			.bySimpleName("zeroOneOrMoreStatements")
 			//...modify behavior of parameters...
 			//e.g. using parameter modifier
 			.setMinOccurence(0);
@@ -507,7 +522,7 @@ But you can mark code to be inlined this way:
 ```java
 Pattern t = PatternBuilder.create(...select template model...)
 	//...configure parameters...
-	configureLiveStatements(ls -> 
+	configureInlineStatements(ls -> 
 		//...select to be inlined statements...
 		//e.g. by variable name:
 		ls.byVariableName("intValues")
@@ -519,5 +534,5 @@ Pattern t = PatternBuilder.create(...select template model...)
 * `byVariableName(String varName)` - all CtForEach and CtIf statements
 whose expression references variable named `varName` are understood as
 inline statements
-* `markLive(CtForEach|CtIf)` - provided CtForEach or CtIf statement
+* `markInline(CtForEach|CtIf)` - provided CtForEach or CtIf statement
 is understood as inline statement
