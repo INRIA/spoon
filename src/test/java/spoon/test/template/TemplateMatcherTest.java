@@ -22,6 +22,7 @@ import org.junit.Test;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterValueProvider;
@@ -868,7 +869,7 @@ public class TemplateMatcherTest {
 		//contract: match elements in container of type Set - e.g method throwables
 		CtType<?> ctClass = ModelUtils.buildClass(MatchThrowables.class);
 		Factory f = ctClass.getFactory();
-		Pattern pattern = PatternBuilder.create(f, MatchThrowables.class, tmb -> tmb.setTypeMember("matcher1"))
+		Pattern pattern = PatternBuilder.create(ctClass, new TemplateModelBuilder(ctClass).setTypeMember("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("otherThrowables")
 					//add matcher for other arbitrary throwables

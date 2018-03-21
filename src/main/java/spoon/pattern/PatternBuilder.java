@@ -68,37 +68,8 @@ public class PatternBuilder {
 
 	public static final String TARGET_TYPE = "targetType";
 
-	public static PatternBuilder create(Factory factory, Class<?> templateClass) {
-		return create(factory, templateClass, null);
-	}
-
-	/**
-	 * Creates a pattern builder.
-	 *
-	 * @param factory
-	 * @param templateClass
-	 * @param selector the code which selects part of templateClass AST, which has to be used as template model
-	 * @return new instance of {@link PatternBuilder}
-	 */
-	public static PatternBuilder create(Factory factory, Class<?> templateClass, Consumer<TemplateModelBuilder> selector) {
-		return create(factory.Type().get(templateClass), selector);
-	}
-
-	public static PatternBuilder create(CtType<?> templateType) {
-		return create(templateType, null);
-	}
-
-	public static PatternBuilder create(CtType<?> templateType, Consumer<TemplateModelBuilder> selector) {
-		checkTemplateType(templateType);
-		List<CtElement> templateModel;
-		if (selector != null) {
-			TemplateModelBuilder model = new TemplateModelBuilder(templateType);
-			selector.accept(model);
-			templateModel = model.getTemplateModel();
-		} else {
-			templateModel = Collections.singletonList(templateType);
-		}
-		return create(templateType.getReference(), templateModel);
+	public static PatternBuilder create(CtType<?> templateType, CtElement... elems) {
+		return create(templateType.getReference(), Arrays.asList(elems));
 	}
 
 	/**
@@ -113,8 +84,13 @@ public class PatternBuilder {
 		return new PatternBuilder(templateTypeRef, patternModel);
 	}
 
-	public static PatternBuilder create(CtElement patternModel) {
-		return new PatternBuilder(null, Collections.singletonList(patternModel));
+	public static PatternBuilder create(CtType<?> type, List<CtElement> patternModel) {
+		return new PatternBuilder(type.getReference(), patternModel);
+	}
+
+
+	public static PatternBuilder create(CtTypeReference<?> templateTypeRef, CtElement... elems) {
+		return new PatternBuilder(templateTypeRef, Arrays.asList(elems));
 	}
 
 	private final List<CtElement> patternModel;
@@ -343,7 +319,7 @@ public class PatternBuilder {
 	 * are automatically marked as pattern parameters
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder configureAutomaticParameters() {
+	public PatternBuilder createPatternParameters() {
 		configureParameters(pb -> {
 			//add this substitution request only if there isn't another one yet
 			pb.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE);

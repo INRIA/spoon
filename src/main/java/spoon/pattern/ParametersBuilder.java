@@ -266,21 +266,21 @@ public class ParametersBuilder {
 	}
 
 	/**
-	 * Add parameters for each field reference of variable named `variableName`
+	 * Add parameters for each field reference to variable named `variableName`
 	 * @param variableName the name of the variable reference
 	 * @return {@link ParametersBuilder} to support fluent API
 	 */
-	public ParametersBuilder parametersByVariable(String... variableName) {
+	public ParametersBuilder createPatternParameterForVariable(String... variableName) {
 		for (String varName : variableName) {
 			CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(varName)).first();
 			if (var != null) {
-				parametersByVariable(var);
+				createPatternParameterForVariable(var);
 			} else {
 				List<CtVariable<?>> vars = queryModel().filterChildren(new NamedElementFilter(CtVariable.class, varName)).list();
 				if (vars.size() > 1) {
 					throw new SpoonException("Ambiguous variable " + varName);
 				} else if (vars.size() == 1) {
-					parametersByVariable(vars.get(0));
+					createPatternParameterForVariable(vars.get(0));
 				} //else may be we should fail when variable is not found?
 			}
 		}
@@ -291,7 +291,7 @@ public class ParametersBuilder {
 	 * @param variable to be substituted variable
 	 * @return this to support fluent API
 	 */
-	public ParametersBuilder parametersByVariable(CtVariable<?> variable) {
+	public ParametersBuilder createPatternParameterForVariable(CtVariable<?> variable) {
 		CtQueryable searchScope;
 		if (patternBuilder.isInModel(variable)) {
 			addSubstitutionRequest(

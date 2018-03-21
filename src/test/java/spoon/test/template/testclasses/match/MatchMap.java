@@ -3,9 +3,11 @@ package spoon.test.template.testclasses.match;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
@@ -14,7 +16,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class MatchMap {
 
 	public static Pattern createPattern(Factory factory, boolean acceptOtherAnnotations) {
-		return PatternBuilder.create(factory, MatchMap.class, tmb -> tmb.setTypeMember("matcher1"))
+		CtType<?> type = factory.Type().get(MatchMap.class);
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				//match any value of @Check annotation to parameter `testAnnotations`
 				pb.parameter("CheckAnnotationValues").attributeOfElementByFilter(CtRole.VALUE, new TypeFilter(CtAnnotation.class)).setContainerKind(ContainerKind.MAP);
@@ -30,7 +33,8 @@ public class MatchMap {
 			.build();
 	}
 	public static Pattern createMatchKeyPattern(Factory factory) {
-		return PatternBuilder.create(factory, MatchMap.class, tmb -> tmb.setTypeMember("m1"))
+		CtType<?> type = factory.Type().get(MatchMap.class);
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("m1").getTemplateModels())
 			.configureParameters(pb -> {
 				//match any value of @Check annotation to parameter `testAnnotations`
 				pb.parameter("CheckKey").bySubstring("value");

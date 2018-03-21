@@ -2,8 +2,10 @@ package spoon.test.template.testclasses.replace;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
@@ -61,14 +63,13 @@ public class OldPattern {
 	 * @return a Pattern instance of this Pattern
 	 */
 	public static Pattern createPattern(Factory factory) {
-		return PatternBuilder
-			//Create a pattern from all statements of OldPattern_ParamsInNestedType#patternModel
-			.create(factory, OldPattern.class, model->model.setBodyOfMethod("patternModel"))
+		CtType<?> type = factory.Type().get(OldPattern.class);
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
 			.configureParameters(pb->pb
-					.parametersByVariable("params", "item")
+					.createPatternParameterForVariable("params", "item")
 					.parameter("statements").setContainerKind(ContainerKind.LIST)
 			)
-			.configureAutomaticParameters()
+			.createPatternParameters()
 			.configureInlineStatements(ls -> ls.byVariableName("useStartKeyword"))
 			.build();
 	}

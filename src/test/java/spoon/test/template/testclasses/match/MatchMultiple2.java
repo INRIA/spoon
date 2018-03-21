@@ -3,6 +3,8 @@ package spoon.test.template.testclasses.match;
 import spoon.pattern.ParametersBuilder;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.template.TemplateParameter;
@@ -15,7 +17,8 @@ import java.util.function.Consumer;
 public class MatchMultiple2 {
 
 	public static Pattern createPattern(Factory factory, Consumer<ParametersBuilder> cfgParams) {
-		return PatternBuilder.create(factory, MatchMultiple2.class, tmb -> tmb.setBodyOfMethod("matcher1"))
+		CtType<?> type = factory.Type().get(MatchMultiple2.class);
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureTemplateParameters()
 			.configureParameters(pb -> {
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST);

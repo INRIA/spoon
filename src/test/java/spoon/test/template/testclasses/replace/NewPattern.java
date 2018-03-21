@@ -4,12 +4,14 @@ import java.util.function.Consumer;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
+import spoon.test.template.testclasses.match.MatchModifiers;
 
 public class NewPattern {
 
@@ -35,9 +37,9 @@ public class NewPattern {
 	 * Creates a Pattern for this model
 	 */
 	public static Pattern createPattern(Factory factory) {
-		return PatternBuilder
-			.create(factory, NewPattern.class, model->model.setBodyOfMethod("patternModel"))
-			.configureAutomaticParameters()
+		CtType<?> type = factory.Type().get(NewPattern.class);
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
+			.createPatternParameters()
 			.configureParameters(pb -> {
 				pb.parameter("statements").setContainerKind(ContainerKind.LIST);
 			})

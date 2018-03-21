@@ -39,8 +39,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 
 /**
- * Builder which allows to define which part of AST of template {@link CtType}
- * has to be used as a model of the {@link Pattern}
+ * Utility class to select parts of AST to be used as a model of a {@link Pattern}.
  */
 public class TemplateModelBuilder {
 	/**
@@ -57,15 +56,8 @@ public class TemplateModelBuilder {
 	 */
 	private List<CtElement> templateModel = null;
 
-	TemplateModelBuilder(CtType<?> templateTemplate) {
+	public TemplateModelBuilder(CtType<?> templateTemplate) {
 		this.templateType = templateTemplate;
-	}
-
-	/**
-	 * @return origin {@link CtType}, which is the source of the pattern model
-	 */
-	public CtType<?> getTemplateType() {
-		return templateType;
 	}
 
 	/**
@@ -136,8 +128,9 @@ public class TemplateModelBuilder {
 	 * Sets a template model from body of the method of template type
 	 * @param methodName the name of {@link CtMethod}
 	 */
-	public void setBodyOfMethod(String methodName) {
+	public TemplateModelBuilder setBodyOfMethod(String methodName) {
 		setBodyOfMethod(tm -> methodName.equals(tm.getSimpleName()));
+		return this;
 	}
 	/**
 	 * Sets a template model from body of the method of template type selected by filter
@@ -276,7 +269,7 @@ public class TemplateModelBuilder {
 	/**
 	 * @return a List of {@link CtElement}s, which has to be used as pattern model
 	 */
-	public List<CtElement> getTemplateModel() {
+	public List<CtElement> getTemplateModels() {
 		return templateModel;
 	}
 

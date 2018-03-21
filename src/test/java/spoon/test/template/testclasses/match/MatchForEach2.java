@@ -4,6 +4,8 @@ import java.util.List;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 
@@ -12,7 +14,9 @@ import static java.lang.System.out;
 public class MatchForEach2 {
 
 	public static Pattern createPattern(Factory factory) {
-		return PatternBuilder.create(factory, MatchForEach2.class, tmb -> tmb.setBodyOfMethod("matcher1"))
+		CtType<?> type = factory.Type().get(MatchForEach2.class);
+
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST);
 				pb.parameter("varName").byString("var");

@@ -71,7 +71,8 @@ public class TemplateBuilder {
 		CtTypeReference<TemplateParameter> templateParamRef = f.Type().createReference(TemplateParameter.class);
 		if (templateType == templateRoot) {
 			//templateRoot is a class which extends from Template. We have to remove all Templating stuff from the patter model
-			pb = PatternBuilder.create(templateType, tv -> {
+			TemplateModelBuilder tv = new TemplateModelBuilder(templateType);
+			{
 				tv.keepTypeMembers(typeMember -> {
 					if (typeMember.getAnnotation(Parameter.class) != null) {
 						//remove all type members annotated with @Parameter
@@ -90,9 +91,10 @@ public class TemplateBuilder {
 				});
 				//remove `... extends Template`, which doesn't have to be part of pattern model
 				tv.removeSuperClass();
-			});
+			};
+			pb = PatternBuilder.create(templateType.getReference(), tv.getTemplateModels());
 		} else {
-			pb = PatternBuilder.create(templateType, model -> model.setTemplateModel(templateRoot));
+			pb = PatternBuilder.create(templateType.getReference(), templateRoot);
 		}
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, null, template);
 		//legacy templates always automatically simplifies generated code

@@ -2,7 +2,9 @@ package spoon.test.template.testclasses.match;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -11,7 +13,8 @@ import static java.lang.System.out;
 public class MatchIfElse {
 
 	public static Pattern createPattern(Factory factory) {
-		return PatternBuilder.create(factory, MatchIfElse.class, tmb -> tmb.setBodyOfMethod("matcher1"))
+		CtType<?> type = factory.Type().get(MatchIfElse.class);
+		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("option").byVariable("option");
 				pb.parameter("option2").byVariable("option2");

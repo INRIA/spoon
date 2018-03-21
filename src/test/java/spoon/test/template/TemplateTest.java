@@ -5,8 +5,8 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.TemplateModelBuilder;
 import spoon.pattern.matcher.Match;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
@@ -75,7 +75,6 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -671,12 +670,14 @@ public class TemplateTest {
 		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
 		params.put("_block_", toBeLoggedMethod.getBody());
 		//create a patter from the LoggerModel#block
-		spoon.pattern.Pattern pattern = PatternBuilder.create(launcher.getFactory(), LoggerModel.class,
-				//type member named "block" of LoggerModel is used as pattern model of this pattern
-				model -> model.setTypeMember("block"))
+		CtType<?> type = factory.Type().get(LoggerModel.class);
+
+
+		// creating a pattern from method "block"
+		spoon.pattern.Pattern pattern = PatternBuilder.create(type, type.getMethodsByName("block").get(0))
 				//all the variable references which are declared out of type member "block" are automatically considered
 				//as pattern parameters
-				.configureAutomaticParameters()
+				.createPatternParameters()
 				.build();
 		final List<CtMethod> aMethods = pattern.applyToType(aTargetType, CtMethod.class, params);
 		assertEquals(1, aMethods.size());
@@ -1181,7 +1182,7 @@ public class TemplateTest {
 			// creating a Pattern from a Literal, with zero pattern parameters
 			// The pattern model consists of one CtLIteral only
 			// there is not needed any type reference, because CtLiteral has no reference to a type where it is defined
-			spoon.pattern.Pattern p = PatternBuilder.create(null, f.createLiteral("a")).build();
+			spoon.pattern.Pattern p = PatternBuilder.create((CtType)null, f.createLiteral("a")).build();
 
 			//The pattern has no parameters. There is just one constant CtLiteral
 			assertEquals (0, p.getParameterInfos().size());
@@ -1245,7 +1246,7 @@ public class TemplateTest {
 	}
 
 	private static spoon.pattern.Pattern patternOfStringLiterals(Factory f, String... strs) {
-		return PatternBuilder.create(null, Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList())
+		return PatternBuilder.create((CtType)null, Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList())
 		).build();
 	}
 
