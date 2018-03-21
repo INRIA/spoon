@@ -54,8 +54,9 @@ spoonTemplate.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
 
 There are several ways how to build a **spoon template**
 
-A) Using a regular java class, which implements a `Template` interface
-B) Using PatternBuilder, which takes any part of code and where you 
+* Using a regular java class, which implements a `Template` interface
+
+* Using PatternBuilder, which takes any part of code and where you 
 define which parts of that code are **template parameters** by calling PatternBuilder methods.
 
 The `Template` interface based definitions are statically type-checked, in order to ensure statically that the generated code will be correct.
