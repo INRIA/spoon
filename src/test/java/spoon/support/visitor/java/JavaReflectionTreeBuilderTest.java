@@ -19,6 +19,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.code.CtConditionalImpl;
+import spoon.support.reflect.declaration.CtEnumValueImpl;
+import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.test.generics.ComparableComparatorBug;
 
 import java.io.ObjectInputStream;
@@ -190,6 +192,26 @@ public class JavaReflectionTreeBuilderTest {
 		CtType aType = aTypeRef.getTypeDeclaration();
 		for (CtTypeReference<?> ifaceRef : aType.getSuperInterfaces()) {
 			assertNotNull(ifaceRef.getQualifiedName() + " doesn't exist?", ifaceRef.getActualClass());
+			assertSame(aType, ifaceRef.getParent());
+		}
+		for (CtTypeReference<?> ifaceRef : aTypeRef.getSuperInterfaces()) {
+			assertNotNull(ifaceRef.getQualifiedName() + " doesn't exist?", ifaceRef.getActualClass());
+			assertSame(aType, ifaceRef.getParent());
 		}
 	}
+	
+	@Test
+	public void testSuperClass() {
+		//contract: the super class have actual type arguments
+		TypeFactory typeFactory = createFactory().Type();
+		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtEnumValueImpl.class);
+		CtType aType = aTypeRef.getTypeDeclaration();
+		CtTypeReference<?> superClass = aType.getSuperclass();
+		assertEquals(CtFieldImpl.class.getName(), superClass.getQualifiedName());
+		assertSame(aType, superClass.getParent());
+		assertEquals(1, superClass.getActualTypeArguments().size());
+		CtTypeParameterReference paramRef = (CtTypeParameterReference) superClass.getActualTypeArguments().get(0);
+		assertSame(aType.getFormalCtTypeParameters().get(0), paramRef.getDeclaration());
+	}
+	
 }
