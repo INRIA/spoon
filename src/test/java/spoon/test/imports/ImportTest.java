@@ -358,7 +358,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
@@ -395,7 +395,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
