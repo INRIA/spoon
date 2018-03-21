@@ -17,7 +17,7 @@ public class MatchIfElse {
 				pb.parameter("option2").byVariable("option2");
 				pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
 			})
-			.configureLiveStatements(lsb -> lsb.byVariableName("option"))
+			.configureInlineStatements(lsb -> lsb.byVariableName("option"))
 			.build();
 	}
 	

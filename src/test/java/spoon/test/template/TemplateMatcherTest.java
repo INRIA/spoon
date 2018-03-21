@@ -56,7 +56,7 @@ public class TemplateMatcherTest {
 
 	@Test
 	public void testMatchForeach() throws Exception {
-		//contract: live foreach template can match multiple models into list of parameter values
+		//contract: inline foreach template can match multiple models into list of parameter values
 		CtType<?> ctClass = ModelUtils.buildClass(MatchForEach.class);
 		
 		Pattern pattern = MatchForEach.createPattern(ctClass.getFactory());
@@ -87,7 +87,7 @@ public class TemplateMatcherTest {
 	
 	@Test
 	public void testMatchForeachWithOuterSubstitution() throws Exception {
-		//contract: live foreach template can match multiple models into list of parameter values including outer parameters
+		//contract: inline foreach template can match multiple models into list of parameter values including outer parameters
 		CtType<?> ctClass = ModelUtils.buildClass(MatchForEach2.class);
 		
 		Pattern pattern = MatchForEach2.createPattern(ctClass.getFactory());
@@ -126,7 +126,7 @@ public class TemplateMatcherTest {
 
 	@Test
 	public void testMatchIfElse() throws Exception {
-		//contract: live switch Pattern can match one of the models
+		//contract: inline switch Pattern can match one of the models
 		CtType<?> ctClass = ModelUtils.buildClass(MatchIfElse.class);
 		
 		Pattern pattern = MatchIfElse.createPattern(ctClass.getFactory());

@@ -42,7 +42,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import static spoon.pattern.PatternBuilder.bodyToStatements;
 
 /**
- * Builds live statements of Pattern
+ * Builds inline statements of Pattern
  *
  * For example if the `for` statement in this pattern model
  * <pre><code>
@@ -50,7 +50,7 @@ import static spoon.pattern.PatternBuilder.bodyToStatements;
  *	System.out.println(x);
  * }
  * </code></pre>
- * is configured as live statement and a Pattern is substituted
+ * is configured as inline statement and a Pattern is substituted
  * using parameter <code>$iterable$ = new String[]{"A", "B", "C"}</code>
  * then pattern generated this code
  * <pre><code>
@@ -58,17 +58,17 @@ import static spoon.pattern.PatternBuilder.bodyToStatements;
  * System.out.println("B");
  * System.out.println("C");
  * </code></pre>
- * because live statements are executed during substitution process and are not included in generated result.
+ * because inline statements are executed during substitution process and are not included in generated result.
  *
- * The live statements may be used in PatternMatching process (opposite to Pattern substitution) too.
+ * The inline statements may be used in PatternMatching process (opposite to Pattern substitution) too.
  */
-public class LiveStatementsBuilder {
+public class InlineStatementsBuilder {
 
 	private final PatternBuilder patternBuilder;
 	private boolean failOnMissingParameter = true;
 	private ConflictResolutionMode conflictResolutionMode = ConflictResolutionMode.FAIL;
 
-	public LiveStatementsBuilder(PatternBuilder patternBuilder) {
+	public InlineStatementsBuilder(PatternBuilder patternBuilder) {
 		this.patternBuilder = patternBuilder;
 	}
 
@@ -84,17 +84,17 @@ public class LiveStatementsBuilder {
 	 * @param conflictResolutionMode to be applied mode
 	 * @return this to support fluent API
 	 */
-	public LiveStatementsBuilder setConflictResolutionMode(ConflictResolutionMode conflictResolutionMode) {
+	public InlineStatementsBuilder setConflictResolutionMode(ConflictResolutionMode conflictResolutionMode) {
 		this.conflictResolutionMode = conflictResolutionMode;
 		return this;
 	}
 
 	/**
-	 * marks all CtIf and CtForEach whose expression contains a variable refrence named `variableName` as live statement.
+	 * marks all CtIf and CtForEach whose expression contains a variable reference named `variableName` as inline statement.
 	 * @param variableName to be searched variable name
 	 * @return this to support fluent API
 	 */
-	public LiveStatementsBuilder byVariableName(String variableName) {
+	public InlineStatementsBuilder byVariableName(String variableName) {
 		patternBuilder.patternQuery
 			.filterChildren(new TypeFilter<>(CtVariableReference.class))
 			.map((CtVariableReference<?> varRef) -> {
@@ -104,11 +104,11 @@ public class LiveStatementsBuilder {
 				stmt.accept(new CtAbstractVisitor() {
 					@Override
 					public void visitCtForEach(CtForEach foreach) {
-						markLive(foreach);
+						markInline(foreach);
 					}
 					@Override
 					public void visitCtIf(CtIf ifElement) {
-						markLive(ifElement);
+						markInline(ifElement);
 					}
 				});
 			});
@@ -116,15 +116,15 @@ public class LiveStatementsBuilder {
 	}
 
 	/**
-	 * marks {@link CtForEach} as live statement.
+	 * marks {@link CtForEach} as inline statement.
 	 * @param foreach to be marked {@link CtForEach} element
 	 * @return this to support fluent API
 	 */
-	public LiveStatementsBuilder markLive(CtForEach foreach) {
+	public InlineStatementsBuilder markInline(CtForEach foreach) {
 		//detect meta elements by different way - e.g. comments?
 		RootNode vr = patternBuilder.getPatternNode(foreach.getExpression());
 		if ((vr instanceof PrimitiveMatcher) == false) {
-			throw new SpoonException("Each live `for(x : iterable)` statement must have defined pattern parameter for `iterable` expression");
+			throw new SpoonException("Each inline `for(x : iterable)` statement must have defined pattern parameter for `iterable` expression");
 		}
 		PrimitiveMatcher parameterOfExpression = (PrimitiveMatcher) vr;
 //		PatternBuilder localPatternBuilder = patternBuilder.create(bodyToStatements(foreach.getBody()));
@@ -149,13 +149,13 @@ public class LiveStatementsBuilder {
 	}
 
 	/**
-	 * marks {@link CtIf} as live statement.
+	 * marks {@link CtIf} as inline statement.
 	 * @param ifElement to be marked {@link CtIf} element
 	 * @return this to support fluent API
 	 */
-	public LiveStatementsBuilder markLive(CtIf ifElement) {
+	public InlineStatementsBuilder markInline(CtIf ifElement) {
 		SwitchNode osp = new SwitchNode();
-		boolean[] canBeLive = new boolean[]{true};
+		boolean[] canBeInline = new boolean[]{true};
 		forEachIfCase(ifElement, (expression, block) -> {
 			//detect meta elements by different way - e.g. comments?
 			if (expression != null) {
@@ -163,23 +163,23 @@ public class LiveStatementsBuilder {
 				RootNode vrOfExpression = patternBuilder.getPatternNode(expression);
 				if (vrOfExpression instanceof ParameterNode == false) {
 					if (failOnMissingParameter) {
-						throw new SpoonException("Each live `if` statement must have defined pattern parameter in expression. If you want to ignore this, then call LiveStatementsBuilder#setFailOnMissingParameter(false) first.");
+						throw new SpoonException("Each inline `if` statement must have defined pattern parameter in expression. If you want to ignore this, then call InlineStatementsBuilder#setFailOnMissingParameter(false) first.");
 					} else {
-						canBeLive[0] = false;
+						canBeInline[0] = false;
 						return;
 					}
 				}
 				if (vrOfExpression instanceof PrimitiveMatcher) {
 					osp.addCase((PrimitiveMatcher) vrOfExpression, getPatternNode(bodyToStatements(block)));
 				} else {
-					throw new SpoonException("Live `if` statement have defined single value pattern parameter in expression. But there is " + vrOfExpression.getClass().getName());
+					throw new SpoonException("Inline `if` statement have defined single value pattern parameter in expression. But there is " + vrOfExpression.getClass().getName());
 				}
 			} else {
 				//expression is null, it is: else {}
 				osp.addCase(null, getPatternNode(bodyToStatements(block)));
 			}
 		});
-		if (canBeLive[0]) {
+		if (canBeInline[0]) {
 			/*
 			 * create Substitution request for whole `if`,
 			 * resolve the expressions at substitution time and substitute only the `if` then/else statements, not `if` itself.
@@ -239,11 +239,11 @@ public class LiveStatementsBuilder {
 	}
 
 	/**
-	 * @param failOnMissingParameter set true if it should fail when some statement cannot be handled as live
+	 * @param failOnMissingParameter set true if it should fail when some statement cannot be handled as inline
 	 * set false if ssuch statement should be kept as part of template.
 	 * @return this to support fluent API
 	 */
-	public LiveStatementsBuilder setFailOnMissingParameter(boolean failOnMissingParameter) {
+	public InlineStatementsBuilder setFailOnMissingParameter(boolean failOnMissingParameter) {
 		this.failOnMissingParameter = failOnMissingParameter;
 		return this;
 	}

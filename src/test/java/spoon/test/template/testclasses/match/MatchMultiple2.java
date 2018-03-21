@@ -23,7 +23,7 @@ public class MatchMultiple2 {
 				pb.parameter("printedValue").byVariable("something");
 				cfgParams.accept(pb);
 			})
-			.configureLiveStatements(ls -> {
+			.configureInlineStatements(ls -> {
 				ls.byVariableName("something");
 			})
 			.build();

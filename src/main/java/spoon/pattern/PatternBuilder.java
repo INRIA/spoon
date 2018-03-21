@@ -771,8 +771,8 @@ public class PatternBuilder {
 					.bySubstring(stringMarker);
 
 				if (templateParameters != null) {
-					//handle automatic live statements
-					addLiveStatements(fieldName, templateParameters.get(parameterName));
+					//handle automatic inline statements
+					addInlineStatements(fieldName, templateParameters.get(parameterName));
 				}
 			} else {
 				//TODO CtMethod was may be supported in old Template engine!!!
@@ -795,19 +795,19 @@ public class PatternBuilder {
 				.byTemplateParameterReference(field);
 
 			if (templateParameters != null) {
-				//handle automatic live statements
-				addLiveStatements(parameterName, templateParameters.get(parameterName));
+				//handle automatic inline statements
+				addInlineStatements(parameterName, templateParameters.get(parameterName));
 			}
 		}
 
 	}
 
-	private void addLiveStatements(String variableName, Object paramValue) {
+	private void addInlineStatements(String variableName, Object paramValue) {
 		if (paramValue != null && paramValue.getClass().isArray()) {
 			//the parameters with Array value are meta parameters in legacy templates
-			configureLiveStatements(sb -> {
-				//we are adding live statements automatically from legacy templates,
-				//so do not fail if it is sometime not possible - it means that it is not a live statement then
+			configureInlineStatements(sb -> {
+				//we are adding inline statements automatically from legacy templates,
+				//so do not fail if it is sometime not possible - it means that it is not a inline statement then
 				sb.setFailOnMissingParameter(false);
 				sb.byVariableName(variableName);
 			});
@@ -815,7 +815,7 @@ public class PatternBuilder {
 	}
 
 	/**
-	 * Configures live statements
+	 * Configures inline statements
 	 *
 	 * For example if the `for` statement in this pattern model
 	 * <pre><code>
@@ -823,7 +823,7 @@ public class PatternBuilder {
 	 *	System.out.println(x);
 	 * }
 	 * </code></pre>
-	 * is configured as live statement and a Pattern is substituted
+	 * is configured as inline statement and a Pattern is substituted
 	 * using parameter <code>$iterable$ = new String[]{"A", "B", "C"}</code>
 	 * then pattern generated this code
 	 * <pre><code>
@@ -831,14 +831,14 @@ public class PatternBuilder {
 	 * System.out.println("B");
 	 * System.out.println("C");
 	 * </code></pre>
-	 * because live statements are executed during substitution process and are not included in generated result.
+	 * because inline statements are executed during substitution process and are not included in generated result.
 	 *
-	 * The live statements may be used in PatternMatching process (opposite to Pattern substitution) too.
+	 * The inline statements may be used in PatternMatching process (opposite to Pattern substitution) too.
 	 * @param consumer
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder configureLiveStatements(Consumer<LiveStatementsBuilder> consumer) {
-		LiveStatementsBuilder sb = new LiveStatementsBuilder(this);
+	public PatternBuilder configureInlineStatements(Consumer<InlineStatementsBuilder> consumer) {
+		InlineStatementsBuilder sb = new InlineStatementsBuilder(this);
 		consumer.accept(sb);
 		return this;
 	}

@@ -17,7 +17,7 @@ public class MatchForEach2 {
 				pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST);
 				pb.parameter("varName").byString("var");
 			})
-			.configureLiveStatements(lsb -> lsb.byVariableName("values"))
+			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 			.build();
 	}
 	

@@ -15,7 +15,7 @@ public class MatchWithParameterType {
 					pb.setValueType(valueType);
 				}
 			})
-			.configureLiveStatements(lsb -> lsb.byVariableName("values"))
+			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 			.build();
 	}
 	

@@ -26,7 +26,7 @@ import spoon.Metamodel;
 import spoon.pattern.node.ConstantNode;
 import spoon.pattern.node.ElementNode;
 import spoon.pattern.node.ListOfNodes;
-import spoon.pattern.node.LiveNode;
+import spoon.pattern.node.InlineNode;
 import spoon.pattern.node.ParameterNode;
 import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
@@ -69,9 +69,9 @@ public class PatternPrinter extends DefaultGenerator {
 	@Override
 	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
 		int firstResultIdx = result.getResults().size();
-		if (node instanceof LiveNode) {
-			//this is a Live node. Do not generated nodes normally, but generate origin live statements
-			((LiveNode) node).generateLiveTargets(this, result, parameters);
+		if (node instanceof InlineNode) {
+			//this is a inline node. Do not generated nodes normally, but generate origin inline statements
+			((InlineNode) node).generateInlineTargets(this, result, parameters);
 		} else {
 			super.generateTargets(node, result, parameters);
 		}

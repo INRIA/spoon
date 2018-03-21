@@ -69,7 +69,7 @@ public class OldPattern {
 					.parameter("statements").setContainerKind(ContainerKind.LIST)
 			)
 			.configureAutomaticParameters()
-			.configureLiveStatements(ls -> ls.byVariableName("useStartKeyword"))
+			.configureInlineStatements(ls -> ls.byVariableName("useStartKeyword"))
 			.build();
 	}
 

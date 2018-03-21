@@ -26,13 +26,13 @@ import spoon.pattern.parameter.ParameterValueProvider;
  * For example CtForEach statement is handled as repeated generation of pattern
  * Or CtIf statement is handled as optionally generated pattern
  */
-public interface LiveNode extends RootNode {
+public interface InlineNode extends RootNode {
 	/**
-	 * Generates Live statements of this live {@link RootNode}.
+	 * Generates inline statements of this inline {@link RootNode}.
 	 * This method is used when sources of pattern have to be printed
-	 * @param generator
+	 * @param generator a to be used {@link Generator}
 	 * @param result holder of the result
-	 * @param parameters
+	 * @param parameters a {@link ParameterValueProvider} with current parameters
 	 */
-	<T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
 }

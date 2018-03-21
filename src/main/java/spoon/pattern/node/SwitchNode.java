@@ -45,7 +45,7 @@ import spoon.reflect.factory.Factory;
  *  ... someStatements in other cases ...
  * }
  */
-public class SwitchNode extends AbstractNode implements LiveNode {
+public class SwitchNode extends AbstractNode implements InlineNode {
 
 	private List<CaseNode> cases = new ArrayList<>();
 
@@ -117,7 +117,7 @@ public class SwitchNode extends AbstractNode implements LiveNode {
 		return new CaseNode(null, null).matchTargets(targets, nextMatchers);
 	}
 
-	private class CaseNode extends AbstractNode implements LiveNode {
+	private class CaseNode extends AbstractNode implements InlineNode {
 		/*
 		 * is null for the default case
 		 */
@@ -193,7 +193,7 @@ public class SwitchNode extends AbstractNode implements LiveNode {
 		}
 
 		@Override
-		public <T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 			Factory f = generator.getFactory();
 			CoreFactory cf = f.Core();
 			CtBlock<?> block = cf.createBlock();
@@ -214,7 +214,7 @@ public class SwitchNode extends AbstractNode implements LiveNode {
 	}
 
 	@Override
-	public <T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		CtStatement resultStmt = null;
 		CtStatement lastElse = null;
 		CtIf lastIf = null;

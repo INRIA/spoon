@@ -17,7 +17,7 @@ public class MatchWithParameterCondition {
 					pb.matchCondition(null, condition);
 				}
 			})
-			.configureLiveStatements(lsb -> lsb.byVariableName("values"))
+			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 			.build();
 	}
 	

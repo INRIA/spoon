@@ -16,7 +16,7 @@ public class MatchForEach {
 			.configureParameters(pb -> {
 				pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST);
 			})
-			.configureLiveStatements(lsb -> lsb.byVariableName("values"))
+			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 			.build();
 	}
 	

@@ -41,7 +41,7 @@ import spoon.reflect.factory.Factory;
  * </code></pre>
  * where parameter values are _x_ = ["a", "b", getStringOf(p1, p2)]
  */
-public class ForEachNode extends AbstractRepeatableMatcher implements LiveNode {
+public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode {
 
 	private PrimitiveMatcher iterableParameter;
 	private RootNode nestedModel;
@@ -146,7 +146,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements LiveNode {
 	}
 
 	@Override
-	public <T> void generateLiveTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		Factory f = generator.getFactory();
 		CtForEach forEach = f.Core().createForEach();
 		forEach.setVariable(f.Code().createLocalVariable(f.Type().objectType(), localParameter.getName(), null));
