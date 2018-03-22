@@ -43,9 +43,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			clazz.getPackage();
 		}
 		if (clazz.getSuperclass() != null) {
-			visitClassReference(clazz.getSuperclass());
+			visitClassReference(clazz.getGenericSuperclass());
 		}
-		for (Class<?> anInterface : clazz.getInterfaces()) {
+		for (Type anInterface : clazz.getGenericInterfaces()) {
 			visitInterfaceReference(anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
@@ -339,12 +339,49 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	}
 
 	@Override
+	public <T> void visitClassReference(ParameterizedType type) {
+		Type rawType = type.getRawType();
+
+		if (!(rawType instanceof Class)) {
+			throw new UnsupportedOperationException("Rawtype of the parameterized type should be a class.");
+		}
+
+		@SuppressWarnings("unchecked")
+		Class<T> classRaw = (Class<T>) rawType;
+		if (classRaw.getPackage() != null) {
+			visitPackage(classRaw.getPackage());
+		}
+		if (classRaw.getEnclosingClass() != null) {
+			visitClassReference(classRaw.getEnclosingClass());
+		}
+
+		for (Type generic : type.getActualTypeArguments()) {
+			if (generic instanceof TypeVariable) {
+				visitTypeParameter((TypeVariable<?>) generic);
+			} else {
+				visitType(generic);
+			}
+		}
+	}
+
+	@Override
 	public <T> void visitClassReference(Class<T> clazz) {
 		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
 			visitClassReference(clazz.getEnclosingClass());
+		}
+	}
+
+	@Override
+	public <T> void visitClassReference(Type type) {
+		if (type instanceof Class) {
+			visitClassReference((Class) type);
+		} else if (type instanceof ParameterizedType) {
+			visitClassReference((ParameterizedType) type);
+		} else {
+			throw new UnsupportedOperationException("Only type with class or ParameterizedType are supported.");
 		}
 	}
 

@@ -84,8 +84,13 @@ interface JavaReflectionVisitor {
 	/** Visits a class as an array reference */
 	<T> void visitArrayReference(Class<T> typeArray);
 
+	/** Visits a type as a class reference */
+	<T> void visitClassReference(ParameterizedType type);
+
 	/** Visits a class as a class reference */
 	<T> void visitClassReference(Class<T> clazz);
+
+	<T> void visitClassReference(Type type);
 
 	/** Visits a class as an interface reference */
 	<T> void visitInterfaceReference(Class<T> anInterface);
