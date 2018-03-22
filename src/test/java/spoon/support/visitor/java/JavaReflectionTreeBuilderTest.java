@@ -2,6 +2,7 @@ package spoon.support.visitor.java;
 
 import org.junit.Test;
 
+import spoon.Launcher;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
@@ -11,26 +12,32 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.test.generics.ComparableComparatorBug;
 
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.lang.annotation.Retention;
 import java.net.CookieManager;
 import java.net.URLClassLoader;
 import java.time.format.TextStyle;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -214,4 +221,45 @@ public class JavaReflectionTreeBuilderTest {
 		assertSame(aType.getFormalCtTypeParameters().get(0), paramRef.getDeclaration());
 	}
 	
+	@Test
+	public void testSuperOfActualTypeArgumentsOfReturnTypeOfMethod() throws Exception {
+				
+		Consumer<CtType<?>> checker = type -> {
+			{
+				CtMethod method = type.getMethodsByName("setAssignment").get(0);
+				CtTypeReference<?> paramType = ((CtParameter<?>) method.getParameters().get(0)).getType();
+				assertEquals(CtExpression.class.getName(), paramType.getQualifiedName());
+				assertEquals(1, paramType.getActualTypeArguments().size());
+				CtTypeParameterReference actTypeArgOfReturnType = (CtTypeParameterReference) paramType.getActualTypeArguments().get(0);
+				assertEquals("A", actTypeArgOfReturnType.getSimpleName());
+				CtTypeReference<?> boundType = actTypeArgOfReturnType.getBoundingType();
+				assertEquals("T", boundType.getSimpleName());
+				assertTrue(boundType instanceof CtTypeParameterReference);
+			}
+			{
+				CtMethod method = type.getMethodsByName("getAssignment").get(0);
+				CtTypeReference<?> returnType = method.getType();
+				assertEquals(CtExpression.class.getName(), returnType.getQualifiedName());
+				assertEquals(1, returnType.getActualTypeArguments().size());
+				CtTypeParameterReference actTypeArgOfReturnType = (CtTypeParameterReference) returnType.getActualTypeArguments().get(0);
+				assertEquals("A", actTypeArgOfReturnType.getSimpleName());
+				CtTypeReference<?> boundType = actTypeArgOfReturnType.getBoundingType();
+				assertEquals("T", boundType.getSimpleName());
+				assertTrue(boundType instanceof CtTypeParameterReference);
+			}
+		};
+		//try the check using CtType build from sources
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new FileSystemFile(new File("./src/main/java/spoon/support/reflect/code/CtAssignmentImpl.java")));
+		launcher.buildModel();
+		CtClass<?> classFromSources = launcher.getFactory().Class().get(CtAssignmentImpl.class.getName());
+		assertFalse(classFromSources.isShadow());
+		checker.accept(classFromSources);
+		
+		//try the same check using CtType build using reflection
+		CtType<?> classFromReflection = createFactory().Class().get(CtAssignmentImpl.class);
+		assertTrue(classFromReflection.isShadow());
+		checker.accept(classFromReflection);
+	}
 }
