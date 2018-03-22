@@ -90,6 +90,7 @@ interface JavaReflectionVisitor {
 	/** Visits a class as a class reference */
 	<T> void visitClassReference(Class<T> clazz);
 
+	/** Visits a type as a class reference */
 	<T> void visitClassReference(Type type);
 
 	/** Visits a class as an interface reference */
