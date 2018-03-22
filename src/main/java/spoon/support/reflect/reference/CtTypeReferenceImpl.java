@@ -41,6 +41,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
@@ -509,7 +510,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		//we need a interface type references whose parent is connected to CtType, otherwise TypeParameterReferences cannot be resolved well
 		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
-			return t.getSuperInterfaces();
+			return Collections.unmodifiableSet(t.getSuperInterfaces());
+		} else {
+			Class<?> c = getActualClass();
+			Class<?>[] sis = c.getInterfaces();
+			if ((sis != null) && (sis.length > 0)) {
+				Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
+				for (Class<?> si : sis) {
+					set.add(getFactory().Type().createReference(si));
+				}
+				return Collections.unmodifiableSet(set);
+			}
 		}
 		throw new SpoonException("Cannot provide CtType for " + getQualifiedName());
 	}
