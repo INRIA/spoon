@@ -233,6 +233,9 @@ public class JavaReflectionTreeBuilderTest {
 				CtTypeParameterReference actTypeArgOfReturnType = (CtTypeParameterReference) paramType.getActualTypeArguments().get(0);
 				assertEquals("A", actTypeArgOfReturnType.getSimpleName());
 				CtTypeReference<?> boundType = actTypeArgOfReturnType.getBoundingType();
+				//is it really correct to have bounding type T?
+				//There should be NO bounding type - may be a special AST node?
+				//Even the Object as bounding type here is probably not correct.
 				assertEquals("T", boundType.getSimpleName());
 				assertTrue(boundType instanceof CtTypeParameterReference);
 			}
@@ -244,6 +247,9 @@ public class JavaReflectionTreeBuilderTest {
 				CtTypeParameterReference actTypeArgOfReturnType = (CtTypeParameterReference) returnType.getActualTypeArguments().get(0);
 				assertEquals("A", actTypeArgOfReturnType.getSimpleName());
 				CtTypeReference<?> boundType = actTypeArgOfReturnType.getBoundingType();
+				//is it really correct to have bounding type T?
+				//There should be NO bounding type - may be a special AST node?
+				//Even the Object as bounding type here is probably not correct.
 				assertEquals("T", boundType.getSimpleName());
 				assertTrue(boundType instanceof CtTypeParameterReference);
 			}
