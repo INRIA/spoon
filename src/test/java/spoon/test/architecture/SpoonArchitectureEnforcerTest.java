@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.pattern.PatternBuilder;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
@@ -17,8 +18,10 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.metamodel.SpoonMetaModel;
@@ -233,6 +236,27 @@ public class SpoonArchitectureEnforcerTest {
 				return "junit.framework.TestCase".equals(element.getQualifiedName());
 			}
 		}).size());
+
+		// contract: all public methods of those classes are properly tested in a JUnit test
+		List<String> l = new ArrayList<>();
+		l.add("spoon.pattern.PatternBuilder");
+		l.add("spoon.pattern.Pattern");
+		List<String> errors = new ArrayList<>();
+		for (String klass : l) {
+			for (CtMethod m : spoon.getFactory().Type().get(Class.forName(klass)).getMethods()) {
+				if (!m.hasModifier(ModifierKind.PUBLIC)) continue;
+
+				if (spoon.getModel().getElements(new Filter<CtExecutableReference>() {
+					@Override
+					public boolean matches(CtExecutableReference element) {
+						return element.getExecutableDeclaration() == m;
+					}
+				}).size() == 0) {
+					errors.add(klass+"#"+m.getSimpleName());
+				}
+			}
+		}
+		assertTrue("untested public methods: "+errors.toString(), errors.size()==0);
 	}
 
 	@Test

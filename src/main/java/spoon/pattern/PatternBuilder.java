@@ -352,6 +352,9 @@ public class PatternBuilder {
 		return this;
 	}
 
+	/**
+	 * TODO
+	 */
 	public PatternBuilder configureLocalParameters(Consumer<ParametersBuilder> parametersBuilder) {
 		ParametersBuilder pb = new ParametersBuilder(this, new HashMap<>());
 		parametersBuilder.accept(pb);

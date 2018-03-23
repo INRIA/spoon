@@ -16,6 +16,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
+import spoon.pattern.InlineStatementsBuilder;
 import spoon.pattern.ParametersBuilder;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
@@ -163,4 +164,8 @@ public class PatternTest {
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 	}
 
+	@Test
+	public void testInlineStatementsBuilder() throws Exception {
+		// TODO: specify what InlineStatementsBuilder does
+	}
 }
