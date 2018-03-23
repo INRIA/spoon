@@ -59,9 +59,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -314,6 +312,15 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter) {
+		Iterator<RuntimeBuilderContext> contextIterator = contexts.iterator();
+		while (contextIterator.hasNext()) {
+			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(parameter.getName());
+			if (typeParameter != null) {
+				contexts.peek().addFormalType(typeParameter.clone());
+				return;
+			}
+		}
+
 		final CtTypeParameter typeParameter = factory.Core().createTypeParameter();
 		typeParameter.setSimpleName(parameter.getName());
 
@@ -326,23 +333,24 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
-		Iterator<RuntimeBuilderContext> contextIterator = contexts.descendingIterator();
-		while (contextIterator.hasNext()) {
-			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(parameter.getName());
-			if (typeParameter != null) {
-				contexts.peek().addTypeName(typeParameter.getReference());
-				return;
-			}
-		}
-
 		final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
 		typeParameterReference.setSimpleName(parameter.getName());
 
 		RuntimeBuilderContext runtimeBuilderContext = new TypeReferenceRuntimeBuilderContext(typeParameterReference);
 		if (contexts.contains(runtimeBuilderContext)) {
 			// we hare in the case of a loop
-			contexts.peek().addTypeName(factory.Type().OBJECT);
+			exit();
+			enter(new TypeReferenceRuntimeBuilderContext(factory.Type().OBJECT));
 			return;
+		}
+
+		Iterator<RuntimeBuilderContext> contextIterator = contexts.iterator();
+		while (contextIterator.hasNext()) {
+			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(parameter.getName());
+			if (typeParameter != null) {
+				contexts.peek().addTypeName(typeParameter.getReference());
+				return;
+			}
 		}
 
 		enter(runtimeBuilderContext);
@@ -374,7 +382,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitType(ParameterizedType type) {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
 
-		enter(new TypeReferenceRuntimeBuilderContext(ctTypeReference) {
+		RuntimeBuilderContext context = new TypeReferenceRuntimeBuilderContext(ctTypeReference) {
 			@Override
 			public void addClassReference(CtTypeReference<?> typeReference) {
 				ctTypeReference.setSimpleName(typeReference.getSimpleName());
@@ -387,11 +395,23 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			@Override
 			public void addType(CtType<?> aType) {
 			}
-		});
+		};
+
+		enter(context);
 		super.visitType(type);
+
+		// in case of a loop we have replaced a context:
+		// we do not want to addTypeName then
+		// and we have to rely on the instance reference to check that
+		boolean contextStillExisting = false;
+		for (RuntimeBuilderContext context1 : contexts) {
+			contextStillExisting = contextStillExisting || (context1 == context);
+		}
 		exit();
 
-		contexts.peek().addTypeName(ctTypeReference);
+		if (contextStillExisting) {
+			contexts.peek().addTypeName(ctTypeReference);
+		}
 	}
 
 	@Override

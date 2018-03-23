@@ -82,5 +82,7 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) { return this.mapTypeParameters.get(string); }
+	public CtTypeParameter getTypeParameter(String string) {
+		return this.mapTypeParameters.get(string);
+	}
 }

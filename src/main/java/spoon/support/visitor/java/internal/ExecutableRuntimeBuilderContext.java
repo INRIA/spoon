@@ -43,6 +43,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	public ExecutableRuntimeBuilderContext(CtConstructor<?> ctConstructor) {
 		super(ctConstructor);
 		this.ctExecutable = ctConstructor;
+		this.mapTypeParameters = new HashMap<>();
 	}
 
 	@Override
@@ -96,5 +97,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) { return this.mapTypeParameters.get(string); }
+	public CtTypeParameter getTypeParameter(String string) {
+		return this.mapTypeParameters.get(string);
+	}
 }

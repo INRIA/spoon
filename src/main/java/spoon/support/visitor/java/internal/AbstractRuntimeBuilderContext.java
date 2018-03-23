@@ -30,8 +30,6 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
 
 abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 
@@ -105,5 +103,7 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) { return null; }
+	public CtTypeParameter getTypeParameter(String string) {
+		return null;
+	}
 }

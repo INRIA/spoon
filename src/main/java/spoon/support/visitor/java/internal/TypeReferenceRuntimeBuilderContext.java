@@ -68,19 +68,24 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) { return this.mapTypeParameters.get(string); }
+	public CtTypeParameter getTypeParameter(String string) {
+		return this.mapTypeParameters.get(string);
+	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		final TypeReferenceRuntimeBuilderContext that = (TypeReferenceRuntimeBuilderContext) o;
 		return Objects.equals(typeReference, that.typeReference);
 	}
 
 	@Override
 	public int hashCode() {
-
 		return Objects.hash(typeReference);
 	}
 }
