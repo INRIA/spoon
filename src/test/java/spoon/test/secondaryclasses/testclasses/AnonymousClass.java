@@ -1,4 +1,4 @@
-package spoon.test.secondaryclasses;
+package spoon.test.secondaryclasses.testclasses;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

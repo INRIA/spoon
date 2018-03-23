@@ -1,4 +1,4 @@
-package spoon.test.model;
+package spoon.test.model.testclasses;
 
 public class InterfaceSuperclass implements Comparable<Integer> {
 	@Override

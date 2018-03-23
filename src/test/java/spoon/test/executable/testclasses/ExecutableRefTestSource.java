@@ -1,4 +1,4 @@
-package spoon.test.executable;
+package spoon.test.executable.testclasses;
 
 public class ExecutableRefTestSource implements MyIntf {
 

@@ -17,7 +17,7 @@ public class SourcePositionTest {
 
 	@Test
 	public void equalPositionsHaveSameHashcode() throws Exception {
-		String packageName = "spoon.test";
+		String packageName = "spoon.test.testclasses";
 		String sampleClassName = "SampleClass";
 		String qualifiedName = packageName + "." + sampleClassName;
 

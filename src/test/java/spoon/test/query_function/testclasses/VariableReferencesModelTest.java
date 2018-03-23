@@ -1,4 +1,4 @@
-package spoon.test.query_function;
+package spoon.test.query_function.testclasses;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,7 +11,7 @@ import org.junit.Test;
 
 /**
  * The main purpose of this test is to be transfomed by Spoon into Spoon model, 
- * which is then used by {@link VariableReferencesTest}
+ * which is then used by {@link spoon.test.query_function.VariableReferencesTest}
  * 
  * The values of the fields must be a sequence starting from 1
  */

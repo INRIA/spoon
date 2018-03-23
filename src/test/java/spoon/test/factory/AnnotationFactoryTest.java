@@ -16,7 +16,7 @@ public class AnnotationFactoryTest {
 	@Test
 	public void testAnnotate() throws Exception {
 
-		CtClass<?> type = build("spoon.test", "SampleClass");
+		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 
 		AnnotationFactory af = type.getFactory().Annotation();
 		af.annotate(type,SampleAnnotation.class,"names",new String[]{"foo","bar"});
