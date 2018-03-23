@@ -23,13 +23,18 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtTypeReference<?> typeReference;
+	private Map<String, CtTypeParameter> mapTypeParameters;
 
 	public TypeReferenceRuntimeBuilderContext(CtTypeReference<?> typeReference) {
 		super(typeReference);
 		this.typeReference = typeReference;
+		this.mapTypeParameters = new HashMap<>();
 	}
 
 	@Override
@@ -59,5 +64,23 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		typeReference.addActualTypeArgument(parameterRef.getReference());
+		this.mapTypeParameters.put(parameterRef.getSimpleName(), parameterRef);
+	}
+
+	@Override
+	public CtTypeParameter getTypeParameter(String string) { return this.mapTypeParameters.get(string); }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		final TypeReferenceRuntimeBuilderContext that = (TypeReferenceRuntimeBuilderContext) o;
+		return Objects.equals(typeReference, that.typeReference);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(typeReference);
 	}
 }

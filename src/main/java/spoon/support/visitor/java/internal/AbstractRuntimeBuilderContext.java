@@ -30,8 +30,11 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
 abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
+
 	protected AbstractRuntimeBuilderContext(CtShadowable element) {
 		element.setShadow(true);
 	}
@@ -100,4 +103,7 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 	public void addTypeName(CtTypeReference<?> ctTypeReference) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public CtTypeParameter getTypeParameter(String string) { return null; }
 }

@@ -25,13 +25,17 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	protected CtType type;
+	private Map<String, CtTypeParameter> mapTypeParameters;
 
 	public TypeRuntimeBuilderContext(CtType type) {
 		super(type);
 		this.type = type;
+		this.mapTypeParameters = new HashMap<>();
 	}
 
 	@Override
@@ -67,6 +71,7 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		this.type.addFormalCtTypeParameter(parameterRef);
+		this.mapTypeParameters.put(parameterRef.getSimpleName(), parameterRef);
 	}
 
 	@Override
@@ -75,4 +80,7 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 			((CtTypeParameter) this.type).setSuperclass(ctTypeReference);
 		}
 	}
+
+	@Override
+	public CtTypeParameter getTypeParameter(String string) { return this.mapTypeParameters.get(string); }
 }

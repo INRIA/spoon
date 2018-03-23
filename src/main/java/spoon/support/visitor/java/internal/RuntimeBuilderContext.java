@@ -56,4 +56,6 @@ public interface RuntimeBuilderContext {
 	void addFormalType(CtTypeParameter parameterRef);
 
 	void addTypeName(CtTypeReference<?> ctTypeReference);
+
+	CtTypeParameter getTypeParameter(String string);
 }

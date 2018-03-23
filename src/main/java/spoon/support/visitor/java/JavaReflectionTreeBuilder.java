@@ -59,6 +59,9 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -323,10 +326,26 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+		Iterator<RuntimeBuilderContext> contextIterator = contexts.descendingIterator();
+		while (contextIterator.hasNext()) {
+			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(parameter.getName());
+			if (typeParameter != null) {
+				contexts.peek().addTypeName(typeParameter.getReference());
+				return;
+			}
+		}
+
 		final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
 		typeParameterReference.setSimpleName(parameter.getName());
 
-		enter(new TypeReferenceRuntimeBuilderContext(typeParameterReference));
+		RuntimeBuilderContext runtimeBuilderContext = new TypeReferenceRuntimeBuilderContext(typeParameterReference);
+		if (contexts.contains(runtimeBuilderContext)) {
+			// we hare in the case of a loop
+			contexts.peek().addTypeName(factory.Type().OBJECT);
+			return;
+		}
+
+		enter(runtimeBuilderContext);
 		super.visitTypeParameterReference(parameter);
 		exit();
 
@@ -337,7 +356,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitType(Type type) {
 		CtTypeReference<?> ctTypeReference;
 		if (type instanceof TypeVariable) {
-			ctTypeReference = factory.Core().createTypeParameterReference();
+			this.visitTypeParameterReference((TypeVariable<?>) type);
+			return;
 		} else {
 			ctTypeReference = factory.Core().createTypeReference();
 		}

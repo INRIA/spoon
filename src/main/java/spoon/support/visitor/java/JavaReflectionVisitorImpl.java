@@ -42,7 +42,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		if (clazz.getSuperclass() != null) {
+		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+			visitTypeParameter(generic);
+		}
+		if (clazz.getGenericSuperclass() != null) {
 			visitClassReference(clazz.getGenericSuperclass());
 		}
 		for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -70,9 +73,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else {
 				visitClass(aClass);
 			}
-		}
-		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-			visitTypeParameter(generic);
 		}
 	}
 
@@ -193,12 +193,13 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				visitAnnotation(annotation);
 			}
 		}
-		for (RtParameter parameter : RtParameter.parametersOf(method)) {
-			visitParameter(parameter);
-		}
 		for (TypeVariable<Method> aTypeParameter : method.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
 		}
+		for (RtParameter parameter : RtParameter.parametersOf(method)) {
+			visitParameter(parameter);
+		}
+
 		if (method.getReturnType() != null) {
 			if (method.getReturnType().isArray() && method.getReturnType().getComponentType() != null) {
 				visitArrayReference(method.getReturnType().getComponentType());
