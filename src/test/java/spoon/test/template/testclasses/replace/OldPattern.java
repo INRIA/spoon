@@ -62,7 +62,7 @@ public class OldPattern {
 	 * @param factory a to be used factory
 	 * @return a Pattern instance of this Pattern
 	 */
-	public static Pattern createPattern(Factory factory) {
+	public static Pattern createPatternFromOldPattern(Factory factory) {
 		CtType<?> type = factory.Type().get(OldPattern.class);
 		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
 			.configureParameters(pb->pb

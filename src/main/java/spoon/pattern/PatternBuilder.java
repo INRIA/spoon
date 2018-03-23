@@ -266,6 +266,12 @@ public class PatternBuilder {
 		});
 	}
 
+	/** adds the given nodes to the pattern */
+	public PatternBuilder selectNodes(TemplateModelBuilder selector) {
+		this.patternModel.addAll(selector.getTemplateModels());
+		return this;
+	}
+
 	/**
 	 * @param element to be checked element
 	 * @return true if element `element` is a template or a child of template
