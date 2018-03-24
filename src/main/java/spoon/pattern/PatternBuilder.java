@@ -360,6 +360,12 @@ public class PatternBuilder {
 		return this;
 	}
 
+	/**
+	 * Configure template parameters
+	 * @param parametersBuilder a buildir which allows to define template parameters and to select
+	 *  to be substituted nodes
+	 * @return
+	 */
 	public PatternBuilder configureParameters(Consumer<ParametersBuilder> parametersBuilder) {
 		ParametersBuilder pb = new ParametersBuilder(this, parameterInfos);
 		parametersBuilder.accept(pb);
@@ -367,9 +373,9 @@ public class PatternBuilder {
 	}
 
 	/**
-	 * TODO
+	 * Used by inline for each statement to define template parameter which is local in the scope of the inline statement
 	 */
-	public PatternBuilder configureLocalParameters(Consumer<ParametersBuilder> parametersBuilder) {
+	PatternBuilder configureLocalParameters(Consumer<ParametersBuilder> parametersBuilder) {
 		ParametersBuilder pb = new ParametersBuilder(this, new HashMap<>());
 		parametersBuilder.accept(pb);
 		return this;
