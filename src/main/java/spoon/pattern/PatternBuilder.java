@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -129,7 +130,10 @@ public class PatternBuilder {
 	}
 
 	private PatternBuilder(CtTypeReference<?> templateTypeRef, List<CtElement> template) {
-		this.templateTypeRef = templateTypeRef;
+		this.templateTypeRef = getDeclaringTypeRef(template);
+		if (Objects.equals(this.templateTypeRef, templateTypeRef) == false) {
+			throw new SpoonException("Unexpetced template type ref");
+		}
 		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		if (template == null) {
 			throw new SpoonException("Cannot create a Pattern from an null model");
@@ -142,6 +146,38 @@ public class PatternBuilder {
 				pb.parameter(TARGET_TYPE).byType(templateTypeRef).setValueType(CtTypeReference.class);
 			});
 		}
+	}
+
+	private CtTypeReference<?> getDeclaringTypeRef(List<CtElement> template) {
+		CtType<?> type = null;
+		for (CtElement ctElement : template) {
+			CtType t;
+			if (ctElement instanceof CtType) {
+				t = (CtType) ctElement;
+				type = mergeType(type, t);
+			}
+			t = ctElement.getParent(CtType.class);
+			if (t != null) {
+				type = mergeType(type, t);
+			}
+		}
+		return type == null ? null : type.getReference();
+	}
+
+	private CtType<?> mergeType(CtType<?> type, CtType t) {
+		if (type == null) {
+			return t;
+		}
+		if (type == t) {
+			return type;
+		}
+		if (type.hasParent(t)) {
+			return t;
+		}
+		if (t.hasParent(type)) {
+			return type;
+		}
+		throw new SpoonException("The pattern on nested types are not supported.");
 	}
 
 	/**
