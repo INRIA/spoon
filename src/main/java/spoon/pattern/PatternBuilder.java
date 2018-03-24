@@ -130,12 +130,12 @@ public class PatternBuilder {
 
 	private PatternBuilder(CtTypeReference<?> templateTypeRef, List<CtElement> template) {
 		this.templateTypeRef = templateTypeRef;
-		this.patternModel = template;
+		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		if (template == null) {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
 		this.valueConvertor = new ValueConvertorImpl();
-		patternNodes = ElementNode.create(template, patternElementToSubstRequests);
+		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
 		if (templateTypeRef != null) {
 			configureParameters(pb -> {
@@ -264,12 +264,6 @@ public class PatternBuilder {
 		modifyNodeOfAttributeOfElement(element, role, conflictMode, oldAttrNode -> {
 			return node;
 		});
-	}
-
-	/** adds the given nodes to the pattern */
-	public PatternBuilder selectNodes(TemplateModelBuilder selector) {
-		this.patternModel.addAll(selector.getTemplateModels());
-		return this;
 	}
 
 	/**
