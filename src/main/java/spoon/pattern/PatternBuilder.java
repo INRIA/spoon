@@ -169,10 +169,10 @@ public class PatternBuilder {
 	 * @return {@link RootNode}, which handles matching/generation of an `object` from the source spoon AST.
 	 * or null, if there is none
 	 */
-	public RootNode getOptionalPatternNode(CtElement element, CtRole... roles) {
+	RootNode getOptionalPatternNode(CtElement element, CtRole... roles) {
 		return getPatternNode(true, element, roles);
 	}
-	public RootNode getPatternNode(CtElement element, CtRole... roles) {
+	RootNode getPatternNode(CtElement element, CtRole... roles) {
 		return getPatternNode(false, element, roles);
 	}
 	private RootNode getPatternNode(boolean optional, CtElement element, CtRole... roles) {
@@ -635,7 +635,7 @@ public class PatternBuilder {
 	 * @param parameter to be checked {@link ParameterInfo}
 	 * @param consumer receiver of calls
 	 */
-	public void forEachNodeOfParameter(ParameterInfo parameter, Consumer<RootNode> consumer) {
+	void forEachNodeOfParameter(ParameterInfo parameter, Consumer<RootNode> consumer) {
 		patternNodes.forEachParameterInfo((paramInfo, vr) -> {
 			if (paramInfo == parameter) {
 				consumer.accept(vr);
