@@ -3,19 +3,28 @@ package spoon.support.visitor.java;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.path.CtElementPathBuilder;
+import spoon.reflect.path.CtPathException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -25,7 +34,10 @@ import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
+import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
+import spoon.test.metamodel.MetamodelConcept;
+import spoon.test.metamodel.SpoonMetaModel;
 
 import java.io.File;
 import java.io.ObjectInputStream;
@@ -33,6 +45,14 @@ import java.lang.annotation.Retention;
 import java.net.CookieManager;
 import java.net.URLClassLoader;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -150,6 +170,129 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
 	
+	@Test
+	public void testShadowModelEqualsNormalModel() {
+		//contract: CtType made from sources is equal to CtType made by reflection
+		//with exception of CtExecutable#body, CtParameter#simpleName
+		//with exception of Annotations with retention policy SOURCE
+		SpoonMetaModel metaModel = new SpoonMetaModel(new File("src/main/java"));
+		for (MetamodelConcept concept : metaModel.getConcepts()) {
+			checkShadowTypeIsEqual(concept.getModelClass());
+			checkShadowTypeIsEqual(concept.getModelInterface());
+		}
+	}
+	
+	private void checkShadowTypeIsEqual(CtType<?> type) {
+		if (type == null) {
+			return;
+		}
+		Factory shadowFactory = createFactory();
+		CtTypeReference<?> shadowTypeRef = shadowFactory.Type().createReference(type.getActualClass());
+		CtType<?> shadowType = shadowTypeRef.getTypeDeclaration();
+		
+		assertFalse(type.isShadow());
+		assertTrue(shadowType.isShadow());
+		
+		ShadowEqualsVisitor sev = new ShadowEqualsVisitor(new HashSet<>(Arrays.asList(
+				//shadow classes has no body
+				CtRole.STATEMENT)));
+		List<String> diffs = sev.checkDiffs(type, shadowType);
+		assertTrue(String.join("\n", diffs), diffs.isEmpty());
+	}
+	
+	private static class ShadowEqualsVisitor extends EqualsVisitor {
+		CtElement rootOfOther;
+		CtElementPathBuilder pathBuilder = new CtElementPathBuilder();
+		List<String> differences;
+		Set<CtRole> ignoredRoles;
+		ShadowEqualsVisitor(Set<CtRole> ignoredRoles) {
+			super();
+			this.ignoredRoles = ignoredRoles;
+		}
+		@Override
+		protected boolean fail(CtRole role, Object element, Object other) {
+			if (ignoredRoles.contains(role)) {
+				return false;
+			}
+			CtElement parentOfOther = stack.peek();
+			try {
+				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName());
+			} catch (CtPathException e) {
+				throw new SpoonException(e);
+			}
+			return false;
+		}
+		@Override
+		public void biScan(CtRole role, CtElement element, CtElement other) {
+			if (element instanceof CtParameter) {
+				CtParameter param = (CtParameter) element;
+				CtParameter otherParam = (CtParameter) other;
+				if (otherParam.getSimpleName().startsWith("arg")) {
+					otherParam.setSimpleName(param.getSimpleName());
+				}
+			}
+			super.biScan(role, element, other);
+		}
+		@Override
+		protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+			if (role == CtRole.TYPE_MEMBER) {
+				//sort type members so they match together
+				Map<String, CtTypeMember> elementsByName = groupTypeMembersBySignature((Collection) elements);
+				Map<String, CtTypeMember> othersByName = groupTypeMembersBySignature((Collection) others);
+				for (Map.Entry<String, CtTypeMember> e : elementsByName.entrySet()) {
+					String name = e.getKey();
+					CtTypeMember other = othersByName.remove(name);
+					if (other == null) {
+						differences.add("Missing shadow typeMember: " + name);
+					}
+					biScan(role, e.getValue(), other);
+				}
+				for (Map.Entry<String, CtTypeMember> e : othersByName.entrySet()) {
+					differences.add("Unexpected shadow typeMember: " + e.getKey());
+				}
+				return;
+			}
+			if (role == CtRole.ANNOTATION) {
+				//remove all RetentionPolicy#SOURCE level annotations from elements
+				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>)elements).stream().filter(a->{
+					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
+					Class ac = at.getActualClass();
+					if (ac == Override.class) {
+						return false;
+					}
+					return true;
+				}).collect(Collectors.toList());
+				super.biScan(role, fileteredElements, others);
+				return;
+			}
+			super.biScan(role, elements, others);
+		}
+		public List<String> checkDiffs(CtType<?> type, CtType<?> shadowType) {
+			differences = new ArrayList<>();
+			rootOfOther = shadowType;
+			biScan(null, type, shadowType);
+			return differences;
+		}
+	}
+	
+	private static Map<String, CtTypeMember> groupTypeMembersBySignature(Collection<CtTypeMember> typeMembers) {
+		Map<String, CtTypeMember> typeMembersByName = new HashMap<>();
+		for (CtTypeMember tm : typeMembers) {
+			String name;
+			if (tm instanceof CtExecutable) {
+				CtExecutable<?> exec = ((CtExecutable) tm);
+				name = exec.getSignature();
+			} else {
+				name = tm.getSimpleName();
+			}
+			CtTypeMember conflictTM = typeMembersByName.put(name, tm);
+			if (conflictTM != null) {
+				throw new SpoonException("There are two type members with name: " + name + " in " + tm.getParent(CtType.class).getQualifiedName());
+			}
+		}
+		return typeMembersByName;
+	}
+
 	@Test
 	public void testSuperInterfaceActualTypeArgumentsByJavaReflectionTreeBuilder() {
 		final CtType<CtConditionalImpl> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CtConditionalImpl.class);
