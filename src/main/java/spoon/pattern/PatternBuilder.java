@@ -274,13 +274,28 @@ public class PatternBuilder {
 		}
 	}
 
-	public void setNodeOfElement(CtElement element, RootNode node, ConflictResolutionMode conflictMode) {
+	/**
+	 * Changes the Pattern by way the `node` is used at position of template element.
+	 * It is used for example to mark that `element` as pattern parameter
+	 * @param element
+	 * @param node
+	 * @param conflictMode
+	 */
+	void setNodeOfElement(CtElement element, RootNode node, ConflictResolutionMode conflictMode) {
 		modifyNodeOfElement(element, conflictMode, oldNode -> {
 			return node;
 		});
 	}
 
-	public void setNodeOfAttributeOfElement(CtElement element, CtRole role, RootNode node, ConflictResolutionMode conflictMode) {
+	/**
+	 * Changes the Pattern by way the `node` is used at position of template element attribute of `role`.
+	 * It is used for example to mark that `element` as pattern parameter
+	 * @param element
+	 * @param role
+	 * @param node
+	 * @param conflictMode
+	 */
+	void setNodeOfAttributeOfElement(CtElement element, CtRole role, RootNode node, ConflictResolutionMode conflictMode) {
 		modifyNodeOfAttributeOfElement(element, role, conflictMode, oldAttrNode -> {
 			return node;
 		});
@@ -290,7 +305,7 @@ public class PatternBuilder {
 	 * @param element to be checked element
 	 * @return true if element `element` is a template or a child of template
 	 */
-	public boolean isInModel(CtElement element) {
+	boolean isInModel(CtElement element) {
 		if (element != null) {
 			for (CtElement patternElement : patternModel) {
 				if (element == patternElement || element.hasParent(patternElement)) {
@@ -605,7 +620,7 @@ public class PatternBuilder {
 		return null;
 	}
 
-	public boolean hasParameterInfo(String parameterName) {
+	boolean hasParameterInfo(String parameterName) {
 		return parameterInfos.containsKey(parameterName);
 	}
 
@@ -627,7 +642,10 @@ public class PatternBuilder {
 			throw new SpoonException("Cannot create Pattern from shadow Template type. Add sources of Template type into spoon model.");
 		}
 	}
-	public List<CtElement> getPatternModel() {
+	/**
+	 * @return a {@link CtElement}s which are the template model of this Pattern
+	 */
+	List<CtElement> getPatternModel() {
 		return patternModel;
 	}
 	/**

@@ -58,6 +58,7 @@ import spoon.reflect.visitor.chain.CtConsumer;
  */
 public class Pattern implements CtConsumableFunction<Object> {
 	private ParameterValueProviderFactory parameterValueProviderFactory = UnmodifiableParameterValueProvider.Factory.INSTANCE;
+	//TODO rename
 	private ModelNode modelValueResolver;
 	private boolean addGeneratedBy = false;
 
@@ -68,6 +69,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 	/**
 	 * @return a {@link ModelNode} of this pattern
 	 */
+	//TODO rename
 	public ModelNode getModelValueResolver() {
 		return modelValueResolver;
 	}
