@@ -1182,7 +1182,7 @@ public class TemplateTest {
 			// creating a Pattern from a Literal, with zero pattern parameters
 			// The pattern model consists of one CtLIteral only
 			// there is not needed any type reference, because CtLiteral has no reference to a type where it is defined
-			spoon.pattern.Pattern p = PatternBuilder.create((CtType)null, f.createLiteral("a")).build();
+			spoon.pattern.Pattern p = PatternBuilder.create((CtTypeReference)null, f.createLiteral("a")).build();
 
 			//The pattern has no parameters. There is just one constant CtLiteral
 			assertEquals (0, p.getParameterInfos().size());
@@ -1246,7 +1246,7 @@ public class TemplateTest {
 	}
 
 	private static spoon.pattern.Pattern patternOfStringLiterals(Factory f, String... strs) {
-		return PatternBuilder.create((CtType)null, Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList())
+		return PatternBuilder.create((CtTypeReference)null, Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList())
 		).build();
 	}
 
