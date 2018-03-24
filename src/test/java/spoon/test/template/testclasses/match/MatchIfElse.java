@@ -14,7 +14,7 @@ public class MatchIfElse {
 
 	public static Pattern createPattern(Factory factory) {
 		CtType<?> type = factory.Type().get(MatchIfElse.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("option").byVariable("option");
 				pb.parameter("option2").byVariable("option2");

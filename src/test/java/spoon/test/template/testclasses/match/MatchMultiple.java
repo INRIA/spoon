@@ -15,7 +15,7 @@ public class MatchMultiple {
 
 	public static Pattern createPattern(Factory factory, Quantifier matchingStrategy, Integer minCount, Integer maxCount) {
 		CtType<?> type = factory.Type().get(MatchMultiple.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("statements").bySimpleName("statements").setContainerKind(ContainerKind.LIST);
 				if (matchingStrategy != null) {

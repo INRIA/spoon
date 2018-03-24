@@ -92,9 +92,9 @@ public class TemplateBuilder {
 				//remove `... extends Template`, which doesn't have to be part of pattern model
 				tv.removeSuperClass();
 			};
-			pb = PatternBuilder.create(templateType.getReference(), tv.getTemplateModels());
+			pb = PatternBuilder.create(tv.getTemplateModels());
 		} else {
-			pb = PatternBuilder.create(templateType.getReference(), templateRoot);
+			pb = PatternBuilder.create(templateRoot);
 		}
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, null, template);
 		//legacy templates always automatically simplifies generated code

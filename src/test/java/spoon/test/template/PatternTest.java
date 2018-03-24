@@ -97,7 +97,7 @@ public class PatternTest {
 		CtType<Object> type = f.Type().get(OldPattern.class);
 		Pattern p = PatternBuilder
 				//Create a pattern from all statements of OldPattern_ParamsInNestedType#patternModel
-				.create(type, new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
+				.create(new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
 				.configureParameters((ParametersBuilder pb) -> pb
 						// creating patterns parameters for all references to "params" and "items"
 						.createPatternParameterForVariable("params", "item")

@@ -13,7 +13,7 @@ public class MatchWithParameterCondition {
 
 	public static Pattern createPattern(Factory factory, Predicate<Object> condition) {
 		CtType<?> type = factory.Type().get(MatchWithParameterCondition.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("value").byVariable("value");
 				if (condition != null) {

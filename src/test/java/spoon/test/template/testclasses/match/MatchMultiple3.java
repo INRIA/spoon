@@ -18,7 +18,7 @@ public class MatchMultiple3 {
 
 	public static Pattern createPattern(Factory factory, Consumer<ParametersBuilder> cfgParams) {
 		CtType<?> type = factory.Type().get(MatchMultiple3.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureTemplateParameters()
 			.configureParameters(pb -> {
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST);

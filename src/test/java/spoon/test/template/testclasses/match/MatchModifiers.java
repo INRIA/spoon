@@ -14,7 +14,7 @@ public class MatchModifiers {
 
 	public static Pattern createPattern(Factory factory, boolean matchBody) {
 		CtType<?> type = factory.Type().get(MatchModifiers.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("modifiers").attributeOfElementByFilter(CtRole.MODIFIER, new TypeFilter(CtMethod.class));
 				pb.parameter("methodName").byString("matcher1");

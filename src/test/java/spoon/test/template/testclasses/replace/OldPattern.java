@@ -64,7 +64,7 @@ public class OldPattern {
 	 */
 	public static Pattern createPatternFromOldPattern(Factory factory) {
 		CtType<?> type = factory.Type().get(OldPattern.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
 			.configureParameters(pb->pb
 					.createPatternParameterForVariable("params", "item")
 					.parameter("statements").setContainerKind(ContainerKind.LIST)

@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -69,29 +68,17 @@ public class PatternBuilder {
 
 	public static final String TARGET_TYPE = "targetType";
 
-	public static PatternBuilder create(CtType<?> templateType, CtElement... elems) {
-		return create(templateType.getReference(), Arrays.asList(elems));
-	}
-
 	/**
 	 * Creates a {@link PatternBuilder} from the List of template elements
-	 * @param templateTypeRef the reference to {@link CtType}, which contains a patternModel elements.
-	 * 	These type references have to be replaced by references to type, which receives generated code.
-	 * 	If patternModel contains no type references, then `templateTypeRef` may be null
 	 * @param patternModel a List of Spoon AST nodes, which represents a template of to be generated or to be matched code
 	 * @return new instance of {@link PatternBuilder}
 	 */
-	public static PatternBuilder create(CtTypeReference<?> templateTypeRef, List<CtElement> patternModel) {
-		return new PatternBuilder(templateTypeRef, patternModel);
+	public static PatternBuilder create(List<CtElement> patternModel) {
+		return new PatternBuilder(patternModel);
 	}
 
-	public static PatternBuilder create(CtType<?> type, List<CtElement> patternModel) {
-		return new PatternBuilder(type.getReference(), patternModel);
-	}
-
-
-	public static PatternBuilder create(CtTypeReference<?> templateTypeRef, CtElement... elems) {
-		return new PatternBuilder(templateTypeRef, Arrays.asList(elems));
+	public static PatternBuilder create(CtElement... elems) {
+		return new PatternBuilder(Arrays.asList(elems));
 	}
 
 	private final List<CtElement> patternModel;
@@ -129,11 +116,8 @@ public class PatternBuilder {
 		}
 	}
 
-	private PatternBuilder(CtTypeReference<?> templateTypeRef, List<CtElement> template) {
+	private PatternBuilder(List<CtElement> template) {
 		this.templateTypeRef = getDeclaringTypeRef(template);
-		if (Objects.equals(this.templateTypeRef, templateTypeRef) == false) {
-			throw new SpoonException("Unexpetced template type ref");
-		}
 		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		if (template == null) {
 			throw new SpoonException("Cannot create a Pattern from an null model");
@@ -141,9 +125,9 @@ public class PatternBuilder {
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
-		if (templateTypeRef != null) {
+		if (this.templateTypeRef != null) {
 			configureParameters(pb -> {
-				pb.parameter(TARGET_TYPE).byType(templateTypeRef).setValueType(CtTypeReference.class);
+				pb.parameter(TARGET_TYPE).byType(this.templateTypeRef).setValueType(CtTypeReference.class);
 			});
 		}
 	}

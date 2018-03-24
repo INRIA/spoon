@@ -37,7 +37,7 @@ public class NewPattern {
 	 */
 	public static Pattern createPatternFromNewPattern(Factory factory) {
 		CtType<?> type = factory.Type().get(NewPattern.class);
-		return PatternBuilder.create(type, new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
+		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
 			.createPatternParameters()
 			.configureParameters(pb -> {
 				pb.parameter("statements").setContainerKind(ContainerKind.LIST);

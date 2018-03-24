@@ -869,7 +869,7 @@ public class TemplateMatcherTest {
 		//contract: match elements in container of type Set - e.g method throwables
 		CtType<?> ctClass = ModelUtils.buildClass(MatchThrowables.class);
 		Factory f = ctClass.getFactory();
-		Pattern pattern = PatternBuilder.create(ctClass, new TemplateModelBuilder(ctClass).setTypeMember("matcher1").getTemplateModels())
+		Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(ctClass).setTypeMember("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
 				pb.parameter("otherThrowables")
 					//add matcher for other arbitrary throwables
