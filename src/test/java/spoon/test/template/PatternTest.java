@@ -115,9 +115,21 @@ public class PatternTest {
 		ParameterValueProvider params = matches.get(0).getParameters();
 		assertEquals("\"extends\"", params.getValue("startKeyword").toString());
 		assertEquals(Boolean.TRUE, params.getValue("useStartKeyword"));
+		assertEquals("false", params.getValue("startPrefixSpace").toString());
+		assertEquals("null", params.getValue("start").toString());
+		assertEquals("false", params.getValue("startSuffixSpace").toString());
+		assertEquals("false", params.getValue("nextPrefixSpace").toString());
+		assertEquals("\",\"", params.getValue("next").toString());
+		assertEquals("true", params.getValue("nextSuffixSpace").toString());
+		assertEquals("false", params.getValue("endPrefixSpace").toString());
+		assertEquals("\";\"", params.getValue("end").toString());
+		assertEquals("ctEnum.getEnumValues()", params.getValue("getIterable").toString());
+		assertEquals("[scan(enumValue)]", params.getValue("statements").toString());
 
 		params = matches.get(1).getParameters();
 		// all method arguments to createListPrinter have been matched
+		assertEquals(null, params.getValue("startKeyword"));
+		assertEquals(Boolean.FALSE, params.getValue("useStartKeyword"));
 		assertEquals("false", params.getValue("startPrefixSpace").toString());
 		assertEquals("null", params.getValue("start").toString());
 		assertEquals("false", params.getValue("startSuffixSpace").toString());
