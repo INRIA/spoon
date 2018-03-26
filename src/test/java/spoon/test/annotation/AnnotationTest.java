@@ -1336,8 +1336,8 @@ public class AnnotationTest {
 		}
 
 		String classContent = type.toString();
-		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays(\"foo\")"));
-		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays(\"bar\")"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays({ \"foo\" })"));
+		assertTrue("Content of the file: "+classContent, classContent.contains("@spoon.test.annotation.testclasses.repeatandarrays.TagArrays({ \"bar\" })"));
 	}
 
 	@Test
@@ -1400,8 +1400,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationAndShadowDefaultRetentionPolicy() {
-		// contract: TBD.
-		// When the default retention policy is used in an annotation, it's lost in shadow classes
+		// contract: When the default retention policy is used in an annotation, it's lost in shadow classes
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
 		CtModel model = launcher.buildModel();
@@ -1412,13 +1411,13 @@ public class AnnotationTest {
 		CtType<?> shadowDumbKlass = shadowFactory.Type().get(DumbKlass.class);
 		CtMethod<?> shadowFooMethod = shadowDumbKlass.getMethodsByName("foo").get(0);
 
-		assertEquals(fooMethod.getAnnotations().size(), shadowFooMethod.getAnnotations().size());
+		assertEquals(1, fooMethod.getAnnotations().size());
+		assertTrue(shadowFooMethod.getAnnotations().isEmpty());
 	}
 
 	@Test
 	public void testAnnotationAndShadowClassRetentionPolicy() {
-		// contract: TBD.
-		// When the Class retention policy is used in an annotation, it's lost in shadow classes
+		// contract: When the Class retention policy is used in an annotation, it's lost in shadow classes
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
 		CtModel model = launcher.buildModel();
@@ -1429,7 +1428,8 @@ public class AnnotationTest {
 		CtType<?> shadowDumbKlass = shadowFactory.Type().get(DumbKlass.class);
 		CtMethod<?> shadowFooMethod = shadowDumbKlass.getMethodsByName("fooClass").get(0);
 
-		assertEquals(fooMethod.getAnnotations().size(), shadowFooMethod.getAnnotations().size());
+		assertEquals(1, fooMethod.getAnnotations().size());
+		assertTrue(shadowFooMethod.getAnnotations().isEmpty());
 	}
 
 	@Test
@@ -1450,8 +1450,8 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationArray() throws Exception {
-		// contract: TBD
-		
+		// contract: spooned and shadow models should be the same when using array values in annotations
+
 		Method barOneValueMethod = DumbKlass.class.getMethod("barOneValue");
 		Method barMultipleValueMethod = DumbKlass.class.getMethod("barMultipleValues");
 
