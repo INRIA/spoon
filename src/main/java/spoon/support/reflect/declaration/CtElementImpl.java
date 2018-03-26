@@ -65,8 +65,6 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
