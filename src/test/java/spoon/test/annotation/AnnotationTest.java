@@ -1494,5 +1494,6 @@ public class AnnotationTest {
 		assertEquals(annotationOne.getAnnotationType(), shadowAnnotationOne.getAnnotationType());
 		assertEquals(annotationOne.getValue("role"), shadowAnnotationOne.getValue("role"));
 
+		assertEquals("@spoon.test.annotation.testclasses.shadow.RuntimeRetention(role = \"bidule\")", annotationOne.toString());
 	}
 }

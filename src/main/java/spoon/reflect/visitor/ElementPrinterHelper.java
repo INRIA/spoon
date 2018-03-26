@@ -22,6 +22,7 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
@@ -53,6 +54,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.code.CtNewArrayImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -210,6 +212,13 @@ public class ElementPrinterHelper {
 		} else if (value instanceof CtFieldReference) {
 			prettyPrinter.scan(((CtFieldReference<?>) value).getDeclaringType());
 			printer.writeSeparator(".").writeIdentifier(((CtFieldReference<?>) value).getSimpleName());
+		} else if (value instanceof CtNewArrayImpl) {
+			CtNewArray valueArray = (CtNewArray) value;
+			if (valueArray.getElements().size() == 1) {
+				writeAnnotationElement(factory, valueArray.getElements().get(0));
+			} else {
+				prettyPrinter.scan(valueArray);
+			}
 		} else if (value instanceof CtElement) {
 			prettyPrinter.scan((CtElement) value);
 		} else if (value instanceof String) {
@@ -222,10 +231,15 @@ public class ElementPrinterHelper {
 				}
 			}
 		} else if (value instanceof Object[]) {
-			try (ListPrinter lp = createListPrinter(false, "{", false, true, ",", false, false, "}")) {
-				for (Object obj : (Object[]) value) {
-					lp.printSeparatorIfAppropriate();
-					writeAnnotationElement(factory, obj);
+			Object[] valueArray = (Object[]) value;
+			if (valueArray.length == 1) {
+				writeAnnotationElement(factory, valueArray[0]);
+			} else {
+				try (ListPrinter lp = createListPrinter(false, "{", false, true, ",", false, false, "}")) {
+					for (Object obj : (Object[]) value) {
+						lp.printSeparatorIfAppropriate();
+						writeAnnotationElement(factory, obj);
+					}
 				}
 			}
 		} else if (value instanceof Enum) {
