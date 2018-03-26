@@ -264,7 +264,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (type instanceof WildcardType) {
 				visitType((WildcardType) type);
 			} else {
-				visitType(type);
+				// we want to ignore Object to avoid <T extends Object>
+				if (!type.getTypeName().equals("java.lang.Object")) {
+					visitType(type);
+				}
 			}
 		}
 	}

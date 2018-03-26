@@ -411,4 +411,19 @@ public class JavaReflectionTreeBuilderTest {
 		assertTrue(classFromReflection.isShadow());
 		checker.accept(classFromReflection);
 	}
+
+	@Test
+	public void testTypeParameterCtConditionnal() {
+		// contract: when using MyClass<T> T should not have Object as superclass in shadow class
+
+		Factory factory = createFactory();
+		CtTypeReference typeReference = factory.Type().createReference(CtConditionalImpl.class);
+		CtType shadowType = typeReference.getTypeDeclaration();
+
+		assertEquals(1, shadowType.getFormalCtTypeParameters().size());
+		CtTypeParameter typeParameter = shadowType.getFormalCtTypeParameters().get(0);
+
+		assertEquals("T", typeParameter.getSimpleName());
+		assertTrue(typeParameter.getSuperclass() == null);
+	}
 }
