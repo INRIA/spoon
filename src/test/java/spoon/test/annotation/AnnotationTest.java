@@ -1479,7 +1479,7 @@ public class AnnotationTest {
 
 		// but with Spoon, we consider two different values
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
+		launcher.addInputResource("./src/test/java/spoon/test/");
 		CtModel model = launcher.buildModel();
 		CtClass<?> dumbKlass = model.getElements(new NamedElementFilter<>(CtClass.class, "DumbKlass")).get(0);
 		CtMethod<?> barOneValue = dumbKlass.getMethodsByName("barOneValue").get(0);
@@ -1495,5 +1495,28 @@ public class AnnotationTest {
 		assertEquals(annotationOne.getValue("role"), shadowAnnotationOne.getValue("role"));
 
 		assertEquals("@spoon.test.annotation.testclasses.shadow.RuntimeRetention(role = \"bidule\")", annotationOne.toString());
+	}
+
+	@Test
+	public void testAnnotationAreTreatedDifferently() {
+		final Launcher launcherAllTest = new Launcher();
+		launcherAllTest.addInputResource("./src/test/java/spoon/test/");
+		CtModel modelAllTests = launcherAllTest.buildModel();
+		CtClass<?> dumbKlass = modelAllTests.getElements(new NamedElementFilter<>(CtClass.class, "DumbKlass")).get(0);
+
+		final Launcher launcherSpecific = new Launcher();
+		launcherSpecific.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
+		CtModel modelSpecific = launcherSpecific.buildModel();
+		CtClass<?> dumbKlass2 = modelSpecific.getElements(new NamedElementFilter<>(CtClass.class, "DumbKlass")).get(0);
+
+		// this is not passing because of the order of resolution of the CompilationUnits in JDTBasedSpoonCompiler
+		// in case of launcherAllTest: DumbKlass is visited *before* RuntimeRetention, so in CtAnnotationImpl it cannot resolve
+		// the declaration and still create a CtLiteral to the annotation element
+		//
+		// in the second case the order of resolution is not the same meaning that RuntimeRetention is resolved before DumbKlass
+		// so CtAnnotationImpl can resolve the declaration and create the right type on the annotation element
+		//
+		// This also explains why MainTest#testTest is failing
+		assertEquals(dumbKlass, dumbKlass2);
 	}
 }
