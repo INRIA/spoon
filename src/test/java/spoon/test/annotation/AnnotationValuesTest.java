@@ -59,7 +59,7 @@ public class AnnotationValuesTest {
 		on(ctAnnotation).giveMeAnnotationValue("integer").isTypedBy(CtLiteral.class);
 		on(ctAnnotation).giveMeAnnotationValue("integers").isTypedBy(CtNewArray.class);
 		on(ctAnnotation).giveMeAnnotationValue("string").isTypedBy(CtLiteral.class);
-		on(ctAnnotation).giveMeAnnotationValue("strings").isTypedBy(CtLiteral.class);
+		on(ctAnnotation).giveMeAnnotationValue("strings").isTypedBy(CtNewArray.class);
 		on(ctAnnotation).giveMeAnnotationValue("clazz").isTypedBy(CtFieldAccess.class);
 		on(ctAnnotation).giveMeAnnotationValue("classes").isTypedBy(CtNewArray.class);
 		on(ctAnnotation).giveMeAnnotationValue("b").isTypedBy(CtLiteral.class);

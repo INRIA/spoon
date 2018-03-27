@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
+import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -27,6 +28,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
@@ -173,6 +175,12 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
+		if (this instanceof CtShadowable) {
+			CtShadowable shadowable = (CtShadowable) this;
+			if (shadowable.isShadow()) {
+				Launcher.LOGGER.info("Some annotations might be unreachable from the shadow element: " + this.getShortRepresentation());
+			}
+		}
 		return unmodifiableList(annotations);
 	}
 

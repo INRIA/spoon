@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -188,12 +189,45 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				elementValues.put(elementName, newArray);
 			}
 		} else {
+			CtExpression value;
+			if (expression instanceof CtLiteral) {
+				value = this.checkExpression(expression, elementName);
+			} else {
+				value = expression;
+			}
+
 			// Add the new value.
-			expression.setParent(this);
-			getFactory().getEnvironment().getModelChangeListener().onMapAdd(this, VALUE, this.elementValues, elementName, expression);
-			elementValues.put(elementName, expression);
+			value.setParent(this);
+			getFactory().getEnvironment().getModelChangeListener().onMapAdd(this, VALUE, this.elementValues, elementName, value);
+			elementValues.put(elementName, value);
 		}
 		return (T) this;
+	}
+
+	/**
+	 * Transforms a CtLiteral to a CtNewArray if needed, based on AnnotationType and elementName
+	 */
+	private CtExpression checkExpression(CtExpression expression, String elementName) {
+		if (this.annotationType == null || this.annotationType.getDeclaration() == null) {
+			return expression;
+		}
+
+		CtType declaration = this.annotationType.getDeclaration();
+		CtMethod method = declaration.getMethod(elementName);
+		if (method == null) {
+			return expression;
+		}
+
+		CtTypeReference returnType = method.getType();
+		if (returnType instanceof CtArrayTypeReference) {
+			CtNewArray newArray = getFactory().Core().createNewArray();
+			CtArrayTypeReference typeReference = this.getFactory().createArrayTypeReference();
+			typeReference.setComponentType(expression.getType().clone());
+			newArray.setType(typeReference);
+			newArray.addElement(expression);
+			return newArray;
+		}
+		return expression;
 	}
 
 	@Override

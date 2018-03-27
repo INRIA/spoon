@@ -18,6 +18,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -304,6 +305,8 @@ public class MainTest {
 		assertTrue(counter.enter == counter.scan);
 
 		Counter counterBiScan = new Counter();
+
+		StringBuilder errors = new StringBuilder();
 		class ActualCounterScanner extends CtBiScannerDefault {
 			@Override
 			public void biScan(CtElement element, CtElement other) {
@@ -316,7 +319,17 @@ public class MainTest {
 					Assert.fail("other can't be null if element isn't null.");
 				} else {
 					// contract: all elements have been cloned and are still equal
-					assertEquals(element, other);
+					if (!element.equals(other)) {
+						if (element instanceof CtNamedElement) {
+							try {
+								errors.append("Unequality "+((CtNamedElement) element).getSimpleName()+" \n");
+							} catch (ClassCastException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+
+					//assertEquals(element, other);
 					assertFalse(element == other);
 				}
 				super.biScan(element, other);
@@ -324,6 +337,9 @@ public class MainTest {
 		}
 		final ActualCounterScanner actual = new ActualCounterScanner();
 		actual.biScan(pack, pack.clone());
+
+		String obtainedErrors = errors.toString();
+		assertTrue("Errors obtained: "+obtainedErrors, obtainedErrors.isEmpty());
 
 		// contract: scan and biscan are executed the same number of times
 		assertEquals(counterInclNull.scan, counterBiScan.scan);
