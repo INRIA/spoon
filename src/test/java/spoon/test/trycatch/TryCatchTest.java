@@ -218,7 +218,7 @@ public class TryCatchTest {
 		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
-		
+
 		CtCatchVariable<?> catchVariable = catchers.get(0).getParameter();
 
 		assertEquals(
@@ -230,20 +230,20 @@ public class TryCatchTest {
 		assertEquals(
 				RuntimeException.class,
 				catchVariable.getMultiTypes().get(0).getActualClass());
-		
+
 		//contract: the manipulation with catch variable type is possible
 		catchVariable.setType((CtTypeReference)factory.Type().createReference(IllegalArgumentException.class));
 		assertEquals(IllegalArgumentException.class,catchVariable.getType().getActualClass());
 		//contract setType influences multitypes
 		assertEquals(1, catchVariable.getMultiTypes().size());
 		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(0).getActualClass());
-		
+
 		catchVariable.setMultiTypes(Collections.singletonList((CtTypeReference)factory.Type().createReference(UnsupportedOperationException.class)));
 		assertEquals(UnsupportedOperationException.class,catchVariable.getType().getActualClass());
 		//contract setType influences multitypes
 		assertEquals(1, catchVariable.getMultiTypes().size());
 		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
-		
+
 		catchVariable.setMultiTypes(Arrays.asList(
 				factory.Type().createReference(UnsupportedOperationException.class),
 				factory.Type().createReference(IllegalArgumentException.class)
@@ -251,7 +251,7 @@ public class TryCatchTest {
 		assertEquals(2, catchVariable.getMultiTypes().size());
 		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
 		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(1).getActualClass());
-		
+
 		//contract setMultiTypes influences types, which contains common super class of all multi types
 		assertEquals(RuntimeException.class,catchVariable.getType().getActualClass());
 	}
@@ -288,5 +288,19 @@ public class TryCatchTest {
 		String content = StringUtils.join(Files.readAllLines(f.toPath()),"\n");
 
 		assertTrue(content.contains("catch (final java.lang.Exception e)"));
+	}
+
+	@Test
+	public void testCatchWithUnknownExceptions() {
+		// contract: unknown exception type in multicatch should not cause IndexOutOfBoundsException
+		String inputResource = "./src/test/resources/spoon/test/noclasspath/exceptions/Foo.java";
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(inputResource);
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtCatch> catches = model.getElements(new TypeFilter<CtCatch>(CtCatch.class));
+		catches.get(0).getParameter().getType(); // catch with single UnknownException
+		catches.get(1).getParameter().getType(); // multicatch with UnknownException
 	}
 }
