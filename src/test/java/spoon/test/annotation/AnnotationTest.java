@@ -1400,8 +1400,7 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationAndShadowDefaultRetentionPolicy() {
-		// contract: TBD.
-		// When the default retention policy is used in an annotation, it's lost in shadow classes
+		// contract: When the default retention policy is used in an annotation, it's lost in shadow classes
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
 		CtModel model = launcher.buildModel();
@@ -1412,13 +1411,12 @@ public class AnnotationTest {
 		CtType<?> shadowDumbKlass = shadowFactory.Type().get(DumbKlass.class);
 		CtMethod<?> shadowFooMethod = shadowDumbKlass.getMethodsByName("foo").get(0);
 
-		assertEquals(fooMethod.getAnnotations().size(), shadowFooMethod.getAnnotations().size());
+		assertEquals(0, shadowFooMethod.getAnnotations().size());
 	}
 
 	@Test
 	public void testAnnotationAndShadowClassRetentionPolicy() {
-		// contract: TBD.
-		// When the Class retention policy is used in an annotation, it's lost in shadow classes
+		// contract: When the Class retention policy is used in an annotation, it's lost in shadow classes
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
 		CtModel model = launcher.buildModel();
@@ -1429,7 +1427,7 @@ public class AnnotationTest {
 		CtType<?> shadowDumbKlass = shadowFactory.Type().get(DumbKlass.class);
 		CtMethod<?> shadowFooMethod = shadowDumbKlass.getMethodsByName("fooClass").get(0);
 
-		assertEquals(fooMethod.getAnnotations().size(), shadowFooMethod.getAnnotations().size());
+		assertEquals(0, shadowFooMethod.getAnnotations().size());
 	}
 
 	@Test
