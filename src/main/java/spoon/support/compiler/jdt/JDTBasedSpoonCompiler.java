@@ -430,8 +430,11 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
+		List<CompilationUnitDeclaration> unitList = Arrays.asList(units);
+		unitList.sort(new CompilationUnitComparator(this.getEnvironment().getSeedCUComparator()));
+
 		unitLoop:
-		for (CompilationUnitDeclaration unit : units) {
+		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				for (final CompilationUnitFilter cuf : compilationUnitFilters) {

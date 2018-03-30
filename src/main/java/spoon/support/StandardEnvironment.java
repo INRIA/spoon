@@ -62,6 +62,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
 
+	public static final int DEFAULT_SEED_CU_COMPARATOR = 0;
+
 	private FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
@@ -99,6 +101,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
+
+	private int seedCUComparator = DEFAULT_SEED_CU_COMPARATOR;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -564,5 +568,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public OutputType getOutputType() {
 		return this.outputType;
+	}
+
+	@Override
+	public void setSeedCUComparator(int seed) {
+		this.seedCUComparator = seed;
+	}
+
+	@Override
+	public int getSeedCUComparator() {
+		return this.seedCUComparator;
 	}
 }
