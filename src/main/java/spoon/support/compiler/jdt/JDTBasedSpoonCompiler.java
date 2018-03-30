@@ -431,7 +431,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		List<CompilationUnitDeclaration> unitList = Arrays.asList(units);
-		unitList.sort(new CompilationUnitComparator(this.getEnvironment().getSeedCUComparator()));
+		unitList.sort(new CompilationUnitComparator());
 
 		unitLoop:
 		for (CompilationUnitDeclaration unit : unitList) {
