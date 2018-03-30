@@ -18,7 +18,6 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import spoon.Launcher;
-import spoon.support.StandardEnvironment;
 
 import java.util.Comparator;
 import java.util.Random;
