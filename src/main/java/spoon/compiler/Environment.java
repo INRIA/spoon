@@ -384,16 +384,4 @@ public interface Environment {
 	 * Get the output type
 	 */
 	OutputType getOutputType();
-
-	/**
-	 * This method should only be used for tests purpose.
-	 * It specify a seed used for sorting the compilation units in Spoon
-	 * Users should always used the default value.
-	 */
-	void setSeedCUComparator(int seed);
-
-	/**
-	 * Gets the seed used for sorting compilation units
-	 */
-	int getSeedCUComparator();
 }

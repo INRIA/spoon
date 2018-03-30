@@ -17,21 +17,27 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import spoon.Launcher;
 import spoon.support.StandardEnvironment;
 
 import java.util.Comparator;
 import java.util.Random;
 
 public class CompilationUnitComparator implements Comparator<CompilationUnitDeclaration> {
-	private int seed;
-
-	public CompilationUnitComparator(int seed) {
-		this.seed = seed;
-	}
 
 	@Override
 	public int compare(CompilationUnitDeclaration o1, CompilationUnitDeclaration o2) {
-		if (this.seed == StandardEnvironment.DEFAULT_SEED_CU_COMPARATOR) {
+		int seed = 0;
+		if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
+			try {
+				seed = Integer.parseInt(System.getenv("SPOON_SEED_CU_COMPARATOR"));
+				Launcher.LOGGER.warn("Seed for CU sorting set with: " + seed);
+			} catch (NumberFormatException e) {
+				Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
+			}
+		}
+
+		if (seed == 0) {
 			String s1 = new String(o1.getFileName());
 			String s2 = new String(o2.getFileName());
 			return s1.compareTo(s2);
