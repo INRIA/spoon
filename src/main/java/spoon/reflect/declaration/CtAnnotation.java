@@ -78,6 +78,16 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	<T extends CtExpression> T getValue(String key);
 
 	/**
+	 * Gets a value for a given key
+	 *
+	 * @param key
+	 * 		Name of searched value.
+	 * @return the value expression or null if not found.
+	 */
+	@PropertyGetter(role = VALUE)
+	<T extends CtExpression> T getTypedValue(String key);
+
+	/**
 	 * Returns this annotation's elements and their values. This is returned in
 	 * the form of a map that associates element names with their corresponding
 	 * values. If you iterate over the map with entrySet(), the iteration order
