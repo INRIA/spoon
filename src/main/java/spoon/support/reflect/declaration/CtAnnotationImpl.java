@@ -358,32 +358,32 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return (T) this.elementValues.get(key);
 	}
 
-    @Override
-    public <T extends CtExpression> T getTypedValue(String key) {
-        CtExpression ctExpression = this.getValue(key);
+	@Override
+	public <T extends CtExpression> T getTypedValue(String key) {
+		CtExpression ctExpression = this.getValue(key);
 
-        if (ctExpression instanceof CtLiteral) {
-            CtTypeReference typeReference = this.getAnnotationType();
-            CtType type = typeReference.getDeclaration();
-            if (type != null) {
-                CtMethod method = type.getMethod(key);
-                if (method != null) {
-                    CtTypeReference returnType = method.getType();
-                    if (returnType instanceof CtArrayTypeReference) {
-                        CtNewArray newArray = getFactory().Core().createNewArray();
-                        CtArrayTypeReference typeReference2 = this.getFactory().createArrayTypeReference();
-                        typeReference2.setComponentType(ctExpression.getType().clone());
-                        newArray.setType(typeReference);
-                        newArray.addElement(ctExpression);
-                        return (T) newArray;
-                    }
-                }
-            }
-        }
-        return (T) ctExpression;
-    }
+		if (ctExpression instanceof CtLiteral) {
+			CtTypeReference typeReference = this.getAnnotationType();
+			CtType type = typeReference.getDeclaration();
+			if (type != null) {
+				CtMethod method = type.getMethod(key);
+				if (method != null) {
+					CtTypeReference returnType = method.getType();
+					if (returnType instanceof CtArrayTypeReference) {
+						CtNewArray newArray = getFactory().Core().createNewArray();
+						CtArrayTypeReference typeReference2 = this.getFactory().createArrayTypeReference();
+						typeReference2.setComponentType(ctExpression.getType().clone());
+						newArray.setType(typeReference);
+						newArray.addElement(ctExpression);
+						return (T) newArray;
+					}
+				}
+			}
+		}
+		return (T) ctExpression;
+	}
 
-    public Map<String, Object> getElementValues() {
+	public Map<String, Object> getElementValues() {
 		TreeMap<String, Object> res = new TreeMap<>();
 		for (Entry<String, CtExpression> elementValue : elementValues.entrySet()) {
 			res.put(elementValue.getKey(), elementValue.getValue());
