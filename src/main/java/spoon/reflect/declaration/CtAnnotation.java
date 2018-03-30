@@ -69,6 +69,10 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 
 	/**
 	 * Gets a value for a given key without any conversion.
+	 * Note that this value type does not necessarily corresponds to the annotation
+	 * type member. For example, in case the annotation type expect an array of Object,
+	 * and a single value is given, Spoon will return only the object without the CtNewArray.
+	 * If you want to get a type closer to the annotation type one, see {@link #getTypedValue(String)}.
 	 *
 	 * @param key
 	 * 		Name of searched value.
@@ -78,7 +82,11 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	<T extends CtExpression> T getValue(String key);
 
 	/**
-	 * Gets a value for a given key
+	 * Gets a value for a given key and try to fix its type based on the
+	 * annotation type. For example, if the annotation type member expects an array of String,
+	 * and it can be resolved, this method will return a CtNewArray instead of a CtLiteral.
+	 *
+	 * Warning: the returned element might be detached from the model
 	 *
 	 * @param key
 	 * 		Name of searched value.
