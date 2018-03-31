@@ -250,9 +250,9 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		List<CtComment> comments = type.getComments();
-		assertEquals(3, comments.size());
+		assertEquals(5, comments.size());
 		type.removeComment(comments.get(0));
-		assertEquals(2, type.getComments().size());
+		assertEquals(4, type.getComments().size());
 	}
 
 	@Test
