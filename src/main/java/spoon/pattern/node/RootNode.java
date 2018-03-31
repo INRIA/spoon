@@ -91,6 +91,8 @@ public interface RootNode extends Matchers {
 	}
 
 	/**
+	 * Call it to modify Pattern structure. It is actually called mainly by PatternBuilder.
+	 * TODO: May be we can move this method into some internal interface?
 	 * @param oldNode old {@link RootNode}
 	 * @param newNode new {@link RootNode}
 	 * @return a true if `oldNode` was found in this {@link RootNode} or it's children and replaced by `newNode`

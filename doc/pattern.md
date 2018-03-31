@@ -46,7 +46,7 @@ Main class: `PatternBuilder`
 --------------------------------------------------
 
 To create a Spoon pattern, one must use `PatternBuilder`, which takes AST nodes as input, and where you 
-**pattern parameters** are defined by calling PatternBuilder fluen API methods.
+**pattern parameters** are defined by calling PatternBuilder fluent API methods.
 
 
 The method `statement` below defines a Spoon pattern. 
