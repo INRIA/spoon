@@ -263,7 +263,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(64, comments.size());
+		assertEquals(66, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -275,7 +275,7 @@ public class CommentTest {
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(3, type.getComments().size());
+		assertEquals(5, type.getComments().size());
 		assertEquals(CtComment.CommentType.FILE, type.getComments().get(0).getCommentType());
 		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(1));
 
