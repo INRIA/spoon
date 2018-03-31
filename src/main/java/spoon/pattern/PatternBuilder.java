@@ -62,7 +62,9 @@ import spoon.template.Parameter;
 import spoon.template.TemplateParameter;
 
 /**
- * The builder which creates a {@link Pattern}
+ * The master class to create a {@link Pattern} instance.
+ *
+ * Based on a fluent API, see tests and documentation ('pattern.md')
  */
 public class PatternBuilder {
 
@@ -396,7 +398,12 @@ public class PatternBuilder {
 		return this;
 	}
 	/**
-	 * adds all standard Template parameters based on {@link TemplateParameter} and {@link Parameter} annotation
+	 *
+	 * 	All variables defined out of scope of the model (eg body of the method)
+	 * 	are considered as template parameters
+	 *
+	 * Provides backward compatibility with standard Template parameters based on {@link TemplateParameter} and {@link Parameter} annotation
+	 *
 	 * @return this to support fluent API
 	 */
 	public PatternBuilder configureTemplateParameters() {

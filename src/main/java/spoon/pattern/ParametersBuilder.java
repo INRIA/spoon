@@ -291,7 +291,7 @@ public class ParametersBuilder {
 	 * @param variable to be substituted variable
 	 * @return this to support fluent API
 	 */
-	public ParametersBuilder createPatternParameterForVariable(CtVariable<?> variable) {
+	private ParametersBuilder createPatternParameterForVariable(CtVariable<?> variable) {
 		CtQueryable searchScope;
 		if (patternBuilder.isInModel(variable)) {
 			addSubstitutionRequest(
@@ -536,11 +536,11 @@ public class ParametersBuilder {
 
 	/**
 	 * Attribute defined by `role` of all elements matched by {@link Filter} will be substituted by parameter value
-	 * @param role {@link CtRole}, which defines to be substituted elements
 	 * @param filter {@link Filter}, which defines to be substituted elements
+	 * @param role {@link CtRole}, which defines to be substituted elements
 	 * @return {@link ParametersBuilder} to support fluent API
 	 */
-	public ParametersBuilder attributeOfElementByFilter(CtRole role, Filter<?> filter) {
+	public ParametersBuilder byRole(Filter<?> filter, CtRole role) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren(filter)
 			.forEach((CtElement ele) -> {

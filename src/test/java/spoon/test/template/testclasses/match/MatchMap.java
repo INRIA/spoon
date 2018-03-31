@@ -15,40 +15,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 public class MatchMap {
 
-	public static Pattern createPattern(Factory factory, boolean acceptOtherAnnotations) {
-		CtType<?> type = factory.Type().get(MatchMap.class);
-		return PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
-			.configureParameters(pb -> {
-				//match any value of @Check annotation to parameter `testAnnotations`
-				pb.parameter("CheckAnnotationValues").attributeOfElementByFilter(CtRole.VALUE, new TypeFilter(CtAnnotation.class)).setContainerKind(ContainerKind.MAP);
-				//match any method name
-				pb.parameter("methodName").byString("matcher1");
-				if (acceptOtherAnnotations) {
-					//match on all annotations of method
-					pb.parameter("allAnnotations")
-						.setConflictResolutionMode(ConflictResolutionMode.APPEND)
-						.attributeOfElementByFilter(CtRole.ANNOTATION, new TypeFilter<>(CtMethod.class));
-				}
-			})
-			.build();
-	}
-	public static Pattern createMatchKeyPattern(Factory factory) {
-		CtType<?> type = factory.Type().get(MatchMap.class);
-		return PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("m1").getTemplateModels())
-			.configureParameters(pb -> {
-				//match any value of @Check annotation to parameter `testAnnotations`
-				pb.parameter("CheckKey").bySubstring("value");
-				pb.parameter("CheckValue").byFilter((CtLiteral lit) -> true);
-				//match any method name
-				pb.parameter("methodName").byString("m1");
-				//match on all annotations of method
-				pb.parameter("allAnnotations")
-					.setConflictResolutionMode(ConflictResolutionMode.APPEND)
-					.attributeOfElementByFilter(CtRole.ANNOTATION, new TypeFilter<>(CtMethod.class));
-			})
-			.build();
-	}
-
 	@Check()
 	void matcher1() {
 	}

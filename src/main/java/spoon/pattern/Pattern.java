@@ -62,6 +62,7 @@ public class Pattern implements CtConsumableFunction<Object> {
 	private ModelNode modelValueResolver;
 	private boolean addGeneratedBy = false;
 
+	/** package-protected, must use {@link PatternBuilder} */
 	Pattern(ModelNode modelValueResolver) {
 		this.modelValueResolver = modelValueResolver;
 	}

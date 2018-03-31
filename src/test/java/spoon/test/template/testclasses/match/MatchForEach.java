@@ -14,17 +14,6 @@ import static java.lang.System.out;
 
 public class MatchForEach {
 
-	public static Pattern createPattern(Factory factory) {
-		CtType<?> type = factory.Type().get(MatchForEach.class);
-
-		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
-			.configureParameters(pb -> {
-				pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST);
-			})
-			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
-			.build();
-	}
-	
 	public void matcher1(List<String> values) {
 		for (String value : values) {
 			System.out.println(value);

@@ -16,11 +16,11 @@ public class MatchModifiers {
 		CtType<?> type = factory.Type().get(MatchModifiers.class);
 		return PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
-				pb.parameter("modifiers").attributeOfElementByFilter(CtRole.MODIFIER, new TypeFilter(CtMethod.class));
+				pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
 				pb.parameter("methodName").byString("matcher1");
-				pb.parameter("parameters").attributeOfElementByFilter(CtRole.PARAMETER, new TypeFilter(CtMethod.class));
+				pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
 				if (matchBody) {
-					pb.parameter("statements").attributeOfElementByFilter(CtRole.STATEMENT, new TypeFilter(CtBlock.class));
+					pb.parameter("statements").byRole(new TypeFilter(CtBlock.class), CtRole.STATEMENT);
 				}
 			})
 			.build();
