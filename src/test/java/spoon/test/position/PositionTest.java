@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooAbstractMethod;
@@ -28,6 +29,7 @@ import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.PositionParameterTypeWithReference;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -113,6 +116,25 @@ public class PositionTest {
 				"public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
 
+	@Test
+	public void testPositionParameterTypeReference() throws Exception {
+		//contract: the parameterized type refernce has a source position which includes parameter types, etc.
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<?> foo = build.Type().get(PositionParameterTypeWithReference.class);
+		String classContent = getClassContent(foo);
+
+		CtTypeReference<?> field2Type =  foo.getField("field2").getType();
+		//this already worked well
+		assertEquals("List<T>[][]", contentAtPosition(classContent, field2Type.getPosition()));
+
+		CtTypeReference<?> field1Type =  foo.getField("field1").getType();
+		//this probably points to an bug in JDT. But we have no workaround in Spoon
+		assertEquals("List<T>", contentAtPosition(classContent, field1Type.getPosition()));
+
+		CtTypeReference<?> field3Type =  foo.getField("field3").getType();
+		//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
+		assertEquals("List<T // */ >\n\t/*// */>", contentAtPosition(classContent, field3Type.getPosition()));
+	}
 	
 	@Test
 	public void testPositionInterface() throws Exception {
@@ -570,7 +592,5 @@ public class PositionTest {
 		assertEquals(8, positionElse.getLine());
 
 		assertNotEquals(returnStatement, otherReturnStatement);
-
-
 	}
 }
