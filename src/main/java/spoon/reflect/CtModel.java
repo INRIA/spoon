@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** represents a Java program, modeled by a set of compile-time (Ct) objects
- * where each objects is a program element (for instance, a CtClass represents a class).
+ * where each object is a program element (for instance, a CtClass represents a class).
  */
 public interface CtModel extends Serializable, CtQueryable {
 
