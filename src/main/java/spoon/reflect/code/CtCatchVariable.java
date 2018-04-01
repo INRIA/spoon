@@ -46,11 +46,11 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	@UnsettableProperty
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
 
-	@Override
-	@DerivedProperty
 	/**
 	 * Returns type reference of the exception variable in a catch.
 	 * If type is unknown, or any of the types in a multi-catch is unknown, returns null.
 	 */
+	@Override
+	@DerivedProperty
 	CtTypeReference<T> getType();
 }
