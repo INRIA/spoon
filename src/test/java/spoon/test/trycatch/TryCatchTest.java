@@ -31,6 +31,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -300,7 +301,8 @@ public class TryCatchTest {
 		CtModel model = launcher.buildModel();
 
 		List<CtCatch> catches = model.getElements(new TypeFilter<CtCatch>(CtCatch.class));
-		catches.get(0).getParameter().getType(); // catch with single UnknownException
-		catches.get(1).getParameter().getType(); // multicatch with UnknownException
+		assertNotNull(catches.get(0).getParameter().getType()); // catch with single UnknownException
+		assertNull(catches.get(1).getParameter().getType()); // multicatch with UnknownException
+		assertNull(catches.get(2).getParameter().getType()); // multicatch with UnknownException
 	}
 }

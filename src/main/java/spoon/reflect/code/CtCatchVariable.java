@@ -48,5 +48,9 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 
 	@Override
 	@DerivedProperty
+	/**
+	 * Returns type reference of the exception variable in a catch.
+	 * If type is unknown, or any of the types in a multi-catch is unknown, returns null.
+	 */
 	CtTypeReference<T> getType();
 }
