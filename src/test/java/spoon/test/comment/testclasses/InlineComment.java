@@ -4,8 +4,13 @@
  */
 package spoon.test.comment.testclasses;
 
+import java.util.ArrayList;
+
 // comment class
-public class InlineComment {
+public class InlineComment
+	//this comment 1 belongs to class too
+	extends ArrayList<String> //this comment 2 belongs to class too 
+	{
 	// Comment Field
 	// comment field 2
 	private int field // comment in field
