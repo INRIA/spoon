@@ -80,6 +80,8 @@ public class PositionTest {
 	
 	@Test
 	public void testPositionClassWithComments() throws Exception {
+		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
+		//and it produces correct `modifierEnd`
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazzWithComments> foo = build.Type().get(FooClazzWithComments.class);
 		String classContent = getClassContent(foo);
@@ -118,7 +120,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionParameterTypeReference() throws Exception {
-		//contract: the parameterized type refernce has a source position which includes parameter types, etc.
+		//contract: the parameterized type reference has a source position which includes parameter types, etc.
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<?> foo = build.Type().get(PositionParameterTypeWithReference.class);
 		String classContent = getClassContent(foo);
