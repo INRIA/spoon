@@ -373,8 +373,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 						CtNewArray newArray = getFactory().Core().createNewArray();
 						CtArrayTypeReference typeReference2 = this.getFactory().createArrayTypeReference();
 						typeReference2.setComponentType(ctExpression.getType().clone());
-						newArray.setType(typeReference);
-						newArray.addElement(ctExpression);
+						newArray.setType(typeReference2);
+						newArray.addElement(ctExpression.clone());
 						return (T) newArray;
 					}
 				}

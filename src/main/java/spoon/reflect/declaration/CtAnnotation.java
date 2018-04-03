@@ -92,6 +92,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * 		Name of searched value.
 	 * @return the value expression or null if not found.
 	 */
+	@DerivedProperty
 	@PropertyGetter(role = VALUE)
 	<T extends CtExpression> T getTypedValue(String key);
 

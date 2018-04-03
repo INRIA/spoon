@@ -1448,7 +1448,10 @@ public class AnnotationTest {
 
 	@Test
 	public void testAnnotationArray() throws Exception {
-		// contract: TBD
+		// contract: getValue should return a value as close as possible from the sourcecode:
+        // i.e. even if the annotation should return an Array, it should return a single element
+        // if the value is given without the braces. The same behaviour should be used both for
+        // spooned source code and shadow classes.
 		
 		Method barOneValueMethod = DumbKlass.class.getMethod("barOneValue");
 		Method barMultipleValueMethod = DumbKlass.class.getMethod("barMultipleValues");
@@ -1472,6 +1475,7 @@ public class AnnotationTest {
 		CtMethod<?> shadowMultiple = shadowDumbKlass.getMethodsByName("barMultipleValues").get(0);
 		CtAnnotation shadowAnnotationMultiple = shadowMultiple.getAnnotations().get(0);
 
+		// FIXME: this should change
 		assertEquals("[Shadow] Annotation one and multiple are not of the same type", shadowAnnotationOne.getAnnotationType(), shadowAnnotationMultiple.getAnnotationType());
 		assertEquals("[Shadow] Annotation one and multiples values are not the same", shadowAnnotationOne.getValue("role"), shadowAnnotationMultiple.getValue("role"));
 
@@ -1492,6 +1496,7 @@ public class AnnotationTest {
 
 		assertTrue(annotationOne.getTypedValue("role") instanceof CtNewArray);
 		assertTrue(annotationMultipleVal.getTypedValue("role") instanceof CtNewArray);
+		assertEquals(annotationMultipleVal.getTypedValue("role"), annotationOne.getTypedValue("role"));
 
 		assertEquals(annotationOne.getAnnotationType(), shadowAnnotationOne.getAnnotationType());
 		// FIXME: this contract should be fixed in #1914
