@@ -100,6 +100,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private OutputType outputType = OutputType.CLASSES;
 
+	private Boolean noclasspath = null;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -458,8 +460,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.preserveLineNumbers = preserveLineNumbers;
 	}
 
-	private boolean noclasspath = false;
-
 	@Override
 	public void setNoClasspath(boolean option) {
 		noclasspath = option;
@@ -467,6 +467,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean getNoClasspath() {
+		if (this.noclasspath == null) {
+			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
+			this.noclasspath = true;
+		}
 		return noclasspath;
 	}
 
