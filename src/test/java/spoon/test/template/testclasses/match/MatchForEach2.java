@@ -18,10 +18,9 @@ public class MatchForEach2 {
 
 		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 			.configureParameters(pb -> {
-				pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST);
+				pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST).matchInlinedStatements();
 				pb.parameter("varName").byString("var");
 			})
-			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 			.build();
 	}
 	

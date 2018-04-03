@@ -23,11 +23,8 @@ public class MatchMultiple2 {
 			.configureParameters(pb -> {
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST);
 				pb.parameter("statements2").setContainerKind(ContainerKind.LIST);
-				pb.parameter("printedValue").byVariable("something");
+				pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
 				cfgParams.accept(pb);
-			})
-			.configureInlineStatements(ls -> {
-				ls.byVariableName("something");
 			})
 			.build();
 	}

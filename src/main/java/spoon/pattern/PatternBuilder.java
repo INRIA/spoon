@@ -398,10 +398,6 @@ public class PatternBuilder {
 		return this;
 	}
 	/**
-	 *
-	 * 	All variables defined out of scope of the model (eg body of the method)
-	 * 	are considered as template parameters
-	 *
 	 * Provides backward compatibility with standard Template parameters based on {@link TemplateParameter} and {@link Parameter} annotation
 	 *
 	 * @return this to support fluent API
@@ -627,8 +623,8 @@ public class PatternBuilder {
 		return null;
 	}
 
-	boolean hasParameterInfo(String parameterName) {
-		return parameterInfos.containsKey(parameterName);
+	AbstractParameterInfo getParameterInfo(String parameterName) {
+		return parameterInfos.get(parameterName);
 	}
 
 	protected Factory getFactory() {

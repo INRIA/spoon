@@ -72,6 +72,7 @@ public class ParametersBuilder {
 	private final PatternBuilder patternBuilder;
 	private final Map<String, AbstractParameterInfo> parameterInfos;
 	private AbstractParameterInfo currentParameter;
+	private List<CtElement> substitutedNodes = new ArrayList<>();
 	private ConflictResolutionMode conflictResolutionMode = ConflictResolutionMode.FAIL;
 
 	ParametersBuilder(PatternBuilder patternBuilder, Map<String, AbstractParameterInfo> parameterInfos) {
@@ -116,6 +117,7 @@ public class ParametersBuilder {
 	 */
 	public ParametersBuilder parameter(String paramName) {
 		currentParameter = getParameterInfo(paramName, true);
+		substitutedNodes.clear();
 		return this;
 	}
 
@@ -559,8 +561,20 @@ public class ParametersBuilder {
 		return this;
 	}
 
+	/**
+	 * marks all CtIf and CtForEach whose expression is substituted by a this pattern parameter as inline statement.
+	 * @return this to support fluent API
+	 */
+	public ParametersBuilder matchInlinedStatements() {
+		InlineStatementsBuilder sb = new InlineStatementsBuilder(patternBuilder);
+		for (CtElement ctElement : substitutedNodes) {
+			sb.byElement(ctElement);
+		}
+		return this;
+	}
+
 	public boolean isSubstituted(String paramName) {
-		if (patternBuilder.hasParameterInfo(paramName) == false) {
+		if (patternBuilder.getParameterInfo(paramName) == null) {
 			return false;
 		}
 		ParameterInfo pi = getParameterInfo(paramName, false);
@@ -576,6 +590,8 @@ public class ParametersBuilder {
 	}
 
 	void addSubstitutionRequest(ParameterInfo parameter, CtElement element) {
+		//remember elements substituted by current parameter to be able to use them for marking inline statements
+		substitutedNodes.add(element);
 		ParameterElementPair pep = getSubstitutedNodeOfElement(parameter, element);
 		patternBuilder.setNodeOfElement(pep.element, new ParameterNode(pep.parameter), conflictResolutionMode);
 		if (patternBuilder.isAutoSimplifySubstitutions() && pep.element.isParentInitialized()) {

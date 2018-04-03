@@ -91,9 +91,8 @@ public class PatternTest {
 //		}
 		Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
 					.configureParameters(pb -> {
-						pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST);
+						pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST).matchInlinedStatements();
 					})
-					.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 				.build();
 
 		List<Match> matches = pattern.getMatches(ctClass);

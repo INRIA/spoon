@@ -20,6 +20,8 @@ public class MatchIfElse {
 				pb.parameter("option2").byVariable("option2");
 				pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
 			})
+			//we have to configure inline statements after all expressions
+			//of combined if statement are marked as pattern parameters
 			.configureInlineStatements(lsb -> lsb.byVariableName("option"))
 			.build();
 	}

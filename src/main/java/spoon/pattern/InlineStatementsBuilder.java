@@ -37,7 +37,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import static spoon.pattern.PatternBuilder.bodyToStatements;
 
@@ -96,22 +95,29 @@ public class InlineStatementsBuilder {
 	 */
 	public InlineStatementsBuilder byVariableName(String variableName) {
 		patternBuilder.patternQuery
-			.filterChildren(new TypeFilter<>(CtVariableReference.class))
-			.map((CtVariableReference<?> varRef) -> {
-				return variableName.equals(varRef.getSimpleName()) ? varRef.getParent(CtStatement.class) : null;
-			}).forEach((CtStatement stmt) -> {
-				//called for first parent statement of all variables named `variableName`
-				stmt.accept(new CtAbstractVisitor() {
-					@Override
-					public void visitCtForEach(CtForEach foreach) {
-						markInline(foreach);
-					}
-					@Override
-					public void visitCtIf(CtIf ifElement) {
-						markInline(ifElement);
-					}
-				});
-			});
+			.filterChildren((CtVariableReference varRef) -> variableName.equals(varRef.getSimpleName()))
+			.forEach(this::byElement);
+		return this;
+	}
+
+	/**
+	 * marks all CtIf and CtForEach whose expression contains element as inline statement.
+	 * @param element a child of CtIf or CtForEach
+	 * @return this to support fluent API
+	 */
+	InlineStatementsBuilder byElement(CtElement element) {
+		CtStatement stmt = element instanceof CtStatement ? (CtStatement) element : element.getParent(CtStatement.class);
+		//called for first parent statement of all current parameter substitutions
+		stmt.accept(new CtAbstractVisitor() {
+			@Override
+			public void visitCtForEach(CtForEach foreach) {
+				markInline(foreach);
+			}
+			@Override
+			public void visitCtIf(CtIf ifElement) {
+				markInline(ifElement);
+			}
+		});
 		return this;
 	}
 

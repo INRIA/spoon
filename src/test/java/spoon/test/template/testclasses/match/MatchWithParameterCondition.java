@@ -20,7 +20,6 @@ public class MatchWithParameterCondition {
 					pb.matchCondition(null, condition);
 				}
 			})
-			.configureInlineStatements(lsb -> lsb.byVariableName("values"))
 			.build();
 	}
 	
