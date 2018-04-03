@@ -27,13 +27,13 @@ public class CompilationUnitComparator implements Comparator<CompilationUnitDecl
 	@Override
 	public int compare(CompilationUnitDeclaration o1, CompilationUnitDeclaration o2) {
 		int seed = 0;
-		if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
-			try {
+		try {
+			if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
 				seed = Integer.parseInt(System.getenv("SPOON_SEED_CU_COMPARATOR"));
 				Launcher.LOGGER.warn("Seed for CU sorting set with: " + seed);
-			} catch (NumberFormatException e) {
-				Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
 			}
+		} catch (NumberFormatException | SecurityException e) {
+			Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
 		}
 
 		if (seed == 0) {
