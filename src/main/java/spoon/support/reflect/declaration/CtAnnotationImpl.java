@@ -364,7 +364,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 		if (ctExpression instanceof CtLiteral) {
 			CtTypeReference typeReference = this.getAnnotationType();
-			CtType type = typeReference.getDeclaration();
+			CtType type = typeReference.getTypeDeclaration();
 			if (type != null) {
 				CtMethod method = type.getMethod(key);
 				if (method != null) {
