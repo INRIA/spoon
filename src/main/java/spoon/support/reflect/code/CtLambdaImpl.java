@@ -33,12 +33,12 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -190,19 +190,8 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
-		if (thrownTypes == null || thrownTypes.isEmpty()) {
-			this.thrownTypes = CtElementImpl.emptySet();
-			return (C) this;
-		}
-		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<>(this.thrownTypes));
-		this.thrownTypes.clear();
-		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
-			addThrownType(thrownType);
-		}
 		return (C) this;
 	}
 

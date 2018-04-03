@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
+import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtStatementList;
@@ -127,14 +128,16 @@ public class PositionBuilder {
 			Annotation[] annotations = typeDeclaration.annotations;
 			if (annotations != null && annotations.length > 0) {
 				if (annotations[0].sourceStart() == declarationSourceStart) {
-					modifiersSourceStart = findNextNonWhitespace(contents, annotations[annotations.length - 1].declarationSourceEnd + 1);
+					modifiersSourceStart = findNextNonWhitespace(contents, declarationSourceEnd, annotations[annotations.length - 1].declarationSourceEnd + 1);
 				}
 			}
 			if (modifiersSourceStart == 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
 			//look for start of first keyword before the type keyword e.g. "class". `sourceStart` points at first char of type name
-			int modifiersSourceEnd = findPrevNonWhitespace(contents, findPrevWhitespace(contents, findPrevNonWhitespace(contents, sourceStart - 1)));
+			int modifiersSourceEnd = findPrevNonWhitespace(contents, modifiersSourceStart - 1,
+										findPrevWhitespace(contents, modifiersSourceStart - 1,
+											findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
 			if (modifiersSourceEnd < modifiersSourceStart) {
 				//there is no modifier
 				modifiersSourceEnd = modifiersSourceStart - 1;
@@ -191,30 +194,43 @@ public class PositionBuilder {
 
 
 			sourceEnd = sourceStart + methodDeclaration.selector.length - 1;
-
+			if (bodyStart == 0) {
+				return SourcePosition.NOPOSITION;
+			}
 			if (e instanceof CtStatementList) {
 				return cf.createSourcePosition(cu, bodyStart - 1, bodyEnd + 1, lineSeparatorPositions);
 			} else {
-				if (bodyStart == 0) {
-					return SourcePosition.NOPOSITION;
-				} else {
-					if (bodyStart < bodyEnd) {
-						//include brackets if they are there
-						if (contents[bodyStart - 1] == '{') {
-							bodyStart--;
-							if (contents[bodyEnd + 1] == '}') {
-								bodyEnd++;
-							} else {
-								throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
-							}
+				if (bodyStart < bodyEnd) {
+					//include brackets if they are there
+					if (contents[bodyStart - 1] == '{') {
+						bodyStart--;
+						if (contents[bodyEnd + 1] == '}') {
+							bodyEnd++;
+						} else {
+							throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
 						}
 					}
-					return cf.createBodyHolderSourcePosition(cu,
-							sourceStart, sourceEnd,
-							modifiersSourceStart, modifiersSourceEnd,
-							declarationSourceStart, declarationSourceEnd,
-							bodyStart, bodyEnd,
-							lineSeparatorPositions);
+				}
+				return cf.createBodyHolderSourcePosition(cu,
+						sourceStart, sourceEnd,
+						modifiersSourceStart, modifiersSourceEnd,
+						declarationSourceStart, declarationSourceEnd,
+						bodyStart, bodyEnd,
+						lineSeparatorPositions);
+			}
+		} else if (node instanceof TypeReference) {
+			//e.g. SomeType<String,T>
+			TypeReference[][] typeArgs = ((TypeReference) node).getTypeArguments();
+			if (typeArgs != null && typeArgs.length > 0) {
+				TypeReference[] trs = typeArgs[typeArgs.length - 1];
+				if (trs != null && trs.length > 0) {
+					TypeReference tr = trs[trs.length - 1];
+					if (sourceEnd < tr.sourceEnd) {
+						//the sourceEnd of reference is smaller then source of type argument of this reference
+						//move sourceEnd so that type argument is included in sources
+						//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
+						sourceEnd = findNextNonWhitespace(contents, contents.length, tr.sourceEnd + 1);
+					}
 				}
 			}
 		}
@@ -223,13 +239,25 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @return index of first non whitespace char, searching forward. Can return off if it is non whitespace.
+	 * @param maxOff maximum acceptable return value
+	 * @return index of first non whitespace char, searching forward.
+	 * Can return 'off' if it is non whitespace.
+	 * Note: all kinds of java comments are understood as whitespace too.
+	 * The search must start out of comment or on the first character of the comment
 	 */
-	private int findNextNonWhitespace(char[] content, int off) {
-		while (off >= 0) {
+	private int findNextNonWhitespace(char[] content, int maxOff, int off) {
+		maxOff = Math.min(maxOff, content.length - 1);
+		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
 			if (Character.isWhitespace(c) == false) {
-				return off;
+				//non whitespace found
+				int endOfCommentOff = getEndOfComment(content, maxOff, off);
+				if (endOfCommentOff == -1) {
+					//it is not a comment. Finish
+					return off;
+				}
+				//it is a comment move to the end of comment and continue
+				off = endOfCommentOff;
 			}
 			off++;
 		}
@@ -237,12 +265,17 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @return index of first whitespace char, searching forward. Can return off if it is whitespace.
+	 * @param maxOff maximum acceptable return value
+	 * @return index of first whitespace char, searching forward. Return -1 if there is no white space.
+	 * Can return `off` if it is already a non whitespace.
+	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the first character of the comment
 	 */
-	private int findNextWhitespace(char[] content, int off) {
-		while (off >= 0) {
+	private int findNextWhitespace(char[] content, int maxOff, int off) {
+		maxOff = Math.min(maxOff, content.length - 1);
+		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
-			if (Character.isWhitespace(c)) {
+			if (Character.isWhitespace(c) || getEndOfComment(content, maxOff, off) >= 0) {
+				//it is whitespace or comment starts there
 				return off;
 			}
 			off++;
@@ -250,12 +283,21 @@ public class PositionBuilder {
 		return -1;
 	}
 	/**
-	 * @return index of first non whitespace char, searching backward. Can return off if it is non whitespace.
+	 * @param minOff the minimal acceptable return value
+	 * @return index of first non whitespace char, searching backward. Can return `off` if it is already a non whitespace.
+	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the first non whitespace character before the comment
 	 */
-	private int findPrevNonWhitespace(char[] content, int off) {
-		while (off >= 0) {
+	int findPrevNonWhitespace(char[] content, int minOff, int off) {
+		minOff = Math.max(0, minOff);
+		while (off >= minOff) {
 			char c = content[off];
-			if (Character.isWhitespace(c) == false) {
+			//first check a comment and then whitesapce
+			//because line comment "// ...  \n" ends with EOL, which would be eat by isWhitespace and the comment detection would fail then
+			int startOfCommentOff = getStartOfComment(content, minOff, off);
+			if (startOfCommentOff >= 0) {
+				off = startOfCommentOff;
+			} else if (Character.isWhitespace(c) == false) {
+				//non whitespace found.
 				return off;
 			}
 			off--;
@@ -264,15 +306,103 @@ public class PositionBuilder {
 	}
 
 	/**
+	 * @param minOff the minimal acceptable return value
 	 * @return index of first whitespace char, searching backward. Can return off if it is whitespace.
+	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the last comment character.
+	 * in case of line comment it returns last character of EOL which ends the comment
 	 */
-	private int findPrevWhitespace(char[] content, int off) {
-		while (off >= 0) {
+	private int findPrevWhitespace(char[] content, int minOff, int off) {
+		minOff = Math.max(0, minOff);
+		while (off >= minOff) {
 			char c = content[off];
-			if (Character.isWhitespace(c)) {
+			if (Character.isWhitespace(c) || getStartOfComment(content, minOff, off) >= 0) {
 				return off;
 			}
 			off--;
+		}
+		return -1;
+	}
+	/**
+	 * @param maxOff maximum acceptable return value
+	 * @return if the off points at start of comment then it returns offset which points on last character of the comment
+	 * if the off does not point at start of comment then it returns -1
+	 */
+	private int getEndOfComment(char[] content, int maxOff, int off) {
+		maxOff = Math.min(maxOff, content.length - 1);
+		if (off + 1 <= maxOff) {
+			if (content[off] == '/' && content[off + 1] == '*') {
+				// +3, because we are searching for first possible '/' and not for '*'
+				//this is shortest comment: /**/
+				off = off + 3;
+				while (off <= maxOff) {
+					if (content[off] == '/' && content[off - 1] == '*') {
+						//we have found end of this comment
+						return off;
+					}
+					off++;
+				}
+				//the content ended. Comment ends with end of file too
+				return off;
+			} else if (content[off] == '/' && content[off + 1] == '/') {
+				while (off <= maxOff) {
+					/*
+					 * Handle all 3 kinds of EOLs
+					 * \r\n
+					 * \r
+					 * \n
+					 */
+					if (content[off] == '\n') {
+						return off;
+					}
+					if (content[off] == '\r') {
+						//we have found end of this comment
+						//skip windows \n too if any
+						if (content[off] == '\n') {
+							off++;
+						}
+						return off;
+					}
+					off++;
+				}
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * @param minOff minimum offset where it should search for start of comment
+	 * @return if the off points at end of comment then it returns offset which points on first character of the comment
+	 * if the off does not point at the end of comment then it returns -1
+	 */
+	private int getStartOfComment(char[] content, int minOff, int off) {
+		if (off < 2) {
+			//there cannot start comment
+			return -1;
+		}
+		if ((content[off] == '/' && content[off - 1] == '*')
+				|| content[off] == '\n'
+				|| content[off] == '\r') {
+			//it is probably end of some comment. Not that it is not enough to search for /* recursivelly
+			//because there may be something like: comment starts here: /* /* /* and not here: /*  */
+			//or something like this
+//			/*// */ this code is not in comment EOL
+			//so search for comment from beginning of `minOff`
+			int maxOff = off;
+			off = minOff;
+			while (off <= maxOff) {
+				int endOfComment = getEndOfComment(content, maxOff, off);
+				if (endOfComment >= 0) {
+					//it detected a comment
+					if (endOfComment == maxOff) {
+						//off points to start of comment which ends on maxOff. We found it
+						return off;
+					}
+					//else we have found some previous comment
+					//jump over it and continue searching
+					off = endOfComment;
+				}
+				off++;
+			}
 		}
 		return -1;
 	}

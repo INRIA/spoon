@@ -149,6 +149,16 @@ public abstract class CtScanner implements CtVisitor {
 			}
 		}
 	}
+	/**
+	 * Generically scans a Map of meta-model elements.
+	 */
+	public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
+		if (elements != null) {
+			for (CtElement obj : elements.values()) {
+				scan(role, obj);
+			}
+		}
+	}
 
 	/**
 	 * Generically scans a collection of meta-model elements.
@@ -199,14 +209,10 @@ public abstract class CtScanner implements CtVisitor {
 			scan(role, ((CtElement) (o)));
 		}
 		if (o instanceof Collection<?>) {
-			for (Object obj : ((Collection<?>) (o))) {
-				scan(role, obj);
-			}
+			scan(role, (Collection<? extends CtElement>) o);
 		}
 		if (o instanceof Map<?, ?>) {
-			for (Object obj : ((Map) (o)).values()) {
-				scan(role, obj);
-			}
+			scan(role, (Map<String, ? extends CtElement>) o);
 		}
 	}
 
@@ -252,7 +258,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtArrayTypeReference(final CtArrayTypeReference<T> reference) {
 		enter(reference);
-		scan(CtRole.COMMENT, reference.getComments());
 		scan(CtRole.PACKAGE_REF, reference.getPackage());
 		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
 		scan(CtRole.TYPE, reference.getComponentType());
@@ -540,7 +545,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtCatchVariableReference(final CtCatchVariableReference<T> reference) {
 		enter(reference);
-		scan(CtRole.COMMENT, reference.getComments());
 		scan(CtRole.TYPE, reference.getType());
 		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
@@ -610,7 +614,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE, lambda.getType());
 		scan(CtRole.CAST, lambda.getTypeCasts());
 		scan(CtRole.PARAMETER, lambda.getParameters());
-		scan(CtRole.THROWN, lambda.getThrownTypes());
 		scan(CtRole.BODY, lambda.getBody());
 		scan(CtRole.EXPRESSION, lambda.getExpression());
 		scan(CtRole.COMMENT, lambda.getComments());

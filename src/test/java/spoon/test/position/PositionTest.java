@@ -16,31 +16,31 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooAbstractMethod;
 import spoon.test.position.testclasses.FooAnnotation;
 import spoon.test.position.testclasses.FooClazz;
 import spoon.test.position.testclasses.FooClazz2;
+import spoon.test.position.testclasses.FooClazzWithComments;
 import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.PositionParameterTypeWithReference;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -75,6 +75,67 @@ public class PositionTest {
 
 		assertEquals("FooClazz", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+	}
+	
+	
+	@Test
+	public void testPositionClassWithComments() throws Exception {
+		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
+		//and it produces correct `modifierEnd`
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<FooClazzWithComments> foo = build.Type().get(FooClazzWithComments.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
+
+//		assertEquals(4, position.getLine());
+//		assertEquals(6, position.getEndLine());
+
+		assertEquals(42, position.getSourceStart());
+		assertEquals(132, position.getSourceEnd());
+		assertEquals("/*c1*/\n" + 
+				"//lc1\n" + 
+				"public /*c2*/\n" + 
+				"//lc2 /*\n" + 
+				"class \n" + 
+				"// */\n" + 
+				"/*c3 class // */\n" + 
+				"FooClazzWithComments {\n" + 
+				"\n" + 
+				"}", contentAtPosition(classContent, position));
+
+		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
+
+		// this specifies that getLine starts at name (and not at Javadoc or annotation)
+		final CtType<FooClazz> foo2 = build.Type().get(FooClazz2.class);
+		assertEquals(42, foo2.getPosition().getSourceStart());
+		assertEquals(4, foo2.getPosition().getLine());
+		assertEquals(4, foo2.getPosition().getEndLine());
+
+		assertEquals("FooClazzWithComments", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
+		assertEquals("/*c1*/\n" + 
+				"//lc1\n" + 
+				"public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+	}
+
+	@Test
+	public void testPositionParameterTypeReference() throws Exception {
+		//contract: the parameterized type reference has a source position which includes parameter types, etc.
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final CtType<?> foo = build.Type().get(PositionParameterTypeWithReference.class);
+		String classContent = getClassContent(foo);
+
+		CtTypeReference<?> field2Type =  foo.getField("field2").getType();
+		//this already worked well
+		assertEquals("List<T>[][]", contentAtPosition(classContent, field2Type.getPosition()));
+
+		CtTypeReference<?> field1Type =  foo.getField("field1").getType();
+		//this probably points to an bug in JDT. But we have no workaround in Spoon
+		assertEquals("List<T>", contentAtPosition(classContent, field1Type.getPosition()));
+
+		CtTypeReference<?> field3Type =  foo.getField("field3").getType();
+		//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
+		assertEquals("List<T // */ >\n\t/*// */>", contentAtPosition(classContent, field3Type.getPosition()));
 	}
 	
 	@Test
@@ -533,7 +594,5 @@ public class PositionTest {
 		assertEquals(8, positionElse.getLine());
 
 		assertNotEquals(returnStatement, otherReturnStatement);
-
-
 	}
 }

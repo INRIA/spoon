@@ -27,6 +27,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.meta.ContainerKind;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -34,23 +37,28 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 import spoon.test.metamodel.MMMethod;
 import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.MMType;
+import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.MMTypeKind;
 import spoon.test.metamodel.SpoonMetaModel;
 
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -132,20 +140,20 @@ public class CtScannerTest {
 
 		class Counter  { int nbChecks = 0; }
 		Counter c = new Counter();
-		for (MMType leafMmType : metaModel.getMMTypes()) {
+		for (MetamodelConcept leafConcept : metaModel.getConcepts()) {
 
 			// we only consider leaf, actual classes of the metamodel (eg CtInvocation) and not abstract ones (eg CtModifiable)
-			if (leafMmType.getKind() != MMTypeKind.LEAF) {
+			if (leafConcept.getKind() != MMTypeKind.LEAF) {
 				continue;
 			}
 
-			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafMmType.getName());
-			assertNotNull("CtScanner#" + "visit"+leafMmType.getName() + "(...) not found", visitMethod);
+			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafConcept.getName());
+			assertNotNull("CtScanner#" + "visit"+leafConcept.getName() + "(...) not found", visitMethod);
 			Set<String> calledMethods = new HashSet<>();
 			Set<String> checkedMethods = new HashSet<>();
 
 			// go over the roles and the corresponding fields of this type
-			leafMmType.getRole2field().forEach((role, mmField) -> {
+			leafConcept.getRoleToProperty().forEach((role, mmField) -> {
 
 				if (mmField.isDerived()) {
 					//ignore derived fields
@@ -173,7 +181,7 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && leafMmType.getModelInterface().isSubtypeOf(ctRefRef)) {
+				if(getter.getName().equals("getComments") && leafConcept.getModelInterface().isSubtypeOf(ctRefRef)) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}
@@ -226,6 +234,7 @@ public class CtScannerTest {
 			int nExit=0;
 			int nObject=0;
 			int nElement=0;
+			Deque<CollectionContext> contexts = new ArrayDeque<>();
 		};
 		Counter counter = new Counter();
 		launcher.getModel().getRootPackage().accept(new CtScanner() {
@@ -258,5 +267,86 @@ public class CtScannerTest {
 		assertEquals(2396, counter.nEnter);
 		assertEquals(2396, counter.nExit);
 
+		// contract: all AST nodes which are part of Collection or Map are visited first by method "scan(Collection|Map)" and then by method "scan(CtElement)"
+		Counter counter2 = new Counter();
+		launcher.getModel().getRootPackage().accept(new CtScanner() {
+			@Override
+			public void scan(Object o) {
+				counter2.nObject++;
+				super.scan(o);
+			}
+			@Override
+			public void scan(CtRole role, CtElement o) {
+				if (o == null) {
+					//there is no collection involved in scanning of this single value NULL attribute
+					assertNull(counter2.contexts.peek().col);
+					
+				} else {
+					RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getParent().getClass(), role);
+					if (rh.getContainerKind()==ContainerKind.SINGLE) {
+						//there is no collection involved in scanning of this single value attribute
+						assertNull(counter2.contexts.peek().col);
+					} else {
+						counter2.contexts.peek().assertRemoveSame(o);
+					}
+				}
+				counter2.nElement++;
+				super.scan(o);
+			}
+			@Override
+			public void scan(CtRole role, Collection<? extends CtElement> elements) {
+				//contract: before processed collection is finished before it starts with next collection
+				counter2.contexts.peek().initCollection(elements);
+				super.scan(role, elements);
+				//contract: all elements of collection are processed in previous super.scan call
+				counter2.contexts.peek().assertCollectionIsEmpty();
+			}
+			@Override
+			public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
+				//contract: before processed collection is finished before it starts with next collection
+				counter2.contexts.peek().initCollection(elements.values());
+				super.scan(role, elements);
+				//contract: all elements of collection are processed in previous super.scan call
+				counter2.contexts.peek().assertCollectionIsEmpty();
+			}
+			@Override
+			public void enter(CtElement o) {
+				counter2.nEnter++;
+				counter2.contexts.push(new CollectionContext());
+			}
+			@Override
+			public void exit(CtElement o) {
+				counter2.nExit++;
+				counter2.contexts.peek().assertCollectionIsEmpty();
+				counter2.contexts.pop();
+			}
+		});
+		assertEquals(counter.nObject, counter2.nObject);
+		assertEquals(counter.nElement, counter2.nElement);
+		assertEquals(counter.nEnter, counter2.nEnter);
+		assertEquals(counter.nExit, counter2.nExit);
+	}
+	private static class CollectionContext {
+		Collection<CtElement> col;
+		void assertCollectionIsEmpty() {
+			assertTrue(col == null || col.isEmpty());
+			col = null;
+		}
+		public void initCollection(Collection<? extends CtElement> elements) {
+			assertCollectionIsEmpty();
+			col = new ArrayList<>(elements);
+			assertFalse(col.contains(null));
+		}
+		public void assertRemoveSame(CtElement o) {
+			assertNotNull(col);
+			for (Iterator iter = col.iterator(); iter.hasNext();) {
+				CtElement ctElement = (CtElement) iter.next();
+				if (o == ctElement) {
+					iter.remove();
+					return;
+				}
+			}
+			fail();
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package spoon.test;
+package spoon.test.testclasses;
 
 public class SampleClass {
 

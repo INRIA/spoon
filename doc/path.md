@@ -6,18 +6,27 @@ keywords: quering, query, path, ast, elements
 
 `CtPath` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPath.html)) 
 defines the path to a `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) 
-in a model respectively to another element. A `CtPath` can also be used 
-to make a query to get elements and is based on three concepts: 
-names of elements, types of elements and roles of code elements.
+in a model. For example, `.spoon.test.path.Foo.foo#body#statement[index=0]` represents the first statement of the body of method foo.
 
-A role is a relation between two AST nodes, encoded as an AST node field.
-For instance, a "then" branch in a if/then/else is a role (and not an node). 
+A `CtPath`is based on: names of elements (eg `foo`), and roles of elements with respect to their parent (eg `body`).
+A role is a relation between two AST nodes.
+For instance, a "then" branch in a if/then/else is a role (and not an node). All roles can be found in `CtRole`. In addition, each getter or setter in the metamodel is annotated with its role.
 
-To build a path, you have two possibilities: `CtPathBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html)) 
-and `CtPathStringBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathStringBuilder.html)).
-`CtPathBuilder` defines a fluent api to build  your path. 
-`CtPathStringBuilder` creates a path object from a string according to a 
+To build a path, there are several possibilities:
+ 
+* method `getPath` in `CtElement`
+* `CtPathStringBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathStringBuilder.html)).
+it creates a path object from a string according to a 
 syntax inspired from XPath and CSS selectors.
+* the low-level `CtPathBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html)), it defines a fluent api to build  your path. 
+
+To evaluate a path, ie getting the elements represented by it, use `evaluateOn(List<CtElement>)`
+
+```java
+path = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=0]");
+List<CtElement> l = path.evaluateOn(root)
+```
+
 
 ## CtPathStringBuilder
 
@@ -30,7 +39,7 @@ For instance, if we want the first statement in the body of method `foo`, declar
 in the class `spoon.test.path.Foo`. 
 
 ```java
-new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body[index=0]");
+new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=0]");
 ```
 
 ## CtPathBuilder

@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
@@ -330,6 +331,10 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Clone the element which calls this method in a new object.
+	 *
+	 * Note that that references are kept as is, and thus, so if you clone whole classes
+	 * or methods, some parts of the cloned element (eg executable references) may still point to the initial element.
+	 * In this case, consider using methods {@link spoon.refactoring.Refactoring#copyType(CtType)} and {@link spoon.refactoring.Refactoring#copyMethod(CtMethod)} instead which does additional work beyond cloning.
 	 */
 	CtElement clone();
 
@@ -349,4 +354,10 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param value to be assigned to this field.
 	 */
 	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
+
+	/**
+	 * Return the path from the model root to this CtElement, eg `.spoon.test.path.Foo.foo#body#statement[index=0]`
+	 */
+	CtPath getPath();
+
 }

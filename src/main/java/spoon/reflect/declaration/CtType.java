@@ -345,4 +345,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 
 	@Override
 	CtType<T> clone();
+
+	/**
+	 * Copy the type, where copy means cloning + porting all the references in the clone from the old type to the new type.
+	 *
+	 * The copied type is added to the same package (and this to the factory as well).
+	 *
+	 * A new unique method name is given for each copy, and this method can be called several times.
+	 */
+	CtType<?> copyType();
 }

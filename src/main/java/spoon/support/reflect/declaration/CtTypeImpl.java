@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
@@ -284,7 +285,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				fields.add((CtField<?>) typeMember);
 			}
 		}
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	@Override
@@ -456,7 +457,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				nestedTypes.add((CtType<?>) typeMember);
 			}
 		}
-		return nestedTypes;
+		return Collections.unmodifiableSet(nestedTypes);
 	}
 
 	@Override
@@ -827,7 +828,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				methods.add((CtMethod<?>) typeMember);
 			}
 		}
-		return methods;
+		return Collections.unmodifiableSet(methods);
 	}
 
 	@Override
@@ -1052,5 +1053,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
+	}
+
+	@Override
+	public CtType<?> copyType() {
+		return Refactoring.copyType(this);
 	}
 }

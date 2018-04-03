@@ -92,6 +92,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 				.includingInterfaces(false)
 				.includingSelf(true)
 				.returnTypeReferences(true)).list();
+		if (superTypesOfFirst.isEmpty()) {
+			return null;
+		}
 		int commonSuperTypeIdx = 0;
 		//index of Throwable. Last is Object
 		int throwableIdx = superTypesOfFirst.size() - 2;
@@ -124,6 +127,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
 		setMultiTypes(type == null ? emptyList() : Collections.singletonList(type));
 		return (C) this;

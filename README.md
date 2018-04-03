@@ -79,7 +79,7 @@ Stable version:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <version>6.1.0</version>
+    <version>6.2.0</version>
 </dependency>
 ```
 
@@ -90,16 +90,15 @@ Snapshot version:
 	<dependency>
 		<groupId>fr.inria.gforge.spoon</groupId>
 		<artifactId>spoon-core</artifactId>
-		<version>6.2.0-SNAPSHOT</version>
+		<version>6.3.0-SNAPSHOT</version>
 	</dependency>
 </dependencies>
 <repositories>
 	<repository>
-		<id>gforge.inria.fr-snapshot</id>
-		<name>Maven Repository for Spoon Snapshot</name>
-		<url>http://spoon.gforge.inria.fr/repositories/snapshots/</url>
-		<snapshots />
-	</repository>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
 </repositories>
 ```
 

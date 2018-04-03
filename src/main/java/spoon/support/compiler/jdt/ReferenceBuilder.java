@@ -93,7 +93,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,7 +105,6 @@ public class ReferenceBuilder {
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
 	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
-	private Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
 	private boolean bounds = false;
 
@@ -786,14 +784,9 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof BaseTypeBinding) {
 			String name = new String(binding.sourceName());
-			ref = basestypes.get(name);
-			if (ref == null) {
-				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-				ref.setSimpleName(name);
-				basestypes.put(name, ref);
-			} else {
-				ref = ref == null ? ref : ref.clone();
-			}
+			//always create new TypeReference, because clonning from a cache clones invalid SourcePosition
+			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			ref.setSimpleName(name);
 		} else if (binding instanceof WildcardBinding) {
 			WildcardBinding wildcardBinding = (WildcardBinding) binding;
 			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();

@@ -1,4 +1,4 @@
-package spoon.test.properties;
+package spoon.test.properties.testclasses;
 
 public class Sample {
 

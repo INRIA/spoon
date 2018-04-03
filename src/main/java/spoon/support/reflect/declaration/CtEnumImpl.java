@@ -132,7 +132,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		List<CtField<?>> result = new ArrayList<>();
 		result.addAll(getEnumValues());
 		result.addAll(super.getFields());
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override

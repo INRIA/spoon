@@ -1,7 +1,6 @@
 package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -1055,11 +1054,11 @@ public class AnnotationTest {
 		//spoon2.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
 		spoon2.buildModel();
 
-		List<CtMethod<?>> methods = spoon2.getModel().getElements(new NamedElementFilter(CtMethod.class, "getPort"));
+		List<CtField<?>> fields = spoon2.getModel().getElements(new NamedElementFilter(CtField.class, "port"));
 
-		assertEquals("Number of method getPort should be 1", 1, methods.size());
+		assertEquals("Number of fields port should be 1", 1, fields.size());
 
-		CtMethod getport = methods.get(0);
+		CtField<?> getport = fields.get(0);
 		CtTypeReference returnType = getport.getType();
 
 		List<CtAnnotation<?>> annotations = returnType.getAnnotations();

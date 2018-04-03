@@ -16,6 +16,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
@@ -59,4 +60,15 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalType
 	 * Returns the empty collection if defined here for the first time.
 	 */
 	Collection<CtMethod<?>> getTopDefinitions();
+
+	/**
+	 * Copy the method, where copy means cloning + porting all the references of the old method to the new method (important for recursive methods).
+	 * The copied method is added to the type, with a suffix "Copy".
+	 *
+	 * A new unique method name is given for each copy, and this method can be called several times.
+	 *
+	 * If you want to rename the new method, use {@link Refactoring#changeMethodName(CtMethod, String)} (and not {@link #setSimpleName(String)}, which does not update the references)
+	 */
+	CtMethod<?> copyMethod();
+
 }

@@ -509,7 +509,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
 		CtType<?> t = getDeclaration();
 		if (t != null) {
-			return t.getSuperInterfaces();
+			return Collections.unmodifiableSet(t.getSuperInterfaces());
 		} else {
 			Class<?> c = getActualClass();
 			Class<?>[] sis = c.getInterfaces();
@@ -518,7 +518,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				for (Class<?> si : sis) {
 					set.add(getFactory().Type().createReference(si));
 				}
-				return set;
+				return Collections.unmodifiableSet(set);
 			}
 		}
 		return Collections.emptySet();

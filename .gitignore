@@ -13,6 +13,7 @@ nb-actions.xml
 .settings/
 .project
 .classpath
+.checkstyle
 .externalToolBuilders/
 bin/
 maven-eclipse.xml

@@ -123,7 +123,6 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
 		spoon.reflect.reference.CtArrayTypeReference other = ((spoon.reflect.reference.CtArrayTypeReference) (this.stack.peek()));
 		enter(reference);
-		biScan(spoon.reflect.path.CtRole.COMMENT, reference.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, reference.getPackage(), other.getPackage());
 		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, reference.getDeclaringType(), other.getDeclaringType());
 		biScan(spoon.reflect.path.CtRole.TYPE, reference.getComponentType(), other.getComponentType());
@@ -471,7 +470,6 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 	public <T> void visitCtCatchVariableReference(final spoon.reflect.reference.CtCatchVariableReference<T> reference) {
 		spoon.reflect.reference.CtCatchVariableReference other = ((spoon.reflect.reference.CtCatchVariableReference) (this.stack.peek()));
 		enter(reference);
-		biScan(spoon.reflect.path.CtRole.COMMENT, reference.getComments(), other.getComments());
 		biScan(spoon.reflect.path.CtRole.TYPE, reference.getType(), other.getType());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, reference.getAnnotations(), other.getAnnotations());
 		exit(reference);
@@ -553,7 +551,6 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.TYPE, lambda.getType(), other.getType());
 		biScan(spoon.reflect.path.CtRole.CAST, lambda.getTypeCasts(), other.getTypeCasts());
 		biScan(spoon.reflect.path.CtRole.PARAMETER, lambda.getParameters(), other.getParameters());
-		biScan(spoon.reflect.path.CtRole.THROWN, lambda.getThrownTypes(), other.getThrownTypes());
 		biScan(spoon.reflect.path.CtRole.BODY, lambda.getBody(), other.getBody());
 		biScan(spoon.reflect.path.CtRole.EXPRESSION, lambda.getExpression(), other.getExpression());
 		biScan(spoon.reflect.path.CtRole.COMMENT, lambda.getComments(), other.getComments());
