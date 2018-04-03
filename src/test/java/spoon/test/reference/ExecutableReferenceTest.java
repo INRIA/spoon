@@ -216,13 +216,13 @@ public class ExecutableReferenceTest {
 		launcher.buildModel();
 
 		CtClass klass = launcher.getFactory().Class().get(Stream.class);
-		new CtScanner() {
-			@Override
-			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
-				assertNotNull(reference.toString(), reference.getExecutableDeclaration());
-			}
-		}.scan(klass);
+		List<CtExecutableReference> executableReferenceList = klass.getElements(new TypeFilter<>(CtExecutableReference.class));
 
+		for (CtExecutableReference execRef : executableReferenceList) {
+			String refString = execRef.toString();
+			CtExecutable executable = execRef.getExecutableDeclaration();
+			assertNotNull(refString, executable);
+		}
 	}
 
 }
