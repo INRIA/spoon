@@ -469,7 +469,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	public boolean getNoClasspath() {
 		if (this.noclasspath == null) {
 			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
-			return true;
+			this.noclasspath = true;
 		}
 		return noclasspath;
 	}
