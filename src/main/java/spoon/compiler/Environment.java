@@ -240,8 +240,8 @@ public interface Environment {
 	/**
 	 * Sets the source class path of the Spoon model.
 	 * After the class path is set, it can be retrieved by
-	 * {@link #getSourceClasspath()}. Only .jar files or directories
-	 * are accepted.
+	 * {@link #getSourceClasspath()}. Only .jar files or directories with *.class files are accepted.
+	 * The *.jar or *.java files contained in given directories are ignored.
 	 *
 	 * @throws InvalidClassPathException if a given classpath does not exists or
 	 * does not have the right format (.jar file or directory)
