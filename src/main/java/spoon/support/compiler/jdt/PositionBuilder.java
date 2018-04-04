@@ -82,12 +82,18 @@ public class PositionBuilder {
 			}
 		}
 
-		if (node instanceof AbstractVariableDeclaration) {
+		if (node instanceof TypeParameter) {
+			TypeParameter typeParameter = (TypeParameter) node;
+			sourceStart = typeParameter.declarationSourceStart;
+			sourceEnd = typeParameter.declarationSourceEnd;
+			if (typeParameter.type != null) {
+				sourceEnd = getSourceEndOfTypeReference(contents, typeParameter.type, sourceEnd);
+			}
+		} else if (node instanceof AbstractVariableDeclaration) {
 			AbstractVariableDeclaration variableDeclaration = (AbstractVariableDeclaration) node;
 			int modifiersSourceStart = variableDeclaration.modifiersSourceStart;
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
-			int declarationEnd = variableDeclaration.declarationEnd;
 
 			Annotation[] annotations = variableDeclaration.annotations;
 			if (annotations != null && annotations.length > 0) {
@@ -142,6 +148,12 @@ public class PositionBuilder {
 				//there is no modifier
 				modifiersSourceEnd = modifiersSourceStart - 1;
 			}
+			if (typeDeclaration.name.length == 0) {
+				//it is annonymous type
+				sourceEnd = sourceStart - 1;
+				//adjust bodyEnd of annonymous type
+				bodyEnd++;
+			}
 
 			return cf.createBodyHolderSourcePosition(cu, sourceStart, sourceEnd,
 					modifiersSourceStart, modifiersSourceEnd,
@@ -189,7 +201,7 @@ public class PositionBuilder {
 			}
 
 			if (getModifiers(methodDeclaration.modifiers, false, true).isEmpty()) {
-				modifiersSourceStart = modifiersSourceEnd + 1;
+				modifiersSourceEnd = modifiersSourceStart - 1;
 			}
 
 
@@ -219,23 +231,28 @@ public class PositionBuilder {
 						lineSeparatorPositions);
 			}
 		} else if (node instanceof TypeReference) {
-			//e.g. SomeType<String,T>
-			TypeReference[][] typeArgs = ((TypeReference) node).getTypeArguments();
-			if (typeArgs != null && typeArgs.length > 0) {
-				TypeReference[] trs = typeArgs[typeArgs.length - 1];
-				if (trs != null && trs.length > 0) {
-					TypeReference tr = trs[trs.length - 1];
-					if (sourceEnd < tr.sourceEnd) {
-						//the sourceEnd of reference is smaller then source of type argument of this reference
-						//move sourceEnd so that type argument is included in sources
-						//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
-						sourceEnd = findNextNonWhitespace(contents, contents.length, tr.sourceEnd + 1);
-					}
-				}
-			}
+			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		}
 
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+	}
+
+	private int getSourceEndOfTypeReference(char[] contents, TypeReference node, int sourceEnd) {
+		//e.g. SomeType<String,T>
+		TypeReference[][] typeArgs = ((TypeReference) node).getTypeArguments();
+		if (typeArgs != null && typeArgs.length > 0) {
+			TypeReference[] trs = typeArgs[typeArgs.length - 1];
+			if (trs != null && trs.length > 0) {
+				TypeReference tr = trs[trs.length - 1];
+				if (sourceEnd < tr.sourceEnd) {
+					//the sourceEnd of reference is smaller then source of type argument of this reference
+					//move sourceEnd so that type argument is included in sources
+					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
+					sourceEnd = findNextNonWhitespace(contents, contents.length, tr.sourceEnd + 1);
+				}
+			}
+		}
+		return sourceEnd;
 	}
 
 	/**
