@@ -228,7 +228,9 @@ public class JavaReflectionTreeBuilderTest {
 
 			CtElement parentOfOther = stack.peek();
 			try {
-				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName());
+				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName()
+				+"\nShadow: " + other.toString()
+				+"\nNormal: " + element.toString()+"\n");
 			} catch (CtPathException e) {
 				throw new SpoonException(e);
 			}
