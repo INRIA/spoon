@@ -359,7 +359,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	}
 
 	@Override
-	public <T extends CtExpression> T getTypedValue(String key) {
+	public <T extends CtExpression> T getWrappedValue(String key) {
 		CtExpression ctExpression = this.getValue(key);
 
 		if (ctExpression instanceof CtLiteral) {

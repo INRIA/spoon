@@ -1,7 +1,6 @@
 package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -82,7 +81,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
@@ -1494,9 +1492,9 @@ public class AnnotationTest {
 		assertTrue(annotationOne.getValue("role") instanceof CtLiteral);
 		assertTrue(annotationMultipleVal.getValue("role") instanceof CtNewArray);
 
-		assertTrue(annotationOne.getTypedValue("role") instanceof CtNewArray);
-		assertTrue(annotationMultipleVal.getTypedValue("role") instanceof CtNewArray);
-		assertEquals(annotationMultipleVal.getTypedValue("role"), annotationOne.getTypedValue("role"));
+		assertTrue(annotationOne.getWrappedValue("role") instanceof CtNewArray);
+		assertTrue(annotationMultipleVal.getWrappedValue("role") instanceof CtNewArray);
+		assertEquals(annotationMultipleVal.getWrappedValue("role"), annotationOne.getWrappedValue("role"));
 
 		assertEquals(annotationOne.getAnnotationType(), shadowAnnotationOne.getAnnotationType());
 		// FIXME: this contract should be fixed in #1914

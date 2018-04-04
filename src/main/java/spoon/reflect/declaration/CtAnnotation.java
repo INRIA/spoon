@@ -72,7 +72,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * Note that this value type does not necessarily corresponds to the annotation
 	 * type member. For example, in case the annotation type expect an array of Object,
 	 * and a single value is given, Spoon will return only the object without the CtNewArray.
-	 * If you want to get a type closer to the annotation type one, see {@link #getTypedValue(String)}.
+	 * If you want to get a type closer to the annotation type one, see {@link #getWrappedValue(String)}.
 	 *
 	 * @param key
 	 * 		Name of searched value.
@@ -94,7 +94,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 */
 	@DerivedProperty
 	@PropertyGetter(role = VALUE)
-	<T extends CtExpression> T getTypedValue(String key);
+	<T extends CtExpression> T getWrappedValue(String key);
 
 	/**
 	 * Returns this annotation's elements and their values. This is returned in
