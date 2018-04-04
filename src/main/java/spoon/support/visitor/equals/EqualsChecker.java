@@ -41,6 +41,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 
 	public void setOther(CtElement other) {
 		this.other = other;
+		isNotEqual = false;
 	}
 
 	public boolean isNotEqual() {
