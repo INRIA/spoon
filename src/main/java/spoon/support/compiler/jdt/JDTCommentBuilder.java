@@ -38,6 +38,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -325,7 +326,8 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtClass(CtClass<T> e) {
-				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
+				//all the comments located before the body brackets belongs to class
+				if (comment.getPosition().getSourceEnd() < ((BodyHolderSourcePosition) e.getPosition()).getBodyStart()) {
 					e.addComment(comment);
 					return;
 				}

@@ -199,4 +199,14 @@ public class PathTest {
 		assertEquals(path, new CtPathStringBuilder().fromString(path).toString());
 	}
 
+	@Test
+	public void exceptionTest() {
+		try {
+			new CtPathStringBuilder().fromString("/CtClassss");
+			fail();
+		} catch (CtPathException e) {
+			assertEquals("Unable to locate element with type CtClassss in Spoon model", e.getMessage());
+		}
+	}
+
 }

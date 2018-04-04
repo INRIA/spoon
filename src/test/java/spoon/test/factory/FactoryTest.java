@@ -37,7 +37,7 @@ public class FactoryTest {
 
 	@Test
 	public void testClone() throws Exception {
-		CtClass<?> type = build("spoon.test", "SampleClass");
+		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 		int i = m.getBody().getStatements().size();
 
@@ -71,7 +71,7 @@ public class FactoryTest {
 			}
 		};
 
-		CtClass<?> type = build("spoon.test", "SampleClass", launcher.getFactory());
+		CtClass<?> type = build("spoon.test.testclasses", "SampleClass", launcher.getFactory());
 
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 

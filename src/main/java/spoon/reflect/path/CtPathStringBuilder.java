@@ -52,7 +52,7 @@ public class CtPathStringBuilder {
 			return Class.forName("spoon.reflect.code." + name);
 		} catch (ClassNotFoundException ex) {
 			throw new CtPathException(
-					String.format("Unable to locate element with name $s in Spoon model", name));
+					String.format("Unable to locate element with type %s in Spoon model", name));
 		}
 	}
 

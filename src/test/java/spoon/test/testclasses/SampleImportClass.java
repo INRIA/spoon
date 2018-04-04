@@ -1,4 +1,4 @@
-package spoon.test;
+package spoon.test.testclasses;
 
 import java.util.List;
 import static java.util.Collections.EMPTY_LIST;

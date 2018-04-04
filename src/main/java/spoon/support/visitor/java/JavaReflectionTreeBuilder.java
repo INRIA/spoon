@@ -226,7 +226,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			@Override
 			public void addMethod(CtMethod ctMethod) {
 				try {
-					Object value = annotation.getClass().getMethod(ctMethod.getSimpleName()).invoke(annotation);
+					Object value = annotation.annotationType().getMethod(ctMethod.getSimpleName()).invoke(annotation);
 					ctAnnotation.addValue(ctMethod.getSimpleName(), value);
 				} catch (Exception ignore) {
 					ctAnnotation.addValue(ctMethod.getSimpleName(), "");

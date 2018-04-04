@@ -92,6 +92,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 				.includingInterfaces(false)
 				.includingSelf(true)
 				.returnTypeReferences(true)).list();
+		if (superTypesOfFirst.isEmpty()) {
+			return null;
+		}
 		int commonSuperTypeIdx = 0;
 		//index of Throwable. Last is Object
 		int throwableIdx = superTypesOfFirst.size() - 2;

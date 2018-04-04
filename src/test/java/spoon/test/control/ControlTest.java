@@ -21,7 +21,7 @@ public class ControlTest {
 
 	@Test
 	public void testModelBuildingFor() throws Exception {
-		CtType<?> type = build("spoon.test.control", "Fors");
+		CtType<?> type = build("spoon.test.control.testclasses", "Fors");
 		assertEquals("Fors", type.getSimpleName());
 
 		List<CtFor> fors = type.getElements(new TypeFilter<CtFor>(CtFor.class));
@@ -50,7 +50,7 @@ public class ControlTest {
 
 	@Test
 	public void testModelBuildingDoWhile() throws Exception {
-		CtType<?> type = build("spoon.test.control", "DoWhile");
+		CtType<?> type = build("spoon.test.control.testclasses", "DoWhile");
 		assertEquals("DoWhile", type.getSimpleName());
 		CtMethod<?> meth = type.getElements(
 				new NamedElementFilter<>(CtMethod.class,"methode")).get(0);
