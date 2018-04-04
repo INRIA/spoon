@@ -227,6 +227,18 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			public void addMethod(CtMethod ctMethod) {
 				try {
 					Object value = annotation.annotationType().getMethod(ctMethod.getSimpleName()).invoke(annotation);
+
+					// if there's only one element in annotation,
+					// then we only put that element's value.
+					// this intends to keep the same behaviour than when spooning a model
+					// with @MyAnnotation(values = "myval") -> Spoon creates only a CtLiteral for "values"
+					// even if the return type should be a String[]
+					if (value instanceof Object[]) {
+						Object[] values = (Object[]) value;
+						if (values.length == 1) {
+							value = values[0];
+						}
+					}
 					ctAnnotation.addValue(ctMethod.getSimpleName(), value);
 				} catch (Exception ignore) {
 					ctAnnotation.addValue(ctMethod.getSimpleName(), "");
