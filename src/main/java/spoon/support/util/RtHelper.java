@@ -16,6 +16,7 @@
  */
 package spoon.support.util;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -24,6 +25,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -122,9 +124,16 @@ public abstract class RtHelper {
 			args.add(((CtLiteral<?>) e).getValue());
 		}
 		Class<?> c = i.getExecutable().getDeclaringType().getActualClass();
+		if (c == null) {
+			throw new SpoonException("Cannot make invocation");
+		}
 		ArrayList<Class<?>> argTypes = new ArrayList<>();
 		for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
-			argTypes.add(type.getActualClass());
+			Class zeClass = type.getActualClass();
+			if (zeClass == null) {
+				throw new SpoonException("Cannot make invocation");
+			}
+			argTypes.add(zeClass);
 		}
 		return (T) c.getMethod(i.getExecutable().getSimpleName(), argTypes.toArray(new Class[argTypes.size()]))
 				.invoke(target, args.toArray());

@@ -16,14 +16,19 @@
  */
 package spoon.support;
 
-import spoon.SpoonException;
-
-/** Spoon-specific ClassNotFoundException (mostly encapsulates a ClassNotFoundException or a NoClassDefFoundError
- * as a runtime exception)
+/** Exception to be managed internally
+ * All external Spoon methods should only return {@link spoon.SpoonException}
  */
-public class SpoonClassNotFoundException extends SpoonException {
-	public SpoonClassNotFoundException(String msg) { super (msg); }
-	public SpoonClassNotFoundException(String msg, Throwable cnfe) {
+public class SpoonInternalException extends Exception {
+	public SpoonInternalException(String msg) {
+		super(msg);
+	}
+
+	public SpoonInternalException(Throwable cnfe) {
+		super(cnfe);
+	}
+
+	public SpoonInternalException(String msg, Throwable cnfe) {
 		super(msg, cnfe);
 	}
 

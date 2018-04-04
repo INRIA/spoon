@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -119,9 +120,14 @@ public class AnnotationFactory extends TypeFactory {
 			isArray = (e.getType() instanceof CtArrayTypeReference);
 		} else {
 			Method m;
-			try {
-				m = annotation.getAnnotationType().getActualClass().getMethod(annotationElementName, new Class[0]);
-			} catch (Exception ex) {
+			Class zeClass = annotation.getAnnotationType().getActualClass();
+			if (zeClass != null) {
+				try {
+					m = zeClass.getMethod(annotationElementName);
+				} catch (NoSuchMethodException e) {
+					throw new SpoonException(e);
+				}
+			} else {
 				annotation.addValue(annotationElementName, value);
 				return annotation;
 			}

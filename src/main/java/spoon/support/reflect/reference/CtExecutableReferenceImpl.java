@@ -325,46 +325,53 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	@Override
 	public Method getActualMethod() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
+        Class zeClass = getDeclaringType().getActualClass();
 
-		method_loop:
-		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
-			if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
-				continue;
-			}
-			if (!m.getName().equals(getSimpleName())) {
-				continue;
-			}
-			if (m.getParameterTypes().length != parameters.size()) {
-				continue;
-			}
-			for (int i = 0; i < parameters.size(); i++) {
-				Class<?> methodParameterType = m.getParameterTypes()[i];
-				Class<?> currentParameterType = parameters.get(i).getActualClass();
-				if (methodParameterType != currentParameterType) {
-					continue method_loop;
-				}
-			}
+		if (zeClass != null) {
+            method_loop:
+            for (Method m : zeClass.getDeclaredMethods()) {
+                if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
+                    continue;
+                }
+                if (!m.getName().equals(getSimpleName())) {
+                    continue;
+                }
+                if (m.getParameterTypes().length != parameters.size()) {
+                    continue;
+                }
+                for (int i = 0; i < parameters.size(); i++) {
+                    Class<?> methodParameterType = m.getParameterTypes()[i];
+                    Class<?> currentParameterType = parameters.get(i).getActualClass();
+                    if (methodParameterType != currentParameterType) {
+                        continue method_loop;
+                    }
+                }
 
-			return m;
-		}
+                return m;
+            }
+        }
 		return null;
 	}
 
 	public Constructor<?> getActualConstructor() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
-		constructor_loop:
-		for (Constructor<?> c : getDeclaringType().getActualClass().getDeclaredConstructors()) {
-			if (c.getParameterTypes().length != parameters.size()) {
-				continue;
-			}
-			for (int i = 0; i < parameters.size(); i++) {
-				if (c.getParameterTypes()[i] != parameters.get(i).getActualClass()) {
-					continue constructor_loop;
-				}
-			}
-			return c;
-		}
+		Class zeClass = getDeclaringType().getActualClass();
+		if (zeClass != null) {
+            constructor_loop:
+            for (Constructor<?> c : zeClass.getDeclaredConstructors()) {
+                if (c.getParameterTypes().length != parameters.size()) {
+                    continue;
+                }
+                for (int i = 0; i < parameters.size(); i++) {
+                    if (c.getParameterTypes()[i] != parameters.get(i).getActualClass()) {
+                        continue constructor_loop;
+                    }
+                }
+                return c;
+            }
+        }
+
 		return null;
 	}
 
