@@ -223,7 +223,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			if (field.getType().isArray() && field.getType().getComponentType() != null) {
 				visitArrayReference(field.getType().getComponentType());
 			} else {
-				visitClassReference(field.getType());
+				visitClassReference(field.getGenericType());
 			}
 		}
 	}

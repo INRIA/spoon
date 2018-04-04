@@ -539,7 +539,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	private void setModifier(CtModifiable ctModifiable, int modifiers) {
-		if (Modifier.isAbstract(modifiers)) {
+		// an interface is implicitly abstract
+		if (Modifier.isAbstract(modifiers) && !(ctModifiable instanceof CtInterface)) {
 			ctModifiable.addModifier(ModifierKind.ABSTRACT);
 		}
 		if (Modifier.isFinal(modifiers)) {

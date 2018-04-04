@@ -195,7 +195,13 @@ public class JavaReflectionTreeBuilderTest {
 		
 		ShadowEqualsVisitor sev = new ShadowEqualsVisitor(new HashSet<>(Arrays.asList(
 				//shadow classes has no body
-				CtRole.STATEMENT)));
+				CtRole.STATEMENT,
+
+				// shadow classes have no default expression
+				CtRole.DEFAULT_EXPRESSION,
+
+				// shadow classes have no comments
+				CtRole.COMMENT)));
 		List<String> diffs = sev.checkDiffs(type, shadowType);
 		assertTrue(String.join("\n", diffs), diffs.isEmpty());
 	}
@@ -211,9 +217,15 @@ public class JavaReflectionTreeBuilderTest {
 		}
 		@Override
 		protected boolean fail(CtRole role, Object element, Object other) {
-			if (ignoredRoles.contains(role)) {
+			if (role == null) {
+				this.isNotEqual = false;
 				return false;
 			}
+			if (ignoredRoles.contains(role)) {
+				this.isNotEqual = false;
+				return false;
+			}
+
 			CtElement parentOfOther = stack.peek();
 			try {
 				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName());
@@ -229,6 +241,12 @@ public class JavaReflectionTreeBuilderTest {
 				CtParameter otherParam = (CtParameter) other;
 				if (otherParam.getSimpleName().startsWith("arg")) {
 					otherParam.setSimpleName(param.getSimpleName());
+				}
+			}
+			if (element instanceof CtAnnotation) {
+				CtAnnotation myAnnotation = (CtAnnotation) element;
+				if (myAnnotation.getAnnotationType().getSimpleName().equals("Override")) {
+					return;
 				}
 			}
 			super.biScan(role, element, other);
