@@ -7,14 +7,17 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -29,7 +32,11 @@ import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.NoMethodModifiers;
 import spoon.test.position.testclasses.PositionParameterTypeWithReference;
+import spoon.test.position.testclasses.SomeEnum;
+import spoon.test.position.testclasses.TypeParameter;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,9 +44,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -595,4 +602,59 @@ public class PositionTest {
 
 		assertNotEquals(returnStatement, otherReturnStatement);
 	}
+	@Test
+	public void testPositionMethodTypeParameter() throws Exception {
+		//contract: the Method TypeParameter T extends List<?> has simple source position
+		//the previous used DeclarationSourcePosition had incorrect details
+		final CtType<?> foo = ModelUtils.buildClass(TypeParameter.class);
+		String classContent = getClassContent(foo);
+
+		CtTypeParameter typeParam = foo.getMethodsByName("m").get(0).getFormalCtTypeParameters().get(0);
+		assertEquals("T extends List<?>", contentAtPosition(classContent, typeParam.getPosition()));
+		assertFalse(typeParam.getPosition() instanceof DeclarationSourcePosition);
+	}
+	
+	@Test
+	public void testPositionOfAnnonymousType() throws Exception {
+		//contract: the annonymous type has consistent position
+		final CtEnum foo = (CtEnum) ModelUtils.buildClass(SomeEnum.class);
+		String classContent = getClassContent(foo);
+
+		CtNewClass<?> newClass = (CtNewClass<?>) foo.getEnumValue("X").getDefaultExpression();
+		CtClass<?> annonClass = newClass.getAnonymousClass();
+		assertEquals("{\n" + 
+				"		void m() {};\n" + 
+				"	}", contentAtPosition(classContent, annonClass.getPosition()));
+		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
+		int start = annonClass.getPosition().getSourceStart();
+		int end = annonClass.getPosition().getSourceEnd();
+		//body is equal to source start/end
+		assertEquals(start, bhsp.getBodyStart());
+		assertEquals(end, bhsp.getBodyEnd());
+
+		//there is no name and no modifiers
+		assertEquals(start - 1, bhsp.getNameEnd());
+		assertEquals(start, bhsp.getModifierSourceStart());
+		assertEquals(start - 1, bhsp.getModifierSourceEnd());
+		assertEquals(start, bhsp.getNameStart());
+		assertEquals(start - 1, bhsp.getNameEnd());
+	}
+	
+	@Test
+	public void testEmptyModifiersOfMethod() throws Exception {
+		//contract: the modifiers of Method without modifiers are empty and have correct start
+		final CtType<?> foo = ModelUtils.buildClass(NoMethodModifiers.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) foo.getMethodsByName("m").get(0).getPosition();
+		assertEquals("void m();", contentAtPosition(classContent, bhsp));
+		int start = bhsp.getSourceStart();
+		int end = bhsp.getSourceEnd();
+		assertEquals(start, bhsp.getModifierSourceStart());
+		assertEquals(start - 1, bhsp.getModifierSourceEnd());
+		assertEquals("m", contentAtPosition(classContent, bhsp.getNameStart(), bhsp.getNameEnd()));
+		assertEquals(end, bhsp.getBodyStart());
+		assertEquals(end - 1, bhsp.getBodyEnd());
+	}
+	
 }
