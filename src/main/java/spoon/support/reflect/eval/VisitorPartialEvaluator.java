@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.eval;
 
+import spoon.Launcher;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -55,6 +56,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 import spoon.support.util.RtHelper;
 
 import java.util.List;
@@ -72,21 +75,27 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	CtElement result;
 
 	Number convert(CtTypeReference<?> type, Number n) {
-		if ((type.getActualClass() == int.class) || (type.getActualClass() == Integer.class)) {
-			return n.intValue();
+		try {
+			if ((type.getActualClass() == int.class) || (type.getActualClass() == Integer.class)) {
+				return n.intValue();
+			}
+			if ((type.getActualClass() == byte.class) || (type.getActualClass() == Byte.class)) {
+				return n.byteValue();
+			}
+			if ((type.getActualClass() == long.class) || (type.getActualClass() == Long.class)) {
+				return n.longValue();
+			}
+			if ((type.getActualClass() == float.class) || (type.getActualClass() == Float.class)) {
+				return n.floatValue();
+			}
+			if ((type.getActualClass() == short.class) || (type.getActualClass() == Short.class)) {
+				return n.shortValue();
+			}
+		} catch (SpoonClassNotFoundException e) {
+			// should never happen
+			throw new SpoonClassNotFoundRuntimeException(e);
 		}
-		if ((type.getActualClass() == byte.class) || (type.getActualClass() == Byte.class)) {
-			return n.byteValue();
-		}
-		if ((type.getActualClass() == long.class) || (type.getActualClass() == Long.class)) {
-			return n.longValue();
-		}
-		if ((type.getActualClass() == float.class) || (type.getActualClass() == Float.class)) {
-			return n.floatValue();
-		}
-		if ((type.getActualClass() == short.class) || (type.getActualClass() == Short.class)) {
-			return n.shortValue();
-		}
+
 		return n;
 	}
 
@@ -287,7 +296,17 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 	private <T> void visitFieldAccess(CtFieldAccess<T> fieldAccess) {
 		if ("class".equals(fieldAccess.getVariable().getSimpleName())) {
-			Class<?> actualClass = fieldAccess.getVariable().getDeclaringType().getActualClass();
+			Class<?> actualClass = null;
+			try {
+				actualClass = fieldAccess.getVariable().getDeclaringType().getActualClass();
+			} catch (SpoonClassNotFoundException e) {
+				if (fieldAccess.getFactory().getEnvironment().getNoClasspath()) {
+					actualClass = null;
+					Launcher.LOGGER.warn(e.getMessage());
+				} else {
+					throw new SpoonClassNotFoundRuntimeException(e);
+				}
+			}
 			if (actualClass != null) {
 				CtLiteral<Class<?>> literal = fieldAccess.getFactory().Core().createLiteral();
 				literal.setValue(actualClass);

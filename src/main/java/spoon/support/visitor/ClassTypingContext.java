@@ -213,16 +213,8 @@ public class ClassTypingContext extends AbstractTypingContext {
 				if (actualTypeArguments.isEmpty()) {
 					//may be they are not set - check whether type declares some generic parameters
 					List<CtTypeParameter> typeParams;
-					try {
-						CtType<?> type = typeRef.getTypeDeclaration();
-						typeParams = type.getFormalCtTypeParameters();
-					} catch (final SpoonClassNotFoundException e) {
-						if (typeRef.getFactory().getEnvironment().getNoClasspath()) {
-							typeParams = Collections.emptyList();
-						} else {
-							throw e;
-						}
-					}
+					CtType<?> type = typeRef.getTypeDeclaration();
+					typeParams = type.getFormalCtTypeParameters();
 					if (typeParams.size() > 0) {
 						//yes, there are generic type parameters. Reference should use actualTypeArguments computed from their bounds
 						actualTypeArguments = new ArrayList<>(typeParams.size());

@@ -31,6 +31,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
@@ -103,12 +104,20 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@Override
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
-		if (isUpper()) {
-			if (isDefaultBoundingType()) {
-				return (Class<Object>) getTypeErasure().getActualClass();
+		String className = null;
+		try {
+			if (isUpper()) {
+				if (isDefaultBoundingType()) {
+					className = getTypeErasure().getQualifiedName();
+					return (Class<Object>) getTypeErasure().getActualClass();
+				}
+				className = getBoundingType().getQualifiedName();
+				return (Class<Object>) getBoundingType().getActualClass();
 			}
-			return (Class<Object>) getBoundingType().getActualClass();
+		} catch (SpoonClassNotFoundException e) {
+			handleClassNotFound(e, className);
 		}
+
 		return null;
 	}
 

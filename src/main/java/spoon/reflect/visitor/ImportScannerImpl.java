@@ -492,15 +492,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected boolean isImportedInFieldImports(CtFieldReference<?> ref) {
 		if (!(ref.isImplicit()) && fieldImports.containsKey(ref.getSimpleName())) {
 			CtFieldReference<?> exist = fieldImports.get(ref.getSimpleName());
-			try {
-				if (exist.getFieldDeclaration() != null && exist.getFieldDeclaration().equals(ref.getFieldDeclaration())) {
-					return true;
-				}
-			// in some rare cases we could not access to the field, then we do not import it.
-			} catch (SpoonClassNotFoundException notfound) {
-				return false;
+			if (exist.getFieldDeclaration() != null && exist.getFieldDeclaration().equals(ref.getFieldDeclaration())) {
+				return true;
 			}
-
 		}
 
 		return false;

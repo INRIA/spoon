@@ -27,6 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -118,7 +119,7 @@ class JDTImportBuilder {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 					klass = this.factory.Type().get(zeClass);
 					return klass;
-				} catch (ClassNotFoundException e) {
+				} catch (ClassNotFoundException|SpoonClassNotFoundException e) {
 					return null;
 				}
 			}

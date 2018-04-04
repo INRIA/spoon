@@ -42,6 +42,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtExpressionImpl;
@@ -253,7 +255,13 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		} else if (value instanceof CtNewArray) {
 			CtNewArray<?> arrayExpression = (CtNewArray<?>) value;
 
-			Class<?> componentType = arrayExpression.getType().getActualClass().getComponentType();
+			Class<?> componentType = null;
+			try {
+				componentType = arrayExpression.getType().getActualClass().getComponentType();
+			} catch (SpoonClassNotFoundException e) {
+				handleClassNotFound(e, arrayExpression.getType().getQualifiedName());
+				return value;
+			}
 			List<CtExpression<?>> elements = arrayExpression.getElements();
 
 			Object array = Array.newInstance(componentType, elements.size());
@@ -276,7 +284,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			return this.convertValue(ret);
 		} else if (value instanceof CtTypeReference) {
 			// Get RT class for References
-			return ((CtTypeReference<?>) value).getActualClass();
+			try {
+				return ((CtTypeReference<?>) value).getActualClass();
+			} catch (SpoonClassNotFoundException e) {
+				handleClassNotFound(e, ((CtTypeReference<?>) value).getQualifiedName());
+			}
 		}
 		return value;
 	}
@@ -286,14 +298,23 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		CtType<?> t = getAnnotationType().getDeclaration();
 		if (t != null) {
 			CtMethod<?> method = t.getMethod(name);
-			return method.getType().getActualClass();
+			try {
+				return method.getType().getActualClass();
+			} catch (SpoonClassNotFoundException e) {
+				handleClassNotFound(e, method.getType().getQualifiedName());
+			}
 		}
 		// Try with RT reflection
-		Class<?> c = getAnnotationType().getActualClass();
-		for (Method m : c.getMethods()) {
-			if (m.getName().equals(name)) {
-				return m.getReturnType();
+		Class<?> c = null;
+		try {
+			c = getAnnotationType().getActualClass();
+			for (Method m : c.getMethods()) {
+				if (m.getName().equals(name)) {
+					return m.getReturnType();
+				}
 			}
+		} catch (SpoonClassNotFoundException e) {
+			handleClassNotFound(e, getAnnotationType().getQualifiedName());
 		}
 		return null;
 	}
@@ -478,7 +499,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				return ret;
 			}
 		}
-		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));
+		try {
+			return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));
+		} catch (SpoonClassNotFoundException e) {
+			throw new SpoonClassNotFoundRuntimeException(e);
+		}
 	}
 
 	@MetamodelPropertyField(role = CtRole.IS_SHADOW)

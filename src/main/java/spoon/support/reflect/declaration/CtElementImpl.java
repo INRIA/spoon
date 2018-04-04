@@ -54,6 +54,8 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 import spoon.support.StandardEnvironment;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -122,6 +124,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		super();
 	}
 
+	protected void handleClassNotFound(SpoonClassNotFoundException cnfe, String name) {
+		String msg = "cannot load class: " + name + " with class loader "
+				+ Thread.currentThread().getContextClassLoader();
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			// should not be thrown in 'noClasspath' environment (#775)
+			Launcher.LOGGER.warn(msg);
+			return;
+		} else {
+			throw new SpoonClassNotFoundRuntimeException(cnfe);
+		}
+	}
 
 	@Override
 	public String getShortRepresentation() {

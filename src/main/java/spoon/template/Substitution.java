@@ -37,6 +37,8 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
 
@@ -208,7 +210,12 @@ public abstract class Substitution {
 	 * 		the model of source template
 	 */
 	static void insertAllMethods(CtType<?> targetType, Template<?> template, CtClass<?> sourceClass) {
-		Set<CtMethod<?>> methodsOfTemplate = sourceClass.getFactory().Type().get(Template.class).getMethods();
+		Set<CtMethod<?>> methodsOfTemplate = null;
+		try {
+			methodsOfTemplate = sourceClass.getFactory().Type().get(Template.class).getMethods();
+		} catch (SpoonClassNotFoundException e) {
+			throw new SpoonClassNotFoundRuntimeException(e);
+		}
 		// insert all the methods
 		for (CtMethod<?> m : sourceClass.getMethods()) {
 			if (m.getAnnotation(Local.class) != null) {

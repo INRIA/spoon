@@ -61,7 +61,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @throws SpoonClassNotFoundException
 	 * 		if the class is not in the classpath
 	 */
-	Class<T> getActualClass();
+	Class<T> getActualClass() throws SpoonClassNotFoundException;
 
 	/**
 	 * Returns the {@link CtType}, that corresponds to the
