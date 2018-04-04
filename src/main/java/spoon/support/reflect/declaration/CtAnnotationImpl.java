@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -355,6 +356,31 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@Override
 	public <T extends CtExpression> T getValue(String key) {
 		return (T) this.elementValues.get(key);
+	}
+
+	@Override
+	public <T extends CtExpression> T getWrappedValue(String key) {
+		CtExpression ctExpression = this.getValue(key);
+
+		if (ctExpression instanceof CtLiteral) {
+			CtTypeReference typeReference = this.getAnnotationType();
+			CtType type = typeReference.getTypeDeclaration();
+			if (type != null) {
+				CtMethod method = type.getMethod(key);
+				if (method != null) {
+					CtTypeReference returnType = method.getType();
+					if (returnType instanceof CtArrayTypeReference) {
+						CtNewArray newArray = getFactory().Core().createNewArray();
+						CtArrayTypeReference typeReference2 = this.getFactory().createArrayTypeReference();
+						typeReference2.setComponentType(ctExpression.getType().clone());
+						newArray.setType(typeReference2);
+						newArray.addElement(ctExpression.clone());
+						return (T) newArray;
+					}
+				}
+			}
+		}
+		return (T) ctExpression;
 	}
 
 	public Map<String, Object> getElementValues() {
