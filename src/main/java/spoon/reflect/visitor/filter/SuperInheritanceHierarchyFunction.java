@@ -32,6 +32,7 @@ import spoon.reflect.visitor.chain.CtQueryAware;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 
 import static spoon.reflect.visitor.chain.ScanningMode.NORMAL;
 import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
@@ -214,14 +215,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			typeRef = type.getReference();
 		} else {
 			typeRef = (CtTypeReference<?>) input;
-			try {
-				type = typeRef.getTypeDeclaration();
-			} catch (SpoonClassNotFoundException e) {
-				if (typeRef.getFactory().getEnvironment().getNoClasspath() == false) {
-					throw e;
-				}
-				type = null;
-			}
+			type = typeRef.getTypeDeclaration();
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
 		isClass = type == null ? false : (type instanceof CtClass);
@@ -290,16 +284,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 	 */
 	protected void visitSuperInterfaces(CtTypeReference<?> type, CtConsumer<Object> outputConsumer) {
 		Set<CtTypeReference<?>> superInterfaces;
-		try {
-			superInterfaces = type.getSuperInterfaces();
-		} catch (SpoonClassNotFoundException e) {
-			if (failOnClassNotFound) {
-				throw e;
-			}
-			Launcher.LOGGER.warn("Cannot load class: " + type.getQualifiedName() + " with class loader "
-					+ Thread.currentThread().getContextClassLoader());
-			return;
-		}
+		superInterfaces = type.getSuperInterfaces();
 		for (CtTypeReference<?> ifaceRef : superInterfaces) {
 			ScanningMode mode = enter(ifaceRef, false);
 			if (mode == SKIP_ALL) {
@@ -349,7 +334,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			CtType<?> type;
 			try {
 				type = typeRef.getTypeDeclaration();
-			} catch (SpoonClassNotFoundException e) {
+			} catch (SpoonClassNotFoundRuntimeException e) {
 				if (failOnClassNotFound) {
 					throw e;
 				}

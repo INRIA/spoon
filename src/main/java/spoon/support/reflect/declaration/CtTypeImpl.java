@@ -51,6 +51,7 @@ import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.DerivedProperty;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
@@ -358,7 +359,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Class<T> getActualClass() {
-		return getFactory().Type().createReference(this).getActualClass();
+		try {
+			return getFactory().Type().createReference(this).getActualClass();
+		} catch (SpoonClassNotFoundException e) {
+			handleClassNotFound(e, getQualifiedName());
+			return null;
+		}
 	}
 
 	@Override

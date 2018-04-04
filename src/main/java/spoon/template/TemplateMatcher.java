@@ -40,6 +40,8 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.InvocationFilter;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 import spoon.support.template.DefaultParameterMatcher;
 import spoon.support.template.ParameterMatcher;
 import spoon.support.template.Parameters;
@@ -115,13 +117,21 @@ public class TemplateMatcher implements Filter<CtElement> {
 	private List<CtFieldReference<?>> getVarargs(CtClass<? extends Template<?>> root, List<CtInvocation<?>> variables) {
 		List<CtFieldReference<?>> fields = new ArrayList<>();
 		for (CtFieldReference<?> field : root.getAllFields()) {
-			if (field.getType().getActualClass() == CtStatementList.class) {
-				boolean alreadyAdded = false;
-				for (CtInvocation<?> invocation : variables) {
-					alreadyAdded |= ((CtFieldAccess<?>) invocation.getTarget()).getVariable().getDeclaration().equals(field);
-				}
-				if (!alreadyAdded) {
-					fields.add(field);
+			try {
+				if (field.getType().getActualClass() == CtStatementList.class) {
+                    boolean alreadyAdded = false;
+                    for (CtInvocation<?> invocation : variables) {
+                        alreadyAdded |= ((CtFieldAccess<?>) invocation.getTarget()).getVariable().getDeclaration().equals(field);
+                    }
+                    if (!alreadyAdded) {
+                        fields.add(field);
+                    }
+                }
+			} catch (SpoonClassNotFoundException e) {
+				if (root.getFactory().getEnvironment().getNoClasspath()) {
+					Launcher.LOGGER.warn(e.getMessage());
+				} else {
+					throw new SpoonClassNotFoundRuntimeException(e);
 				}
 			}
 		}
@@ -425,8 +435,17 @@ public class TemplateMatcher implements Filter<CtElement> {
 			final List<CtStatement> statements = ((CtBlock) template).getStatements();
 			if (statements.size() == 1 && statements.get(0) instanceof CtInvocation) {
 				final CtInvocation ctStatement = (CtInvocation) statements.get(0);
-				if ("S".equals(ctStatement.getExecutable().getSimpleName()) && CtBlock.class.equals(ctStatement.getType().getActualClass())) {
-					return true;
+				try {
+					if ("S".equals(ctStatement.getExecutable().getSimpleName()) && CtBlock.class.equals(ctStatement.getType().getActualClass())) {
+                        return true;
+                    }
+				} catch (SpoonClassNotFoundException e) {
+					if (((CtBlock) template).getFactory().getEnvironment().getNoClasspath()) {
+						Launcher.LOGGER.warn(e.getMessage());
+						return false;
+					} else {
+						throw new SpoonClassNotFoundRuntimeException(e);
+					}
 				}
 			}
 		}

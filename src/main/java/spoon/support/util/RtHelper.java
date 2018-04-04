@@ -24,6 +24,8 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -121,13 +123,17 @@ public abstract class RtHelper {
 		for (CtExpression<?> e : i.getArguments()) {
 			args.add(((CtLiteral<?>) e).getValue());
 		}
-		Class<?> c = i.getExecutable().getDeclaringType().getActualClass();
-		ArrayList<Class<?>> argTypes = new ArrayList<>();
-		for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
-			argTypes.add(type.getActualClass());
+		try {
+			Class<?> c = i.getExecutable().getDeclaringType().getActualClass();
+			ArrayList<Class<?>> argTypes = new ArrayList<>();
+			for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
+				argTypes.add(type.getActualClass());
+			}
+			return (T) c.getMethod(i.getExecutable().getSimpleName(), argTypes.toArray(new Class[argTypes.size()]))
+					.invoke(target, args.toArray());
+		} catch (SpoonClassNotFoundException e) {
+			throw new SpoonClassNotFoundRuntimeException(e);
 		}
-		return (T) c.getMethod(i.getExecutable().getSimpleName(), argTypes.toArray(new Class[argTypes.size()]))
-				.invoke(target, args.toArray());
 	}
 
 	/**

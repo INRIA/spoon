@@ -21,6 +21,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.reflect.Array;
 
@@ -83,7 +84,12 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	@SuppressWarnings("unchecked")
 	@Override
 	public Class<T> getActualClass() {
-		Class<?> c = getComponentType().getActualClass();
+		Class<?> c = null;
+		try {
+			c = getComponentType().getActualClass();
+		} catch (SpoonClassNotFoundException e) {
+			handleClassNotFound(e, getComponentType().getQualifiedName());
+		}
 		if (c == null) {
 			return null;
 		}

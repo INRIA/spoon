@@ -519,7 +519,7 @@ public class TypeFactory extends SubFactory {
 	 * 		then poses problem when T is a generic type itself
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CtType<T> get(Class<?> cl) {
+	public <T> CtType<T> get(Class<?> cl) throws SpoonClassNotFoundException {
 		final CtType<T> aType = get(cl.getName());
 		if (aType == null) {
 			final CtType<T> shadowClass = (CtType<T>) this.shadowCache.get(cl);

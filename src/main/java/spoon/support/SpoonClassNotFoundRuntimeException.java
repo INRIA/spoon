@@ -21,8 +21,10 @@ import spoon.SpoonException;
 /** Spoon-specific ClassNotFoundException (mostly encapsulates a ClassNotFoundException or a NoClassDefFoundError
  * as a runtime exception)
  */
-public class SpoonClassNotFoundException extends Exception {
-	public SpoonClassNotFoundException(String msg, Throwable cnfe) {
+public class SpoonClassNotFoundRuntimeException extends SpoonException {
+	public SpoonClassNotFoundRuntimeException(Throwable cnfe) { super(cnfe); }
+
+	public SpoonClassNotFoundRuntimeException(String msg, Throwable cnfe) {
 		super(msg, cnfe);
 	}
 

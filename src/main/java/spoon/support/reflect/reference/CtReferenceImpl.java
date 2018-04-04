@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.Launcher;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
@@ -25,6 +26,8 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonClassNotFoundRuntimeException;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
