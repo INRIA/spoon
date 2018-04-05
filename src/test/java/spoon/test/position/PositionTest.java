@@ -1,5 +1,6 @@
 package spoon.test.position;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
@@ -7,6 +8,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
@@ -21,6 +23,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooAbstractMethod;
 import spoon.test.position.testclasses.FooAnnotation;
@@ -38,12 +41,8 @@ import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -526,19 +525,11 @@ public class PositionTest {
 
 	private String getClassContent(CtType type) {
 		File file = type.getPosition().getFile();
-		String content = "";
-		Charset charset = Charset.forName("UTF-8");
-		try (BufferedReader reader = Files.newBufferedReader(
-				Paths.get(file.getPath()), charset)) {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				content+=line + "\n";
-			}
-		} catch (IOException x) {
-			System.err.format("IOException: %s%n", x);
+		try {
+			return FileUtils.readFileToString(file, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-
-		return content;
 	}
 
 	private String contentAtPosition(String content, int start, int end) {
@@ -640,6 +631,38 @@ public class PositionTest {
 		assertEquals(start - 1, bhsp.getNameEnd());
 	}
 	
+	@Test
+	public void testPositionOfAnnonymousTypeByNewInterface() throws Exception {
+		//contract: the annonymous type has consistent position
+		final CtType<?> foo = ModelUtils.buildClass(AnnonymousClassNewIface.class);
+		String classContent = getClassContent(foo);
+
+		CtLocalVariable<?> localVar = (CtLocalVariable<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtNewClass<?> newClass = (CtNewClass<?>) localVar.getDefaultExpression();
+		CtClass<?> annonClass = newClass.getAnonymousClass();
+		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
+		int start = annonClass.getPosition().getSourceStart();
+		int end = annonClass.getPosition().getSourceEnd();
+		assertEquals("Consumer<Set<?>>() {\r\n" + 
+				"			@Override\r\n" + 
+				"			public void accept(Set<?> t) {\r\n" + 
+				"			}\r\n" + 
+				"		}", contentAtPosition(classContent, start, end));
+		
+		assertEquals("{\r\n" + 
+				"			@Override\r\n" + 
+				"			public void accept(Set<?> t) {\r\n" + 
+				"			}\r\n" + 
+				"		}", contentAtPosition(classContent, bhsp.getBodyStart(), bhsp.getBodyEnd()));
+
+		//there is no name and no modifiers and they are located at source start
+		assertEquals(start - 1, bhsp.getNameEnd());
+		assertEquals(start, bhsp.getModifierSourceStart());
+		assertEquals(start - 1, bhsp.getModifierSourceEnd());
+		assertEquals(start, bhsp.getNameStart());
+		assertEquals(start - 1, bhsp.getNameEnd());
+	}
+
 	@Test
 	public void testEmptyModifiersOfMethod() throws Exception {
 		//contract: the modifiers of Method without modifiers are empty and have correct start

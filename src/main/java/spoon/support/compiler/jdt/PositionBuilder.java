@@ -149,10 +149,12 @@ public class PositionBuilder {
 				modifiersSourceEnd = modifiersSourceStart - 1;
 			}
 			if (typeDeclaration.name.length == 0) {
-				//it is annonymous type
+				//it is annonymous type, there is no name start/end
 				sourceEnd = sourceStart - 1;
-				//adjust bodyEnd of annonymous type
-				bodyEnd++;
+				if (contents[sourceStart] == '{') {
+					//adjust bodyEnd of annonymous type in definition of enum value
+					bodyEnd++;
+				}
 			}
 
 			return cf.createBodyHolderSourcePosition(cu, sourceStart, sourceEnd,
