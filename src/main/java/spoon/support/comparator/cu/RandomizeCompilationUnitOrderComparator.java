@@ -22,15 +22,15 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class RandomizeCompilationUnitOrderComparator implements Comparator<CompilationUnitDeclaration> {
-    private Random random;
+	private Random random;
 
-    public RandomizeCompilationUnitOrderComparator(int seed) {
-        this.random = new Random(seed);
-    }
+	public RandomizeCompilationUnitOrderComparator(int seed) {
+		this.random = new Random(seed);
+	}
 
-    @Override
-    public int compare(CompilationUnitDeclaration o1, CompilationUnitDeclaration o2) {
-        int r = this.random.nextInt(3); // can be 0, 1 or 2
-        return r - 1; // can be -1, 0 or 1
-    }
+	@Override
+	public int compare(CompilationUnitDeclaration o1, CompilationUnitDeclaration o2) {
+		int r = this.random.nextInt(3); // can be 0, 1 or 2
+		return r - 1; // can be -1, 0 or 1
+	}
 }
