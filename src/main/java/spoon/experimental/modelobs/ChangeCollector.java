@@ -123,7 +123,12 @@ public class ChangeCollector {
 		}
 	}
 
-	private void onChange(CtElement currentElement, CtRole role) {
+	/**
+	 * Called whenever anything changes in the spoon model
+	 * @param currentElement the modified element
+	 * @param role the modified attribute of that element
+	 */
+	protected void onChange(CtElement currentElement, CtRole role) {
 		Set<CtRole> roles = elementToChangeRole.get(currentElement);
 		if (roles == null) {
 			roles = new HashSet<>();
