@@ -45,6 +45,7 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 				modifierSourceStart, modifierSourceEnd,
 				declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);
+		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, bodyStart, bodyEnd + 1, declarationSourceEnd + 1);
 		this.bodyStart = bodyStart;
 		this.bodyEnd = bodyEnd;
 	}
@@ -57,5 +58,17 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 	@Override
 	public int getBodyEnd() {
 		return bodyEnd;
+	}
+
+	/**
+	 * @return origin source code of body
+	 */
+	public String getBodySourceFragment() {
+		return getFragment(getBodyStart(), getBodyEnd());
+	}
+
+	protected String getSourceInfo() {
+		return super.getSourceInfo()
+				+ "\nbody = " + getBodySourceFragment();
 	}
 }
