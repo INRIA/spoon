@@ -202,7 +202,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		if (position != null) {
 			return position;
 		}
-		return null;
+		return SourcePosition.NOPOSITION;
 	}
 
 	@Override
@@ -264,6 +264,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> E setPosition(SourcePosition position) {
+		if (position == null) {
+			position = SourcePosition.NOPOSITION;
+		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, POSITION, position, this.position);
 		this.position = position;
 		return (E) this;
