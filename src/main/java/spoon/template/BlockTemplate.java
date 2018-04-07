@@ -16,7 +16,6 @@
  */
 package spoon.template;
 
-import spoon.pattern.TemplateBuilder;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;

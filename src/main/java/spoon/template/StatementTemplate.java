@@ -18,7 +18,6 @@ package spoon.template;
 
 import java.util.List;
 
-import spoon.pattern.TemplateBuilder;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;

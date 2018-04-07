@@ -2,7 +2,7 @@ package spoon.test.template.testclasses.match;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateModelBuilder;
+import spoon.pattern.PatternBuilderHelper;
 import spoon.pattern.matcher.Quantifier;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtType;
@@ -15,7 +15,7 @@ public class MatchMultiple {
 
 	public static Pattern createPattern(Factory factory, Quantifier matchingStrategy, Integer minCount, Integer maxCount) {
 		CtType<?> type = factory.Type().get(MatchMultiple.class);
-		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
+		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 			.configureParameters(pb -> {
 				pb.parameter("statements").bySimpleName("statements").setContainerKind(ContainerKind.LIST);
 				if (matchingStrategy != null) {

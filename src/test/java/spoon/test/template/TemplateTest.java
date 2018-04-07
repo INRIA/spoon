@@ -5,7 +5,6 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateModelBuilder;
 import spoon.pattern.matcher.Match;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;

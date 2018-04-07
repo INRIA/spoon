@@ -19,7 +19,6 @@ package spoon.template;
 import java.util.List;
 
 import spoon.pattern.Pattern;
-import spoon.pattern.TemplateBuilder;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.node.ModelNode;

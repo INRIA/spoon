@@ -28,7 +28,7 @@ import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.ParametersBuilder;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateModelBuilder;
+import spoon.pattern.PatternBuilderHelper;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterInfo;
@@ -78,7 +78,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchForeach() throws Exception {
-		//contract: inline foreach template can match multiple models into list of parameter values
+		//contract: a foreach template can also match inlined lists of statements
 		CtType<?> ctClass = ModelUtils.buildClass(MatchForEach.class);
 
 		CtType<?> type = ctClass.getFactory().Type().get(MatchForEach.class);
@@ -89,7 +89,7 @@ public class PatternTest {
 //				System.out.println(value);
 //			}
 //		}
-		Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
+		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 					.configureParameters(pb -> {
 						pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST).matchInlinedStatements();
 					})
@@ -121,10 +121,18 @@ public class PatternTest {
 
 	@Test
 	public void testMatchForeachWithOuterSubstitution() throws Exception {
-		//contract: inline foreach template can match multiple models into list of parameter values including outer parameters
+		//contract: inline foreach templates can also match outer parameters
 		CtType<?> ctClass = ModelUtils.buildClass(MatchForEach2.class);
 
-		Pattern pattern = MatchForEach2.createPattern(ctClass.getFactory());
+		CtType<?> type = ctClass.getFactory().Type().get(MatchForEach2.class);
+
+		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
+				.configureParameters(pb -> {
+					pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST).matchInlinedStatements();
+					// the variable "var" of the template is a parameter
+					pb.parameter("varName").byString("var");
+				})
+				.build();
 
 		List<Match> matches = pattern.getMatches(ctClass);
 
@@ -143,9 +151,9 @@ public class PatternTest {
 					"cc++",
 					"java.lang.System.out.println(((java.lang.String) (null)))",
 					"cc++"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(Arrays.asList(
-					"\"Xxxx\"",
-					"((java.lang.String) (null))"), listToListOfStrings((List) match.getParameters().getValue("values")));
+
+			// correctly matching the outer parameter
+			assertEquals("cc", match.getParameters().getValue("varName"));
 		}
 		{
 			Match match = matches.get(2);
@@ -153,8 +161,9 @@ public class PatternTest {
 					"int dd = 0",
 					"java.lang.System.out.println(java.lang.Long.class.toString())",
 					"dd++"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(Arrays.asList(
-					"java.lang.Long.class.toString()"), listToListOfStrings((List) match.getParameters().getValue("values")));
+
+			// correctly matching the outer parameter
+			assertEquals("dd", match.getParameters().getValue("varName"));
 		}
 	}
 
@@ -163,7 +172,17 @@ public class PatternTest {
 		//contract: inline switch Pattern can match one of the models
 		CtType<?> ctClass = ModelUtils.buildClass(MatchIfElse.class);
 
-		Pattern pattern = MatchIfElse.createPattern(ctClass.getFactory());
+		CtType<?> type = ctClass.getFactory().Type().get(MatchIfElse.class);
+		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
+				.configureParameters(pb -> {
+					pb.parameter("option").byVariable("option");
+					pb.parameter("option2").byVariable("option2");
+					pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
+				})
+				//we have to configure inline statements after all expressions
+				//of combined if statement are marked as pattern parameters
+				.configureInlineStatements(lsb -> lsb.byVariableName("option"))
+				.build();
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
@@ -784,7 +803,7 @@ public class PatternTest {
 //			@Check()
 //			void matcher1() {
 //			}
-			Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
 					.configureParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
 						pb.parameter("__pattern_param_annot").byRole(new TypeFilter(CtAnnotation.class), CtRole.VALUE).setContainerKind(ContainerKind.MAP);
@@ -850,7 +869,7 @@ public class PatternTest {
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMap.class);
 			// create a pattern from method matcher1
 			//match all methods with arbitrary name, with any annotation set, Test modifiers, parameters, but with empty body and return type void
-			Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
 					.configureParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
 						//match any method name
@@ -888,7 +907,7 @@ public class PatternTest {
 		{
 			//match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMap.class);
-			Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("m1").getTemplateModels())
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("m1").getPatternElements())
 					.configureParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
 						pb.parameter("CheckKey").bySubstring("value");
@@ -930,7 +949,7 @@ public class PatternTest {
 		//contract: match elements in container of type Set - e.g method throwables
 		CtType<?> ctClass = ModelUtils.buildClass(MatchThrowables.class);
 		Factory f = ctClass.getFactory();
-		Pattern pattern = PatternBuilder.create(new TemplateModelBuilder(ctClass).setTypeMember("matcher1").getTemplateModels())
+		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
 				.configureParameters(pb -> {
 					pb.parameter("otherThrowables")
 							//add matcher for other arbitrary throwables
@@ -1068,7 +1087,7 @@ public class PatternTest {
 		CtType<Object> type = f.Type().get(OldPattern.class);
 		Pattern p = PatternBuilder
 				//Create a pattern from all statements of OldPattern_ParamsInNestedType#patternModel
-				.create(new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
+				.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
 				.configureParameters((ParametersBuilder pb) -> pb
 						// creating patterns parameters for all references to "params" and "items"
 						.createPatternParameterForVariable("params", "item")

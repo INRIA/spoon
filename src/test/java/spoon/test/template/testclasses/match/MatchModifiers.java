@@ -2,7 +2,7 @@ package spoon.test.template.testclasses.match;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateModelBuilder;
+import spoon.pattern.PatternBuilderHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -14,7 +14,7 @@ public class MatchModifiers {
 
 	public static Pattern createPattern(Factory factory, boolean matchBody) {
 		CtType<?> type = factory.Type().get(MatchModifiers.class);
-		return PatternBuilder.create(new TemplateModelBuilder(type).setTypeMember("matcher1").getTemplateModels())
+		return PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
 			.configureParameters(pb -> {
 				pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
 				pb.parameter("methodName").byString("matcher1");

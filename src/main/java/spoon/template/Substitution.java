@@ -18,7 +18,6 @@ package spoon.template;
 
 import spoon.SpoonException;
 import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateBuilder;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;

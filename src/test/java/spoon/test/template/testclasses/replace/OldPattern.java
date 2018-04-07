@@ -2,7 +2,7 @@ package spoon.test.template.testclasses.replace;
 
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateModelBuilder;
+import spoon.pattern.PatternBuilderHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtType;
@@ -64,7 +64,7 @@ public class OldPattern {
 	 */
 	public static Pattern createPatternFromOldPattern(Factory factory) {
 		CtType<?> type = factory.Type().get(OldPattern.class);
-		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("patternModel").getTemplateModels())
+		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
 			.configureParameters(pb->pb
 					.createPatternParameterForVariable("params", "item")
 					.parameter("statements").setContainerKind(ContainerKind.LIST)

@@ -1,31 +1,9 @@
 package spoon.test.template.testclasses.match;
 
-import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
-import spoon.pattern.TemplateModelBuilder;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.filter.TypeFilter;
-
 import static java.lang.System.out;
 
 public class MatchIfElse {
 
-	public static Pattern createPattern(Factory factory) {
-		CtType<?> type = factory.Type().get(MatchIfElse.class);
-		return PatternBuilder.create(new TemplateModelBuilder(type).setBodyOfMethod("matcher1").getTemplateModels())
-			.configureParameters(pb -> {
-				pb.parameter("option").byVariable("option");
-				pb.parameter("option2").byVariable("option2");
-				pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
-			})
-			//we have to configure inline statements after all expressions
-			//of combined if statement are marked as pattern parameters
-			.configureInlineStatements(lsb -> lsb.byVariableName("option"))
-			.build();
-	}
-	
 	public void matcher1(boolean option, boolean option2) {
 		if (option) {
 			//matches String argument
