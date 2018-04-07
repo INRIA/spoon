@@ -470,7 +470,7 @@ public class PatternBuilder {
 
 				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
 					//parameter is a multivalue
-					pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).bySimpleName(stringMarker);
+					pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker);
 				} else if (paramType.isSubtypeOf(typeReferenceRef) || paramType.getQualifiedName().equals(Class.class.getName())) {
 					/*
 					 * parameter with value type TypeReference or Class, identifies replacement of local type whose name is equal to parameter name
