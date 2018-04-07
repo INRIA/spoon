@@ -482,24 +482,12 @@ public class ParametersBuilder {
 		protected abstract void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue);
 	}
 
-
-	/**
-	 * Any named element or reference identified by it's simple name
-	 * @param simpleName simple name of {@link CtNamedElement} or {@link CtReference}
-	 * @return {@link ParametersBuilder} to support fluent API
-	 */
-	public ParametersBuilder bySimpleName(String simpleName) {
-		byNamedElementSimpleName(simpleName);
-		byReferenceSimpleName(simpleName);
-		return this;
-	}
-
 	/**
 	 * Any named element by it's simple name
 	 * @param simpleName simple name of {@link CtNamedElement}
 	 * @return {@link ParametersBuilder} to support fluent API
 	 */
-	public ParametersBuilder byNamedElementSimpleName(String simpleName) {
+	public ParametersBuilder byNamedElement(String simpleName) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren((CtNamedElement named) -> simpleName.equals(named.getSimpleName()))
 			.forEach((CtNamedElement named) -> {
@@ -509,11 +497,14 @@ public class ParametersBuilder {
 	}
 
 	/**
-	 * Any reference identified by it's simple name
+	 * Any reference identified by it's simple name.
+	 *
+	 * Can be used to match any method call for instance.
+	 *
 	 * @param simpleName simple name of {@link CtReference}
 	 * @return {@link ParametersBuilder} to support fluent API
 	 */
-	public ParametersBuilder byReferenceSimpleName(String simpleName) {
+	public ParametersBuilder byReferenceName(String simpleName) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren((CtReference ref) -> simpleName.equals(ref.getSimpleName()))
 			.forEach((CtReference ref) -> {

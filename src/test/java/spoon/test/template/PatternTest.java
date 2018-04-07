@@ -239,8 +239,9 @@ public class PatternTest {
 	}
 	@Test
 	public void testGenerateMultiValues() throws Exception {
+		// todo: what's the tested contract?
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), null, null, null);
+		Pattern pattern = MatchMultiple.createPattern(null, null, null);
 		Map<String, Object> params = new HashMap<>();
 		params.put("printedValue", "does it work?");
 		params.put("statements", ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3));
@@ -251,18 +252,21 @@ public class PatternTest {
 				"java.lang.System.out.println(i)",
 				"java.lang.System.out.println(\"does it work?\")"), generated.stream().map(Object::toString).collect(Collectors.toList()));
 	}
+
 	@Test
 	public void testMatchGreedyMultiValueUnlimited() throws Exception {
 		//contract: multivalue parameter can match multiple nodes into list of parameter values.
 		//contract: default greedy matching eats everything but can leave some matches if it is needed to match remaining template parameters
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), null, null, null);
+
+		Pattern pattern = MatchMultiple.createPattern(null, null, null);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
 		assertEquals(1, matches.size());
 		Match match = matches.get(0);
 		//check all statements are matched
+		// TODO: why all statements are matched? AFAIU, nothing in the pattern definition says "any kind of statement"
 		assertEquals(Arrays.asList(
 				"int i = 0",
 				"i++",
@@ -278,6 +282,7 @@ public class PatternTest {
 				"java.lang.System.out.println(i)",
 				"java.lang.System.out.println(\"Xxxx\")",
 				"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+
 		//last statement is matched by last template, which saves printed value
 		assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 		assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
@@ -287,7 +292,7 @@ public class PatternTest {
 	public void testMatchGreedyMultiValueMaxCountLimit() throws Exception {
 		//contract: default greedy matching eats everything until max count = 3
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), null, null, 3);
+		Pattern pattern = MatchMultiple.createPattern(null, null, 3);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
@@ -334,7 +339,7 @@ public class PatternTest {
 		//contract: reluctant matches only minimal amount
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), Quantifier.RELUCTANT, null, null);
+		Pattern pattern = MatchMultiple.createPattern(Quantifier.RELUCTANT, null, null);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
@@ -388,7 +393,7 @@ public class PatternTest {
 		//contract: reluctant matches only at least 1 node in this case
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), Quantifier.RELUCTANT, 1, null);
+		Pattern pattern = MatchMultiple.createPattern(Quantifier.RELUCTANT, 1, null);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
@@ -432,7 +437,7 @@ public class PatternTest {
 		//contract: reluctant matches min 2 and max 2 nodes in this case
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), Quantifier.RELUCTANT, 2, 2);
+		Pattern pattern = MatchMultiple.createPattern(Quantifier.RELUCTANT, 2, 2);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
@@ -460,7 +465,7 @@ public class PatternTest {
 		//contract: multivalue parameter can match multiple nodes into list of parameter values.
 		//contract: possessive matching eats everything and never returns back
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), Quantifier.POSSESSIVE, null, null);
+		Pattern pattern = MatchMultiple.createPattern(Quantifier.POSSESSIVE, null, null);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 		//the last template has nothing to match -> no match
@@ -471,7 +476,7 @@ public class PatternTest {
 		//contract: multivalue parameter can match multiple nodes into list of parameter values.
 		//contract: possessive matching eats everything and never returns back
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
-		Pattern pattern = MatchMultiple.createPattern(ctClass.getFactory(), Quantifier.POSSESSIVE, null, 4);
+		Pattern pattern = MatchMultiple.createPattern(Quantifier.POSSESSIVE, null, 4);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 

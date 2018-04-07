@@ -6,18 +6,19 @@ import spoon.pattern.PatternBuilderHelper;
 import spoon.pattern.matcher.Quantifier;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
+import spoon.testing.utils.ModelUtils;
 
 import static java.lang.System.out;
 
 public class MatchMultiple {
 
-	public static Pattern createPattern(Factory factory, Quantifier matchingStrategy, Integer minCount, Integer maxCount) {
-		CtType<?> type = factory.Type().get(MatchMultiple.class);
+	/** return a pattern built from {}@link {@link #matcher1()} */
+	public static Pattern createPattern(Quantifier matchingStrategy, Integer minCount, Integer maxCount) throws Exception {
+		CtType<?> type = ModelUtils.buildClass(MatchMultiple.class);
 		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 			.configureParameters(pb -> {
-				pb.parameter("statements").bySimpleName("statements").setContainerKind(ContainerKind.LIST);
+				pb.parameter("statements").byReferenceName("statements").setContainerKind(ContainerKind.LIST);
 				if (matchingStrategy != null) {
 					pb.setMatchingStrategy(matchingStrategy);
 				}
