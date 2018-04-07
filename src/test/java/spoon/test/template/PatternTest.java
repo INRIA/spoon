@@ -239,7 +239,9 @@ public class PatternTest {
 	}
 	@Test
 	public void testGenerateMultiValues() throws Exception {
-		// todo: what's the tested contract?
+		// contract: the pattern parameter (in this case 'statements')
+		//can have type List and can be replaced by list of elements
+		//(in this case by list of statements)
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 		Pattern pattern = MatchMultiple.createPattern(null, null, null);
 		Map<String, Object> params = new HashMap<>();
@@ -247,9 +249,11 @@ public class PatternTest {
 		params.put("statements", ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3));
 		List<CtStatement> generated = pattern.substituteList(ctClass.getFactory(), CtStatement.class, params);
 		assertEquals(Arrays.asList(
+				//these 3 statements comes from `statements` parameter value
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
+				//this statement comes from pattern model, just the string literal comes from parameter `printedValue`
 				"java.lang.System.out.println(\"does it work?\")"), generated.stream().map(Object::toString).collect(Collectors.toList()));
 	}
 
