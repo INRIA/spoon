@@ -470,6 +470,9 @@ public class PatternBuilder {
 
 				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
 					//parameter is a multivalue
+					// changed from bySimpleName to byReferenceName
+					// everything is OK but for testTemplateInheritance, where I (Martin)
+					// suspects that there is a hidden bug or implicit contract
 					pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).byReferenceName(stringMarker);
 				} else if (paramType.isSubtypeOf(typeReferenceRef) || paramType.getQualifiedName().equals(Class.class.getName())) {
 					/*
