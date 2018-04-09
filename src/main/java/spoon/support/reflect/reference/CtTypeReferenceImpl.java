@@ -40,7 +40,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
-import spoon.support.SpoonInternalException;
+import spoon.support.SpoonFindClassException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
@@ -146,7 +146,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
         try {
             return findClass();
-        } catch (SpoonInternalException e) {
+        } catch (SpoonFindClassException e) {
             String msg = "cannot load class: " + getQualifiedName() + " with class loader "
                     + Thread.currentThread().getContextClassLoader();
             if (getFactory().getEnvironment().getNoClasspath()) {
@@ -165,7 +165,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 * Looks for the class in the standard Java classpath, but also in the sourceClassPath given as option.
 	 */
 	@SuppressWarnings("unchecked")
-	protected Class<T> findClass() throws SpoonInternalException {
+	protected Class<T> findClass() throws SpoonFindClassException {
 		try {
 			// creating a classloader on the fly is not the most efficient
 			// but it decreases the amount of state to maintain
@@ -174,7 +174,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			String qualifiedName = getQualifiedName();
 			return (Class<T>) classLoader.loadClass(qualifiedName);
 		} catch (Throwable e) {
-			throw new SpoonInternalException("cannot load class: " + getQualifiedName(), e);
+			throw new SpoonFindClassException("cannot load class: " + getQualifiedName(), e);
 		}
 	}
 

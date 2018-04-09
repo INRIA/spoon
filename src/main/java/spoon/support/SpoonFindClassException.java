@@ -19,16 +19,12 @@ package spoon.support;
 /** Exception to be managed internally
  * All external Spoon methods should only return {@link spoon.SpoonException}
  */
-public class SpoonInternalException extends Exception {
-	public SpoonInternalException(String msg) {
+public class SpoonFindClassException extends SpoonClassNotFoundException {
+	public SpoonFindClassException(String msg) {
 		super(msg);
 	}
 
-	public SpoonInternalException(Throwable cnfe) {
-		super(cnfe);
-	}
-
-	public SpoonInternalException(String msg, Throwable cnfe) {
+	public SpoonFindClassException(String msg, Throwable cnfe) {
 		super(msg, cnfe);
 	}
 
