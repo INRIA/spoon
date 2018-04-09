@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.comparator.cu;
+package spoon.support.comparator;
 
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 

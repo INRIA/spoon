@@ -50,8 +50,8 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
-import spoon.support.comparator.cu.FixedOrderBasedOnFileNameCompilationUnitComparator;
-import spoon.support.comparator.cu.RandomizeCompilationUnitOrderComparator;
+import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
+import spoon.support.comparator.RandomizeCompilationUnitOrderComparator;
 import spoon.support.compiler.VirtualFolder;
 
 import java.io.ByteArrayInputStream;
@@ -451,7 +451,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		return units;
 	}
 
-	private List<CompilationUnitDeclaration> orderCompilationUnits(CompilationUnitDeclaration[] units) {
+	protected List<CompilationUnitDeclaration> sortCompilationUnits(CompilationUnitDeclaration[] units) {
 		List<CompilationUnitDeclaration> unitList = new ArrayList<>(Arrays.asList(units));
 		unitList.sort(this.cuComparator);
 		return unitList;
@@ -459,7 +459,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
-		List<CompilationUnitDeclaration> unitList = this.orderCompilationUnits(units);
+		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
 		unitLoop:
 		for (CompilationUnitDeclaration unit : unitList) {

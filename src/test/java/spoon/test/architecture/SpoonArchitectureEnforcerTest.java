@@ -328,7 +328,6 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.reflect.visitor");
 		officialPackages.add("spoon.reflect");
 		officialPackages.add("spoon.support.comparator");
-		officialPackages.add("spoon.support.comparator.cu");
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");
 		officialPackages.add("spoon.support.gui");
