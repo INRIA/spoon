@@ -7,5 +7,5 @@
 # Uncomment after Travis passes
 #if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     source /opt/jdk_switcher/jdk_switcher.sh
-    jdk_switcher use oraclejdk9 && SPOON_SEED_CU_COMPARATOR=1 mvn -Djava.src.version=1.9 test
+    jdk_switcher use oraclejdk8 && SPOON_SEED_CU_COMPARATOR=1 mvn -Djava.src.version=1.8 test
 #fi
