@@ -124,20 +124,8 @@ public class MainTest {
 					continue;
 				}
 				SourcePosition position = modifier.getPosition();
-				if (position == null) {
-					System.out.println("null position" + modifiable);
-					continue;
-				}
 				CompilationUnit compilationUnit = position.getCompilationUnit();
-				if (compilationUnit == null) {
-					System.out.println("cannot be null" + modifiable);
-					continue;
-				}
 				String originalSourceCode = compilationUnit.getOriginalSourceCode();
-				if (originalSourceCode == null) {
-					System.out.println("no source" + modifiable);
-					continue;
-				}
 				assertEquals(modifier.getKind().toString(), originalSourceCode.substring(position.getSourceStart(), position.getSourceEnd() + 1));
 			}
 		}
