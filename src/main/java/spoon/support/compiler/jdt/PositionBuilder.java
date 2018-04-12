@@ -102,20 +102,13 @@ public class PositionBuilder {
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
 
-			Annotation[] annotations = variableDeclaration.annotations;
-			if (annotations != null && annotations.length > 0) {
-				if (annotations[0].sourceStart() == sourceStart) {
-					modifiersSourceStart = annotations[annotations.length - 1].sourceEnd() + 2;
-				}
-			}
-			if (modifiersSourceStart == 0) {
+			if (modifiersSourceStart <= 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
 			int modifiersSourceEnd;
 			if (variableDeclaration.type != null) {
 				modifiersSourceEnd = variableDeclaration.type.sourceStart() - 2;
 			} else if (variableDeclaration instanceof Initializer) {
-				// variable that has no type such as TypeParameter
 				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart;
 			} else {
 				// variable that has no type such as TypeParameter
@@ -146,13 +139,7 @@ public class PositionBuilder {
 			int bodyStart = typeDeclaration.bodyStart;
 			int bodyEnd = typeDeclaration.bodyEnd;
 
-			Annotation[] annotations = typeDeclaration.annotations;
-			if (annotations != null && annotations.length > 0) {
-				if (annotations[0].sourceStart() == declarationSourceStart) {
-					modifiersSourceStart = findNextNonWhitespace(contents, declarationSourceEnd, annotations[annotations.length - 1].declarationSourceEnd + 1);
-				}
-			}
-			if (modifiersSourceStart == 0) {
+			if (modifiersSourceStart <= 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
 			//look for start of first keyword before the type keyword e.g. "class". `sourceStart` points at first char of type name
@@ -188,7 +175,7 @@ public class PositionBuilder {
 			int declarationSourceEnd = methodDeclaration.declarationSourceEnd;
 			int modifiersSourceStart = methodDeclaration.modifiersSourceStart;
 
-			if (modifiersSourceStart == 0) {
+			if (modifiersSourceStart <= 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}
 
@@ -201,12 +188,6 @@ public class PositionBuilder {
 			Javadoc javadoc = methodDeclaration.javadoc;
 			if (javadoc != null && javadoc.sourceEnd() > declarationSourceStart) {
 				modifiersSourceStart = javadoc.sourceEnd() + 1;
-			}
-			Annotation[] annotations = methodDeclaration.annotations;
-			if (annotations != null && annotations.length > 0) {
-				if (annotations[0].sourceStart() == declarationSourceStart) {
-					modifiersSourceStart = annotations[annotations.length - 1].sourceEnd() + 2;
-				}
 			}
 
 			int modifiersSourceEnd = sourceStart - 1;
@@ -279,8 +260,10 @@ public class PositionBuilder {
 		char[] contents = cr.compilationUnit.getContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
-		String modifierContent = String.valueOf(
-				Arrays.copyOfRange(contents, start, end + 1));
+		if (start < 0 || end + 1 > contents.length) {
+			System.out.println(e);
+		}
+		String modifierContent = String.valueOf(Arrays.copyOfRange(contents, start, end + 1));
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
 				modifier.setPosition(SourcePosition.NOPOSITION);
