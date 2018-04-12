@@ -34,7 +34,12 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.factory.CoreFactory;
+import spoon.support.reflect.CtExtendedModifier;
+
+import java.util.Arrays;
+import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 
@@ -114,6 +119,8 @@ public class PositionBuilder {
 			// when no modifier
 			if (modifiersSourceStart > modifiersSourceEnd) {
 				modifiersSourceEnd = modifiersSourceStart - 1;
+			}  else if (e instanceof CtModifiable) {
+				setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
 			}
 
 			return cf.createDeclarationSourcePosition(cu,
@@ -146,6 +153,9 @@ public class PositionBuilder {
 			int modifiersSourceEnd = findPrevNonWhitespace(contents, modifiersSourceStart - 1,
 										findPrevWhitespace(contents, modifiersSourceStart - 1,
 											findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
+			if (e instanceof CtModifiable) {
+				setModifiersPosition((CtModifiable) e, modifiersSourceStart, bodyStart);
+			}
 			if (modifiersSourceEnd < modifiersSourceStart) {
 				//there is no modifier
 				modifiersSourceEnd = modifiersSourceStart - 1;
@@ -195,6 +205,10 @@ public class PositionBuilder {
 
 			int modifiersSourceEnd = sourceStart - 1;
 
+			if (e instanceof CtModifiable) {
+				setModifiersPosition((CtModifiable) e, modifiersSourceStart, declarationSourceEnd);
+			}
+
 			if (methodDeclaration instanceof MethodDeclaration && ((MethodDeclaration) methodDeclaration).returnType != null) {
 				modifiersSourceEnd = ((MethodDeclaration) methodDeclaration).returnType.sourceStart() - 2;
 			}
@@ -239,6 +253,31 @@ public class PositionBuilder {
 		}
 
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+	}
+
+
+	private void setModifiersPosition(CtModifiable e, int start, int end) {
+		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
+		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		char[] contents = cr.compilationUnit.getContents();
+
+		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
+		String modifierContent = String.valueOf(
+				Arrays.copyOfRange(contents, start, end + 1));
+		for (CtExtendedModifier modifier: modifiers) {
+			if (modifier.isImplicit()) {
+				continue;
+			}
+			int index = modifierContent.indexOf(modifier.getKind().toString());
+			if (index == -1) {
+				throw new SpoonException("Explicit modifier not found");
+			}
+			int indexStart = index + start;
+			int indexEnd = indexStart + modifier.getKind().toString().length() - 1;
+
+			modifier.setPosition(cf.createSourcePosition(cu, indexStart, indexEnd, cr.lineSeparatorPositions));
+		}
 	}
 
 	private int getSourceEndOfTypeReference(char[] contents, TypeReference node, int sourceEnd) {
