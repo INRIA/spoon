@@ -56,6 +56,9 @@ public class CtExtendedModifier implements Serializable {
 	}
 
 	public SourcePosition getPosition() {
+		if (position == null) {
+			return SourcePosition.NOPOSITION;
+		}
 		return position;
 	}
 
