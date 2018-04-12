@@ -26,15 +26,14 @@ import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.CoreFactory;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -122,6 +121,9 @@ public class PositionBuilder {
 					modifiersSourceStart, modifiersSourceEnd,
 					declarationSourceStart, declarationSourceEnd,
 					lineSeparatorPositions);
+		} else if (node instanceof TypeDeclaration && e instanceof CtPackage) {
+			// the position returned by JTD is equals to 0
+			return cf.createSourcePosition(cu, 0, contents.length - 1, lineSeparatorPositions);
 		} else if (node instanceof TypeDeclaration) {
 			TypeDeclaration typeDeclaration = (TypeDeclaration) node;
 
