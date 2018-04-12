@@ -13,11 +13,13 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -36,6 +38,7 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 
 import java.io.ByteArrayOutputStream;
@@ -43,17 +46,13 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Deque;
 import java.util.ArrayDeque;
-import java.util.Map;
-import java.util.IdentityHashMap;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -112,6 +111,19 @@ public class MainTest {
 	@Test
 	public void testMain_checkParentConsistency() {
 		checkParentConsistency(rootPackage);
+	}
+
+	@Test
+	public void testMain_checkModifiers() {
+		for (CtModifiable modifiable: rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
+			for (CtExtendedModifier modifier: modifiable.getExtendedModifiers()) {
+				if (modifier.isImplicit()) {
+					continue;
+				}
+				SourcePosition position = modifier.getPosition();
+				assertEquals(modifier.getKind().toString(), position.getCompilationUnit().getOriginalSourceCode().substring(position.getSourceStart(), position.getSourceEnd() + 1));
+			}
+		}
 	}
 
 	public void checkGenericContracts(CtPackage pack) {
