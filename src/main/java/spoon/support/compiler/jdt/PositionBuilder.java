@@ -23,12 +23,14 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import spoon.SpoonException;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -39,6 +41,7 @@ import spoon.reflect.factory.CoreFactory;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -111,6 +114,9 @@ public class PositionBuilder {
 			int modifiersSourceEnd;
 			if (variableDeclaration.type != null) {
 				modifiersSourceEnd = variableDeclaration.type.sourceStart() - 2;
+			} else if (variableDeclaration instanceof Initializer) {
+				// variable that has no type such as TypeParameter
+				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart;
 			} else {
 				// variable that has no type such as TypeParameter
 				modifiersSourceEnd = declarationSourceStart - 1;
@@ -248,10 +254,18 @@ public class PositionBuilder {
 						bodyStart, bodyEnd,
 						lineSeparatorPositions);
 			}
+		} else if (e instanceof CtCatchVariable) {
+			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
+			iterator.next();
+			ASTPair next = iterator.next();
+			return buildPositionCtElement(e, next.node);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		}
 
+		if (e instanceof CtModifiable) {
+			setModifiersPosition((CtModifiable) e, sourceStart, sourceEnd);
+		}
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
@@ -267,6 +281,7 @@ public class PositionBuilder {
 				Arrays.copyOfRange(contents, start, end + 1));
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
+				modifier.setPosition(SourcePosition.NOPOSITION);
 				continue;
 			}
 			int index = modifierContent.indexOf(modifier.getKind().toString());
