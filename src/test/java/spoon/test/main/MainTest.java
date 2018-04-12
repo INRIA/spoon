@@ -115,8 +115,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testMain_checkModifiers() throws Exception {
-
+	public void testMain_checkModifiers() {
 		// the explicit modifier should be present in the original source code
 		for (CtModifiable modifiable: rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
 			for (CtExtendedModifier modifier: modifiable.getExtendedModifiers()) {

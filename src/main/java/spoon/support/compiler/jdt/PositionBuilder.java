@@ -258,7 +258,9 @@ public class PositionBuilder {
 			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
 			iterator.next();
 			ASTPair next = iterator.next();
-			return buildPositionCtElement(e, next.node);
+			buildPositionCtElement(e, next.node);
+			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
+			return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		}
