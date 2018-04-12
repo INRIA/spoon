@@ -13,6 +13,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -114,14 +115,30 @@ public class MainTest {
 	}
 
 	@Test
-	public void testMain_checkModifiers() {
+	public void testMain_checkModifiers() throws Exception {
+
+		// the explicit modifier should be present in the original source code
 		for (CtModifiable modifiable: rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
 			for (CtExtendedModifier modifier: modifiable.getExtendedModifiers()) {
 				if (modifier.isImplicit()) {
 					continue;
 				}
 				SourcePosition position = modifier.getPosition();
-				assertEquals(modifier.getKind().toString(), position.getCompilationUnit().getOriginalSourceCode().substring(position.getSourceStart(), position.getSourceEnd() + 1));
+				if (position == null) {
+					System.out.println("null position" + modifiable);
+					continue;
+				}
+				CompilationUnit compilationUnit = position.getCompilationUnit();
+				if (compilationUnit == null) {
+					System.out.println("cannot be null" + modifiable);
+					continue;
+				}
+				String originalSourceCode = compilationUnit.getOriginalSourceCode();
+				if (originalSourceCode == null) {
+					System.out.println("no source" + modifiable);
+					continue;
+				}
+				assertEquals(modifier.getKind().toString(), originalSourceCode.substring(position.getSourceStart(), position.getSourceEnd() + 1));
 			}
 		}
 	}
