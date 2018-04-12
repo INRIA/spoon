@@ -1,5 +1,6 @@
 package spoon.test.constructor;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -48,8 +48,8 @@ public class ConstructorTest {
 	public void testImplicitConstructor() throws Exception {
 		CtClass<?> ctType = (CtClass) ModelUtils.buildClass(ImplicitConstructor.class);
 
-		assertTrue(ctType.getConstructor().isImplicit());
-		assertFalse(aClass.getConstructor().isImplicit());
+		Assert.assertTrue(ctType.getConstructor().isImplicit());
+		Assert.assertFalse(aClass.getConstructor().isImplicit());
 	}
 
 	@Test
