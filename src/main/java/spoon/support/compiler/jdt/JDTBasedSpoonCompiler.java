@@ -51,7 +51,6 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
-import spoon.support.comparator.RandomizeCompilationUnitOrderComparator;
 import spoon.support.compiler.VirtualFolder;
 
 import java.io.ByteArrayInputStream;
@@ -63,7 +62,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +84,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	//The classpath used to build templates
 	protected String[] templateClasspath = new String[0];
 	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
-	private Comparator<CompilationUnitDeclaration> cuComparator;
+	private boolean sortList;
 
 	/**
 	 * Default constructor
@@ -97,21 +95,17 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private void initializeCUCOmparator() {
-		int seed = 0;
 		try {
 			if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
-				seed = Integer.parseInt(System.getenv("SPOON_SEED_CU_COMPARATOR"));
-				Launcher.LOGGER.warn("Seed for CU sorting set with: " + seed);
+				this.sortList = false;
+			} else {
+				this.sortList = true;
 			}
 		} catch (NumberFormatException | SecurityException e) {
 			Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
+			this.sortList = true;
 		}
 
-		if (seed != 0) {
-			this.cuComparator = new RandomizeCompilationUnitOrderComparator(seed);
-		} else {
-			this.cuComparator = new FixedOrderBasedOnFileNameCompilationUnitComparator();
-		}
 	}
 
 	@Override
@@ -453,7 +447,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	protected List<CompilationUnitDeclaration> sortCompilationUnits(CompilationUnitDeclaration[] units) {
 		List<CompilationUnitDeclaration> unitList = new ArrayList<>(Arrays.asList(units));
-		unitList.sort(this.cuComparator);
+		if (this.sortList) {
+			unitList.sort(new FixedOrderBasedOnFileNameCompilationUnitComparator());
+		} else {
+			Collections.shuffle(unitList);
+		}
+
 		return unitList;
 	}
 
