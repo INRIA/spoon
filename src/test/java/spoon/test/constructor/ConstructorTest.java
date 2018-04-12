@@ -14,13 +14,16 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.constructor.testclasses.AClass;
+import spoon.test.constructor.testclasses.ImplicitConstructor;
 import spoon.test.constructor.testclasses.Tacos;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -39,6 +42,14 @@ public class ConstructorTest {
 		});
 		factory = launcher.getFactory();
 		aClass = factory.Class().get(Tacos.class);
+	}
+
+	@Test
+	public void testImplicitConstructor() throws Exception {
+		CtClass<?> ctType = (CtClass) ModelUtils.buildClass(ImplicitConstructor.class);
+
+		assertTrue(ctType.getConstructor().isImplicit());
+		assertFalse(aClass.getConstructor().isImplicit());
 	}
 
 	@Test
