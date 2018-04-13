@@ -108,7 +108,7 @@ public class PositionBuilder {
 			if (variableDeclaration.type != null) {
 				modifiersSourceEnd = variableDeclaration.type.sourceStart() - 2;
 			} else if (variableDeclaration instanceof Initializer) {
-				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart;
+				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart - 1;
 			} else {
 				// variable that has no type such as TypeParameter
 				modifiersSourceEnd = declarationSourceStart - 1;
