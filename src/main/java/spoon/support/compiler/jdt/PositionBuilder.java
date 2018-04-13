@@ -35,12 +35,11 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.CoreFactory;
 import spoon.support.reflect.CtExtendedModifier;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -154,7 +153,7 @@ public class PositionBuilder {
 				modifiersSourceEnd = modifiersSourceStart - 1;
 			}
 			if (typeDeclaration.name.length == 0) {
-				//it is annonymous type, there is no name start/end
+				//it is anonymous type, there is no name start/end
 				sourceEnd = sourceStart - 1;
 				if (contents[sourceStart] == '{') {
 					//adjust bodyEnd of annonymous type in definition of enum value
@@ -260,7 +259,7 @@ public class PositionBuilder {
 		char[] contents = cr.compilationUnit.getContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
-		String modifierContent = String.valueOf(Arrays.copyOfRange(contents, start, end + 1));
+		String modifierContent = String.valueOf(contents, start, end + 1);
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
 				modifier.setPosition(SourcePosition.NOPOSITION);
