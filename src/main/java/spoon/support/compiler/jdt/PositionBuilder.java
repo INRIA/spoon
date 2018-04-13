@@ -260,9 +260,6 @@ public class PositionBuilder {
 		char[] contents = cr.compilationUnit.getContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
-		if (start < 0 || end + 1 > contents.length) {
-			System.out.println(e);
-		}
 		String modifierContent = String.valueOf(Arrays.copyOfRange(contents, start, end + 1));
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
