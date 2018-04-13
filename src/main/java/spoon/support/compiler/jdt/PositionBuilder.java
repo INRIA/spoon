@@ -259,7 +259,7 @@ public class PositionBuilder {
 		char[] contents = cr.compilationUnit.getContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
-		String modifierContent = String.valueOf(contents, start, end + 1);
+		String modifierContent = String.valueOf(contents, start, end - start + 1);
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
 				modifier.setPosition(SourcePosition.NOPOSITION);
