@@ -80,7 +80,7 @@ public class PositionTest {
 		assertEquals(4, foo2.getPosition().getEndLine());
 
 		assertEquals("FooClazz", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		assertEquals("@Deprecated\npublic", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
 	
 	
@@ -166,7 +166,7 @@ public class PositionTest {
 		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
 
 		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		assertEquals("@Deprecated\n@InnerAnnot(value=\"machin\")\npublic", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 		
 		{
 			SourcePosition annPosition = foo.getAnnotations().get(0).getPosition();
@@ -202,7 +202,8 @@ public class PositionTest {
 				+ "}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
 
 		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("public abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		assertEquals("@Target(value={})\n"
+				+ "@Retention(RetentionPolicy.RUNTIME)  \npublic abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 		
 		CtMethod<?> method1 = foo.getMethodsByName("value").get(0);
 		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();

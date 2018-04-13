@@ -633,6 +633,10 @@ public class JDTTreeBuilderHelper {
 		} else {
 			type = jdtTreeBuilder.getFactory().Core().createClass();
 		}
+
+		// Setting modifiers
+		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
+
 		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
 
 		if (typeDeclaration.superInterfaces != null) {
@@ -654,9 +658,6 @@ public class JDTTreeBuilderHelper {
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
-
-		// Setting modifiers
-		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
 
 		return type;
 	}

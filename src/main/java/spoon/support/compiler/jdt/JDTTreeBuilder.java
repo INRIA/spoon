@@ -980,8 +980,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
 		}
-		for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
-			c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		// avoid to add explicit modifier to implicit constructor
+		if (!c.isImplicit()) {
+			for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
+				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+			}
 		}
 		context.enter(c, constructorDeclaration);
 
