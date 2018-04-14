@@ -18,8 +18,10 @@ package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
+import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -267,7 +269,10 @@ public class PrinterHelper {
 	}
 
 	public void mapLine(CtElement e, CompilationUnit unitExpected) {
-		if ((e.getPosition() != null) && (e.getPosition().getCompilationUnit() == unitExpected)) {
+		SourcePosition sp = e.getPosition();
+		if ((sp != null)
+				&& (sp.getCompilationUnit() == unitExpected)
+				&& (sp instanceof PartialSourcePositionImpl) == false) {
 			// only map elements coming from the source CU
 			putLineNumberMapping(e.getPosition().getLine());
 		} else {
