@@ -169,7 +169,11 @@ public class PatternTest {
 
 	@Test
 	public void testMatchIfElse() throws Exception {
-		//contract: inline switch Pattern can match one of the models
+		//contract: if statements can be inlined
+
+		// in this example the main if statement starting with "if (option) {"
+		// is inlined
+		// and any of the branch can be matched
 		CtType<?> ctClass = ModelUtils.buildClass(MatchIfElse.class);
 
 		CtType<?> type = ctClass.getFactory().Type().get(MatchIfElse.class);
