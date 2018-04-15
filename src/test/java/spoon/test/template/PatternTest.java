@@ -1,5 +1,6 @@
 package spoon.test.template;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -229,6 +230,9 @@ public class PatternTest {
 
 		// here, in particular, we test method "substituteList"
 
+		// REVIEW:
+		// Here, I have a concern with the API: we have 4 public methods `substitute*`. It is hard for client to quickly grasp the differences. Is it possible to have a single `substituteMethod?`
+
 		// setup of the test
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 		Factory factory = ctClass.getFactory();
@@ -293,7 +297,10 @@ public class PatternTest {
 
 	@Test
 	public void testMatchGreedyMultiValueMaxCountLimit() throws Exception {
-		//contract: default greedy matching eats everything until max count = 3
+		//contract: it is possible to stop matching after a specific number of times
+		// This is done with method parameterBuilder.setMaxOccurence(maxCount)
+
+		// explanation: greedy matching eats everything until max count = 3
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 		Pattern pattern = MatchMultiple.createPattern(null, null, 3);
 
