@@ -19,8 +19,10 @@ package spoon.pattern.parameter;
 import java.util.Map;
 
 /**
- * It is unmodifiable storage of parameter name-value pairs.
- * The values may be primitive values or List,Set,Map of values.
+ *
+ * An immutable map.
+ * (eg unmodifiable storage of parameter name-value pairs).
+ * The values may be primitive values or List, Set, Map of values.
  * All internal containers are unmodifiable too.
  */
 public interface ParameterValueProvider {
