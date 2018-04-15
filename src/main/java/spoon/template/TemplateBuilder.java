@@ -31,6 +31,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.template.Parameters;
+import spoon.support.util.UnmodifiableParameterValueProvider;
 
 /**
  * Internal class used to provide pattern-based implementation of Template and TemplateMatcher
@@ -157,6 +158,6 @@ class TemplateBuilder {
 	 * @return List of substituted elements
 	 */
 	public <T extends CtElement> List<T> substituteList(Factory factory, CtType<?> targetType, Class<T> itemType) {
-		return build().substituteList(factory, itemType, getTemplateParameters(targetType));
+		return build().substitute(factory, itemType, new UnmodifiableParameterValueProvider(getTemplateParameters(targetType)));
 	}
 }

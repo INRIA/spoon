@@ -73,7 +73,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	@Override
 	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
 		for (Object parameterValue : generator.generateTargets(iterableParameter, parameters, Object.class)) {
-			generator.generateTargets(nestedModel, result, parameters.putValueToCopy(localParameter.getName(), parameterValue));
+			generator.generateTargets(nestedModel, result, parameters.putValue(localParameter.getName(), parameterValue));
 		}
 	}
 
@@ -84,7 +84,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 
 	@Override
 	public TobeMatched matchAllWith(TobeMatched tobeMatched) {
-		TobeMatched  localMatch = nestedModel.matchAllWith(tobeMatched.copyAndSetParams(tobeMatched.getParameters().createLocalParameterValueProvider()));
+		TobeMatched  localMatch = nestedModel.matchAllWith(tobeMatched.copyAndSetParams(tobeMatched.getParameters().checkpoint()));
 		if (localMatch == null) {
 			//nested model did not matched.
 			return null;
@@ -92,7 +92,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 		//it matched.
 		ParameterValueProvider newParameters = tobeMatched.getParameters();
 		//copy values of local parameters
-		for (Map.Entry<String, Object> e : localMatch.getParameters().asLocalMap().entrySet()) {
+		for (Map.Entry<String, Object> e : localMatch.getParameters().getModifiedParameters().entrySet()) {
 			String name = e.getKey();
 			Object value = e.getValue();
 			if (name.equals(localParameter.getName())) {
@@ -105,7 +105,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 				}
 			} else {
 				//it is new global parameter value. Just set it
-				newParameters = newParameters.putValueToCopy(name, value);
+				newParameters = newParameters.putValue(name, value);
 			}
 		}
 		//all local parameters were applied to newParameters. We can use newParameters as result of this iteration for next iteration
@@ -150,7 +150,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 		Factory f = generator.getFactory();
 		CtForEach forEach = f.Core().createForEach();
 		forEach.setVariable(f.Code().createLocalVariable(f.Type().objectType(), localParameter.getName(), null));
-		forEach.setExpression(generator.generateTarget(iterableParameter, parameters, CtExpression.class));
+		forEach.setExpression(generator.generateSingleTarget(iterableParameter, parameters, CtExpression.class));
 		CtBlock<?> body = f.createBlock();
 		body.setStatements(generator.generateTargets(nestedModel, parameters, CtStatement.class));
 		forEach.setBody(body);

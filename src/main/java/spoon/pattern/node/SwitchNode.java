@@ -188,7 +188,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 			if (vrOfExpression == null) {
 				return true;
 			}
-			Boolean value = generator.generateTarget(vrOfExpression, parameters, Boolean.class);
+			Boolean value = generator.generateSingleTarget(vrOfExpression, parameters, Boolean.class);
 			return value == null ? false : value.booleanValue();
 		}
 
@@ -203,7 +203,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 			if (vrOfExpression != null) {
 				//There is if expression
 				CtIf ifStmt = cf.createIf();
-				ifStmt.setCondition(generator.generateTarget(vrOfExpression, parameters, CtExpression.class));
+				ifStmt.setCondition(generator.generateSingleTarget(vrOfExpression, parameters, CtExpression.class));
 				ifStmt.setThenStatement(block);
 				result.addResult((T) ifStmt);
 			} else {
@@ -219,7 +219,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 		CtStatement lastElse = null;
 		CtIf lastIf = null;
 		for (CaseNode caseNode : cases) {
-			CtStatement stmt = generator.generateTarget(caseNode, parameters, CtStatement.class);
+			CtStatement stmt = generator.generateSingleTarget(caseNode, parameters, CtStatement.class);
 			if (stmt instanceof CtIf) {
 				CtIf ifStmt = (CtIf) stmt;
 				if (lastIf == null) {

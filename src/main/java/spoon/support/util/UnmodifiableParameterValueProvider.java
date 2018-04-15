@@ -64,7 +64,7 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 	}
 
 	@Override
-	public UnmodifiableParameterValueProvider createLocalParameterValueProvider() {
+	public UnmodifiableParameterValueProvider checkpoint() {
 		return new UnmodifiableParameterValueProvider(this, Collections.emptyMap());
 	}
 
@@ -89,7 +89,7 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 	}
 
 	@Override
-	public ParameterValueProvider putValueToCopy(String parameterName, Object value) {
+	public ParameterValueProvider putValue(String parameterName, Object value) {
 		return new UnmodifiableParameterValueProvider(parent, map, parameterName, value);
 	}
 
@@ -127,7 +127,7 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 	}
 
 	@Override
-	public Map<String, Object> asLocalMap() {
+	public Map<String, Object> getModifiedParameters() {
 		return map;
 	}
 

@@ -106,8 +106,8 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
-		String entryKey = generator.generateTarget(key, parameters, String.class);
-		CtElement entryValue = generator.generateTarget(value, parameters, CtElement.class);
+		String entryKey = generator.generateSingleTarget(key, parameters, String.class);
+		CtElement entryValue = generator.generateSingleTarget(value, parameters, CtElement.class);
 		if (entryKey != null && entryValue != null) {
 			result.addResult((T) new Entry(entryKey, entryValue));
 		}

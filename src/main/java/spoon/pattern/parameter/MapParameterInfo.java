@@ -82,7 +82,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 					//it is already there
 					return parameters;
 				}
-				return parameters.putValueToCopy(newEntryKey, newEntryValue);
+				return parameters.putValue(newEntryKey, newEntryValue);
 			}
 			if (newValue instanceof Map) {
 				Map<String, Object> newMap = (Map) newValue;
@@ -95,7 +95,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 					}
 					if (existingValue != newEntryValue) {
 						//it is not there yet. Add it
-						parameters = parameters.putValueToCopy(newEntryKey, newEntryValue);
+						parameters = parameters.putValue(newEntryKey, newEntryValue);
 					}
 					//it is there, continue to check next entry
 				}
@@ -113,7 +113,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 			//it is already there.
 			return parameters;
 		}
-		return parameters.putValueToCopy(name, newValue);
+		return parameters.putValue(name, newValue);
 	}
 
 	@Override

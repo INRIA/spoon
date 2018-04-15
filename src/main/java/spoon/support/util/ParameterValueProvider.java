@@ -32,17 +32,19 @@ public interface ParameterValueProvider {
 	 * @return true if there is defined some value for the parameter. null can be a value too
 	 */
 	boolean hasValue(String parameterName);
+
 	/**
 	 * @param parameterName the name of the parameter
 	 * @return a value of the parameter under the name `parameterNamer
 	 */
 	Object getValue(String parameterName);
+
 	/**
 	 * @param parameterName to be set parameter name
 	 * @param value the new value
 	 * @return copies this {@link ParameterValueProvider}, sets the new value there and returns that copy
 	 */
-	ParameterValueProvider putValueToCopy(String parameterName, Object value);
+	ParameterValueProvider putValue(String parameterName, Object value);
 
 	/**
 	 * @return underlying unmodifiable Map&lt;String, Object&gt;
@@ -51,13 +53,14 @@ public interface ParameterValueProvider {
 
 	/**
 	 * @return a new instance of {@link ParameterValueProvider}, which inherits all values from this {@link ParameterValueProvider}
-	 * Any call of {@link #putValueToCopy(String, Object)} is remembered in local Map of parameters.
-	 * At the end of process the {@link #asLocalMap()} can be used to return all the parameters which were changed
+	 * Any call of {@link #putValue(String, Object)} is remembered in local Map of parameters.
+	 * At the end of process the {@link #getModifiedParameters()} can be used to return all the parameters which were changed
 	 * after local {@link ParameterValueProvider} was created
 	 */
-	ParameterValueProvider createLocalParameterValueProvider();
+	ParameterValueProvider checkpoint();
+
 	/**
-	 * @return {@link Map} with all modified parameters after {@link #createLocalParameterValueProvider()} has been called
+	 * @return the modified parameters since last call to {@link #checkpoint()}
 	 */
-	Map<String, Object> asLocalMap();
+	Map<String, Object> getModifiedParameters();
 }

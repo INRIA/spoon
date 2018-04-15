@@ -286,7 +286,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 			Metamodel.Field mmField = e.getKey();
 			switch (mmField.getContainerKind()) {
 			case SINGLE:
-				mmField.setValue(clone, generator.generateTarget(e.getValue(), parameters, mmField.getValueClass()));
+				mmField.setValue(clone, generator.generateSingleTarget(e.getValue(), parameters, mmField.getValueClass()));
 				break;
 			case LIST:
 				mmField.setValue(clone, generator.generateTargets(e.getValue(), parameters, mmField.getValueClass()));

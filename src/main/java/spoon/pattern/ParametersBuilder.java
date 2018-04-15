@@ -637,7 +637,7 @@ public class ParametersBuilder {
 		}
 	}
 
-	public ParameterElementPair getSubstitutedNodeOfElement(ParameterInfo parameter, CtElement element) {
+	private ParameterElementPair getSubstitutedNodeOfElement(ParameterInfo parameter, CtElement element) {
 		ParameterElementPair parameterElementPair = new ParameterElementPair(parameter, element);
 		parameterElementPair = transformVariableAccessToVariableReference(parameterElementPair);
 		parameterElementPair = transformArrayAccess(parameterElementPair);

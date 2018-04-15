@@ -64,7 +64,7 @@ public interface Generator {
 	 *
 	 * @return a generate value or null
 	 */
-	default <T> T generateTarget(RootNode node, ParameterValueProvider parameters, Class<T> expectedType) {
+	default <T> T generateSingleTarget(RootNode node, ParameterValueProvider parameters, Class<T> expectedType) {
 		ResultHolder.Single<T> result = new ResultHolder.Single<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();

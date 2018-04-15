@@ -1,6 +1,5 @@
 package spoon.test.template;
 
-import org.hamcrest.core.Is;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -37,6 +36,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.UnmodifiableParameterValueProvider;
 import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.ToBeMatched;
 import spoon.test.template.testclasses.logger.Logger;
@@ -238,20 +238,20 @@ public class PatternTest {
 		Factory factory = ctClass.getFactory();
 
 		Pattern pattern = MatchMultiple.createPattern(null, null, null);
-		Map<String, Object> params = new HashMap<>();
+		ParameterValueProvider params = new UnmodifiableParameterValueProvider();
 
 		// created in "MatchMultiple.createPattern",matching a literal "something"
 		// so "something" si replaced by "does it work?"
-		params.put("printedValue", "does it work?");
+		params = params.putValue("printedValue", "does it work?");
 		List<CtStatement> statementsToBeAdded = null;
 
 		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the matching and the transformation
 		statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 
 		// created in "MatchMultiple.createPattern",matching a method "statements"
-		params.put("statements", statementsToBeAdded);
+		params = params.putValue("statements", statementsToBeAdded);
 
-		List<CtStatement> generated = pattern.substituteList(factory, CtStatement.class, params);
+		List<CtStatement> generated = pattern.substitute(factory, CtStatement.class, params);
 		assertEquals(Arrays.asList(
 				//these statements comes from `statements` parameter value
 				"int foo = 0",
