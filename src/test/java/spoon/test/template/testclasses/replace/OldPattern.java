@@ -9,7 +9,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.ElementPrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 
 public class OldPattern {

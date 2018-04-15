@@ -2,7 +2,6 @@ package spoon.test.template.testclasses.replace;
 
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.visitor.ElementPrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 
 public class DPPSample1 {
