@@ -88,24 +88,11 @@ public class DeclarationSourcePositionImpl extends SourcePositionImpl
 		return searchLineNumber(declarationSourceEnd);
 	}
 
-	/**
-	 * @return origin source code of modifiers
-	 */
-	public String getModifierSourceFragment() {
-		return getFragment(getModifierSourceStart(), getModifierSourceEnd());
-	}
-
-	/**
-	 * @return origin source code of `name`
-	 */
-	public String getNameSourceFragment() {
-		return getFragment(getNameStart(), getNameEnd());
-	}
-
-	protected String getSourceInfo() {
-		return super.getSourceInfo()
-				+ "\nmodifier = " + getModifierSourceFragment()
-				+ "\nname = " + getNameSourceFragment();
+	@Override
+	public String getSourceDetails() {
+		return super.getSourceDetails()
+				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
+				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
 	}
 
 }

@@ -60,15 +60,9 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 		return bodyEnd;
 	}
 
-	/**
-	 * @return origin source code of body
-	 */
-	public String getBodySourceFragment() {
-		return getFragment(getBodyStart(), getBodyEnd());
-	}
-
-	protected String getSourceInfo() {
-		return super.getSourceInfo()
-				+ "\nbody = " + getBodySourceFragment();
+	@Override
+	public String getSourceDetails() {
+		return super.getSourceDetails()
+				+ "\nbody = " + getFragment(getBodyStart(), getBodyEnd());
 	}
 }

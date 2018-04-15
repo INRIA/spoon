@@ -195,19 +195,18 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return compilationUnit;
 	}
 
-	protected String getFragment(int start, int end) {
-		return "|" + start + ";" + end + "|" + getCompilationUnit().getOriginalSourceCode().substring(start, end + 1) + "|";
-	}
-
 	/**
-	 * @return source code of this {@link SourcePosition}
+	 * Helper for debugging purposes. Displays |startIndex; endIndex|sourceCode| of this {@link SourcePosition}
+	 * If this instance is {@link DeclarationSourcePosition} or {@link BodyHolderSourcePosition}
+	 * Then details about name, modifiers and body are included in resulting string too
+	 * @return details about source code of this {@link SourcePosition}
 	 */
-	public String getSourceFragment() {
+	public String getSourceDetails() {
 		return getFragment(getSourceStart(), getSourceEnd());
 	}
 
-	protected String getSourceInfo() {
-		return getSourceFragment();
+	protected String getFragment(int start, int end) {
+		return "|" + start + ";" + end + "|" + getCompilationUnit().getOriginalSourceCode().substring(start, end + 1) + "|";
 	}
 
 	/**
