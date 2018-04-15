@@ -34,6 +34,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  */

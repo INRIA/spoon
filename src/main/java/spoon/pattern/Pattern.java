@@ -29,9 +29,6 @@ import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.MatchingScanner;
 import spoon.pattern.node.ModelNode;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.pattern.parameter.ParameterValueProviderFactory;
-import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -39,6 +36,9 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ParameterValueProviderFactory;
+import spoon.support.util.UnmodifiableParameterValueProvider;
 
 /**
  * Represents a pattern for matching or transformation. It means an AST model, where some parts of that model are substituted by pattern parameters.

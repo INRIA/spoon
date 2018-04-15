@@ -32,7 +32,7 @@ import spoon.pattern.ResultHolder;
 import spoon.pattern.ResultHolder.Single;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Delivers single String value, which is created by replacing string markers in constant String template

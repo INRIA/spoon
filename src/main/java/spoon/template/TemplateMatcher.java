@@ -22,14 +22,14 @@ import spoon.pattern.Pattern;
 import spoon.pattern.matcher.Match;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.node.ModelNode;
-import spoon.pattern.parameter.ParameterValueProvider;
-import spoon.pattern.parameter.ParameterValueProviderFactory;
-import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ParameterValueProviderFactory;
+import spoon.support.util.UnmodifiableParameterValueProvider;
 
 import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
 

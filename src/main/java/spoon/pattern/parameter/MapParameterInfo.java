@@ -19,6 +19,9 @@ package spoon.pattern.parameter;
 import java.util.Map;
 import java.util.function.Function;
 
+import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.UnmodifiableParameterValueProvider;
+
 /**
  * A kind of {@link ParameterInfo} which returns value by the named parameter
  * From a container of type {@link ParameterValueProvider} or {@link Map}

@@ -26,13 +26,13 @@ import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * List of conditional cases

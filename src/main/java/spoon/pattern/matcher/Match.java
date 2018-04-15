@@ -21,8 +21,8 @@ import java.util.Map;
 
 import spoon.SpoonException;
 import spoon.pattern.Pattern;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Represents a single match of {@link Pattern}

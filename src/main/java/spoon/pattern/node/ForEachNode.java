@@ -24,12 +24,12 @@ import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.Factory;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Pattern node of multiple occurrences of the same model, just with different parameters.

@@ -25,7 +25,7 @@ import spoon.pattern.matcher.ChainOfMatchersImpl;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * List of {@link RootNode}s. The {@link RootNode}s are processed in same order like they were inserted in the list

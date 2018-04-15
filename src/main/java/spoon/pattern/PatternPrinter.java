@@ -30,7 +30,6 @@ import spoon.pattern.node.InlineNode;
 import spoon.pattern.node.ParameterNode;
 import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtComment.CommentType;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
@@ -41,6 +40,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  */

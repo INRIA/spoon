@@ -23,7 +23,7 @@ import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Represents a parameterized Pattern ValueResolver, which can be used

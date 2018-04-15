@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import spoon.SpoonException;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.meta.ContainerKind;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Describes what next has to be matched.

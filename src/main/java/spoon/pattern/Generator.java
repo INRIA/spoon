@@ -20,9 +20,9 @@ import java.util.List;
 
 import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Drives generation process

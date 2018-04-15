@@ -22,8 +22,8 @@ import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Represents pattern model variable

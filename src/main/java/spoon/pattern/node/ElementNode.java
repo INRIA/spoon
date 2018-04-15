@@ -35,11 +35,11 @@ import spoon.pattern.matcher.Matchers;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.matcher.TobeMatched;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.support.util.ParameterValueProvider;
 
 import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
 

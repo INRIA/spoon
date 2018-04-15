@@ -21,10 +21,10 @@ import org.junit.Test;
 import spoon.pattern.parameter.ListParameterInfo;
 import spoon.pattern.parameter.MapParameterInfo;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.pattern.parameter.SetParameterInfo;
-import spoon.pattern.parameter.UnmodifiableParameterValueProvider;
 import spoon.reflect.meta.ContainerKind;
+import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.UnmodifiableParameterValueProvider;
 
 public class ParameterInfoTest {
 

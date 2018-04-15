@@ -18,7 +18,7 @@ package spoon.pattern.node;
 
 import spoon.pattern.Generator;
 import spoon.pattern.ResultHolder;
-import spoon.pattern.parameter.ParameterValueProvider;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Represents a kind of {@link RootNode},

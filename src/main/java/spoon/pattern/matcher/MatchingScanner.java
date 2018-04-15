@@ -24,12 +24,12 @@ import java.util.Set;
 
 import spoon.SpoonException;
 import spoon.pattern.node.ModelNode;
-import spoon.pattern.parameter.ParameterValueProviderFactory;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.support.util.ParameterValueProviderFactory;
 
 /**
  * Represents a Match of TemplateMatcher

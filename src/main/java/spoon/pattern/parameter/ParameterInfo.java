@@ -21,6 +21,7 @@ import spoon.pattern.ResultHolder;
 import spoon.pattern.matcher.Quantifier;
 import spoon.pattern.node.RootNode;
 import spoon.reflect.factory.Factory;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Represents the parameter of {@link Pattern}

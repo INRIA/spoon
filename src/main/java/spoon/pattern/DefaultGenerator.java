@@ -18,7 +18,6 @@ package spoon.pattern;
 
 import spoon.pattern.node.RootNode;
 import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.ParameterValueProvider;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.CompilationUnit;
@@ -28,6 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.util.ParameterValueProvider;
 
 /**
  * Drives generation process
