@@ -38,7 +38,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 
 /**

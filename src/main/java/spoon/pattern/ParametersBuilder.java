@@ -483,6 +483,17 @@ public class ParametersBuilder {
 	}
 
 	/**
+	 * Any named element or reference identified by it's simple name
+	 * @param simpleName simple name of {@link CtNamedElement} or {@link CtReference}
+	 * @return {@link ParametersBuilder} to support fluent API
+	 */
+	public ParametersBuilder byName(String simpleName) {
+		byNamedElement(simpleName);
+		byReferenceName(simpleName);
+		return this;
+	}
+
+	/**
 	 * Any named element by it's simple name
 	 * @param simpleName simple name of {@link CtNamedElement}
 	 * @return {@link ParametersBuilder} to support fluent API
