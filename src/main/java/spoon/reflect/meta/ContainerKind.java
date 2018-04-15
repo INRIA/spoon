@@ -25,16 +25,22 @@ public enum ContainerKind {
 	 * Example: CtClassImpl.simpleName
 	 */
 	SINGLE,
+
+
 	/**
 	 * It is a list of values
 	 * Example: CtClassImpl.typeMembers
 	 */
 	LIST,
+
+
 	/**
 	 * It is a set of values
 	 * Example: CtPackageImpl.types
 	 */
 	SET,
+
+
 	/**
 	 * It is a map&lt;String, T&gt; of values
 	 * Example: CtAnnotationImpl.elementValues

@@ -18,6 +18,9 @@ public class MatchMultiple {
 		CtType<?> type = ModelUtils.buildClass(MatchMultiple.class);
 		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 			.configureParameters(pb -> {
+
+				// matching anything that is called "statements".
+				// the setContainerKind(ContainerKind.LIST) means match zero, one or more then one arbitrary statement
 				pb.parameter("statements").byReferenceName("statements").setContainerKind(ContainerKind.LIST);
 				if (matchingStrategy != null) {
 					pb.setMatchingStrategy(matchingStrategy);
