@@ -246,17 +246,32 @@ public class PatternTest {
 		// contract: the pattern parameter (in this case 'statements')
 		//can have type List and can be replaced by list of elements
 		//(in this case by list of statements)
+
+		// here, in particular, we test method "substituteList"
+
+		// setup of the test
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
+		Factory factory = ctClass.getFactory();
+
 		Pattern pattern = MatchMultiple.createPattern(null, null, null);
 		Map<String, Object> params = new HashMap<>();
+
+		// created in "MatchMultiple.createPattern",matching a literal "something"
+		// so "something" si replaced by "does it work?"
 		params.put("printedValue", "does it work?");
-		params.put("statements", ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3));
-		List<CtStatement> generated = pattern.substituteList(ctClass.getFactory(), CtStatement.class, params);
+		List<CtStatement> statementsToBeAdded = null;
+
+		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the macthing and the transformation
+		statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
+
+		// created in "MatchMultiple.createPattern",matching a method "statements"
+		params.put("statements", statementsToBeAdded);
+
+		List<CtStatement> generated = pattern.substituteList(factory, CtStatement.class, params);
 		assertEquals(Arrays.asList(
-				//these 3 statements comes from `statements` parameter value
-				"int i = 0",
-				"i++",
-				"java.lang.System.out.println(i)",
+				//these statements comes from `statements` parameter value
+				"int foo = 0",
+				"foo++",
 				//this statement comes from pattern model, just the string literal comes from parameter `printedValue`
 				"java.lang.System.out.println(\"does it work?\")"), generated.stream().map(Object::toString).collect(Collectors.toList()));
 	}

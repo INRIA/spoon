@@ -118,6 +118,6 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @param consumer the receiver of matches
 	 */
 	public void forEachMatch(CtElement rootElement, CtConsumer<Match> consumer) {
-		rootElement.map(pattern).forEach(consumer);
+		pattern.forEachMatch(rootElement, consumer);
 	}
 }
