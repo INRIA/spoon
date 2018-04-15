@@ -27,22 +27,27 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Executable;
+import java.lang.reflect.GenericDeclaration;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtExecutable<?> ctExecutable;
+	private Executable executable;
 	private Map<String, CtTypeParameter> mapTypeParameters;
 
-	public ExecutableRuntimeBuilderContext(CtMethod<?> ctMethod) {
+	public ExecutableRuntimeBuilderContext(Executable executable, CtMethod<?> ctMethod) {
 		super(ctMethod);
 		this.ctExecutable = ctMethod;
+		this.executable = executable;
 		this.mapTypeParameters = new HashMap<>();
 	}
 
-	public ExecutableRuntimeBuilderContext(CtConstructor<?> ctConstructor) {
+	public ExecutableRuntimeBuilderContext(Executable executable, CtConstructor<?> ctConstructor) {
 		super(ctConstructor);
 		this.ctExecutable = ctConstructor;
+		this.executable = executable;
 		this.mapTypeParameters = new HashMap<>();
 	}
 
@@ -97,7 +102,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) {
-		return this.mapTypeParameters.get(string);
+	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+		return executable == genericDeclaration ? this.mapTypeParameters.get(string) : null;
 	}
 }

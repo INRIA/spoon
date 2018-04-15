@@ -229,8 +229,8 @@ public class JavaReflectionTreeBuilderTest {
 			CtElement parentOfOther = stack.peek();
 			try {
 				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName()
-				+"\nShadow: " + other.toString()
-				+"\nNormal: " + element.toString()+"\n");
+				+"\nShadow: " + String.valueOf(other)
+				+"\nNormal: " + String.valueOf(element)+"\n");
 			} catch (CtPathException e) {
 				throw new SpoonException(e);
 			}
@@ -277,7 +277,7 @@ public class JavaReflectionTreeBuilderTest {
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>)elements).stream().filter(a->{
 					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
 					Class ac = at.getActualClass();
-					if (ac == Override.class) {
+					if (ac == Override.class || ac == SuppressWarnings.class) {
 						return false;
 					}
 					return true;

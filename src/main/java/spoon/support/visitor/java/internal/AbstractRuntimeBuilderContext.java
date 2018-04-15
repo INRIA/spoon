@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
 
 abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 
@@ -103,7 +104,7 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) {
+	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
 		return null;
 	}
 }

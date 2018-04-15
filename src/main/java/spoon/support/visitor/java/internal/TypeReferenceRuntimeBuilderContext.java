@@ -23,17 +23,21 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtTypeReference<?> typeReference;
+	private Type type;
 	private Map<String, CtTypeParameter> mapTypeParameters;
 
-	public TypeReferenceRuntimeBuilderContext(CtTypeReference<?> typeReference) {
+	public TypeReferenceRuntimeBuilderContext(Type type, CtTypeReference<?> typeReference) {
 		super(typeReference);
 		this.typeReference = typeReference;
+		this.type = type;
 		this.mapTypeParameters = new HashMap<>();
 	}
 
@@ -68,8 +72,8 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 	}
 
 	@Override
-	public CtTypeParameter getTypeParameter(String string) {
-		return this.mapTypeParameters.get(string);
+	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+		return type == genericDeclaration ? this.mapTypeParameters.get(string) : null;
 	}
 
 	@Override

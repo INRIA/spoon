@@ -29,7 +29,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
@@ -442,12 +441,15 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {
-		final List<RtMethod> methods = new ArrayList<>();
-		methods.addAll(Arrays.asList(RtMethod.methodsOf(clazz)));
-		final Class<?> superclass = clazz.getSuperclass();
-		if (superclass != null) {
-			methods.removeAll(Arrays.asList(RtMethod.sameMethodsWithDifferentTypeOf(superclass, methods)));
+		Method[] javaMethods = clazz.getDeclaredMethods();
+		List<RtMethod> rtMethods = new ArrayList<>();
+		for (Method method : javaMethods) {
+			if (method.isSynthetic()) {
+				//ignore synthetic methods.
+				continue;
+			}
+			rtMethods.add(RtMethod.create(method));
 		}
-		return methods;
+		return rtMethods;
 	}
 }

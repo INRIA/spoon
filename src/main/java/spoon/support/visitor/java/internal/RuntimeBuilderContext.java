@@ -29,6 +29,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
 
 public interface RuntimeBuilderContext {
 	void addPackage(CtPackage ctPackage);
@@ -57,5 +58,5 @@ public interface RuntimeBuilderContext {
 
 	void addTypeName(CtTypeReference<?> ctTypeReference);
 
-	CtTypeParameter getTypeParameter(String string);
+	CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string);
 }
