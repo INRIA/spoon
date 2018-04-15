@@ -19,7 +19,7 @@ public class MatchMultiple {
 		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 			.configureParameters(pb -> {
 
-				// matching anything that is called "statements".
+				// matching anything that is called "statements" (in this case call to method statement.
 				// the setContainerKind(ContainerKind.LIST) means match zero, one or more then one arbitrary statement
 				pb.parameter("statements").byReferenceName("statements").setContainerKind(ContainerKind.LIST);
 				if (matchingStrategy != null) {

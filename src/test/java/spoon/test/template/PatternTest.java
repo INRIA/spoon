@@ -278,8 +278,9 @@ public class PatternTest {
 
 	@Test
 	public void testMatchGreedyMultiValueUnlimited() throws Exception {
-		//contract: multivalue parameter can match multiple nodes into list of parameter values.
-		//contract: default greedy matching eats everything but can leave some matches if it is needed to match remaining template parameters
+		//contract: there is a way to match absolutely any kind of statement, in an unlimited list
+
+		//explanation: multivalue parameter (setContainerKind(ContainerKind.LIST) can match multiple nodes in a row.
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
 		Pattern pattern = MatchMultiple.createPattern(null, null, null);
@@ -288,8 +289,7 @@ public class PatternTest {
 
 		assertEquals(1, matches.size());
 		Match match = matches.get(0);
-		//check all statements are matched
-		// TODO: why all statements are matched? AFAIU, nothing in the pattern definition says "any kind of statement"
+		//check that absolutely all statements from "testMatch1" are matched
 		assertEquals(Arrays.asList(
 				"int i = 0",
 				"i++",
