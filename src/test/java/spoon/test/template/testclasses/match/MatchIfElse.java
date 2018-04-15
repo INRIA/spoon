@@ -8,9 +8,6 @@ public class MatchIfElse {
 		if (option) {
 			//matches String argument
 			System.out.println("string");
-		} else if (option2) {
-			//matches int argument
-			System.out.println(1);
 		} else {
 			//matches double argument
 			System.out.println(4.5);

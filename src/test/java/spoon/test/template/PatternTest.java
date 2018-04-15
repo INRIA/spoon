@@ -174,17 +174,16 @@ public class PatternTest {
 	@Test
 	public void testMatchIfElse() throws Exception {
 		//contract: if statements can be inlined
+		// meaning, either the if branch or the else branch can be matched independently
 
 		// in this example the main if statement starting with "if (option) {"
-		// is inlined
-		// and any of the branch can be matched
+		// is inlined, and any of the branch can be matched
 		CtType<?> ctClass = ModelUtils.buildClass(MatchIfElse.class);
 
 		CtType<?> type = ctClass.getFactory().Type().get(MatchIfElse.class);
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 				.configureParameters(pb -> {
 					pb.parameter("option").byVariable("option");
-					pb.parameter("option2").byVariable("option2");
 					pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
 				})
 				//we have to configure inline statements after all expressions
@@ -194,56 +193,33 @@ public class PatternTest {
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
-		assertEquals(7, matches.size());
+		// we only match the calls having a string literal as parameter or a float
+		assertEquals(5, matches.size());
 		{
 			Match match = matches.get(0);
-			assertEquals(Arrays.asList("java.lang.System.out.println(i)"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(false, match.getParameters().getValue("option"));
-			assertEquals(true, match.getParameters().getValue("option2"));
-			assertEquals("i", match.getParameters().getValue("value").toString());
-		}
-		{
-			Match match = matches.get(1);
 			assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
-			assertEquals(false, match.getParameters().getValue("option2"));
 			assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 		}
 		{
-			Match match = matches.get(2);
+			Match match = matches.get(1);
 			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
-			assertEquals(false, match.getParameters().getValue("option2"));
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 		}
 		{
-			Match match = matches.get(3);
+			Match match = matches.get(2);
 			assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
-			assertEquals(false, match.getParameters().getValue("option2"));
 			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(4);
-			assertEquals(Arrays.asList("java.lang.System.out.println(2018)"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(false, match.getParameters().getValue("option"));
-			assertEquals(true, match.getParameters().getValue("option2"));
-			assertEquals("2018", match.getParameters().getValue("value").toString());
-		}
-		{
-			Match match = matches.get(5);
-			assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
-			assertEquals(true, match.getParameters().getValue("option"));
-			assertEquals(false, match.getParameters().getValue("option2"));
-			assertEquals("java.lang.Long.class.toString()", match.getParameters().getValue("value").toString());
-		}
-		{
-			Match match = matches.get(6);
 			assertEquals(Arrays.asList("java.lang.System.out.println(3.14)"), listToListOfStrings(match.getMatchingElements()));
 			assertEquals(false, match.getParameters().getValue("option"));
-			assertEquals(false, match.getParameters().getValue("option2"));
 			assertEquals("3.14", match.getParameters().getValue("value").toString());
 		}
+
 	}
 	@Test
 	public void testGenerateMultiValues() throws Exception {
