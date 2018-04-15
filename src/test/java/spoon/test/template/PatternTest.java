@@ -37,6 +37,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -54,6 +55,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.template.testclasses.LoggerModel;
+import spoon.test.template.testclasses.logger.Logger;
 import spoon.test.template.testclasses.match.MatchForEach;
 import spoon.test.template.testclasses.match.MatchForEach2;
 import spoon.test.template.testclasses.match.MatchIfElse;
@@ -261,7 +264,7 @@ public class PatternTest {
 		params.put("printedValue", "does it work?");
 		List<CtStatement> statementsToBeAdded = null;
 
-		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the macthing and the transformation
+		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the matching and the transformation
 		statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 
 		// created in "MatchMultiple.createPattern",matching a method "statements"
@@ -1293,4 +1296,154 @@ public class PatternTest {
 	public void testInlineStatementsBuilder() throws Exception {
 		// TODO: specify what InlineStatementsBuilder does
 	}
+
+	@Test
+	public void testTemplateMatchOfMultipleElements() throws Exception {
+		CtType toBeMatchedtype = ModelUtils.buildClass(ToBeMatched.class);
+
+		// getting the list of literals defined in method match1
+		List<CtLiteral<String>> literals1 = getFirstStmt(toBeMatchedtype, "match1", CtInvocation.class).getArguments();
+		List<CtLiteral<String>> literals2 = getFirstStmt(toBeMatchedtype, "match2", CtInvocation.class).getArguments();
+		assertEquals("a", literals1.get(0).getValue());
+
+		Factory f = toBeMatchedtype.getFactory();
+
+		{	//contract: matches one exact literal
+			List<CtElement> found = new ArrayList<>();
+
+			// creating a Pattern from a Literal, with zero pattern parameters
+			// The pattern model consists of one CtLIteral only
+			// there is not needed any type reference, because CtLiteral has no reference to a type where it is defined
+			spoon.pattern.Pattern p = PatternBuilder.create(f.createLiteral("a")).build();
+
+			//The pattern has no parameters. There is just one constant CtLiteral
+			assertEquals (0, p.getParameterInfos().size());
+
+			// when we match the pattern agains AST of toBeMatchedtype, we find three instances of "a",
+			//because there are 3 instances of CtLiteral "a" in toBeMatchedtype
+			p.forEachMatch(toBeMatchedtype, (match) -> {
+				found.add(match.getMatchingElement());
+			});
+
+			assertEquals(3, found.size());
+			assertSame(literals1.get(0)/* first "a" in match1 */, found.get(0));
+			assertSame(literals1.get(6)/* 2nd "a" in match1 */, found.get(1));
+			assertSame(literals2.get(0)/* 1st "a" in match 2 */, found.get(2));
+		}
+		{	//contract: matches sequence of elements
+			List<List<CtElement>> found = new ArrayList<>();
+			// now we match a sequence of "a", "b", "c"
+			spoon.pattern.Pattern pattern = patternOfStringLiterals(toBeMatchedtype.getFactory(), "a", "b", "c");
+			pattern.forEachMatch(toBeMatchedtype, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			assertEquals(2, found.size());
+
+			assertEquals(3, found.get(1).size());
+			// it starts with the first "a" in the match1
+			assertEquals("\"a\"", found.get(0).get(0).toString());
+			assertEquals(17, found.get(0).get(0).getPosition().getColumn());
+			assertEquals("\"b\"", found.get(0).get(1).toString());
+			assertEquals(22, found.get(0).get(1).getPosition().getColumn());
+			assertEquals("\"c\"", found.get(0).get(2).toString());
+			assertEquals(27, found.get(0).get(2).getPosition().getColumn());
+
+			// more generic asserts
+			assertSequenceOn(literals1, 0, 3, found.get(0));
+			assertSequenceOn(literals1, 6, 3, found.get(1));
+		}
+		{	//contract: matches sequence of elements not starting at the beginning
+			List<List<CtElement>> found = new ArrayList<>();
+			patternOfStringLiterals(toBeMatchedtype.getFactory(), "b", "c").forEachMatch(toBeMatchedtype, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			// we have three times a sequence ["b", "c"]
+			assertEquals(3, found.size());
+			assertSequenceOn(literals1, 1, 2, found.get(0));
+			assertSequenceOn(literals1, 7, 2, found.get(1));
+			assertSequenceOn(literals2, 3, 2, found.get(2));
+		}
+		{	//contract: matches sequence of repeated elements, but match each element only once
+			List<List<CtElement>> found = new ArrayList<>();
+			// we search for ["d", "d"]
+			patternOfStringLiterals(toBeMatchedtype.getFactory(), "d", "d").forEachMatch(toBeMatchedtype, (match) -> {
+				found.add(match.getMatchingElements());
+			});
+			// in ToBeMatched there is ["d", "d", "d", "d", "d]
+			// so there are only two sequences, starting at first and third "d"
+			assertEquals(2, found.size());
+			assertSequenceOn(literals2, 6, 2, found.get(0));
+			assertSequenceOn(literals2, 8, 2, found.get(1));
+		}
+	}
+
+	private static spoon.pattern.Pattern patternOfStringLiterals(Factory f, String... strs) {
+		return PatternBuilder.create(Arrays.asList(strs).stream().map(s -> f.createLiteral(s)).collect(Collectors.toList())
+		).build();
+	}
+
+
+	private void assertSequenceOn(List<? extends CtElement> source, int expectedOffset, int expectedSize, List<CtElement> matches) {
+		//check the number of matches
+		assertEquals(expectedSize, matches.size());
+		//check that each match fits to source collection on the expected offset
+		for (int i = 0; i < expectedSize; i++) {
+			assertSame(source.get(expectedOffset + i), matches.get(i));
+		}
+	}
+
+	private <T extends CtElement> T getFirstStmt(CtType type, String methodName, Class<T> stmtType) {
+		return (T) type.filterChildren((CtMethod m) -> m.getSimpleName().equals(methodName)).first(CtMethod.class).getBody().getStatement(0);
+	}
+
+	private int indexOf(List list, Object o) {
+		for(int i=0; i<list.size(); i++) {
+			if (list.get(i)==o) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	@Test
+	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
+		//contract: substitution can be done on model, which is not based on Template
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/LoggerModel.java"));
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		final CtMethod<?> toBeLoggedMethod = aTargetType.getMethodsByName("enter").get(0);
+
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("_classname_", factory.Code().createLiteral(aTargetType.getSimpleName()));
+		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
+		params.put("_block_", toBeLoggedMethod.getBody());
+		//create a patter from the LoggerModel#block
+		CtType<?> type = factory.Type().get(LoggerModel.class);
+
+
+		// creating a pattern from method "block"
+		spoon.pattern.Pattern pattern = PatternBuilder.create(type.getMethodsByName("block").get(0))
+				//all the variable references which are declared out of type member "block" are automatically considered
+				//as pattern parameters
+				.createPatternParameters()
+				.build();
+		final List<CtMethod> aMethods = pattern.applyToType(aTargetType, CtMethod.class, params);
+		assertEquals(1, aMethods.size());
+		final CtMethod<?> aMethod = aMethods.get(0);
+		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
+		assertTrue(aTry.getBody().getStatements().size() > 1);
+	}
+
 }
