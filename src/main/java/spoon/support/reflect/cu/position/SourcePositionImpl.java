@@ -19,6 +19,8 @@ package spoon.support.reflect.cu.position;
 import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 
 import java.io.File;
 import java.io.Serializable;
