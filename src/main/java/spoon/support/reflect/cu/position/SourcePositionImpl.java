@@ -125,6 +125,11 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		this.lineSeparatorPositions = lineSeparatorPositions;
 	}
 
+	@Override
+	public boolean isValidPosition() {
+		return true;
+	}
+
 	public int getColumn() {
 		return searchColumnNumber(sourceStart);
 	}

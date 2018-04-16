@@ -48,6 +48,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -544,12 +545,22 @@ public class PositionTest {
 	@Test
 	public void testSourcePosition() throws Exception {
 		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
-		assertEquals(-1, s.getSourceStart());
-		assertEquals(-1, s.getSourceEnd());
-		assertEquals(-1, s.getColumn());
-		assertEquals(-1, s.getLine());
+		assertFalse(s.isValidPosition());
+		assertFails(() -> s.getSourceStart());
+		assertFails(() -> s.getSourceEnd());
+		assertFails(() -> s.getColumn());
+		assertFails(() -> s.getLine());
 		assertEquals("(unknown file)", s.toString());
 		assertTrue(s.hashCode() > 0); // no NPE
+	}
+	
+	private static void assertFails(Runnable code) {
+		try {
+			code.run();
+			fail();
+		} catch (Exception e) {
+			//OK
+		}
 	}
 
 	@Test
