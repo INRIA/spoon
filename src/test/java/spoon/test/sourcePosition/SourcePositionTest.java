@@ -3,6 +3,7 @@ package spoon.test.sourcePosition;
 import org.junit.Test;
 
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtMethod;
@@ -12,6 +13,10 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.cu.CompilationUnitImpl;
+import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
+import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
+import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.test.sourcePosition.testclasses.Brambora;
 import spoon.testing.utils.ModelUtils;
 
@@ -70,4 +75,26 @@ public class SourcePositionTest {
 		}
 	}
 
+	@Test
+	public void testSourcePositionStringFragment() throws Exception {
+		CompilationUnit cu = new CompilationUnitImpl() {
+			@Override
+			public String getOriginalSourceCode() {
+				return "0123456789";
+			}
+		};
+		SourcePositionImpl sp = new SourcePositionImpl(cu, 1, 9, null);
+		assertEquals("|1;9|123456789|", sp.getSourceDetails());
+		
+		DeclarationSourcePositionImpl dsp = new DeclarationSourcePositionImpl(cu, 4, 7, 2, 2, 1,9, null);
+		assertEquals("|1;9|123456789|\n" + 
+				"modifier = |2;2|2|\n" + 
+				"name = |4;7|4567|", dsp.getSourceDetails());
+		
+		BodyHolderSourcePositionImpl bhsp = new BodyHolderSourcePositionImpl(cu, 4, 7, 2, 2, 1,9, 8, 9, null);
+		assertEquals("|1;9|123456789|\n" + 
+				"modifier = |2;2|2|\n" + 
+				"name = |4;7|4567|\n" + 
+				"body = |8;9|89|", bhsp.getSourceDetails());
+	}
 }

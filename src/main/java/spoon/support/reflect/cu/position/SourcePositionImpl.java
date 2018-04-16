@@ -16,8 +16,11 @@
  */
 package spoon.support.reflect.cu.position;
 
+import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 
 import java.io.File;
 import java.io.Serializable;
@@ -112,6 +115,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
+		checkArgsAreAscending(sourceStart, sourceEnd + 1);
 		this.compilationUnit = compilationUnit;
 		if (compilationUnit != null) {
 			this.file = compilationUnit.getFile();
@@ -193,4 +197,34 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return compilationUnit;
 	}
 
+	/**
+	 * Helper for debugging purposes. Displays |startIndex; endIndex|sourceCode| of this {@link SourcePosition}
+	 * If this instance is {@link DeclarationSourcePosition} or {@link BodyHolderSourcePosition}
+	 * Then details about name, modifiers and body are included in resulting string too
+	 * @return details about source code of this {@link SourcePosition}
+	 */
+	public String getSourceDetails() {
+		return getFragment(getSourceStart(), getSourceEnd());
+	}
+
+	protected String getFragment(int start, int end) {
+		return "|" + start + ";" + end + "|" + getCompilationUnit().getOriginalSourceCode().substring(start, end + 1) + "|";
+	}
+
+	/**
+	 * fails when `values` are not sorted ascending
+	 * It is used to check whether start/end values of SourcePosition are consistent
+	 */
+	protected static void checkArgsAreAscending(int...values) {
+		int last = -1;
+		for (int value : values) {
+			if (value < 0) {
+				throw new SpoonException("SourcePosition value must not be negative");
+			}
+			if (last > value) {
+				throw new SpoonException("SourcePosition values must be ascending or equal");
+			}
+			last = value;
+		}
+	}
 }
