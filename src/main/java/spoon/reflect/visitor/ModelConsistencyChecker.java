@@ -89,7 +89,7 @@ public class ModelConsistencyChecker extends CtScanner {
 	private void dumpStack() {
 		environment.debugMessage("model consistency checker stack:");
 		for (CtElement e : stack) {
-			environment.debugMessage("    " + e.getClass().getSimpleName() + " " + (e.getPosition() == null ? "(?)" : "" + e.getPosition()));
+			environment.debugMessage("    " + e.getClass().getSimpleName() + " " + (e.getPosition().isValidPosition() ? String.valueOf(e.getPosition()) : "(?)"));
 		}
 	}
 

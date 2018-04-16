@@ -252,7 +252,7 @@ public class PrinterHelper {
 	}
 
 	public PrinterHelper adjustEndPosition(CtElement e) {
-		if (env.isPreserveLineNumbers() && e.getPosition() != null) {
+		if (env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
 			// let's add lines if required
 			while (line < e.getPosition().getEndLine()) {
 				writeln();

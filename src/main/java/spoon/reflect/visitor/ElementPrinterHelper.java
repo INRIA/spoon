@@ -414,7 +414,7 @@ public class ElementPrinterHelper {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				continue;
 			}
-			if (comment.getPosition() == null || element.getPosition() == null) {
+			if (comment.getPosition().isValidPosition() == false || element.getPosition().isValidPosition() == false) {
 				if (offset == CommentOffset.BEFORE) {
 					commentsToPrint.add(comment);
 				}
