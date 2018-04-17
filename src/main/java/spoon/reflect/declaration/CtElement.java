@@ -126,7 +126,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Gets the position of this element in input source files
 	 *
-	 * @return Source file and line number of this element or null
+	 * @return Source file and line number of this element.
+	 * It never returns null. Use {@link SourcePosition#isValidPosition()}
+	 * to detect whether return instance contains start/end indexes.
 	 */
 	@PropertyGetter(role = POSITION)
 	SourcePosition getPosition();

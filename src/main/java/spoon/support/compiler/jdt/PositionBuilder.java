@@ -211,7 +211,7 @@ public class PositionBuilder {
 
 			sourceEnd = sourceStart + methodDeclaration.selector.length - 1;
 			if (bodyStart == 0) {
-				return SourcePosition.NOPOSITION;
+				return cf.createPartialSourcePosition(cu);
 			}
 			if (e instanceof CtStatementList) {
 				return cf.createSourcePosition(cu, bodyStart - 1, bodyEnd + 1, lineSeparatorPositions);
@@ -262,7 +262,7 @@ public class PositionBuilder {
 		String modifierContent = String.valueOf(contents, start, end - start + 1);
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
-				modifier.setPosition(SourcePosition.NOPOSITION);
+				modifier.setPosition(cf.createPartialSourcePosition(cu));
 				continue;
 			}
 			int index = modifierContent.indexOf(modifier.getKind().toString());

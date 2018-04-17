@@ -5,7 +5,6 @@ import org.junit.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -69,7 +68,7 @@ public class SourcePositionTest {
 		CtTypeReference<?> typeOfReturnValueOfPrintln = execRef.getType();
 		assertEquals("void", typeOfReturnValueOfPrintln.getQualifiedName());
 		SourcePosition sp = typeOfReturnValueOfPrintln.getPosition();
-		if (sp != null && sp instanceof NoSourcePosition == false) {
+		if (sp.isValidPosition()) {
 			//it copied source position from owner method return type
 			fail("The source position of invisible implicit reference to void is: [" + sp.getSourceStart() + "; " + sp.getSourceEnd() + "]");
 		}

@@ -94,10 +94,10 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	}
 
 	/** The position of the first byte of this element (incl. documentation and modifiers) */
-	private int sourceStart = -1;
+	private final int sourceStart;
 
 	/** The position of the last byte of this element */
-	private int sourceEnd = -1;
+	private final int sourceEnd;
 
 	/** The line number of the start of the element, if appropriate (eg the method name).
 	 * Computed lazily by {@link #getLine()}
@@ -108,21 +108,20 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 * The index of line breaks, as computed by JDT.
 	 * Used to compute line numbers afterwards.
 	 */
-	int[] lineSeparatorPositions;
-
-	/** The file for this position, same pointer as in the compilation unit, but required for serialization. */
-	private File file;
+	private final int[] lineSeparatorPositions;
 
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		checkArgsAreAscending(sourceStart, sourceEnd + 1);
 		this.compilationUnit = compilationUnit;
-		if (compilationUnit != null) {
-			this.file = compilationUnit.getFile();
-		}
 		this.sourceEnd = sourceEnd;
 		this.sourceStart = sourceStart;
 		this.lineSeparatorPositions = lineSeparatorPositions;
+	}
+
+	@Override
+	public boolean isValidPosition() {
+		return true;
 	}
 
 	public int getColumn() {
@@ -134,10 +133,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	}
 
 	public File getFile() {
-		if (compilationUnit == null) {
-			return file;
-		}
-		return compilationUnit.getFile();
+		return compilationUnit == null ? null : compilationUnit.getFile();
 	}
 
 	public int getLine() {
@@ -191,7 +187,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return result;
 	}
 
-	transient CompilationUnit compilationUnit;
+	private final CompilationUnit compilationUnit;
 
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;

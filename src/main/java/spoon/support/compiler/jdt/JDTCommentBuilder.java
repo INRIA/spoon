@@ -219,7 +219,7 @@ class JDTCommentBuilder {
 		int smallDistance = Integer.MAX_VALUE;
 
 		for (CtElement element : elements) {
-			if (element.getPosition() == null) {
+			if (element.getPosition().isValidPosition() == false) {
 				continue;
 			}
 			if (element.isImplicit()) {
@@ -419,8 +419,8 @@ class JDTCommentBuilder {
 					}
 				}
 				if (e.getElseStatement() != null) {
-					SourcePosition thenPosition = e.getThenStatement().getPosition() == null ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
-					SourcePosition elsePosition = e.getElseStatement().getPosition() == null ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
+					SourcePosition thenPosition = e.getThenStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
+					SourcePosition elsePosition = e.getElseStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
 					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
 						e.getElseStatement().addComment(comment);
 					}
@@ -498,7 +498,7 @@ class JDTCommentBuilder {
 			}
 
 			private boolean isCommentBetweenElementPosition(CtElement element) {
-				return (element.getPosition() != null
+				return (element.getPosition().isValidPosition()
 						&& element.getPosition().getSourceStart() <= this.start
 						&& element.getPosition().getSourceEnd() >= this.end);
 			}
@@ -512,7 +512,7 @@ class JDTCommentBuilder {
 					return;
 				}
 				CtElement body = getBody(element);
-				if (body != null && body.getPosition() == null) {
+				if (body != null && body.getPosition().isValidPosition() == false) {
 					body = null;
 				}
 

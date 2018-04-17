@@ -84,6 +84,7 @@ public class MetamodelTest {
 	@Test
 	public void testRoleOnField() {
 		//  contract: all non-final fields must be annotated with {@link spoon.reflect.annotations.MetamodelPropertyField}
+		System.setProperty("line.separator","\n");
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect");
 		implementations.buildModel();
@@ -102,6 +103,7 @@ public class MetamodelTest {
 				if ( 	// not a role
 						"parent".equals(candidate.getSimpleName())
 						|| "metadata".equals(candidate.getSimpleName())
+						|| "factory".equals(candidate.getSimpleName())
 						// cache field
 						|| "valueOfMethod".equals(candidate.getSimpleName())) {
 					return false;

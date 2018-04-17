@@ -346,7 +346,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			} catch (Exception ex) {
 				String elementInfo = e.getClass().getName();
 				elementInfo += " on path " + getPath(e) + "\n";
-				if (e.getPosition() != null) {
+				if (e.getPosition().isValidPosition()) {
 					elementInfo += "at position " + e.getPosition().toString() + " ";
 				}
 				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
@@ -1196,7 +1196,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
 			for (CtComment comment : comments) {
 				SourcePosition thenPosition =
-						ifElement.getThenStatement().getPosition() == null ? ((CtBlock) ifElement.getThenStatement()).getStatement(0).getPosition() : ifElement.getThenStatement().getPosition();
+						ifElement.getThenStatement().getPosition().isValidPosition() ? ifElement.getThenStatement().getPosition() : ((CtBlock) ifElement.getThenStatement()).getStatement(0).getPosition();
 				if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd()) {
 					elementPrinterHelper.writeComment(comment);
 				}
@@ -1343,7 +1343,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (m.getBody() != null) {
 			printer.writeSpace();
 			scan(m.getBody());
-			if (m.getBody().getPosition() != null) {
+			if (m.getBody().getPosition().isValidPosition()) {
 				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
 					if (m.getBody().getStatements().isEmpty() || !(m.getBody().getStatements().get(m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
 						getPrinterHelper().putLineNumberMapping(m.getBody().getPosition().getEndLine());
