@@ -42,7 +42,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_U
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	private static final long serialVersionUID = 1L;
 
-	transient Factory factory;
+	Factory factory;
 
 	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
 
