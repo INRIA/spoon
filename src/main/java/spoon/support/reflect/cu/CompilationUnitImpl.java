@@ -275,7 +275,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	private PartialSourcePositionImpl myPartialSourcePosition;
 	/**
-	 * @return a {@link Source} which points to this {@link CompilationUnit}. It always returns same value to safe memory.
+	 * @return a {@link SourcePosition} which points to this {@link CompilationUnit}. It always returns same value to safe memory.
 	 */
 	public SourcePosition getOrCreatePartialSourcePosition() {
 		if (myPartialSourcePosition == null) {
