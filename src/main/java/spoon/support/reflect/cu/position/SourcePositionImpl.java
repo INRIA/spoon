@@ -187,7 +187,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return result;
 	}
 
-	private CompilationUnit compilationUnit;
+	private final CompilationUnit compilationUnit;
 
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
