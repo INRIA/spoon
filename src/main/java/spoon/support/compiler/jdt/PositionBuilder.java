@@ -34,6 +34,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -238,9 +239,12 @@ public class PositionBuilder {
 			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
 			iterator.next();
 			ASTPair next = iterator.next();
-			buildPositionCtElement(e, next.node);
-			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
-			return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+			DeclarationSourcePosition sourcePositionVariable = (DeclarationSourcePosition) buildPositionCtElement(e, next.node);
+			return cf.createDeclarationSourcePosition(cu,
+					findNextNonWhitespace(contents,sourcePositionVariable.getNameEnd(), sourceEnd + 1), sourcePositionVariable.getNameEnd(),
+					sourcePositionVariable.getModifierSourceStart(), sourcePositionVariable.getModifierSourceEnd(),
+					sourcePositionVariable.getSourceStart(), sourcePositionVariable.getSourceEnd(),
+					lineSeparatorPositions);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		}
