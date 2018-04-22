@@ -641,6 +641,11 @@ public class ParametersBuilder {
 		}
 	}
 
+	/**
+	 * Arguments for that implicit behavior:
+	 * - most of the clients doesn't understand the Spoon model deep enough to distinguish between CtInvocation, CtExecutableReference, ... so the implicit fallback is to the elements which are directly visible in source code
+	 * - the Pattern builder code is simpler for clients
+	 */
 	private ParameterElementPair getSubstitutedNodeOfElement(ParameterInfo parameter, CtElement element) {
 		ParameterElementPair parameterElementPair = new ParameterElementPair(parameter, element);
 		parameterElementPair = transformVariableAccessToVariableReference(parameterElementPair);
