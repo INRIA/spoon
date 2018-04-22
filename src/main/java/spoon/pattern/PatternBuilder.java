@@ -64,7 +64,7 @@ import spoon.template.TemplateParameter;
 /**
  * The master class to create a {@link Pattern} instance.
  *
- * Based on a fluent API, see tests and documentation ('pattern.md')
+ * Based on a fluent API, see tests and documentation ('pattern.md').
  */
 public class PatternBuilder {
 

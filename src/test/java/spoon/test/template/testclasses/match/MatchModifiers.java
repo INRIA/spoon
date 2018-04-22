@@ -12,21 +12,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 public class MatchModifiers {
 
-	public static Pattern createPattern(Factory factory, boolean matchBody) {
-		CtType<?> type = factory.Type().get(MatchModifiers.class);
-		return PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
-			.configureParameters(pb -> {
-				pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
-				pb.parameter("methodName").byString("matcher1");
-				pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
-				if (matchBody) {
-					pb.parameter("statements").byRole(new TypeFilter(CtBlock.class), CtRole.STATEMENT);
-				}
-			})
-			.build();
-	}
 
-	
 	public void matcher1() {
 	}
 	

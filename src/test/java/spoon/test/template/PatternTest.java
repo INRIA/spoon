@@ -60,6 +60,7 @@ import spoon.testing.utils.ModelUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -105,7 +106,7 @@ public class PatternTest {
 		assertEquals(2, matches.size());
 		{
 			Match match = matches.get(0);
-			assertEquals(Arrays.asList("java.lang.System.out.println(value)"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("java.lang.System.out.println(value)"), toListOfStrings(match.getMatchingElements()));
 			//FIX IT
 //			assertEquals(Arrays.asList(""), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
@@ -115,12 +116,12 @@ public class PatternTest {
 					"java.lang.System.out.println(\"a\")",
 					"java.lang.System.out.println(\"Xxxx\")",
 					"java.lang.System.out.println(((java.lang.String) (null)))",
-					"java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(java.lang.Long.class.toString())"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(Arrays.asList(
 					"\"a\"",
 					"\"Xxxx\"",
 					"((java.lang.String) (null))",
-					"java.lang.Long.class.toString()"), listToListOfStrings((List) match.getParameters().getValue("values")));
+					"java.lang.Long.class.toString()"), toListOfStrings((List) match.getParameters().getValue("values")));
 		}
 	}
 
@@ -144,7 +145,7 @@ public class PatternTest {
 		assertEquals(3, matches.size());
 		{
 			Match match = matches.get(0);
-			assertEquals(Arrays.asList("int var = 0"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("int var = 0"), toListOfStrings(match.getMatchingElements()));
 			//FIX IT
 //			assertEquals(Arrays.asList(""), listToListOfStrings((List) match.getParameters().getValue("values")));
 		}
@@ -155,7 +156,7 @@ public class PatternTest {
 					"java.lang.System.out.println(\"Xxxx\")",
 					"cc++",
 					"java.lang.System.out.println(((java.lang.String) (null)))",
-					"cc++"), listToListOfStrings(match.getMatchingElements()));
+					"cc++"), toListOfStrings(match.getMatchingElements()));
 
 			// correctly matching the outer parameter
 			assertEquals("cc", match.getParameters().getValue("varName"));
@@ -165,7 +166,7 @@ public class PatternTest {
 			assertEquals(Arrays.asList(
 					"int dd = 0",
 					"java.lang.System.out.println(java.lang.Long.class.toString())",
-					"dd++"), listToListOfStrings(match.getMatchingElements()));
+					"dd++"), toListOfStrings(match.getMatchingElements()));
 
 			// correctly matching the outer parameter
 			assertEquals("dd", match.getParameters().getValue("varName"));
@@ -198,25 +199,25 @@ public class PatternTest {
 		assertEquals(5, matches.size());
 		{
 			Match match = matches.get(0);
-			assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
 			assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(1);
-			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(2);
-			assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
 			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 		}
 		{
 			Match match = matches.get(4);
-			assertEquals(Arrays.asList("java.lang.System.out.println(3.14)"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("java.lang.System.out.println(3.14)"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(false, match.getParameters().getValue("option"));
 			assertEquals("3.14", match.getParameters().getValue("value").toString());
 		}
@@ -230,8 +231,6 @@ public class PatternTest {
 
 		// here, in particular, we test method "substituteList"
 
-		// REVIEW:
-		// Here, I have a concern with the API: we have 4 public methods `substitute*`. It is hard for client to quickly grasp the differences. Is it possible to have a single `substituteMethod?`
 
 		// setup of the test
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
@@ -280,7 +279,7 @@ public class PatternTest {
 				"java.lang.System.out.println(i)",
 				"java.lang.System.out.println(\"Xxxx\")",
 				"java.lang.System.out.println(((java.lang.String) (null)))",
-				"java.lang.System.out.println(\"last one\")"), listToListOfStrings(match.getMatchingElements()));
+				"java.lang.System.out.println(\"last one\")"), toListOfStrings(match.getMatchingElements()));
 
 		//check all statements excluding last are stored as value of "statements" parameter
 		assertEquals(Arrays.asList(
@@ -288,7 +287,7 @@ public class PatternTest {
 				"i++",
 				"java.lang.System.out.println(i)",
 				"java.lang.System.out.println(\"Xxxx\")",
-				"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+				"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings((List) match.getParameters().getValue("statements")));
 
 		//last statement is matched by last template, which saves printed value
 		assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
@@ -315,13 +314,13 @@ public class PatternTest {
 					"i++",
 					"java.lang.System.out.println(i)",
 					"java.lang.System.out.println(\"Xxxx\")"
-			), listToListOfStrings(match.getMatchingElements()));
+			), toListOfStrings(match.getMatchingElements()));
 
 			//check 3 statements are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
 					"int i = 0",
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+					"java.lang.System.out.println(i)"), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//4th statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
@@ -331,11 +330,11 @@ public class PatternTest {
 			//check remaining next 2 statements are matched
 			assertEquals(Arrays.asList(
 					"java.lang.System.out.println(((java.lang.String) (null)))",
-					"java.lang.System.out.println(\"last one\")"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(\"last one\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
-					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+					"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
@@ -345,8 +344,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchReluctantMultivalue() throws Exception {
-		//contract: multivalue parameter can match multiple nodes into list of parameter values.
-		//contract: reluctant matches only minimal amount
+		//contract: reluctant matching (Quantifier.RELUCTANT) matches only the minimal amount of time
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.RELUCTANT, null, null);
@@ -361,13 +359,13 @@ public class PatternTest {
 					"int i = 0",
 					"i++",
 					"java.lang.System.out.println(i)",	//this is println(int), but last temple matches println(String) - it is question if it is wanted or not ...
-					"java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
 					"int i = 0",
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+					"java.lang.System.out.println(i)"), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
@@ -376,10 +374,10 @@ public class PatternTest {
 			Match match = matches.get(1);
 			//check all statements are matched
 			assertEquals(Arrays.asList(
-					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
-			assertEquals(Arrays.asList(), listToListOfStrings((List) match.getParameters().getValue("statements")));
+			assertEquals(Arrays.asList(), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("printedValue").toString());
@@ -388,10 +386,10 @@ public class PatternTest {
 			Match match = matches.get(2);
 			//check all statements are matched
 			assertEquals(Arrays.asList(
-					"java.lang.System.out.println(\"last one\")"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(\"last one\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
-			assertEquals(Arrays.asList(), listToListOfStrings((List) match.getParameters().getValue("statements")));
+			assertEquals(Arrays.asList(), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
@@ -399,8 +397,7 @@ public class PatternTest {
 	}
 	@Test
 	public void testMatchReluctantMultivalueMinCount1() throws Exception {
-		//contract: multivalue parameter can match multiple nodes into list of parameter values.
-		//contract: reluctant matches only at least 1 node in this case
+		//contract: one can do reluctant matches with a minCount of 1 node
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.RELUCTANT, 1, null);
@@ -415,13 +412,13 @@ public class PatternTest {
 					"int i = 0",
 					"i++",
 					"java.lang.System.out.println(i)",	//this is println(int), but last temple matches println(String) - it is question if it is wanted or not ...
-					"java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
 					"int i = 0",
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+					"java.lang.System.out.println(i)"), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
@@ -431,11 +428,11 @@ public class PatternTest {
 			//check all statements are matched
 			assertEquals(Arrays.asList(
 					"java.lang.System.out.println(((java.lang.String) (null)))",
-					"java.lang.System.out.println(\"last one\")"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(\"last one\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
-					"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+					"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
@@ -443,8 +440,7 @@ public class PatternTest {
 	}
 	@Test
 	public void testMatchReluctantMultivalueExactly2() throws Exception {
-		//contract: multivalue parameter can match multiple nodes into list of parameter values.
-		//contract: reluctant matches min 2 and max 2 nodes in this case
+		//contract: one can do reluctant matches min 2 nodes and max 2 nodes
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.RELUCTANT, 2, 2);
@@ -458,12 +454,12 @@ public class PatternTest {
 			assertEquals(Arrays.asList(
 					"i++",
 					"java.lang.System.out.println(i)",	//this is println(int), but last temple matches println(String) - it is question if it is wanted or not ...
-					"java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
+					"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check 2 statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
 					"i++",
-					"java.lang.System.out.println(i)"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+					"java.lang.System.out.println(i)"), toListOfStrings((List) match.getParameters().getValue("statements")));
 			//last statement is matched by last template, which saves printed value
 			assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("printedValue").toString());
@@ -472,8 +468,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchPossesiveMultiValueUnlimited() throws Exception {
-		//contract: multivalue parameter can match multiple nodes into list of parameter values.
-		//contract: possessive matching eats everything and never returns back
+		//contract: possessive matching eats everything and never returns anything
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.POSSESSIVE, null, null);
 
@@ -498,35 +493,41 @@ public class PatternTest {
 				"i++",
 				"java.lang.System.out.println(i)",
 				"java.lang.System.out.println(\"Xxxx\")",
-				"java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
+				"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings(match.getMatchingElements()));
 
 		//check 4 statements excluding last are stored as value of "statements" parameter
 		assertEquals(Arrays.asList(
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
-				"java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings((List) match.getParameters().getValue("statements")));
+				"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings((List) match.getParameters().getValue("statements")));
 		//last statement is matched by last template, which saves printed value
 		assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 		assertEquals("((java.lang.String) (null))", match.getParameters().getValue("printedValue").toString());
 	}
+
 	@Test
 	public void testMatchPossesiveMultiValueMinCount() throws Exception {
-		//contract: check possessive matching with min count limit and GREEDY back off
+		//contract: support for possessive matching with min count limit mixed with GREEDY back off
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple3.class);
 		for (int i = 0; i < 7; i++) {
 			final int count = i;
-			Pattern pattern = MatchMultiple3.createPattern(ctClass.getFactory(), pb -> {
-				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
-				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(count).setMaxOccurence(count);
-			});
+			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple3.class);
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
+					.configureTemplateParameters()
+					.configureParameters(pb -> {
+						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(count).setMaxOccurence(count);
+						pb.parameter("printedValue").byFilter((CtLiteral<?> literal) -> "something".equals(literal.getValue()));
+					})
+					.build();
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 			if (count < 6) {
 				//the last template has nothing to match -> no match
 				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, 5-count, getSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count="+count, count, getSize(matches.get(0).getParameters().getValue("statements2")));
+				assertEquals("count="+count, 5-count, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count="+count, count, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
 			} else {
 				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 				assertEquals("count="+count, 0, matches.size());
@@ -536,7 +537,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchPossesiveMultiValueMinCount2() throws Exception {
-		//contract: check possessive matching with min count limit and GREEDY back off
+		//contract: support for check possessive matching with min count limit and GREEDY back off
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple2.class);
 		for (int i = 0; i < 7; i++) {
 			final int count = i;
@@ -550,9 +551,9 @@ public class PatternTest {
 			if (count < 5) {
 				//the last template has nothing to match -> no match
 				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, 4-count, getSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count="+count, count, getSize(matches.get(0).getParameters().getValue("statements2")));
-				assertEquals("count="+count, 2, getSize(matches.get(0).getParameters().getValue("printedValue")));
+				assertEquals("count="+count, 4-count, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count="+count, count, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+				assertEquals("count="+count, 2, getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
 			} else {
 				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 				assertEquals("count="+count, 0, matches.size());
@@ -575,9 +576,9 @@ public class PatternTest {
 			if (count < 7) {
 				//the last template has nothing to match -> no match
 				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, Math.max(0, 3-count), getSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count="+count, count - Math.max(0, count-4), getSize(matches.get(0).getParameters().getValue("statements2")));
-				assertEquals("count="+count, Math.max(2, 3 - Math.max(0, count-3)), getSize(matches.get(0).getParameters().getValue("printedValue")));
+				assertEquals("count="+count, Math.max(0, 3-count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count="+count, count - Math.max(0, count-4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+				assertEquals("count="+count, Math.max(2, 3 - Math.max(0, count-3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
 			} else {
 				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 				assertEquals("count="+count, 0, matches.size());
@@ -585,30 +586,39 @@ public class PatternTest {
 		}
 	}
 
-	private int getSize(Object o) {
-		if (o instanceof List) {
-			return ((List) o).size();
+	/** returns the size of the list of 0 is list is null */
+	private int getCollectionSize(Object list) {
+		if (list instanceof Collection) {
+			return ((Collection) list).size();
 		}
-		if (o == null) {
+		if (list == null) {
 			return 0;
 		}
-		fail("Unexpected object of type " + o.getClass());
+		fail("Unexpected object of type " + list.getClass());
 		return -1;
 	}
 
 	@Test
 	public void testMatchParameterValue() throws Exception {
-		//contract: by default the parameter value is the reference to real node from the model
+		//contract: if matching on the pattern itself, the matched parameter value is the originak AST node from the pattern
+		// see last assertSame of this test
 		CtType<?> ctClass = ModelUtils.buildClass(MatchWithParameterType.class);
 
-		Pattern pattern = MatchWithParameterType.createPattern(ctClass.getFactory(), null);
+		// pattern: a call to System.out.println with anything as parameter
+		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
+				.configureParameters(pb -> {
+					pb.parameter("value").byVariable("value");
+				})
+				.build();
 
 		List<Match> matches = pattern.getMatches(ctClass);
+
+		// we match in the whole class, which means the original matcher statements and the ones from testMatcher1
 
 		assertEquals(5, matches.size());
 		{
 			Match match = matches.get(0);
-			assertEquals(Arrays.asList("java.lang.System.out.println(value)"), listToListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("java.lang.System.out.println(value)"), toListOfStrings(match.getMatchingElements()));
 			Object value = match.getParameters().getValue("value");
 			assertTrue(value instanceof CtVariableRead);
 			assertEquals("value", value.toString());
@@ -616,70 +626,61 @@ public class PatternTest {
 			assertTrue(((CtElement)value).isParentInitialized());
 			assertSame(CtRole.ARGUMENT, ((CtElement)value).getRoleInParent());
 		}
-		{
-			Match match = matches.get(1);
-			assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
-			assertEquals("\"a\"", match.getParameters().getValue("value").toString());
-		}
-		{
-			Match match = matches.get(2);
-			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
-			assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
-		}
-		{
-			Match match = matches.get(3);
-			assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
-			assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
-		}
-		{
-			Match match = matches.get(4);
-			assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
-			assertTrue(match.getParameters().getValue("value") instanceof CtInvocation);
-			assertEquals("java.lang.Long.class.toString()", match.getParameters().getValue("value").toString());
-		}
 	}
 
 	@Test
 	public void testMatchParameterValueType() throws Exception {
-		//contract: the parameter value type matches only values of required type
+		//contract: pattern parameters can be restricted to only certain types
+		// (here CtLiteral.class)
 		CtType<?> ctClass = ModelUtils.buildClass(MatchWithParameterType.class);
 		{
-			Pattern pattern = MatchWithParameterType.createPattern(ctClass.getFactory(), CtLiteral.class);
+			// now we match only the ones with a literal as parameter
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
+					.configureParameters(pb -> {
+						pb.parameter("value").byVariable("value");
+						pb.setValueType(CtLiteral.class);
+					})
+					.build();
 
-			List<Match> matches = pattern.getMatches(ctClass);
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1"));
 
+			// there are 3 System.out.println with a literal as parameter
 			assertEquals(3, matches.size());
 			{
 				Match match = matches.get(0);
-				assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(1);
-				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 			}
 			{
+				// in Java, null is considered as a literal
 				Match match = matches.get(2);
-				assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 			}
 		}
 		{
-			Pattern pattern = MatchWithParameterType.createPattern(ctClass.getFactory(), CtInvocation.class);
+			// now we match a System.out.println with an invocation as paramter
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
+					.configureParameters(pb -> {
+						pb.parameter("value").byVariable("value");
+						pb.setValueType(CtInvocation.class);
+					})
+					.build();
 
 			List<Match> matches = pattern.getMatches(ctClass);
 
 			assertEquals(1, matches.size());
 			{
 				Match match = matches.get(0);
-				assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(java.lang.Long.class.toString())"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtInvocation);
 				assertEquals("java.lang.Long.class.toString()", match.getParameters().getValue("value").toString());
 			}
@@ -689,30 +690,36 @@ public class PatternTest {
 
 	@Test
 	public void testMatchParameterCondition() throws Exception {
-		//contract: the parameter value matching condition causes that only matching parameter values are accepted
+		//contract: pattern parameters support conditions passed as lambda
 		//if the value isn't matching then node is not matched
 		CtType<?> ctClass = ModelUtils.buildClass(MatchWithParameterCondition.class);
 		{
-			Pattern pattern = MatchWithParameterCondition.createPattern(ctClass.getFactory(), (Object value) -> value instanceof CtLiteral);
+			// matching a System.out.println with a literal
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
+					.configureParameters(pb -> {
+						pb.parameter("value").byVariable("value");
+						pb.matchCondition(null, (Object value) -> value instanceof CtLiteral);
+					})
+					.build();
 
 			List<Match> matches = pattern.getMatches(ctClass);
 
 			assertEquals(3, matches.size());
 			{
 				Match match = matches.get(0);
-				assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(\"a\")"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("\"a\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(1);
-				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 			}
 			{
 				Match match = matches.get(2);
-				assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), listToListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("((java.lang.String) (null))", match.getParameters().getValue("value").toString());
 			}
@@ -722,11 +729,20 @@ public class PatternTest {
 	@Test
 	public void testMatchOfAttribute() throws Exception {
 		//contract: match some nodes like template, but with some variable attributes
+		// tested methods: ParameterBuilder#byRole and ParameterBuilder#byString
 		CtType<?> ctClass = ModelUtils.buildClass(MatchModifiers.class);
 		{
 			//match all methods with arbitrary name, modifiers, parameters, but with empty body and return type void
-			Pattern pattern = MatchModifiers.createPattern(ctClass.getFactory(), false);
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
+					.configureParameters(pb -> {
+						pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
+						pb.parameter("methodName").byString("matcher1");
+						pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
+					})
+					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
+
+			// three methods are matched
 			assertEquals(3, matches.size());
 			{
 				Match match = matches.get(0);
@@ -758,39 +774,17 @@ public class PatternTest {
 		}
 		{
 			//match all methods with arbitrary name, modifiers, parameters and body, but with return type void
-			Pattern pattern = MatchModifiers.createPattern(ctClass.getFactory(), true);
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
+					.configureParameters(pb -> {
+						pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
+						pb.parameter("methodName").byString("matcher1");
+						pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
+						pb.parameter("statements").byRole(new TypeFilter(CtBlock.class), CtRole.STATEMENT);
+					})
+					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
+			// same as before + one more method: withBody
 			assertEquals(4, matches.size());
-			{
-				Match match = matches.get(0);
-				assertEquals(1, match.getMatchingElements().size());
-				assertEquals("matcher1", match.getMatchingElement(CtMethod.class).getSimpleName());
-				assertEquals(4, match.getParametersMap().size());
-				assertEquals("matcher1", match.getParametersMap().get("methodName"));
-				assertEquals(new HashSet<>(Arrays.asList(ModifierKind.PUBLIC)), match.getParametersMap().get("modifiers"));
-				assertEquals(Arrays.asList(), match.getParametersMap().get("parameters"));
-				assertEquals(Arrays.asList(), match.getParametersMap().get("statements"));
-			}
-			{
-				Match match = matches.get(1);
-				assertEquals(1, match.getMatchingElements().size());
-				assertEquals("publicStaticMethod", match.getMatchingElement(CtMethod.class).getSimpleName());
-				assertEquals(4, match.getParametersMap().size());
-				assertEquals("publicStaticMethod", match.getParametersMap().get("methodName"));
-				assertEquals(new HashSet<>(Arrays.asList(ModifierKind.PUBLIC, ModifierKind.STATIC)), match.getParametersMap().get("modifiers"));
-				assertEquals(Arrays.asList(), match.getParametersMap().get("parameters"));
-				assertEquals(Arrays.asList(), match.getParametersMap().get("statements"));
-			}
-			{
-				Match match = matches.get(2);
-				assertEquals(1, match.getMatchingElements().size());
-				assertEquals("packageProtectedMethodWithParam", match.getMatchingElement(CtMethod.class).getSimpleName());
-				assertEquals(4, match.getParametersMap().size());
-				assertEquals("packageProtectedMethodWithParam", match.getParametersMap().get("methodName"));
-				assertEquals(new HashSet<>(), match.getParametersMap().get("modifiers"));
-				assertEquals(2, ((List) match.getParametersMap().get("parameters")).size());
-				assertEquals(Arrays.asList(), match.getParametersMap().get("statements"));
-			}
 			{
 				Match match = matches.get(3);
 				assertEquals(1, match.getMatchingElements().size());
@@ -809,12 +803,12 @@ public class PatternTest {
 
 	@Test
 	public void testMatchOfMapAttribute() throws Exception {
-		//contract: match a pattern with an "open" annotation (different values can be matched)
+		//contract: there is support for matching annotations with different values
 		CtType<?> matchMapClass = ModelUtils.buildClass(MatchMap.class);
 		{
 			CtType<?> type = matchMapClass.getFactory().Type().get(MatchMap.class);
 			// create a pattern from method matcher1
-			//match all methods with arbitrary name, and annotation @Check, parameters, but with empty body and return type void
+			// match all methods with arbitrary name, and annotation @Check, parameters, but with empty body and return type void
 //			@Check()
 //			void matcher1() {
 //			}
@@ -883,13 +877,13 @@ public class PatternTest {
 		{
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMap.class);
 			// create a pattern from method matcher1
-			//match all methods with arbitrary name, with any annotation set, Test modifiers, parameters, but with empty body and return type void
+			// match all methods with arbitrary name, with any annotation set, Test modifiers, parameters, but with empty body and return type void
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
 					.configureParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
 						//match any method name
 						pb.parameter("methodName").byString("matcher1");
-						//match on all annotations of method
+						// match on any annotation
 						pb.parameter("allAnnotations")
 								.setConflictResolutionMode(ConflictResolutionMode.APPEND)
 								.byRole(new TypeFilter<>(CtMethod.class), CtRole.ANNOTATION)
@@ -899,9 +893,9 @@ public class PatternTest {
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
 
-			// we match all methods
+			// we match the same methods in MatchMap as testMatchOfMapAttribute
 			assertEquals(4, matches.size());
-			// the new ones is the one with deprecated
+			// the new one is the one with deprecated
 			{
 				Match match = matches.get(3);
 				assertEquals(1, match.getMatchingElements().size());
@@ -917,10 +911,10 @@ public class PatternTest {
 
 	@Test
 	public void testMatchOfMapKeySubstring() throws Exception {
-		//contract: match substring in key of Map Entry - match key of annotation value
+		//contract: one can capture in parameters a key in an annotation key-> value map
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMap.class);
 		{
-			//match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void
+			// match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMap.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("m1").getPatternElements())
 					.configureParameters(pb -> {
@@ -961,9 +955,13 @@ public class PatternTest {
 
 	@Test
 	public void testMatchInSet() throws Exception {
-		//contract: match elements in container of type Set - e.g method throwables
+		// contract: the container type "Set" is supported to match set-related AST nodes (eg the throws clause)
+		// tested method: setContainerKind(ContainerKind.SET)
 		CtType<?> ctClass = ModelUtils.buildClass(MatchThrowables.class);
 		Factory f = ctClass.getFactory();
+
+		// we match a method with any "throws" clause
+		// and the match "throws" are captured in the parameter
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
 				.configureParameters(pb -> {
 					pb.parameter("otherThrowables")
@@ -988,15 +986,11 @@ public class PatternTest {
 			Match match = matches.get(0);
 			assertEquals(1, match.getMatchingElements().size());
 			assertEquals("matcher1", match.getMatchingElement(CtMethod.class).getSimpleName());
-			assertEquals(new HashSet(Arrays.asList(
-					"modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
 		}
 		{
 			Match match = matches.get(1);
 			assertEquals(1, match.getMatchingElements().size());
 			assertEquals("sample2", match.getMatchingElement(CtMethod.class).getSimpleName());
-			assertEquals(new HashSet(Arrays.asList(
-					"otherThrowables", "modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
 			assertEquals(new HashSet(Arrays.asList(
 					"java.lang.UnsupportedOperationException",
 					"java.lang.IllegalArgumentException")),
@@ -1008,8 +1002,6 @@ public class PatternTest {
 			assertEquals(1, match.getMatchingElements().size());
 			assertEquals("sample3", match.getMatchingElement(CtMethod.class).getSimpleName());
 			assertEquals(new HashSet(Arrays.asList(
-					"otherThrowables", "modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
-			assertEquals(new HashSet(Arrays.asList(
 					"java.lang.IllegalArgumentException")),
 					((Set<CtTypeReference<?>>) match.getParameters().getValue("otherThrowables"))
 							.stream().map(e->e.toString()).collect(Collectors.toSet()));
@@ -1018,12 +1010,12 @@ public class PatternTest {
 			Match match = matches.get(3);
 			assertEquals(1, match.getMatchingElements().size());
 			assertEquals("sample4", match.getMatchingElement(CtMethod.class).getSimpleName());
-			assertEquals(new HashSet(Arrays.asList(
-					"modifiers","methodName","parameters","statements")), match.getParametersMap().keySet());
+			assertNotNull(match.getParameters().getValue("otherThrowables"));
+			assertEquals(2, getCollectionSize(match.getParameters().getValue("otherThrowables")));
 		}
 	}
 
-	private List<String> listToListOfStrings(List<? extends Object> list) {
+	private List<String> toListOfStrings(List<? extends Object> list) {
 		if (list == null) {
 			return Collections.emptyList();
 		}
@@ -1048,21 +1040,21 @@ public class PatternTest {
 
 	@Test
 	public void testPatternParameters() {
-		//contract: all the parameters of Pattern are available
+		//contract: all the parameters of Pattern are available through getParameterInfos
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
 			);
-		Pattern p = OldPattern.createPatternFromOldPattern(f);
+		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
 		Map<String, ParameterInfo> parameterInfos = p.getParameterInfos();
-
-		// the code in createPatternFromOldPattern creates 15 pattern parameters
+		// the pattern has 15 pattern parameters (all usages of variable "params" and "item"
 		assertEquals(15, parameterInfos.size());
 		// .. which are
 		assertEquals(new HashSet<>(Arrays.asList("next","item","startPrefixSpace","printer","start",
 				"statements","nextPrefixSpace","startSuffixSpace","elementPrinterHelper",
 				"endPrefixSpace","startKeyword","useStartKeyword","end","nextSuffixSpace","getIterable"
 				)), parameterInfos.keySet());
+
 		// the map from getParameterInfos is consistent
 		for (Map.Entry<String, ParameterInfo> e : parameterInfos.entrySet()) {
 			assertEquals(e.getKey(), e.getValue().getName());
@@ -1076,21 +1068,83 @@ public class PatternTest {
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
 			);
-		Pattern p = OldPattern.createPatternFromOldPattern(f);
-		String strOfPattern = p.toString();
-		
-		Map<String, ParameterInfo> parameterInfos = p.getParameterInfos();
-		assertEquals(15, parameterInfos.size());
-
-		// contract: all parameters from getParameterInfos are pretty-printed
-		for (Map.Entry<String, ParameterInfo> e : parameterInfos.entrySet()) {
-			assertTrue("The parameter " + e.getKey() + " is missing", strOfPattern.indexOf("<= ${"+e.getKey()+"}")>=0);
-		}
+		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
+		assertEquals("if (/* CtInvocation\n" +
+				"    / <= ${useStartKeyword}\n" +
+				" */\n" +
+				"useStartKeyword()) {\n" +
+				"    /* CtInvocation\n" +
+				"        /argument/ <= ${startKeyword}\n" +
+				"     */\n" +
+				"    /* CtInvocation\n" +
+				"        /target/ <= ${printer}\n" +
+				"     */\n" +
+				"    /* CtInvocation\n" +
+				"        / <= ${printer}\n" +
+				"     */\n" +
+				"    printer().writeSpace().writeKeyword(/* CtInvocation\n" +
+				"        / <= ${startKeyword}\n" +
+				"     */\n" +
+				"    startKeyword()).writeSpace();\n" +
+				"}\n" +
+				"try (final spoon.reflect.visitor.ListPrinter lp = /* CtInvocation\n" +
+				"    /argument/ <= ${end}\n" +
+				"    /target/ <= ${elementPrinterHelper}\n" +
+				" */\n" +
+				"/* CtInvocation\n" +
+				"    / <= ${elementPrinterHelper}\n" +
+				" */\n" +
+				"elementPrinterHelper().createListPrinter(/* CtInvocation\n" +
+				"    / <= ${startPrefixSpace}\n" +
+				" */\n" +
+				"startPrefixSpace(), /* CtInvocation\n" +
+				"    / <= ${start}\n" +
+				" */\n" +
+				"start(), /* CtInvocation\n" +
+				"    / <= ${startSuffixSpace}\n" +
+				" */\n" +
+				"startSuffixSpace(), /* CtInvocation\n" +
+				"    / <= ${nextPrefixSpace}\n" +
+				" */\n" +
+				"nextPrefixSpace(), /* CtInvocation\n" +
+				"    / <= ${next}\n" +
+				" */\n" +
+				"next(), /* CtInvocation\n" +
+				"    / <= ${nextSuffixSpace}\n" +
+				" */\n" +
+				"nextSuffixSpace(), /* CtInvocation\n" +
+				"    / <= ${endPrefixSpace}\n" +
+				" */\n" +
+				"endPrefixSpace(), /* CtInvocation\n" +
+				"    / <= ${end}\n" +
+				" */\n" +
+				"end())) {\n" +
+				"    /* CtForEach\n" +
+				"        /expression/ <= ${getIterable}\n" +
+				"        /foreachVariable/ <= ${item}\n" +
+				"     */\n" +
+				"    for (/* CtLocalVariable\n" +
+				"        / <= ${item}\n" +
+				"     */\n" +
+				"    java.lang.Object item : /* CtInvocation\n" +
+				"        / <= ${getIterable}\n" +
+				"     */\n" +
+				"    getIterable()) /* CtBlock\n" +
+				"        /statement/ <= ${statements}\n" +
+				"     */\n" +
+				"    {\n" +
+				"        lp.printSeparatorIfAppropriate();\n" +
+				"        /* CtInvocation\n" +
+				"            / <= ${statements}\n" +
+				"         */\n" +
+				"        statements();\n" +
+				"    }\n" +
+				"}\n", p.toString());
 	}
 
 	@Test
 	public void testMatchSample1() throws Exception {
-		// contract: a complex pattern is well matched twice
+		// contract: a super omplex pattern is well matched
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
@@ -1100,8 +1154,8 @@ public class PatternTest {
 		assertFalse(classDJPP.isShadow());
 
 		CtType<Object> type = f.Type().get(OldPattern.class);
+		// Create a pattern from all statements of OldPattern#patternModel
 		Pattern p = PatternBuilder
-				//Create a pattern from all statements of OldPattern_ParamsInNestedType#patternModel
 				.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
 				.configureParameters((ParametersBuilder pb) -> pb
 						// creating patterns parameters for all references to "params" and "items"
@@ -1115,7 +1169,7 @@ public class PatternTest {
 		// so let's try to match this complex pattern  on DJPP
 		List<Match> matches = p.getMatches(classDJPP);
 
-		// there are two results (the try-with-resource in each method
+		// there are two results (the try-with-resource in each method)
 		assertEquals(2, matches.size());
 		ParameterValueProvider params = matches.get(0).getParameters();
 		assertEquals("\"extends\"", params.getValue("startKeyword").toString());
@@ -1168,7 +1222,7 @@ public class PatternTest {
 
 		// we create two different patterns
 		Pattern newPattern = NewPattern.createPatternFromNewPattern(f);
-		Pattern oldPattern = OldPattern.createPatternFromOldPattern(f);
+		Pattern oldPattern = OldPattern.createPatternFromMethodPatternModel(f);
 		
 		oldPattern.forEachMatch(classDJPP, (match) -> {
 			CtElement matchingElement = match.getMatchingElement(CtElement.class, false);

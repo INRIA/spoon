@@ -11,18 +11,6 @@ import java.util.function.Predicate;
 
 public class MatchWithParameterCondition {
 
-	public static Pattern createPattern(Factory factory, Predicate<Object> condition) {
-		CtType<?> type = factory.Type().get(MatchWithParameterCondition.class);
-		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-			.configureParameters(pb -> {
-				pb.parameter("value").byVariable("value");
-				if (condition != null) {
-					pb.matchCondition(null, condition);
-				}
-			})
-			.build();
-	}
-	
 	public void matcher1(String value) {
 		System.out.println(value);
 	}

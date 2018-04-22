@@ -512,6 +512,10 @@ public class ParametersBuilder {
 	 *
 	 * Can be used to match any method call for instance.
 	 *
+	 * In some cases, the selected object is actually the parent of the reference (eg the invocation).
+	 * This is implemented in {@link ParametersBuilder#getSubstitutedNodeOfElement(ParameterInfo, CtElement)}
+	 *
+	 *
 	 * @param simpleName simple name of {@link CtReference}
 	 * @return {@link ParametersBuilder} to support fluent API
 	 */

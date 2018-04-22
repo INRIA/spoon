@@ -9,18 +9,6 @@ import static java.lang.System.out;
 
 public class MatchWithParameterType {
 
-	public static Pattern createPattern(Factory factory, Class valueType) {
-		CtType<?> type = factory.Type().get(MatchWithParameterType.class);
-		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-			.configureParameters(pb -> {
-				pb.parameter("value").byVariable("value");
-				if (valueType != null) {
-					pb.setValueType(valueType);
-				}
-			})
-			.build();
-	}
-	
 	public void matcher1(String value) {
 		System.out.println(value);
 	}
