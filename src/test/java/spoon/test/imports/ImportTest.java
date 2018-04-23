@@ -18,16 +18,15 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -1306,5 +1305,16 @@ public class ImportTest {
 
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
+	}
+
+	@Test
+	public void testNullable() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/resources/noclasspath/TestNullable.java"));
+		comp.build();
+		// should build
+		assertNotNull(launcher.getFactory().Type().get("TestNullable"));
 	}
 }

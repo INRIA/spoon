@@ -242,6 +242,14 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.9.2</version>
     </dependency>
+    <dependency>
+      <!-- to reproduce JTD error with nullable annotation -->
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
