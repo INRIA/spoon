@@ -435,7 +435,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public void scanCtStatement(CtStatement s) {
-				if (!(s instanceof CtStatementList || s instanceof CtSwitch)) {
+				if (!(s instanceof CtStatementList || s instanceof CtSwitch || s instanceof CtVariable)) {
 					s.addComment(comment);
 				}
 			}
@@ -464,7 +464,6 @@ class JDTCommentBuilder {
 			public void visitCtCatch(CtCatch e) {
 				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
 					e.addComment(comment);
-					return;
 				}
 			}
 
