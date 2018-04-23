@@ -3,14 +3,7 @@ package spoon.test.position;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -23,26 +16,14 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.position.testclasses.AnnonymousClassNewIface;
-import spoon.test.position.testclasses.Foo;
-import spoon.test.position.testclasses.FooAbstractMethod;
-import spoon.test.position.testclasses.FooAnnotation;
-import spoon.test.position.testclasses.FooClazz;
-import spoon.test.position.testclasses.FooClazz2;
-import spoon.test.position.testclasses.FooClazzWithComments;
-import spoon.test.position.testclasses.FooField;
-import spoon.test.position.testclasses.FooGeneric;
-import spoon.test.position.testclasses.FooInterface;
-import spoon.test.position.testclasses.FooMethod;
-import spoon.test.position.testclasses.FooStatement;
-import spoon.test.position.testclasses.NoMethodModifiers;
-import spoon.test.position.testclasses.PositionParameterTypeWithReference;
-import spoon.test.position.testclasses.SomeEnum;
-import spoon.test.position.testclasses.TypeParameter;
+import spoon.test.comment.testclasses.Comment1;
+import spoon.test.position.testclasses.*;
+import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -691,5 +672,77 @@ public class PositionTest {
 		assertEquals(end, bhsp.getBodyStart());
 		assertEquals(end - 1, bhsp.getBodyEnd());
 	}
-	
+
+	@Test
+	public void testPositionTryCatch() throws Exception {
+		//contract: check that the variable in the catch has a correct position
+		CtType<?> foo = ModelUtils.buildClass(PositionTry.class);
+		String classContent = getClassContent(foo);
+
+		List<CtCatchVariable> elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+
+		CtCatchVariable withoutModifier = elements.get(0);
+		assertEquals("java.lang.Exception e", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+		CtCatchVariable withModifier = elements.get(1);
+		assertEquals("final java.lang.Exception e", contentAtPosition(classContent, withModifier.getPosition().getSourceStart(), withModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withModifier.getPosition()).getNameEnd()));
+		assertEquals("final", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withModifier.getPosition()).getModifierSourceEnd()));
+
+		CtCatchVariable withMultipleCatch = elements.get(2);
+		assertEquals("NullPointerException | java.lang.ArithmeticException e", contentAtPosition(classContent, withMultipleCatch.getPosition().getSourceStart(), withMultipleCatch.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceEnd()));
+
+		foo = buildClass(Comment1.class);
+		classContent = getClassContent(foo);
+		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+		withoutModifier = elements.get(0);
+		assertEquals("Exception ex", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("ex", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+
+		foo = buildClass(VariableReferencesModelTest.class);
+		classContent = getClassContent(foo);
+		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+		withoutModifier = elements.get(0);
+		assertEquals("IllegalArgumentException e", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+		withoutModifier = elements.get(1);
+		assertEquals("Exception /*7*/field", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("field", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+
+
+	}
 }
