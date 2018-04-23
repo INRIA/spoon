@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.*;
 import spoon.testing.utils.ModelUtils;
 
@@ -663,7 +664,7 @@ public class PositionTest {
 	@Test
 	public void testPositionTryCatch() throws Exception {
 		//contract: check that the variable in the catch has a correct position
-		final CtType<?> foo = ModelUtils.buildClass(PositionTry.class);
+		CtType<?> foo = ModelUtils.buildClass(PositionTry.class);
 		String classContent = getClassContent(foo);
 
 		List<CtCatchVariable> elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
@@ -694,5 +695,17 @@ public class PositionTest {
 		assertEquals("", contentAtPosition(classContent,
 				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceStart(),
 				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceEnd()));
+
+		foo = buildClass(Comment1.class);
+		classContent = getClassContent(foo);
+		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+		withoutModifier = elements.get(0);
+		assertEquals("Exception ex", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("ex", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
 	}
 }

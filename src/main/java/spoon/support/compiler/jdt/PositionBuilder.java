@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
@@ -237,13 +238,28 @@ public class PositionBuilder {
 			}
 		} else if (e instanceof CtCatchVariable) {
 			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
-			iterator.next();
-			ASTPair next = iterator.next();
-			DeclarationSourcePosition sourcePositionVariable = (DeclarationSourcePosition) buildPositionCtElement(e, next.node);
+			ASTPair catchNode = iterator.next();
+			while (!(catchNode.node instanceof Argument)) {
+				catchNode = iterator.next();
+			}
+			DeclarationSourcePosition argumentPosition = (DeclarationSourcePosition) buildPositionCtElement(e, catchNode.node);
+
+			int variableNameStart = findNextNonWhitespace(contents, argumentPosition.getSourceEnd(), sourceEnd + 1);
+			int variableNameEnd = argumentPosition.getSourceEnd();
+
+			int modifierStart = sourceStart;
+			int modifierEnd = sourceStart - 1;
+			if (!getModifiers(((Argument) catchNode.node).modifiers, false, false).isEmpty()) {
+				modifierStart = argumentPosition.getModifierSourceStart();
+				modifierEnd = argumentPosition.getModifierSourceEnd();
+
+				sourceStart = modifierStart;
+			}
+			sourceEnd = argumentPosition.getSourceEnd();
 			return cf.createDeclarationSourcePosition(cu,
-					findNextNonWhitespace(contents,sourcePositionVariable.getNameEnd(), sourceEnd + 1), sourcePositionVariable.getNameEnd(),
-					sourcePositionVariable.getModifierSourceStart(), sourcePositionVariable.getModifierSourceEnd(),
-					sourcePositionVariable.getSourceStart(), sourcePositionVariable.getSourceEnd(),
+					variableNameStart, variableNameEnd,
+					modifierStart, modifierEnd,
+					sourceStart, sourceEnd,
 					lineSeparatorPositions);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
