@@ -18,6 +18,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.*;
+import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -707,5 +708,30 @@ public class PositionTest {
 		assertEquals("", contentAtPosition(classContent,
 				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
 				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+
+		foo = buildClass(VariableReferencesModelTest.class);
+		classContent = getClassContent(foo);
+		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+		withoutModifier = elements.get(0);
+		assertEquals("IllegalArgumentException e", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+		withoutModifier = elements.get(1);
+		assertEquals("Exception /*7*/field", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("field", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+
+
 	}
 }

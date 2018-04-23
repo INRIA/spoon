@@ -49,6 +49,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtInheritanceScanner;
@@ -364,7 +365,7 @@ class JDTCommentBuilder {
 			}
 
 			@Override
-			public <T> void visitCtField(CtField<T> e) {
+			public <T> void scanCtVariable(CtVariable<T> e) {
 				e.addComment(comment);
 			}
 
