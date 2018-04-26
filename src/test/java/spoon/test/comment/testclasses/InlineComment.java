@@ -149,3 +149,7 @@ public class InlineComment
 	}
 	// comment after class
 }
+
+/*
+ * Bottom File
+ */

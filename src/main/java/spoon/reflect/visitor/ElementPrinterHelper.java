@@ -364,6 +364,17 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Write the compilation unit footer.
+	 */
+	public void writeFooter(List<CtType<?>> types) {
+		if (!types.isEmpty()) {
+			for (CtType<?> ctType : types) {
+				writeComment(ctType, CommentOffset.BOTTOM_FILE);
+			}
+		}
+	}
+
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
@@ -407,7 +418,11 @@ public class ElementPrinterHelper {
 			return commentsToPrint;
 		}
 		for (CtComment comment : element.getComments()) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.TOP_FILE) {
+			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.TOP_FILE && element.getPosition().getSourceEnd() > comment.getPosition().getSourceStart()) {
+				commentsToPrint.add(comment);
+				continue;
+			}
+			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.BOTTOM_FILE && element.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 				commentsToPrint.add(comment);
 				continue;
 			}

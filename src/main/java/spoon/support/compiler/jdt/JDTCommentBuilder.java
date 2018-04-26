@@ -48,10 +48,12 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -145,7 +147,7 @@ class JDTCommentBuilder {
 		String commentContent = getCommentContent(start, end);
 
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
-		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end, lineSeparatorPositions);
+		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end - 1, lineSeparatorPositions);
 
 		// create the Spoon comment element
 		comment = parseTags(comment, commentContent);
@@ -238,7 +240,7 @@ class JDTCommentBuilder {
 			int elementEndLine = element.getPosition().getEndLine();
 			int commentLine = comment.getPosition().getLine();
 
-			if (distance < smallDistance && (!isAfter || elementEndLine == commentLine)) {
+			if (distance < smallDistance && (!isAfter || elementEndLine == commentLine || element instanceof CtType)) {
 				best = element;
 				smallDistance = distance;
 			}
@@ -286,6 +288,12 @@ class JDTCommentBuilder {
 					}
 					super.scan(e);
 				}
+			}
+
+			@Override
+			public void scanCtReference(CtReference reference) {
+				reference.addComment(comment);
+				super.scanCtReference(reference);
 			}
 
 			@Override

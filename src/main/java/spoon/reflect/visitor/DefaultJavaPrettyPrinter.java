@@ -1921,6 +1921,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
+	/**
+	 * Write the compilation unit footer.
+	 */
+	public DefaultJavaPrettyPrinter writeFooter(List<CtType<?>> types) {
+		elementPrinterHelper.writeFooter(types);
+		return this;
+	}
+
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		// reset the importsContext to avoid errors with multiple CU
@@ -1945,6 +1953,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				getPrinterHelper().adjustEndPosition(t);
 			}
 		}
+		this.writeFooter(types);
 	}
 
 	@Override
