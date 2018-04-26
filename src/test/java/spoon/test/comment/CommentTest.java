@@ -257,7 +257,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(67, comments.size());
+		assertEquals(69, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -275,12 +275,12 @@ public class CommentTest {
 		assertEquals("Bottom File", type.getComments().get(5).getContent());
 
 		CtField<?> field = type.getField("field");
-		assertEquals(3, field.getComments().size());
+		assertEquals(4, field.getComments().size());
 		assertEquals(createFakeComment(f, "Comment Field"), field.getComments().get(0));
 		assertEquals("// Comment Field" + newLine
 				+ "// comment field 2" + newLine
 				+ "// comment in field" + newLine
-				+ "private int field = 10;", field.toString());
+				+ "private int field = 10;// after field\n", field.toString());
 
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
