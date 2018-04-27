@@ -364,6 +364,17 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Write the compilation unit footer.
+	 */
+	public void writeFooter(List<CtType<?>> types) {
+		if (!types.isEmpty()) {
+			for (CtType<?> ctType : types) {
+				writeComment(ctType, CommentOffset.BOTTOM_FILE);
+			}
+		}
+	}
+
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
@@ -407,7 +418,11 @@ public class ElementPrinterHelper {
 			return commentsToPrint;
 		}
 		for (CtComment comment : element.getComments()) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.TOP_FILE) {
+			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.TOP_FILE && element.getPosition().getSourceEnd() > comment.getPosition().getSourceStart()) {
+				commentsToPrint.add(comment);
+				continue;
+			}
+			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.BOTTOM_FILE && element.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 				commentsToPrint.add(comment);
 				continue;
 			}
@@ -423,9 +438,9 @@ public class ElementPrinterHelper {
 			final int line = element.getPosition().getLine();
 			final int sourceEnd = element.getPosition().getSourceEnd();
 			final int sourceStart = element.getPosition().getSourceStart();
-			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < line || (sourceStart <= comment.getPosition().getSourceStart() && sourceEnd >= comment.getPosition().getSourceEnd()))) {
+			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < line || (sourceStart <= comment.getPosition().getSourceStart() && sourceEnd > comment.getPosition().getSourceEnd()))) {
 				commentsToPrint.add(comment);
-			} else if (offset == CommentOffset.AFTER && comment.getPosition().getSourceStart() > sourceEnd) {
+			} else if (offset == CommentOffset.AFTER && (comment.getPosition().getSourceStart() > sourceEnd || comment.getPosition().getSourceEnd() == sourceEnd)) {
 				commentsToPrint.add(comment);
 			} else {
 				final int endLine = element.getPosition().getEndLine();

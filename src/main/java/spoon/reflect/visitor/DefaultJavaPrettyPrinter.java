@@ -745,7 +745,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtField(CtField<T> f) {
-		elementPrinterHelper.writeComment(f);
+		elementPrinterHelper.writeComment(f, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
 		scan(f.getType());
@@ -757,6 +757,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(f.getDefaultExpression());
 		}
 		printer.writeSeparator(";");
+		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
 	}
 
 	@Override
@@ -1326,7 +1327,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		elementPrinterHelper.writeComment(m);
+		elementPrinterHelper.writeComment(m, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(m, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(m);
 		elementPrinterHelper.writeFormalTypeParameters(m);
@@ -1357,6 +1358,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.writeSeparator(";");
 		}
+		elementPrinterHelper.writeComment(m, CommentOffset.AFTER);
 	}
 
 	@Override
@@ -1921,6 +1923,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return this;
 	}
 
+	/**
+	 * Write the compilation unit footer.
+	 */
+	public DefaultJavaPrettyPrinter writeFooter(List<CtType<?>> types) {
+		elementPrinterHelper.writeFooter(types);
+		return this;
+	}
+
 	@Override
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		// reset the importsContext to avoid errors with multiple CU
@@ -1945,6 +1955,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				getPrinterHelper().adjustEndPosition(t);
 			}
 		}
+		this.writeFooter(types);
 	}
 
 	@Override
