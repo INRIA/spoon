@@ -527,10 +527,10 @@ public class PositionTest {
 	public void testSourcePosition() throws Exception {
 		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
 		assertFalse(s.isValidPosition());
-		assertFails(() -> s.getSourceStart());
-		assertFails(() -> s.getSourceEnd());
-		assertFails(() -> s.getColumn());
-		assertFails(() -> s.getLine());
+		assertEquals(-1,  s.getSourceStart());
+		assertEquals(-1,  s.getSourceEnd());
+		assertEquals(-1,  s.getColumn());
+		assertEquals(-1,  s.getLine());
 		assertEquals("(unknown file)", s.toString());
 		assertTrue(s.hashCode() > 0); // no NPE
 	}

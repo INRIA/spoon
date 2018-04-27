@@ -46,32 +46,32 @@ public class NoSourcePosition implements SourcePosition, Serializable {
 
 	@Override
 	public int getLine() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
+		return -1;
 	}
 
 	@Override
 	public int getEndLine() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
+		return -1;
 	}
 
 	@Override
 	public int getColumn() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
+		return -1;
 	}
 
 	@Override
 	public int getEndColumn() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
+		return -1;
 	}
 
 	@Override
 	public int getSourceEnd() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
+		return -1;
 	}
 
 	@Override
 	public int getSourceStart() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
+		return -1;
 	}
 
 	@Override
