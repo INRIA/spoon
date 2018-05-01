@@ -128,19 +128,7 @@ public class Pattern {
 	 * @return the generated type
 	 */
 	public <T extends CtType<?>> T createType(Factory factory, String typeQualifiedName, Map<String, Object> params) {
-		return createType(factory.Type().createReference(typeQualifiedName), params);
-	}
-
-	/**
-	 * Generates type following `newTypeRef` using this {@link Pattern} and provided `params`
-	 *
-	 * Note: the root of pattern element must be one or more types.
-	 *
-	 * @param newTypeRef the type reference which refers to future generated type
-	 * @param params the pattern parameters
-	 * @return the generated type
-	 */
-	public <T extends CtType<?>> T createType(CtTypeReference<?> newTypeRef, Map<String, Object> params) {
+		CtTypeReference<?> newTypeRef = factory.Type().createReference(typeQualifiedName);
 		CtPackage ownerPackage = newTypeRef.getFactory().Package().getOrCreate(newTypeRef.getPackage().getQualifiedName());
 		return createType(ownerPackage, newTypeRef.getSimpleName(), params);
 	}
@@ -156,7 +144,7 @@ public class Pattern {
 	 * @return the generated type
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends CtType<?>> T createType(CtPackage ownerPackage, String typeSimpleName, Map<String, Object> params) {
+	private <T extends CtType<?>> T createType(CtPackage ownerPackage, String typeSimpleName, Map<String, Object> params) {
 		@SuppressWarnings({ "rawtypes" })
 		List<CtType> types = substitute(ownerPackage.getFactory(), CtType.class, new UnmodifiableParameterValueProvider(params,
 				PatternBuilder.TARGET_TYPE, ownerPackage.getFactory().Type().createReference(getQualifiedName(ownerPackage, typeSimpleName))));

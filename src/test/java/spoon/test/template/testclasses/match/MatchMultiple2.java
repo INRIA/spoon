@@ -16,19 +16,6 @@ import java.util.function.Consumer;
 
 public class MatchMultiple2 {
 
-	public static Pattern createPattern(Factory factory, Consumer<ParametersBuilder> cfgParams) {
-		CtType<?> type = factory.Type().get(MatchMultiple2.class);
-		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-			.configureTemplateParameters()
-			.configureParameters(pb -> {
-				pb.parameter("statements1").setContainerKind(ContainerKind.LIST);
-				pb.parameter("statements2").setContainerKind(ContainerKind.LIST);
-				pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
-				cfgParams.accept(pb);
-			})
-			.build();
-	}
-	
 	public void matcher1(List<String> something) {
 		statements1.S();
 		statements2.S();

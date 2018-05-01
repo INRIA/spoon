@@ -73,6 +73,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -468,25 +469,36 @@ public class PatternTest {
 
 	@Test
 	public void testMatchPossesiveMultiValueUnlimited() throws Exception {
-		//contract: possessive matching eats everything and never returns anything
+		//contract: possessive matching eats everything
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.POSSESSIVE, null, null);
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
-		//the last template has nothing to match -> no match
+
+		// template:
+//		public void matcher1() {
+//			statements();
+//			System.out.println("something");
+//		}
+
+		// Quantifier.POSSESSIVE matches all elements by statements() and there remains no element for mandatory single match of System.out.println("something");,
+		// consequently, no match of the full template
 		assertEquals(0, matches.size());
 	}
 	@Test
 	public void testMatchPossesiveMultiValueMaxCount4() throws Exception {
-		//contract: multivalue parameter can match multiple nodes into list of parameter values.
-		//contract: possessive matching eats everything and never returns back
+		//contract: maxCount (#setMaxOccurence) can be used to stop Quantifier.POSSESSIVE for matching too much
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
+
+		// note that if we set maxCount = 3, it fails because there is one dangling statement before System.out.println("something")
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.POSSESSIVE, null, 4);
 
-		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
+		List<Match> matches = pattern.getMatches(ctClass);
 
+		// why method matcher1 is not matched?
 		assertEquals(1, matches.size());
 		Match match = matches.get(0);
+
 		//check 4 statements are matched + last template
 		assertEquals(Arrays.asList(
 				"int i = 0",
@@ -508,83 +520,122 @@ public class PatternTest {
 
 	@Test
 	public void testMatchPossesiveMultiValueMinCount() throws Exception {
-		//contract: support for possessive matching with min count limit mixed with GREEDY back off
+		//contract: there is a correct interplay between for possessive matching with min count limit and with GREEDY matching
+
+		// pattern
+//		public void matcher1() {
+//			statements1.S(); // Quantifier.GREEDY
+//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurence and setMaxOccurence set
+//			System.out.println("something"); // "something" -> anything
+//		}
+
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple3.class);
-		for (int i = 0; i < 7; i++) {
-			final int count = i;
+
+		// trying with all values of "count"
+		for (int count = 0; count < 6; count++) {
+			final int countFinal = count;
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple3.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 					.configureTemplateParameters()
 					.configureParameters(pb -> {
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
-						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(count).setMaxOccurence(count);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
 						pb.parameter("printedValue").byFilter((CtLiteral<?> literal) -> "something".equals(literal.getValue()));
 					})
 					.build();
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
-			if (count < 6) {
-				//the last template has nothing to match -> no match
-				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, 5-count, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count="+count, count, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
-			} else {
-				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
-				assertEquals("count="+count, 0, matches.size());
-			}
+
+			// Quantifier.POSSESSIVE matches exactly the right number of times
+			assertEquals("count="+countFinal, countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+
+			// Quantifier.GREEDY gets the rest
+			assertEquals("count="+countFinal, 5-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
 		}
 	}
 
 	@Test
 	public void testMatchPossesiveMultiValueMinCount2() throws Exception {
-		//contract: support for check possessive matching with min count limit and GREEDY back off
+		//contract: there is a correct interplay between for possessive matching with min count limit and with GREEDY matching
+
+		// pattern:
+//		public void matcher1(List<String> something) {
+//			statements1.S(); // Quantifier.GREEDY
+//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurence and setMaxOccurence set
+//			for (String v : something) {
+//				System.out.println(v); // can be inlined
+//			}
+//		}
+//
+
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple2.class);
-		for (int i = 0; i < 7; i++) {
-			final int count = i;
-			Pattern pattern = MatchMultiple2.createPattern(ctClass.getFactory(), pb -> {
-				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
-				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(count).setMaxOccurence(count);
-				pb.parameter("printedValue").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
-			});
+
+		// trying with all values of "count"
+		for (int count = 0; count < 5; count++) {
+			final int countFinal = count;
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
+.configureParameters(pb -> {
+				pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
+				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
+				pb.parameter("inlinedSysOut").byVariable("something").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).matchInlinedStatements();
+			})
+			.build();
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
-			if (count < 5) {
-				//the last template has nothing to match -> no match
-				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, 4-count, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count="+count, count, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
-				assertEquals("count="+count, 2, getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
-			} else {
-				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
-				assertEquals("count="+count, 0, matches.size());
-			}
+			//the last template has nothing to match -> no match
+			assertEquals("count="+countFinal, 1, matches.size());
+			assertEquals("count="+countFinal, 4-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+			assertEquals("count="+countFinal, countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+			assertEquals("count="+countFinal, 2, getCollectionSize(matches.get(0).getParameters().getValue("inlinedSysOut")));
 		}
-	}
-	@Test
-	public void testMatchGreedyMultiValueMinCount2() throws Exception {
-		//contract: check possessive matching with min count limit and GREEDY back off
-		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple2.class);
-		for (int i = 0; i < 7; i++) {
-			final int count = i;
-			Pattern pattern = MatchMultiple2.createPattern(ctClass.getFactory(), pb -> {
-				pb.parameter("statements1").setMatchingStrategy(Quantifier.RELUCTANT);
-				pb.parameter("statements2").setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
-				pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
-			});
+
+		for (int count = 5; count < 7; count++) {
+			final int countFinal = count;
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
+					.configureTemplateParameters().build();
+//				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
+//				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
+//				pb.parameter("inlinedSysOut").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
+//			});
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
-			if (count < 7) {
-				//the last template has nothing to match -> no match
-				assertEquals("count="+count, 1, matches.size());
-				assertEquals("count="+count, Math.max(0, 3-count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count="+count, count - Math.max(0, count-4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
-				assertEquals("count="+count, Math.max(2, 3 - Math.max(0, count-3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
-			} else {
-				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
-				assertEquals("count="+count, 0, matches.size());
-			}
+			//the possessive matcher eat too much. There is no target element for last `printedValue` variable
+			assertEquals("count="+countFinal, 0, matches.size());
+
 		}
+
 	}
+
+// Martin commented this one
+//	@Test
+//	public void testMatchGreedyMultiValueMinCount2() throws Exception {
+//		//contract: check possessive matching with min count limit and GREEDY back off
+//		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple2.class);
+//		for (int i = 0; i < 7; i++) {
+//			final int count = i;
+//			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple2.class);
+//			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
+//
+//					.configureParameters(pb -> {
+//						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
+//						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
+//						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
+//						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
+//					})
+//					.build();
+//			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+//			if (count < 7) {
+//				//the last template has nothing to match -> no match
+//				assertEquals("count=" + count, 1, matches.size());
+//				assertEquals("count=" + count, Math.max(0, 3 - count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+//				assertEquals("count=" + count, count - Math.max(0, count - 4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+//				assertEquals("count=" + count, Math.max(2, 3 - Math.max(0, count - 3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
+//			} else {
+//				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
+//				assertEquals("count=" + count, 0, matches.size());
+//			}
+//		}
+//	}
 
 	/** returns the size of the list of 0 is list is null */
 	private int getCollectionSize(Object list) {
@@ -1007,13 +1058,13 @@ public class PatternTest {
 							.stream().map(e->e.toString()).collect(Collectors.toSet()));
 		}
 		{
+			// now loooking at sample4
 			Match match = matches.get(3);
 			assertEquals(1, match.getMatchingElements().size());
 			assertEquals("sample4", match.getMatchingElement(CtMethod.class).getSimpleName());
 
-			// TODO @Pavel: why do those assertions fail?
-			// assertNotNull(match.getParameters().getValue("otherThrowables"));
-			// assertEquals(2, getCollectionSize(match.getParameters().getValue("otherThrowables")));
+			// sample4 has exactly the expected exceptions. But there are no other exceptions, so match.getParameters().getValue("otherThrowables") is null
+			assertNull(match.getParameters().getValue("otherThrowables"));
 		}
 	}
 
@@ -1204,58 +1255,48 @@ public class PatternTest {
 	}
 
 	@Test
-	public void testTemplateReplace() throws Exception {
-		// contract: ??
-		Launcher launcher = new Launcher();
-		final Factory factory = launcher.getFactory();
-		factory.getEnvironment().setComplianceLevel(8);
-		factory.getEnvironment().setNoClasspath(true);
-		factory.getEnvironment().setCommentEnabled(true);
-		factory.getEnvironment().setAutoImports(true);
-		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
-		compiler.addInputSource(new File("./src/main/java/spoon/reflect/visitor"));
-		compiler.addInputSource(new File("./src/test/java/spoon/test/template/testclasses/replace"));
-		compiler.build();
-		CtClass<?> classDJPP = factory.Class().get(DefaultJavaPrettyPrinter.class);
-		assertNotNull(classDJPP);
-		assertFalse(classDJPP.isShadow());
-		CtType<?> targetType = (classDJPP instanceof CtType) ? (CtType) classDJPP : classDJPP.getParent(CtType.class);
-		Factory f = classDJPP.getFactory();
+	public void testAddGeneratedBy() throws Exception {
+		//contract: by default "generated by" comments are not generated
+		//contract: generated by comments can be switched ON/OFF later
 
-		// we create two different patterns
-		Pattern newPattern = NewPattern.createPatternFromNewPattern(f);
-		Pattern oldPattern = OldPattern.createPatternFromMethodPatternModel(f);
-		
-		oldPattern.forEachMatch(classDJPP, (match) -> {
-			CtElement matchingElement = match.getMatchingElement(CtElement.class, false);
-			RoleHandler role = RoleHandlerHelper.getRoleHandlerWrtParent(matchingElement);
-			List<CtElement> elements = newPattern.applyToType(targetType, (Class) role.getValueClass(), match.getParametersMap());
-			match.replaceMatchesBy(elements);
-		});
-
-		launcher.setSourceOutputDirectory(new File("./target/spooned-template-replace/"));
-		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
-	}
-	
-	@Test
-	public void testGenerateClassWithSelfReferences() throws Exception {
-		//contract: a class with methods and fields can be used as template to generate a clone
-		//all the references to the origin class are replace by reference to the new class
+		// creating  a pattern from AClassWithMethodsAndRefs
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
 		Pattern pattern = PatternBuilder.create(templateModel).build();
-		//contract: by default generated by comments are not generated
+
 		assertFalse(pattern.isAddGeneratedBy());
-		//contract: generated by comments can be switched ON/OFF later
+
 		pattern.setAddGeneratedBy(true);
 		assertTrue(pattern.isAddGeneratedBy());
+	}
+
+
+
+	@Test
+	public void testGenerateClassWithSelfReferences() throws Exception {
+		// main contract: a class with methods and fields can be used as template
+		// using method #createType
+
+		// in particular, all the references to the origin class are replace by reference to the new class cloned class
+
+		// creating  a pattern from AClassWithMethodsAndRefs
+		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
+		Factory factory = templateModel.getFactory();
+		Pattern pattern = PatternBuilder.create(templateModel).build();
+
+		pattern.setAddGeneratedBy(true);
+
 		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
 		CtClass<?> generatedType = pattern.createType(factory, newQName, Collections.emptyMap());
 		assertNotNull(generatedType);
-		assertEquals(newQName, generatedType.getQualifiedName());
-		assertEquals("ACloneOfAClassWithMethodsAndRefs", generatedType.getSimpleName());
+
+		// sanity check that the new type contains all the expected methods
 		assertEquals(Arrays.asList("<init>","local","sameType","sameTypeStatic","anotherMethod","someMethod","Local","foo"),
 				generatedType.getTypeMembers().stream().map(CtTypeMember::getSimpleName).collect(Collectors.toList()));
+
+		// contract: one can generated the type in a new package, with a fully-qualified name
+		assertEquals(newQName, generatedType.getQualifiedName());
+
 		//contract: all the type references points to new type
 		Set<String> usedTypeRefs = new HashSet<>();
 		generatedType.filterChildren(new TypeFilter<>(CtTypeReference.class))
@@ -1265,7 +1306,8 @@ public class PatternTest {
 				"spoon.test.generated.ACloneOfAClassWithMethodsAndRefs$1Bar",
 				"java.lang.Object","int","spoon.test.generated.ACloneOfAClassWithMethodsAndRefs$Local")),
 				usedTypeRefs);
-		//contract: all executable references points to executables in cloned type
+
+		//contract: all executable references points to the executables in cloned type
 		generatedType.filterChildren(new TypeFilter<>(CtExecutableReference.class)).forEach((CtExecutableReference execRef) ->{
 			CtTypeReference declTypeRef = execRef.getDeclaringType();
 			if(declTypeRef.getQualifiedName().startsWith("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs")) {
@@ -1282,34 +1324,30 @@ public class PatternTest {
 	@Test
 	public void testGenerateMethodWithSelfReferences() throws Exception {
 		//contract: a method with self references can be used as a template to generate a clone
-		//all the references to the origin class are replace by reference to the new class
+
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
+
+		// create a template from method foo
 		Pattern pattern = PatternBuilder.create(
-				(CtMethod) templateModel.getMethodsByName("foo").get(0),
-				templateModel.getNestedType("Local"))
-				//switch ON: generate by comments
-				.setAddGeneratedBy(true)
+				(CtMethod) templateModel.getMethodsByName("foo").get(0)
+				)
+				.setAddGeneratedBy(true) //switch ON: generate by comments
 				.build();
-		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
-		
-		CtClass<?> generatedType = factory.createClass(newQName);
-		
-		assertNotNull(generatedType);
-		assertEquals(newQName, generatedType.getQualifiedName());
-		assertEquals("ACloneOfAClassWithMethodsAndRefs", generatedType.getSimpleName());
+
+		CtClass<?> generatedType = factory.createClass("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs");
 
 		pattern.applyToType(generatedType, CtMethod.class, Collections.emptyMap());
-		//contract: new method and interface were added
-		assertEquals(Arrays.asList("Local","foo"),
+
+		//contract: the foo method has been added
+		assertEquals(Arrays.asList("foo"),
 				generatedType.getTypeMembers().stream().map(CtTypeMember::getSimpleName).collect(Collectors.toList()));
 		assertEquals(1, generatedType.getMethodsByName("foo").size());
-		assertNotNull(generatedType.getNestedType("Local"));
+
 		//contract: generate by comments are appended
 		assertEquals("Generated by spoon.test.template.testclasses.types.AClassWithMethodsAndRefs#foo(AClassWithMethodsAndRefs.java:30)",
 				generatedType.getMethodsByName("foo").get(0).getDocComment().trim());
-		assertEquals("Generated by spoon.test.template.testclasses.types.AClassWithMethodsAndRefs$Local(AClassWithMethodsAndRefs.java:26)",
-				generatedType.getNestedType("Local").getDocComment().trim());
+
 		//contract: all the type references points to new type
 		Set<String> usedTypeRefs = new HashSet<>();
 		generatedType.filterChildren(new TypeFilter<>(CtTypeReference.class))
@@ -1332,13 +1370,9 @@ public class PatternTest {
 			fail("Unexpected declaring type " + declTypeRef.getQualifiedName());
 		});
 	}
-	@Test
-	public void testInlineStatementsBuilder() throws Exception {
-		// TODO: specify what InlineStatementsBuilder does
-	}
 
 	@Test
-	public void testTemplateMatchOfMultipleElements() throws Exception {
+	public void testPatternMatchOfMultipleElements() throws Exception {
 		CtType toBeMatchedtype = ModelUtils.buildClass(ToBeMatched.class);
 
 		// getting the list of literals defined in method match1
