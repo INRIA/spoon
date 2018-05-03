@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Custom CtElement iterator that returns the elements in the tree of a given node, the root, in DFS
+ * A class to be able to iterate over the children elements in the tree of a given node, in depth-first order.
  */
 public class CtIterator extends CtScanner implements Iterator {
 	/**
