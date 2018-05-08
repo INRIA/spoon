@@ -42,12 +42,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.EarlyTerminatingScanner;
-import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.ModelConsistencyChecker;
-import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.*;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -65,13 +60,7 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
@@ -559,5 +548,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		} catch (CtPathException e) {
 			throw new SpoonException(e);
 		}
+	}
+
+	@Override
+	public Iterator<CtElement> descendantIterator() {
+		return new CtIterator(this);
 	}
 }
