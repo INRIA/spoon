@@ -28,7 +28,16 @@ public class CtElementIteratorTest {
 
         List<CtElement> ctElements = getDescendantsInDFS(root);
 
+        testAsIterable(ctElements, root);
         testDescendantIterator(ctElements, root);
+    }
+
+    public void testAsIterable(List<CtElement> ctElements, CtElement root) {
+        int i = 0;
+        for (CtElement elem : CtElement.asIterable(root)) {
+            assertEquals(elem, ctElements.get(i));
+            i++;
+        }
     }
 
     public void testDescendantIterator(List<CtElement> ctElements, CtElement root) {

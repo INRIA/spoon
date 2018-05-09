@@ -375,4 +375,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 */
 	Iterator<CtElement> descendantIterator();
 
+	/**
+	 * Returns an Iterable instance of the given CtElement.
+	 * @param elem the root CtElement to iterate from.
+	 * @return an Iterable object that allows terating through the CtElement's descendants.
+	 */
+	static Iterable<CtElement> asIterable(final CtElement elem) {
+		return elem::descendantIterator;
+	}
+
 }
