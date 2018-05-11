@@ -5,9 +5,7 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
