@@ -567,4 +567,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public Iterator<CtElement> descendantIterator() {
 		return new CtIterator(this);
 	}
+
+	@Override
+	public Iterable<CtElement> asIterable() {
+		return this::descendantIterator;
+	}
 }

@@ -43,7 +43,7 @@ public class CtIteratorTest {
     public void testAsIterable(CtElement root) {
         Deque<CtElement> ctElements = getDescendantsInDFS(root);
 
-        for (CtElement elem : CtElement.asIterable(root)) {
+        for (CtElement elem : root.asIterable()) {
             assertEquals(elem, ctElements.pollFirst());
         }
     }
