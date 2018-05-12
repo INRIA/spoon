@@ -2,8 +2,6 @@ package spoon.test.template;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.OutputType;
-import spoon.SpoonModelBuilder;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.ParametersBuilder;
 import spoon.pattern.Pattern;
@@ -27,12 +25,9 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
-import spoon.reflect.meta.RoleHandler;
-import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.util.ParameterValueProvider;
@@ -52,7 +47,6 @@ import spoon.test.template.testclasses.match.MatchThrowables;
 import spoon.test.template.testclasses.match.MatchWithParameterCondition;
 import spoon.test.template.testclasses.match.MatchWithParameterType;
 import spoon.test.template.testclasses.replace.DPPSample1;
-import spoon.test.template.testclasses.replace.NewPattern;
 import spoon.test.template.testclasses.replace.OldPattern;
 import spoon.test.template.testclasses.types.AClassWithMethodsAndRefs;
 import spoon.testing.utils.ModelUtils;
@@ -495,7 +489,9 @@ public class PatternTest {
 
 		List<Match> matches = pattern.getMatches(ctClass);
 
-		// why method matcher1 is not matched?
+		// only testMatch1 is matched
+		// method matcher1, from which the template has been built, is not matched
+		// because the possessive quantifier eats its two statements, here remains nothing for the second template statement, which cannot match then.
 		assertEquals(1, matches.size());
 		Match match = matches.get(0);
 
@@ -536,7 +532,7 @@ public class PatternTest {
 			final int countFinal = count;
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple3.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-					.configureTemplateParameters()
+					.configurePatternParameters()
 					.configureParameters(pb -> {
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
 						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
@@ -574,7 +570,7 @@ public class PatternTest {
 		for (int count = 0; count < 5; count++) {
 			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-.configureTemplateParameters()
+.configurePatternParameters()
 .configureParameters(pb -> {
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
 				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
@@ -593,7 +589,7 @@ public class PatternTest {
 		for (int count = 5; count < 7; count++) {
 			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-					.configureTemplateParameters().build();
+					.configurePatternParameters().build();
 //				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
 //				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
 //				pb.parameter("inlinedSysOut").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
@@ -607,36 +603,35 @@ public class PatternTest {
 
 	}
 
-// Martin commented this one
-//	@Test
-//	public void testMatchGreedyMultiValueMinCount2() throws Exception {
-//		//contract: check possessive matching with min count limit and GREEDY back off
-//		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple2.class);
-//		for (int i = 0; i < 7; i++) {
-//			final int count = i;
-//			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple2.class);
-//			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-//
-//					.configureParameters(pb -> {
-//						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
-//						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
-//						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
-//						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
-//					})
-//					.build();
-//			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
-//			if (count < 7) {
-//				//the last template has nothing to match -> no match
-//				assertEquals("count=" + count, 1, matches.size());
-//				assertEquals("count=" + count, Math.max(0, 3 - count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
-//				assertEquals("count=" + count, count - Math.max(0, count - 4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
-//				assertEquals("count=" + count, Math.max(2, 3 - Math.max(0, count - 3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
-//			} else {
-//				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
-//				assertEquals("count=" + count, 0, matches.size());
-//			}
-//		}
-//	}
+	@Test
+	public void testMatchGreedyMultiValueMinCount2() throws Exception {
+		//contract: check possessive matching with min count limit and GREEDY back off
+		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple2.class);
+		for (int i = 0; i < 7; i++) {
+			final int count = i;
+			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple2.class);
+			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
+					.configurePatternParameters()
+					.configureParameters(pb -> {
+						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
+						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
+						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
+					})
+					.build();
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+			if (count < 7) {
+				//the last template has nothing to match -> no match
+				assertEquals("count=" + count, 1, matches.size());
+				assertEquals("count=" + count, Math.max(0, 3 - count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+				assertEquals("count=" + count, count - Math.max(0, count - 4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+				assertEquals("count=" + count, Math.max(2, 3 - Math.max(0, count - 3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
+			} else {
+				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
+				assertEquals("count=" + count, 0, matches.size());
+			}
+		}
+	}
 
 	/** returns the size of the list of 0 is list is null */
 	private int getCollectionSize(Object list) {
@@ -652,13 +647,16 @@ public class PatternTest {
 
 	@Test
 	public void testMatchParameterValue() throws Exception {
-		//contract: if matching on the pattern itself, the matched parameter value is the originak AST node from the pattern
+		//contract: if matching on the pattern itself, the matched parameter value is the original AST node from the pattern
 		// see last assertSame of this test
 		CtType<?> ctClass = ModelUtils.buildClass(MatchWithParameterType.class);
+
+		// pattern is System.out.println(value);
 
 		// pattern: a call to System.out.println with anything as parameter
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 				.configureParameters(pb -> {
+					// anything in place of the variable reference value can be matched
 					pb.parameter("value").byVariable("value");
 				})
 				.build();
@@ -682,8 +680,8 @@ public class PatternTest {
 
 	@Test
 	public void testMatchParameterValueType() throws Exception {
-		//contract: pattern parameters can be restricted to only certain types
-		// (here CtLiteral.class)
+		// contract: pattern parameters can be restricted to only certain types
+		// in this test case, we only match CtLiteral
 		CtType<?> ctClass = ModelUtils.buildClass(MatchWithParameterType.class);
 		{
 			// now we match only the ones with a literal as parameter
@@ -780,7 +778,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchOfAttribute() throws Exception {
-		//contract: match some nodes like template, but with some variable attributes
+		// contract: it is possible to match nodes based on their roles
 		// tested methods: ParameterBuilder#byRole and ParameterBuilder#byString
 		CtType<?> ctClass = ModelUtils.buildClass(MatchModifiers.class);
 		{
@@ -855,7 +853,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchOfMapAttribute() throws Exception {
-		//contract: there is support for matching annotations with different values
+		//contract: there is support for matching annotations with different annotation values
 		CtType<?> matchMapClass = ModelUtils.buildClass(MatchMap.class);
 		{
 			CtType<?> type = matchMapClass.getFactory().Type().get(MatchMap.class);
@@ -915,15 +913,9 @@ public class PatternTest {
 		}
 	}
 
-	private Map<String, Object> getMap(Match match, String name) {
-		Object v = match.getParametersMap().get(name);
-		assertNotNull(v);
-		return ((ParameterValueProvider) v).asMap();
-	}
-
 	@Test
 	public void testMatchOfMapAttributeAndOtherAnnotations() throws Exception {
-		//contract: match a pattern with an "open" annotation (different values can be matched)
+		//contract: match a pattern with an "open" annotation (different annotations can be matched)
 		// same test but with one more pattern parameter: allAnnotations
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMap.class);
 		{
@@ -1199,7 +1191,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchSample1() throws Exception {
-		// contract: a super omplex pattern is well matched
+		// contract: a super complex pattern is well matched
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
@@ -1276,9 +1268,7 @@ public class PatternTest {
 
 	@Test
 	public void testGenerateClassWithSelfReferences() throws Exception {
-		// main contract: a class with methods and fields can be used as template
-		// using method #createType
-
+		// main contract: a class with methods and fields can be used as pattern using method #createType
 		// in particular, all the references to the origin class are replace by reference to the new class cloned class
 
 		// creating  a pattern from AClassWithMethodsAndRefs
@@ -1375,6 +1365,7 @@ public class PatternTest {
 
 	@Test
 	public void testPatternMatchOfMultipleElements() throws Exception {
+		// contract: one can match list of elements in hard-coded arrays (CtNewArray)
 		CtType toBeMatchedtype = ModelUtils.buildClass(ToBeMatched.class);
 
 		// getting the list of literals defined in method match1
@@ -1483,7 +1474,7 @@ public class PatternTest {
 
 	@Test
 	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
-		//contract: substitution can be done on model, which is not based on Template
+		//contract: all the variable references which are declared out of the pattern model are automatically considered as pattern parameters
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
@@ -1521,5 +1512,14 @@ public class PatternTest {
 		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
+
+
+	private Map<String, Object> getMap(Match match, String name) {
+		Object v = match.getParametersMap().get(name);
+		assertNotNull(v);
+		return ((ParameterValueProvider) v).asMap();
+	}
+
+
 
 }

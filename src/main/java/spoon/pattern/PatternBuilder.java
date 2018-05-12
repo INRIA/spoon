@@ -402,8 +402,8 @@ public class PatternBuilder {
 	 *
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder configureTemplateParameters() {
-		return configureTemplateParameters(templateTypeRef.getTypeDeclaration(), null);
+	public PatternBuilder configurePatternParameters() {
+		return configurePatternParameters(templateTypeRef.getTypeDeclaration(), null);
 	}
 
 	/**
@@ -412,8 +412,8 @@ public class PatternBuilder {
 	 * 			when parameter value types influences which AST nodes will be the target of substitution in legacy template patterns
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder configureTemplateParameters(Map<String, Object> templateParameters) {
-		return configureTemplateParameters(templateTypeRef.getTypeDeclaration(), templateParameters);
+	public PatternBuilder configurePatternParameters(Map<String, Object> templateParameters) {
+		return configurePatternParameters(templateTypeRef.getTypeDeclaration(), templateParameters);
 	}
 
 	/**
@@ -423,10 +423,10 @@ public class PatternBuilder {
 	 * 			because parameter value types influences which AST nodes will be the target of substitution
 	 * @return this to support fluent API
 	 */
-	private PatternBuilder configureTemplateParameters(CtType<?> templateType, Map<String, Object> templateParameters) {
+	private PatternBuilder configurePatternParameters(CtType<?> templateType, Map<String, Object> templateParameters) {
 		configureParameters(pb -> {
 			templateType.map(new AllTypeMembersFunction()).forEach((CtTypeMember typeMember) -> {
-				configureTemplateParameter(templateType, templateParameters, pb, typeMember);
+				configurePatternParameter(templateType, templateParameters, pb, typeMember);
 			});
 			if (templateParameters != null) {
 				//configure template parameters based on parameter values only - these without any declaration in Template
@@ -448,7 +448,7 @@ public class PatternBuilder {
 		return this;
 	}
 
-	private void configureTemplateParameter(CtType<?> templateType, Map<String, Object> templateParameters, ParametersBuilder pb, CtTypeMember typeMember) {
+	private void configurePatternParameter(CtType<?> templateType, Map<String, Object> templateParameters, ParametersBuilder pb, CtTypeMember typeMember) {
 		Factory f = typeMember.getFactory();
 		CtTypeReference<TemplateParameter> templateParamRef = f.Type().createReference(TemplateParameter.class);
 		CtTypeReference<CtTypeReference> typeReferenceRef = f.Type().createReference(CtTypeReference.class);
