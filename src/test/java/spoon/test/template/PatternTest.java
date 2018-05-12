@@ -1118,6 +1118,7 @@ public class PatternTest {
 	@Test
 	public void testPatternToString() {
 		//contract: Pattern can be printed to String and each parameter is defined there
+		System.setProperty("line.separator", "\n");
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
