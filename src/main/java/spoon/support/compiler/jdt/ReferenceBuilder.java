@@ -988,7 +988,7 @@ public class ReferenceBuilder {
 				CtPackageReference javaLangPackageReference = this.jdtTreeBuilder.getFactory().Core().createPackageReference();
 				javaLangPackageReference.setSimpleName("java.lang");
 				ref.setPackage(javaLangPackageReference);
-			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError | ClassNotFoundException e) {
 				// in that case we consider the package should be the same as the current one. Fix #1293
 				ref.setPackage(jdtTreeBuilder.getContextBuilder().compilationUnitSpoon.getDeclaredPackage().getReference());
 			}

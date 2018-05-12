@@ -17,14 +17,16 @@
 package spoon.support.reflect.cu.position;
 
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 
 import java.io.File;
 
 /**
  * This class intends to create a source position containing only a compilation unit.
  */
-public class PartialSourcePositionImpl implements SourcePosition {
+public class PartialSourcePositionImpl extends NoSourcePosition {
+
+	private static final long serialVersionUID = 1L;
 
 	private CompilationUnit compilationUnit;
 
@@ -40,35 +42,5 @@ public class PartialSourcePositionImpl implements SourcePosition {
 	@Override
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
-	}
-
-	@Override
-	public int getLine() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
-	}
-
-	@Override
-	public int getEndLine() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
-	}
-
-	@Override
-	public int getColumn() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
-	}
-
-	@Override
-	public int getEndColumn() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
-	}
-
-	@Override
-	public int getSourceEnd() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
-	}
-
-	@Override
-	public int getSourceStart() {
-		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 }

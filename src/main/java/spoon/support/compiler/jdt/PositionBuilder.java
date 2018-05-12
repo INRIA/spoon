@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
@@ -34,6 +35,7 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -108,7 +110,7 @@ public class PositionBuilder {
 			if (variableDeclaration.type != null) {
 				modifiersSourceEnd = variableDeclaration.type.sourceStart() - 2;
 			} else if (variableDeclaration instanceof Initializer) {
-				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart;
+				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart - 1;
 			} else {
 				// variable that has no type such as TypeParameter
 				modifiersSourceEnd = declarationSourceStart - 1;
@@ -211,7 +213,7 @@ public class PositionBuilder {
 
 			sourceEnd = sourceStart + methodDeclaration.selector.length - 1;
 			if (bodyStart == 0) {
-				return SourcePosition.NOPOSITION;
+				return cf.createPartialSourcePosition(cu);
 			}
 			if (e instanceof CtStatementList) {
 				return cf.createSourcePosition(cu, bodyStart - 1, bodyEnd + 1, lineSeparatorPositions);
@@ -236,11 +238,29 @@ public class PositionBuilder {
 			}
 		} else if (e instanceof CtCatchVariable) {
 			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
-			iterator.next();
-			ASTPair next = iterator.next();
-			buildPositionCtElement(e, next.node);
-			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
-			return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+			ASTPair catchNode = iterator.next();
+			while (!(catchNode.node instanceof Argument)) {
+				catchNode = iterator.next();
+			}
+			DeclarationSourcePosition argumentPosition = (DeclarationSourcePosition) buildPositionCtElement(e, catchNode.node);
+
+			int variableNameStart = findNextNonWhitespace(contents, argumentPosition.getSourceEnd(), sourceEnd + 1);
+			int variableNameEnd = argumentPosition.getSourceEnd();
+
+			int modifierStart = sourceStart;
+			int modifierEnd = sourceStart - 1;
+			if (!getModifiers(((Argument) catchNode.node).modifiers, false, false).isEmpty()) {
+				modifierStart = argumentPosition.getModifierSourceStart();
+				modifierEnd = argumentPosition.getModifierSourceEnd();
+
+				sourceStart = modifierStart;
+			}
+			sourceEnd = argumentPosition.getSourceEnd();
+			return cf.createDeclarationSourcePosition(cu,
+					variableNameStart, variableNameEnd,
+					modifierStart, modifierEnd,
+					sourceStart, sourceEnd,
+					lineSeparatorPositions);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		}
@@ -262,7 +282,7 @@ public class PositionBuilder {
 		String modifierContent = String.valueOf(contents, start, end - start + 1);
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
-				modifier.setPosition(SourcePosition.NOPOSITION);
+				modifier.setPosition(cf.createPartialSourcePosition(cu));
 				continue;
 			}
 			int index = modifierContent.indexOf(modifier.getKind().toString());

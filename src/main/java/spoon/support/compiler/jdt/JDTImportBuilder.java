@@ -118,7 +118,7 @@ class JDTImportBuilder {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 					klass = this.factory.Type().get(zeClass);
 					return klass;
-				} catch (ClassNotFoundException e) {
+				} catch (NoClassDefFoundError | ClassNotFoundException e) {
 					return null;
 				}
 			}

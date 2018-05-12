@@ -18,6 +18,7 @@ package spoon.support.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -25,6 +26,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +40,8 @@ import java.util.List;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
+	private static final long serialVersionUID = 1L;
+
 	Factory factory;
 
 	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
@@ -269,6 +273,16 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		this.autoImport = autoImport;
 	}
 
+	private PartialSourcePositionImpl myPartialSourcePosition;
+	/**
+	 * @return a {@link SourcePosition} which points to this {@link CompilationUnit}. It always returns same value to safe memory.
+	 */
+	public SourcePosition getOrCreatePartialSourcePosition() {
+		if (myPartialSourcePosition == null) {
+			myPartialSourcePosition = new PartialSourcePositionImpl(this);
+		}
+		return myPartialSourcePosition;
+	}
 
 
 }

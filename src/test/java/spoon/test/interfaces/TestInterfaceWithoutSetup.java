@@ -2,8 +2,8 @@ package spoon.test.interfaces;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
 import spoon.Launcher;
-import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -64,7 +64,7 @@ public class TestInterfaceWithoutSetup {
                 counter++;
             } else {
                 assertFalse(extendedModifier.isImplicit());
-                assertFalse(extendedModifier.getPosition() instanceof NoSourcePosition);
+                assertTrue(extendedModifier.getPosition().isValidPosition());
                 assertEquals(extendedModifier.getKind().toString(), extendedModifier.getPosition().getCompilationUnit().getOriginalSourceCode().substring(extendedModifier.getPosition().getSourceStart(),extendedModifier.getPosition().getSourceEnd() + 1));
                 counter++;
             }
