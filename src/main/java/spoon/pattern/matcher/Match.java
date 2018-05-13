@@ -79,7 +79,7 @@ public class Match {
 	 * @param failIfMany if there is more then one matching element and `failIfMany` == true, then it throws SpoonException.
 	 * @return first matching element
 	 */
-	public <T> T getMatchingElement(Class<T> clazz, boolean failIfMany) {
+	private <T> T getMatchingElement(Class<T> clazz, boolean failIfMany) {
 		if (matchingElements.isEmpty()) {
 			return null;
 		}
