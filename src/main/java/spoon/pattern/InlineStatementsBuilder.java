@@ -16,17 +16,19 @@
  */
 package spoon.pattern;
 
+import static spoon.pattern.PatternBuilder.bodyToStatements;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
 import spoon.SpoonException;
-import spoon.pattern.node.ForEachNode;
-import spoon.pattern.node.ListOfNodes;
-import spoon.pattern.node.RootNode;
-import spoon.pattern.node.ParameterNode;
-import spoon.pattern.node.PrimitiveMatcher;
-import spoon.pattern.node.SwitchNode;
+import spoon.pattern.internal.node.ForEachNode;
+import spoon.pattern.internal.node.ListOfNodes;
+import spoon.pattern.internal.node.ParameterNode;
+import spoon.pattern.internal.node.PrimitiveMatcher;
+import spoon.pattern.internal.node.RootNode;
+import spoon.pattern.internal.node.SwitchNode;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
@@ -37,8 +39,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
-
-import static spoon.pattern.PatternBuilder.bodyToStatements;
 
 /**
  * Builds inline statements of Pattern

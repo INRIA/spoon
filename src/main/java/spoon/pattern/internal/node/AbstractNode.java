@@ -14,29 +14,29 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.internal.node;
 
-import spoon.SpoonException;
-import spoon.pattern.internal.node.RootNode;
+import spoon.pattern.internal.PatternPrinter;
 
 /**
- * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
+ * Represents a parameterized Pattern ValueResolver, which can be used
+ * <ul>
+ * <li>to generate a zero, one or more copies of model using provided parameters</li>
+ * <li>to match zero, one or more instances of model and deliver a matching parameters</li>
+ * </ul>
  */
-public enum ConflictResolutionMode {
-	/**
-	 * throw {@link SpoonException}
-	 */
-	FAIL,
-	/**
-	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
-	 */
-	USE_NEW_NODE,
-	/**
-	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
-	 */
-	KEEP_OLD_NODE,
-	/**
-	 * add new {@link RootNode} after existing nodes
-	 */
-	APPEND
+public abstract class AbstractNode implements RootNode {
+	private boolean simplifyGenerated = false;
+	@Override
+	public String toString() {
+		return new PatternPrinter().printNode(this);
+	}
+	@Override
+	public boolean isSimplifyGenerated() {
+		return simplifyGenerated;
+	}
+	@Override
+	public void setSimplifyGenerated(boolean simplifyGenerated) {
+		this.simplifyGenerated = simplifyGenerated;
+	}
 }

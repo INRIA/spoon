@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
-import spoon.pattern.matcher.Match;
-import spoon.pattern.matcher.MatchingScanner;
-import spoon.pattern.node.ModelNode;
-import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.internal.DefaultGenerator;
+import spoon.pattern.internal.matcher.MatchingScanner;
+import spoon.pattern.internal.node.ModelNode;
+import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;

@@ -14,29 +14,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.internal;
 
-import spoon.SpoonException;
 import spoon.pattern.internal.node.RootNode;
 
 /**
- * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
+ * Maps AST model object to the {@link RootNode}
  */
-public enum ConflictResolutionMode {
+public interface SubstitutionRequestProvider {
 	/**
-	 * throw {@link SpoonException}
+	 * @param object a node from the Pattern model to be matched
+	 * @return {@link RootNode}, which has to be used to match `object` from model of {@link SubstitutionRequestProvider}
 	 */
-	FAIL,
-	/**
-	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
-	 */
-	USE_NEW_NODE,
-	/**
-	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
-	 */
-	KEEP_OLD_NODE,
-	/**
-	 * add new {@link RootNode} after existing nodes
-	 */
-	APPEND
+	RootNode getTemplateValueResolver(Object object);
 }

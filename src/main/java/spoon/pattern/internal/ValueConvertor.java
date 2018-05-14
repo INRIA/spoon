@@ -14,29 +14,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.internal;
 
-import spoon.SpoonException;
-import spoon.pattern.internal.node.RootNode;
+import spoon.reflect.factory.Factory;
 
 /**
- * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
+ * Converts the individual parameter values to required type after substitution
+ * Converts the matching model values to parameter values during matching process
  */
-public enum ConflictResolutionMode {
-	/**
-	 * throw {@link SpoonException}
-	 */
-	FAIL,
-	/**
-	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
-	 */
-	USE_NEW_NODE,
-	/**
-	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
-	 */
-	KEEP_OLD_NODE,
-	/**
-	 * add new {@link RootNode} after existing nodes
-	 */
-	APPEND
+public interface ValueConvertor {
+	<T> T getValueAs(Factory factory, Object value, Class<T> valueClass);
 }

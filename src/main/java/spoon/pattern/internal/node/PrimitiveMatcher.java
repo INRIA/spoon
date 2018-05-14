@@ -14,29 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.internal.node;
 
-import spoon.SpoonException;
-import spoon.pattern.internal.node.RootNode;
+import spoon.support.util.ParameterValueProvider;
 
 /**
- * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
+ * Defines API of a primitive matcher - matcher for single target object
  */
-public enum ConflictResolutionMode {
+public interface PrimitiveMatcher extends RepeatableMatcher {
+
 	/**
-	 * throw {@link SpoonException}
+	 * @param target - to be matched element
+	 * @param parameters will receive the matching parameter values
+	 * @return true if `element` matches with pattern of this matcher
 	 */
-	FAIL,
-	/**
-	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
-	 */
-	USE_NEW_NODE,
-	/**
-	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
-	 */
-	KEEP_OLD_NODE,
-	/**
-	 * add new {@link RootNode} after existing nodes
-	 */
-	APPEND
+	ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters);
 }

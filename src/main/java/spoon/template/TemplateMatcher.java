@@ -16,12 +16,14 @@
  */
 package spoon.template;
 
+import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
+
 import java.util.List;
 
+import spoon.pattern.Match;
 import spoon.pattern.Pattern;
-import spoon.pattern.matcher.Match;
-import spoon.pattern.matcher.TobeMatched;
-import spoon.pattern.node.ModelNode;
+import spoon.pattern.internal.matcher.TobeMatched;
+import spoon.pattern.internal.node.ModelNode;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
@@ -30,8 +32,6 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.util.ParameterValueProvider;
 import spoon.support.util.ParameterValueProviderFactory;
 import spoon.support.util.UnmodifiableParameterValueProvider;
-
-import static spoon.pattern.matcher.TobeMatched.getMatchedParameters;
 
 /**
  * This class defines an engine for matching a template to pieces of code.

@@ -14,29 +14,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.pattern;
+package spoon.pattern.internal.node;
 
-import spoon.SpoonException;
-import spoon.pattern.internal.node.RootNode;
+import spoon.pattern.internal.matcher.TobeMatched;
 
 /**
- * Defines what happens when before explicitly added {@link RootNode} has to be replaced by another {@link RootNode}
+ * Delivers to be substituted value
+ * Matches value
  */
-public enum ConflictResolutionMode {
-	/**
-	 * throw {@link SpoonException}
-	 */
-	FAIL,
-	/**
-	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
-	 */
-	USE_NEW_NODE,
-	/**
-	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
-	 */
-	KEEP_OLD_NODE,
-	/**
-	 * add new {@link RootNode} after existing nodes
-	 */
-	APPEND
+abstract class AbstractPrimitiveMatcher extends AbstractRepeatableMatcher implements PrimitiveMatcher {
+
+	protected AbstractPrimitiveMatcher() {
+	}
+
+
+	@Override
+	public TobeMatched matchAllWith(TobeMatched tobeMatched) {
+		//we are matching single CtElement or attribute value
+		return tobeMatched.matchNext((target, parameters) -> {
+			return matchTarget(target, tobeMatched.getParameters());
+		});
+	}
 }

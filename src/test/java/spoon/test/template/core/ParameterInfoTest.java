@@ -18,10 +18,10 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import spoon.pattern.parameter.ListParameterInfo;
-import spoon.pattern.parameter.MapParameterInfo;
-import spoon.pattern.parameter.ParameterInfo;
-import spoon.pattern.parameter.SetParameterInfo;
+import spoon.pattern.internal.parameter.ListParameterInfo;
+import spoon.pattern.internal.parameter.MapParameterInfo;
+import spoon.pattern.internal.parameter.ParameterInfo;
+import spoon.pattern.internal.parameter.SetParameterInfo;
 import spoon.reflect.meta.ContainerKind;
 import spoon.support.util.ParameterValueProvider;
 import spoon.support.util.UnmodifiableParameterValueProvider;

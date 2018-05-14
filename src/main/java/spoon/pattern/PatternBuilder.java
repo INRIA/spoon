@@ -29,12 +29,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import spoon.SpoonException;
-import spoon.pattern.node.ElementNode;
-import spoon.pattern.node.ListOfNodes;
-import spoon.pattern.node.ModelNode;
-import spoon.pattern.node.RootNode;
-import spoon.pattern.parameter.AbstractParameterInfo;
-import spoon.pattern.parameter.ParameterInfo;
+import spoon.pattern.internal.ValueConvertor;
+import spoon.pattern.internal.ValueConvertorImpl;
+import spoon.pattern.internal.node.ElementNode;
+import spoon.pattern.internal.node.ListOfNodes;
+import spoon.pattern.internal.node.ModelNode;
+import spoon.pattern.internal.node.RootNode;
+import spoon.pattern.internal.parameter.AbstractParameterInfo;
+import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -338,7 +340,7 @@ public class PatternBuilder {
 	/**
 	 * @return default {@link ValueConvertor}, which will be assigned to all new {@link ParameterInfo}s
 	 */
-	public ValueConvertor getDefaultValueConvertor() {
+	ValueConvertor getDefaultValueConvertor() {
 		return valueConvertor;
 	}
 
@@ -346,7 +348,7 @@ public class PatternBuilder {
 	 * @param valueConvertor default {@link ValueConvertor}, which will be assigned to all {@link ParameterInfo}s created after this call
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder setDefaultValueConvertor(ValueConvertor valueConvertor) {
+	PatternBuilder setDefaultValueConvertor(ValueConvertor valueConvertor) {
 		this.valueConvertor = valueConvertor;
 		return this;
 	}
