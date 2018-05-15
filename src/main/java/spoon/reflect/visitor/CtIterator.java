@@ -9,7 +9,7 @@ import java.util.Iterator;
 /**
  * A class to be able to iterate over the children elements in the tree of a given node, in depth-first order.
  */
-public class CtIterator extends CtScanner implements Iterator {
+public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque containing the elements the iterator has seen but not expanded
 	 */
@@ -67,7 +67,7 @@ public class CtIterator extends CtScanner implements Iterator {
 	 * @return CtElement the next element in DFS order without going down the tree
 	 */
 	@Override
-	public Object next() {
+	public CtElement next() {
 		CtElement next = deque.pollFirst(); // get the element to expand from the deque
 		current_children.clear(); // clear for this scan
 		next.accept(this); // call @scan for each direct child of the node

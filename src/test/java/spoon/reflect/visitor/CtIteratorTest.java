@@ -5,12 +5,14 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static org.junit.Assert.assertEquals;
 
 public class CtIteratorTest {
+
     @Test
-    public void testMethodsInIterator() throws Exception {
+    public void testCtElementIteration() throws Exception {
         // contract: CtIterator must go over all nodes in dfs order
         final Launcher launcher = new Launcher();
         launcher.setArgs(new String[] {"--output-type", "nooutput"});
@@ -22,17 +24,41 @@ public class CtIteratorTest {
         // get the first Type
         CtElement root = launcher.getFactory().getModel().getAllTypes().iterator().next();
 
-        // use custom CtScanner to assert the proper behaviour
-        CtScannerList counter = new CtScannerList();
+        testCtIterator(root);
+        testAsIterable(root);
+        testDescendantIterator(root);
+    }
 
-        // scan the root to get the elements in DFS order
-        root.accept(counter);
+    public void testCtIterator(CtElement root) {
+        Deque<CtElement> ctElements = getDescendantsInDFS(root);
 
-        // test the iterator by testing that it matches the DFS order as expected
         CtIterator iterator = new CtIterator(root);
         while (iterator.hasNext()) {
-            assertEquals(counter.nodes.pollFirst(), iterator.next());
+            assertEquals(ctElements.pollFirst(), iterator.next());
         }
+    }
+
+    public void testAsIterable(CtElement root) {
+        Deque<CtElement> ctElements = getDescendantsInDFS(root);
+
+        for (CtElement elem : root.asIterable()) {
+            assertEquals(elem, ctElements.pollFirst());
+        }
+    }
+
+    public void testDescendantIterator(CtElement root) {
+        Deque<CtElement> ctElements = getDescendantsInDFS(root);
+
+        root.descendantIterator().forEachRemaining((CtElement elem) ->
+                assertEquals(ctElements.pollFirst(), elem)
+        );
+    }
+
+    Deque<CtElement> getDescendantsInDFS(CtElement root) {
+        CtScannerList counter = new CtScannerList();
+        root.accept(counter);
+
+        return counter.nodes;
     }
 
     /**
@@ -40,7 +66,7 @@ public class CtIteratorTest {
      * in DFS order, for the {@link CtIterator} test
      */
     class CtScannerList extends CtScanner {
-        public ArrayDeque<CtElement> nodes = new ArrayDeque<>();
+        public Deque<CtElement> nodes = new ArrayDeque<>();
 
         @Override
         protected void enter(CtElement e) {
