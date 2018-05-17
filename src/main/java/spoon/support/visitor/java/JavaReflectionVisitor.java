@@ -73,13 +73,16 @@ interface JavaReflectionVisitor {
 	<T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter);
 
 	/** Visits a {@link Type} */
-	void visitType(Type type);
+	void visitTypeReference(Type type);
 
 	/** Visits a {@link ParameterizedType} */
-	void visitType(ParameterizedType type);
+	void visitTypeReference(ParameterizedType type);
 
 	/** Visits a {@link WildcardType} */
-	void visitType(WildcardType type);
+	void visitTypeReference(WildcardType type);
+
+	/** Visits a {@link Class} in generic parameters */
+	<T> void visitTypeReference(Class<T> clazz);
 
 	/** Visits a class as an array reference */
 	<T> void visitArrayReference(Class<T> typeArray);
@@ -101,4 +104,5 @@ interface JavaReflectionVisitor {
 
 	/** Visits a {@link Type} representing an interface. */
 	<T> void visitInterfaceReference(Type type);
+
 }

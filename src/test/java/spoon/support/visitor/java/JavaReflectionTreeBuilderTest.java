@@ -1,5 +1,30 @@
 package spoon.support.visitor.java;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.createFactory;
+
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.lang.annotation.Retention;
+import java.net.CookieManager;
+import java.net.URLClassLoader;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -20,6 +45,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -28,6 +54,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Root;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.code.CtAssignmentImpl;
@@ -38,31 +65,6 @@ import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
 import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.SpoonMetaModel;
-
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.lang.annotation.Retention;
-import java.net.CookieManager;
-import java.net.URLClassLoader;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
 	@Test
@@ -244,11 +246,24 @@ public class JavaReflectionTreeBuilderTest {
 				if (otherParam.getSimpleName().startsWith("arg")) {
 					otherParam.setSimpleName(param.getSimpleName());
 				}
+				if (param.isFinal()) {
+					otherParam.addModifier(ModifierKind.FINAL);
+				}
 			}
 			if (element instanceof CtAnnotation) {
 				CtAnnotation myAnnotation = (CtAnnotation) element;
-				if (myAnnotation.getAnnotationType().getSimpleName().equals("Override")) {
+				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Override.class.getName())) {
 					return;
+				}
+				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Root.class.getName())) {
+					return;
+				}
+			}
+			if (element instanceof CtTypeMember && (element instanceof CtTypeParameter == false)) {
+				CtTypeMember typeMember = (CtTypeMember) element;
+				CtTypeMember otherTypeMember = (CtTypeMember) other;
+				if (typeMember.getDeclaringType() != null && typeMember.getDeclaringType().isInterface()) {
+					otherTypeMember.setModifiers(typeMember.getModifiers());
 				}
 			}
 			super.biScan(role, element, other);
@@ -277,7 +292,7 @@ public class JavaReflectionTreeBuilderTest {
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>)elements).stream().filter(a->{
 					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
 					Class ac = at.getActualClass();
-					if (ac == Override.class || ac == SuppressWarnings.class) {
+					if (ac == Override.class || ac == SuppressWarnings.class || ac == Root.class) {
 						return false;
 					}
 					return true;

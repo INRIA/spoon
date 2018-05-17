@@ -16,6 +16,20 @@
  */
 package spoon.support.visitor.java;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -47,19 +61,6 @@ import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Iterator;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -265,11 +266,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public void visitMethod(RtMethod method) {
-		this.visitMethod(method, null);
-	}
-
-	@Override
 	public void visitMethod(RtMethod method, Annotation parent) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
@@ -282,6 +278,12 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		exit();
 
 		contexts.peek().addMethod(ctMethod);
+	}
+
+	@Override
+	protected void visitMethodExceptionTypes(RtMethod method) {
+		((ExecutableRuntimeBuilderContext) contexts.peek()).onExceptionTypes();
+		super.visitMethodExceptionTypes(method);
 	}
 
 	@Override
@@ -314,6 +316,10 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtParameter ctParameter = factory.Core().createParameter();
 		ctParameter.setSimpleName(parameter.getName());
 		ctParameter.setVarArgs(parameter.isVarArgs());
+		//it is not possible to detect whether parameter is final in runtime
+//		if (parameter.isFinal()) {
+//			ctParameter.addModifier(ModifierKind.FINAL);
+//		}
 
 		enter(new VariableRuntimeBuilderContext(ctParameter));
 		super.visitParameter(parameter);
@@ -337,7 +343,16 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtTypeParameter typeParameter = factory.Core().createTypeParameter();
 		typeParameter.setSimpleName(parameter.getName());
 
-		enter(new TypeRuntimeBuilderContext(parameter, typeParameter));
+		enter(new TypeRuntimeBuilderContext(parameter, typeParameter) {
+			@Override
+			public void addClassReference(CtTypeReference<?> typeReference) {
+				typeParameter.setSuperclass(typeReference);
+			}
+			@Override
+			public void addTypeName(CtTypeReference<?> typeReference) {
+				typeParameter.setSuperclass(typeReference);
+			}
+		});
 		super.visitTypeParameter(parameter);
 		exit();
 
@@ -351,7 +366,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 		RuntimeBuilderContext runtimeBuilderContext = new TypeReferenceRuntimeBuilderContext(parameter, typeParameterReference);
 		if (contexts.contains(runtimeBuilderContext)) {
-			// we hare in the case of a loop
+			// we are in the case of a loop
 			exit();
 			enter(new TypeReferenceRuntimeBuilderContext(Object.class, factory.Type().OBJECT));
 			return;
@@ -375,25 +390,30 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public void visitType(Type type) {
+	public void visitTypeReference(Type type) {
 		CtTypeReference<?> ctTypeReference;
 		if (type instanceof TypeVariable) {
 			this.visitTypeParameterReference((TypeVariable<?>) type);
 			return;
-		} else {
-			ctTypeReference = factory.Core().createTypeReference();
 		}
-		enter(new TypeReferenceRuntimeBuilderContext(type, ctTypeReference));
-		ctTypeReference.setSimpleName(getTypeName(type));
-
-		super.visitType(type);
-		exit();
-
-		contexts.peek().addTypeName(ctTypeReference);
+		if (type instanceof ParameterizedType) {
+			this.visitTypeReference((ParameterizedType) type);
+			return;
+		}
+		if (type instanceof WildcardType) {
+			this.visitTypeReference((WildcardType) type);
+			return;
+		}
+		if (type instanceof Class) {
+			//do not call visitClassReference because it call addClassReference, but we need to call addTypeName
+			this.visitTypeReference((Class) type);
+			return;
+		}
+		throw new SpoonException("Unexpected java reflection type: " + type.getClass().getName());
 	}
 
 	@Override
-	public void visitType(ParameterizedType type) {
+	public void visitTypeReference(ParameterizedType type) {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
 
 		RuntimeBuilderContext context = new TypeReferenceRuntimeBuilderContext(type, ctTypeReference) {
@@ -412,7 +432,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		};
 
 		enter(context);
-		super.visitType(type);
+		super.visitTypeReference(type);
 
 		// in case of a loop we have replaced a context:
 		// we do not want to addTypeName then
@@ -429,42 +449,53 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public void visitType(WildcardType type) {
+	public void visitTypeReference(WildcardType type) {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
 		wildcard.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
 
 		enter(new TypeReferenceRuntimeBuilderContext(type, wildcard));
-		super.visitType(type);
+		super.visitTypeReference(type);
 		exit();
 
 		contexts.peek().addTypeName(wildcard);
 	}
 
-	private String getTypeName(Type type) {
-		if (!(type instanceof Class)) {
-			return type.toString();
-		}
-		Class clazz = (Class) type;
-		if (clazz.isArray()) {
-			try {
-				Class<?> cl = clazz;
-				int dimensions = 0;
-				while (cl.isArray()) {
-					dimensions++;
-					cl = cl.getComponentType();
-				}
-				StringBuilder sb = new StringBuilder();
-				sb.append(cl.getName());
-				for (int i = 0; i < dimensions; i++) {
-					sb.append("[]");
-				}
-				return sb.toString();
-			} catch (Throwable e) { /*FALLTHRU*/ }
-		} else {
-			visitPackage(clazz.getPackage());
-		}
+	@Override
+	public <T> void visitTypeReference(Class<T> clazz) {
+		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
+		typeReference.setSimpleName(clazz.getSimpleName());
 
-		return clazz.getSimpleName();
+		enter(new TypeReferenceRuntimeBuilderContext(clazz, typeReference));
+		super.visitTypeReference(clazz);
+		exit();
+
+		contexts.peek().addTypeName(typeReference);
+	}
+
+	private String getTypeName(Type type) {
+		if (type instanceof Class) {
+			Class clazz = (Class) type;
+			if (clazz.isArray()) {
+				try {
+					Class<?> cl = clazz;
+					int dimensions = 0;
+					while (cl.isArray()) {
+						dimensions++;
+						cl = cl.getComponentType();
+					}
+					StringBuilder sb = new StringBuilder();
+					sb.append(cl.getName());
+					for (int i = 0; i < dimensions; i++) {
+						sb.append("[]");
+					}
+					return sb.toString();
+				} catch (Throwable e) { /*FALLTHRU*/ }
+			} else {
+				visitPackage(clazz.getPackage());
+			}
+			return clazz.getSimpleName();
+		}
+		return type.toString();
 	}
 
 	@Override

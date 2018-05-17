@@ -36,6 +36,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	private CtExecutable<?> ctExecutable;
 	private Executable executable;
 	private Map<String, CtTypeParameter> mapTypeParameters;
+	private boolean collectingExceptionTypes = false;
 
 	public ExecutableRuntimeBuilderContext(Executable executable, CtMethod<?> ctMethod) {
 		super(ctMethod);
@@ -71,9 +72,15 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 		super.addArrayReference(arrayTypeReference);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addClassReference(CtTypeReference<?> typeReference) {
+		if (collectingExceptionTypes) {
+			ctExecutable.addThrownType((CtTypeReference) typeReference);
+			return;
+		}
 		if (ctExecutable instanceof CtMethod) {
+			@SuppressWarnings("rawtypes")
 			final CtTypeReference ref = typeReference;
 			ctExecutable.setType(ref);
 			return;
@@ -83,12 +90,7 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 
 	@Override
 	public void addTypeName(CtTypeReference<?> typeReference) {
-		if (ctExecutable instanceof CtMethod) {
-			final CtTypeReference ref = typeReference;
-			ctExecutable.setType(ref);
-			return;
-		}
-		super.addClassReference(typeReference);
+		addClassReference(typeReference);
 	}
 
 	@Override
@@ -104,5 +106,9 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	@Override
 	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
 		return executable == genericDeclaration ? this.mapTypeParameters.get(string) : null;
+	}
+
+	public void onExceptionTypes() {
+		collectingExceptionTypes = true;
 	}
 }

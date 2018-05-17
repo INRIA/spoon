@@ -44,7 +44,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 			visitTypeParameter(generic);
 		}
-		if (clazz.getGenericSuperclass() != null) {
+		if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
 			visitClassReference(clazz.getGenericSuperclass());
 		}
 		for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -63,15 +63,19 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			if (aClass.isAnnotation()) {
-				visitAnnotationClass((Class<Annotation>) aClass);
-			} else if (aClass.isInterface()) {
-				visitInterface(aClass);
-			} else if (aClass.isEnum()) {
-				visitEnum(aClass);
-			} else {
-				visitClass(aClass);
-			}
+			visitType(aClass);
+		}
+	}
+
+	protected final <T> void visitType(Class<T> aClass) {
+		if (aClass.isAnnotation()) {
+			visitAnnotationClass((Class<Annotation>) aClass);
+		} else if (aClass.isInterface()) {
+			visitInterface(aClass);
+		} else if (aClass.isEnum()) {
+			visitEnum(aClass);
+		} else {
+			visitClass(aClass);
 		}
 	}
 
@@ -94,7 +98,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
 		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 			visitTypeParameter(generic);
@@ -107,7 +111,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Class<?> anInterface : clazz.getInterfaces()) {
+		for (Type anInterface : clazz.getGenericInterfaces()) {
 			visitInterfaceReference(anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
@@ -133,7 +137,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			}
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
 	}
 
@@ -153,7 +157,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
 	}
 
@@ -182,7 +186,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	}
 
 	@Override
-	public void visitMethod(RtMethod method) {
+	public final void visitMethod(RtMethod method) {
 		this.visitMethod(method, null);
 	}
 
@@ -205,10 +209,17 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (method.getGenericReturnType() instanceof Class) {
 				visitClassReference(method.getReturnType());
 			} else if (method.getGenericReturnType() instanceof ParameterizedType) {
-				visitType((ParameterizedType) method.getGenericReturnType());
+				visitTypeReference((ParameterizedType) method.getGenericReturnType());
 			} else {
 				visitTypeParameterReference((TypeVariable) method.getGenericReturnType());
 			}
+		}
+		visitMethodExceptionTypes(method);
+	}
+
+	protected void visitMethodExceptionTypes(RtMethod method) {
+		for (Class<?> exceptionType : method.getExceptionTypes()) {
+			visitTypeReference(exceptionType);
 		}
 	}
 
@@ -248,7 +259,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			} else if (parameter.getGenericType() instanceof Class) {
 				visitClassReference(parameter.getType());
 			} else if (parameter.getGenericType() instanceof ParameterizedType) {
-				visitType((ParameterizedType) parameter.getGenericType());
+				visitTypeReference((ParameterizedType) parameter.getGenericType());
 			} else {
 				visitTypeParameterReference((TypeVariable) parameter.getGenericType());
 			}
@@ -258,78 +269,70 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter) {
 		for (Type type : parameter.getBounds()) {
-			if (type instanceof ParameterizedType) {
-				visitType((ParameterizedType) type);
-			} else if (type instanceof WildcardType) {
-				visitType((WildcardType) type);
-			} else {
+			if (type == Object.class) {
 				// we want to ignore Object to avoid <T extends Object>
-				if (!type.getTypeName().equals("java.lang.Object")) {
-					visitType(type);
-				}
+				continue;
 			}
+			visitTypeReference(type);
 		}
 	}
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
 		for (Type type : parameter.getBounds()) {
-			if (type instanceof ParameterizedType) {
-				visitType((ParameterizedType) type);
-			} else if (type instanceof WildcardType) {
-				visitType((WildcardType) type);
-			} else {
+			if (type == Object.class) {
 				// we bypass Object.class: if a generic type extends Object we don't put it in the model, it's implicit
 				// we do the same thing in ReferenceBuilder
-				if (!(type instanceof Class && type == Object.class)) {
-					visitType(type);
-				}
+				continue;
 			}
+			visitTypeReference(type);
 		}
 	}
 
 	@Override
-	public void visitType(Type type) {
+	public void visitTypeReference(Type type) {
 	}
 
 	@Override
-	public void visitType(ParameterizedType type) {
+	public void visitTypeReference(ParameterizedType type) {
 		if (type.getRawType() != null) {
 			visitClassReference((Class) type.getRawType());
 		}
 		for (Type actualType : type.getActualTypeArguments()) {
-			if (actualType instanceof ParameterizedType) {
-				visitType((ParameterizedType) actualType);
-			} else if (actualType instanceof WildcardType) {
-				visitType((WildcardType) actualType);
+			visitTypeReference(actualType);
+		}
+	}
+
+	@Override
+	public void visitTypeReference(WildcardType type) {
+		if (!type.getUpperBounds()[0].equals(Object.class)) {
+			for (Type upper : type.getUpperBounds()) {
+				visitTypeReference(upper);
+			}
+		}
+		for (Type lower : type.getLowerBounds()) {
+			if (lower instanceof ParameterizedType) {
+				visitTypeReference((ParameterizedType) lower);
+			} else if (lower instanceof WildcardType) {
+				visitTypeReference((WildcardType) lower);
 			} else {
-				visitType(actualType);
+				visitTypeReference(lower);
 			}
 		}
 	}
 
 	@Override
-	public void visitType(WildcardType type) {
-		if (!type.getUpperBounds()[0].equals(Object.class)) {
-			for (Type upper : type.getUpperBounds()) {
-				if (upper instanceof ParameterizedType) {
-					visitType((ParameterizedType) upper);
-				} else if (upper instanceof WildcardType) {
-					visitType((WildcardType) upper);
-				} else {
-					visitType(upper);
-				}
-			}
+	public <T> void visitTypeReference(Class<T> clazz) {
+		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
+			visitPackage(clazz.getPackage());
 		}
-		for (Type lower : type.getLowerBounds()) {
-			if (lower instanceof ParameterizedType) {
-				visitType((ParameterizedType) lower);
-			} else if (lower instanceof WildcardType) {
-				visitType((WildcardType) lower);
-			} else {
-				visitType(lower);
-			}
+		if (clazz.getEnclosingClass() != null) {
+			visitClassReference(clazz.getEnclosingClass());
 		}
+//
+//		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+//			visitTypeParameter(generic);
+//		}
 	}
 
 	@Override
@@ -359,11 +362,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 
 		for (Type generic : type.getActualTypeArguments()) {
-			if (generic instanceof TypeVariable) {
-				visitTypeParameter((TypeVariable<?>) generic);
-			} else {
-				visitType(generic);
-			}
+			visitTypeReference(generic);
 		}
 	}
 
@@ -378,7 +377,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	}
 
 	@Override
-	public <T> void visitClassReference(Type type) {
+	public final <T> void visitClassReference(Type type) {
 		if (type instanceof Class) {
 			visitClassReference((Class) type);
 		} else if (type instanceof ParameterizedType) {
@@ -390,7 +389,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public <T> void visitInterfaceReference(Class<T> type) {
-		if (type.getPackage() != null) {
+		if (type.getPackage() != null && type.getEnclosingClass() == null) {
 			visitPackage(type.getPackage());
 		}
 		if (type.getEnclosingClass() != null) {
@@ -421,16 +420,12 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 
 		for (Type generic : type.getActualTypeArguments()) {
-			if (generic instanceof TypeVariable) {
-				visitTypeParameter((TypeVariable<?>) generic);
-			} else {
-				visitType(generic);
-			}
+			visitTypeReference(generic);
 		}
 	}
 
 	@Override
-	public <T> void visitInterfaceReference(Type type) {
+	public final <T> void visitInterfaceReference(Type type) {
 		if (type instanceof Class) {
 			visitInterfaceReference((Class) type);
 		} else if (type instanceof ParameterizedType) {

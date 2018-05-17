@@ -54,9 +54,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
-		if ("spoon.reflect.reference.CtTypeReference<?>".equals(simplename)) {
-			this.getClass();
-		}
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simplename = simplename;
