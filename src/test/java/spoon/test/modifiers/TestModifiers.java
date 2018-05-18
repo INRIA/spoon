@@ -206,7 +206,7 @@ public class TestModifiers {
 
     @Test
     public void testClearModifiersByNull() throws Exception {
-    	//contract: it is possible to remove modifiers by setModifiers(emptySet)
+    	//contract: it is possible to remove modifiers by setModifiers(null)
     	CtType<?> ctClass = ModelUtils.buildClass(StaticMethod.class);
     	assertTrue(ctClass.hasModifier(ModifierKind.PUBLIC));
     	assertEquals(1, ctClass.getModifiers().size());
