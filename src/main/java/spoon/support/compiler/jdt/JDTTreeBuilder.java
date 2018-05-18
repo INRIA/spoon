@@ -16,11 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -121,7 +116,6 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
@@ -160,6 +154,11 @@ import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -975,11 +974,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
+		// if the source start of the class is equals to the source start of the constructor
+		// it means that the constructor is implicit.
+		c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
 		}
-		for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
-			c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		// avoid to add explicit modifier to implicit constructor
+		if (!c.isImplicit()) {
+			for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
+				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+			}
 		}
 		context.enter(c, constructorDeclaration);
 

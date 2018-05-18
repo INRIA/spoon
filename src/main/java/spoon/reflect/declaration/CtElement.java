@@ -32,6 +32,7 @@ import spoon.reflect.annotations.PropertySetter;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -126,7 +127,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Gets the position of this element in input source files
 	 *
-	 * @return Source file and line number of this element or null
+	 * @return Source file and line number of this element.
+	 * It never returns null. Use {@link SourcePosition#isValidPosition()}
+	 * to detect whether return instance contains start/end indexes.
 	 */
 	@PropertyGetter(role = POSITION)
 	SourcePosition getPosition();
@@ -365,5 +368,17 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Return the path from the model root to this CtElement, eg `.spoon.test.path.Foo.foo#body#statement[index=0]`
 	 */
 	CtPath getPath();
+
+	/**
+	 * Returns an iterator over this CtElement's descendants.
+	 * @return An iterator over this CtElement's descendants.
+	 */
+	Iterator<CtElement> descendantIterator();
+
+	/**
+	 * Returns an Iterable instance of this CtElement, allowing for dfs traversal of its descendants.
+	 * @return an Iterable object that allows iterating through this CtElement's descendants.
+	 */
+	Iterable<CtElement> asIterable();
 
 }

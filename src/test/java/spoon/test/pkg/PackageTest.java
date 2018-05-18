@@ -64,6 +64,8 @@ public class PackageTest {
 		Assert.assertNotNull(ctPackage.getPosition());
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
 		Assert.assertEquals(1, ctPackage.getPosition().getLine());
+		Assert.assertEquals(0, ctPackage.getPosition().getSourceStart());
+		Assert.assertEquals(71, ctPackage.getPosition().getSourceEnd());
 		Assert.assertEquals(1, ctPackage.getAnnotations().size());
 		Assert.assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
 

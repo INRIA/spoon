@@ -128,11 +128,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		int insertionPosition = typeMembers.size();
 
 		// we search for an insertion position only if this one has one position
-		if (member.getPosition() != null && member.getPosition().getSourceStart() >= 0) {
+		if (member.getPosition().isValidPosition()) {
 			for (int i = typeMembers.size() - 1; i >= 0; i--) {
 				CtTypeMember m = this.typeMembers.get(i);
 
-				if (m.isImplicit() || (m.getPosition().getSourceStart() >= 0 && c.compare(member, m) > 0)) {
+				if (m.isImplicit() || (m.getPosition().isValidPosition() && c.compare(member, m) > 0)) {
 					break;
 				}
 				insertionPosition--;

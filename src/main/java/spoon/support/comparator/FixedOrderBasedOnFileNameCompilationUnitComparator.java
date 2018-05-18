@@ -14,12 +14,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer;
+package spoon.support.comparator;
 
-public enum CommentOffset {
-	BOTTOM_FILE,
-	TOP_FILE,
-	BEFORE,
-	AFTER,
-	INSIDE
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+
+import java.util.Comparator;
+
+public class FixedOrderBasedOnFileNameCompilationUnitComparator implements Comparator<CompilationUnitDeclaration> {
+	@Override
+	public int compare(CompilationUnitDeclaration o1, CompilationUnitDeclaration o2) {
+		String s1 = new String(o1.getFileName());
+		String s2 = new String(o2.getFileName());
+		return s1.compareTo(s2);
+	}
 }

@@ -60,7 +60,7 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {
-		if (ctPackage.getPosition() != null && ctPackage.getPosition().getCompilationUnit() != null) {
+		if (ctPackage.getPosition().getCompilationUnit() != null) {
 			return ctPackage.getPosition().getCompilationUnit();
 		} else {
 
@@ -88,7 +88,7 @@ public class CompilationUnitFactory extends SubFactory {
 		if (type == null) {
 			return null;
 		}
-		if (type.getPosition() != null && type.getPosition().getCompilationUnit() != null) {
+		if (type.getPosition().getCompilationUnit() != null) {
 			return type.getPosition().getCompilationUnit();
 		}
 
@@ -117,7 +117,7 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {
-		if (module.getPosition() != null && module.getPosition().getCompilationUnit() != null) {
+		if (module.getPosition().getCompilationUnit() != null) {
 			return module.getPosition().getCompilationUnit();
 		} else {
 			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile();
