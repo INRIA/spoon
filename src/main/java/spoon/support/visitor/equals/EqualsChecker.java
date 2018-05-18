@@ -41,17 +41,22 @@ public class EqualsChecker extends CtInheritanceScanner {
 
 	public void setOther(CtElement other) {
 		this.other = other;
+		isNotEqual = false;
 	}
 
 	public boolean isNotEqual() {
 		return isNotEqual;
 	}
 
+	private void setNotEqual() {
+		isNotEqual = true;
+	}
+
 	@Override
 	public void scanCtNamedElement(CtNamedElement e) {
 		final CtNamedElement peek = (CtNamedElement) this.other;
 		if (!e.getSimpleName().equals(peek.getSimpleName())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.scanCtNamedElement(e);
@@ -61,7 +66,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 	public void scanCtReference(CtReference reference) {
 		final CtReference peek = (CtReference) this.other;
 		if (!reference.getSimpleName().equals(peek.getSimpleName())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.scanCtReference(reference);
@@ -77,7 +82,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 			return;
 		}
 		if (leftLabel == null || !leftLabel.equals(rightLabel)) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.scanCtStatement(s);
@@ -88,22 +93,22 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtModifiable peek = (CtModifiable) this.other;
 		if (m.getVisibility() == null) {
 			if (peek.getVisibility() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getVisibility() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else  if (!m.getVisibility().equals(peek.getVisibility())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		if (m.getModifiers().size() != peek.getModifiers().size()) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		if (!m.getModifiers().containsAll(peek.getModifiers())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.scanCtModifiable(m);
@@ -112,7 +117,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 	@Override
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
 		if (!(assignment instanceof CtOperatorAssignment) && this.other instanceof CtOperatorAssignment) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtAssignment(assignment);
@@ -123,14 +128,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtOperatorAssignment peek = (CtOperatorAssignment) this.other;
 		if (assignment.getKind() == null) {
 			if (peek.getKind() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getKind() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!assignment.getKind().equals(peek.getKind())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtOperatorAssignment(assignment);
@@ -141,14 +146,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtBinaryOperator peek = (CtBinaryOperator) this.other;
 		if (e.getKind() == null) {
 			if (peek.getKind() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getKind() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!e.getKind().equals(peek.getKind())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtBinaryOperator(e);
@@ -159,14 +164,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtUnaryOperator peek = (CtUnaryOperator) this.other;
 		if (e.getKind() == null) {
 			if (peek.getKind() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getKind() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!e.getKind().equals(peek.getKind())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtUnaryOperator(e);
@@ -176,7 +181,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 	public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> e) {
 		final CtArrayTypeReference peek = (CtArrayTypeReference) this.other;
 		if (e.getDimensionCount() != peek.getDimensionCount()) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtArrayTypeReference(e);
@@ -187,14 +192,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtBreak peek = (CtBreak) this.other;
 		if (e.getTargetLabel() == null) {
 			if (peek.getTargetLabel() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getTargetLabel() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!e.getTargetLabel().equals(peek.getTargetLabel())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtBreak(e);
@@ -205,14 +210,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtContinue peek = (CtContinue) this.other;
 		if (e.getTargetLabel() == null) {
 			if (peek.getTargetLabel() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getTargetLabel() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!e.getTargetLabel().equals(peek.getTargetLabel())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtContinue(e);
@@ -222,7 +227,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 	public <T> void visitCtExecutableReference(CtExecutableReference<T> e) {
 		final CtExecutableReference peek = (CtExecutableReference) this.other;
 		if (e.isConstructor() != peek.isConstructor()) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtExecutableReference(e);
@@ -232,7 +237,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 	public <T> void visitCtMethod(CtMethod<T> e) {
 		final CtMethod peek = (CtMethod) this.other;
 		if (e.isDefaultMethod() != peek.isDefaultMethod()) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtMethod(e);
@@ -242,7 +247,7 @@ public class EqualsChecker extends CtInheritanceScanner {
 	public <T> void visitCtParameter(CtParameter<T> e) {
 		final CtParameter peek = (CtParameter) this.other;
 		if (e.isVarArgs() != peek.isVarArgs()) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtParameter(e);
@@ -253,14 +258,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 		final CtLiteral peek = (CtLiteral) this.other;
 		if (e.getValue() == null) {
 			if (peek.getValue() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getValue() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!e.getValue().equals(peek.getValue())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 		super.visitCtLiteral(e);
@@ -272,14 +277,14 @@ public class EqualsChecker extends CtInheritanceScanner {
 
 		if (ctImport.getImportKind() == null) {
 			if (peek.getImportKind() != null) {
-				isNotEqual = true;
+				setNotEqual();
 				return;
 			}
 		} else if (peek.getImportKind() == null) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		} else if (!ctImport.getImportKind().equals(peek.getImportKind())) {
-			isNotEqual = true;
+			setNotEqual();
 			return;
 		}
 
