@@ -11,6 +11,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.test.modifiers.testclasses.AbstractClass;
 import spoon.test.modifiers.testclasses.MethodVarArgs;
 import spoon.test.modifiers.testclasses.StaticMethod;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -189,5 +190,29 @@ public class TestModifiers {
         assertEquals("isAbstract for "+element+" is wrong", isAbstract, element.isAbstract());
         assertEquals("isFinal for "+element+" is wrong", isFinal, element.isFinal());
         assertEquals("isStatic for "+element+" is wrong", isStatic, element.isStatic());
+    }
+    
+    @Test
+    public void testClearModifiersByEmptySet() throws Exception {
+    	//contract: it is possible to remove modifiers by setModifiers(emptySet)
+    	CtType<?> ctClass = ModelUtils.buildClass(StaticMethod.class);
+    	assertTrue(ctClass.hasModifier(ModifierKind.PUBLIC));
+    	assertEquals(1, ctClass.getModifiers().size());
+    	
+    	ctClass.setModifiers(Collections.emptySet());
+    	assertFalse(ctClass.hasModifier(ModifierKind.PUBLIC));
+    	assertEquals(0, ctClass.getModifiers().size());
+    }
+
+    @Test
+    public void testClearModifiersByNull() throws Exception {
+    	//contract: it is possible to remove modifiers by setModifiers(emptySet)
+    	CtType<?> ctClass = ModelUtils.buildClass(StaticMethod.class);
+    	assertTrue(ctClass.hasModifier(ModifierKind.PUBLIC));
+    	assertEquals(1, ctClass.getModifiers().size());
+    	
+    	ctClass.setModifiers(null);
+    	assertFalse(ctClass.hasModifier(ModifierKind.PUBLIC));
+    	assertEquals(0, ctClass.getModifiers().size());
     }
 }
