@@ -37,18 +37,27 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		return !equalsVisitor.isNotEqual;
 	}
 
-	private final EqualsChecker checker = new EqualsChecker();
+	protected final EqualsChecker checker;
 
 	private CtRole lastRole = null;
+
+	public EqualsVisitor() {
+		this(new EqualsChecker());
+	}
+
+	public EqualsVisitor(EqualsChecker checker) {
+		this.checker = checker;
+	}
 
 	@Override
 	protected void enter(CtElement e) {
 		super.enter(e);
 		CtElement other = stack.peek();
 		checker.setOther(other);
-		checker.scan(e);
-		if (checker.isNotEqual()) {
-			fail(lastRole, e, other);
+		try {
+			checker.scan(e);
+		} catch (NotEqualException ex) {
+			fail(checker.getNotEqualRole() == null ? lastRole : checker.getNotEqualRole(), e, other);
 		}
 	}
 	protected boolean isNotEqual = false;
