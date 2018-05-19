@@ -37,15 +37,27 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		return !equalsVisitor.isNotEqual;
 	}
 
-	private final EqualsChecker checker = new EqualsChecker();
+	protected final EqualsChecker checker;
+
+	private CtRole lastRole = null;
+
+	public EqualsVisitor() {
+		this(new EqualsChecker());
+	}
+
+	public EqualsVisitor(EqualsChecker checker) {
+		this.checker = checker;
+	}
 
 	@Override
 	protected void enter(CtElement e) {
 		super.enter(e);
-		checker.setOther(stack.peek());
-		checker.scan(e);
-		if (checker.isNotEqual()) {
-			fail();
+		CtElement other = stack.peek();
+		checker.setOther(other);
+		try {
+			checker.scan(e);
+		} catch (NotEqualException ex) {
+			fail(checker.getNotEqualRole() == null ? lastRole : checker.getNotEqualRole(), e, other);
 		}
 	}
 	protected boolean isNotEqual = false;
@@ -58,15 +70,15 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 		if (elements == null) {
 			if (others != null) {
-				fail();
+				fail(role, elements, others);
 			}
 			return;
 		} else if (others == null) {
-			fail();
+			fail(role, elements, others);
 			return;
 		}
 		if ((elements.size()) != (others.size())) {
-			fail();
+			fail(role, elements, others);
 			return;
 		}
 		super.biScan(role, elements, others);
@@ -74,17 +86,22 @@ public class EqualsVisitor extends CtBiScannerDefault {
 
 	@Override
 	public void biScan(CtElement element, CtElement other) {
+		biScan(null, element, other);
+	}
+
+	@Override
+	public void biScan(CtRole role, CtElement element, CtElement other) {
 		if (isNotEqual) {
 			return;
 		}
 		if (element == null) {
 			if (other != null) {
-				fail();
+				fail(role, element, other);
 				return;
 			}
 			return;
 		} else if (other == null) {
-			fail();
+			fail(role, element, other);
 			return;
 		}
 		if (element == other) {
@@ -92,15 +109,18 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 
 		try {
+			lastRole = role;
 			super.biScan(element, other);
 		} catch (java.lang.ClassCastException e) {
-			fail();
+			fail(role, element, other);
+		} finally {
+			lastRole = null;
 		}
 
 		return;
 	}
 
-	private boolean fail() {
+	protected boolean fail(CtRole role, Object element, Object other) {
 		isNotEqual = true;
 		return true;
 	}
