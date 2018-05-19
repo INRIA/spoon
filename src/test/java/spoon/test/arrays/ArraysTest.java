@@ -9,6 +9,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.arrays.testclasses.VaragParam;
 import spoon.testing.utils.ModelUtils;
@@ -97,6 +98,7 @@ public class ArraysTest {
 	
 	@Test
 	public void testParameterizedVarargReference() throws Exception {
+		//contract: check actual type arguments of parameter type: List<?>...
 		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
 		CtParameter<?> param1 = ctClass.getMethodsByName("m1").get(0).getParameters().get(0);
 		CtArrayTypeReference<?> varArg1TypeRef = (CtArrayTypeReference<?>) param1.getType();
@@ -108,6 +110,7 @@ public class ArraysTest {
 	
 	@Test
 	public void testParameterizedArrayReference() throws Exception {
+		//contract: check actual type arguments of parameter type: List<?>[]
 		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
 		CtParameter<?> param1 = ctClass.getMethodsByName("m2").get(0).getParameters().get(0);
 		CtArrayTypeReference<?> varArg1TypeRef = (CtArrayTypeReference<?>) param1.getType();
@@ -115,5 +118,29 @@ public class ArraysTest {
 		assertEquals("java.util.List<?>", varArg1TypeRef.getComponentType().toString());
 		assertEquals(1, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
 		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
+	}
+
+	@Test
+	public void testParameterizedArrayVarargReference() throws Exception {
+		//contract: check actual type arguments of parameter type: List<?>[]...
+		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
+		CtParameter<?> param1 = ctClass.getMethodsByName("m3").get(0).getParameters().get(0);
+		CtArrayTypeReference<?> varArg1TypeRef = (CtArrayTypeReference<?>) param1.getType();
+		assertEquals("java.util.List<?>[][]", varArg1TypeRef.toString());
+		assertEquals("java.util.List<?>[]", varArg1TypeRef.getComponentType().toString());
+		assertEquals("java.util.List<?>", ((CtArrayTypeReference<?>) varArg1TypeRef.getComponentType()).getComponentType().toString());
+		assertEquals(1, ((CtArrayTypeReference<?>) varArg1TypeRef.getComponentType()).getComponentType().getActualTypeArguments().size());
+		assertEquals(0, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
+		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
+	}
+
+	@Test
+	public void testParameterizedTypeReference() throws Exception {
+		//contract: check actual type arguments of parameter type: List<?>
+		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
+		CtParameter<?> param1 = ctClass.getMethodsByName("m4").get(0).getParameters().get(0);
+		CtTypeReference<?> typeRef = (CtTypeReference<?>) param1.getType();
+		assertEquals("java.util.List<?>", typeRef.toString());
+		assertEquals(1, typeRef.getActualTypeArguments().size());
 	}
 }

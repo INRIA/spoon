@@ -9,4 +9,10 @@ public class VaragParam {
 
 	void m2(List<?>[] arg) {
 	}
+
+	void m3(List<?>[]... arg) {
+	}
+
+	void m4(List<?> arg) {
+	}
 }
