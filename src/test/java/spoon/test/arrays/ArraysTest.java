@@ -6,9 +6,12 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.arrays.testclasses.VaragParam;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 
@@ -90,5 +93,27 @@ public class ArraysTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testParameterizedVarargReference() throws Exception {
+		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
+		CtParameter<?> param1 = ctClass.getMethodsByName("m1").get(0).getParameters().get(0);
+		CtArrayTypeReference<?> varArg1TypeRef = (CtArrayTypeReference<?>) param1.getType();
+		assertEquals("java.util.List<?>[]", varArg1TypeRef.toString());
+		assertEquals("java.util.List<?>", varArg1TypeRef.getComponentType().toString());
+		assertEquals(1, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
+		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
+	}
+	
+	@Test
+	public void testParameterizedArrayReference() throws Exception {
+		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
+		CtParameter<?> param1 = ctClass.getMethodsByName("m2").get(0).getParameters().get(0);
+		CtArrayTypeReference<?> varArg1TypeRef = (CtArrayTypeReference<?>) param1.getType();
+		assertEquals("java.util.List<?>[]", varArg1TypeRef.toString());
+		assertEquals("java.util.List<?>", varArg1TypeRef.getComponentType().toString());
+		assertEquals(1, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
+		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
 	}
 }
