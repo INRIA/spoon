@@ -433,7 +433,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	@Override
 	public void visitTypeReference(CtRole role, WildcardType type) {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
-		wildcard.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
+//		wildcard.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
+		wildcard.setUpper(type.getUpperBounds() != null && type.getUpperBounds().length > 0);
 
 		enter(new TypeReferenceRuntimeBuilderContext(type, wildcard));
 		super.visitTypeReference(role, type);
