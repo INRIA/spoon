@@ -38,10 +38,12 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -62,6 +64,7 @@ import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
+import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
 import spoon.test.metamodel.MetamodelConcept;
@@ -207,7 +210,74 @@ public class JavaReflectionTreeBuilderTest {
 
 				// shadow classes have no comments
 				CtRole.COMMENT)));
+		
 		return sev.checkDiffs(type, shadowType);
+	}
+	
+	private static class Diff {
+		CtElement element;
+		CtElement other;
+		Set<CtRole> roles = new HashSet<>();
+		Diff(CtElement element, CtElement other) {
+			super();
+			this.element = element;
+			this.other = other;
+		}
+	}
+	
+	private static class ShadowEqualsChecker extends EqualsChecker {
+		Diff currentDiff;
+		List<Diff> differences = new ArrayList<>();
+		
+		@Override
+		protected void setNotEqual(CtRole role) {
+			if (role == CtRole.MODIFIER) {
+				if (currentDiff.element instanceof CtTypeMember) {
+					CtTypeMember tm = (CtTypeMember) currentDiff.element;
+					CtType<?> type = tm.getDeclaringType();
+					if (type != null) {
+						Set<ModifierKind> elementModifiers = ((CtModifiable) currentDiff.element).getModifiers();
+						Set<ModifierKind> otherModifiers = ((CtModifiable) currentDiff.other).getModifiers();
+						if (type.isInterface()) {
+							if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT)
+									.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT))) {
+								//it is OK, that type memebers of interface differs in public abstract modifiers
+								return;
+							}
+						} else if (type.isEnum()) {
+							CtType<?> type2 = type.getDeclaringType();
+							if (type2 != null) {
+								if (type2.isInterface()) {
+									if (removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/)
+											.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/))) {
+										//it is OK, that type memebers of interface differs in public abstract modifiers
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			currentDiff.roles.add(role);
+		}
+		
+		private Set<ModifierKind> removeModifiers(Set<ModifierKind> elementModifiers, ModifierKind... modifiers) {
+			Set<ModifierKind> copy = new HashSet<>(elementModifiers);
+			for (ModifierKind modifierKind : modifiers) {
+				copy.remove(modifierKind);
+			}
+			return copy;
+		}
+
+		@Override
+		public void scan(CtElement element) {
+			currentDiff = new Diff(element, other);
+			super.scan(element);
+			if (currentDiff.roles.size() > 0) {
+				differences.add(currentDiff);
+			}
+		}
 	}
 	
 	private static class ShadowEqualsVisitor extends EqualsVisitor {
@@ -215,9 +285,13 @@ public class JavaReflectionTreeBuilderTest {
 		CtElementPathBuilder pathBuilder = new CtElementPathBuilder();
 		List<String> differences;
 		Set<CtRole> ignoredRoles;
+		
 		ShadowEqualsVisitor(Set<CtRole> ignoredRoles) {
-			super();
+			super(new ShadowEqualsChecker());
 			this.ignoredRoles = ignoredRoles;
+		}
+		List<Diff> getDiffs() {
+			return ((ShadowEqualsChecker) checker).differences;
 		}
 		@Override
 		protected boolean fail(CtRole role, Object element, Object other) {
@@ -226,6 +300,11 @@ public class JavaReflectionTreeBuilderTest {
 				return false;
 			}
 			if (ignoredRoles.contains(role)) {
+				this.isNotEqual = false;
+				return false;
+			}
+			if (element instanceof CtEnumValue && role == CtRole.VALUE) {
+				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't supports that
 				this.isNotEqual = false;
 				return false;
 			}
@@ -249,6 +328,7 @@ public class JavaReflectionTreeBuilderTest {
 					otherParam.setSimpleName(param.getSimpleName());
 				}
 				if (param.isFinal()) {
+					//modifier final of parameters isn't accessible in runtime
 					otherParam.addModifier(ModifierKind.FINAL);
 				}
 			}
@@ -259,13 +339,6 @@ public class JavaReflectionTreeBuilderTest {
 				}
 				if (myAnnotation.getAnnotationType().getQualifiedName().equals(Root.class.getName())) {
 					return;
-				}
-			}
-			if (element instanceof CtTypeMember && (element instanceof CtTypeParameter == false)) {
-				CtTypeMember typeMember = (CtTypeMember) element;
-				CtTypeMember otherTypeMember = (CtTypeMember) other;
-				if (otherTypeMember != null && typeMember.getDeclaringType() != null && typeMember.getDeclaringType().isInterface()) {
-					otherTypeMember.setModifiers(typeMember.getModifiers());
 				}
 			}
 			if (role == CtRole.SUPER_TYPE && other == null && element != null && ((CtTypeReference<?>) element).getQualifiedName().equals(Object.class.getName())) {
@@ -316,6 +389,26 @@ public class JavaReflectionTreeBuilderTest {
 			differences = new ArrayList<>();
 			rootOfOther = shadowType;
 			biScan(null, type, shadowType);
+			for (Diff diff : getDiffs()) {
+				try {
+					CtElement parentOf;
+					CtElement rootOf;
+					if (diff.other != null) {
+						parentOf = diff.other.getParent();
+						rootOf = rootOfOther;
+					} else {
+						parentOf = diff.element.getParent();
+						rootOf = type;
+					}
+					differences.add("Difference on path: " + pathBuilder.fromElement(parentOf, rootOf).toString()+"#"
+					+diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
+					+"\nShadow: " + String.valueOf(diff.other)
+					+"\nNormal: " + String.valueOf(diff.element)+"\n");
+				} catch (CtPathException e) {
+					throw new SpoonException(e);
+				}
+				
+			}
 			return differences;
 		}
 	}

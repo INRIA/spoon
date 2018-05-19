@@ -136,7 +136,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitClass(Class<T> clazz) {
 		final CtClass ctClass = factory.Core().createClass();
 		ctClass.setSimpleName(clazz.getSimpleName());
-		setModifier(ctClass, clazz.getModifiers());
+		setModifier(ctClass, clazz.getModifiers(), clazz.getDeclaringClass());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctClass) {
 			@Override
@@ -163,7 +163,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitInterface(Class<T> clazz) {
 		final CtInterface<Object> ctInterface = factory.Core().createInterface();
 		ctInterface.setSimpleName(clazz.getSimpleName());
-		setModifier(ctInterface, clazz.getModifiers());
+		setModifier(ctInterface, clazz.getModifiers(), clazz.getDeclaringClass());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctInterface) {
 			@Override
@@ -182,7 +182,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitEnum(Class<T> clazz) {
 		final CtEnum ctEnum = factory.Core().createEnum();
 		ctEnum.setSimpleName(clazz.getSimpleName());
-		setModifier(ctEnum, clazz.getModifiers());
+		setModifier(ctEnum, clazz.getModifiers(), clazz.getDeclaringClass());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctEnum) {
 			@Override
@@ -205,7 +205,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		final CtAnnotationType<?> ctAnnotationType = factory.Core().createAnnotationType();
 		ctAnnotationType.setSimpleName(clazz.getSimpleName());
-		setModifier(ctAnnotationType, clazz.getModifiers());
+		setModifier(ctAnnotationType, clazz.getModifiers(), clazz.getDeclaringClass());
 
 		enter(new TypeRuntimeBuilderContext(clazz, ctAnnotationType) {
 			@Override
@@ -260,7 +260,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T> void visitConstructor(Constructor<T> constructor) {
 		final CtConstructor<Object> ctConstructor = factory.Core().createConstructor();
 		ctConstructor.setBody(factory.Core().createBlock());
-		setModifier(ctConstructor, constructor.getModifiers());
+		setModifier(ctConstructor, constructor.getModifiers(), constructor.getDeclaringClass());
 
 		enter(new ExecutableRuntimeBuilderContext(constructor, ctConstructor));
 		super.visitConstructor(constructor);
@@ -273,8 +273,13 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitMethod(RtMethod method, Annotation parent) {
 		final CtMethod<Object> ctMethod = factory.Core().createMethod();
 		ctMethod.setSimpleName(method.getName());
-		ctMethod.setBody(factory.Core().createBlock());
-		setModifier(ctMethod, method.getModifiers());
+		/**
+		 * java 8 static interface methods are marked as abstract but has body
+		 */
+		if (Modifier.isAbstract(method.getModifiers()) == false || Modifier.isStatic(method.getModifiers())) {
+			ctMethod.setBody(factory.Core().createBlock());
+		}
+		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());
 		ctMethod.setDefaultMethod(method.isDefault());
 
 		enter(new ExecutableRuntimeBuilderContext(method.getMethod(), ctMethod));
@@ -288,7 +293,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitField(Field field) {
 		final CtField<Object> ctField = factory.Core().createField();
 		ctField.setSimpleName(field.getName());
-		setModifier(ctField, field.getModifiers());
+		setModifier(ctField, field.getModifiers(), field.getDeclaringClass());
 
 		enter(new VariableRuntimeBuilderContext(ctField));
 		super.visitField(field);
@@ -301,9 +306,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitEnumValue(Field field) {
 		final CtEnumValue<Object> ctEnumValue = factory.Core().createEnumValue();
 		ctEnumValue.setSimpleName(field.getName());
-		ctEnumValue.addModifier(ModifierKind.PUBLIC);
-		ctEnumValue.addModifier(ModifierKind.STATIC);
-		ctEnumValue.addModifier(ModifierKind.FINAL);
+		setModifier(ctEnumValue, field.getDeclaringClass().getModifiers(), field.getDeclaringClass().getDeclaringClass());
 
 		enter(new VariableRuntimeBuilderContext(ctEnumValue));
 		super.visitEnumValue(field);
@@ -505,10 +508,17 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 
-	private void setModifier(CtModifiable ctModifiable, int modifiers) {
+	private void setModifier(CtModifiable ctModifiable, int modifiers, Class<?> declaringClass) {
 		// an interface is implicitly abstract
 		if (Modifier.isAbstract(modifiers) && !(ctModifiable instanceof CtInterface)) {
-			ctModifiable.addModifier(ModifierKind.ABSTRACT);
+			if (ctModifiable instanceof CtEnum) {
+				//enum must not be declared abstract (even if it can be made abstract see CtStatementImpl.InsertType)
+				//as stated in java lang spec https://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.9
+			} else if (isInterface(declaringClass)) {
+				//do not set implicit abstract for interface type members
+			} else {
+				ctModifiable.addModifier(ModifierKind.ABSTRACT);
+			}
 		}
 		if (Modifier.isFinal(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.FINAL);
@@ -523,10 +533,18 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.PROTECTED);
 		}
 		if (Modifier.isPublic(modifiers)) {
-			ctModifiable.addModifier(ModifierKind.PUBLIC);
+			if (isInterface(declaringClass)) {
+				//do not set implicit abstract for interface type members
+			} else {
+				ctModifiable.addModifier(ModifierKind.PUBLIC);
+			}
 		}
 		if (Modifier.isStatic(modifiers)) {
-			ctModifiable.addModifier(ModifierKind.STATIC);
+			if (ctModifiable instanceof CtEnum) {
+				//enum is implicitly static, so do not add static explicitly
+			} else {
+				ctModifiable.addModifier(ModifierKind.STATIC);
+			}
 		}
 		if (Modifier.isStrict(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.STRICTFP);
@@ -546,5 +564,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		if (Modifier.isVolatile(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.VOLATILE);
 		}
+	}
+
+	private boolean isInterface(Class<?> clazz) {
+		return clazz != null && clazz.isInterface();
 	}
 }
