@@ -29,7 +29,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -46,6 +45,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -143,10 +143,14 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			public void addConstructor(CtConstructor<?> ctConstructor) {
 				ctClass.addConstructor(ctConstructor);
 			}
-
 			@Override
-			public void addClassReference(CtTypeReference<?> typeReference) {
-				ctClass.setSuperclass(typeReference);
+			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+				switch (role) {
+				case SUPER_TYPE:
+					ctClass.setSuperclass(typeReference);
+					return;
+				}
+				super.addTypeReference(role, typeReference);
 			}
 		});
 		super.visitClass(clazz);
@@ -345,12 +349,13 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 		enter(new TypeRuntimeBuilderContext(parameter, typeParameter) {
 			@Override
-			public void addClassReference(CtTypeReference<?> typeReference) {
-				typeParameter.setSuperclass(typeReference);
-			}
-			@Override
-			public void addTypeName(CtTypeReference<?> typeReference) {
-				typeParameter.setSuperclass(typeReference);
+			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+				switch (role) {
+				case SUPER_TYPE:
+					typeParameter.setSuperclass(typeReference);
+					return;
+				}
+				super.addTypeReference(role, typeReference);
 			}
 		});
 		super.visitTypeParameter(parameter);
@@ -360,7 +365,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+	public <T extends GenericDeclaration> void visitTypeParameterReference(CtRole role, TypeVariable<T> parameter) {
 		final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
 		typeParameterReference.setSimpleName(parameter.getName());
 
@@ -377,62 +382,42 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		while (contextIterator.hasNext()) {
 			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(genericDeclaration, parameter.getName());
 			if (typeParameter != null) {
-				contexts.peek().addTypeName(typeParameter.getReference());
+				contexts.peek().addTypeReference(role, typeParameter.getReference());
 				return;
 			}
 		}
 
 		enter(runtimeBuilderContext);
-		super.visitTypeParameterReference(parameter);
+		super.visitTypeParameterReference(role, parameter);
 		exit();
 
-		contexts.peek().addTypeName(typeParameterReference);
+		contexts.peek().addTypeReference(role, typeParameterReference);
 	}
 
 	@Override
-	public void visitTypeReference(Type type) {
-		CtTypeReference<?> ctTypeReference;
-		if (type instanceof TypeVariable) {
-			this.visitTypeParameterReference((TypeVariable<?>) type);
-			return;
-		}
-		if (type instanceof ParameterizedType) {
-			this.visitTypeReference((ParameterizedType) type);
-			return;
-		}
-		if (type instanceof WildcardType) {
-			this.visitTypeReference((WildcardType) type);
-			return;
-		}
-		if (type instanceof Class) {
-			//do not call visitClassReference because it call addClassReference, but we need to call addTypeName
-			this.visitTypeReference((Class) type);
-			return;
-		}
-		throw new SpoonException("Unexpected java reflection type: " + type.getClass().getName());
-	}
-
-	@Override
-	public void visitTypeReference(ParameterizedType type) {
+	public void visitTypeReference(CtRole role, ParameterizedType type) {
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
+		ctTypeReference.setSimpleName(((Class) type.getRawType()).getSimpleName());
 
 		RuntimeBuilderContext context = new TypeReferenceRuntimeBuilderContext(type, ctTypeReference) {
-			@Override
-			public void addClassReference(CtTypeReference<?> typeReference) {
-				ctTypeReference.setSimpleName(typeReference.getSimpleName());
-				ctTypeReference.setPackage(typeReference.getPackage());
-				ctTypeReference.setDeclaringType(typeReference.getDeclaringType());
-				ctTypeReference.setActualTypeArguments(typeReference.getActualTypeArguments());
-				ctTypeReference.setAnnotations(typeReference.getAnnotations());
-			}
+//			@Override
+//			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+//				ctTypeReference.setSimpleName(typeReference.getSimpleName());
+//				ctTypeReference.setPackage(typeReference.getPackage());
+//				ctTypeReference.setDeclaringType(typeReference.getDeclaringType());
+//				ctTypeReference.setActualTypeArguments(typeReference.getActualTypeArguments());
+//				ctTypeReference.setAnnotations(typeReference.getAnnotations());
+//			}
 
 			@Override
 			public void addType(CtType<?> aType) {
+				//TODO check if it is needed
+				this.getClass();
 			}
 		};
 
 		enter(context);
-		super.visitTypeReference(type);
+		super.visitTypeReference(role, type);
 
 		// in case of a loop we have replaced a context:
 		// we do not want to addTypeName then
@@ -444,33 +429,22 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		exit();
 
 		if (contextStillExisting) {
-			contexts.peek().addTypeName(ctTypeReference);
+			contexts.peek().addTypeReference(role, ctTypeReference);
 		}
 	}
 
 	@Override
-	public void visitTypeReference(WildcardType type) {
+	public void visitTypeReference(CtRole role, WildcardType type) {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
 		wildcard.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
 
 		enter(new TypeReferenceRuntimeBuilderContext(type, wildcard));
-		super.visitTypeReference(type);
+		super.visitTypeReference(role, type);
 		exit();
 
-		contexts.peek().addTypeName(wildcard);
+		contexts.peek().addTypeReference(role, wildcard);
 	}
 
-	@Override
-	public <T> void visitTypeReference(Class<T> clazz) {
-		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName(clazz.getSimpleName());
-
-		enter(new TypeReferenceRuntimeBuilderContext(clazz, typeReference));
-		super.visitTypeReference(clazz);
-		exit();
-
-		contexts.peek().addTypeName(typeReference);
-	}
 
 	private String getTypeName(Type type) {
 		if (type instanceof Class) {
@@ -499,77 +473,39 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	public <T> void visitArrayReference(final Class<T> typeArray) {
+	public <T> void visitArrayReference(CtRole role, final Type typeArray) {
 		final CtArrayTypeReference<?> arrayTypeReference = factory.Core().createArrayTypeReference();
 
 		enter(new TypeReferenceRuntimeBuilderContext(typeArray, arrayTypeReference) {
 			@Override
-			public void addClassReference(CtTypeReference<?> typeReference) {
-				if (typeArray.getSimpleName().equals(typeReference.getSimpleName())) {
-					arrayTypeReference.setComponentType(typeReference);
-				} else {
+			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+				switch (role) {
+				case DECLARING_TYPE:
 					arrayTypeReference.setDeclaringType(typeReference);
+					return;
 				}
-			}
-
-			@Override
-			public void addArrayReference(CtArrayTypeReference<?> typeReference) {
 				arrayTypeReference.setComponentType(typeReference);
 			}
 		});
-		super.visitArrayReference(typeArray);
+		super.visitArrayReference(role, typeArray);
 		exit();
 
-		contexts.peek().addArrayReference(arrayTypeReference);
+		contexts.peek().addTypeReference(role, arrayTypeReference);
 	}
 
-	@Override
-	public <T> void visitClassReference(ParameterizedType type) {
-		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName(((Class) type.getRawType()).getSimpleName());
-
-		enter(new TypeReferenceRuntimeBuilderContext(type, typeReference));
-		super.visitClassReference(type);
-		exit();
-
-		contexts.peek().addClassReference(typeReference);
-	}
 
 	@Override
-	public <T> void visitClassReference(Class<T> clazz) {
+	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
 		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
 		typeReference.setSimpleName(clazz.getSimpleName());
 
 		enter(new TypeReferenceRuntimeBuilderContext(clazz, typeReference));
-		super.visitClassReference(clazz);
+		super.visitTypeReference(role, clazz);
 		exit();
 
-		contexts.peek().addClassReference(typeReference);
+		contexts.peek().addTypeReference(role, typeReference);
 	}
 
-	@Override
-	public <T> void visitInterfaceReference(Class<T> anInterface) {
-		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName(anInterface.getSimpleName());
-
-		enter(new TypeReferenceRuntimeBuilderContext(anInterface, typeReference));
-		super.visitInterfaceReference(anInterface);
-		exit();
-
-		contexts.peek().addInterfaceReference(typeReference);
-	}
-
-	@Override
-	public <T> void visitInterfaceReference(ParameterizedType anInterface) {
-		final CtTypeReference<Object> typeReference = factory.Core().createTypeReference();
-		typeReference.setSimpleName(((Class) anInterface.getRawType()).getSimpleName());
-
-		enter(new TypeReferenceRuntimeBuilderContext(anInterface, typeReference));
-		super.visitInterfaceReference(anInterface);
-		exit();
-
-		contexts.peek().addInterfaceReference(typeReference);
-	}
 
 	private void setModifier(CtModifiable ctModifiable, int modifiers) {
 		// an interface is implicitly abstract

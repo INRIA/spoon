@@ -17,6 +17,7 @@
 package spoon.support.visitor.java.internal;
 
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -35,9 +36,14 @@ public class AnnotationRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	}
 
 	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		ctAnnotation.setAnnotationType((CtTypeReference<? extends Annotation>) typeReference);
-		ctAnnotation.setType((CtTypeReference<Annotation>) typeReference);
+	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+		switch (role) {
+		case ANNOTATION_TYPE:
+			ctAnnotation.setAnnotationType((CtTypeReference<? extends Annotation>) typeReference);
+			ctAnnotation.setType((CtTypeReference<Annotation>) typeReference);
+			return;
+		}
+		super.addTypeReference(role, typeReference);
 	}
 
 	public CtAnnotation<Annotation> getCtAnnotation() {

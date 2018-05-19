@@ -19,6 +19,7 @@ package spoon.support.visitor.java.internal;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -47,17 +48,20 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 	}
 
 	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		this.typeReference.setDeclaringType(typeReference);
-	}
-
-	@Override
-	public void addTypeName(CtTypeReference<?> ctTypeReference) {
-		if (typeReference instanceof CtTypeParameterReference) {
+	public void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference) {
+		switch (role) {
+		case DECLARING_TYPE:
+			this.typeReference.setDeclaringType(ctTypeReference);
+			return;
+		case BOUNDING_TYPE:
+		case SUPER_TYPE:
 			((CtTypeParameterReference) typeReference).addBound(ctTypeReference);
 			return;
+		case TYPE_ARGUMENT:
+			typeReference.addActualTypeArgument(ctTypeReference);
+			return;
 		}
-		typeReference.addActualTypeArgument(ctTypeReference);
+		super.addTypeReference(role, ctTypeReference);
 	}
 
 	@Override

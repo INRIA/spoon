@@ -17,6 +17,7 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -178,15 +179,17 @@ public class JavaReflectionTreeBuilderTest {
 		//with exception of CtExecutable#body, CtParameter#simpleName
 		//with exception of Annotations with retention policy SOURCE
 		SpoonMetaModel metaModel = new SpoonMetaModel(new File("src/main/java"));
+		List<String> allProblems = new ArrayList<>();
 		for (MetamodelConcept concept : metaModel.getConcepts()) {
-			checkShadowTypeIsEqual(concept.getModelClass());
-			checkShadowTypeIsEqual(concept.getModelInterface());
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelClass()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelInterface()));
 		}
+		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
 	}
 	
-	private void checkShadowTypeIsEqual(CtType<?> type) {
+	private List<String> checkShadowTypeIsEqual(CtType<?> type) {
 		if (type == null) {
-			return;
+			return Collections.emptyList();
 		}
 		Factory shadowFactory = createFactory();
 		CtTypeReference<?> shadowTypeRef = shadowFactory.Type().createReference(type.getActualClass());
@@ -204,8 +207,7 @@ public class JavaReflectionTreeBuilderTest {
 
 				// shadow classes have no comments
 				CtRole.COMMENT)));
-		List<String> diffs = sev.checkDiffs(type, shadowType);
-		assertTrue(String.join("\n", diffs), diffs.isEmpty());
+		return sev.checkDiffs(type, shadowType);
 	}
 	
 	private static class ShadowEqualsVisitor extends EqualsVisitor {
@@ -262,7 +264,7 @@ public class JavaReflectionTreeBuilderTest {
 			if (element instanceof CtTypeMember && (element instanceof CtTypeParameter == false)) {
 				CtTypeMember typeMember = (CtTypeMember) element;
 				CtTypeMember otherTypeMember = (CtTypeMember) other;
-				if (typeMember.getDeclaringType() != null && typeMember.getDeclaringType().isInterface()) {
+				if (otherTypeMember != null && typeMember.getDeclaringType() != null && typeMember.getDeclaringType().isInterface()) {
 					otherTypeMember.setModifiers(typeMember.getModifiers());
 				}
 			}

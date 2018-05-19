@@ -23,7 +23,7 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -62,35 +62,18 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 		ctExecutable.addParameter(ctParameter);
 	}
 
-	@Override
-	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
-		if (ctExecutable instanceof CtMethod) {
-			final CtArrayTypeReference ref = arrayTypeReference;
-			ctExecutable.setType(ref);
-			return;
-		}
-		super.addArrayReference(arrayTypeReference);
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		if (collectingExceptionTypes) {
+	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+		switch (role) {
+		case THROWN:
 			ctExecutable.addThrownType((CtTypeReference) typeReference);
 			return;
-		}
-		if (ctExecutable instanceof CtMethod) {
-			@SuppressWarnings("rawtypes")
-			final CtTypeReference ref = typeReference;
-			ctExecutable.setType(ref);
+		case TYPE:
+			ctExecutable.setType((CtTypeReference) typeReference);
 			return;
 		}
-		super.addClassReference(typeReference);
-	}
-
-	@Override
-	public void addTypeName(CtTypeReference<?> typeReference) {
-		addClassReference(typeReference);
+		super.addTypeReference(role, typeReference);
 	}
 
 	@Override

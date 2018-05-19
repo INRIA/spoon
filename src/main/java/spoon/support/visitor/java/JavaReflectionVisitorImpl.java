@@ -16,12 +16,16 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.SpoonException;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -45,10 +49,10 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitTypeParameter(generic);
 		}
 		if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
-			visitClassReference(clazz.getGenericSuperclass());
+			visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
 		}
 		for (Type anInterface : clazz.getGenericInterfaces()) {
-			visitInterfaceReference(anInterface);
+			visitTypeReference(CtRole.INTERFACE, anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
@@ -86,7 +90,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			clazz.getPackage();
 		}
 		for (Type anInterface : clazz.getGenericInterfaces()) {
-			visitInterfaceReference(anInterface);
+			visitTypeReference(CtRole.INTERFACE, anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
@@ -112,7 +116,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			clazz.getPackage();
 		}
 		for (Type anInterface : clazz.getGenericInterfaces()) {
-			visitInterfaceReference(anInterface);
+			visitTypeReference(CtRole.INTERFACE, anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
@@ -164,7 +168,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	@Override
 	public void visitAnnotation(Annotation annotation) {
 		if (annotation.annotationType() != null) {
-			visitClassReference(annotation.annotationType());
+			visitTypeReference(CtRole.ANNOTATION_TYPE, annotation.annotationType());
 			List<RtMethod> methods = getDeclaredMethods(annotation.annotationType());
 			for (RtMethod method : methods) {
 				visitMethod(method, annotation);
@@ -204,22 +208,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 
 		if (method.getReturnType() != null) {
-			if (method.getReturnType().isArray() && method.getReturnType().getComponentType() != null) {
-				visitArrayReference(method.getReturnType().getComponentType());
-			} else if (method.getGenericReturnType() instanceof Class) {
-				visitClassReference(method.getReturnType());
-			} else if (method.getGenericReturnType() instanceof ParameterizedType) {
-				visitTypeReference((ParameterizedType) method.getGenericReturnType());
-			} else {
-				visitTypeParameterReference((TypeVariable) method.getGenericReturnType());
-			}
+			visitTypeReference(CtRole.TYPE, method.getGenericReturnType());
 		}
 		visitMethodExceptionTypes(method);
 	}
 
 	protected void visitMethodExceptionTypes(RtMethod method) {
 		for (Class<?> exceptionType : method.getExceptionTypes()) {
-			visitTypeReference(exceptionType);
+			visitTypeReference(CtRole.THROWN, exceptionType);
 		}
 	}
 
@@ -229,12 +225,8 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 			visitAnnotation(annotation);
 		}
-		if (field.getType() != null) {
-			if (field.getType().isArray() && field.getType().getComponentType() != null) {
-				visitArrayReference(field.getType().getComponentType());
-			} else {
-				visitClassReference(field.getGenericType());
-			}
+		if (field.getGenericType() != null) {
+			visitTypeReference(CtRole.TYPE, field.getGenericType());
 		}
 	}
 
@@ -244,7 +236,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		if (field.getType() != null) {
-			visitClassReference(field.getType());
+			visitTypeReference(CtRole.TYPE, field.getType());
 		}
 	}
 
@@ -253,15 +245,12 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : parameter.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		if (parameter.getType() != null) {
-			if ((parameter.isVarArgs() || parameter.getType().isArray()) && parameter.getType().getComponentType() != null) {
-				visitArrayReference(parameter.getType().getComponentType());
-			} else if (parameter.getGenericType() instanceof Class) {
-				visitClassReference(parameter.getType());
-			} else if (parameter.getGenericType() instanceof ParameterizedType) {
-				visitTypeReference((ParameterizedType) parameter.getGenericType());
+		if (parameter.getGenericType() != null) {
+			if (parameter.isVarArgs()) {
+				//TODO check if it is OK or there belonss parameter.getType().getComponentType() - as before
+				visitArrayReference(CtRole.TYPE, parameter.getGenericType());
 			} else {
-				visitTypeParameterReference((TypeVariable) parameter.getGenericType());
+				visitTypeReference(CtRole.TYPE, parameter.getGenericType());
 			}
 		}
 	}
@@ -273,166 +262,107 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				// we want to ignore Object to avoid <T extends Object>
 				continue;
 			}
-			visitTypeReference(type);
+			visitTypeReference(CtRole.SUPER_TYPE, type);
 		}
 	}
 
 	@Override
-	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+	public <T extends GenericDeclaration> void visitTypeParameterReference(CtRole role, TypeVariable<T> parameter) {
 		for (Type type : parameter.getBounds()) {
 			if (type == Object.class) {
 				// we bypass Object.class: if a generic type extends Object we don't put it in the model, it's implicit
 				// we do the same thing in ReferenceBuilder
 				continue;
 			}
-			visitTypeReference(type);
+			visitTypeReference(CtRole.SUPER_TYPE, type);
 		}
 	}
 
 	@Override
-	public void visitTypeReference(Type type) {
+	public final void visitTypeReference(CtRole role, Type type) {
+		CtTypeReference<?> ctTypeReference;
+		if (type instanceof TypeVariable) {
+			this.visitTypeParameterReference(role, (TypeVariable<?>) type);
+			return;
+		}
+		if (type instanceof ParameterizedType) {
+			this.visitTypeReference(role, (ParameterizedType) type);
+			return;
+		}
+		if (type instanceof WildcardType) {
+			this.visitTypeReference(role, (WildcardType) type);
+			return;
+		}
+		if (type instanceof GenericArrayType) {
+			visitArrayReference(role, ((GenericArrayType) type).getGenericComponentType());
+			return;
+		}
+		if (type instanceof Class) {
+			Class<?> clazz = (Class<?>) type;
+			if (clazz.isArray()) {
+				visitArrayReference(role, clazz.getComponentType());
+				return;
+			}
+			//do not call visitClassReference because it call addClassReference, but we need to call addTypeName
+			this.visitTypeReference(role, clazz);
+			return;
+		}
+		throw new SpoonException("Unexpected java reflection type: " + type.getClass().getName());
 	}
 
 	@Override
-	public void visitTypeReference(ParameterizedType type) {
-		if (type.getRawType() != null) {
-			visitClassReference((Class) type.getRawType());
+	public void visitTypeReference(CtRole role, ParameterizedType type) {
+		Type rawType = type.getRawType();
+
+		if (!(rawType instanceof Class)) {
+			throw new UnsupportedOperationException("Rawtype of the parameterized type should be a class.");
 		}
-		for (Type actualType : type.getActualTypeArguments()) {
-			visitTypeReference(actualType);
+
+		Class<?> classRaw = (Class<?>) rawType;
+
+		if (classRaw.getPackage() != null) {
+			visitPackage(classRaw.getPackage());
+		}
+		if (classRaw.getEnclosingClass() != null) {
+			visitTypeReference(CtRole.DECLARING_TYPE, classRaw.getEnclosingClass());
+		}
+
+		for (Type generic : type.getActualTypeArguments()) {
+			visitTypeReference(CtRole.TYPE_ARGUMENT, generic);
 		}
 	}
 
 	@Override
-	public void visitTypeReference(WildcardType type) {
+	public void visitTypeReference(CtRole role, WildcardType type) {
 		if (!type.getUpperBounds()[0].equals(Object.class)) {
 			for (Type upper : type.getUpperBounds()) {
-				visitTypeReference(upper);
+				visitTypeReference(CtRole.BOUNDING_TYPE, upper);
 			}
 		}
 		for (Type lower : type.getLowerBounds()) {
-			if (lower instanceof ParameterizedType) {
-				visitTypeReference((ParameterizedType) lower);
-			} else if (lower instanceof WildcardType) {
-				visitTypeReference((WildcardType) lower);
-			} else {
-				visitTypeReference(lower);
-			}
+			visitTypeReference(CtRole.BOUNDING_TYPE, lower);
 		}
 	}
 
 	@Override
-	public <T> void visitTypeReference(Class<T> clazz) {
+	public <T> void visitArrayReference(CtRole role, Type typeArray) {
+		visitTypeReference(role, typeArray);
+	}
+
+	@Override
+	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
 		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
-			visitClassReference(clazz.getEnclosingClass());
+			visitTypeReference(CtRole.DECLARING_TYPE, clazz.getEnclosingClass());
 		}
-//
-//		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-//			visitTypeParameter(generic);
+// TODO in case of interfaces this was used!! But not in case of class?
+//		if (clazz.isInterface()) {
+//			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+//				visitTypeParameter(generic);
+//			}
 //		}
-	}
-
-	@Override
-	public <T> void visitArrayReference(Class<T> typeArray) {
-		if (typeArray.isArray() && typeArray.getComponentType() != null) {
-			visitArrayReference(typeArray.getComponentType());
-		} else {
-			visitClassReference(typeArray);
-		}
-	}
-
-	@Override
-	public <T> void visitClassReference(ParameterizedType type) {
-		Type rawType = type.getRawType();
-
-		if (!(rawType instanceof Class)) {
-			throw new UnsupportedOperationException("Rawtype of the parameterized type should be a class.");
-		}
-
-		@SuppressWarnings("unchecked")
-		Class<T> classRaw = (Class<T>) rawType;
-		if (classRaw.getPackage() != null) {
-			visitPackage(classRaw.getPackage());
-		}
-		if (classRaw.getEnclosingClass() != null) {
-			visitClassReference(classRaw.getEnclosingClass());
-		}
-
-		for (Type generic : type.getActualTypeArguments()) {
-			visitTypeReference(generic);
-		}
-	}
-
-	@Override
-	public <T> void visitClassReference(Class<T> clazz) {
-		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
-			visitPackage(clazz.getPackage());
-		}
-		if (clazz.getEnclosingClass() != null) {
-			visitClassReference(clazz.getEnclosingClass());
-		}
-	}
-
-	@Override
-	public final <T> void visitClassReference(Type type) {
-		if (type instanceof Class) {
-			visitClassReference((Class) type);
-		} else if (type instanceof ParameterizedType) {
-			visitClassReference((ParameterizedType) type);
-		} else {
-			throw new UnsupportedOperationException("Only type with class or ParameterizedType are supported.");
-		}
-	}
-
-	@Override
-	public <T> void visitInterfaceReference(Class<T> type) {
-		if (type.getPackage() != null && type.getEnclosingClass() == null) {
-			visitPackage(type.getPackage());
-		}
-		if (type.getEnclosingClass() != null) {
-			visitClassReference(type.getEnclosingClass());
-		}
-
-		for (TypeVariable<Class<T>> generic : type.getTypeParameters()) {
-			visitTypeParameter(generic);
-		}
-	}
-
-	@Override
-	public <T> void visitInterfaceReference(ParameterizedType type) {
-		Type rawType = type.getRawType();
-
-		if (!(rawType instanceof Class)) {
-			throw new UnsupportedOperationException("Rawtype of the parameterized type should be a class.");
-		}
-
-		@SuppressWarnings("unchecked")
-		Class<T> classRaw = (Class<T>) rawType;
-
-		if (classRaw.getPackage() != null) {
-			visitPackage(classRaw.getPackage());
-		}
-		if (classRaw.getEnclosingClass() != null) {
-			visitClassReference(classRaw.getEnclosingClass());
-		}
-
-		for (Type generic : type.getActualTypeArguments()) {
-			visitTypeReference(generic);
-		}
-	}
-
-	@Override
-	public final <T> void visitInterfaceReference(Type type) {
-		if (type instanceof Class) {
-			visitInterfaceReference((Class) type);
-		} else if (type instanceof ParameterizedType) {
-			visitInterfaceReference((ParameterizedType) type);
-		} else {
-			throw new UnsupportedOperationException("Only type with class or ParameterizedType are supported.");
-		}
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {

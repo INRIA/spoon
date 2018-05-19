@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -68,21 +69,24 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	}
 
 	@Override
-	public void addInterfaceReference(CtTypeReference<?> typeReference) {
-		type.addSuperInterface(typeReference);
-	}
-
-	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		this.type.addFormalCtTypeParameter(parameterRef);
 		this.mapTypeParameters.put(parameterRef.getSimpleName(), parameterRef);
 	}
 
 	@Override
-	public void addTypeName(CtTypeReference<?> ctTypeReference) {
-		if (type instanceof CtTypeParameter) {
-			((CtTypeParameter) this.type).setSuperclass(ctTypeReference);
+	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+		switch (role) {
+			case INTERFACE:
+				type.addSuperInterface(typeReference);
+				return;
+			case SUPER_TYPE:
+				if (type instanceof CtTypeParameter) {
+					((CtTypeParameter) this.type).setSuperclass(typeReference);
+					return;
+				}
 		}
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
