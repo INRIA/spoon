@@ -613,7 +613,10 @@ public class CtQueryImpl implements CtQuery {
 					try {
 						return Class.forName(expectedClassName);
 					} catch (ClassNotFoundException e1) {
-						throw new SpoonException("The class detected from ClassCastException not found.", e1);
+						/*
+						 * It wasn't able to load the expected class from the CCE.
+						 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
+						 */
 					}
 				}
 			}
