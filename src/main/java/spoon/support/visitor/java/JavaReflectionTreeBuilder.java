@@ -285,12 +285,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	@Override
-	protected void visitMethodExceptionTypes(RtMethod method) {
-		((ExecutableRuntimeBuilderContext) contexts.peek()).onExceptionTypes();
-		super.visitMethodExceptionTypes(method);
-	}
-
-	@Override
 	public void visitField(Field field) {
 		final CtField<Object> ctField = factory.Core().createField();
 		ctField.setSimpleName(field.getName());
@@ -307,6 +301,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitEnumValue(Field field) {
 		final CtEnumValue<Object> ctEnumValue = factory.Core().createEnumValue();
 		ctEnumValue.setSimpleName(field.getName());
+		ctEnumValue.addModifier(ModifierKind.PUBLIC);
+		ctEnumValue.addModifier(ModifierKind.STATIC);
+		ctEnumValue.addModifier(ModifierKind.FINAL);
 
 		enter(new VariableRuntimeBuilderContext(ctEnumValue));
 		super.visitEnumValue(field);
@@ -537,7 +534,13 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.SYNCHRONIZED);
 		}
 		if (Modifier.isTransient(modifiers)) {
-			ctModifiable.addModifier(ModifierKind.TRANSIENT);
+			if (ctModifiable instanceof CtField) {
+				ctModifiable.addModifier(ModifierKind.TRANSIENT);
+			} else if (ctModifiable instanceof CtMethod) {
+//				ctModifiable.addModifier(ModifierKind.VARARG);
+			} else {
+				throw new UnsupportedOperationException();
+			}
 		}
 		if (Modifier.isVolatile(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.VOLATILE);

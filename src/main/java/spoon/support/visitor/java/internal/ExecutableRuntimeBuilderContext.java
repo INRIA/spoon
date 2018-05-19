@@ -36,7 +36,6 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	private CtExecutable<?> ctExecutable;
 	private Executable executable;
 	private Map<String, CtTypeParameter> mapTypeParameters;
-	private boolean collectingExceptionTypes = false;
 
 	public ExecutableRuntimeBuilderContext(Executable executable, CtMethod<?> ctMethod) {
 		super(ctMethod);
@@ -89,9 +88,5 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 	@Override
 	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
 		return executable == genericDeclaration ? this.mapTypeParameters.get(string) : null;
-	}
-
-	public void onExceptionTypes() {
-		collectingExceptionTypes = true;
 	}
 }

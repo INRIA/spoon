@@ -59,12 +59,21 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			if (constructor.isSynthetic()) {
+				continue;
+			}
 			visitConstructor(constructor);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
+			if (field.isSynthetic()) {
+				continue;
+			}
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -97,9 +106,15 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
+			if (field.isSynthetic()) {
+				continue;
+			}
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -130,10 +145,16 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 					continue;
 				}
 			}
+			if (constructor.isSynthetic()) {
+				continue;
+			}
 			visitConstructor(constructor);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
 			if (("valueOf".equals(method.getName()) && method.getParameterTypes().length == 1 && String.class.equals(method.getParameterTypes()[0])) || "values".equals(method.getName())) {
+				continue;
+			}
+			if (method.getMethod().isSynthetic()) {
 				continue;
 			}
 			visitMethod(method);
@@ -163,9 +184,15 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
+			if (field.isSynthetic()) {
+				continue;
+			}
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
@@ -189,12 +216,29 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
+		int nrEnclosingClasses = getNumberOfEnclosingClasses(constructor.getDeclaringClass());
 		for (RtParameter parameter : RtParameter.parametersOf(constructor)) {
+			//ignore implicit parameters of enclosing classes
+			if (nrEnclosingClasses > 0) {
+				nrEnclosingClasses--;
+				continue;
+			}
 			visitParameter(parameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
 		}
+		for (Class<?> exceptionType : constructor.getExceptionTypes()) {
+			visitTypeReference(CtRole.THROWN, exceptionType);
+		}
+	}
+
+	private int getNumberOfEnclosingClasses(Class<?> clazz) {
+		int depth = 0;
+		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
+			depth++;
+		}
+		return depth;
 	}
 
 	@Override
@@ -214,14 +258,9 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (RtParameter parameter : RtParameter.parametersOf(method)) {
 			visitParameter(parameter);
 		}
-
 		if (method.getReturnType() != null) {
 			visitTypeReference(CtRole.TYPE, method.getGenericReturnType());
 		}
-		visitMethodExceptionTypes(method);
-	}
-
-	protected void visitMethodExceptionTypes(RtMethod method) {
 		for (Class<?> exceptionType : method.getExceptionTypes()) {
 			visitTypeReference(CtRole.THROWN, exceptionType);
 		}
@@ -254,12 +293,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		if (parameter.getGenericType() != null) {
-			if (parameter.isVarArgs()) {
-				//TODO check if it is OK or there belonss parameter.getType().getComponentType() - as before
-				visitArrayReference(CtRole.TYPE, parameter.getGenericType());
-			} else {
-				visitTypeReference(CtRole.TYPE, parameter.getGenericType());
-			}
+			visitTypeReference(CtRole.TYPE, parameter.getGenericType());
 		}
 	}
 

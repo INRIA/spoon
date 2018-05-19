@@ -268,6 +268,10 @@ public class JavaReflectionTreeBuilderTest {
 					otherTypeMember.setModifiers(typeMember.getModifiers());
 				}
 			}
+			if (role == CtRole.SUPER_TYPE && other == null && element != null && ((CtTypeReference<?>) element).getQualifiedName().equals(Object.class.getName())) {
+				//class X<T extends Object> cannot be distinguished in runtime from X<T>
+				return;
+			}
 			super.biScan(role, element, other);
 		}
 		@Override
@@ -280,6 +284,10 @@ public class JavaReflectionTreeBuilderTest {
 					String name = e.getKey();
 					CtTypeMember other = othersByName.remove(name);
 					if (other == null) {
+						if (e.getValue().isImplicit()) {
+							//it is OK, that implicit elements are not available in runtime
+							continue;
+						}
 						differences.add("Missing shadow typeMember: " + name);
 					}
 					biScan(role, e.getValue(), other);
