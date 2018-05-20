@@ -76,7 +76,8 @@ public class JavaReflectionTreeBuilderTest {
 		final CtClass<Class> aClass = new JavaReflectionTreeBuilder(createFactory()).scan(Class.class);
 		assertNotNull(aClass);
 		assertEquals("java.lang.Class", aClass.getQualifiedName());
-		assertNotNull(aClass.getSuperclass());
+		//The Class extends Object, but CtElementImpl (made from sources) getSuperclass() returns null. See CtTypeInformation#getSuperclass() comment.
+		assertNull(aClass.getSuperclass());
 		assertTrue(aClass.getSuperInterfaces().size() > 0);
 		assertTrue(aClass.getFields().size() > 0);
 		assertTrue(aClass.getMethods().size() > 0);
@@ -400,7 +401,7 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Difference on path: " + pathBuilder.fromElement(parentOf, rootOf).toString()+"#"
+					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString()+"#"
 					+diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
 					+"\nShadow: " + String.valueOf(diff.other)
 					+"\nNormal: " + String.valueOf(diff.element)+"\n");

@@ -35,6 +35,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -342,6 +343,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		typeParameter.setSimpleName(parameter.getName());
 
 		enter(new TypeRuntimeBuilderContext(parameter, typeParameter) {
+			@SuppressWarnings("incomplete-switch")
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
 				switch (role) {
@@ -430,8 +432,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	@Override
 	public void visitTypeReference(CtRole role, WildcardType type) {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
-//		wildcard.setUpper(type.getUpperBounds() != null && !type.getUpperBounds()[0].equals(Object.class));
-		wildcard.setUpper(type.getUpperBounds() != null && type.getUpperBounds().length > 0);
+		//looks like type.getUpperBounds() always returns single value array with Object.class
+		//so we cannot distinguish between <? extends Object> and <?>, which must be upper==true too!
+		wildcard.setUpper((type.getLowerBounds() != null && type.getLowerBounds().length > 0) == false);
 
 		enter(new TypeReferenceRuntimeBuilderContext(type, wildcard));
 		super.visitTypeReference(role, type);
@@ -549,7 +552,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		if (Modifier.isTransient(modifiers)) {
 			if (ctModifiable instanceof CtField) {
 				ctModifiable.addModifier(ModifierKind.TRANSIENT);
-			} else if (ctModifiable instanceof CtMethod) {
+			} else if (ctModifiable instanceof CtExecutable) {
+				//it happens when executable has a vararg parameter. But that is not handled by modifiers in Spoon model
 //				ctModifiable.addModifier(ModifierKind.VARARG);
 			} else {
 				throw new UnsupportedOperationException();
