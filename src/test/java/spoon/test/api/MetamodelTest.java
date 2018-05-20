@@ -45,6 +45,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -195,7 +196,12 @@ public class MetamodelTest {
 
 	private void assertConceptsEqual(MetamodelConcept expectedConcept, MetamodelConcept runtimeConcept) {
 		assertEquals(expectedConcept.getName(), runtimeConcept.getName());
-		assertEquals(expectedConcept.getModelClass().getActualClass(), runtimeConcept.getModelClass().getActualClass());
+		if (expectedConcept.getModelClass() == null) {
+			assertNull(runtimeConcept.getModelClass());
+		} else {
+			assertNotNull(runtimeConcept.getModelClass());
+			assertEquals(expectedConcept.getModelClass().getActualClass(), runtimeConcept.getModelClass().getActualClass());
+		}
 		assertEquals(expectedConcept.getModelInterface().getActualClass(), runtimeConcept.getModelInterface().getActualClass());
 		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
 		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());

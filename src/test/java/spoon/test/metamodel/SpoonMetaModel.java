@@ -114,7 +114,9 @@ public class SpoonMetaModel {
 	public SpoonMetaModel() {
 		this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 		for (CtType<?> iface : Metamodel.getAllMetamodelInterfaces()) {
-			getOrCreateConcept(iface);
+			if (iface instanceof CtInterface) {
+				getOrCreateConcept(iface);
+			}
 		}
 	}
 
