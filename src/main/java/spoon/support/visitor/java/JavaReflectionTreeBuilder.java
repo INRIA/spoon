@@ -165,13 +165,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctInterface.setSimpleName(clazz.getSimpleName());
 		setModifier(ctInterface, clazz.getModifiers(), clazz.getDeclaringClass());
 
-		enter(new TypeRuntimeBuilderContext(clazz, ctInterface) {
-			@Override
-			public void addMethod(CtMethod ctMethod) {
-				super.addMethod(ctMethod);
-				ctMethod.setBody(null);
-			}
-		});
+		enter(new TypeRuntimeBuilderContext(clazz, ctInterface));
 		super.visitInterface(clazz);
 		exit();
 
@@ -276,7 +270,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		/**
 		 * java 8 static interface methods are marked as abstract but has body
 		 */
-		if (Modifier.isAbstract(method.getModifiers()) == false || Modifier.isStatic(method.getModifiers())) {
+		if (Modifier.isAbstract(method.getModifiers()) == false) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
 		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());
