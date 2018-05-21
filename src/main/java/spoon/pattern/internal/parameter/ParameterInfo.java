@@ -21,7 +21,7 @@ import spoon.pattern.Quantifier;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.node.RootNode;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Represents the parameter of {@link Pattern}
@@ -38,13 +38,13 @@ public interface ParameterInfo {
 	/**
 	 * Matches `value` into `parameters` under the name/structure defined by this ParameterInfo.
 	 * 1) checks that value matches with optional internal rules of this {@link ParameterInfo}
-	 * 2) creates new copy of {@link ParameterValueProvider} which contains the new `value` and returns that copy
+	 * 2) creates new copy of {@link ImmutableMap} which contains the new `value` and returns that copy
 	 *
 	 * @param parameters the existing parameters
 	 * @param value the new, to be stored value
 	 * @return copy of `parameters` with new value or existing `parameters` if value is already there or null if value doesn't fit into these parameters
 	 */
-	ParameterValueProvider addValueAs(ParameterValueProvider parameters, Object value);
+	ImmutableMap addValueAs(ImmutableMap parameters, Object value);
 
 	/**
 	 * Takes the value of parameter identified by this {@link ParameterInfo} from the `parameters`
@@ -53,7 +53,7 @@ public interface ParameterInfo {
 	 * @param result the receiver of the result value. It defined required type of returned value and multiplicity of returned value
 	 * @param parameters here are stored all the parameter values
 	 */
-	<T> void getValueAs(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void getValueAs(Factory factory, ResultHolder<T> result, ImmutableMap parameters);
 
 	/**
 	 * @return true if the value container has to be a List, otherwise the container will be a single value
@@ -87,11 +87,11 @@ public interface ParameterInfo {
 	 * @return true if the ValueResolver of this parameter MUST match with next target in the state defined by current `parameters`.
 	 * false if match is optional
 	 */
-	boolean isMandatory(ParameterValueProvider parameters);
+	boolean isMandatory(ImmutableMap parameters);
 
 	/**
 	 * @param parameters matching parameters
 	 * @return true if the ValueResolver of this parameter should be processed again to match next target in the state defined by current `parameters`.
 	 */
-	boolean isTryNextMatch(ParameterValueProvider parameters);
+	boolean isTryNextMatch(ImmutableMap parameters);
 }

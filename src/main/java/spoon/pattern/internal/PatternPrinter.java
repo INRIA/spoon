@@ -40,7 +40,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  */
@@ -58,7 +58,7 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	public String printNode(RootNode node) {
-		List<Object> generated = generateTargets(node, (ParameterValueProvider) null, null);
+		List<Object> generated = generateTargets(node, (ImmutableMap) null, null);
 		StringBuilder sb = new StringBuilder();
 		for (Object ele : generated) {
 			sb.append(ele.toString()).append('\n');
@@ -67,7 +67,7 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	@Override
-	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ImmutableMap parameters) {
 		int firstResultIdx = result.getResults().size();
 		if (node instanceof InlineNode) {
 			//this is a inline node. Do not generated nodes normally, but generate origin inline statements
@@ -129,7 +129,7 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	@Override
-	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ImmutableMap parameters) {
 		Object obj = generatePatternParameterElement(parameterInfo, result.getRequiredClass());
 		if (obj != null) {
 			result.addResult((T) obj);

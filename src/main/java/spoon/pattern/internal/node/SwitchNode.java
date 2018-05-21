@@ -32,7 +32,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * List of conditional cases
@@ -73,7 +73,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (CaseNode case1 : cases) {
 			generator.generateTargets(case1, result, parameters);
 		}
@@ -154,7 +154,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 
 		@Override
 		public TobeMatched matchTargets(TobeMatched targets, Matchers nextMatchers) {
-			ParameterValueProvider parameters = targets.getParameters();
+			ImmutableMap parameters = targets.getParameters();
 			//set all switch parameter values following match case. Even no matching case is OK - everything is false then
 			for (CaseNode case1 : cases) {
 				if (case1.vrOfExpression != null) {
@@ -177,14 +177,14 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 			SwitchNode.this.forEachParameterInfo(consumer);
 		}
 		@Override
-		public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 			if (statement != null) {
 				if (isCaseSelected(generator, parameters)) {
 					generator.generateTargets(statement, result, parameters);
 				}
 			}
 		}
-		private boolean isCaseSelected(Generator generator, ParameterValueProvider parameters) {
+		private boolean isCaseSelected(Generator generator, ImmutableMap parameters) {
 			if (vrOfExpression == null) {
 				return true;
 			}
@@ -193,7 +193,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 		}
 
 		@Override
-		public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+		public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 			Factory f = generator.getFactory();
 			CoreFactory cf = f.Core();
 			CtBlock<?> block = cf.createBlock();
@@ -214,7 +214,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 	}
 
 	@Override
-	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		CtStatement resultStmt = null;
 		CtStatement lastElse = null;
 		CtIf lastIf = null;

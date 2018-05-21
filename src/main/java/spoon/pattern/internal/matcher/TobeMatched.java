@@ -26,17 +26,17 @@ import java.util.function.BiFunction;
 
 import spoon.SpoonException;
 import spoon.reflect.meta.ContainerKind;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Describes what next has to be matched.
- * It consists of current `parameters` represented by {@link ParameterValueProvider}
+ * It consists of current `parameters` represented by {@link ImmutableMap}
  * and by a to be matched target elements.
  * See children of {@link TobeMatched} for supported collections of targer elements.
  */
 public class TobeMatched {
 	//TODO remove parameters. Send them individually into matching methods and return MatchResult
-	private final ParameterValueProvider parameters;
+	private final ImmutableMap parameters;
 	//Use list for everything because Spoon uses Sets with predictable iteration order
 	private final List<?> targets;
 	private final boolean ordered;
@@ -47,7 +47,7 @@ public class TobeMatched {
 	 * @param target the to be matched target data. List, Set, Map or single value
 	 * @return new instance of {@link TobeMatched}, which contains `parameters` and `target` mapped using containerKind
 	 */
-	public static TobeMatched create(ParameterValueProvider parameters, ContainerKind containerKind, Object target) {
+	public static TobeMatched create(ImmutableMap parameters, ContainerKind containerKind, Object target) {
 		switch (containerKind) {
 		case LIST:
 			return new TobeMatched(parameters, (List<Object>) target, true);
@@ -61,7 +61,7 @@ public class TobeMatched {
 		throw new SpoonException("Unexpected RoleHandler containerKind: " + containerKind);
 	}
 
-	private TobeMatched(ParameterValueProvider parameters, Object target) {
+	private TobeMatched(ImmutableMap parameters, Object target) {
 		//It is correct to put whole container as single value in cases when ParameterNode matches agains whole attribute value
 //		if (target instanceof Collection || target instanceof Map) {
 //			throw new SpoonException("Invalid argument. Use other constructors");
@@ -77,21 +77,21 @@ public class TobeMatched {
 	 * @param ordered defines the way how targets are matched. If true then first target is matched with first ValueResolver.
 	 * If false then all targets are tried with first ValueResolver.
 	 */
-	private TobeMatched(ParameterValueProvider parameters, Collection<?> targets, boolean ordered) {
+	private TobeMatched(ImmutableMap parameters, Collection<?> targets, boolean ordered) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
 		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets));
 		this.ordered = ordered;
 	}
 
-	private TobeMatched(ParameterValueProvider parameters, Map<String, ?> targets) {
+	private TobeMatched(ImmutableMap parameters, Map<String, ?> targets) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
 		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets.entrySet()));
 		this.ordered = false;
 	}
 
-	private TobeMatched(ParameterValueProvider parameters, List<?> targets, boolean ordered, int tobeRemovedIndex) {
+	private TobeMatched(ImmutableMap parameters, List<?> targets, boolean ordered, int tobeRemovedIndex) {
 		this.parameters = parameters;
 		this.targets = new ArrayList<>(targets);
 		if (tobeRemovedIndex >= 0) {
@@ -103,7 +103,7 @@ public class TobeMatched {
 	/**
 	 * @return parameters of last successful match.
 	 */
-	public ParameterValueProvider getParameters() {
+	public ImmutableMap getParameters() {
 		return parameters;
 	}
 
@@ -163,7 +163,7 @@ public class TobeMatched {
 	 * @param newParams to be used parameters
 	 * @return copy of {@link TobeMatched} with new parameters
 	 */
-	public TobeMatched copyAndSetParams(ParameterValueProvider newParams) {
+	public TobeMatched copyAndSetParams(ImmutableMap newParams) {
 		if (parameters == newParams) {
 			return this;
 		}
@@ -175,14 +175,14 @@ public class TobeMatched {
 	 * @param matcher a matching algorithm
 	 * @return {@link TobeMatched} with List of remaining (to be matched) targets or null if there is no match
 	 */
-	public TobeMatched matchNext(BiFunction<Object, ParameterValueProvider, ParameterValueProvider> matcher) {
+	public TobeMatched matchNext(BiFunction<Object, ImmutableMap, ImmutableMap> matcher) {
 		if (targets.isEmpty()) {
 			//no target -> no match
 			return null;
 		}
 		if (ordered) {
 			//handle ordered list of targets - match with first target
-			ParameterValueProvider parameters = matcher.apply(targets.get(0), getParameters());
+			ImmutableMap parameters = matcher.apply(targets.get(0), getParameters());
 			if (parameters != null) {
 				//return remaining match
 				return removeTarget(parameters, 0);
@@ -192,7 +192,7 @@ public class TobeMatched {
 			//handle un-ordered list of targets - match with all targets, stop at first matching
 			int idxOfMatch = 0;
 			while (idxOfMatch < targets.size()) {
-				ParameterValueProvider parameters = matcher.apply(targets.get(idxOfMatch), getParameters());
+				ImmutableMap parameters = matcher.apply(targets.get(idxOfMatch), getParameters());
 				if (parameters != null) {
 					return removeTarget(parameters, idxOfMatch);
 				}
@@ -207,7 +207,7 @@ public class TobeMatched {
 	 * @param remainingMatch the {@link TobeMatched} whose parameters has to be returned
 	 * @return parameters from `remainingMatch`, if it exists. Else returns null
 	 */
-	public static ParameterValueProvider getMatchedParameters(TobeMatched remainingMatch) {
+	public static ImmutableMap getMatchedParameters(TobeMatched remainingMatch) {
 		return remainingMatch == null ? null : remainingMatch.getParameters();
 	}
 	/**
@@ -217,7 +217,7 @@ public class TobeMatched {
 	public TobeMatched removeTarget(int idxOfTobeRemovedTarget) {
 		return removeTarget(parameters, idxOfTobeRemovedTarget);
 	}
-	public TobeMatched removeTarget(ParameterValueProvider parameters, int idxOfTobeRemovedTarget) {
+	public TobeMatched removeTarget(ImmutableMap parameters, int idxOfTobeRemovedTarget) {
 		return new TobeMatched(parameters, targets, ordered, idxOfTobeRemovedTarget);
 	}
 

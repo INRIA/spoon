@@ -22,7 +22,7 @@ import spoon.pattern.Quantifier;
 import spoon.pattern.internal.Generator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.parameter.ParameterInfo;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Generates/Matches a copy of single template object
@@ -50,12 +50,12 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ParameterValueProvider parameters) {
+	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ImmutableMap parameters) {
 		result.addResult((U) template);
 	}
 
 	@Override
-	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
 		if (target == null && template == null) {
 			return parameters;
 		}
@@ -79,7 +79,7 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		//it always matches only once
 		return false;
 	}

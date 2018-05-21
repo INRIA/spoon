@@ -29,7 +29,7 @@ import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Represents a ValueResolver of one Map.Entry
@@ -105,7 +105,7 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		String entryKey = generator.generateSingleTarget(key, parameters, String.class);
 		CtElement entryValue = generator.generateSingleTarget(value, parameters, CtElement.class);
 		if (entryKey != null && entryValue != null) {
@@ -113,7 +113,7 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 		}
 	}
 	@Override
-	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
 		if (target instanceof Map.Entry) {
 			Map.Entry<String, CtElement> targetEntry = (Map.Entry<String, CtElement>) target;
 			parameters = getMatchedParameters(getKey().matchAllWith(TobeMatched.create(parameters, ContainerKind.SINGLE, targetEntry.getKey())));
@@ -134,7 +134,7 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		if (key instanceof ParameterNode) {
 			return ((ParameterNode) key).isTryNextMatch(parameters);
 		}

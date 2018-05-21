@@ -2,10 +2,14 @@
 title: Spoon Patterns
 ---
 
-**Spoon patterns** aim at finding code elements using patterns. A **Spoon pattern** is based on a one or several AST nodes,
-where some parts of the AST are **pattern parameters**.
+Spoon patterns enables you to find code elements. A Spoon pattern is based on a one or several AST nodes, which represent the code to match, where some parts of the AST are pattern parameters. When a pattern is matched, one can access to the code matched in each pattern parameter.
 
-Once you have a pattern, one matches again some code:
+The main classes of Spoon patterns are those in package `spoon.pattern`:
+
+* classes: PatternBuilder, Pattern, Match, PatternBuilderHelper, PatternParameterConfigurator, InlinedStatementConfigurator 
+* eums: ConflictResolutionMode, Quantifier
+
+Example usage:
 
 ```java
 Factory spoonFactory = ...
@@ -21,41 +25,44 @@ pattern.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
 });
 ```
 
+## PatternBuilder
 
-## Main class: `PatternBuilder`
-
-To create a Spoon pattern, one must use `PatternBuilder`, which takes AST nodes as input, and where you 
-**pattern parameters** are defined.
-
-
-The code to creates a Spoon pattern using `PatternBuilder` looks like this:
-
-```java
-public class Foo {
-	public void statement() {
-		if (_col_.size() > 10)
-			throw new OutOfBoundException();
-	}
-}
-```
+To create a Spoon pattern, one must use `PatternBuilder`, which takes AST nodes as input, and **pattern parameters** are defined.
 
 
 ```java
+// creates pattern from the body of method "matcher1"
 Pattern t = PatternBuilder.create(
     new PatternBuilderHelper(fooClass).setBodyOfMethod("matcher1").getPatternElements())
-    .configureParameters()
+    .configurePatternParameters()
     .build();
 ```
 
 
-This pattern matches all statements of the body of method `statement`, ie. a precondition to check that a list 
-is smaller than a certain size. 
-This pattern has 
-one single pattern parameter called `_col_`, which is considered as a pattern parameter because it is declared outside of the AST node. 
+This pattern matches all statements of the body of method `statement`, ie. a precondition to check that a list  is smaller than a certain size. 
+This pattern has  one single pattern parameter called `_col_`, which is automatically considered as a pattern parameter because it is declared outside of the AST node. This automatic configuration happens when `configurePatternParameters` is called.
 
-## ParametersBuilder parameters
+## Pattern 
 
-To create pattern, one use a `ParametersBuilder` in a lambda:
+The main methods of `Pattern` are `getMatches` and `forEachMatch`.
+
+```
+List<Match> matches = pattern.getMatches(ctClass);
+```
+
+## Match
+
+A `Match` represent a match of a pattern on a code elements.
+
+The main methods are `getMatchingElement` and `getMatchingElements`.
+
+## PatternBuilderHelper
+
+`PatternBuilderHelper` is used to select AST nodes that would act as pattern. It is mainly used to get the body (method `setBodyOfMethod`) or the return expression of a method (method `setReturnExpressionOfMethod`) .
+
+## PatternParameterConfigurator
+
+To create pattern paramters, one uses a `PatternParameterConfigurator` as a lambda:
 
 
 ```java
@@ -68,6 +75,7 @@ void method(String _x_) {
 //a pattern definition
 Pattern t = PatternBuilder.create(...select pattern model...)
 	.configureParameters(pb -> 
+		// creating a pattern parameter called "firstParamName"
 		pb.parameter("firstParamName")
 			//...select which AST nodes are parameters...
 			//e.g. using parameter selector
@@ -78,35 +86,31 @@ Pattern t = PatternBuilder.create(...select pattern model...)
 			
 		//... you can define as many parameters as you need...
 		
+		// another parameter (all usages of variable "_x_"
 		pb.parameter("lastParamName").byVariable("_x_");
 	)
 	.build();
 ```
 
-`ParametersBuilder` has the following methods:
+`ParametersBuilder` has many methods to create the perfect pattern parameters, incl:
 
 * `byType(Class|CtTypeReference|String)` - all the references to the type defined by Class,
 CtTypeReference or qualified name are considered as pattern parameter
 * `byLocalType(CtType<?> searchScope, String localTypeSimpleName)` - all the types defined in `searchScope`
 and having simpleName equal to `localTypeSimpleName` are considered as pattern parameter
 * `byVariable(CtVariable|String)` - all read/write variable references to CtVariable
-or any variable with provided simple name are considered as pattern parameter
-* `byInvocation(CtMethod<?> method)` - each invocation of `method` are considered as pattern parameter
-* `parametersByVariable(CtVariable|String... variableName)` - each `variableName` is a name of a variable
+or any variable named with the provided simple name are considered as pattern parameter
+* `byInvocation(CtMethod<?> method)` - all invocations of `method` are considered as pattern parameter
+* `byVariable(CtVariable|String... variableName)` - each `variableName` is a name of a variable
 which references instance of a class with fields. Each such field is considered as pattern parameter.
-* `byTemplateParameterReference(CtVariable)` - the reference to variable of type `TemplateParameter` is handled
-as pattern parameter using all the rules defined in the chapters above.
 * `byFilter(Filter)` - any pattern model element, where `Filter.accept(element)` returns true is a pattern parameter.
-* `attributeOfElementByFilter(CtRole role, Filter filter)` - the attribute defined by `role` of all 
+* `byRole(CtRole role, Filter filter)` - the attribute defined by `role` of all 
 pattern model elements, where `Filter.accept(element)` returns true is a pattern parameter. It can be used to define a varible on any CtElement attribute. E.g. method modifiers or throwables, ...
 * `byString(String name)` - all pattern model string attributes whose value is equal to `name` are considered as pattern parameter.This can be used to define full name of the methods and fields, etc.
 * `bySubstring(String stringMarker)` - all pattern model string attributes whose value contains
-whole string or a substring equal to `stringMarker`are pattern parameter.
-Note: only the `stringMarker` substring of the string value is substituted.
-Other parts of string/element name are kept unchanged.
-* `bySimpleName(String name)` - any CtNamedElement or CtReference identified by it's simple name is a pattern parameter.
-* `byNamedElementSimpleName(String name)` - any CtNamedElement identified by it's simple name is a pattern parameter.
-* `byReferenceSimpleName(String name)` - any CtReference identified by it's simple name is a pattern parameter.
+whole string or a substring equal to `stringMarker`are pattern parameter. Note: only the `stringMarker` substring of the string value is substituted, other parts of string/element name are kept unchanged.
+* `byNamedElement(String name)` - any CtNamedElement identified by it's simple name is a pattern parameter.
+* `byReferenceName(String name)` - any CtReference identified by it's simple name is a pattern parameter.
 
 
 Any parameter of a pattern can be configured like this:
@@ -140,9 +144,9 @@ The `setValueType(type)` is called internally too, so match condition assures bo
   * `ContainerKind#MAP` - The values are always stored as `Map`.
 
 
-## Inlining with PatternBuilder
+## InlinedStatementConfigurator
 
-It is possible to inlined code, eg:
+It is possible to match inlined code, eg:
 
 ```java
 System.out.println(1);
@@ -158,8 +162,7 @@ for (int i=0; i<n; i++) {
 }
 ```
 
-
-But you can mark code to be matched inlined as follows:
+One mark code to be matched inlined using method `configureInlineStatements`, which receives a  InlinedStatementConfigurator as follows:
 ```java
 Pattern t = PatternBuilder.create(...select pattern model...)
 	//...configure parameters...
@@ -172,9 +175,9 @@ Pattern t = PatternBuilder.create(...select pattern model...)
 
 The inlining methods are:
 
-* `byVariableName(String varName)` - all CtForEach and CtIf statements
+* `inlineIfOrForeachReferringTo(String varName)` - all CtForEach and CtIf statements
 whose expression references variable named `varName` are understood as
 inline statements
-* `markInline(CtForEach|CtIf)` - provided CtForEach or CtIf statement
+* `markAsInlined(CtForEach|CtIf)` - provided CtForEach or CtIf statement
 is understood as inline statement
 

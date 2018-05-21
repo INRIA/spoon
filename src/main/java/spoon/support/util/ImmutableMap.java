@@ -16,6 +16,8 @@
  */
 package spoon.support.util;
 
+import spoon.support.Internal;
+
 import java.util.Map;
 
 /**
@@ -24,8 +26,10 @@ import java.util.Map;
  * (eg unmodifiable storage of parameter name-value pairs).
  * The values may be primitive values or List, Set, Map of values.
  * All internal containers are unmodifiable too.
+ *
+ * Internal class only, not in the public API.
  */
-public interface ParameterValueProvider {
+public interface ImmutableMap {
 
 	/**
 	 * @param parameterName to be checked parameter name
@@ -42,9 +46,9 @@ public interface ParameterValueProvider {
 	/**
 	 * @param parameterName to be set parameter name
 	 * @param value the new value
-	 * @return copies this {@link ParameterValueProvider}, sets the new value there and returns that copy
+	 * @return copies this {@link ImmutableMap}, sets the new value there and returns that copy
 	 */
-	ParameterValueProvider putValue(String parameterName, Object value);
+	ImmutableMap putValue(String parameterName, Object value);
 
 	/**
 	 * @return underlying unmodifiable Map&lt;String, Object&gt;
@@ -52,15 +56,15 @@ public interface ParameterValueProvider {
 	Map<String, Object> asMap();
 
 	/**
-	 * @return a new instance of {@link ParameterValueProvider}, which inherits all values from this {@link ParameterValueProvider}
+	 * @return a new instance of {@link ImmutableMap}, which inherits all values from this {@link ImmutableMap}
 	 * Any call of {@link #putValue(String, Object)} is remembered in local Map of parameters.
-	 * At the end of process the {@link #getModifiedParameters()} can be used to return all the parameters which were changed
-	 * after local {@link ParameterValueProvider} was created
+	 * At the end of process the {@link #getModifiedValues()} can be used to return all the parameters which were changed
+	 * after local {@link ImmutableMap} was created
 	 */
-	ParameterValueProvider checkpoint();
+	ImmutableMap checkpoint();
 
 	/**
 	 * @return the modified parameters since last call to {@link #checkpoint()}
 	 */
-	Map<String, Object> getModifiedParameters();
+	Map<String, Object> getModifiedValues();
 }

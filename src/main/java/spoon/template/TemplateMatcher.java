@@ -29,9 +29,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 import spoon.support.util.ParameterValueProviderFactory;
-import spoon.support.util.UnmodifiableParameterValueProvider;
+import spoon.support.util.ImmutableMapImpl;
 
 /**
  * This class defines an engine for matching a template to pieces of code.
@@ -50,8 +50,8 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * <ul>any value of primitive attribute, like String, Enum value, number, ...
 	 * </li>
 	 */
-	private ParameterValueProvider matches;
-	private ParameterValueProviderFactory parameterValueProviderFactory = UnmodifiableParameterValueProvider.Factory.INSTANCE;
+	private ImmutableMap matches;
+	private ParameterValueProviderFactory parameterValueProviderFactory = ImmutableMapImpl.Factory.INSTANCE;
 
 	/**
 	 * Constructs a matcher for a given template.
@@ -96,7 +96,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * The {@link #matches(CtElement)} method must have been called before and must return true.
 	 * Otherwise it returns null.
 	 */
-	public ParameterValueProvider getMatches() {
+	public ImmutableMap getMatches() {
 		return matches;
 	}
 

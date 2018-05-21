@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.support.SpoonClassNotFoundException;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Drives generation process
@@ -42,7 +42,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	@Override
-	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ImmutableMap parameters) {
 		node.generateTargets(this, result, parameters);
 		if (node.isSimplifyGenerated()) {
 			// simplify this element, it contains a substituted element
@@ -71,7 +71,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	@Override
-	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ImmutableMap parameters) {
 		parameterInfo.getValueAs(factory, result, parameters);
 	}
 

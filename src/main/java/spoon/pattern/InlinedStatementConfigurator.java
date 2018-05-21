@@ -39,6 +39,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
+import spoon.support.Experimental;
 
 /**
  * Builds inline statements of Pattern
@@ -59,15 +60,16 @@ import spoon.reflect.visitor.CtAbstractVisitor;
  * </code></pre>
  * because inline statements are executed during substitution process and are not included in generated result.
  *
- * The inline statements may be used in PatternMatching process (opposite to Pattern substitution) too.
+ * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
  */
-public class InlineStatementsBuilder {
+@Experimental
+public class InlinedStatementConfigurator {
 
 	private final PatternBuilder patternBuilder;
 	private boolean failOnMissingParameter = true;
 	private ConflictResolutionMode conflictResolutionMode = ConflictResolutionMode.FAIL;
 
-	public InlineStatementsBuilder(PatternBuilder patternBuilder) {
+	public InlinedStatementConfigurator(PatternBuilder patternBuilder) {
 		this.patternBuilder = patternBuilder;
 	}
 
@@ -83,7 +85,7 @@ public class InlineStatementsBuilder {
 	 * @param conflictResolutionMode to be applied mode
 	 * @return this to support fluent API
 	 */
-	public InlineStatementsBuilder setConflictResolutionMode(ConflictResolutionMode conflictResolutionMode) {
+	public InlinedStatementConfigurator setConflictResolutionMode(ConflictResolutionMode conflictResolutionMode) {
 		this.conflictResolutionMode = conflictResolutionMode;
 		return this;
 	}
@@ -93,7 +95,7 @@ public class InlineStatementsBuilder {
 	 * @param variableName to be searched variable name
 	 * @return this to support fluent API
 	 */
-	public InlineStatementsBuilder byVariableName(String variableName) {
+	public InlinedStatementConfigurator inlineIfOrForeachReferringTo(String variableName) {
 		patternBuilder.patternQuery
 			.filterChildren((CtVariableReference varRef) -> variableName.equals(varRef.getSimpleName()))
 			.forEach(this::byElement);
@@ -105,17 +107,17 @@ public class InlineStatementsBuilder {
 	 * @param element a child of CtIf or CtForEach
 	 * @return this to support fluent API
 	 */
-	InlineStatementsBuilder byElement(CtElement element) {
+	InlinedStatementConfigurator byElement(CtElement element) {
 		CtStatement stmt = element instanceof CtStatement ? (CtStatement) element : element.getParent(CtStatement.class);
 		//called for first parent statement of all current parameter substitutions
 		stmt.accept(new CtAbstractVisitor() {
 			@Override
 			public void visitCtForEach(CtForEach foreach) {
-				markInline(foreach);
+				markAsInlined(foreach);
 			}
 			@Override
 			public void visitCtIf(CtIf ifElement) {
-				markInline(ifElement);
+				markAsInlined(ifElement);
 			}
 		});
 		return this;
@@ -126,7 +128,7 @@ public class InlineStatementsBuilder {
 	 * @param foreach to be marked {@link CtForEach} element
 	 * @return this to support fluent API
 	 */
-	public InlineStatementsBuilder markInline(CtForEach foreach) {
+	public InlinedStatementConfigurator markAsInlined(CtForEach foreach) {
 		//detect meta elements by different way - e.g. comments?
 		RootNode vr = patternBuilder.getPatternNode(foreach.getExpression());
 		if ((vr instanceof PrimitiveMatcher) == false) {
@@ -159,7 +161,7 @@ public class InlineStatementsBuilder {
 	 * @param ifElement to be marked {@link CtIf} element
 	 * @return this to support fluent API
 	 */
-	public InlineStatementsBuilder markInline(CtIf ifElement) {
+	public InlinedStatementConfigurator markAsInlined(CtIf ifElement) {
 		SwitchNode osp = new SwitchNode();
 		boolean[] canBeInline = new boolean[]{true};
 		forEachIfCase(ifElement, (expression, block) -> {
@@ -169,7 +171,7 @@ public class InlineStatementsBuilder {
 				RootNode vrOfExpression = patternBuilder.getPatternNode(expression);
 				if (vrOfExpression instanceof ParameterNode == false) {
 					if (failOnMissingParameter) {
-						throw new SpoonException("Each inline `if` statement must have defined pattern parameter in expression. If you want to ignore this, then call InlineStatementsBuilder#setFailOnMissingParameter(false) first.");
+						throw new SpoonException("Each inline `if` statement must have defined pattern parameter in expression. If you want to ignore this, then call InlinedStatementConfigurator#setFailOnMissingParameter(false) first.");
 					} else {
 						canBeInline[0] = false;
 						return;
@@ -249,7 +251,7 @@ public class InlineStatementsBuilder {
 	 * set false if ssuch statement should be kept as part of template.
 	 * @return this to support fluent API
 	 */
-	public InlineStatementsBuilder setFailOnMissingParameter(boolean failOnMissingParameter) {
+	public InlinedStatementConfigurator setFailOnMissingParameter(boolean failOnMissingParameter) {
 		this.failOnMissingParameter = failOnMissingParameter;
 		return this;
 	}

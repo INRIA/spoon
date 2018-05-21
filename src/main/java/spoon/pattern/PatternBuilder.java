@@ -60,14 +60,16 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.Experimental;
 import spoon.template.Parameter;
 import spoon.template.TemplateParameter;
 
 /**
  * The master class to create a {@link Pattern} instance.
  *
- * Based on a fluent API, see tests and documentation ('pattern.md').
+ * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
  */
+@Experimental
 public class PatternBuilder {
 
 	public static final String TARGET_TYPE = "targetType";
@@ -130,7 +132,7 @@ public class PatternBuilder {
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
 		if (this.templateTypeRef != null) {
-			configureParameters(pb -> {
+			configurePatternParameters(pb -> {
 				pb.parameter(TARGET_TYPE).byType(this.templateTypeRef).setValueType(CtTypeReference.class);
 			});
 		}
@@ -358,8 +360,8 @@ public class PatternBuilder {
 	 * are automatically marked as pattern parameters
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder createPatternParameters() {
-		configureParameters(pb -> {
+	public PatternBuilder configurePatternParameters() {
+		configurePatternParameters(pb -> {
 			//add this substitution request only if there isn't another one yet
 			pb.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE);
 			/*
@@ -380,13 +382,11 @@ public class PatternBuilder {
 	}
 
 	/**
-	 * Configure template parameters
-	 * @param parametersBuilder a buildir which allows to define template parameters and to select
-	 *  to be substituted nodes
-	 * @return
+	 * Configure pattern parameters with a {@link PatternParameterConfigurator}
+	 * @return this
 	 */
-	public PatternBuilder configureParameters(Consumer<ParametersBuilder> parametersBuilder) {
-		ParametersBuilder pb = new ParametersBuilder(this, parameterInfos);
+	public PatternBuilder configurePatternParameters(Consumer<PatternParameterConfigurator> parametersBuilder) {
+		PatternParameterConfigurator pb = new PatternParameterConfigurator(this, parameterInfos);
 		parametersBuilder.accept(pb);
 		return this;
 	}
@@ -394,22 +394,14 @@ public class PatternBuilder {
 	/**
 	 * Used by inline for each statement to define template parameter which is local in the scope of the inline statement
 	 */
-	PatternBuilder configureLocalParameters(Consumer<ParametersBuilder> parametersBuilder) {
-		ParametersBuilder pb = new ParametersBuilder(this, new HashMap<>());
+	PatternBuilder configureLocalParameters(Consumer<PatternParameterConfigurator> parametersBuilder) {
+		PatternParameterConfigurator pb = new PatternParameterConfigurator(this, new HashMap<>());
 		parametersBuilder.accept(pb);
 		return this;
 	}
-	/**
-	 * Provides backward compatibility with standard Template parameters based on {@link TemplateParameter} and {@link Parameter} annotation
-	 *
-	 * @return this to support fluent API
-	 */
-	public PatternBuilder configurePatternParameters() {
-		return configurePatternParameters(templateTypeRef.getTypeDeclaration(), null);
-	}
 
 	/**
-	 * adds all standard Template parameters based on {@link TemplateParameter} and {@link Parameter} annotation
+	 * method to support legacy {@link TemplateParameter} and {@link Parameter} annotation
 	 * @param templateParameters parameters, which will be used in substitution. It is needed here,
 	 * 			when parameter value types influences which AST nodes will be the target of substitution in legacy template patterns
 	 * @return this to support fluent API
@@ -426,7 +418,7 @@ public class PatternBuilder {
 	 * @return this to support fluent API
 	 */
 	private PatternBuilder configurePatternParameters(CtType<?> templateType, Map<String, Object> templateParameters) {
-		configureParameters(pb -> {
+		configurePatternParameters(pb -> {
 			templateType.map(new AllTypeMembersFunction()).forEach((CtTypeMember typeMember) -> {
 				configurePatternParameter(templateType, templateParameters, pb, typeMember);
 			});
@@ -450,7 +442,7 @@ public class PatternBuilder {
 		return this;
 	}
 
-	private void configurePatternParameter(CtType<?> templateType, Map<String, Object> templateParameters, ParametersBuilder pb, CtTypeMember typeMember) {
+	private void configurePatternParameter(CtType<?> templateType, Map<String, Object> templateParameters, PatternParameterConfigurator pb, CtTypeMember typeMember) {
 		Factory f = typeMember.getFactory();
 		CtTypeReference<TemplateParameter> templateParamRef = f.Type().createReference(TemplateParameter.class);
 		CtTypeReference<CtTypeReference> typeReferenceRef = f.Type().createReference(CtTypeReference.class);
@@ -473,7 +465,7 @@ public class PatternBuilder {
 				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
 					//parameter is a multivalue
 					// here we need to replace all named element and all references whose simpleName == stringMarker
-					pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).byName(stringMarker);
+					pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);
 				} else if (paramType.isSubtypeOf(typeReferenceRef) || paramType.getQualifiedName().equals(Class.class.getName())) {
 					/*
 					 * parameter with value type TypeReference or Class, identifies replacement of local type whose name is equal to parameter name
@@ -570,13 +562,13 @@ public class PatternBuilder {
 				//we are adding inline statements automatically from legacy templates,
 				//so do not fail if it is sometime not possible - it means that it is not a inline statement then
 				sb.setFailOnMissingParameter(false);
-				sb.byVariableName(variableName);
+				sb.inlineIfOrForeachReferringTo(variableName);
 			});
 		}
 	}
 
 	/**
-	 * Configures inline statements
+	 * Configures inlined statements
 	 *
 	 * For example if the `for` statement in this pattern model
 	 * <pre><code>
@@ -598,8 +590,8 @@ public class PatternBuilder {
 	 * @param consumer
 	 * @return this to support fluent API
 	 */
-	public PatternBuilder configureInlineStatements(Consumer<InlineStatementsBuilder> consumer) {
-		InlineStatementsBuilder sb = new InlineStatementsBuilder(this);
+	public PatternBuilder configureInlineStatements(Consumer<InlinedStatementConfigurator> consumer) {
+		InlinedStatementConfigurator sb = new InlinedStatementConfigurator(this);
 		consumer.accept(sb);
 		return this;
 	}
@@ -669,7 +661,7 @@ public class PatternBuilder {
 	/**
 	 * @return true if produced Pattern will append generated by comments
 	 */
-	public boolean isAddGeneratedBy() {
+	private boolean isAddGeneratedBy() {
 		return addGeneratedBy;
 	}
 	/**

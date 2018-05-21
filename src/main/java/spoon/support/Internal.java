@@ -14,14 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.util;
+package spoon.support;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Creates instances of {@link ImmutableMap}
+ * Tells that a class or method is not in the public API (even if it has Java visibility "public")
+ * Required because package-visibility is too coarse-grained.
  */
-public interface ParameterValueProviderFactory {
-	/**
-	 * @return new instance of empty {@link ImmutableMap}
-	 */
-	ImmutableMap createParameterValueProvider();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
+public @interface Internal {
 }

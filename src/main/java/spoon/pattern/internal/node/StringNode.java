@@ -30,9 +30,8 @@ import spoon.SpoonException;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.Generator;
 import spoon.pattern.internal.ResultHolder;
-import spoon.pattern.internal.ResultHolder.Single;
 import spoon.pattern.internal.parameter.ParameterInfo;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Delivers single String value, which is created by replacing string markers in constant String template
@@ -57,7 +56,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		Class<?> requiredClass = result.getRequiredClass();
 		if (requiredClass != null && requiredClass.isAssignableFrom(String.class) == false) {
 			throw new SpoonException("StringValueResolver provides only String values. It doesn't support: " + requiredClass);
@@ -80,7 +79,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
 		if ((target instanceof String) == false) {
 			return null;
 		}
@@ -277,7 +276,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		//it always matches only once
 		return false;
 	}

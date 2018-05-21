@@ -17,7 +17,7 @@ public class MatchMultiple {
 	public static Pattern createPattern(Quantifier matchingStrategy, Integer minCount, Integer maxCount) throws Exception {
 		CtType<?> type = ModelUtils.buildClass(MatchMultiple.class);
 		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-			.configureParameters(pb -> {
+			.configurePatternParameters(pb -> {
 
 				// matching anything that is called "statements" (in this case call to method statement.
 				// the setContainerKind(ContainerKind.LIST) means match zero, one or more then one arbitrary statement

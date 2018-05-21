@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  */
@@ -77,7 +77,7 @@ public class SetParameterInfo extends AbstractParameterInfo {
 		return Collections.emptySet();
 	}
 	@Override
-	protected Object getValue(ParameterValueProvider parameters) {
+	protected Object getValue(ImmutableMap parameters) {
 		return castTo(super.getValue(parameters), Set.class);
 	}
 

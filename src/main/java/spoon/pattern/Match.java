@@ -21,16 +21,16 @@ import java.util.Map;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Represents a single match of {@link Pattern}
  */
 public class Match {
 	private final List<? extends Object> matchingElements;
-	private final ParameterValueProvider parameters;
+	private final ImmutableMap parameters;
 
-	public Match(List<? extends Object> matches, ParameterValueProvider parameters) {
+	public Match(List<? extends Object> matches, ImmutableMap parameters) {
 		this.parameters = parameters;
 		this.matchingElements = matches;
 	}
@@ -93,29 +93,9 @@ public class Match {
 	}
 
 	/**
-	 * Replaces all matching elements with `newElements`
-	 * @param newElements the elements which has to be used instead of matched element
+	 * @return {@link ImmutableMap} with values of {@link Pattern} parameters, which fits to current match
 	 */
-	public void replaceMatchesBy(List<CtElement> newElements) {
-		if (matchingElements.isEmpty()) {
-			throw new SpoonException("Cannot replace empty list of elements");
-		}
-		CtElement last = null;
-		for (CtElement oldElement : getMatchingElements(CtElement.class)) {
-			if (last != null) {
-				//delete all excluding last
-				last.delete();
-			}
-			last = oldElement;
-		}
-		//replace last element
-		last.replace(newElements);
-	}
-
-	/**
-	 * @return {@link ParameterValueProvider} with values of {@link Pattern} parameters, which fits to current match
-	 */
-	public ParameterValueProvider getParameters() {
+	public ImmutableMap getParameters() {
 		return parameters;
 	}
 	/**

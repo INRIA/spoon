@@ -41,7 +41,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Generates/Matches a copy of a single CtElement AST node with all it's children (whole AST tree of the root CtElement)
@@ -273,7 +273,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ParameterValueProvider parameters) {
+	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ImmutableMap parameters) {
 		//TODO implement create on Metamodel.Type
 		CtElement clone = generator.getFactory().Core().create(elementType.getModelInterface());
 		generateSingleNodeAttributes(generator, clone, parameters);
@@ -281,7 +281,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		result.addResult((U) clone);
 	}
 
-	protected void generateSingleNodeAttributes(Generator generator, CtElement clone, ParameterValueProvider parameters) {
+	protected void generateSingleNodeAttributes(Generator generator, CtElement clone, ImmutableMap parameters) {
 		for (Map.Entry<Metamodel.Field, RootNode> e : getRoleToNode().entrySet()) {
 			Metamodel.Field mmField = e.getKey();
 			switch (mmField.getContainerKind()) {
@@ -310,7 +310,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
 		if (target == null) {
 			return null;
 		}
@@ -330,7 +330,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return parameters;
 	}
 
-	protected ParameterValueProvider matchesRole(ParameterValueProvider parameters, CtElement target, Metamodel.Field mmField, RootNode attrNode) {
+	protected ImmutableMap matchesRole(ImmutableMap parameters, CtElement target, Metamodel.Field mmField, RootNode attrNode) {
 		if (isMatchingRole(mmField.getRole(), elementType.getModelInterface()) == false) {
 			return parameters;
 		}
@@ -417,7 +417,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		//it always matches only once
 		return false;
 	}

@@ -1,18 +1,10 @@
 package spoon.test.template.testclasses.match;
 
-import spoon.pattern.ParametersBuilder;
-import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
-import spoon.pattern.PatternBuilderHelper;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.meta.ContainerKind;
 import spoon.template.TemplateParameter;
 
 import static java.lang.System.out;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class MatchMultiple2 {
 

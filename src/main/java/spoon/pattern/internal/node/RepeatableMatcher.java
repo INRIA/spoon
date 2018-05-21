@@ -17,7 +17,7 @@
 package spoon.pattern.internal.node;
 
 import spoon.pattern.Quantifier;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Defines API of a repeatable matcher.
@@ -43,12 +43,12 @@ public interface RepeatableMatcher extends RootNode {
 	 * @return true if this ValueResolver MUST match with next target in the state defined by current `parameters`.
 	 * false if match is optional
 	 */
-	default boolean isMandatory(ParameterValueProvider parameters) {
+	default boolean isMandatory(ImmutableMap parameters) {
 		return true;
 	}
 	/**
 	 * @param parameters matching parameters
 	 * @return true if this ValueResolver should be processed again to match next target in the state defined by current `parameters`.
 	 */
-	boolean isTryNextMatch(ParameterValueProvider parameters);
+	boolean isTryNextMatch(ImmutableMap parameters);
 }

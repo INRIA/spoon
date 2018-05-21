@@ -22,7 +22,7 @@ import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Drives generation process
@@ -46,7 +46,7 @@ public interface Generator {
 	 * @param result the holder which receives the generated node
 	 * @param parameters the input parameters
 	 */
-	<T> void generateTargets(RootNode node, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void generateTargets(RootNode node, ResultHolder<T> result, ImmutableMap parameters);
 
 	/**
 	 * Returns zero, one or more values into `result`. The value comes from `parameters` from the location defined by `parameterInfo`
@@ -54,17 +54,17 @@ public interface Generator {
 	 * @param result the holder which receives the generated node
 	 * @param parameters the input parameters
 	 */
-	<T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void getValueAs(ParameterInfo parameterInfo, ResultHolder<T> result, ImmutableMap parameters);
 
 	/**
 	 * Generates one target depending on kind of this {@link RootNode}, expected `expectedType` and input `parameters`
 	 * @param node to be generated node
-	 * @param parameters {@link ParameterValueProvider}
+	 * @param parameters {@link ImmutableMap}
 	 * @param expectedType defines {@link Class} of returned value
 	 *
 	 * @return a generate value or null
 	 */
-	default <T> T generateSingleTarget(RootNode node, ParameterValueProvider parameters, Class<T> expectedType) {
+	default <T> T generateSingleTarget(RootNode node, ImmutableMap parameters, Class<T> expectedType) {
 		ResultHolder.Single<T> result = new ResultHolder.Single<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();
@@ -73,12 +73,12 @@ public interface Generator {
 	/**
 	 * Generates zero, one or more targets depending on kind of this {@link RootNode}, expected `expectedType` and input `parameters`
 	 * @param node to be generated node
-	 * @param parameters {@link ParameterValueProvider}
+	 * @param parameters {@link ImmutableMap}
 	 * @param expectedType defines {@link Class} of returned value
 	 *
 	 * @return a {@link List} of generated targets
 	 */
-	default <T> List<T> generateTargets(RootNode node, ParameterValueProvider parameters, Class<T> expectedType) {
+	default <T> List<T> generateTargets(RootNode node, ImmutableMap parameters, Class<T> expectedType) {
 		ResultHolder.Multiple<T> result = new ResultHolder.Multiple<>(expectedType);
 		generateTargets(node, result, parameters);
 		return result.getResult();

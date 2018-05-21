@@ -23,7 +23,7 @@ import spoon.pattern.internal.Generator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Represents pattern model variable
@@ -44,12 +44,12 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		generator.getValueAs(parameterInfo, result, parameters);
 	}
 
 	@Override
-	public ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters) {
+	public ImmutableMap matchTarget(Object target, ImmutableMap parameters) {
 		return parameterInfo.addValueAs(parameters, target);
 	}
 
@@ -63,12 +63,12 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public boolean isMandatory(ParameterValueProvider parameters) {
+	public boolean isMandatory(ImmutableMap parameters) {
 		return parameterInfo.isMandatory(parameters);
 	}
 
 	@Override
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		return parameterInfo.isTryNextMatch(parameters);
 	}
 

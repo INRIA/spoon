@@ -36,27 +36,29 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.Experimental;
+import spoon.support.util.ImmutableMap;
+import spoon.support.util.ImmutableMapImpl;
 import spoon.support.util.ParameterValueProviderFactory;
-import spoon.support.util.UnmodifiableParameterValueProvider;
 
 /**
  * Represents a pattern for matching code. A pattern is composed of a list of AST models, where a model is an AST with some nodes being "pattern parameters".
  *
- * Differences with {@link spoon.template.TemplateMatcher}:
- * - it can match sequences of elements
- * - it can match inlined elements
+ * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
  *
  * Instances can created with {@link PatternBuilder}.
  *
  * The {@link Pattern} can also be used to generate new code where
  * (Pattern) + (pattern parameters) =&gt; (copy of pattern where parameters are replaced by parameter values)
+ * This is done with {@link #substitute(Factory, Class, ImmutableMap)}
  *
- * This is done with {@link #substitute(Factory, Class, ParameterValueProvider)}
+ * Differences with {@link spoon.template.TemplateMatcher}:
+ * - it can match sequences of elements
+ * - it can match inlined elements
  */
+@Experimental
 public class Pattern {
-	private ParameterValueProviderFactory parameterValueProviderFactory = UnmodifiableParameterValueProvider.Factory.INSTANCE;
-	//TODO rename
+	private ParameterValueProviderFactory parameterValueProviderFactory = ImmutableMapImpl.Factory.INSTANCE;
 	private ModelNode modelValueResolver;
 	private boolean addGeneratedBy = false;
 
@@ -66,9 +68,11 @@ public class Pattern {
 	}
 
 	/**
+	 *
+	 * Not in the public API
+	 *
 	 * @return a {@link ModelNode} of this pattern
 	 */
-	//TODO rename
 	public ModelNode getModelValueResolver() {
 		return modelValueResolver;
 	}
@@ -99,22 +103,22 @@ public class Pattern {
 	 * @param params - the substitution parameters
 	 * @return List of generated elements
 	 */
-	public <T extends CtElement> List<T> substitute(Factory factory, Class<T> valueType, ParameterValueProvider params) {
+	public <T extends CtElement> List<T> substitute(Factory factory, Class<T> valueType, ImmutableMap params) {
 		return new DefaultGenerator(factory).setAddGeneratedBy(isAddGeneratedBy()).generateTargets(modelValueResolver, params, valueType);
 	}
 
-	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, ParameterValueProvider)}, but with a Map as third parameter */
+	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, ImmutableMap)}, but with a Map as third parameter */
 	public <T extends CtElement> List<T> substituteList(Factory factory, Class<T> valueType, Map<String, Object> params) {
-		return substitute(factory, valueType, new UnmodifiableParameterValueProvider(params));
+		return substitute(factory, valueType, new ImmutableMapImpl(params));
 	}
 
-	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, ParameterValueProvider)}, but returns a single element, and uses a map as parameter */
+	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, ImmutableMap)}, but returns a single element, and uses a map as parameter */
 	public <T extends CtElement> T substituteSingle(Factory factory, Class<T> valueType, Map<String, Object> params) {
-		return substituteSingle(factory, valueType, new UnmodifiableParameterValueProvider(params));
+		return substituteSingle(factory, valueType, new ImmutableMapImpl(params));
 	}
 
-	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, ParameterValueProvider)}, but returns a single element */
-	public <T extends CtElement> T substituteSingle(Factory factory, Class<T> valueType, ParameterValueProvider params) {
+	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, ImmutableMap)}, but returns a single element */
+	public <T extends CtElement> T substituteSingle(Factory factory, Class<T> valueType, ImmutableMap params) {
 		return new DefaultGenerator(factory).setAddGeneratedBy(isAddGeneratedBy()).generateSingleTarget(modelValueResolver, params, valueType);
 	}
 
@@ -146,7 +150,7 @@ public class Pattern {
 	@SuppressWarnings("unchecked")
 	private <T extends CtType<?>> T createType(CtPackage ownerPackage, String typeSimpleName, Map<String, Object> params) {
 		@SuppressWarnings({ "rawtypes" })
-		List<CtType> types = substitute(ownerPackage.getFactory(), CtType.class, new UnmodifiableParameterValueProvider(params,
+		List<CtType> types = substitute(ownerPackage.getFactory(), CtType.class, new ImmutableMapImpl(params,
 				PatternBuilder.TARGET_TYPE, ownerPackage.getFactory().Type().createReference(getQualifiedName(ownerPackage, typeSimpleName))));
 		T result = null;
 		for (CtType<?> type : types) {
@@ -168,7 +172,7 @@ public class Pattern {
 	 * @return List of generated elements
 	 */
 	public <T extends CtElement> List<T> applyToType(CtType<?> targetType, Class<T> valueType,  Map<String, Object> params) {
-		List<T> results = substitute(targetType.getFactory(), valueType, new UnmodifiableParameterValueProvider(params, PatternBuilder.TARGET_TYPE, targetType.getReference()));
+		List<T> results = substitute(targetType.getFactory(), valueType, new ImmutableMapImpl(params, PatternBuilder.TARGET_TYPE, targetType.getReference()));
 		for (T result : results) {
 			if (result instanceof CtTypeMember) {
 				targetType.addTypeMember((CtTypeMember) result);
@@ -192,7 +196,7 @@ public class Pattern {
 		}
 
 		MatchingScanner scanner = new MatchingScanner(modelValueResolver, parameterValueProviderFactory, consumer);
-		ParameterValueProvider parameters = parameterValueProviderFactory.createParameterValueProvider();
+		ImmutableMap parameters = parameterValueProviderFactory.createParameterValueProvider();
 		if (input instanceof Collection<?>) {
 			scanner.scan(null, (Collection<CtElement>) input);
 		} else if (input instanceof Map) {
@@ -203,12 +207,12 @@ public class Pattern {
 	}
 
 	/**
-	 * Finds all target program sub-trees that correspond to a template
+	 * Finds all target program sub-trees that correspond to this pattern
 	 * and returns them.
 	 * @param root the root of to be searched AST. It can be a CtElement or List, Set, Map of CtElements
 	 * @return List of {@link Match}
 	 */
-	public List<Match> getMatches(Object root) {
+	public List<Match> getMatches(CtElement root) {
 		List<Match> matches = new ArrayList<>();
 		forEachMatch(root, match -> {
 			matches.add(match);
@@ -232,7 +236,8 @@ public class Pattern {
 		return addGeneratedBy;
 	}
 
-	public Pattern setAddGeneratedBy(boolean addGeneratedBy) {
+	// not public because pattern should be immutable (only configured through PatternBuilder
+	Pattern setAddGeneratedBy(boolean addGeneratedBy) {
 		this.addGeneratedBy = addGeneratedBy;
 		return this;
 	}

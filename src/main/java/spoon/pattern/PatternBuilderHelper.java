@@ -36,10 +36,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
+import spoon.support.Experimental;
 
 /**
- * Utility class to select parts of AST to be used as a model of a {@link Pattern}.
+ * Utility class to select parts of AST to be used as a model of a {@link PatternBuilder}.
+ *
+ * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
  */
+@Experimental
 public class PatternBuilderHelper {
 	/**
 	 * The original type, which contains the AST of pattern model
@@ -87,26 +91,8 @@ public class PatternBuilderHelper {
 	 * Sets a template model from {@link CtTypeMember} of a template type
 	 * @param filter the {@link Filter} whose match defines to be used {@link CtTypeMember}
 	 */
-	public PatternBuilderHelper setTypeMember(Filter<CtTypeMember> filter) {
+	private PatternBuilderHelper setTypeMember(Filter<CtTypeMember> filter) {
 		setElements(getByFilter(filter));
-		return this;
-	}
-
-	/**
-	 * removes all annotations of type defined by `classes` from the clone of the source {@link CtType}
-	 * @param classes list of classes which defines types of to be removed annotations
-	 * @return this to support fluent API
-	 */
-	public PatternBuilderHelper removeTag(Class... classes) {
-		List<CtElement> elements = getClonedElements();
-		for (Class class1 : classes) {
-			for (CtElement element : elements) {
-				CtAnnotation<?> annotation = element.getAnnotation(element.getFactory().Type().createReference(class1));
-				if (annotation != null) {
-					element.removeAnnotation(annotation);
-				}
-			}
-		}
 		return this;
 	}
 
@@ -135,7 +121,7 @@ public class PatternBuilderHelper {
 	 * Sets a template model from body of the method of template type selected by filter
 	 * @param filter the {@link Filter} whose match defines to be used {@link CtMethod}
 	 */
-	public void setBodyOfMethod(Filter<CtMethod<?>> filter) {
+	private void setBodyOfMethod(Filter<CtMethod<?>> filter) {
 		CtBlock<?> body =  getOneByFilter(filter).getBody();
 		setElements(body.getStatements());
 	}
@@ -151,7 +137,7 @@ public class PatternBuilderHelper {
 	 * Sets a template model from return expression of the method of template type selected by filter
 	 * @param filter the {@link Filter} whose match defines to be used {@link CtExecutable}
 	 */
-	public void setReturnExpressionOfMethod(Filter<CtMethod<?>> filter) {
+	private void setReturnExpressionOfMethod(Filter<CtMethod<?>> filter) {
 		CtMethod<?> method = getOneByFilter(filter);
 		CtBlock<?> body = method.getBody();
 		if (body.getStatements().size() != 1) {
@@ -178,28 +164,6 @@ public class PatternBuilderHelper {
 		}
 		return elements.get(0);
 	}
-	/**
-	 * @param filter whose matches will be removed from the template model
-	 */
-	public PatternBuilderHelper removeTypeMembers(Filter<CtTypeMember> filter) {
-		for (CtTypeMember ctTypeMember : new ArrayList<>(getClonedPatternType().getTypeMembers())) {
-			if (filter.matches(ctTypeMember)) {
-				ctTypeMember.delete();
-			}
-		}
-		return this;
-	}
-
-	/**
-	 * Removes all type members which are annotated by `annotationClass`
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public PatternBuilderHelper removeTypeMembersAnnotatedBy(Class<?>... annotationClass) {
-		for (Class<?> ac : annotationClass) {
-			removeTypeMembers(tm -> tm.getAnnotation((Class) ac) != null);
-		}
-		return this;
-	}
 
 	/**
 	 * @param filter whose matches will be kept in the template. All others will be removed
@@ -209,58 +173,6 @@ public class PatternBuilderHelper {
 			if (filter.matches(ctTypeMember) == false) {
 				ctTypeMember.delete();
 			}
-		}
-		return this;
-	}
-
-	/**
-	 * Keeps only type members, which are annotated by `annotationClass`. All others will be removed
-	 */
-	public PatternBuilderHelper keepTypeMembersAnnotatedBy(Class<? extends Annotation> annotationClass) {
-		keepTypeMembers(tm -> tm.getAnnotation(annotationClass) != null);
-		return this;
-	}
-
-	/**
-	 * removes super class from the template
-	 */
-	public PatternBuilderHelper removeSuperClass() {
-		getClonedPatternType().setSuperclass(null);
-		return this;
-	}
-
-	/**
-	 * @param filter super interfaces which matches the filter will be removed
-	 */
-	public PatternBuilderHelper removeSuperInterfaces(Filter<CtTypeReference<?>> filter) {
-		Set<CtTypeReference<?>> superIfaces = new HashSet<>(getClonedPatternType().getSuperInterfaces());
-		boolean changed = false;
-		for (Iterator<CtTypeReference<?>> iter = superIfaces.iterator(); iter.hasNext();) {
-			if (filter.matches(iter.next())) {
-				iter.remove();
-				changed = true;
-			}
-		}
-		if (changed) {
-			getClonedPatternType().setSuperInterfaces(superIfaces);
-		}
-		return this;
-	}
-
-	/**
-	 * @param filter super interfaces which matches the filter will be kept. Others will be removed
-	 */
-	public PatternBuilderHelper keepSuperInterfaces(Filter<CtTypeReference<?>> filter) {
-		Set<CtTypeReference<?>> superIfaces = new HashSet<>(getClonedPatternType().getSuperInterfaces());
-		boolean changed = false;
-		for (Iterator<CtTypeReference<?>> iter = superIfaces.iterator(); iter.hasNext();) {
-			if (filter.matches(iter.next())) {
-				iter.remove();
-				changed = true;
-			}
-		}
-		if (changed) {
-			getClonedPatternType().setSuperInterfaces(superIfaces);
 		}
 		return this;
 	}
@@ -276,7 +188,7 @@ public class PatternBuilderHelper {
 	 * @param template a List of {@link CtElement}s, which has to be used as pattern model
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void setElements(List<? extends CtElement> template) {
+	private void setElements(List<? extends CtElement> template) {
 		this.elements = (List) template;
 	}
 }

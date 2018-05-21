@@ -23,7 +23,7 @@ import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Represents a parameterized Pattern ValueResolver, which can be used
@@ -43,9 +43,9 @@ public interface RootNode extends Matchers {
 	 * Generates zero, one or more target depending on kind of this {@link RootNode}, expected `result` and input `parameters`
 	 * @param generator {@link Generator} which drives generation process
 	 * @param result holder for the generated objects
-	 * @param parameters a {@link ParameterValueProvider} holding parameters
+	 * @param parameters a {@link ImmutableMap} holding parameters
 	 */
-	<T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters);
 
 	/**
 	 * @return true if generated result has to be evaluated to apply simplifications.

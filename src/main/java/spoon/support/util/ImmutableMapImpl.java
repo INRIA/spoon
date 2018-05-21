@@ -16,6 +16,8 @@
  */
 package spoon.support.util;
 
+import spoon.support.Internal;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,34 +25,38 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides value of parameter
+ *
+ * Internal class only, not in the public API.
+ *
+ * Spoon implementation of {@link ImmutableMap}
  */
-public class UnmodifiableParameterValueProvider implements ParameterValueProvider {
+@Internal
+public class ImmutableMapImpl implements ImmutableMap {
 
 	public static class Factory implements ParameterValueProviderFactory {
 		public static final Factory INSTANCE = new Factory();
 		@Override
-		public ParameterValueProvider createParameterValueProvider() {
-			return new UnmodifiableParameterValueProvider();
+		public ImmutableMap createParameterValueProvider() {
+			return new ImmutableMapImpl();
 		}
 	}
 
-	protected final ParameterValueProvider parent;
+	protected final ImmutableMap parent;
 	protected final Map<String, Object> map;
 
-	public UnmodifiableParameterValueProvider(Map<String, Object> map) {
+	public ImmutableMapImpl(Map<String, Object> map) {
 		this(null, map);
 	}
-	private UnmodifiableParameterValueProvider(ParameterValueProvider parent, Map<String, Object> map) {
+	private ImmutableMapImpl(ImmutableMap parent, Map<String, Object> map) {
 		this.parent = parent;
 		this.map = Collections.unmodifiableMap(map);
 	}
 
-	public UnmodifiableParameterValueProvider(Map<String, Object> map, String parameterName, Object value) {
+	public ImmutableMapImpl(Map<String, Object> map, String parameterName, Object value) {
 		this(null, map, parameterName, value);
 	}
 
-	private UnmodifiableParameterValueProvider(ParameterValueProvider parent, Map<String, Object> map, String parameterName, Object value) {
+	private ImmutableMapImpl(ImmutableMap parent, Map<String, Object> map, String parameterName, Object value) {
 		this.parent = null;
 		Map<String, Object> copy = new HashMap<>(map.size() + 1);
 		copy.putAll(map);
@@ -58,14 +64,14 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 		this.map = Collections.unmodifiableMap(copy);
 	}
 
-	public UnmodifiableParameterValueProvider() {
+	public ImmutableMapImpl() {
 		this.parent = null;
 		this.map = Collections.emptyMap();
 	}
 
 	@Override
-	public UnmodifiableParameterValueProvider checkpoint() {
-		return new UnmodifiableParameterValueProvider(this, Collections.emptyMap());
+	public ImmutableMapImpl checkpoint() {
+		return new ImmutableMapImpl(this, Collections.emptyMap());
 	}
 
 	@Override
@@ -89,8 +95,8 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 	}
 
 	@Override
-	public ParameterValueProvider putValue(String parameterName, Object value) {
-		return new UnmodifiableParameterValueProvider(parent, map, parameterName, value);
+	public ImmutableMap putValue(String parameterName, Object value) {
+		return new ImmutableMapImpl(parent, map, parameterName, value);
 	}
 
 	@Override
@@ -127,14 +133,14 @@ public class UnmodifiableParameterValueProvider implements ParameterValueProvide
 	}
 
 	@Override
-	public Map<String, Object> getModifiedParameters() {
+	public Map<String, Object> getModifiedValues() {
 		return map;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ParameterValueProvider) {
-			obj = ((ParameterValueProvider) obj).asMap();
+		if (obj instanceof ImmutableMap) {
+			obj = ((ImmutableMap) obj).asMap();
 		}
 		if (obj instanceof Map) {
 			Map map = (Map) obj;

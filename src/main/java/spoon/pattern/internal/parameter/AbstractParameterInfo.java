@@ -34,7 +34,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  */
@@ -83,7 +83,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	protected abstract String getWrappedName(String containerName);
 
 	@Override
-	public ParameterValueProvider addValueAs(ParameterValueProvider parameters, Object value) {
+	public ImmutableMap addValueAs(ImmutableMap parameters, Object value) {
 		Class<?> requiredType = getParameterValueType();
 		if (requiredType != null && value != null && requiredType.isInstance(value) == false) {
 			return null;
@@ -97,7 +97,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		if (newContainer == NO_MERGE) {
 			return null;
 		}
-		return (ParameterValueProvider) newContainer;
+		return (ImmutableMap) newContainer;
 	}
 
 	protected Object addValueToContainer(Object container, Function<Object, Object> merger) {
@@ -316,7 +316,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @return true if the ValueResolver of this parameter MUST match with next target in the state defined by current `parameters`.
 	 * false if match is optional
 	 */
-	public boolean isMandatory(ParameterValueProvider parameters) {
+	public boolean isMandatory(ImmutableMap parameters) {
 		int nrOfValues = getNumberOfValues(parameters);
 		//current number of values is smaller then minimum number of values. Value is mandatory
 		return nrOfValues < getMinOccurences();
@@ -326,7 +326,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @param parameters matching parameters
 	 * @return true if the ValueResolver of this parameter should be processed again to match next target in the state defined by current `parameters`.
 	 */
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		int nrOfValues = getNumberOfValues(parameters);
 		if (getContainerKind(parameters) == ContainerKind.SINGLE) {
 			/*
@@ -343,7 +343,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @param parameters
 	 * @return 0 if there is no value. 1 if there is single value or null. Number of values in collection if there is a collection
 	 */
-	private int getNumberOfValues(ParameterValueProvider parameters) {
+	private int getNumberOfValues(ImmutableMap parameters) {
 		if (parameters.hasValue(getName()) == false) {
 			return 0;
 		}
@@ -361,7 +361,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		this.containerKind = containerKind;
 		return this;
 	}
-	protected ContainerKind getContainerKind(ParameterValueProvider params) {
+	protected ContainerKind getContainerKind(ImmutableMap params) {
 		return getContainerKind(params.getValue(getName()), null);
 	}
 	protected ContainerKind getContainerKind(Object existingValue, Object value) {
@@ -377,7 +377,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		if (existingValue instanceof Map) {
 			return ContainerKind.MAP;
 		}
-		if (existingValue instanceof ParameterValueProvider) {
+		if (existingValue instanceof ImmutableMap) {
 			return ContainerKind.MAP;
 		}
 		if (existingValue != null) {
@@ -396,14 +396,14 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		if (value instanceof Map) {
 			return ContainerKind.MAP;
 		}
-		if (value instanceof ParameterValueProvider) {
+		if (value instanceof ImmutableMap) {
 			return ContainerKind.MAP;
 		}
 		return ContainerKind.SINGLE;
 	}
 
 	@Override
-	public <T> void getValueAs(Factory factory, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void getValueAs(Factory factory, ResultHolder<T> result, ImmutableMap parameters) {
 		//get raw parameter value
 		Object rawValue = getValue(parameters);
 		if (isMultiple() && rawValue instanceof CtBlock<?>)  {
@@ -416,7 +416,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		convertValue(factory, result, rawValue);
 	}
 
-	protected Object getValue(ParameterValueProvider parameters) {
+	protected Object getValue(ImmutableMap parameters) {
 		if (containerItemAccessor != null) {
 			return containerItemAccessor.getValue(parameters);
 		}

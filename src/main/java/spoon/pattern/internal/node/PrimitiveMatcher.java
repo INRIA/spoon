@@ -16,7 +16,7 @@
  */
 package spoon.pattern.internal.node;
 
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Defines API of a primitive matcher - matcher for single target object
@@ -28,5 +28,5 @@ public interface PrimitiveMatcher extends RepeatableMatcher {
 	 * @param parameters will receive the matching parameter values
 	 * @return true if `element` matches with pattern of this matcher
 	 */
-	ParameterValueProvider matchTarget(Object target, ParameterValueProvider parameters);
+	ImmutableMap matchTarget(Object target, ImmutableMap parameters);
 }

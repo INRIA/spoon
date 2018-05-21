@@ -4,7 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Match;
-import spoon.pattern.ParametersBuilder;
+import spoon.pattern.PatternParameterConfigurator;
 import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
 import spoon.pattern.PatternBuilderHelper;
@@ -30,8 +30,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
-import spoon.support.util.ParameterValueProvider;
-import spoon.support.util.UnmodifiableParameterValueProvider;
+import spoon.support.util.ImmutableMap;
+import spoon.support.util.ImmutableMapImpl;
 import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.ToBeMatched;
 import spoon.test.template.testclasses.logger.Logger;
@@ -91,7 +91,7 @@ public class PatternTest {
 //			}
 //		}
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST).matchInlinedStatements();
 					})
 				.build();
@@ -128,7 +128,7 @@ public class PatternTest {
 		CtType<?> type = ctClass.getFactory().Type().get(MatchForEach2.class);
 
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-				.configureParameters(pb -> {
+				.configurePatternParameters(pb -> {
 					pb.parameter("values").byVariable("values").setContainerKind(ContainerKind.LIST).matchInlinedStatements();
 					// the variable "var" of the template is a parameter
 					pb.parameter("varName").byString("var");
@@ -179,13 +179,13 @@ public class PatternTest {
 
 		CtType<?> type = ctClass.getFactory().Type().get(MatchIfElse.class);
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-				.configureParameters(pb -> {
+				.configurePatternParameters(pb -> {
 					pb.parameter("option").byVariable("option");
 					pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
 				})
 				//we have to configure inline statements after all expressions
 				//of combined if statement are marked as pattern parameters
-				.configureInlineStatements(lsb -> lsb.byVariableName("option"))
+				.configureInlineStatements(lsb -> lsb.inlineIfOrForeachReferringTo("option"))
 				.build();
 
 		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
@@ -232,7 +232,7 @@ public class PatternTest {
 		Factory factory = ctClass.getFactory();
 
 		Pattern pattern = MatchMultiple.createPattern(null, null, null);
-		ParameterValueProvider params = new UnmodifiableParameterValueProvider();
+		ImmutableMap params = new ImmutableMapImpl();
 
 		// created in "MatchMultiple.createPattern",matching a literal "something"
 		// so "something" si replaced by "does it work?"
@@ -533,7 +533,7 @@ public class PatternTest {
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple3.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters()
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
 						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
 						pb.parameter("printedValue").byFilter((CtLiteral<?> literal) -> "something".equals(literal.getValue()));
@@ -571,7 +571,8 @@ public class PatternTest {
 			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 .configurePatternParameters()
-.configureParameters(pb -> {
+.configurePatternParameters(pb -> {
+				pb.setConflictResolutionMode(ConflictResolutionMode.USE_NEW_NODE);
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
 				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
 				pb.parameter("inlinedSysOut").byVariable("something").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2).matchInlinedStatements();
@@ -612,7 +613,8 @@ public class PatternTest {
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple2.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters()
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
+						pb.setConflictResolutionMode(ConflictResolutionMode.USE_NEW_NODE);
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
 						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
 						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
@@ -655,7 +657,7 @@ public class PatternTest {
 
 		// pattern: a call to System.out.println with anything as parameter
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-				.configureParameters(pb -> {
+				.configurePatternParameters(pb -> {
 					// anything in place of the variable reference value can be matched
 					pb.parameter("value").byVariable("value");
 				})
@@ -686,7 +688,7 @@ public class PatternTest {
 		{
 			// now we match only the ones with a literal as parameter
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						pb.parameter("value").byVariable("value");
 						pb.setValueType(CtLiteral.class);
 					})
@@ -719,7 +721,7 @@ public class PatternTest {
 		{
 			// now we match a System.out.println with an invocation as paramter
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						pb.parameter("value").byVariable("value");
 						pb.setValueType(CtInvocation.class);
 					})
@@ -746,9 +748,9 @@ public class PatternTest {
 		{
 			// matching a System.out.println with a literal
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						pb.parameter("value").byVariable("value");
-						pb.matchCondition(null, (Object value) -> value instanceof CtLiteral);
+						pb.byCondition(null, (Object value) -> value instanceof CtLiteral);
 					})
 					.build();
 
@@ -784,10 +786,10 @@ public class PatternTest {
 		{
 			//match all methods with arbitrary name, modifiers, parameters, but with empty body and return type void
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
-					.configureParameters(pb -> {
-						pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
+					.configurePatternParameters(pb -> {
+						pb.parameter("modifiers").byRole(CtRole.MODIFIER, new TypeFilter(CtMethod.class));
 						pb.parameter("methodName").byString("matcher1");
-						pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
+						pb.parameter("parameters").byRole(CtRole.PARAMETER, new TypeFilter(CtMethod.class));
 					})
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
@@ -825,11 +827,11 @@ public class PatternTest {
 		{
 			//match all methods with arbitrary name, modifiers, parameters and body, but with return type void
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
-					.configureParameters(pb -> {
-						pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
+					.configurePatternParameters(pb -> {
+						pb.parameter("modifiers").byRole(CtRole.MODIFIER, new TypeFilter(CtMethod.class));
 						pb.parameter("methodName").byString("matcher1");
-						pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
-						pb.parameter("statements").byRole(new TypeFilter(CtBlock.class), CtRole.STATEMENT);
+						pb.parameter("parameters").byRole(CtRole.PARAMETER, new TypeFilter(CtMethod.class));
+						pb.parameter("statements").byRole(CtRole.STATEMENT, new TypeFilter(CtBlock.class));
 					})
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
@@ -863,9 +865,9 @@ public class PatternTest {
 //			void matcher1() {
 //			}
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
-						pb.parameter("__pattern_param_annot").byRole(new TypeFilter(CtAnnotation.class), CtRole.VALUE).setContainerKind(ContainerKind.MAP);
+						pb.parameter("__pattern_param_annot").byRole(CtRole.VALUE, new TypeFilter(CtAnnotation.class)).setContainerKind(ContainerKind.MAP);
 						//match any method name
 						pb.parameter("__pattern_param_method_name").byString("matcher1");
 					})
@@ -923,16 +925,16 @@ public class PatternTest {
 			// create a pattern from method matcher1
 			// match all methods with arbitrary name, with any annotation set, Test modifiers, parameters, but with empty body and return type void
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("matcher1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
 						//match any method name
 						pb.parameter("methodName").byString("matcher1");
 						// match on any annotation
 						pb.parameter("allAnnotations")
 								.setConflictResolutionMode(ConflictResolutionMode.APPEND)
-								.byRole(new TypeFilter<>(CtMethod.class), CtRole.ANNOTATION)
+								.byRole(CtRole.ANNOTATION, new TypeFilter<>(CtMethod.class))
 						;
-						pb.parameter("CheckAnnotationValues").byRole(new TypeFilter(CtAnnotation.class), CtRole.VALUE).setContainerKind(ContainerKind.MAP);
+						pb.parameter("CheckAnnotationValues").byRole(CtRole.VALUE, new TypeFilter(CtAnnotation.class)).setContainerKind(ContainerKind.MAP);
 					})
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
@@ -961,7 +963,7 @@ public class PatternTest {
 			// match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMap.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setTypeMember("m1").getPatternElements())
-					.configureParameters(pb -> {
+					.configurePatternParameters(pb -> {
 						//match any value of @Check annotation to parameter `testAnnotations`
 						pb.parameter("CheckKey").bySubstring("value");
 						pb.parameter("CheckValue").byFilter((CtLiteral lit) -> true);
@@ -970,7 +972,7 @@ public class PatternTest {
 						//match on all annotations of method
 						pb.parameter("allAnnotations")
 								.setConflictResolutionMode(ConflictResolutionMode.APPEND)
-								.byRole(new TypeFilter<>(CtMethod.class), CtRole.ANNOTATION);
+								.byRole(CtRole.ANNOTATION, new TypeFilter<>(CtMethod.class));
 					})
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass);
@@ -1007,20 +1009,20 @@ public class PatternTest {
 		// we match a method with any "throws" clause
 		// and the match "throws" are captured in the parameter
 		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setTypeMember("matcher1").getPatternElements())
-				.configureParameters(pb -> {
+				.configurePatternParameters(pb -> {
 					pb.parameter("otherThrowables")
 							//add matcher for other arbitrary throwables
 							.setConflictResolutionMode(ConflictResolutionMode.APPEND)
 							.setContainerKind(ContainerKind.SET)
 							.setMinOccurence(0)
-							.byRole(new TypeFilter(CtMethod.class), CtRole.THROWN);
+							.byRole(CtRole.THROWN, new TypeFilter(CtMethod.class));
 				})
-				.configureParameters(pb -> {
+				.configurePatternParameters(pb -> {
 					//define other parameters too to match all kinds of methods
-					pb.parameter("modifiers").byRole(new TypeFilter(CtMethod.class), CtRole.MODIFIER);
+					pb.parameter("modifiers").byRole(CtRole.MODIFIER, new TypeFilter(CtMethod.class));
 					pb.parameter("methodName").byString("matcher1");
-					pb.parameter("parameters").byRole(new TypeFilter(CtMethod.class), CtRole.PARAMETER);
-					pb.parameter("statements").byRole(new TypeFilter(CtBlock.class), CtRole.STATEMENT);
+					pb.parameter("parameters").byRole(CtRole.PARAMETER, new TypeFilter(CtMethod.class));
+					pb.parameter("statements").byRole(CtRole.STATEMENT, new TypeFilter(CtBlock.class));
 				})
 				.build();
 		String str = pattern.toString();
@@ -1093,7 +1095,7 @@ public class PatternTest {
 			);
 		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
 		Map<String, ParameterInfo> parameterInfos = p.getParameterInfos();
-		// the pattern has 15 pattern parameters (all usages of variable "params" and "item"
+		// the pattern has all usages of variable "params" and "item"
 		assertEquals(15, parameterInfos.size());
 		// .. which are
 		assertEquals(new HashSet<>(Arrays.asList("next","item","startPrefixSpace","printer","start",
@@ -1204,13 +1206,13 @@ public class PatternTest {
 		// Create a pattern from all statements of OldPattern#patternModel
 		Pattern p = PatternBuilder
 				.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
-				.configureParameters((ParametersBuilder pb) -> pb
+				.configurePatternParameters((PatternParameterConfigurator pb) -> pb
 						// creating patterns parameters for all references to "params" and "items"
-						.createPatternParameterForVariable("params", "item")
+						.byVariable("params", "item")
 						.parameter("statements").setContainerKind(ContainerKind.LIST)
 				)
-				.createPatternParameters()
-				.configureInlineStatements(ls -> ls.byVariableName("useStartKeyword"))
+				.configurePatternParameters()
+				.configureInlineStatements(ls -> ls.inlineIfOrForeachReferringTo("useStartKeyword"))
 				.build();
 
 		// so let's try to match this complex pattern  on DJPP
@@ -1218,7 +1220,7 @@ public class PatternTest {
 
 		// there are two results (the try-with-resource in each method)
 		assertEquals(2, matches.size());
-		ParameterValueProvider params = matches.get(0).getParameters();
+		ImmutableMap params = matches.get(0).getParameters();
 		assertEquals("\"extends\"", params.getValue("startKeyword").toString());
 		assertEquals(Boolean.TRUE, params.getValue("useStartKeyword"));
 		assertEquals("false", params.getValue("startPrefixSpace").toString());
@@ -1256,11 +1258,8 @@ public class PatternTest {
 		// creating  a pattern from AClassWithMethodsAndRefs
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
-		Pattern pattern = PatternBuilder.create(templateModel).build();
+		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
-		assertFalse(pattern.isAddGeneratedBy());
-
-		pattern.setAddGeneratedBy(true);
 		assertTrue(pattern.isAddGeneratedBy());
 	}
 
@@ -1274,9 +1273,7 @@ public class PatternTest {
 		// creating  a pattern from AClassWithMethodsAndRefs
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
-		Pattern pattern = PatternBuilder.create(templateModel).build();
-
-		pattern.setAddGeneratedBy(true);
+		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
 		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
 		CtClass<?> generatedType = pattern.createType(factory, newQName, Collections.emptyMap());
@@ -1499,7 +1496,7 @@ public class PatternTest {
 		spoon.pattern.Pattern pattern = PatternBuilder.create(type.getMethodsByName("block").get(0))
 				//all the variable references which are declared out of type member "block" are automatically considered
 				//as pattern parameters
-				.createPatternParameters()
+				.configurePatternParameters()
 				.build();
 		final List<CtMethod> aMethods = pattern.applyToType(aTargetType, CtMethod.class, params);
 		assertEquals(1, aMethods.size());
@@ -1517,7 +1514,7 @@ public class PatternTest {
 	private Map<String, Object> getMap(Match match, String name) {
 		Object v = match.getParametersMap().get(name);
 		assertNotNull(v);
-		return ((ParameterValueProvider) v).asMap();
+		return ((ImmutableMap) v).asMap();
 	}
 
 

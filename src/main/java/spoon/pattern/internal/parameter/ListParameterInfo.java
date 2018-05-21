@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  */
@@ -97,7 +97,7 @@ public class ListParameterInfo extends AbstractParameterInfo {
 		return Collections.emptyList();
 	}
 	@Override
-	protected Object getValue(ParameterValueProvider parameters) {
+	protected Object getValue(ImmutableMap parameters) {
 		List<Object> list = castTo(super.getValue(parameters), List.class);
 		if (idx < 0) {
 			return list;

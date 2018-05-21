@@ -25,7 +25,7 @@ import spoon.pattern.internal.matcher.ChainOfMatchersImpl;
 import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * List of {@link RootNode}s. The {@link RootNode}s are processed in same order like they were inserted in the list
@@ -46,7 +46,7 @@ public class ListOfNodes extends AbstractNode {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (RootNode node : nodes) {
 			generator.generateTargets(node, result, parameters);
 		}

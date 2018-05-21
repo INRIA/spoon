@@ -64,12 +64,12 @@ public class OldPattern {
 	public static Pattern createPatternFromMethodPatternModel(Factory factory) {
 		CtType<?> type = factory.Type().get(OldPattern.class);
 		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
-			.configureParameters(pb->pb
-					.createPatternParameterForVariable("params", "item")
+			.configurePatternParameters(pb->pb
+					.byVariable("params", "item")
 					.parameter("statements").setContainerKind(ContainerKind.LIST)
 			)
-			.createPatternParameters()
-			.configureInlineStatements(ls -> ls.byVariableName("useStartKeyword"))
+			.configurePatternParameters()
+			.configureInlineStatements(ls -> ls.inlineIfOrForeachReferringTo("useStartKeyword"))
 			.build();
 	}
 

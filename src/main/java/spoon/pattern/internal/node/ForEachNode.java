@@ -29,7 +29,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Pattern node of multiple occurrences of the same model, just with different parameters.
@@ -71,7 +71,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (Object parameterValue : generator.generateTargets(iterableParameter, parameters, Object.class)) {
 			generator.generateTargets(nestedModel, result, parameters.putValue(localParameter.getName(), parameterValue));
 		}
@@ -90,9 +90,9 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 			return null;
 		}
 		//it matched.
-		ParameterValueProvider newParameters = tobeMatched.getParameters();
+		ImmutableMap newParameters = tobeMatched.getParameters();
 		//copy values of local parameters
-		for (Map.Entry<String, Object> e : localMatch.getParameters().getModifiedParameters().entrySet()) {
+		for (Map.Entry<String, Object> e : localMatch.getParameters().getModifiedValues().entrySet()) {
 			String name = e.getKey();
 			Object value = e.getValue();
 			if (name.equals(localParameter.getName())) {
@@ -136,17 +136,17 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	}
 
 	@Override
-	public boolean isMandatory(ParameterValueProvider parameters) {
+	public boolean isMandatory(ImmutableMap parameters) {
 		return iterableParameter.isMandatory(parameters);
 	}
 
 	@Override
-	public boolean isTryNextMatch(ParameterValueProvider parameters) {
+	public boolean isTryNextMatch(ImmutableMap parameters) {
 		return iterableParameter.isTryNextMatch(parameters);
 	}
 
 	@Override
-	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters) {
+	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		Factory f = generator.getFactory();
 		CtForEach forEach = f.Core().createForEach();
 		forEach.setVariable(f.Code().createLocalVariable(f.Type().objectType(), localParameter.getName(), null));

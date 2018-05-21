@@ -18,7 +18,7 @@ package spoon.pattern.internal.node;
 
 import spoon.pattern.internal.Generator;
 import spoon.pattern.internal.ResultHolder;
-import spoon.support.util.ParameterValueProvider;
+import spoon.support.util.ImmutableMap;
 
 /**
  * Represents a kind of {@link RootNode},
@@ -32,7 +32,7 @@ public interface InlineNode extends RootNode {
 	 * This method is used when sources of pattern have to be printed
 	 * @param generator a to be used {@link Generator}
 	 * @param result holder of the result
-	 * @param parameters a {@link ParameterValueProvider} with current parameters
+	 * @param parameters a {@link ImmutableMap} with current parameters
 	 */
-	<T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ParameterValueProvider parameters);
+	<T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters);
 }

@@ -19,12 +19,12 @@ package spoon.pattern.internal.parameter;
 import java.util.Map;
 import java.util.function.Function;
 
-import spoon.support.util.ParameterValueProvider;
-import spoon.support.util.UnmodifiableParameterValueProvider;
+import spoon.support.util.ImmutableMap;
+import spoon.support.util.ImmutableMapImpl;
 
 /**
  * A kind of {@link ParameterInfo} which returns value by the named parameter
- * From a container of type {@link ParameterValueProvider} or {@link Map}
+ * From a container of type {@link ImmutableMap} or {@link Map}
  */
 public class MapParameterInfo extends AbstractParameterInfo {
 
@@ -59,7 +59,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 
 	@Override
 	protected Object addValueAs(Object container, Function<Object, Object> merger) {
-		ParameterValueProvider parameters = castTo(container, ParameterValueProvider.class);
+		ImmutableMap parameters = castTo(container, ImmutableMap.class);
 		if (name == null) {
 			//This accessor matches any entry - has no predefined key
 			Object newValue = merger.apply(null);
@@ -117,22 +117,22 @@ public class MapParameterInfo extends AbstractParameterInfo {
 	}
 
 	@Override
-	protected Object getValue(ParameterValueProvider parameters) {
-		ParameterValueProvider map = castTo(super.getValue(parameters), ParameterValueProvider.class);
+	protected Object getValue(ImmutableMap parameters) {
+		ImmutableMap map = castTo(super.getValue(parameters), ImmutableMap.class);
 		return name == null ? map : map.getValue(name);
 	}
 
 	@Override
 	protected <T> T castTo(Object o, Class<T> type) {
 		if (o instanceof Map) {
-			o = new UnmodifiableParameterValueProvider((Map) o);
+			o = new ImmutableMapImpl((Map) o);
 		}
 		return super.castTo(o, type);
 	}
 
-	private static final ParameterValueProvider EMPTY = new UnmodifiableParameterValueProvider();
+	private static final ImmutableMap EMPTY = new ImmutableMapImpl();
 	@Override
-	protected ParameterValueProvider getEmptyContainer() {
+	protected ImmutableMap getEmptyContainer() {
 		return EMPTY;
 	}
 }

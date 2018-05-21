@@ -31,7 +31,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.template.Parameters;
-import spoon.support.util.UnmodifiableParameterValueProvider;
+import spoon.support.util.ImmutableMapImpl;
 
 /**
  * Internal class used to provide pattern-based implementation of Template and TemplateMatcher
@@ -88,8 +88,6 @@ class TemplateBuilder {
 					//all other type members have to be part of the pattern model
 					return true;
 				});
-				//remove `... extends Template`, which doesn't have to be part of pattern model
-				tv.removeSuperClass();
 			};
 			pb = PatternBuilder.create(tv.getPatternElements());
 		} else {
@@ -158,6 +156,6 @@ class TemplateBuilder {
 	 * @return List of substituted elements
 	 */
 	public <T extends CtElement> List<T> substituteList(Factory factory, CtType<?> targetType, Class<T> itemType) {
-		return build().substitute(factory, itemType, new UnmodifiableParameterValueProvider(getTemplateParameters(targetType)));
+		return build().substitute(factory, itemType, new ImmutableMapImpl(getTemplateParameters(targetType)));
 	}
 }

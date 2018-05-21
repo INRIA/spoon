@@ -38,7 +38,6 @@ import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
@@ -63,19 +62,23 @@ import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
+import spoon.support.Experimental;
 import spoon.template.TemplateParameter;
 
 /**
- * Used to define Pattern parameters and their mapping to Pattern model
+ * Used to define pattern parameters.
+ *
+ * Main documentation at http://spoon.gforge.inria.fr/pattern.html.
  */
-public class ParametersBuilder {
+@Experimental
+public class PatternParameterConfigurator {
 	private final PatternBuilder patternBuilder;
 	private final Map<String, AbstractParameterInfo> parameterInfos;
 	private AbstractParameterInfo currentParameter;
 	private List<CtElement> substitutedNodes = new ArrayList<>();
 	private ConflictResolutionMode conflictResolutionMode = ConflictResolutionMode.FAIL;
 
-	ParametersBuilder(PatternBuilder patternBuilder, Map<String, AbstractParameterInfo> parameterInfos) {
+	PatternParameterConfigurator(PatternBuilder patternBuilder, Map<String, AbstractParameterInfo> parameterInfos) {
 		this.patternBuilder = patternBuilder;
 		this.parameterInfos = parameterInfos;
 	}
@@ -92,7 +95,7 @@ public class ParametersBuilder {
 	 * @param conflictResolutionMode to be applied mode
 	 * @return this to support fluent API
 	 */
-	public ParametersBuilder setConflictResolutionMode(ConflictResolutionMode conflictResolutionMode) {
+	public PatternParameterConfigurator setConflictResolutionMode(ConflictResolutionMode conflictResolutionMode) {
 		this.conflictResolutionMode = conflictResolutionMode;
 		return this;
 	}
@@ -113,26 +116,26 @@ public class ParametersBuilder {
 	/**
 	 * Creates a parameter with name `paramName` and assigns it into context, so next calls on builder will be applied to this parameter
 	 * @param paramName to be build parameter name
-	 * @return this {@link ParametersBuilder} to support fluent API
+	 * @return this {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder parameter(String paramName) {
+	public PatternParameterConfigurator parameter(String paramName) {
 		currentParameter = getParameterInfo(paramName, true);
 		substitutedNodes.clear();
 		return this;
 	}
 
-	public ParametersBuilder setMinOccurence(int minOccurence) {
+	public PatternParameterConfigurator setMinOccurence(int minOccurence) {
 		currentParameter.setMinOccurences(minOccurence);
 		return this;
 	}
-	public ParametersBuilder setMaxOccurence(int maxOccurence) {
+	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {
 		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
 			throw new SpoonException("Cannot set maxOccurences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
 		currentParameter.setMaxOccurences(maxOccurence);
 		return this;
 	}
-	public ParametersBuilder setMatchingStrategy(Quantifier quantifier) {
+	public PatternParameterConfigurator setMatchingStrategy(Quantifier quantifier) {
 		currentParameter.setMatchingStrategy(quantifier);
 		return this;
 	}
@@ -141,9 +144,9 @@ public class ParametersBuilder {
 	 * Set expected type of Parameter. In some cases legacy Template needs to know the type of parameter value to select substituted element.
 	 * See {@link ValueConvertor}, which provides conversion between matched element and expected parameter type
 	 * @param valueType a expected type of parameter value
-	 * @return this {@link ParametersBuilder} to support fluent API
+	 * @return this {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder setValueType(Class<?> valueType) {
+	public PatternParameterConfigurator setValueType(Class<?> valueType) {
 		currentParameter.setParameterValueType(valueType);
 		return this;
 	}
@@ -152,9 +155,9 @@ public class ParametersBuilder {
 	 * Defines type of parameter value (List/Set/Map/single).
 	 * If not defined then real value type of property is used. If null, then default is {@link ContainerKind#SINGLE}
 	 * @param containerKind to be used {@link ContainerKind}
-	 * @return this {@link ParametersBuilder} to support fluent API
+	 * @return this {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder setContainerKind(ContainerKind containerKind) {
+	public PatternParameterConfigurator setContainerKind(ContainerKind containerKind) {
 		currentParameter.setContainerKind(containerKind);
 		return this;
 	}
@@ -169,25 +172,25 @@ public class ParametersBuilder {
 	/**
 	 * `type` itself and all the references to the `type` are subject for substitution by current parameter
 	 * @param type to be substituted Class
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byType(Class<?> type) {
+	public PatternParameterConfigurator byType(Class<?> type) {
 		return byType(type.getName());
 	}
 	/**
 	 * type identified by `typeQualifiedName` itself and all the references to that type are subject for substitution by current parameter
 	 * @param typeQualifiedName a fully qualified name of to be substituted Class
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byType(String typeQualifiedName) {
+	public PatternParameterConfigurator byType(String typeQualifiedName) {
 		return byType(patternBuilder.getFactory().Type().createReference(typeQualifiedName));
 	}
 	/**
 	 * type referred by {@link CtTypeReference} `type` and all the references to that type are subject for substitution by current parameter
 	 * @param type a fully qualified name of to be substituted Class
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byType(CtTypeReference<?> type) {
+	public PatternParameterConfigurator byType(CtTypeReference<?> type) {
 		ParameterInfo pi = getCurrentParameter();
 		//substitute all references to that type
 		queryModel().filterChildren((CtTypeReference<?> typeRef) -> typeRef.equals(type))
@@ -210,9 +213,9 @@ public class ParametersBuilder {
 	 * Searches for a type visible in scope `templateType`, whose simple name is equal to `localTypeSimpleName`
 	 * @param searchScope the Type which is searched for local Type
 	 * @param localTypeSimpleName the simple name of to be returned Type
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byLocalType(CtType<?> searchScope, String localTypeSimpleName) {
+	public PatternParameterConfigurator byLocalType(CtType<?> searchScope, String localTypeSimpleName) {
 		CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(searchScope, localTypeSimpleName);
 		if (nestedType == null) {
 			throw new SpoonException("Template parameter " + localTypeSimpleName + " doesn't match to any local type");
@@ -224,22 +227,10 @@ public class ParametersBuilder {
 
 	/**
 	 * variable read/write of `variable`
-	 * @param variableName a variable whose references will be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
-	 */
-	public ParametersBuilder byVariable(String variableName) {
-		CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(variableName)).first();
-		if (var != null) {
-			byVariable(var);
-		}	//else may be we should fail?
-		return this;
-	}
-	/**
-	 * variable read/write of `variable`
 	 * @param variable a variable whose references will be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byVariable(CtVariable<?> variable) {
+	public PatternParameterConfigurator byVariable(CtVariable<?> variable) {
 		ParameterInfo pi = getCurrentParameter();
 		CtQueryable root = queryModel();
 		if (patternBuilder.isInModel(variable)) {
@@ -256,9 +247,9 @@ public class ParametersBuilder {
 	/**
 	 * each invocation of `method` will be replaces by parameter value
 	 * @param method the method whose invocation has to be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byInvocation(CtMethod<?> method) {
+	public PatternParameterConfigurator byInvocation(CtMethod<?> method) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren(new InvocationFilter(method))
 			.forEach((CtInvocation<?> inv) -> {
@@ -270,61 +261,31 @@ public class ParametersBuilder {
 	/**
 	 * Add parameters for each field reference to variable named `variableName`
 	 * @param variableName the name of the variable reference
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder createPatternParameterForVariable(String... variableName) {
+	public PatternParameterConfigurator byVariable(String... variableName) {
 		for (String varName : variableName) {
 			CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(varName)).first();
 			if (var != null) {
-				createPatternParameterForVariable(var);
+				byVariable(var);
 			} else {
 				List<CtVariable<?>> vars = queryModel().filterChildren(new NamedElementFilter(CtVariable.class, varName)).list();
 				if (vars.size() > 1) {
 					throw new SpoonException("Ambiguous variable " + varName);
 				} else if (vars.size() == 1) {
-					createPatternParameterForVariable(vars.get(0));
+					byVariable(vars.get(0));
 				} //else may be we should fail when variable is not found?
 			}
 		}
-		return this;
-	}
-	/**
-	 * Add parameters for each variable reference of `variable`
-	 * @param variable to be substituted variable
-	 * @return this to support fluent API
-	 */
-	private ParametersBuilder createPatternParameterForVariable(CtVariable<?> variable) {
-		CtQueryable searchScope;
-		if (patternBuilder.isInModel(variable)) {
-			addSubstitutionRequest(
-					parameter(variable.getSimpleName()).getCurrentParameter(),
-					variable);
-			searchScope = variable;
-		} else {
-			searchScope = queryModel();
-		}
-		searchScope.map(new VariableReferenceFunction(variable))
-		.forEach((CtVariableReference<?> varRef) -> {
-			CtFieldRead<?> fieldRead = varRef.getParent(CtFieldRead.class);
-			if (fieldRead != null) {
-				addSubstitutionRequest(
-						parameter(fieldRead.getVariable().getSimpleName()).getCurrentParameter(),
-						fieldRead);
-			} else {
-				addSubstitutionRequest(
-						parameter(varRef.getSimpleName()).getCurrentParameter(),
-						varRef);
-			}
-		});
 		return this;
 	}
 
 	/**
 	 * variable read/write of `variable` of type {@link TemplateParameter}
 	 * @param variable a variable whose references will be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byTemplateParameterReference(CtVariable<?> variable) {
+	public PatternParameterConfigurator byTemplateParameterReference(CtVariable<?> variable) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().map(new VariableReferenceFunction(variable))
 			.forEach((CtVariableReference<?> varRef) -> {
@@ -348,9 +309,9 @@ public class ParametersBuilder {
 	/**
 	 * CodeElement element identified by `simpleName`
 	 * @param simpleName the name of the element or reference
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-//	public ParametersBuilder codeElementBySimpleName(String simpleName) {
+//	public PatternParameterConfigurator codeElementBySimpleName(String simpleName) {
 //		ParameterInfo pi = getCurrentParameter();
 //		pattern.getModel().filterChildren((CtNamedElement named) -> simpleName.equals(named.getSimpleName()))
 //			.forEach((CtNamedElement named) -> {
@@ -375,9 +336,9 @@ public class ParametersBuilder {
 	 * All spoon model string attributes whose value is equal to `stringMarker`
 	 * are subject for substitution by current parameter
 	 * @param stringMarker a string value which has to be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byString(String stringMarker) {
+	public PatternParameterConfigurator byString(String stringMarker) {
 		ParameterInfo pi = getCurrentParameter();
 		new StringAttributeScanner() {
 			@Override
@@ -406,9 +367,9 @@ public class ParametersBuilder {
 	 * All spoon model string attributes whose value contains whole string or a substring equal to `stringMarker`
 	 * are subject for substitution by current parameter. Only the `stringMarker` substring of the string value is substituted!
 	 * @param stringMarker a string value which has to be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder bySubstring(String stringMarker) {
+	public PatternParameterConfigurator bySubstring(String stringMarker) {
 		ParameterInfo pi = getCurrentParameter();
 		new StringAttributeScanner() {
 			@Override
@@ -483,22 +444,11 @@ public class ParametersBuilder {
 	}
 
 	/**
-	 * Any named element or reference identified by it's simple name
-	 * @param simpleName simple name of {@link CtNamedElement} or {@link CtReference}
-	 * @return {@link ParametersBuilder} to support fluent API
-	 */
-	public ParametersBuilder byName(String simpleName) {
-		byNamedElement(simpleName);
-		byReferenceName(simpleName);
-		return this;
-	}
-
-	/**
 	 * Any named element by it's simple name
 	 * @param simpleName simple name of {@link CtNamedElement}
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byNamedElement(String simpleName) {
+	public PatternParameterConfigurator byNamedElement(String simpleName) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren((CtNamedElement named) -> simpleName.equals(named.getSimpleName()))
 			.forEach((CtNamedElement named) -> {
@@ -513,13 +463,13 @@ public class ParametersBuilder {
 	 * Can be used to match any method call for instance.
 	 *
 	 * In some cases, the selected object is actually the parent of the reference (eg the invocation).
-	 * This is implemented in {@link ParametersBuilder#getSubstitutedNodeOfElement(ParameterInfo, CtElement)}
+	 * This is implemented in {@link PatternParameterConfigurator#getSubstitutedNodeOfElement(ParameterInfo, CtElement)}
 	 *
 	 *
 	 * @param simpleName simple name of {@link CtReference}
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byReferenceName(String simpleName) {
+	public PatternParameterConfigurator byReferenceName(String simpleName) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren((CtReference ref) -> simpleName.equals(ref.getSimpleName()))
 			.forEach((CtReference ref) -> {
@@ -531,9 +481,9 @@ public class ParametersBuilder {
 	/**
 	 * All elements matched by {@link Filter} will be substituted by parameter value
 	 * @param filter {@link Filter}, which defines to be substituted elements
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byFilter(Filter<?> filter) {
+	public PatternParameterConfigurator byFilter(Filter<?> filter) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren(filter)
 			.forEach((CtElement ele) -> {
@@ -544,11 +494,11 @@ public class ParametersBuilder {
 
 	/**
 	 * Attribute defined by `role` of all elements matched by {@link Filter} will be substituted by parameter value
-	 * @param filter {@link Filter}, which defines to be substituted elements
 	 * @param role {@link CtRole}, which defines to be substituted elements
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @param filter {@link Filter}, which defines to be substituted elements
+	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public ParametersBuilder byRole(Filter<?> filter, CtRole role) {
+	public PatternParameterConfigurator byRole(CtRole role, Filter<?> filter) {
 		ParameterInfo pi = getCurrentParameter();
 		queryModel().filterChildren(filter)
 			.forEach((CtElement ele) -> {
@@ -562,17 +512,17 @@ public class ParametersBuilder {
 	 * @param matchCondition a {@link Predicate} which selects matching values
 	 * @return this to support fluent API
 	 */
-	public <T> ParametersBuilder matchCondition(Class<T> type, Predicate<T> matchCondition) {
+	public <T> PatternParameterConfigurator byCondition(Class<T> type, Predicate<T> matchCondition) {
 		currentParameter.setMatchCondition(type, matchCondition);
 		return this;
 	}
 
 	/**
-	 * marks all CtIf and CtForEach whose expression is substituted by a this pattern parameter as inline statement.
+	 * marks a CtIf and CtForEach to be matched, even when inlined.
 	 * @return this to support fluent API
 	 */
-	public ParametersBuilder matchInlinedStatements() {
-		InlineStatementsBuilder sb = new InlineStatementsBuilder(patternBuilder);
+	public PatternParameterConfigurator matchInlinedStatements() {
+		InlinedStatementConfigurator sb = new InlinedStatementConfigurator(patternBuilder);
 		for (CtElement ctElement : substitutedNodes) {
 			sb.byElement(ctElement);
 		}
