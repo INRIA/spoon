@@ -694,7 +694,7 @@ public class PatternTest {
 					})
 					.build();
 
-			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1"));
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0));
 
 			// there are 3 System.out.println with a literal as parameter
 			assertEquals(3, matches.size());
