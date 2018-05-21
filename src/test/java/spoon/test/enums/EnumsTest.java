@@ -79,7 +79,7 @@ public class EnumsTest {
 
 	@Test
 	public void testNestedPrivateEnumValues() throws Exception {
-		// contract: ...
+		// contract: enum values have correct modifiers
 		CtType<?> ctClass = ModelUtils.buildClass(NestedEnums.class);
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PrivateENUM");
