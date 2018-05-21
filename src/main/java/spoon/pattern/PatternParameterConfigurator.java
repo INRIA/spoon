@@ -38,6 +38,7 @@ import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
@@ -226,6 +227,36 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
+	 * Add parameters for each variable reference of `variable`
+	 * @param variable to be substituted variable
+	 * @return this to support fluent API
+	 */
+	private void createPatternParameterForVariable(CtVariable<?> variable) {
+		CtQueryable searchScope;
+		if (patternBuilder.isInModel(variable)) {
+			addSubstitutionRequest(
+					parameter(variable.getSimpleName()).getCurrentParameter(),
+					variable);
+			searchScope = variable;
+		} else {
+			searchScope = queryModel();
+		}
+		searchScope.map(new VariableReferenceFunction(variable))
+				.forEach((CtVariableReference<?> varRef) -> {
+					CtFieldRead<?> fieldRead = varRef.getParent(CtFieldRead.class);
+					if (fieldRead != null) {
+						addSubstitutionRequest(
+								parameter(fieldRead.getVariable().getSimpleName()).getCurrentParameter(),
+								fieldRead);
+					} else {
+						addSubstitutionRequest(
+								parameter(varRef.getSimpleName()).getCurrentParameter(),
+								varRef);
+					}
+				});
+	}
+
+	/**
 	 * variable read/write of `variable`
 	 * @param variable a variable whose references will be substituted
 	 * @return {@link PatternParameterConfigurator} to support fluent API
@@ -267,13 +298,13 @@ public class PatternParameterConfigurator {
 		for (String varName : variableName) {
 			CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(varName)).first();
 			if (var != null) {
-				byVariable(var);
+				createPatternParameterForVariable(var);
 			} else {
 				List<CtVariable<?>> vars = queryModel().filterChildren(new NamedElementFilter(CtVariable.class, varName)).list();
 				if (vars.size() > 1) {
 					throw new SpoonException("Ambiguous variable " + varName);
 				} else if (vars.size() == 1) {
-					byVariable(vars.get(0));
+					createPatternParameterForVariable(vars.get(0));
 				} //else may be we should fail when variable is not found?
 			}
 		}
