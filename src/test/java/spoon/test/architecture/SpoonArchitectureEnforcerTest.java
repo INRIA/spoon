@@ -336,7 +336,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.experimental");
 		officialPackages.add("spoon.legacy");
 		officialPackages.add("spoon.pattern");
-		officialPackages.add("spoon.pattern.internal.");
+		officialPackages.add("spoon.pattern.internal");
 		officialPackages.add("spoon.pattern.internal.matcher");
 		officialPackages.add("spoon.pattern.internal.node");
 		officialPackages.add("spoon.pattern.internal.parameter");
