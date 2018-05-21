@@ -199,12 +199,13 @@ public class ReferenceBuilder {
 				}
 			}
 			if (type.getTypeArguments() != null && type.getTypeArguments().length - 1 <= position && type.getTypeArguments()[position] != null && type.getTypeArguments()[position].length > 0) {
-				currentReference.getActualTypeArguments().clear();
+				CtTypeReference<?> componentReference = getTypeReferenceOfArrayComponent(currentReference);
+				componentReference.getActualTypeArguments().clear();
 				for (TypeReference typeArgument : type.getTypeArguments()[position]) {
 					if (typeArgument instanceof Wildcard || typeArgument.resolvedType instanceof WildcardBinding || typeArgument.resolvedType instanceof TypeVariableBinding) {
-						currentReference.addActualTypeArgument(buildTypeParameterReference(typeArgument, scope));
+						componentReference.addActualTypeArgument(buildTypeParameterReference(typeArgument, scope));
 					} else {
-						currentReference.addActualTypeArgument(buildTypeReference(typeArgument, scope));
+						componentReference.addActualTypeArgument(buildTypeReference(typeArgument, scope));
 					}
 				}
 			} else if ((type instanceof ParameterizedSingleTypeReference || type instanceof ParameterizedQualifiedTypeReference)
@@ -223,6 +224,13 @@ public class ReferenceBuilder {
 			currentReference = currentReference.getDeclaringType();
 		}
 		return typeReference;
+	}
+
+	private CtTypeReference<?> getTypeReferenceOfArrayComponent(CtTypeReference<?> currentReference) {
+		while (currentReference instanceof CtArrayTypeReference) {
+			currentReference = ((CtArrayTypeReference<?>) currentReference).getComponentType();
+		}
+		return currentReference;
 	}
 
 	private boolean isTypeArgumentExplicit(TypeReference[][] typeArguments) {
