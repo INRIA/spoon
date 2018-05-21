@@ -16,8 +16,6 @@
  */
 package spoon.support.util;
 
-import spoon.support.Internal;
-
 import java.util.Map;
 
 /**

@@ -16,27 +16,21 @@
  */
 package spoon.pattern;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.support.Experimental;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Utility class to select parts of AST to be used as a model of a {@link PatternBuilder}.
