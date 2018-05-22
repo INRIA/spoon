@@ -570,9 +570,8 @@ public class PatternTest {
 		for (int count = 0; count < 5; count++) {
 			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
-.configurePatternParameters()
+.configurePatternParameters((Map) null)
 .configurePatternParameters(pb -> {
-				pb.setConflictResolutionMode(ConflictResolutionMode.USE_NEW_NODE);
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
 				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
 				pb.parameter("inlinedSysOut").byVariable("something").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2).matchInlinedStatements();
@@ -612,9 +611,8 @@ public class PatternTest {
 			final int count = i;
 			CtType<?> type = ctClass.getFactory().Type().get(MatchMultiple2.class);
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("matcher1").getPatternElements())
-					.configurePatternParameters()
+					.configurePatternParameters((Map) null)
 					.configurePatternParameters(pb -> {
-						pb.setConflictResolutionMode(ConflictResolutionMode.USE_NEW_NODE);
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
 						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
 						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
@@ -1208,7 +1206,7 @@ public class PatternTest {
 				.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
 				.configurePatternParameters((PatternParameterConfigurator pb) -> pb
 						// creating patterns parameters for all references to "params" and "items"
-						.byVariable("params", "item")
+						.byFieldRefOfVariable("params", "item")
 						.parameter("statements").setContainerKind(ContainerKind.LIST)
 				)
 				.configurePatternParameters()
