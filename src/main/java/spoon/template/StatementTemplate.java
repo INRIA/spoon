@@ -48,18 +48,10 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		List<CtStatement> statements = TemplateBuilder.createPattern(patternModel, this)
 				.setAddGeneratedBy(isAddGeneratedBy())
 				.substituteList(c.getFactory(), targetType, CtStatement.class);
-		if (statements.isEmpty()) {
-			return null;
+		if (statements.size() != 1) {
+			throw new IllegalStateException();
 		}
-		if (statements.size() == 1) {
-			return statements.get(0);
-		}
-		CtBlock<?> block = patternModel.getFactory().createBlock();
-		block.setImplicit(true);
-		for (CtStatement stmt : statements) {
-			block.addStatement(stmt);
-		}
-		return block;
+		return statements.get(0);
 	}
 
 	public Void S() {
