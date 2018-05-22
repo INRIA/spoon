@@ -229,7 +229,7 @@ public class PatternParameterConfigurator {
 	/**
 	 * variable read/write of `variable`
 	 * @param variableName a variable whose references will be substituted
-	 * @return {@link ParametersBuilder} to support fluent API
+	 * @return this to support fluent API
 	 */
 	public PatternParameterConfigurator byVariable(String variableName) {
 		CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(variableName)).first();
