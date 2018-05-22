@@ -172,6 +172,14 @@ public class PatternBuilderHelper {
 	}
 
 	/**
+	 * removes super class from the template
+	 */
+	public PatternBuilderHelper removeSuperClass() {
+		getClonedPatternType().setSuperclass(null);
+		return this;
+	}
+
+	/**
 	 * @return a List of {@link CtElement}s, which has to be used as pattern model
 	 */
 	public List<CtElement> getPatternElements() {

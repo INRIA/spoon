@@ -88,6 +88,8 @@ class TemplateBuilder {
 					//all other type members have to be part of the pattern model
 					return true;
 				});
+				//remove `... extends Template`, which doesn't have to be part of pattern model
+				tv.removeSuperClass();
 			};
 			pb = PatternBuilder.create(tv.getPatternElements());
 		} else {
