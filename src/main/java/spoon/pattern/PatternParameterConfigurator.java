@@ -227,33 +227,16 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
-	 * Add parameters for each variable reference of `variable`
-	 * @param variable to be substituted variable
-	 * @return this to support fluent API
+	 * variable read/write of `variable`
+	 * @param variableName a variable whose references will be substituted
+	 * @return {@link ParametersBuilder} to support fluent API
 	 */
-	private void createPatternParameterForVariable(CtVariable<?> variable) {
-		CtQueryable searchScope;
-		if (patternBuilder.isInModel(variable)) {
-			addSubstitutionRequest(
-					parameter(variable.getSimpleName()).getCurrentParameter(),
-					variable);
-			searchScope = variable;
-		} else {
-			searchScope = queryModel();
-		}
-		searchScope.map(new VariableReferenceFunction(variable))
-				.forEach((CtVariableReference<?> varRef) -> {
-					CtFieldRead<?> fieldRead = varRef.getParent(CtFieldRead.class);
-					if (fieldRead != null) {
-						addSubstitutionRequest(
-								parameter(fieldRead.getVariable().getSimpleName()).getCurrentParameter(),
-								fieldRead);
-					} else {
-						addSubstitutionRequest(
-								parameter(varRef.getSimpleName()).getCurrentParameter(),
-								varRef);
-					}
-				});
+	public PatternParameterConfigurator byVariable(String variableName) {
+		CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(variableName)).first();
+		if (var != null) {
+			byVariable(var);
+		}	//else may be we should fail?
+		return this;
 	}
 
 	/**
@@ -291,10 +274,21 @@ public class PatternParameterConfigurator {
 
 	/**
 	 * Add parameters for each field reference to variable named `variableName`
+	 * For example this pattern model
+	 * class Params {
+	 *   int paramA;
+	 *   int paramB;
+	 * }
+	 * void matcher(Params p) {
+	 *   return p.paramA + p.paramB;
+	 * }
+	 *
+	 * called with `byFieldRefOfVariable("p")` will create pattern parameters: `paramA` and `paramB`
+	 *
 	 * @param variableName the name of the variable reference
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public PatternParameterConfigurator byVariable(String... variableName) {
+	public PatternParameterConfigurator byFieldRefOfVariable(String... variableName) {
 		for (String varName : variableName) {
 			CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(varName)).first();
 			if (var != null) {
@@ -309,6 +303,35 @@ public class PatternParameterConfigurator {
 			}
 		}
 		return this;
+	}
+	/**
+	 * Add parameters for each variable reference of `variable`
+	 * @param variable to be substituted variable
+	 * @return this to support fluent API
+	 */
+	private void createPatternParameterForVariable(CtVariable<?> variable) {
+		CtQueryable searchScope;
+		if (patternBuilder.isInModel(variable)) {
+			addSubstitutionRequest(
+					parameter(variable.getSimpleName()).getCurrentParameter(),
+					variable);
+			searchScope = variable;
+		} else {
+			searchScope = queryModel();
+		}
+		searchScope.map(new VariableReferenceFunction(variable))
+				.forEach((CtVariableReference<?> varRef) -> {
+					CtFieldRead<?> fieldRead = varRef.getParent(CtFieldRead.class);
+					if (fieldRead != null) {
+						addSubstitutionRequest(
+								parameter(fieldRead.getVariable().getSimpleName()).getCurrentParameter(),
+								fieldRead);
+					} else {
+						addSubstitutionRequest(
+								parameter(varRef.getSimpleName()).getCurrentParameter(),
+								varRef);
+					}
+				});
 	}
 
 	/**
