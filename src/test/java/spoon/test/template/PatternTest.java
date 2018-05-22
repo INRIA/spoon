@@ -620,6 +620,8 @@ public class PatternTest {
 					})
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+
+
 			if (count < 7) {
 				//the last template has nothing to match -> no match
 				assertEquals("count=" + count, 1, matches.size());
@@ -662,6 +664,13 @@ public class PatternTest {
 				.build();
 
 		List<Match> matches = pattern.getMatches(ctClass);
+
+		// specifying Match#toString
+		assertEquals("{\n" +
+				"value=value\n" +
+				"}\n" +
+				"----------\n" +
+				"1) java.lang.System.out.println(value)", matches.get(0).toString());
 
 		// we match in the whole class, which means the original matcher statements and the ones from testMatcher1
 
