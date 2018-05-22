@@ -1255,6 +1255,9 @@ public class PatternTest {
 		assertEquals("\";\"", params.getValue("end").toString());
 		assertEquals("ctEnum.getEnumValues()", params.getValue("getIterable").toString());
 		assertEquals("[scan(enumValue)]", params.getValue("statements").toString());
+
+		// additional test for ImmutableMap
+		assertEquals(params.asMap(), params.checkpoint().asMap());
 	}
 
 	@Test
