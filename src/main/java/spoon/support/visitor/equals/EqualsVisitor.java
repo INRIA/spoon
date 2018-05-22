@@ -30,11 +30,7 @@ import java.util.Collection;
  */
 public class EqualsVisitor extends CtBiScannerDefault {
 	public static boolean equals(CtElement element, CtElement other) {
-		EqualsVisitor equalsVisitor = new EqualsVisitor();
-		equalsVisitor.biScan(element, other);
-
-		// double negation is always hard to understand, but this is legacy :-)
-		return !equalsVisitor.isNotEqual;
+		return new EqualsVisitor().checkEquals(element, other);
 	}
 
 	protected final EqualsChecker checker;
@@ -61,6 +57,9 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 	}
 	protected boolean isNotEqual = false;
+	protected CtRole notEqualRole;
+	protected Object notEqualElement;
+	protected Object notEqualOther;
 
 	@Override
 	protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
@@ -122,8 +121,49 @@ public class EqualsVisitor extends CtBiScannerDefault {
 
 	protected boolean fail(CtRole role, Object element, Object other) {
 		isNotEqual = true;
+		notEqualRole = role;
+		notEqualElement = element;
+		notEqualOther = other;
 		return true;
 	}
 
-}
+	/**
+	 * @param element first to be compared element
+	 * @param other second to be compared element
+	 * @return true if `element` and `other` are equal. If false then see
+	 * {@link #getNotEqualElement()}, {@link #getNotEqualOther()} and {@link #getNotEqualRole()} for details
+	 */
+	public boolean checkEquals(CtElement element, CtElement other) {
+		biScan(element, other);
+		return !isNotEqual;
+	}
 
+	/**
+	 * @return true if {@link #checkEquals(CtElement, CtElement)} are equal. If false then see
+	 * {@link #getNotEqualElement()}, {@link #getNotEqualOther()} and {@link #getNotEqualRole()} for details
+	 */
+	public boolean isEqual() {
+		return !isNotEqual;
+	}
+
+	/**
+	 * @return role on which the element and other element were not equal
+	 */
+	public CtRole getNotEqualRole() {
+		return notEqualRole;
+	}
+
+	/**
+	 * @return element or collection which was not equal
+	 */
+	public Object getNotEqualElement() {
+		return notEqualElement;
+	}
+
+	/**
+	 * @return other element or collection which was not equal
+	 */
+	public Object getNotEqualOther() {
+		return notEqualOther;
+	}
+}
