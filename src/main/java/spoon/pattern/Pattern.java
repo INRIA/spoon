@@ -39,7 +39,6 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.Experimental;
 import spoon.support.util.ImmutableMap;
 import spoon.support.util.ImmutableMapImpl;
-import spoon.support.util.ParameterValueProviderFactory;
 
 /**
  * Represents a pattern for matching code. A pattern is composed of a list of AST models, where a model is an AST with some nodes being "pattern parameters".
@@ -58,7 +57,6 @@ import spoon.support.util.ParameterValueProviderFactory;
  */
 @Experimental
 public class Pattern {
-	private ParameterValueProviderFactory parameterValueProviderFactory = ImmutableMapImpl.Factory.INSTANCE;
 	private ModelNode modelValueResolver;
 	private boolean addGeneratedBy = false;
 
@@ -195,8 +193,8 @@ public class Pattern {
 			input = Arrays.asList((Object[]) input);
 		}
 
-		MatchingScanner scanner = new MatchingScanner(modelValueResolver, parameterValueProviderFactory, consumer);
-		ImmutableMap parameters = parameterValueProviderFactory.createParameterValueProvider();
+		MatchingScanner scanner = new MatchingScanner(modelValueResolver, consumer);
+		ImmutableMap parameters = new ImmutableMapImpl();
 		if (input instanceof Collection<?>) {
 			scanner.scan(null, (Collection<CtElement>) input);
 		} else if (input instanceof Map) {

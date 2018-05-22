@@ -30,19 +30,17 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.support.util.ParameterValueProviderFactory;
+import spoon.support.util.ImmutableMapImpl;
 
 /**
  * Represents a Match of TemplateMatcher
  */
 public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 	private final ModelNode pattern;
-	private ParameterValueProviderFactory parameterValueProviderFactory;
 	private CtConsumer<? super Match> matchConsumer;
 
-	public MatchingScanner(ModelNode pattern, ParameterValueProviderFactory parameterValueProviderFactory, CtConsumer<? super Match> matchConsumer) {
+	public MatchingScanner(ModelNode pattern, CtConsumer<? super Match> matchConsumer) {
 		this.pattern = pattern;
-		this.parameterValueProviderFactory = parameterValueProviderFactory;
 		this.matchConsumer = matchConsumer;
 	}
 
@@ -72,7 +70,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 		int matchCount = 0;
 		if (list.size() > 0) {
 			TobeMatched tobeMatched = TobeMatched.create(
-					parameterValueProviderFactory.createParameterValueProvider(),
+					new ImmutableMapImpl(),
 					ContainerKind.LIST,
 					list);
 			while (tobeMatched.hasTargets()) {
@@ -85,7 +83,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 						matchConsumer.accept(new Match(matchedTargets, nextTobeMatched.getParameters()));
 						//do not scan children of matched elements. They already matched, so we must not scan them again
 						//use targets of last match together with new parameters for next match
-						tobeMatched = nextTobeMatched.copyAndSetParams(parameterValueProviderFactory.createParameterValueProvider());
+						tobeMatched = nextTobeMatched.copyAndSetParams(new ImmutableMapImpl());
 						continue;
 					} //else the template matches nothing. Understand it as no match in this context
 				}
@@ -105,7 +103,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 			//copy targets, because it might be modified by call of matchConsumer, when refactoring spoon model
 			//use List, because Spoon uses Sets with predictable order - so keep the order
 			TobeMatched tobeMatched = TobeMatched.create(
-					parameterValueProviderFactory.createParameterValueProvider(),
+					new ImmutableMapImpl(),
 					ContainerKind.SET,
 					set);
 			while (tobeMatched.hasTargets()) {

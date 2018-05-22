@@ -30,7 +30,6 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.util.ImmutableMap;
-import spoon.support.util.ParameterValueProviderFactory;
 import spoon.support.util.ImmutableMapImpl;
 
 /**
@@ -51,7 +50,6 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * </li>
 	 */
 	private ImmutableMap matches;
-	private ParameterValueProviderFactory parameterValueProviderFactory = ImmutableMapImpl.Factory.INSTANCE;
 
 	/**
 	 * Constructs a matcher for a given template.
@@ -84,7 +82,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 			return false;
 		}
 		matches = getMatchedParameters(patternModel.matchAllWith(TobeMatched.create(
-				parameterValueProviderFactory.createParameterValueProvider(),
+				new ImmutableMapImpl(),
 				ContainerKind.SINGLE,
 				element)));
 		return matches != null;

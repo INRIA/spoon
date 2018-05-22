@@ -33,14 +33,6 @@ import java.util.Map;
 @Internal
 public class ImmutableMapImpl implements ImmutableMap {
 
-	public static class Factory implements ParameterValueProviderFactory {
-		public static final Factory INSTANCE = new Factory();
-		@Override
-		public ImmutableMap createParameterValueProvider() {
-			return new ImmutableMapImpl();
-		}
-	}
-
 	protected final ImmutableMap parent;
 	protected final Map<String, Object> map;
 
