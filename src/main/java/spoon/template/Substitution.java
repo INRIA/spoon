@@ -107,7 +107,10 @@ public abstract class Substitution {
 	public static <T extends CtType<?>> T createTypeFromTemplate(String qualifiedTypeName, CtType<?> templateOfType, Map<String, Object> templateParameters) {
 		return PatternBuilder
 				.create(templateOfType)
-				.configurePatternParameters(templateParameters)
+				.configurePatternParameters(pc -> {
+					pc.byTemplateParameter(templateParameters);
+					pc.byParameterValues(templateParameters);
+				})
 				.build()
 				.createType(templateOfType.getFactory(), qualifiedTypeName, templateParameters);
 	}

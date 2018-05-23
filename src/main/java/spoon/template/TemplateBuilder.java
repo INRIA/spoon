@@ -98,7 +98,11 @@ class TemplateBuilder {
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, null, template);
 		//legacy templates always automatically simplifies generated code
 		pb.setAutoSimplifySubstitutions(true);
-		pb.configurePatternParameters(templateParameters);
+		pb.configurePatternParameters(pc -> {
+			pc.byTemplateParameter(templateParameters);
+			pc.byParameterValues(templateParameters);
+		});
+
 		return new TemplateBuilder(templateType, pb, template);
 	}
 

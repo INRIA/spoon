@@ -42,16 +42,21 @@ import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -59,11 +64,13 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtQueryable;
+import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.support.Experimental;
+import spoon.template.Parameter;
 import spoon.template.TemplateParameter;
 
 /**
@@ -330,6 +337,186 @@ public class PatternParameterConfigurator {
 								varRef);
 					}
 				});
+	}
+
+	/**
+	 * Creates pattern parameter for each field of type {@link TemplateParameter}
+	 * @return this to support fluent API
+	 */
+	public PatternParameterConfigurator byTemplateParameter() {
+		return byTemplateParameter(null);
+	}
+	/**
+	 * Creates pattern parameter for each field of type {@link TemplateParameter}
+	 * @param parameterValues pattern parameter values.
+	 * 		Note these values may influence the way how pattern parameters are created.
+	 * 		This unclear and ambiguous technique was used in legacy templates
+	 * @return this to support fluent API
+	 */
+	@Deprecated
+	public PatternParameterConfigurator byTemplateParameter(Map<String, Object> parameterValues) {
+		CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
+		templateType.map(new AllTypeMembersFunction()).forEach((CtTypeMember typeMember) -> {
+			configureByTemplateParameter(templateType, parameterValues, typeMember);
+		});
+		return this;
+	}
+
+	private void configureByTemplateParameter(CtType<?> templateType, Map<String, Object> parameterValues, CtTypeMember typeMember) {
+		Factory f = typeMember.getFactory();
+		CtTypeReference<CtTypeReference> typeReferenceRef = f.Type().createReference(CtTypeReference.class);
+		CtTypeReference<CtStatement> ctStatementRef = f.Type().createReference(CtStatement.class);
+		CtTypeReference<TemplateParameter> templateParamRef = f.Type().createReference(TemplateParameter.class);
+		Parameter param = typeMember.getAnnotation(Parameter.class);
+		if (param != null) {
+			if (typeMember instanceof CtField) {
+				CtField<?> paramField = (CtField<?>) typeMember;
+				/*
+				 * We have found a CtField annotated by @Parameter.
+				 * Use it as Pattern parameter
+				 */
+				String fieldName = typeMember.getSimpleName();
+				String stringMarker = (param.value() != null && param.value().length() > 0) ? param.value() : fieldName;
+				//for the compatibility reasons with Parameters.getNamesToValues(), use the proxy name as parameter name
+				String parameterName = stringMarker;
+
+				CtTypeReference<?> paramType = paramField.getType();
+
+				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
+					//parameter is a multivalue
+					// here we need to replace all named element and all references whose simpleName == stringMarker
+					parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);
+				} else if (paramType.isSubtypeOf(typeReferenceRef) || paramType.getQualifiedName().equals(Class.class.getName())) {
+					/*
+					 * parameter with value type TypeReference or Class, identifies replacement of local type whose name is equal to parameter name
+					 */
+					CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
+					if (nestedType != null) {
+						//all references to nestedType has to be replaced
+						parameter(parameterName).byType(nestedType);
+					}
+					//and replace the variable references by class access
+					parameter(parameterName).byVariable(paramField);
+				} else if (paramType.getQualifiedName().equals(String.class.getName())) {
+					CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
+					if (nestedType != null) {
+						//There is a local type with such name. Replace it
+						parameter(parameterName).byType(nestedType);
+					}
+				} else if (paramType.isSubtypeOf(templateParamRef)) {
+					parameter(parameterName)
+						.byTemplateParameterReference(paramField);
+					//if there is any invocation of method with name matching to stringMarker, then substitute their invocations too.
+					templateType.getMethodsByName(stringMarker).forEach(m -> {
+						parameter(parameterName).byInvocation(m);
+					});
+				} else if (paramType.isSubtypeOf(ctStatementRef)) {
+					//if there is any invocation of method with name matching to stringMarker, then substitute their invocations too.
+					templateType.getMethodsByName(stringMarker).forEach(m -> {
+						parameter(parameterName).setContainerKind(ContainerKind.LIST).byInvocation(m);
+					});
+				} else {
+					//it is not a String. It is used to substitute CtLiteral of parameter value
+					parameter(parameterName)
+						//all occurrences of parameter name in pattern model are subject of substitution
+						.byVariable(paramField);
+				}
+				if (paramType.getQualifiedName().equals(Object.class.getName()) && parameterValues != null) {
+					//if the parameter type is Object, then detect the real parameter type from the parameter value
+					Object value = parameterValues.get(parameterName);
+					if (value instanceof CtLiteral || value instanceof CtTypeReference) {
+						/*
+						 * the real parameter value is CtLiteral or CtTypeReference
+						 * We should replace all method invocations whose name equals to stringMarker
+						 * by that CtLiteral or qualified name of CtTypeReference
+						 */
+						ParameterInfo pi = parameter(parameterName).getCurrentParameter();
+						queryModel().filterChildren((CtInvocation<?> inv) -> {
+							return inv.getExecutable().getSimpleName().equals(stringMarker);
+						}).forEach((CtInvocation<?> inv) -> {
+							addSubstitutionRequest(pi, inv);
+						});
+					}
+				}
+
+				//any value can be converted to String. Substitute content of all string attributes
+				parameter(parameterName).setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
+					.bySubstring(stringMarker);
+
+				if (parameterValues != null) {
+					//handle automatic inline statements
+					addInlineStatements(fieldName, parameterValues.get(parameterName));
+				}
+			} else {
+				//TODO CtMethod was may be supported in old Template engine!!!
+				throw new SpoonException("Template Parameter annotation on " + typeMember.getClass().getName() + " is not supported");
+			}
+		} else if (typeMember instanceof CtField<?> && ((CtField<?>) typeMember).getType().isSubtypeOf(templateParamRef)) {
+			CtField<?> field = (CtField<?>) typeMember;
+			String parameterName = typeMember.getSimpleName();
+			Object value = parameterValues == null ? null : parameterValues.get(parameterName);
+			Class valueType = null;
+			boolean multiple = false;
+			if (value != null) {
+				valueType = value.getClass();
+				if (value instanceof CtBlock) {
+					//the CtBlock in this situation is expected as container of Statements in legacy templates.
+					multiple = true;
+				}
+			}
+			parameter(parameterName).setValueType(valueType).setContainerKind(multiple ? ContainerKind.LIST : ContainerKind.SINGLE)
+				.byTemplateParameterReference(field);
+
+			if (parameterValues != null) {
+				//handle automatic inline statements
+				addInlineStatements(parameterName, parameterValues.get(parameterName));
+			}
+		}
+	}
+
+	private void addInlineStatements(String variableName, Object paramValue) {
+		if (paramValue != null && paramValue.getClass().isArray()) {
+			//the parameters with Array value are meta parameters in legacy templates
+			patternBuilder.configureInlineStatements(sb -> {
+				//we are adding inline statements automatically from legacy templates,
+				//so do not fail if it is sometime not possible - it means that it is not a inline statement then
+				sb.setFailOnMissingParameter(false);
+				sb.inlineIfOrForeachReferringTo(variableName);
+			});
+		}
+	}
+
+	/**
+	 * Creates pattern parameter for each key of parameterValues {@link Map}.
+	 * The parameter is created only if doesn't exist yet.
+	 * If the parameter value is a CtTypeReference, then all local types whose simple name equals to parameter name are substituted
+	 * Then any name in source code which contains a parameter name will be converted to parameter
+	 *
+	 * Note: This unclear and ambiguous technique was used in legacy templates
+	 *
+	 * @param parameterValues pattern parameter values or null if not known
+	 * @return this to support fluent API
+	 */
+	@Deprecated
+	public PatternParameterConfigurator byParameterValues(Map<String, Object> parameterValues) {
+		if (parameterValues != null) {
+			CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
+			//configure template parameters based on parameter values only - these without any declaration in Template
+			parameterValues.forEach((paramName, paramValue) -> {
+				if (isSubstituted(paramName) == false) {
+					//and only these parameters whose name isn't already handled by explicit template parameters
+					if (paramValue instanceof CtTypeReference<?>) {
+						parameter(paramName)
+							.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
+							.byLocalType(templateType, paramName);
+					}
+					parameter(paramName)
+						.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
+						.bySubstring(paramName);
+				}
+			});
+		}
+		return this;
 	}
 
 	/**

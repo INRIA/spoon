@@ -38,19 +38,13 @@ import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.parameter.AbstractParameterInfo;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.QueryFactory;
-import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.Filter;
@@ -58,11 +52,8 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryable;
-import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
-import spoon.template.Parameter;
-import spoon.template.TemplateParameter;
 
 /**
  * The master class to create a {@link Pattern} instance.
@@ -401,173 +392,6 @@ public class PatternBuilder {
 	}
 
 	/**
-	 * method to support legacy {@link TemplateParameter} and {@link Parameter} annotation
-	 * @param templateParameters parameters, which will be used in substitution. It is needed here,
-	 * 			when parameter value types influences which AST nodes will be the target of substitution in legacy template patterns
-	 * @return this to support fluent API
-	 */
-	public PatternBuilder configurePatternParameters(Map<String, Object> templateParameters) {
-		return configurePatternParameters(templateTypeRef.getTypeDeclaration(), templateParameters);
-	}
-
-	/**
-	 * adds all standard Template parameters based on {@link TemplateParameter} and {@link Parameter} annotation
-	 * @param templateType the CtType which contains template parameters
-	 * @param templateParameters parameters, which will be used in substitution. It is needed here,
-	 * 			because parameter value types influences which AST nodes will be the target of substitution
-	 * @return this to support fluent API
-	 */
-	private PatternBuilder configurePatternParameters(CtType<?> templateType, Map<String, Object> templateParameters) {
-		configurePatternParameters(pb -> {
-			templateType.map(new AllTypeMembersFunction()).forEach((CtTypeMember typeMember) -> {
-				configurePatternParameter(templateType, templateParameters, pb, typeMember);
-			});
-			if (templateParameters != null) {
-				//configure template parameters based on parameter values only - these without any declaration in Template
-				templateParameters.forEach((paramName, paramValue) -> {
-					if (pb.isSubstituted(paramName) == false) {
-						//and only these parameters whose name isn't already handled by explicit template parameters
-						if (paramValue instanceof CtTypeReference<?>) {
-							pb.parameter(paramName)
-								.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
-								.byLocalType(templateType, paramName);
-						}
-						pb.parameter(paramName)
-							.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
-							.bySubstring(paramName);
-					}
-				});
-			}
-		});
-		return this;
-	}
-
-	private void configurePatternParameter(CtType<?> templateType, Map<String, Object> templateParameters, PatternParameterConfigurator pb, CtTypeMember typeMember) {
-		Factory f = typeMember.getFactory();
-		CtTypeReference<TemplateParameter> templateParamRef = f.Type().createReference(TemplateParameter.class);
-		CtTypeReference<CtTypeReference> typeReferenceRef = f.Type().createReference(CtTypeReference.class);
-		CtTypeReference<CtStatement> ctStatementRef = f.Type().createReference(CtStatement.class);
-		Parameter param = typeMember.getAnnotation(Parameter.class);
-		if (param != null) {
-			if (typeMember instanceof CtField) {
-				CtField<?> paramField = (CtField<?>) typeMember;
-				/*
-				 * We have found a CtField annotated by @Parameter.
-				 * Use it as Pattern parameter
-				 */
-				String fieldName = typeMember.getSimpleName();
-				String stringMarker = (param.value() != null && param.value().length() > 0) ? param.value() : fieldName;
-				//for the compatibility reasons with Parameters.getNamesToValues(), use the proxy name as parameter name
-				String parameterName = stringMarker;
-
-				CtTypeReference<?> paramType = paramField.getType();
-
-				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
-					//parameter is a multivalue
-					// here we need to replace all named element and all references whose simpleName == stringMarker
-					pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);
-				} else if (paramType.isSubtypeOf(typeReferenceRef) || paramType.getQualifiedName().equals(Class.class.getName())) {
-					/*
-					 * parameter with value type TypeReference or Class, identifies replacement of local type whose name is equal to parameter name
-					 */
-					CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
-					if (nestedType != null) {
-						//all references to nestedType has to be replaced
-						pb.parameter(parameterName).byType(nestedType);
-					}
-					//and replace the variable references by class access
-					pb.parameter(parameterName).byVariable(paramField);
-				} else if (paramType.getQualifiedName().equals(String.class.getName())) {
-					CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
-					if (nestedType != null) {
-						//There is a local type with such name. Replace it
-						pb.parameter(parameterName).byType(nestedType);
-					}
-				} else if (paramType.isSubtypeOf(templateParamRef)) {
-					pb.parameter(parameterName)
-						.byTemplateParameterReference(paramField);
-					//if there is any invocation of method with name matching to stringMarker, then substitute their invocations too.
-					templateType.getMethodsByName(stringMarker).forEach(m -> {
-						pb.parameter(parameterName).byInvocation(m);
-					});
-				} else if (paramType.isSubtypeOf(ctStatementRef)) {
-					//if there is any invocation of method with name matching to stringMarker, then substitute their invocations too.
-					templateType.getMethodsByName(stringMarker).forEach(m -> {
-						pb.parameter(parameterName).setContainerKind(ContainerKind.LIST).byInvocation(m);
-					});
-				} else {
-					//it is not a String. It is used to substitute CtLiteral of parameter value
-					pb.parameter(parameterName)
-						//all occurrences of parameter name in pattern model are subject of substitution
-						.byVariable(paramField);
-				}
-				if (paramType.getQualifiedName().equals(Object.class.getName()) && templateParameters != null) {
-					//if the parameter type is Object, then detect the real parameter type from the parameter value
-					Object value = templateParameters.get(parameterName);
-					if (value instanceof CtLiteral || value instanceof CtTypeReference) {
-						/*
-						 * the real parameter value is CtLiteral or CtTypeReference
-						 * We should replace all method invocations whose name equals to stringMarker
-						 * by that CtLiteral or qualified name of CtTypeReference
-						 */
-						ParameterInfo pi = pb.parameter(parameterName).getCurrentParameter();
-						pb.queryModel().filterChildren((CtInvocation<?> inv) -> {
-							return inv.getExecutable().getSimpleName().equals(stringMarker);
-						}).forEach((CtInvocation<?> inv) -> {
-							pb.addSubstitutionRequest(pi, inv);
-						});
-					}
-				}
-
-				//any value can be converted to String. Substitute content of all string attributes
-				pb.parameter(parameterName).setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
-					.bySubstring(stringMarker);
-
-				if (templateParameters != null) {
-					//handle automatic inline statements
-					addInlineStatements(fieldName, templateParameters.get(parameterName));
-				}
-			} else {
-				//TODO CtMethod was may be supported in old Template engine!!!
-				throw new SpoonException("Template Parameter annotation on " + typeMember.getClass().getName() + " is not supported");
-			}
-		} else if (typeMember instanceof CtField<?> && ((CtField<?>) typeMember).getType().isSubtypeOf(templateParamRef)) {
-			CtField<?> field = (CtField<?>) typeMember;
-			String parameterName = typeMember.getSimpleName();
-			Object value = templateParameters == null ? null : templateParameters.get(parameterName);
-			Class valueType = null;
-			boolean multiple = false;
-			if (value != null) {
-				valueType = value.getClass();
-				if (value instanceof CtBlock) {
-					//the CtBlock in this situation is expected as container of Statements in legacy templates.
-					multiple = true;
-				}
-			}
-			pb.parameter(parameterName).setValueType(valueType).setContainerKind(multiple ? ContainerKind.LIST : ContainerKind.SINGLE)
-				.byTemplateParameterReference(field);
-
-			if (templateParameters != null) {
-				//handle automatic inline statements
-				addInlineStatements(parameterName, templateParameters.get(parameterName));
-			}
-		}
-
-	}
-
-	private void addInlineStatements(String variableName, Object paramValue) {
-		if (paramValue != null && paramValue.getClass().isArray()) {
-			//the parameters with Array value are meta parameters in legacy templates
-			configureInlineStatements(sb -> {
-				//we are adding inline statements automatically from legacy templates,
-				//so do not fail if it is sometime not possible - it means that it is not a inline statement then
-				sb.setFailOnMissingParameter(false);
-				sb.inlineIfOrForeachReferringTo(variableName);
-			});
-		}
-	}
-
-	/**
 	 * Configures inlined statements
 	 *
 	 * For example if the `for` statement in this pattern model
@@ -687,5 +511,9 @@ public class PatternBuilder {
 	public PatternBuilder setAutoSimplifySubstitutions(boolean autoSimplifySubstitutions) {
 		this.autoSimplifySubstitutions = autoSimplifySubstitutions;
 		return this;
+	}
+
+	CtTypeReference<?> getTemplateTypeRef() {
+		return templateTypeRef;
 	}
 }
