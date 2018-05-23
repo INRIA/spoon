@@ -1473,7 +1473,6 @@ public class AnnotationTest {
 		CtMethod<?> shadowMultiple = shadowDumbKlass.getMethodsByName("barMultipleValues").get(0);
 		CtAnnotation shadowAnnotationMultiple = shadowMultiple.getAnnotations().get(0);
 
-		// FIXME: this should change
 		assertEquals("[Shadow] Annotation one and multiple are not of the same type", shadowAnnotationOne.getAnnotationType(), shadowAnnotationMultiple.getAnnotationType());
 		assertEquals("[Shadow] Annotation one and multiples values are not the same", shadowAnnotationOne.getValue("role"), shadowAnnotationMultiple.getValue("role"));
 
@@ -1497,9 +1496,8 @@ public class AnnotationTest {
 		assertEquals(annotationMultipleVal.getWrappedValue("role"), annotationOne.getWrappedValue("role"));
 
 		assertEquals(annotationOne.getAnnotationType(), shadowAnnotationOne.getAnnotationType());
-		// FIXME: this contract should be fixed in #1914
-		assertTrue(shadowAnnotationOne.getValue("role") instanceof CtNewArray); // should be CtLiteral
-		//assertEquals(annotationOne.getValue("role"), shadowAnnotationOne.getValue("role")); // should pass
+		assertTrue(shadowAnnotationOne.getValue("role") instanceof CtLiteral); // should be CtLiteral
+		assertEquals(annotationOne.getValue("role"), shadowAnnotationOne.getValue("role")); // should pass
 
 	}
 }

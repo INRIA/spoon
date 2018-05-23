@@ -507,7 +507,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
-		CtType<?> t = getDeclaration();
+		//we need a interface type references whose parent is connected to CtType, otherwise TypeParameterReferences cannot be resolved well
+		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
 			return Collections.unmodifiableSet(t.getSuperInterfaces());
 		} else {
@@ -521,7 +522,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				return Collections.unmodifiableSet(set);
 			}
 		}
-		return Collections.emptySet();
+		throw new SpoonException("Cannot provide CtType for " + getQualifiedName());
 	}
 
 	@Override
