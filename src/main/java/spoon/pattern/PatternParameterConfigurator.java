@@ -285,7 +285,7 @@ public class PatternParameterConfigurator {
 	 *
 	 * called with `byFieldRefOfVariable("p")` will create pattern parameters: `paramA` and `paramB`
 	 *
-	 * @param variableName the name of the variable reference
+	 * @param varName the name of the variable reference
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
 	public PatternParameterConfigurator byFieldAccessOnVariable(String varName) {
