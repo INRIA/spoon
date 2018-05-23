@@ -50,6 +50,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
+import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.VirtualFolder;
 
 import java.io.ByteArrayInputStream;
@@ -83,12 +84,28 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	//The classpath used to build templates
 	protected String[] templateClasspath = new String[0];
 	protected List<CompilationUnitFilter> compilationUnitFilters = new ArrayList<>();
+	private boolean sortList;
 
 	/**
 	 * Default constructor
 	 */
 	public JDTBasedSpoonCompiler(Factory factory) {
 		this.factory = factory;
+		this.initializeCUCOmparator();
+	}
+
+	private void initializeCUCOmparator() {
+		try {
+			if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
+				this.sortList = false;
+			} else {
+				this.sortList = true;
+			}
+		} catch (NumberFormatException | SecurityException e) {
+			Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
+			this.sortList = true;
+		}
+
 	}
 
 	@Override
@@ -428,10 +445,23 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		return units;
 	}
 
+	protected List<CompilationUnitDeclaration> sortCompilationUnits(CompilationUnitDeclaration[] units) {
+		List<CompilationUnitDeclaration> unitList = new ArrayList<>(Arrays.asList(units));
+		if (this.sortList) {
+			unitList.sort(new FixedOrderBasedOnFileNameCompilationUnitComparator());
+		} else {
+			Collections.shuffle(unitList);
+		}
+
+		return unitList;
+	}
+
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
+		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
+
 		unitLoop:
-		for (CompilationUnitDeclaration unit : units) {
+		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				for (final CompilationUnitFilter cuf : compilationUnitFilters) {

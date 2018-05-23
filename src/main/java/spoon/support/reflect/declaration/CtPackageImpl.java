@@ -17,7 +17,6 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
@@ -236,19 +235,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CONTAINED_TYPE, types, type);
 		types.remove(type);
-	}
-
-	@Override
-	public SourcePosition getPosition() {
-		/*
-		 * The super.getPosition() method returns the own position
-		 * or if it's null the position of the parent element,
-		 * but that isn't possible for packages.
-		 * A package should return the position of the package-info file
-		 * if it exists. The parent of a package is another package which
-		 * needs to have an own package-info file.
-		 */
-		return this.position;
 	}
 
 	@Override

@@ -455,12 +455,7 @@ public class PrinterTest {
 
 		String[] listString = new String[] {"un", "deux", "trois"};
 
-		try (ListPrinter listPrinter = elementPrinterHelper.createListPrinter(true, "start", true, true, "next", true, true, "end")) {
-			for (String s : listString) {
-				listPrinter.printSeparatorIfAppropriate();
-				tw.writeIdentifier(s);
-			}
-		}
+		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
 
 		String expectedResult = " start un next deux next trois end";
 		assertEquals(expectedResult, pp.toString());

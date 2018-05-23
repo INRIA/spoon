@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.reflect.path.CtRole;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
@@ -69,24 +70,27 @@ interface JavaReflectionVisitor {
 	/** Visits a {@link TypeVariable} */
 	<T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter);
 
-	/** Visits a {@link TypeVariable} */
-	<T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter);
+	/** Visits a {@link TypeVariable}
+	 * @param role {@link CtRole} which this reference plays*/
+	<T extends GenericDeclaration> void visitTypeParameterReference(CtRole role, TypeVariable<T> parameter);
 
-	/** Visits a {@link Type} */
-	void visitType(Type type);
+	/** Visits a {@link Type}
+	 * @param role {@link CtRole} which this reference plays*/
+	void visitTypeReference(CtRole role, Type type);
 
-	/** Visits a {@link ParameterizedType} */
-	void visitType(ParameterizedType type);
+	/** Visits a {@link ParameterizedType}
+	 * @param role {@link CtRole} which this reference plays*/
+	void visitTypeReference(CtRole role, ParameterizedType type);
 
-	/** Visits a {@link WildcardType} */
-	void visitType(WildcardType type);
+	/** Visits a {@link WildcardType}
+	 * @param role {@link CtRole} which this reference plays*/
+	void visitTypeReference(CtRole role, WildcardType type);
 
-	/** Visits a class as an array reference */
-	<T> void visitArrayReference(Class<T> typeArray);
+	/** Visits a {@link Class} in generic parameters
+	 * @param role {@link CtRole} which this reference plays*/
+	<T> void visitTypeReference(CtRole role, Class<T> clazz);
 
-	/** Visits a class as a class reference */
-	<T> void visitClassReference(Class<T> clazz);
-
-	/** Visits a class as an interface reference */
-	<T> void visitInterfaceReference(Class<T> anInterface);
+	/** Visits a class as an array reference
+	 * @param role {@link CtRole} which this reference plays*/
+	<T> void visitArrayReference(CtRole role, Type typeArray);
 }

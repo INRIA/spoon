@@ -203,7 +203,7 @@ public class VariableReferencesTest {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{
 			if(isTestFieldName(varRef.getSimpleName())) {
 				CtLocalVariable<?> var = varRef.getDeclaration();
-				assertNotNull("The declaration of variable "+varRef.getSimpleName()+" in "+getParentMethodName(varRef)+" on line "+varRef.getPosition().getLine()+" with value "+getVariableReferenceValue(varRef)+" was not found", var);
+				assertNotNull("The declaration of variable "+varRef.getSimpleName()+" in "+getParentMethodName(varRef)+" on line "+var.getPosition().getLine()+" with value "+getVariableReferenceValue(varRef)+" was not found", var);
 				assertEquals("CtLocalVariableReference#getDeclaration returned wrong declaration in "+getParentMethodName(varRef), getVariableReferenceValue(varRef), (int)getLiteralValue(var));
 			}
 			return false;

@@ -149,10 +149,9 @@
   </developers>
 
   <scm>
-    <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
-    <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
-    <developerConnection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</developerConnection>
-    <tag>HEAD</tag>
+    <url>https://github.com/INRIA/spoon</url>
+    <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
+    <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
   </scm>
 
   <properties>
