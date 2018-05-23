@@ -28,9 +28,11 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
 import spoon.support.template.SubstitutionVisitor;
+import spoon.template.ExpressionTemplate;
 import spoon.template.Substitution;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
+import spoon.test.template.testclasses.AnExpressionTemplate;
 import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
@@ -791,6 +793,25 @@ public class TemplateTest {
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtStatement result = new SubstituteRootTemplate(templateParam).apply(resultKlass);
 		assertEquals("java.lang.String s = \"Spoon is cool!\"", ((CtBlock)result).getStatement(0).toString());
+	}
+
+	@Test
+	public void testExpressionTemplate() throws Exception {
+		//contract: the template engine supports expression templates
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/AnExpressionTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<? extends ExpressionTemplate<?>> templateClass = factory.Class().get(AnExpressionTemplate.class);
+
+		assertEquals("new java.lang.String(exp.S())", ExpressionTemplate.getExpression(templateClass).toString());
+
+
+		CtClass<?> resultKlass = factory.Class().create("Result");
+		CtExpression result = new AnExpressionTemplate(factory.createCodeSnippetExpression("\"Spoon is cool!\"")).apply(resultKlass);
+		assertEquals("new java.lang.String(\"Spoon is cool!\")", result.toString());
 	}
 
 	@Test
