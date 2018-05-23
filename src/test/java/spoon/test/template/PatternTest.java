@@ -1215,7 +1215,7 @@ public class PatternTest {
 				.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
 				.configurePatternParameters((PatternParameterConfigurator pb) -> pb
 						// creating patterns parameters for all references to "params" and "items"
-						.byFieldRefOfVariable("params", "item")
+						.byFieldAccessOnVariable("params").byFieldAccessOnVariable("item")
 						.parameter("statements").setContainerKind(ContainerKind.LIST)
 				)
 				.configurePatternParameters()

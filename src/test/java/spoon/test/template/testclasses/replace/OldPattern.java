@@ -65,7 +65,7 @@ public class OldPattern {
 		CtType<?> type = factory.Type().get(OldPattern.class);
 		return PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("patternModel").getPatternElements())
 			.configurePatternParameters(pb->pb
-					.byFieldRefOfVariable("params", "item")
+					.byFieldAccessOnVariable("params").byFieldAccessOnVariable("item")
 					.parameter("statements").setContainerKind(ContainerKind.LIST)
 			)
 			.configurePatternParameters()

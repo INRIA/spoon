@@ -288,19 +288,17 @@ public class PatternParameterConfigurator {
 	 * @param variableName the name of the variable reference
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
-	public PatternParameterConfigurator byFieldRefOfVariable(String... variableName) {
-		for (String varName : variableName) {
-			CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(varName)).first();
-			if (var != null) {
-				createPatternParameterForVariable(var);
-			} else {
-				List<CtVariable<?>> vars = queryModel().filterChildren(new NamedElementFilter(CtVariable.class, varName)).list();
-				if (vars.size() > 1) {
-					throw new SpoonException("Ambiguous variable " + varName);
-				} else if (vars.size() == 1) {
-					createPatternParameterForVariable(vars.get(0));
-				} //else may be we should fail when variable is not found?
-			}
+	public PatternParameterConfigurator byFieldAccessOnVariable(String varName) {
+		CtVariable<?> var = queryModel().map(new PotentialVariableDeclarationFunction(varName)).first();
+		if (var != null) {
+			createPatternParameterForVariable(var);
+		} else {
+			List<CtVariable<?>> vars = queryModel().filterChildren(new NamedElementFilter(CtVariable.class, varName)).list();
+			if (vars.size() > 1) {
+				throw new SpoonException("Ambiguous variable " + varName);
+			} else if (vars.size() == 1) {
+				createPatternParameterForVariable(vars.get(0));
+			} //else may be we should fail when variable is not found?
 		}
 		return this;
 	}
