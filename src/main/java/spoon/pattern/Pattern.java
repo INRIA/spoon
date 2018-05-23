@@ -29,7 +29,6 @@ import spoon.pattern.internal.matcher.MatchingScanner;
 import spoon.pattern.internal.node.ModelNode;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.Experimental;
 import spoon.support.util.ImmutableMap;
@@ -44,7 +43,7 @@ import spoon.support.util.ImmutableMapImpl;
  *
  * The {@link Pattern} can also be used to generate new code where
  * (Pattern) + (pattern parameters) =&gt; (copy of pattern where parameters are replaced by parameter values)
- * This is done with {@link #substitute(Factory, Class, ImmutableMap)}
+ * This is done with {@link #generator()} and it's methods
  *
  * Differences with {@link spoon.template.TemplateMatcher}:
  * - it can match sequences of elements
