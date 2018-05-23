@@ -52,6 +52,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
@@ -72,6 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
@@ -559,5 +561,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		} catch (CtPathException e) {
 			throw new SpoonException(e);
 		}
+	}
+
+	@Override
+	public Iterator<CtElement> descendantIterator() {
+		return new CtIterator(this);
+	}
+
+	@Override
+	public Iterable<CtElement> asIterable() {
+		return this::descendantIterator;
 	}
 }

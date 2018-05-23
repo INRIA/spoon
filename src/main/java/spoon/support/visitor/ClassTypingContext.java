@@ -468,6 +468,9 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (typeRef instanceof CtTypeParameterReference) {
 				CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
 				CtTypeParameter typeParam = typeParamRef.getDeclaration();
+				if (typeParam == null) {
+					throw new SpoonException("The typeParam " + typeRef.getQualifiedName() + " declaration cannot be resolved");
+				}
 				CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
 				typeRef = resolveTypeParameter(declarer, typeParamRef, typeParam, typeRef);
 			}
