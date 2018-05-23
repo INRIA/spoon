@@ -112,6 +112,7 @@ public abstract class Substitution {
 					pc.byParameterValues(templateParameters);
 				})
 				.build()
+				.generator()
 				.createType(templateOfType.getFactory(), qualifiedTypeName, templateParameters);
 	}
 

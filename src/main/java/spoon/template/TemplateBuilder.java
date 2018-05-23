@@ -153,7 +153,7 @@ class TemplateBuilder {
 	 * @return a substituted element
 	 */
 	public <T extends CtElement> T substituteSingle(CtType<?> targetType, Class<T> itemType) {
-		return build().substituteSingle(targetType.getFactory(), itemType, getTemplateParameters(targetType));
+		return build().generator().substituteSingle(targetType.getFactory(), itemType, getTemplateParameters(targetType));
 	}
 	/**
 	 * generates a new AST nodes made by cloning of `patternModel` and by substitution of parameters by their values
@@ -162,6 +162,6 @@ class TemplateBuilder {
 	 * @return List of substituted elements
 	 */
 	public <T extends CtElement> List<T> substituteList(Factory factory, CtType<?> targetType, Class<T> itemType) {
-		return build().substitute(factory, itemType, new ImmutableMapImpl(getTemplateParameters(targetType)));
+		return build().generator().substitute(factory, itemType, new ImmutableMapImpl(getTemplateParameters(targetType)));
 	}
 }
