@@ -26,16 +26,27 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.metamodel.MetamodelConcept;
+import spoon.test.metamodel.MetamodelProperty;
+import spoon.test.metamodel.SpoonMetaModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class MetamodelTest {
@@ -163,5 +174,57 @@ public class MetamodelTest {
 			assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
 		}
 
+	}
+	@Test
+	public void testMetamodelWithoutSources() {
+		//contract: metamodel based on spoon sources delivers is same like metamodel based on shadow classes
+		SpoonMetaModel runtimeMM = new SpoonMetaModel();
+		Collection<MetamodelConcept> concepts = runtimeMM.getConcepts();
+		
+		SpoonMetaModel sourceBasedMM = new SpoonMetaModel(new File("src/main/java"));
+		Map<String, MetamodelConcept> expectedConceptsByName = new HashMap<>();
+		sourceBasedMM.getConcepts().forEach(c -> {
+			expectedConceptsByName.put(c.getName(), c);
+		});
+		for (MetamodelConcept runtimeConcept : concepts) {
+			MetamodelConcept expectedConcept = expectedConceptsByName.remove(runtimeConcept.getName());
+			assertNotNull(expectedConcept);
+			assertConceptsEqual(expectedConcept, runtimeConcept);
+		}
+		assertEquals(0, expectedConceptsByName.size());
+	}
+
+	private void assertConceptsEqual(MetamodelConcept expectedConcept, MetamodelConcept runtimeConcept) {
+		assertEquals(expectedConcept.getName(), runtimeConcept.getName());
+		if (expectedConcept.getModelClass() == null) {
+			assertNull(runtimeConcept.getModelClass());
+		} else {
+			assertNotNull(runtimeConcept.getModelClass());
+			assertEquals(expectedConcept.getModelClass().getActualClass(), runtimeConcept.getModelClass().getActualClass());
+		}
+		assertEquals(expectedConcept.getModelInterface().getActualClass(), runtimeConcept.getModelInterface().getActualClass());
+		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
+		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());
+		for (int i = 0; i < expectedConcept.getSuperConcepts().size(); i++) {
+			assertConceptsEqual(expectedConcept.getSuperConcepts().get(i), runtimeConcept.getSuperConcepts().get(i));
+		}
+		Map<CtRole, MetamodelProperty> expectedRoleToProperty = new HashMap(expectedConcept.getRoleToProperty());
+		for (Map.Entry<CtRole, MetamodelProperty> e : runtimeConcept.getRoleToProperty().entrySet()) {
+			MetamodelProperty runtimeProperty = e.getValue();
+			MetamodelProperty expectedProperty = expectedRoleToProperty.remove(e.getKey());
+			assertPropertiesEqual(expectedProperty, runtimeProperty);
+		}
+		assertEquals(0, expectedRoleToProperty.size());
+	}
+
+	private void assertPropertiesEqual(MetamodelProperty expectedProperty, MetamodelProperty runtimeProperty) {
+		assertSame(expectedProperty.getRole(), runtimeProperty.getRole());
+		assertEquals(expectedProperty.getName(), runtimeProperty.getName());
+		assertEquals(expectedProperty.getItemValueType().getActualClass(), runtimeProperty.getItemValueType().getActualClass());
+		assertEquals(expectedProperty.getOwnerConcept().getName(), runtimeProperty.getOwnerConcept().getName());
+		assertSame(expectedProperty.getValueContainerType(), runtimeProperty.getValueContainerType());
+		assertEquals(expectedProperty.getValueType(), runtimeProperty.getValueType());
+		assertEquals(expectedProperty.isDerived(), runtimeProperty.isDerived());
+		assertEquals(expectedProperty.isUnsettable(), runtimeProperty.isUnsettable());
 	}
 }
