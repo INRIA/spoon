@@ -93,6 +93,7 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		if (executable == null) {
 			// default reference
 			executable = getFactory().Core().createExecutableReference();
+			executable.setParent(this);
 		}
 		return executable;
 	}
