@@ -18,7 +18,8 @@ package spoon.pattern.internal.node;
 
 import java.util.function.BiConsumer;
 
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
@@ -45,7 +46,7 @@ public interface RootNode extends Matchers {
 	 * @param result holder for the generated objects
 	 * @param parameters a {@link ImmutableMap} holding parameters
 	 */
-	<T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters);
+	<T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters);
 
 	/**
 	 * @return true if generated result has to be evaluated to apply simplifications.

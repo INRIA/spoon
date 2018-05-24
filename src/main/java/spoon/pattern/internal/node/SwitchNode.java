@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import spoon.SpoonException;
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
@@ -73,7 +74,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (CaseNode case1 : cases) {
 			generator.generateTargets(case1, result, parameters);
 		}
@@ -177,14 +178,14 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 			SwitchNode.this.forEachParameterInfo(consumer);
 		}
 		@Override
-		public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+		public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 			if (statement != null) {
 				if (isCaseSelected(generator, parameters)) {
 					generator.generateTargets(statement, result, parameters);
 				}
 			}
 		}
-		private boolean isCaseSelected(Generator generator, ImmutableMap parameters) {
+		private boolean isCaseSelected(DefaultGenerator generator, ImmutableMap parameters) {
 			if (vrOfExpression == null) {
 				return true;
 			}
@@ -193,7 +194,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 		}
 
 		@Override
-		public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+		public <T> void generateInlineTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 			Factory f = generator.getFactory();
 			CoreFactory cf = f.Core();
 			CtBlock<?> block = cf.createBlock();
@@ -214,7 +215,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 	}
 
 	@Override
-	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateInlineTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		CtStatement resultStmt = null;
 		CtStatement lastElse = null;
 		CtIf lastIf = null;

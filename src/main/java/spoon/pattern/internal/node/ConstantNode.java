@@ -19,7 +19,8 @@ package spoon.pattern.internal.node;
 import java.util.function.BiConsumer;
 
 import spoon.pattern.Quantifier;
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.support.util.ImmutableMap;
@@ -50,7 +51,7 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ImmutableMap parameters) {
+	public <U> void generateTargets(DefaultGenerator generator, ResultHolder<U> result, ImmutableMap parameters) {
 		result.addResult((U) template);
 	}
 

@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import spoon.pattern.Quantifier;
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
@@ -71,7 +72,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (Object parameterValue : generator.generateTargets(iterableParameter, parameters, Object.class)) {
 			generator.generateTargets(nestedModel, result, parameters.putValue(localParameter.getName(), parameterValue));
 		}
@@ -146,7 +147,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	}
 
 	@Override
-	public <T> void generateInlineTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateInlineTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		Factory f = generator.getFactory();
 		CtForEach forEach = f.Core().createForEach();
 		forEach.setVariable(f.Code().createLocalVariable(f.Type().objectType(), localParameter.getName(), null));

@@ -19,7 +19,8 @@ package spoon.pattern.internal.node;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.ChainOfMatchersImpl;
 import spoon.pattern.internal.matcher.Matchers;
@@ -46,7 +47,7 @@ public class ListOfNodes extends AbstractNode {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (RootNode node : nodes) {
 			generator.generateTargets(node, result, parameters);
 		}

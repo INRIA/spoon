@@ -245,7 +245,7 @@ public class PatternTest {
 		// created in "MatchMultiple.createPattern",matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
 
-		List<CtStatement> generated = pattern.generator().substitute(factory, CtStatement.class, params);
+		List<CtStatement> generated = pattern.generator().substitute(CtStatement.class, params);
 		assertEquals(Arrays.asList(
 				//these statements comes from `statements` parameter value
 				"int foo = 0",
@@ -1270,7 +1270,6 @@ public class PatternTest {
 		Factory factory = templateModel.getFactory();
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
-		assertTrue(pattern.generator().isAddGeneratedBy());
 	}
 
 
@@ -1286,7 +1285,7 @@ public class PatternTest {
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
 		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
-		CtClass<?> generatedType = pattern.generator().createType(factory, newQName, Collections.emptyMap());
+		CtClass<?> generatedType = pattern.generator().createType(newQName, Collections.emptyMap());
 		assertNotNull(generatedType);
 
 		// sanity check that the new type contains all the expected methods
@@ -1336,7 +1335,7 @@ public class PatternTest {
 
 		CtClass<?> generatedType = factory.createClass("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs");
 
-		pattern.generator().applyToType(generatedType, CtMethod.class, Collections.emptyMap());
+		pattern.generator().addToType(CtMethod.class, Collections.emptyMap(), generatedType);
 
 		//contract: the foo method has been added
 		assertEquals(Arrays.asList("foo"),
@@ -1508,7 +1507,7 @@ public class PatternTest {
 				//as pattern parameters
 				.configurePatternParameters()
 				.build();
-		final List<CtMethod> aMethods = pattern.generator().applyToType(aTargetType, CtMethod.class, params);
+		final List<CtMethod> aMethods = pattern.generator().addToType(CtMethod.class, params, aTargetType);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);

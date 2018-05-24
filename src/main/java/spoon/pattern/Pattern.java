@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.matcher.MatchingScanner;
 import spoon.pattern.internal.node.ModelNode;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.Experimental;
 import spoon.support.util.ImmutableMap;
@@ -53,10 +55,11 @@ import spoon.support.util.ImmutableMapImpl;
 public class Pattern {
 	private ModelNode modelValueResolver;
 	private boolean addGeneratedBy = false;
-
+	private final Factory factory;
 	/** package-protected, must use {@link PatternBuilder} */
-	Pattern(ModelNode modelValueResolver) {
+	Pattern(Factory factory, ModelNode modelValueResolver) {
 		this.modelValueResolver = modelValueResolver;
+		this.factory = factory;
 	}
 
 	/**
@@ -89,10 +92,10 @@ public class Pattern {
 	}
 
 	/**
-	 * @return a {@link Generator}, which can be used to generate a code based on this {@link Pattern}
+	 * @return a {@link GeneratorImpl}, which can be used to generate a code based on this {@link Pattern}
 	 */
 	public Generator generator() {
-		return new Generator(this);
+		return new DefaultGenerator(factory, this).setAddGeneratedBy(addGeneratedBy);
 	}
 
 	/**

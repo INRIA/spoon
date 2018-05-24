@@ -32,7 +32,8 @@ import java.util.stream.Collectors;
 import spoon.Metamodel;
 import spoon.SpoonException;
 import spoon.pattern.Quantifier;
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
@@ -273,15 +274,15 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U> void generateTargets(Generator generator, ResultHolder<U> result, ImmutableMap parameters) {
+	public <U> void generateTargets(DefaultGenerator generator, ResultHolder<U> result, ImmutableMap parameters) {
 		//TODO implement create on Metamodel.Type
 		CtElement clone = generator.getFactory().Core().create(elementType.getModelInterface());
 		generateSingleNodeAttributes(generator, clone, parameters);
-		generator.applyGeneratedBy(clone, templateElement);
+		generator.applyGeneratedBy(clone, generator.getGeneratedByComment(templateElement));
 		result.addResult((U) clone);
 	}
 
-	protected void generateSingleNodeAttributes(Generator generator, CtElement clone, ImmutableMap parameters) {
+	protected void generateSingleNodeAttributes(DefaultGenerator generator, CtElement clone, ImmutableMap parameters) {
 		for (Map.Entry<Metamodel.Field, RootNode> e : getRoleToNode().entrySet()) {
 			Metamodel.Field mmField = e.getKey();
 			switch (mmField.getContainerKind()) {

@@ -23,7 +23,8 @@ import java.util.function.BiConsumer;
 
 import spoon.SpoonException;
 import spoon.pattern.Quantifier;
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
@@ -105,7 +106,7 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 	}
 
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		String entryKey = generator.generateSingleTarget(key, parameters, String.class);
 		CtElement entryValue = generator.generateSingleTarget(value, parameters, CtElement.class);
 		if (entryKey != null && entryValue != null) {

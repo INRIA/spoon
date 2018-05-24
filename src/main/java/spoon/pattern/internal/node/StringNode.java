@@ -28,7 +28,8 @@ import java.util.regex.Pattern;
 
 import spoon.SpoonException;
 import spoon.pattern.Quantifier;
-import spoon.pattern.internal.Generator;
+import spoon.pattern.Generator;
+import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.support.util.ImmutableMap;
@@ -56,7 +57,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> void generateTargets(Generator generator, ResultHolder<T> result, ImmutableMap parameters) {
+	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		Class<?> requiredClass = result.getRequiredClass();
 		if (requiredClass != null && requiredClass.isAssignableFrom(String.class) == false) {
 			throw new SpoonException("StringValueResolver provides only String values. It doesn't support: " + requiredClass);

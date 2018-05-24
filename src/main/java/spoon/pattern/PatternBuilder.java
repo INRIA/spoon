@@ -320,7 +320,7 @@ public class PatternBuilder {
 		built = true;
 		//clean the mapping so it is not possible to further modify built pattern using this builder
 		patternElementToSubstRequests.clear();
-		return new Pattern(new ModelNode(patternNodes.getNodes())).setAddGeneratedBy(isAddGeneratedBy());
+		return new Pattern(getFactory(), new ModelNode(patternNodes.getNodes())).setAddGeneratedBy(isAddGeneratedBy());
 	}
 
 	static List<? extends CtElement> bodyToStatements(CtStatement statementOrBlock) {

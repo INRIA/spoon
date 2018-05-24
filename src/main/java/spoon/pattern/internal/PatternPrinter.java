@@ -54,7 +54,7 @@ public class PatternPrinter extends DefaultGenerator {
 	private List<ParamOnElement> params = new ArrayList<>();
 
 	public PatternPrinter() {
-		super(DEFAULT_FACTORY);
+		super(DEFAULT_FACTORY, null);
 	}
 
 	public String printNode(RootNode node) {
