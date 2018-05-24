@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -63,8 +64,12 @@ public class CollectionsContractTest<T extends CtVisitable> {
 	
 	@AfterClass
 	public static void reportAllProblems() {
+		System.out.println("Expected collection handling:");
+		System.out.println(allExpected.stream().sorted().collect(Collectors.joining("\n")));
 		if (allProblems.size() > 0) {
-			System.out.println(String.join("\n", allProblems));
+			System.out.println("-----------------------------");
+			System.out.println("Wrong collection handling:");
+			System.out.println(allProblems.stream().sorted().collect(Collectors.joining("\n")));
 		}
 	}
 	
@@ -86,6 +91,7 @@ public class CollectionsContractTest<T extends CtVisitable> {
 	
 	static Set<CtRole> ignoredRoles = new HashSet<>(Arrays.asList(CtRole.POSITION, CtRole.MODIFIER));
 	static List<String> allProblems = new ArrayList<>();
+	static List<String> allExpected = new ArrayList<>();
 	
 	@Test
 	public void testContract() throws Throwable {
@@ -98,6 +104,7 @@ public class CollectionsContractTest<T extends CtVisitable> {
 		}
 		
 		List<String> problems = new ArrayList<>();
+		List<String> expected = new ArrayList<>();
 		
 		for (MetamodelProperty mmProperty : mmConcept.getRoleToProperty().values()) {
 			if (mmProperty.getValueContainerType() == ContainerKind.SINGLE || ignoredRoles.contains(mmProperty.getRole())) {
@@ -113,18 +120,25 @@ public class CollectionsContractTest<T extends CtVisitable> {
 					if (colKind != CollectionKind.READ_ONLY) {
 						//report this problem
 						problems.add("derived;" +mmConcept + "#" + mmProperty.getName() + ";" + colKind.name());
+					} else {
+						//collect expected collection
+						expected.add("derived;" +mmConcept + "#" + mmProperty.getName() + ";" + colKind.name());
 					}
 				} else {
 					//normal properties should be attached correct
 					if (colKind != CollectionKind.MUTABLE_ATTACHED_CORRECT) {
 						//report this problem
 						problems.add("normal;" + mmConcept + "#" + mmProperty.getName() + ";" + colKind.name());
+					} else {
+						expected.add("normal;" + mmConcept + "#" + mmProperty.getName() + ";" + colKind.name());
 					}
 				}
 			} else {
 				problems.add("Failed check of;" + mmConcept + "#" + mmProperty.getName());
 			}
 		}
+		
+		allExpected.addAll(expected);
 		
 		if (problems.size() > 0) {
 			allProblems.addAll(problems);
