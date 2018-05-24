@@ -221,10 +221,10 @@ public class PatternTest {
 	@Test
 	public void testGenerateMultiValues() throws Exception {
 		// contract: the pattern parameter (in this case 'statements')
-		//can have type List and can be replaced by list of elements
+		// can have type List and can be replaced by list of elements
 		//(in this case by list of statements)
 
-		// here, in particular, we test method "substituteList"
+		// here, in particular, we test method "substitute"
 
 
 		// setup of the test
@@ -245,7 +245,7 @@ public class PatternTest {
 		// created in "MatchMultiple.createPattern",matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
 
-		List<CtStatement> generated = pattern.generator().substitute(CtStatement.class, params);
+		List<CtStatement> generated = pattern.generator().generate(CtStatement.class, params);
 		assertEquals(Arrays.asList(
 				//these statements comes from `statements` parameter value
 				"int foo = 0",
@@ -1276,7 +1276,7 @@ public class PatternTest {
 
 	@Test
 	public void testGenerateClassWithSelfReferences() throws Exception {
-		// main contract: a class with methods and fields can be used as pattern using method #createType
+		// main contract: a class with methods and fields can be generated with method #createType
 		// in particular, all the references to the origin class are replace by reference to the new class cloned class
 
 		// creating  a pattern from AClassWithMethodsAndRefs
@@ -1285,7 +1285,7 @@ public class PatternTest {
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
 		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
-		CtClass<?> generatedType = pattern.generator().createType(newQName, Collections.emptyMap());
+		CtClass<?> generatedType = pattern.generator().generateType(newQName, Collections.emptyMap());
 		assertNotNull(generatedType);
 
 		// sanity check that the new type contains all the expected methods
@@ -1480,7 +1480,7 @@ public class PatternTest {
 
 	@Test
 	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
-		//contract: all the variable references which are declared out of the pattern model are automatically considered as pattern parameters
+		//contract: one can add type members with Generator
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");

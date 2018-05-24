@@ -181,3 +181,8 @@ inline statements
 * `markAsInlined(CtForEach|CtIf)` - provided CtForEach or CtIf statement
 is understood as inline statement
 
+## Generator
+
+All patterns can be used for code generation. The idea is that one calls `#generator()` on a pattern object to get a `Generator`. This class contains methods that takes as input a map of string,objects where each string key points to a pattern parameter name and each map value contains the element to be put in place of the pattern parameter.
+
+
