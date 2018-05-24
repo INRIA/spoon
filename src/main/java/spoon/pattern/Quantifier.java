@@ -19,7 +19,7 @@ package spoon.pattern;
 import spoon.pattern.internal.node.RootNode;
 
 /**
- * Defines a strategy used to resolve conflict between two {@link RootNode}s
+ * Defines a matching strategy for pattern parameters.
  */
 public enum Quantifier {
 	/**
@@ -31,7 +31,7 @@ public enum Quantifier {
 	GREEDY,
 	/**
 	 * The reluctant quantifier takes the opposite approach: It start at the beginning of the input,
-	 * then reluctantly eat one character at a time looking for a match.
+	 * then reluctantly eats one character at a time looking for a match.
 	 * The last thing it tries is the entire input.
 	 */
 	RELUCTANT,
