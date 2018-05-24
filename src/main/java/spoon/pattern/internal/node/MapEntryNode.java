@@ -16,14 +16,8 @@
  */
 package spoon.pattern.internal.node;
 
-import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
-
-import java.util.Map;
-import java.util.function.BiConsumer;
-
 import spoon.SpoonException;
 import spoon.pattern.Quantifier;
-import spoon.pattern.Generator;
 import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.TobeMatched;
@@ -31,6 +25,11 @@ import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.support.util.ImmutableMap;
+
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
 
 /**
  * Represents a ValueResolver of one Map.Entry

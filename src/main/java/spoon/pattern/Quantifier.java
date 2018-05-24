@@ -16,8 +16,6 @@
  */
 package spoon.pattern;
 
-import spoon.pattern.internal.node.RootNode;
-
 /**
  * Defines a matching strategy for pattern parameters.
  */

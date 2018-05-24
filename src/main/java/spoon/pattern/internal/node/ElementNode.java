@@ -16,7 +16,19 @@
  */
 package spoon.pattern.internal.node;
 
-import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
+import spoon.Metamodel;
+import spoon.SpoonException;
+import spoon.pattern.Quantifier;
+import spoon.pattern.internal.DefaultGenerator;
+import spoon.pattern.internal.ResultHolder;
+import spoon.pattern.internal.matcher.Matchers;
+import spoon.pattern.internal.matcher.TobeMatched;
+import spoon.pattern.internal.parameter.ParameterInfo;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.meta.ContainerKind;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.support.util.ImmutableMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,20 +41,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import spoon.Metamodel;
-import spoon.SpoonException;
-import spoon.pattern.Quantifier;
-import spoon.pattern.Generator;
-import spoon.pattern.internal.DefaultGenerator;
-import spoon.pattern.internal.ResultHolder;
-import spoon.pattern.internal.matcher.Matchers;
-import spoon.pattern.internal.matcher.TobeMatched;
-import spoon.pattern.internal.parameter.ParameterInfo;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.meta.ContainerKind;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.support.util.ImmutableMap;
+import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
 
 /**
  * Generates/Matches a copy of a single CtElement AST node with all it's children (whole AST tree of the root CtElement)
