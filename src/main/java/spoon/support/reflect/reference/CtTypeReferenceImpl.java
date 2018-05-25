@@ -346,34 +346,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return Collections.emptyList();
 	}
 
-	/**
-	 * Collects all field references of the declared class.
-	 *
-	 * @return collection of field references
-	 */
-	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
-			Collection<CtFieldReference<?>> references = new ArrayList<>();
-			for (Field f : getDeclaredFields(getActualClass())) {
-				references.add(getFactory().Field().createReference(f));
-			}
-			if (getActualClass().isAnnotation()) {
-				for (Method m : getActualClass().getDeclaredMethods()) {
-					CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
-					CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
-					references.add(fr);
-				}
-			}
-			return references;
-	}
-
-	private Field[] getDeclaredFields(Class<?> cls) {
-		try {
-			return cls.getDeclaredFields();
-		} catch (Throwable e) {
-			throw new SpoonClassNotFoundException("cannot load fields of class: " + getQualifiedName(), e);
-		}
-	}
-
 	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
 		String msg = "cannot load class: " + getQualifiedName() + " with class loader "
 				+ Thread.currentThread().getContextClassLoader();

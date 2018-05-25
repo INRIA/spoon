@@ -83,6 +83,8 @@ public class FieldTest {
 		assertEquals(13, fileClass.getDeclaredFields().size());
 		assertEquals("pathSeparator", fileClass.getDeclaredField("pathSeparator").getSimpleName());
 		assertEquals("pathSeparator", fileClass.getDeclaredOrInheritedField("pathSeparator").getSimpleName());
+
+		// double check that we can still go to the declaration
 		assertEquals("pathSeparator", fileClass.getDeclaredField("pathSeparator").getFieldDeclaration().getSimpleName());
 	}
 
