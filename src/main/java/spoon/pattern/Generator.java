@@ -40,7 +40,7 @@ public interface Generator {
 	/**
 	 * Main method to generate a new AST made from substituting of parameters by values in `params`
 	 * @param valueType - the expected type of returned items
-	 * @param params - the substitution parameters
+	 * @param params - the substitution parameters, it can be CtElement, primitive literals like String, Integer, ... and or List or Set of them.
 	 * @return List of generated elements
 	 */
 	<T extends CtElement> List<T> generate(Class<T> valueType, Map<String, Object> params);
