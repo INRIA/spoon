@@ -16,18 +16,10 @@
  */
 package spoon.pattern;
 
-import static spoon.pattern.PatternBuilder.getLocalTypeRefBySimpleName;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
 import spoon.SpoonException;
 import spoon.pattern.internal.ValueConvertor;
 import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.node.MapEntryNode;
-import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.node.ParameterNode;
 import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.node.StringNode;
@@ -72,6 +64,13 @@ import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.support.Experimental;
 import spoon.template.Parameter;
 import spoon.template.TemplateParameter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import static spoon.pattern.PatternBuilder.getLocalTypeRefBySimpleName;
 
 /**
  * Used to define pattern parameters.
