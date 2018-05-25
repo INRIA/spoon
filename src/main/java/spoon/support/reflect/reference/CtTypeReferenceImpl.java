@@ -339,17 +339,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				return getDeclaredFieldReferences();
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return Collections.emptyList();
-			}
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredFields();
 		}
+		return Collections.emptyList();
 	}
 
 	/**
@@ -397,50 +391,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (name == null) {
 			return null;
 		}
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				Collection<CtFieldReference<?>> fields = getDeclaredFieldReferences();
-				for (CtFieldReference<?> field : fields) {
-					if (name.equals(field.getSimpleName())) {
-						return field;
-					}
-				}
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return null;
-			}
-			return null;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredField(name);
 		}
+		return null;
 	}
 
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			CtFieldReference<?> field = getDeclaredField(fieldName);
-			if (field != null) {
-				return field;
-			}
-			CtTypeReference<?> typeRef = getSuperclass();
-			if (typeRef != null) {
-				field = typeRef.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
-			for (CtTypeReference<?> iface : ifaces) {
-				field = iface.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			return field;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredOrInheritedField(fieldName);
 		}
+		return null;
 	}
 
 

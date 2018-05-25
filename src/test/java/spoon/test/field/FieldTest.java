@@ -38,8 +38,10 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
@@ -69,6 +71,19 @@ public class FieldTest {
 		assertEquals(first, fieldClass.getFields().get(0));
 		assertEquals(third, fieldClass.getFields().get(1));
 		assertEquals(second, fieldClass.getFields().get(2));
+	}
+
+	@Test
+	public void testgetDeclaredFields() throws Exception {
+		// contract: get*Fields works for both references
+		final CtClass<AddFieldAtTop> aClass = (CtClass<AddFieldAtTop>) buildClass(AddFieldAtTop.class);
+
+		assertEquals(1, aClass.getReference().getDeclaredFields().size());
+		CtTypeReference<?> fileClass = aClass.getFactory().Type().get(File.class).getReference();
+		assertEquals(13, fileClass.getDeclaredFields().size());
+		assertEquals("pathSeparator", fileClass.getDeclaredField("pathSeparator").getSimpleName());
+		assertEquals("pathSeparator", fileClass.getDeclaredOrInheritedField("pathSeparator").getSimpleName());
+		assertEquals("pathSeparator", fileClass.getDeclaredField("pathSeparator").getFieldDeclaration().getSimpleName());
 	}
 
 	@Test
