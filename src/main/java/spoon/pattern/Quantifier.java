@@ -17,12 +17,12 @@
 package spoon.pattern;
 
 /**
- * Defines a matching strategy for pattern parameters.
+ * Defines a matching strategy for pattern parameters, default is {@link #GREEDY}.
  */
 public enum Quantifier {
 	/**
-	 * Greedy quantifiers are considered "greedy" because they force the matcher to read in, or eat,
-	 * the entire input prior to attempting the next match.
+	 * Force the matcher to read in, or eat,
+	 * the entire input prior to attempting the next match (default).
 	 * If the next match attempt (the entire input) fails, the matcher backs off the input by one and tries again,
 	 * repeating the process until a match is found or there are no more elements left to back off from.
 	 */

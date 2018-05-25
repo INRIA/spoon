@@ -20,23 +20,23 @@ import spoon.SpoonException;
 import spoon.pattern.internal.node.RootNode;
 
 /**
- * Defines what happens when a {@link RootNode} has to be replaced by another {@link RootNode}
+ * Defines what happens when a {@link RootNode} has to be replaced by another {@link RootNode}, default in {@link #FAIL}.
  */
 public enum ConflictResolutionMode {
 	/**
-	 * throw {@link SpoonException}
+	 * Throw {@link SpoonException} if a conflict happens, it is the default in most cases. But there are some standard Pattern builder algorithms (mainly these which deals with legacy Templates), which are using the other modes.
 	 */
 	FAIL,
 	/**
-	 * get rid of old {@link RootNode} and use new {@link RootNode} instead
+	 * Get rid of old {@link RootNode} and use new {@link RootNode} instead
 	 */
 	USE_NEW_NODE,
 	/**
-	 * keep old {@link RootNode} and ignore requests to add new {@link RootNode}
+	 * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}
 	 */
 	KEEP_OLD_NODE,
 	/**
-	 * add new {@link RootNode} after existing nodes
+	 * Add new {@link RootNode} after existing nodes
 	 */
 	APPEND
 }
