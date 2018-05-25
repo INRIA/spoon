@@ -45,7 +45,7 @@ public interface Generator {
 	 */
 	<T extends CtElement> List<T> generate(Class<T> valueType, Map<String, Object> params);
 
-	/** Utility method that provides the same feature as {@link #substitute(Factory, Class, Map)}, but with a {@link ImmutableMap} as parameter (a Spoon elegant utility type) */
+	/** Utility method that provides the same feature as {@link #generate(Class, Map)}, but with a {@link ImmutableMap} as parameter (a Spoon elegant utility type) */
 	<T extends CtElement> List<T> generate(Class<T> valueType, ImmutableMap params);
 
 	/**

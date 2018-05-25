@@ -82,7 +82,7 @@ public class Pattern {
 	}
 
 	/**
-	 * @return a {@link GeneratorImpl}, which can be used to generate a code based on this {@link Pattern}
+	 * @return a {@link Generator}, which can be used to generate a code based on this {@link Pattern}
 	 */
 	public Generator generator() {
 		return new DefaultGenerator(factory, modelValueResolver).setAddGeneratedBy(addGeneratedBy);
