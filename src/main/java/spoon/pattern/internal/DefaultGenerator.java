@@ -17,8 +17,8 @@
 package spoon.pattern.internal;
 
 import spoon.pattern.Generator;
-import spoon.pattern.Pattern;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtCodeElement;
@@ -44,11 +44,11 @@ import java.util.Map;
 public class DefaultGenerator implements Generator {
 	protected final Factory factory;
 	private boolean addGeneratedBy = false;
-	private Pattern pattern;
+	private ListOfNodes nodes;
 
-	public DefaultGenerator(Factory factory, Pattern pattern) {
+	public DefaultGenerator(Factory factory, ListOfNodes nodes) {
 		super();
-		this.pattern = pattern;
+		this.nodes = nodes;
 		this.factory = factory;
 	}
 
@@ -223,7 +223,7 @@ public class DefaultGenerator implements Generator {
 
 	@Override
 	public <T extends CtElement> List<T> generate(Class<T> valueType, ImmutableMap params) {
-		return setAddGeneratedBy(isAddGeneratedBy()).generateTargets(pattern.getModelValueResolver(), params, valueType);
+		return setAddGeneratedBy(isAddGeneratedBy()).generateTargets(nodes, params, valueType);
 	}
 
 	@Override

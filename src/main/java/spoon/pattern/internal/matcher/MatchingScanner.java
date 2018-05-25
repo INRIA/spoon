@@ -24,7 +24,7 @@ import java.util.Set;
 
 import spoon.SpoonException;
 import spoon.pattern.Match;
-import spoon.pattern.internal.node.ModelNode;
+import spoon.pattern.internal.node.ListOfNodes;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
@@ -36,10 +36,10 @@ import spoon.support.util.ImmutableMapImpl;
  * Represents a Match of TemplateMatcher
  */
 public class MatchingScanner extends EarlyTerminatingScanner<Void> {
-	private final ModelNode pattern;
+	private final ListOfNodes pattern;
 	private CtConsumer<? super Match> matchConsumer;
 
-	public MatchingScanner(ModelNode pattern, CtConsumer<? super Match> matchConsumer) {
+	public MatchingScanner(ListOfNodes pattern, CtConsumer<? super Match> matchConsumer) {
 		this.pattern = pattern;
 		this.matchConsumer = matchConsumer;
 	}

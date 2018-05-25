@@ -17,13 +17,15 @@
 package spoon.template;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import spoon.SpoonException;
 import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
 import spoon.pattern.PatternBuilderHelper;
+import spoon.pattern.internal.node.ListOfNodes;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -49,6 +51,18 @@ class TemplateBuilder {
 		CtClass<? extends Template<?>> templateType = Substitution.getTemplateCtClass(templateRoot.getFactory(), template);
 		return createPattern(templateRoot, templateType, template);
 	}
+	//needed to provide access to protected members
+	private static class PatternBuilder extends spoon.pattern.PatternBuilder {
+
+		PatternBuilder(List<CtElement> template) {
+			super(template);
+		}
+
+		ListOfNodes getListOfNodes() {
+			return new ListOfNodes(patternNodes.getNodes());
+		}
+	}
+
 	/**
 	 * Creates a {@link TemplateBuilder}, which builds {@link Pattern} from {@link Template}
 	 * @param templateRoot the root element of {@link Template} model
@@ -91,9 +105,9 @@ class TemplateBuilder {
 				//remove `... extends Template`, which doesn't have to be part of pattern model
 				tv.removeSuperClass();
 			};
-			pb = PatternBuilder.create(tv.getPatternElements());
+			pb = new PatternBuilder(tv.getPatternElements());
 		} else {
-			pb = PatternBuilder.create(templateRoot);
+			pb = new PatternBuilder(Collections.singletonList(templateRoot));
 		}
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, null, template);
 		//legacy templates always automatically simplifies generated code
@@ -121,6 +135,11 @@ class TemplateBuilder {
 	 */
 	public Pattern build() {
 		return patternBuilder.build();
+	}
+
+	Pattern build(Consumer<ListOfNodes> nodes) {
+		nodes.accept(patternBuilder.getListOfNodes());
+		return build();
 	}
 
 	/**

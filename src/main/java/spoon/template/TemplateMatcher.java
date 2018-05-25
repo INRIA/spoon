@@ -23,7 +23,7 @@ import java.util.List;
 import spoon.pattern.Match;
 import spoon.pattern.Pattern;
 import spoon.pattern.internal.matcher.TobeMatched;
-import spoon.pattern.internal.node.ModelNode;
+import spoon.pattern.internal.node.ListOfNodes;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
@@ -38,6 +38,7 @@ import spoon.support.util.ImmutableMapImpl;
 public class TemplateMatcher implements Filter<CtElement> {
 
 	private final Pattern pattern;
+	private ListOfNodes patternModel;
 	private final CtElement templateRoot;
 
 	/**
@@ -68,14 +69,13 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @param templateType the class of the template, which contains all the template parameters
 	 */
 	public TemplateMatcher(CtElement templateRoot, CtClass<?> templateType) {
-		this.pattern = TemplateBuilder.createPattern(templateRoot, templateType, null).build();
+		this.pattern = TemplateBuilder.createPattern(templateRoot, templateType, null).build(nodes -> this.patternModel = nodes);
 		this.templateRoot = templateRoot;
 	}
 
 	@Override
 	public boolean matches(CtElement element) {
 		//clear all matches from previous run before we start matching with `element`
-		ModelNode patternModel = pattern.getModelValueResolver();
 		if (element == templateRoot) {
 			// This case can occur when we are scanning the entire package for example see TemplateTest#testTemplateMatcherWithWholePackage
 			// Correct template matches itself of course, but client does not want that

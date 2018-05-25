@@ -33,7 +33,6 @@ import spoon.pattern.internal.ValueConvertor;
 import spoon.pattern.internal.ValueConvertorImpl;
 import spoon.pattern.internal.node.ElementNode;
 import spoon.pattern.internal.node.ListOfNodes;
-import spoon.pattern.internal.node.ModelNode;
 import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.parameter.AbstractParameterInfo;
 import spoon.pattern.internal.parameter.ParameterInfo;
@@ -79,13 +78,13 @@ public class PatternBuilder {
 	}
 
 	private final List<CtElement> patternModel;
-	private final ListOfNodes patternNodes;
+	protected final ListOfNodes patternNodes;
 	private final Map<CtElement, RootNode> patternElementToSubstRequests = new IdentityHashMap<>();
 	private final Set<RootNode> explicitNodes = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	private CtTypeReference<?> templateTypeRef;
 	private final Map<String, AbstractParameterInfo> parameterInfos = new HashMap<>();
-//	ModelNode pattern;
+//	ListOfNodes pattern;
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;
 	private boolean addGeneratedBy = false;
@@ -113,7 +112,7 @@ public class PatternBuilder {
 		}
 	}
 
-	private PatternBuilder(List<CtElement> template) {
+	protected PatternBuilder(List<CtElement> template) {
 		this.templateTypeRef = getDeclaringTypeRef(template);
 		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		if (template == null) {
@@ -320,7 +319,7 @@ public class PatternBuilder {
 		built = true;
 		//clean the mapping so it is not possible to further modify built pattern using this builder
 		patternElementToSubstRequests.clear();
-		return new Pattern(getFactory(), new ModelNode(patternNodes.getNodes())).setAddGeneratedBy(isAddGeneratedBy());
+		return new Pattern(getFactory(), new ListOfNodes(patternNodes.getNodes())).setAddGeneratedBy(isAddGeneratedBy());
 	}
 
 	static List<? extends CtElement> bodyToStatements(CtStatement statementOrBlock) {

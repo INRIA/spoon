@@ -27,7 +27,7 @@ import java.util.Map;
 import spoon.SpoonException;
 import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.matcher.MatchingScanner;
-import spoon.pattern.internal.node.ModelNode;
+import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
@@ -53,23 +53,13 @@ import spoon.support.util.ImmutableMapImpl;
  */
 @Experimental
 public class Pattern {
-	private ModelNode modelValueResolver;
+	private ListOfNodes modelValueResolver;
 	private boolean addGeneratedBy = false;
 	private final Factory factory;
 	/** package-protected, must use {@link PatternBuilder} */
-	Pattern(Factory factory, ModelNode modelValueResolver) {
+	Pattern(Factory factory, ListOfNodes modelValueResolver) {
 		this.modelValueResolver = modelValueResolver;
 		this.factory = factory;
-	}
-
-	/**
-	 *
-	 * Not in the public API
-	 *
-	 * @return a {@link ModelNode} of this pattern
-	 */
-	public ModelNode getModelValueResolver() {
-		return modelValueResolver;
 	}
 
 	/**
@@ -95,7 +85,7 @@ public class Pattern {
 	 * @return a {@link GeneratorImpl}, which can be used to generate a code based on this {@link Pattern}
 	 */
 	public Generator generator() {
-		return new DefaultGenerator(factory, this).setAddGeneratedBy(addGeneratedBy);
+		return new DefaultGenerator(factory, modelValueResolver).setAddGeneratedBy(addGeneratedBy);
 	}
 
 	/**

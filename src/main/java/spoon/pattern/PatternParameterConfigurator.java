@@ -27,7 +27,7 @@ import spoon.SpoonException;
 import spoon.pattern.internal.ValueConvertor;
 import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.node.MapEntryNode;
-import spoon.pattern.internal.node.ModelNode;
+import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.node.ParameterNode;
 import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.node.StringNode;
@@ -798,14 +798,14 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
-	 * Adds request to substitute value of `attributeRole` of `element`, by the value of this {@link ModelNode} parameter {@link ParameterInfo} value
+	 * Adds request to substitute value of `attributeRole` of `element`, by the value of this {@link ListOfNodes} parameter {@link ParameterInfo} value
 	 * @param element whose attribute of {@link CtRole} `attributeRole` have to be replaced
 	 */
 	void addSubstitutionRequest(ParameterInfo parameter, CtElement element, CtRole attributeRole) {
 		patternBuilder.setNodeOfAttributeOfElement(element, attributeRole, new ParameterNode(parameter), conflictResolutionMode);
 	}
 	/**
-	 * Adds request to substitute substring of {@link String} value of `attributeRole` of `element`, by the value of this {@link ModelNode} parameter {@link ParameterInfo} value
+	 * Adds request to substitute substring of {@link String} value of `attributeRole` of `element`, by the value of this {@link ListOfNodes} parameter {@link ParameterInfo} value
 	 * @param element whose part of String attribute of {@link CtRole} `attributeRole` have to be replaced
 	 */
 	void addSubstitutionRequest(ParameterInfo parameter, CtElement element, CtRole attributeRole, String subStringMarker) {
