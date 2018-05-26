@@ -53,12 +53,15 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtModifierHandler;
+import spoon.support.util.ModelList;
+import spoon.support.util.ModelSet;
 import spoon.support.visitor.clone.CloneBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -210,9 +213,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.code.CtRHSReceiverImpl",
 					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "metadata");
-			private final CtTypeReference<List> LIST_REFERENCE = factory.Type().createReference(List.class);
-			private final CtTypeReference<Collection> COLLECTION_REFERENCE = factory.Type().createReference(Collection.class);
-			private final CtTypeReference<Set> SET_REFERENCE = factory.Type().createReference(Set.class);
+			private final Set<String> collectionClasses = new HashSet<>(Arrays.asList(
+					List.class.getName(), Collection.class.getName(), Set.class.getName(),
+					ModelList.class.getName(), ModelSet.class.getName()));
 			private final CtTypeReference<CtElement> CTELEMENT_REFERENCE = factory.Type().createReference(CtElement.class);
 			private final CtClass<?> GETTER_TEMPLATE_MATCHER_CLASS = factory.Class().get(GENERATING_CLONE_PACKAGE + ".GetterTemplateMatcher");
 			private final CtClass<?> SETTER_TEMPLATE_MATCHER_CLASS = factory.Class().get(GENERATING_CLONE_PACKAGE + ".SetterTemplateMatcher");
@@ -430,7 +433,6 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						return ctMethod;
 					}
 				}
-				SETTER_TEMPLATE_MATCHER_CLASS.getMethod("setElement", factory.Type().BOOLEAN_PRIMITIVE).getBody();
 				final List<CtMethod> matchers = ctField.getDeclaringType().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 					@Override
 					public boolean matches(CtMethod element) {
@@ -505,7 +507,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					if (type.isSubtypeOf(factory.Type().createReference(CtElement.class))) {
 						return true;
 					}
-					if (type.getQualifiedName().equals(LIST_REFERENCE.getQualifiedName()) || type.getQualifiedName().equals(COLLECTION_REFERENCE.getQualifiedName()) || type.getQualifiedName().equals(SET_REFERENCE.getQualifiedName())) {
+					if (collectionClasses.contains(type.getQualifiedName())) {
 						if (type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE)) {
 							return true;
 						}
@@ -523,6 +525,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private CtClass<Object> createCloneVisitor() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_CLONE_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_CLONE);
+		//remove type from old package so it can be added to new package
+		target.delete();
 		target.setSimpleName(TARGET_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
@@ -543,6 +547,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 	private CtClass<Object> createCloneBuilder() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_CLONE_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_BUILDER_CLONE);
+		//remove target from old package so it can be added to new package
+		target.delete();
 		target.setSimpleName(TARGET_BUILDER_CLONE_TYPE);
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
