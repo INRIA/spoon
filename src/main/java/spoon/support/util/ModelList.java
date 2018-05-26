@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import spoon.SpoonException;
 import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
@@ -89,6 +90,12 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	}
 
 	static void linkToParent(CtElement owner, CtElement element) {
+		if (owner.getFactory().getEnvironment().checksAreSkipped() == false && element.isParentInitialized() && element.getParent() != owner) {
+			//the `e` already has an different parent. Check if it is still linked to that parent
+			if (element.getRoleInParent() != null) {
+				throw new SpoonException("The element " + element + " is already used by another part of SpoonModel. Remove it from previous model or clone it before.");
+			}
+		}
 		element.setParent(owner);
 	}
 
