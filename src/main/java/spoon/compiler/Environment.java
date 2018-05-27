@@ -318,7 +318,7 @@ public interface Environment {
 	/**
 	 * Tells whether Spoon does no checks at all.
 	 * - parents are consistent (see {@link spoon.reflect.visitor.AstParentConsistencyChecker})
-	 * - hashcode violation (see {@link CtElement#equals(CtElement)})
+	 * - hashcode violation (see {@link spoon.support.reflect.declaration.CtElementImpl#equals(Object)})
 	 * - method violation (see {@link spoon.reflect.declaration.CtType#addMethod(CtMethod)})
 	 * are active or not.
 	 *
