@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
+import spoon.experimental.modelobs.ActionBasedChangeListenerImpl;
+import spoon.experimental.modelobs.action.Action;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -15,6 +17,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.test.SpoonTestHelpers;
 
@@ -36,9 +39,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
-// check that all setters of the metamodel call setParent in a correct manner
+/**
+ * check that all setters of the metamodel do the right things:
+ * - call setParent
+ * - trigger a change event
+  */
 @RunWith(Parameterized.class)
-public class ParentContractTest<T extends CtVisitable> {
+public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 	private static Factory factory = createFactory();
 	private static final List<CtType<? extends CtElement>> allInstantiableMetamodelInterfaces = SpoonTestHelpers.getAllInstantiableMetamodelInterfaces();
@@ -60,6 +67,19 @@ public class ParentContractTest<T extends CtVisitable> {
 
 	@Parameterized.Parameter(0)
 	public CtType<?> toTest;
+
+	class ModelChangeListener extends ActionBasedChangeListenerImpl {
+		int nbCallsToOnAction = 0;
+		List changedElements = new ArrayList();
+		@Override
+		public void onAction(Action action) {
+			super.onAction(action);
+			changedElements.add(action.getContext().getElementWhereChangeHappens());
+			nbCallsToOnAction++;
+		}
+	}
+
+	ModelChangeListener changeListener = new ModelChangeListener();
 
 	public static Object createCompatibleObject(CtTypeReference<?> parameterType) {
 		Class<?> c = parameterType.getActualClass();
@@ -93,11 +113,13 @@ public class ParentContractTest<T extends CtVisitable> {
 
 	@Test
 	public void testContract() throws Throwable {
+		factory.getEnvironment().setModelChangeListener(changeListener);
 		int nSetterCalls= 0;
 		int nAssertsOnParent = 0;
 		int nAssertsOnParentInList = 0;
 		// contract: all setters/adders must set the parent (not necessarily the direct parent, can be upper in the parent tree, for instance when injecting blocks
 		Object o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
+
 		for (CtMethod<?> setter : SpoonTestHelpers.getAllSetters(toTest)) {
 
 			Object argument = createCompatibleObject(setter.getParameters().get(0).getType());
@@ -108,7 +130,18 @@ public class ParentContractTest<T extends CtVisitable> {
 
 				// we invoke the setter
 				Method actualMethod = setter.getReference().getActualMethod();
+
+				int nBefore = changeListener.nbCallsToOnAction;
+				changeListener.changedElements = new ArrayList();
+
+				// here we actually call the setter
 				actualMethod.invoke(receiver, new Object[] { argument });
+
+				int nAfter = changeListener.nbCallsToOnAction;
+
+				// contract: at least one change event is well fired (sometimes it is more than one for complex setters)
+				assertTrue(actualMethod.getName(), nBefore < nAfter);
+
 				nSetterCalls++;
 				nTotalSetterCalls++;
 				// if it's a settable property
@@ -130,7 +163,8 @@ public class ParentContractTest<T extends CtVisitable> {
 
 
 			} catch (AssertionError e) {
-				Assert.fail("call setParent contract failed for " + setter.toString() + " " + e.toString());
+				System.err.println("one contract failed for " + setter.toString());
+				throw e;
 			} catch (InvocationTargetException e) {
 				if (e.getCause() instanceof UnsupportedOperationException) {
 					// fail-safe contract: we can always call a setter
