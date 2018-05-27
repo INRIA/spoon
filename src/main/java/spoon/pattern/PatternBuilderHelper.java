@@ -29,8 +29,8 @@ import spoon.reflect.visitor.Filter;
 import spoon.support.Experimental;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Utility class to select parts of AST to be used as a model of a {@link PatternBuilder}.
@@ -69,6 +69,7 @@ public class PatternBuilderHelper {
 				//set parent package, to keep origin qualified name of the Template. It is needed for correct substitution of Template name by target type reference
 				clonedPatternType.setParent(patternType.getParent());
 			}
+			setElements(Collections.singletonList(clonedPatternType));
 		}
 		return clonedPatternType;
 	}
@@ -88,19 +89,6 @@ public class PatternBuilderHelper {
 	private PatternBuilderHelper setTypeMember(Filter<CtTypeMember> filter) {
 		setElements(getByFilter(filter));
 		return this;
-	}
-
-	private List<CtElement> getClonedElements() {
-		if (elements == null) {
-			throw new SpoonException("Template model is not defined yet");
-		}
-		for (ListIterator<CtElement> iter = elements.listIterator(); iter.hasNext();) {
-			CtElement ele = iter.next();
-			if (ele.getRoleInParent() != null) {
-				iter.set(ele.clone());
-			}
-		}
-		return elements;
 	}
 
 	/**

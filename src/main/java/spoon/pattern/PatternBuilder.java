@@ -455,14 +455,6 @@ public class PatternBuilder {
 		throw new SpoonException("PatternBuilder has no CtElement to provide a Factory");
 	}
 
-	private static void checkTemplateType(CtType<?> type) {
-		if (type == null) {
-			throw new SpoonException("Cannot create Pattern from null Template type.");
-		}
-		if (type.isShadow()) {
-			throw new SpoonException("Cannot create Pattern from shadow Template type. Add sources of Template type into spoon model.");
-		}
-	}
 	/**
 	 * @return a {@link CtElement}s which are the template model of this Pattern
 	 */
