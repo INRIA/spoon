@@ -171,7 +171,7 @@ public class DefaultGenerator implements Generator {
 	}
 	private void appendInnerTypedElements(StringBuilder result, CtType<?> mainType, CtElement ele) {
 		CtTypeMember typeMember = getFirst(ele, CtTypeMember.class);
-		if (typeMember != null && typeMember != mainType) {
+		if (typeMember != null && isMainType(typeMember, mainType) == false) {
 			if (typeMember.isParentInitialized()) {
 				appendInnerTypedElements(result, mainType, typeMember.getParent());
 			}
@@ -183,6 +183,14 @@ public class DefaultGenerator implements Generator {
 			result.append(typeMember.getSimpleName());
 		}
 	}
+
+	private boolean isMainType(CtTypeMember tm, CtType<?> mainType) {
+		if (tm instanceof CtType) {
+			return mainType.getQualifiedName().equals(((CtType) tm).getQualifiedName());
+		}
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T extends CtElement> T getFirst(CtElement ele, Class<T> clazz) {
 		if (ele != null) {
