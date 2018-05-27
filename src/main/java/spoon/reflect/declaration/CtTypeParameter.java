@@ -82,6 +82,6 @@ public interface CtTypeParameter extends CtType<Object> {
 
 	@Override
 	@UnsettableProperty
-	public <F, C extends CtType<Object>> C addFieldAtTop(CtField<F> field);
+	<F, C extends CtType<Object>> C addFieldAtTop(CtField<F> field);
 
 }

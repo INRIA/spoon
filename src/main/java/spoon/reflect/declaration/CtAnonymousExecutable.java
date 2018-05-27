@@ -16,14 +16,11 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
 import java.util.List;
 import java.util.Set;
-
-import static spoon.reflect.path.CtRole.PARAMETER;
 
 /**
  * This element defines an anonymous executable block declaration in a class.
