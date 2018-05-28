@@ -88,7 +88,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean shouldCompile = false;
 
-	private boolean skipSelfChecks;
+	private boolean skipSelfChecks = false;
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
@@ -159,6 +159,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSelfChecks(boolean skip) {
 		skipSelfChecks = skip;
+	}
+
+	@Override
+	public void disableConsistencyChecks() {
+		skipSelfChecks = true;
 	}
 
 	private Level toLevel(String level) {
