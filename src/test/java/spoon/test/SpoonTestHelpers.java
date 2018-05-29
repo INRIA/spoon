@@ -6,6 +6,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 import spoon.test.metamodel.SpoonMetaModel;
 
 import java.io.File;
@@ -84,7 +85,10 @@ public class SpoonTestHelpers {
 				//parent is a special kind of setter, which does not influence model properties of element, but link to parent element.
 				continue;
 			}
-			if (!m.getSimpleName().startsWith("set")) {
+			if (! (m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add"))) {
+				continue;
+			}
+			if (m.hasAnnotation(UnsettableProperty.class)) {
 				continue;
 			}
 			if (m.getParameters().size()!=1) {

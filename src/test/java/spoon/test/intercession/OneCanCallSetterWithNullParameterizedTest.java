@@ -17,11 +17,11 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.fail;
-import static spoon.test.parent.ParentContractTest.createCompatibleObject;
+import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 
 // contract: one can call all setters with null as parameter (no problem with parent)
 @RunWith(Parameterized.class)
-public class IntercessionContractTest {
+public class OneCanCallSetterWithNullParameterizedTest {
 
 	@Parameterized.Parameters(name = "{1}")
 	public static Collection<Object[]> data() throws Exception {

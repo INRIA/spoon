@@ -19,18 +19,30 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.ModelList;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static spoon.reflect.path.CtRole.COMMENT_TAG;
 
 public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 	@MetamodelPropertyField(role = CtRole.COMMENT_TAG)
-	List<CtJavaDocTag> tags = new ArrayList<>();
+	private final ModelList<CtJavaDocTag> tags = new ModelList<CtJavaDocTag>() {
+		@Override
+		protected CtElement getOwner() {
+			return CtJavaDocImpl.this;
+		}
+		@Override
+		protected CtRole getRole() {
+			return CtRole.COMMENT_TAG;
+		}
+		@Override
+		protected int getDefaultCapacity() {
+			return 2;
+		}
+	};;
 
 	public CtJavaDocImpl() {
 		super(CommentType.JAVADOC);
@@ -38,51 +50,36 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 	@Override
 	public List<CtJavaDocTag> getTags() {
-		return new ArrayList<>(tags);
+		return tags;
 	}
 
 	@Override
 	public <E extends CtJavaDoc> E setTags(List<CtJavaDocTag> tags) {
-		if (tags == null) {
-			return (E) this;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, COMMENT_TAG, this.tags, new ArrayList<>(this.tags));
-		this.tags = new ArrayList<>();
-		for (CtJavaDocTag tag : tags) {
-			this.addTag(tag);
-		}
+		this.tags.set(tags);
 		return (E) this;
 	}
 
 	@Override
 	public <E extends CtJavaDoc> E addTag(CtJavaDocTag tag) {
-		if (tag != null) {
-			tag.setParent(this);
-			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, COMMENT_TAG, tags, tag);
-			tags.add(tag);
-		}
+		this.tags.add(tag);
 		return (E) this;
 	}
 
 	@Override
 	public <E extends CtJavaDoc> E addTag(int index, CtJavaDocTag tag) {
-		tag.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, COMMENT_TAG, tags, index, tag);
-		tags.add(index, tag);
+		this.tags.add(index, tag);
 		return (E) this;
 	}
 
 	@Override
 	public <E extends CtJavaDoc> E removeTag(int index) {
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, COMMENT_TAG, tags, index, tags.get(index));
-		tags.remove(index);
+		this.tags.remove(index);
 		return (E) this;
 	}
 
 	@Override
 	public <E extends CtJavaDoc> E removeTag(CtJavaDocTag tag) {
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, COMMENT_TAG, tags, tags.indexOf(tag), tag);
-		tags.remove(tag);
+		this.tags.remove(tag);
 		return (E) this;
 	}
 

@@ -46,8 +46,6 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -339,45 +337,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				return getDeclaredFieldReferences();
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return Collections.emptyList();
-			}
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredFields();
 		}
-	}
-
-	/**
-	 * Collects all field references of the declared class.
-	 *
-	 * @return collection of field references
-	 */
-	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
-			Collection<CtFieldReference<?>> references = new ArrayList<>();
-			for (Field f : getDeclaredFields(getActualClass())) {
-				references.add(getFactory().Field().createReference(f));
-			}
-			if (getActualClass().isAnnotation()) {
-				for (Method m : getActualClass().getDeclaredMethods()) {
-					CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
-					CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
-					references.add(fr);
-				}
-			}
-			return references;
-	}
-
-	private Field[] getDeclaredFields(Class<?> cls) {
-		try {
-			return cls.getDeclaredFields();
-		} catch (Throwable e) {
-			throw new SpoonClassNotFoundException("cannot load fields of class: " + getQualifiedName(), e);
-		}
+		return Collections.emptyList();
 	}
 
 	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
@@ -397,50 +361,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (name == null) {
 			return null;
 		}
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				Collection<CtFieldReference<?>> fields = getDeclaredFieldReferences();
-				for (CtFieldReference<?> field : fields) {
-					if (name.equals(field.getSimpleName())) {
-						return field;
-					}
-				}
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return null;
-			}
-			return null;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredField(name);
 		}
+		return null;
 	}
 
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			CtFieldReference<?> field = getDeclaredField(fieldName);
-			if (field != null) {
-				return field;
-			}
-			CtTypeReference<?> typeRef = getSuperclass();
-			if (typeRef != null) {
-				field = typeRef.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
-			for (CtTypeReference<?> iface : ifaces) {
-				field = iface.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			return field;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredOrInheritedField(fieldName);
 		}
+		return null;
 	}
 
 
