@@ -112,8 +112,9 @@ public class PatternBuilderHelper {
 	 * Sets a template model from return expression of the method of template type selected by filter
 	 * @param methodName the name of {@link CtMethod}
 	 */
-	public void setReturnExpressionOfMethod(String methodName) {
+	public PatternBuilderHelper setReturnExpressionOfMethod(String methodName) {
 		setReturnExpressionOfMethod(tm -> methodName.equals(tm.getSimpleName()));
+		return this;
 	}
 	/**
 	 * Sets a template model from return expression of the method of template type selected by filter
@@ -129,7 +130,7 @@ public class PatternBuilderHelper {
 		if (firstStatement instanceof CtReturn<?> == false) {
 			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body.toString());
 		}
-		elements.add(((CtReturn<?>) firstStatement).getReturnedExpression());
+		setElements(Collections.singletonList(((CtReturn<?>) firstStatement).getReturnedExpression()));
 	}
 
 	private <T extends CtElement> List<T> getByFilter(Filter<T> filter) {

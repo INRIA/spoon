@@ -16,6 +16,7 @@
  */
 package spoon.template;
 
+import spoon.pattern.PatternBuilderHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
@@ -64,11 +65,9 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 	@SuppressWarnings("unchecked")
 	public CtExpression<T> apply(CtType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c = Substitution.getTemplateCtClass(targetType, this);
-		CtBlock<?> block = TemplateBuilder.createPattern(getExpressionBlock(c), this).setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtBlock.class);
-		if (block == null || block.getStatements().isEmpty()) {
-			return null;
-		}
-		return ((CtReturn<T>) block.getStatements().get(0)).getReturnedExpression();
+		return TemplateBuilder.createPattern(
+				new PatternBuilderHelper(c).setReturnExpressionOfMethod("expression").getPatternElements().get(0), this)
+				.setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtExpression.class);
 	}
 
 	public T S() {
