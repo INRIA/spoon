@@ -21,9 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import spoon.support.template.DefaultParameterMatcher;
-import spoon.support.template.ParameterMatcher;
-
 /**
  * This annotation should be placed on templates' fields or methods to indicate
  * that they represent template parameters. It is only mandatory for names,
@@ -68,12 +65,4 @@ public @interface Parameter {
 	 */
 	String value() default "";
 
-	/**
-	 * Precises the type of the parameter matcher for this particular parameter
-	 * when using the {@link spoon.template.TemplateMatcher} engine (optional).
-	 * By default, the parameter will match under any form. Specifying an
-	 * implementation of {@link ParameterMatcher} here allows the matching of
-	 * more specific forms.
-	 */
-	Class<? extends ParameterMatcher> match() default DefaultParameterMatcher.class;
 }
