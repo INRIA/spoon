@@ -14,10 +14,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
-import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
-import static spoon.test.metamodel.SpoonMetaModel.getOrCreate;
+import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
+import static spoon.metamodel.SpoonMetaModel.getOrCreate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -233,13 +233,13 @@ public class MetamodelProperty {
 		List<MMMethod> ms = methodsByKind.get(kind);
 		return ms == null ? Collections.emptyList() : Collections.unmodifiableList(ms);
 	}
-	
+
 	/**
 	 * @param consumer is called for each CtMethod of this field which is not covered by this meta model
 	 */
 	public void forEachUnhandledMethod(Consumer<CtMethod<?>> consumer) {
 		methodsByKind.forEach((kind, mmMethods) -> {
-			if(kind == MMMethodKind.OTHER) {
+			if (kind == MMMethodKind.OTHER) {
 				mmMethods.forEach(mmMethod -> mmMethod.getOwnMethods().forEach(consumer));
 			} else {
 				if (mmMethods.size() > 1) {
@@ -445,7 +445,7 @@ public class MetamodelProperty {
 	public boolean isDerived() {
 		if (derived == null) {
 			if (isUnsettable()) {
-				//all unsettable properties are derived too 
+				//all unsettable properties are derived too
 				derived = true;
 				return true;
 			}
@@ -569,7 +569,7 @@ public class MetamodelProperty {
 		}
 		return potentialRootSuperFields.get(idx);
 	}
-	
+
 	private	static ContainerKind containerKindOf(Class<?> valueClass) {
 		if (List.class.isAssignableFrom(valueClass)) {
 			return ContainerKind.LIST;

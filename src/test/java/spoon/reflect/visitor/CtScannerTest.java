@@ -19,10 +19,13 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.SpoonException;
+import spoon.metamodel.MMMethod;
+import spoon.metamodel.MMMethodKind;
+import spoon.metamodel.MMTypeKind;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.SpoonMetaModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -35,11 +38,6 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
-import spoon.test.metamodel.MMMethod;
-import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.MMTypeKind;
-import spoon.test.metamodel.SpoonMetaModel;
 
 import java.io.File;
 import java.util.ArrayDeque;

@@ -14,9 +14,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
-import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
+import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;

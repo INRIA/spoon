@@ -14,9 +14,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
-import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
+import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,7 +121,7 @@ public class MMMethod {
 	public MetamodelProperty getOwnerField() {
 		return ownerField;
 	}
-	
+
 	/**
 	 * @return {@link MetamodelConcept} where this {@link MMMethod} belongs to
 	 */
@@ -131,13 +131,13 @@ public class MMMethod {
 
 	/**
 	 * @return {@link CtMethod}s, which are declared directly in the getOwnType().
-	 * It does not return methods which are inherited from super types. 
-	 * It returns empty list, if there is no own implementation and method is inherited only 
+	 * It does not return methods which are inherited from super types.
+	 * It returns empty list, if there is no own implementation and method is inherited only
 	 */
 	public List<CtMethod<?>> getOwnMethods() {
 		return Collections.unmodifiableList(ownMethods);
 	}
-	
+
 	void addOwnMethod(CtMethod<?> method) {
 		ownMethods.add(method);
 	}

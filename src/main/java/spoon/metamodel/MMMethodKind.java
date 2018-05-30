@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
 import java.util.function.Predicate;
 
@@ -108,8 +108,8 @@ public enum MMMethodKind {
 	}
 
 	/**
-	 * @return index of parameter, which contains the field value. 
-	 * idx >= 0 - for method parameters 
+	 * @return index of parameter, which contains the field value.
+	 * idx >= 0 - for method parameters
 	 * idx = -1 - for return value of the method
 	 * idx = -2 - unknown
 	 */

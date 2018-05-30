@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -67,7 +67,7 @@ public class SpoonMetaModel {
 			"spoon.reflect.reference"));
 
 	private final Factory factory;
-	
+
 	/**
 	 * {@link MetamodelConcept}s by name
 	 */
@@ -88,7 +88,7 @@ public class SpoonMetaModel {
 	 */
 	public SpoonMetaModel(Factory factory) {
 		this.factory =  factory;
-		
+
 		for (String apiPackage : MODEL_IFACE_PACKAGES) {
 			if (factory.Package().get(apiPackage) == null) {
 				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
@@ -98,7 +98,7 @@ public class SpoonMetaModel {
 				throw new SpoonException("Spoon Factory model is missing implementation package " + implPackage);
 			}
 		}
-		
+
 		//search for all interfaces of spoon model and create MetamodelConcepts for them
 		factory.getModel().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
@@ -107,7 +107,7 @@ public class SpoonMetaModel {
 				}
 			});
 	}
-	
+
 	/**
 	 * creates a {@link SpoonMetaModel} in runtime mode when spoon sources are not available
 	 */
@@ -126,7 +126,7 @@ public class SpoonMetaModel {
 	public Collection<MetamodelConcept> getConcepts() {
 		return Collections.unmodifiableCollection(nameToConcept.values());
 	}
-	
+
 	/**
 	 * @param type a spoon model class or interface, whose concept name has to be returned
 	 * @return name of {@link MetamodelConcept}, which represents Spoon model {@link CtType}
@@ -138,7 +138,7 @@ public class SpoonMetaModel {
 		}
 		return name;
 	}
-	
+
 
 	/**
 	 * @param iface the interface of spoon model element
@@ -148,7 +148,7 @@ public class SpoonMetaModel {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
 		return (CtClass<?>) getType(impl, iface);
 	}
-	
+
 	private static CtType<?> getType(String qualifiedName, CtElement anElement) {
 		Class aClass;
 		try {
@@ -162,7 +162,7 @@ public class SpoonMetaModel {
 
 	private static final String modelApiPackage = "spoon.reflect";
 	private static final String modelApiImplPackage = "spoon.support.reflect";
-	
+
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
 		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
 			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
@@ -202,7 +202,7 @@ public class SpoonMetaModel {
 
 	/**
 	 * @param type can be class or interface of Spoon model element
-	 * @return existing or creates and initializes new {@link MetamodelConcept} which represents the `type` 
+	 * @return existing or creates and initializes new {@link MetamodelConcept} which represents the `type`
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
 		String conceptName = getConceptName(type);
@@ -213,7 +213,7 @@ public class SpoonMetaModel {
 		}
 		return mmConcept;
 	}
-	
+
 	/**
 	 * is called once for each {@link MetamodelConcept}, to initialize it.
 	 * @param type a class or inteface of the spoon model element
@@ -393,8 +393,8 @@ public class SpoonMetaModel {
 		implementations.buildModel();
 
 		List<CtType<? extends CtElement>> result = new ArrayList<>();
-		for(CtType<? > itf : interfaces.getModel().getAllTypes()) {
-			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect")+"Impl";
+		for (CtType<?> itf : interfaces.getModel().getAllTypes()) {
+			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect") + "Impl";
 			CtType implClass = implementations.getFactory().Type().get(impl);
 			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
 				result.add((CtType<? extends CtElement>) itf);

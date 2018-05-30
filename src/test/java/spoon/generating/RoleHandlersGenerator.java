@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
+import spoon.metamodel.MMMethod;
+import spoon.metamodel.MMMethodKind;
+import spoon.metamodel.MetamodelProperty;
+import spoon.metamodel.SpoonMetaModel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;
@@ -39,10 +43,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.template.Substitution;
-import spoon.test.metamodel.MetamodelProperty;
-import spoon.test.metamodel.MMMethod;
-import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.SpoonMetaModel;
 
 public class RoleHandlersGenerator extends AbstractManualProcessor {
 	public static final String TARGET_PACKAGE = "spoon.reflect.meta.impl";

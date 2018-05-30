@@ -30,6 +30,8 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.SpoonMetaModel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
@@ -68,8 +70,6 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.SpoonMetaModel;
 
 public class JavaReflectionTreeBuilderTest {
 	@Test
