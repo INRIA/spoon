@@ -35,6 +35,7 @@ import spoon.support.util.ImmutableMapImpl;
 import spoon.test.template.testclasses.LoggerModel;
 import spoon.test.template.testclasses.ToBeMatched;
 import spoon.test.template.testclasses.logger.Logger;
+import spoon.test.template.testclasses.match.GenerateIfElse;
 import spoon.test.template.testclasses.match.MatchForEach;
 import spoon.test.template.testclasses.match.MatchForEach2;
 import spoon.test.template.testclasses.match.MatchIfElse;
@@ -218,6 +219,38 @@ public class PatternTest {
 		}
 
 	}
+
+	@Test
+	public void testGenerateIfElse() throws Exception {
+		//contract: it is possible to generate code using optional targets 
+		CtType<?> type = ModelUtils.buildClass(GenerateIfElse.class);
+		Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(type).setBodyOfMethod("generator").getPatternElements())
+				.configurePatternParameters(pb -> {
+					pb.parameter("option").byVariable("option");
+				})
+				//we have to configure inline statements after all expressions
+				//of combined if statement are marked as pattern parameters
+				.configureInlineStatements(lsb -> lsb.inlineIfOrForeachReferringTo("option"))
+				//contract: it is possible to configure pattern parameters after their parent is inlined
+				.configurePatternParameters(pb -> {
+					pb.parameter("value").byFilter(new TypeFilter(CtLiteral.class));
+				})
+				.build();
+
+		{
+			List<CtStatement> statements = pattern.generator().generate(CtStatement.class, 
+					new ImmutableMapImpl().putValue("option", true).putValue("value", "spoon"));
+			assertEquals(1, statements.size());
+			assertEquals("java.lang.System.out.print(\"spoon\")", statements.get(0).toString());
+		}
+		{
+			List<CtStatement> statements = pattern.generator().generate(CtStatement.class, 
+					new ImmutableMapImpl().putValue("option", false).putValue("value", 2.1));
+			assertEquals(1, statements.size());
+			assertEquals("java.lang.System.out.println(2.1)", statements.get(0).toString());
+		}
+	}
+	
 	@Test
 	public void testGenerateMultiValues() throws Exception {
 		// contract: the pattern parameter (in this case 'statements')

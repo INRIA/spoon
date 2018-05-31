@@ -75,7 +75,11 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 	@Override
 	public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		for (CaseNode case1 : cases) {
-			generator.generateTargets(case1, result, parameters);
+			if (case1.isCaseSelected(generator, parameters)) {
+				//generate result using first matching if branch
+				generator.generateTargets(case1, result, parameters);
+				return;
+			}
 		}
 	}
 
@@ -179,9 +183,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 		@Override
 		public <T> void generateTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 			if (statement != null) {
-				if (isCaseSelected(generator, parameters)) {
-					generator.generateTargets(statement, result, parameters);
-				}
+				generator.generateTargets(statement, result, parameters);
 			}
 		}
 		private boolean isCaseSelected(DefaultGenerator generator, ImmutableMap parameters) {
