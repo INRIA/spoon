@@ -1,6 +1,7 @@
 package spoon.test.lambda.testclasses;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -55,6 +56,10 @@ public class Foo {
 		};
 	}
 
+	public void m10() {
+		sortPersonsWithComparator(persons, (p1, p2) -> p1.age - p2.age);
+	}
+
 	public static void printPersonsWithPredicate(List<Person> roster, Predicate<Person> tester) {
 		for (Person p : roster) {
 			if (tester.test(p)) {
@@ -83,6 +88,10 @@ public class Foo {
 		if (tester.test(roster.get(0), roster.get(1))) {
 			roster.get(0).printPerson();
 		}
+	}
+
+	public static void sortPersonsWithComparator(List<Person> roster, Comparator<Person> comparator) {
+		roster.sort(comparator);
 	}
 
 	public class Person {

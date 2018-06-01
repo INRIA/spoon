@@ -35,6 +35,7 @@ import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -401,6 +402,17 @@ public class LambdaTest {
 		//check empty constructor and addImplementingInterface with CtTypeReference
 		methodNames = foo.filterChildren(new LambdaFilter().addImplementingInterface(factory.createCtTypeReference(Predicate.class))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
 		assertHasStrings(methodNames, "m2", "m4", "m7", "m8");
+	}
+
+	@Test
+	public void testLambdaComparator() throws Exception {
+		CtInterface<?> comparatorInterface = factory.Interface().get(Comparator.class);
+		List<CtLambda<?>> comparators = foo.filterChildren(new LambdaFilter(comparatorInterface)).list();
+		assertEquals(1, comparators.size());
+		CtLambda<?> comparator = comparators.get(0);
+		assertEquals(2, comparator.getParameters().size());
+		CtMethod<?> method = comparator.getOverriddenMethod();
+		assertTrue(comparatorInterface.getMethods().contains(method));
 	}
 
 	private void assertHasStrings(List<String> methodNames, String... strs) {
