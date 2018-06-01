@@ -544,6 +544,9 @@ public class ReferenceBuilder {
 	 * reference with a name that correspond to the name of the JDT type reference.
 	 */
 	<T> CtTypeReference<T> getTypeReference(TypeReference ref) {
+		if (ref == null) {
+			return null;
+		}
 		CtTypeReference<T> res = null;
 		CtTypeReference inner = null;
 		final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
