@@ -56,10 +56,6 @@ public class Foo {
 		};
 	}
 
-	public void m10() {
-		sortPersonsWithComparator(persons, (p1, p2) -> p1.age - p2.age);
-	}
-
 	public static void printPersonsWithPredicate(List<Person> roster, Predicate<Person> tester) {
 		for (Person p : roster) {
 			if (tester.test(p)) {
@@ -90,10 +86,6 @@ public class Foo {
 		}
 	}
 
-	public static void sortPersonsWithComparator(List<Person> roster, Comparator<Person> comparator) {
-		roster.sort(comparator);
-	}
-
 	public class Person {
 		public final int age;
 
@@ -119,5 +111,6 @@ public class Foo {
 
 	public interface CheckPersons {
 		boolean test(Person p1, Person p2);
+		boolean equals(Object other);
 	}
 }

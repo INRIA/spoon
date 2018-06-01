@@ -405,14 +405,15 @@ public class LambdaTest {
 	}
 
 	@Test
-	public void testLambdaComparator() throws Exception {
-		CtInterface<?> comparatorInterface = factory.Interface().get(Comparator.class);
-		List<CtLambda<?>> comparators = foo.filterChildren(new LambdaFilter(comparatorInterface)).list();
-		assertEquals(1, comparators.size());
-		CtLambda<?> comparator = comparators.get(0);
-		assertEquals(2, comparator.getParameters().size());
-		CtMethod<?> method = comparator.getOverriddenMethod();
-		assertTrue(comparatorInterface.getMethods().contains(method));
+	public void testInterfaceWithObjectMethods() throws Exception {
+		CtInterface<?> checkPersons = factory.Interface().get(Foo.CheckPersons.class);
+		List<CtLambda<?>> lambdas = foo.filterChildren(new LambdaFilter(checkPersons)).list();
+		assertEquals(2, lambdas.size());
+		CtLambda<?> lambda = lambdas.get(0);
+		assertEquals(2, lambda.getParameters().size());
+		CtMethod<?> method = lambda.getOverriddenMethod();
+		assertTrue(checkPersons.getMethods().contains(method));
+		assertEquals("test", method.getSimpleName());
 	}
 
 	private void assertHasStrings(List<String> methodNames, String... strs) {
