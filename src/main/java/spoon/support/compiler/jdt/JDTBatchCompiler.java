@@ -22,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
+import org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -156,11 +157,18 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 			};
 		}
 
+		IProblemFactory problemFactory = getProblemFactory();
 		TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
 				environment, errorHandlingPolicy, compilerOptions,
-				this.jdtCompiler.requestor, getProblemFactory(), this.out,
-				null);
+				this.jdtCompiler.requestor, problemFactory, this.out, null);
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
+			treeBuilderCompiler.lookupEnvironment.problemReporter = new ProblemReporter(errorHandlingPolicy, compilerOptions, problemFactory) {
+				@Override
+				public int computeSeverity(int problemID) {
+					// all the problems are not a problem, or only for 16777540
+					return 256;
+				}
+			};
 			treeBuilderCompiler.lookupEnvironment.mayTolerateMissingType = true;
 		}
 
