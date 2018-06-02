@@ -2,6 +2,7 @@ package spoon.test.method_overriding;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,9 @@ import java.util.function.BiFunction;
 
 import org.junit.Test;
 
+import spoon.Launcher;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.testing.utils.ModelUtils;
@@ -17,6 +20,18 @@ import spoon.testing.utils.ModelUtils;
 import static org.junit.Assert.*;
 
 public class MethodOverriddingTest {
+	
+	@Test
+	public void testInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+		Factory f = new Launcher().getFactory();
+		CtType<?> comparator = f.Interface().get(Comparator.class);
+		CtMethod<?> comparatorEquals = comparator.getMethodsByName("equals").get(0);
+		
+		CtType<?> object = f.Interface().get(Object.class);
+		CtMethod<?> objectEquals = comparator.getMethodsByName("equals").get(0);
+		
+		assertTrue(comparatorEquals.isOverriding(objectEquals));
+	}
 
 	@Test
 	public void testMethodOverride() {
