@@ -354,8 +354,10 @@ public class MavenLauncher extends Launcher {
 				}
 
 				try {
-					InheritanceModel dependencyModel = readPom(groupId, artifactId, version);
-					output.addAll(dependencyModel.getDependencies(true, hierarchy));
+					InheritanceModel dependencyModel = readPom(groupId.replace("/", "."), artifactId, version);
+					if (dependencyModel != null) {
+						output.addAll(dependencyModel.getDependencies(true, hierarchy));
+					}
 				} catch (Exception ignore) {
 					// ignore the dependencies of the dependency
 					ignore.printStackTrace();
@@ -408,7 +410,7 @@ public class MavenLauncher extends Launcher {
 					return model.getVersion();
 				}
 			}
-			String value = model.getProperties().getProperty(key);
+			String value = extractVariable(model.getProperties().getProperty(key));
 			if (value == null) {
 				if (parent == null) {
 					return null;
