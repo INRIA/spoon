@@ -13,15 +13,10 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.LambdaFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.method_overriding.testclasses2.Foo;
 import spoon.test.method_overriding.testclasses2.ObjectInterface;
 import spoon.testing.utils.ModelUtils;
 
