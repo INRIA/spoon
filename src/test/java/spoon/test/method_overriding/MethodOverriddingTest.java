@@ -37,8 +37,9 @@ public class MethodOverriddingTest {
 		assertTrue(iface.isShadow());
 		CtMethod<?> comparatorEquals = iface.getMethodsByName("equals").get(0);
 		
-		CtType<?> object = f.Interface().get(Object.class);
-		CtMethod<?> objectEquals = iface.getMethodsByName("equals").get(0);
+		CtType<?> object = f.Class().get(Object.class);
+		assertTrue(object.isShadow());
+		CtMethod<?> objectEquals = object.getMethodsByName("equals").get(0);
 		
 		assertTrue(comparatorEquals.isOverriding(objectEquals));
 	}
@@ -53,33 +54,13 @@ public class MethodOverriddingTest {
 		comp.build();
 		CtType<?> iface = f.Interface().get(ObjectInterface.class);
 		assertFalse(iface.isShadow());
-		CtMethod<?> comparatorEquals = iface.getMethodsByName("equals").get(0);
+		CtMethod<?> ifaceEquals = iface.getMethodsByName("equals").get(0);
 		
-		CtType<?> object = iface.getFactory().Interface().get(Object.class);
-		CtMethod<?> objectEquals = iface.getMethodsByName("equals").get(0);
+		CtType<?> object = iface.getFactory().Class().get(Object.class);
+		assertTrue(object.isShadow());
+		CtMethod<?> objectEquals = object.getMethodsByName("equals").get(0);
 		
-		assertTrue(comparatorEquals.isOverriding(objectEquals));
-	}
-
-	@Test
-	public void testLambdaInterfaceMethodsCanOverrideObjectMethods() throws Exception {
-		//contract: ??
-		Launcher launcher = new Launcher();
-		Factory factory = launcher.getFactory();
-		SpoonModelBuilder comp = launcher.createCompiler();
-		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/spoon/test/method_overriding/testclasses2"));
-		comp.build();
-		CtClass<?> fooClass = factory.Class().get(Foo.class);
-		CtClass<?> objectClass = factory.Class().get(Object.class);
-
-		CtLambda<?> objectInterfaceLambda = (CtLambda<?>) fooClass.filterChildren(new LambdaFilter(factory.Interface().get(ObjectInterface.class))).list().get(0);
-		CtTypeReference<?> lambdaTypeReference = objectInterfaceLambda.getType();
-		CtType<?> lambdaType = lambdaTypeReference.getTypeDeclaration();
-
-		CtMethod<?> lambdaTypeEquals = lambdaType.getMethodsByName("equals").get(0);
-		CtMethod<?> objectEquals = objectClass.getMethodsByName("equals").get(0);
-
-		assertTrue(lambdaTypeEquals.isOverriding(objectEquals));
+		assertTrue(ifaceEquals.isOverriding(objectEquals));
 	}
 
 	@Test
