@@ -109,7 +109,7 @@ public enum MMMethodKind {
 
 	/**
 	 * @return index of parameter, which contains the field value.
-	 * idx >= 0 - for method parameters
+	 * idx &gt;= 0 - for method parameters
 	 * idx = -1 - for return value of the method
 	 * idx = -2 - unknown
 	 */
