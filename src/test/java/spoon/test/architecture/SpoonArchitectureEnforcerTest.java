@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
-import spoon.metamodel.SpoonMetaModel;
+import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
@@ -284,7 +284,7 @@ public class SpoonArchitectureEnforcerTest {
 
 		List<String> missingMethods = new ArrayList<>();
 
-		new SpoonMetaModel(interfaces.getFactory()).getConcepts().forEach(mmConcept -> {
+		Metamodel.getInstance().getConcepts().forEach(mmConcept -> {
 			if (mmConcept.getKind() == ABSTRACT && mmConcept.getModelInterface() != null) {
 				CtInterface abstractIface = mmConcept.getModelInterface();
 				String methodName = "scan" + abstractIface.getSimpleName();

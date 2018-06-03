@@ -1,6 +1,6 @@
 package spoon.test;
 
-import spoon.metamodel.SpoonMetaModel;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -19,7 +19,7 @@ public class SpoonTestHelpers {
 	}
 
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		return new SpoonMetaModel(new File("src/main/java")).getAllInstantiableMetamodelInterfaces();
+		return Metamodel.getInstance().getAllInstantiableMetamodelInterfaces();
 	}
 
 	/**

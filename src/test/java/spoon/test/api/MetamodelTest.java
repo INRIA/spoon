@@ -3,13 +3,12 @@ package spoon.test.api;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.Metamodel;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.metamodel.MMMethodKind;
+import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
-import spoon.metamodel.SpoonMetaModel;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
@@ -39,6 +38,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.template.Parameter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -191,10 +191,10 @@ public class MetamodelTest {
 	@Test
 	public void testMetamodelWithoutSources() {
 		//contract: metamodel based on spoon sources delivers is same like metamodel based on shadow classes
-		SpoonMetaModel runtimeMM = new SpoonMetaModel();
+		Metamodel runtimeMM = Metamodel.getInstance();
 		Collection<MetamodelConcept> concepts = runtimeMM.getConcepts();
 		
-		SpoonMetaModel sourceBasedMM = new SpoonMetaModel(new File("src/main/java"));
+		Metamodel sourceBasedMM = new Metamodel(new File("src/main/java"));
 		Map<String, MetamodelConcept> expectedConceptsByName = new HashMap<>();
 		sourceBasedMM.getConcepts().forEach(c -> {
 			expectedConceptsByName.put(c.getName(), c);
@@ -241,6 +241,11 @@ public class MetamodelTest {
 		assertEquals(expectedProperty.isUnsettable(), runtimeProperty.isUnsettable());
 	}
 
+	@Test
+	public void testMetamodelCachedInFactory() throws IOException {
+		//contract: Metamodel concepts are accessible
+		Metamodel.getInstance().getConcepts();
+	}
 
 	/*
 	 * this test reports all spoon model elements which are not yet handled by meta model
@@ -248,7 +253,7 @@ public class MetamodelTest {
 	 */
 	@Test
 	public void spoonMetaModelTest() {
-		SpoonMetaModel mm = new SpoonMetaModel(new File("./src/main/java"));
+		Metamodel mm = Metamodel.getInstance();
 		List<String> problems = new ArrayList<>();
 
 		//detect unused CtRoles

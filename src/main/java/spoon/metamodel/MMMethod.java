@@ -16,7 +16,7 @@
  */
 package spoon.metamodel;
 
-import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
+import static spoon.metamodel.Metamodel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;

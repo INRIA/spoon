@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
-import spoon.Metamodel;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
@@ -40,6 +39,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
@@ -56,8 +58,135 @@ import spoon.support.visitor.ClassTypingContext;
 /**
  * Represents a Spoon meta model of the AST nodes.
  */
-public class SpoonMetaModel {
-	public static final String CLASS_SUFFIX = "Impl";
+public class Metamodel {
+	/**
+	 * Returns all interfaces of the Spoon metamodel.
+	 * This method is stateless for sake of maintenance.
+	 * If you need to call it several times, you should store the result.
+	 */
+	public static Set<CtType<?>> getAllMetamodelInterfaces() {
+		Set<CtType<?>> result = new HashSet<>();
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		result.add(factory.Type().get(spoon.reflect.code.BinaryOperatorKind.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtAbstractInvocation.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtAnnotationFieldAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtArrayAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtArrayRead.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtArrayWrite.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtAssert.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtAssignment.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtBinaryOperator.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtBlock.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtBodyHolder.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtBreak.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCFlowBreak.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCase.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCatch.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCatchVariable.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCodeElement.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCodeSnippetExpression.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtCodeSnippetStatement.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtComment.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtConditional.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtConstructorCall.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtContinue.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtDo.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtExecutableReferenceExpression.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtExpression.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtFieldAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtFieldRead.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtFieldWrite.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtFor.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtForEach.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtIf.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtInvocation.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtJavaDoc.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtJavaDocTag.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtLabelledFlowBreak.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtLambda.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtLiteral.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtLocalVariable.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtLoop.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtNewArray.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtNewClass.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtStatementList.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtSuperAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtSwitch.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtSynchronized.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTargetedExpression.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtThisAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtThrow.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTry.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTryWithResource.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTypeAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtUnaryOperator.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtVariableAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtVariableRead.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtVariableWrite.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtWhile.class));
+		result.add(factory.Type().get(spoon.reflect.code.UnaryOperatorKind.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotatedElementType.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotation.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotationMethod.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotationType.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtAnonymousExecutable.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtClass.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtCodeSnippet.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtConstructor.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtElement.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtEnum.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtEnumValue.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtExecutable.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtField.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtFormalTypeDeclarer.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtInterface.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtMethod.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModifiable.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtMultiTypedElement.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtNamedElement.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtPackage.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtParameter.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtShadowable.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtType.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeInformation.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeMember.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtTypeParameter.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtTypedElement.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtVariable.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.ModifierKind.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.ParentNotInitializedException.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtActualTypeContainer.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtArrayTypeReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtCatchVariableReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtExecutableReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtFieldReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtIntersectionTypeReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtLocalVariableReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtPackageReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtParameterReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtTypeParameterReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtTypeReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtUnboundVariableReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtVariableReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardReference.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtImport.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtImportKind.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModule.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtModuleRequirement.class));
+		result.add(factory.Type().get(CtPackageExport.class));
+		result.add(factory.Type().get(CtProvidedService.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
+		result.add(factory.Type().get(CtModuleDirective.class));
+		return result;
+	}
+
+	private static final String CLASS_SUFFIX = "Impl";
 	/**
 	 * qualified names of packages which contains interfaces of spoon model
 	 */
@@ -73,20 +202,32 @@ public class SpoonMetaModel {
 	 */
 	private final Map<String, MetamodelConcept> nameToConcept = new HashMap<>();
 
+	private static Metamodel instance;
+
+	/**
+	 * @return Spoon {@link Metamodel}, which is built once and then returns cached version
+	 */
+	public static Metamodel getInstance() {
+		if (instance == null) {
+			instance = new Metamodel();
+		}
+		return instance;
+	}
+
 	/**
 	 * Parses spoon sources and creates factory with spoon model.
 	 *
 	 * @param spoonJavaSourcesDirectory the root directory of java sources of spoon model.
 	 * 	The directory must contain "spoon" directory.
 	 */
-	public SpoonMetaModel(File spoonJavaSourcesDirectory) {
+	public Metamodel(File spoonJavaSourcesDirectory) {
 		this(createFactory(spoonJavaSourcesDirectory));
 	}
 
 	/**
 	 * @param factory already loaded factory with all Spoon model types
 	 */
-	public SpoonMetaModel(Factory factory) {
+	public Metamodel(Factory factory) {
 		this.factory =  factory;
 
 		for (String apiPackage : MODEL_IFACE_PACKAGES) {
@@ -109,11 +250,11 @@ public class SpoonMetaModel {
 	}
 
 	/**
-	 * creates a {@link SpoonMetaModel} in runtime mode when spoon sources are not available
+	 * creates a {@link Metamodel} in runtime mode when spoon sources are not available
 	 */
-	public SpoonMetaModel() {
+	public Metamodel() {
 		this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
-		for (CtType<?> iface : Metamodel.getAllMetamodelInterfaces()) {
+		for (CtType<?> iface : getAllMetamodelInterfaces()) {
 			if (iface instanceof CtInterface) {
 				getOrCreateConcept(iface);
 			}

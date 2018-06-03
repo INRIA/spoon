@@ -31,7 +31,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.metamodel.MetamodelConcept;
-import spoon.metamodel.SpoonMetaModel;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
@@ -185,7 +185,7 @@ public class JavaReflectionTreeBuilderTest {
 		//contract: CtType made from sources is equal to CtType made by reflection
 		//with exception of CtExecutable#body, CtParameter#simpleName
 		//with exception of Annotations with retention policy SOURCE
-		SpoonMetaModel metaModel = new SpoonMetaModel(new File("src/main/java"));
+		Metamodel metaModel = Metamodel.getInstance();
 		List<String> allProblems = new ArrayList<>();
 		for (MetamodelConcept concept : metaModel.getConcepts()) {
 			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelClass()));

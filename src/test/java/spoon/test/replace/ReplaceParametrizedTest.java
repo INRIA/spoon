@@ -7,7 +7,7 @@ import spoon.SpoonException;
 import spoon.metamodel.MMTypeKind;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
-import spoon.metamodel.SpoonMetaModel;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtStatement;
@@ -40,11 +40,11 @@ import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatib
 public class ReplaceParametrizedTest<T extends CtVisitable> {
 
 	private static Factory factory;
-	private static SpoonMetaModel metaModel;
+	private static Metamodel metaModel;
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {
-		metaModel = new SpoonMetaModel(new File("src/main/java"));
+		metaModel = Metamodel.getInstance();
 		factory = metaModel.getFactory();
 
 		List<Object[]> values = new ArrayList<>();

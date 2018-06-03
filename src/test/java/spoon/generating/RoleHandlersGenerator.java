@@ -31,7 +31,7 @@ import spoon.SpoonException;
 import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.MetamodelProperty;
-import spoon.metamodel.SpoonMetaModel;
+import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;
@@ -53,7 +53,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 
 	@Override
 	public void process() {
-		SpoonMetaModel metaModel = new SpoonMetaModel(getFactory());
+		Metamodel metaModel = Metamodel.getInstance();
 
 		//all root super MMFields
 		List<MetamodelProperty> superFields = new ArrayList<>();

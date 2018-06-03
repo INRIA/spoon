@@ -23,7 +23,7 @@ import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.MMTypeKind;
 import spoon.metamodel.MetamodelConcept;
-import spoon.metamodel.SpoonMetaModel;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
@@ -126,7 +126,7 @@ public class CtScannerTest {
 		List<String> problems = new ArrayList<>();
 		Set<String> ignoredInvocations = new HashSet(Arrays.asList("scan", "enter", "exit"));
 		
-		SpoonMetaModel metaModel = new SpoonMetaModel(new File("./src/main/java"));
+		Metamodel metaModel = Metamodel.getInstance();
 		
 		//collect all scanner visit methods, to check if all were checked
 		Map<String, CtMethod<?>> scannerVisitMethodsByName = new HashMap<>();

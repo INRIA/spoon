@@ -16,7 +16,7 @@
  */
 package spoon.metamodel;
 
-import static spoon.metamodel.SpoonMetaModel.addUniqueObject;
+import static spoon.metamodel.Metamodel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,7 +91,7 @@ public class MetamodelConcept {
 
 
 	MetamodelProperty getOrCreateMMField(CtRole role) {
-		return SpoonMetaModel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
+		return Metamodel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
 	}
 
 	/**
