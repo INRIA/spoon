@@ -185,7 +185,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t;
 		}
-		return getFactory().Type().get(getActualClass());
+		try {
+			return getFactory().Type().get(getActualClass());
+		} catch (SpoonClassNotFoundException e) {
+			// this only happens in noclasspath
+			return null;
+		}
 	}
 
 	@Override
