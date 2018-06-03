@@ -22,13 +22,26 @@ import static org.junit.Assert.*;
 public class MethodOverriddingTest {
 	
 	@Test
-	public void testInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+	public void testShadowInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+		//contract: Interface (made by reflection) method equals overrides Object#equals
 		Factory f = new Launcher().getFactory();
-		CtType<?> comparator = f.Interface().get(Comparator.class);
-		CtMethod<?> comparatorEquals = comparator.getMethodsByName("equals").get(0);
+		CtType<?> iface = f.Interface().get(Comparator.class);
+		CtMethod<?> comparatorEquals = iface.getMethodsByName("equals").get(0);
 		
 		CtType<?> object = f.Interface().get(Object.class);
-		CtMethod<?> objectEquals = comparator.getMethodsByName("equals").get(0);
+		CtMethod<?> objectEquals = iface.getMethodsByName("equals").get(0);
+		
+		assertTrue(comparatorEquals.isOverriding(objectEquals));
+	}
+
+	@Test
+	public void testInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+		//contract: Interface (made from sources) method equals overrides Object#equals
+		CtType<?> iface = ModelUtils.buildClass(ObjectInterface.class);
+		CtMethod<?> comparatorEquals = iface.getMethodsByName("equals").get(0);
+		
+		CtType<?> object = iface.getFactory().Interface().get(Object.class);
+		CtMethod<?> objectEquals = iface.getMethodsByName("equals").get(0);
 		
 		assertTrue(comparatorEquals.isOverriding(objectEquals));
 	}
