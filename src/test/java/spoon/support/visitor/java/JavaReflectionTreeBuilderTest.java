@@ -185,7 +185,7 @@ public class JavaReflectionTreeBuilderTest {
 		//contract: CtType made from sources is equal to CtType made by reflection
 		//with exception of CtExecutable#body, CtParameter#simpleName
 		//with exception of Annotations with retention policy SOURCE
-		Metamodel metaModel = Metamodel.getInstance();
+		Metamodel metaModel = new Metamodel(new File("src/main/java"));
 		List<String> allProblems = new ArrayList<>();
 		for (MetamodelConcept concept : metaModel.getConcepts()) {
 			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelClass()));
