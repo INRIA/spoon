@@ -244,7 +244,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			if (isClass == false) {
 				visitSuperInterfaces(typeRef, outputConsumer);
 				//last visit Object.class, because each interface extends Object.class
-				sendResultWithListener(typeRef.getFactory().Type().OBJECT, outputConsumer, (ref) -> { });
+				sendResultWithListener(typeRef.getFactory().Type().OBJECT, isClass, outputConsumer, (ref) -> { });
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that
 				visitSuperClasses(typeRef, outputConsumer, includingInterfaces);
@@ -276,8 +276,8 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
 			superClassRef = superTypeRef.getFactory().Type().OBJECT;
 		}
-		sendResultWithListener(superClassRef, outputConsumer,
-				(classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));
+		sendResultWithListener(superClassRef, true,
+				outputConsumer, (classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));
 	}
 
 	/**
@@ -296,16 +296,16 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		for (CtTypeReference<?> ifaceRef : superInterfaces) {
-			sendResultWithListener(ifaceRef, outputConsumer,
-					(ref) -> visitSuperInterfaces(ref, outputConsumer));
+			sendResultWithListener(ifaceRef, false,
+					outputConsumer, (ref) -> visitSuperInterfaces(ref, outputConsumer));
 			if (query.isTerminated()) {
 				return;
 			}
 		}
 	}
 
-	private void sendResultWithListener(CtTypeReference<?> classRef, CtConsumer<Object> outputConsumer, CtConsumer<CtTypeReference<?>> runNext) {
-		ScanningMode mode = enter(classRef, true);
+	private void sendResultWithListener(CtTypeReference<?> classRef, boolean isClass, CtConsumer<Object> outputConsumer, CtConsumer<CtTypeReference<?>> runNext) {
+		ScanningMode mode = enter(classRef, isClass);
 		if (mode == SKIP_ALL) {
 			return;
 		}
@@ -313,7 +313,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		if (mode == NORMAL && query.isTerminated() == false) {
 			runNext.accept(classRef);
 		}
-		exit(classRef, true);
+		exit(classRef, isClass);
 	}
 
 	@Override
