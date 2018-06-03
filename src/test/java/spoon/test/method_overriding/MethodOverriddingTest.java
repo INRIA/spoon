@@ -11,10 +11,18 @@ import java.util.function.BiFunction;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtLambda;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.LambdaFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.method_overriding.testclasses2.Foo;
+import spoon.test.method_overriding.testclasses2.ObjectInterface;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.*;
@@ -26,6 +34,7 @@ public class MethodOverriddingTest {
 		//contract: Interface (made by reflection) method equals overrides Object#equals
 		Factory f = new Launcher().getFactory();
 		CtType<?> iface = f.Interface().get(Comparator.class);
+		assertTrue(iface.isShadow());
 		CtMethod<?> comparatorEquals = iface.getMethodsByName("equals").get(0);
 		
 		CtType<?> object = f.Interface().get(Object.class);
@@ -37,13 +46,40 @@ public class MethodOverriddingTest {
 	@Test
 	public void testInterfaceMethodsCanOverrideObjectMethods() throws Exception {
 		//contract: Interface (made from sources) method equals overrides Object#equals
-		CtType<?> iface = ModelUtils.buildClass(ObjectInterface.class);
+		Launcher launcher = new Launcher();
+		Factory f = launcher.getFactory();
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/spoon/test/method_overriding/testclasses2/ObjectInterface.java"));
+		comp.build();
+		CtType<?> iface = f.Interface().get(ObjectInterface.class);
+		assertFalse(iface.isShadow());
 		CtMethod<?> comparatorEquals = iface.getMethodsByName("equals").get(0);
 		
 		CtType<?> object = iface.getFactory().Interface().get(Object.class);
 		CtMethod<?> objectEquals = iface.getMethodsByName("equals").get(0);
 		
 		assertTrue(comparatorEquals.isOverriding(objectEquals));
+	}
+
+	@Test
+	public void testLambdaInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+		//contract: ??
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/spoon/test/method_overriding/testclasses2"));
+		comp.build();
+		CtClass<?> fooClass = factory.Class().get(Foo.class);
+		CtClass<?> objectClass = factory.Class().get(Object.class);
+
+		CtLambda<?> objectInterfaceLambda = (CtLambda<?>) fooClass.filterChildren(new LambdaFilter(factory.Interface().get(ObjectInterface.class))).list().get(0);
+		CtTypeReference<?> lambdaTypeReference = objectInterfaceLambda.getType();
+		CtType<?> lambdaType = lambdaTypeReference.getTypeDeclaration();
+
+		CtMethod<?> lambdaTypeEquals = lambdaType.getMethodsByName("equals").get(0);
+		CtMethod<?> objectEquals = objectClass.getMethodsByName("equals").get(0);
+
+		assertTrue(lambdaTypeEquals.isOverriding(objectEquals));
 	}
 
 	@Test
