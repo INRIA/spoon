@@ -243,6 +243,8 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		if (mode == NORMAL) {
 			if (isClass == false) {
 				visitSuperInterfaces(typeRef, outputConsumer);
+				//last visit Object.class, because each interface extends Object.class
+				sendResultWithListener(typeRef.getFactory().Type().OBJECT, outputConsumer, (ref) -> { });
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that
 				visitSuperClasses(typeRef, outputConsumer, includingInterfaces);
@@ -274,15 +276,8 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
 			superClassRef = superTypeRef.getFactory().Type().OBJECT;
 		}
-		ScanningMode mode = enter(superClassRef, true);
-		if (mode == SKIP_ALL) {
-			return;
-		}
-		sendResult(superClassRef, outputConsumer);
-		if (mode == NORMAL && query.isTerminated() == false) {
-			visitSuperClasses(superClassRef, outputConsumer, includingInterfaces);
-		}
-		exit(superClassRef, true);
+		sendResultWithListener(superClassRef, outputConsumer,
+				(classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));
 	}
 
 	/**
@@ -301,19 +296,24 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		for (CtTypeReference<?> ifaceRef : superInterfaces) {
-			ScanningMode mode = enter(ifaceRef, false);
-			if (mode == SKIP_ALL) {
-				continue;
-			}
-			sendResult(ifaceRef, outputConsumer);
-			if (mode == NORMAL && query.isTerminated() == false) {
-				visitSuperInterfaces(ifaceRef, outputConsumer);
-			}
-			exit(ifaceRef, false);
+			sendResultWithListener(ifaceRef, outputConsumer,
+					(ref) -> visitSuperInterfaces(ref, outputConsumer));
 			if (query.isTerminated()) {
 				return;
 			}
 		}
+	}
+
+	private void sendResultWithListener(CtTypeReference<?> classRef, CtConsumer<Object> outputConsumer, CtConsumer<CtTypeReference<?>> runNext) {
+		ScanningMode mode = enter(classRef, true);
+		if (mode == SKIP_ALL) {
+			return;
+		}
+		sendResult(classRef, outputConsumer);
+		if (mode == NORMAL && query.isTerminated() == false) {
+			runNext.accept(classRef);
+		}
+		exit(classRef, true);
 	}
 
 	@Override
