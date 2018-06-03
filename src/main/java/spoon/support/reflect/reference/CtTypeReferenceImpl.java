@@ -401,11 +401,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
-		try {
-			CtType<?> t = getTypeDeclaration();
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getAllFields();
-		} catch (SpoonClassNotFoundException cnfe) {
-			handleParentNotFound(cnfe);
+		} else {
 			return Collections.emptyList();
 		}
 	}
