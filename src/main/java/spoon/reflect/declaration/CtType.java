@@ -67,9 +67,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage);
 
 	/**
-	 * Returns the actual runtime class if exists.
 	 *
-	 * @return the runtime class, null if is not accessible or does not exist
+	 * NEVER USE THIS.
+	 *
+	 * See {@link CtTypeReference#getActualClass()}.
+	 *
+	 * @deprecated this will be removed from the public API
 	 */
 	@DerivedProperty
 	Class<T> getActualClass();
