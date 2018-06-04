@@ -197,6 +197,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 		 * visit super inheritance class hierarchy of lastResolve type of level of `type` to found it's actual type arguments.
 		 */
 		((CtElement) lastResolvedSuperclass).map(new SuperInheritanceHierarchyFunction()
+				.interfacesExtendObject(true)
 				.includingSelf(false)
 				.returnTypeReferences(true)
 				.setListener(listener))
