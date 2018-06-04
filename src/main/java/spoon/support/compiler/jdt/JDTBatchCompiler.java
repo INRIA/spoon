@@ -165,7 +165,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 			treeBuilderCompiler.lookupEnvironment.problemReporter = new ProblemReporter(errorHandlingPolicy, compilerOptions, problemFactory) {
 				@Override
 				public int computeSeverity(int problemID) {
-					// all the problems are not a problem, or only for 16777540
+					// ignore all the problem and continue the build creation
 					return 256;
 				}
 			};
