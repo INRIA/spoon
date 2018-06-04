@@ -579,7 +579,6 @@ class JDTCommentBuilder {
 		StringBuilder ret = new StringBuilder();
 		try (BufferedReader br = new BufferedReader(comment)) {
 			String line = br.readLine();
-
 			if (line.length() < 2 || line.charAt(0) != '/') {
 				throw new SpoonException("Unexpected beginning of comment");
 			}
