@@ -1,32 +1,12 @@
 package spoon.test.filters;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
@@ -53,13 +33,13 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
+import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtFunction;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.QueryFailurePolicy;
 import spoon.reflect.visitor.chain.ScanningMode;
-import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.reflect.visitor.chain.CtFunction;
-import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -77,7 +57,6 @@ import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
-import spoon.support.comparator.QualifiedNameComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.visitor.SubInheritanceHierarchyResolver;
 import spoon.test.filters.testclasses.AbstractTostada;
@@ -89,6 +68,17 @@ import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
 import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
+
+import static org.junit.Assert.*;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class FilterTest {
 
@@ -134,6 +124,12 @@ public class FilterTest {
 		assertEquals(2, expressions.size());
 		assertNull(expressions.get(0).getParent(new LineFilter()));
 		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtLoop);
+
+		method = foo.getMethod("loopNoBody");
+		CtFor lastStatement = (CtFor) method.getBody().getLastStatement();
+		expressions = method.getElements(new LineFilter());
+		assertEquals(1, expressions.size());
+		assertEquals(lastStatement, lastStatement.getExpression().getParent(new LineFilter()));
 
 		method = foo.getMethod("ifBlock");
 		expressions = method.getElements(new LineFilter());

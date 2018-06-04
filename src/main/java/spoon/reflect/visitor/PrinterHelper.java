@@ -19,7 +19,6 @@ package spoon.reflect.visitor;
 import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
@@ -237,7 +236,7 @@ public class PrinterHelper {
 
 	/** writes as many newlines as needed to align the line number again between the element position and the current line number */
 	public PrinterHelper adjustStartPosition(CtElement e) {
-		if (e.getPosition() != null && !e.isImplicit() && !(e.getPosition() instanceof NoSourcePosition)) {
+		if (!e.isImplicit() && e.getPosition().isValidPosition()) {
 			// we should add some lines
 			while (line < e.getPosition().getLine()) {
 				writeln();
@@ -253,7 +252,7 @@ public class PrinterHelper {
 	}
 
 	public PrinterHelper adjustEndPosition(CtElement e) {
-		if (env.isPreserveLineNumbers() && e.getPosition() != null) {
+		if (env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
 			// let's add lines if required
 			while (line < e.getPosition().getEndLine()) {
 				writeln();
@@ -270,7 +269,7 @@ public class PrinterHelper {
 
 	public void mapLine(CtElement e, CompilationUnit unitExpected) {
 		SourcePosition sp = e.getPosition();
-		if ((sp != null)
+		if ((sp.isValidPosition())
 				&& (sp.getCompilationUnit() == unitExpected)
 				&& (sp instanceof PartialSourcePositionImpl) == false) {
 			// only map elements coming from the source CU

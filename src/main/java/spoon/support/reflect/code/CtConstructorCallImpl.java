@@ -64,6 +64,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		if (executable == null) {
 			// default reference
 			executable = getFactory().Core().createExecutableReference();
+			executable.setParent(this);
 		}
 		return executable;
 	}

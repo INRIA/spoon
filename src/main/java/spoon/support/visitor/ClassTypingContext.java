@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor;
 
+import java.awt.event.HierarchyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -213,14 +214,15 @@ public class ClassTypingContext extends AbstractTypingContext {
 				if (actualTypeArguments.isEmpty()) {
 					//may be they are not set - check whether type declares some generic parameters
 					List<CtTypeParameter> typeParams;
-					try {
-						CtType<?> type = typeRef.getTypeDeclaration();
+					CtType<?> type = typeRef.getTypeDeclaration();
+					if (type != null) {
 						typeParams = type.getFormalCtTypeParameters();
-					} catch (final SpoonClassNotFoundException e) {
+					} else {
+						// not in classpath
 						if (typeRef.getFactory().getEnvironment().getNoClasspath()) {
 							typeParams = Collections.emptyList();
 						} else {
-							throw e;
+							throw new SpoonClassNotFoundException(type.getQualifiedName() + " cannot be found in the sourcepath or classpath");
 						}
 					}
 					if (typeParams.size() > 0) {
@@ -468,6 +470,9 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (typeRef instanceof CtTypeParameterReference) {
 				CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
 				CtTypeParameter typeParam = typeParamRef.getDeclaration();
+				if (typeParam == null) {
+					throw new SpoonException("The typeParam " + typeRef.getQualifiedName() + " declaration cannot be resolved");
+				}
 				CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
 				typeRef = resolveTypeParameter(declarer, typeParamRef, typeParam, typeRef);
 			}

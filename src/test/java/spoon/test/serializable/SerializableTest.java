@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class SerializableTest {
@@ -81,5 +82,10 @@ public class SerializableTest {
 		assertFalse(factory.Type().getAll().isEmpty());
 		assertFalse(loadedFactory.Type().getAll().isEmpty());
 		assertEquals(factory.getModel().getRootPackage(), loadedFactory.getModel().getRootPackage());
+		//contract: each element of loaded model has same factory
+		for (CtType type : loadedFactory.Type().getAll()) {
+			assertSame(loadedFactory, type.getFactory());
+			assertSame(loadedFactory, type.getPosition().getCompilationUnit().getFactory());
+		}
 	}
 }

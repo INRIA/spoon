@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
+import spoon.Metamodel;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
@@ -42,10 +43,13 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.visitor.ClassTypingContext;
 
@@ -103,6 +107,18 @@ public class SpoonMetaModel {
 				}
 			});
 	}
+	
+	/**
+	 * creates a {@link SpoonMetaModel} in runtime mode when spoon sources are not available
+	 */
+	public SpoonMetaModel() {
+		this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		for (CtType<?> iface : Metamodel.getAllMetamodelInterfaces()) {
+			if (iface instanceof CtInterface) {
+				getOrCreateConcept(iface);
+			}
+		}
+	}
 
 	/**
 	 * @return all {@link MetamodelConcept}s of spoon meta model
@@ -130,7 +146,18 @@ public class SpoonMetaModel {
 	 */
 	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
-		return (CtClass<?>) iface.getFactory().Type().get(impl);
+		return (CtClass<?>) getType(impl, iface);
+	}
+	
+	private static CtType<?> getType(String qualifiedName, CtElement anElement) {
+		Class aClass;
+		try {
+			aClass = anElement.getClass().getClassLoader().loadClass(qualifiedName);
+		} catch (ClassNotFoundException e) {
+			//OK, that interface has no implementation class
+			return null;
+		}
+		return anElement.getFactory().Type().get(aClass);
 	}
 
 	private static final String modelApiPackage = "spoon.reflect";
@@ -138,7 +165,7 @@ public class SpoonMetaModel {
 	
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
 		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
-			throw new SpoonException("The qualified name doesn't belong to Spoon model API package: " + modelApiPackage);
+			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
 	}
@@ -153,7 +180,7 @@ public class SpoonMetaModel {
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
 		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
-		return (CtInterface<?>) impl.getFactory().Type().get(iface);
+		return (CtInterface<?>) getType(iface, impl);
 	}
 
 	private static Factory createFactory(File spoonJavaSourcesDirectory) {
@@ -248,6 +275,7 @@ public class SpoonMetaModel {
 
 	private static Set<String> EXPECTED_TYPES_NOT_IN_CLASSPATH = new HashSet<>(Arrays.asList(
 			"java.lang.Cloneable",
+			"java.lang.Object",
 			"spoon.processing.FactoryAccessor",
 			"spoon.reflect.visitor.CtVisitable",
 			"spoon.reflect.visitor.chain.CtQueryable",
@@ -265,12 +293,13 @@ public class SpoonMetaModel {
 		if (superTypeRef == null) {
 			return;
 		}
-		CtType<?> superType = superTypeRef.getDeclaration();
-		if (superType == null) {
-			if (EXPECTED_TYPES_NOT_IN_CLASSPATH.contains(superTypeRef.getQualifiedName()) == false) {
-				throw new SpoonException("Cannot create spoon meta model. The class " + superTypeRef.getQualifiedName() + " is missing class path");
-			}
+		if (EXPECTED_TYPES_NOT_IN_CLASSPATH.contains(superTypeRef.getQualifiedName())) {
+			//ignore classes which are not part of spoon model
 			return;
+		}
+		CtType<?> superType = superTypeRef.getTypeDeclaration();
+		if (superType == null) {
+			throw new SpoonException("Cannot create spoon meta model. The class " + superTypeRef.getQualifiedName() + " is missing class path");
 		}
 		//call getOrCreateConcept recursively for super concepts
 		MetamodelConcept superConcept = getOrCreateConcept(superType);

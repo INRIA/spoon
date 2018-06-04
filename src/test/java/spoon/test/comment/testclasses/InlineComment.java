@@ -14,7 +14,7 @@ public class InlineComment
 	// Comment Field
 	// comment field 2
 	private int field // comment in field
-			= 10;
+			= 10; // after field
 
 	// comment static block
 	static {
@@ -102,7 +102,7 @@ public class InlineComment
 
 		String m = "" +
 				"" + // comment multi line string
-				"";
+				""; // after statement
 
 		boolean c = (i == 1) ?
 				// comment before then boolean CtConditional
@@ -149,3 +149,7 @@ public class InlineComment
 	}
 	// comment after class
 }
+
+/*
+ * Bottom File
+ */

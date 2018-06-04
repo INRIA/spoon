@@ -256,8 +256,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				if (res instanceof CtStatement) {
 					b.addStatement((CtStatement) res);
 				} else {
-					//the context expectes statement. We cannot simplify in this case
-					b.addStatement(s);
+					//the context expects statement. We cannot simplify in this case
+					b.addStatement(s.clone());
 				}
 			}
 			// do not copy unreachable statements

@@ -103,7 +103,7 @@ public class TestBot extends BotClient {
                 Entity entity = (Entity) e.nextElement();
                 
                 // ignore loaded units
-                if (entity.getPosition() == null) {
+                if (entity.getPosition().isValidPosition() == false) {
                     continue;
                 }
                 
@@ -120,7 +120,7 @@ public class TestBot extends BotClient {
 
                 // ignore loaded units 
                 // (not really necessary unless bot manages to load units)
-                if (entity.getPosition() == null) {
+                if (entity.getPosition().isValidPosition() == false) {
                     continue;
                 }
 
@@ -168,7 +168,7 @@ public class TestBot extends BotClient {
             Entity en = (Entity) enemy_array[d];
             
             // ignore loaded units
-            if (en.getPosition() == null) {
+            if (en.getPosition().isValidPosition() == false) {
                 continue;
             }
             
@@ -218,7 +218,7 @@ public class TestBot extends BotClient {
                 Entity en = (Entity) enemies.get(e);
                 
                 // ignore loaded units
-                if (en.getPosition() == null) {
+                if (en.getPosition().isValidPosition() == false) {
                     continue;
                 }
                 

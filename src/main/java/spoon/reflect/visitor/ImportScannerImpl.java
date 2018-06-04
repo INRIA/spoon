@@ -522,7 +522,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				try {
 					Class.forName("java.lang." + ref.getSimpleName());
 					presentInJavaLang = true;
-				} catch (ClassNotFoundException e) {
+				} catch (NoClassDefFoundError | ClassNotFoundException e) {
 					presentInJavaLang = false;
 				}
 			}

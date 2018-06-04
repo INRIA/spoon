@@ -345,6 +345,8 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfPrivateClass() throws Exception {
+		System.setProperty("line.separator", "\n");
+		
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
@@ -355,7 +357,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
@@ -380,6 +382,8 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfStaticMethod() throws Exception {
+		System.setProperty("line.separator", "\n");
+
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
@@ -390,7 +394,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test

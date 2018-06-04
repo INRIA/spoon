@@ -16,7 +16,6 @@
  */
 package spoon.support.visitor.equals;
 
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtScanner;
@@ -27,10 +26,10 @@ import spoon.support.visitor.clone.CloneVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * {@link CloneHelper} is responsible for creating clones of {@link CtElement} AST nodes including the whole subtree.
@@ -76,22 +75,6 @@ public class CloneHelper {
 		return others;
 	}
 
-	private <T extends CtElement> Set<T> createRightSet(Set<T> elements) {
-		try {
-			if (elements instanceof TreeSet) {
-				// we copy the set, incl its comparator
-				// we may also do this with reflection
-				Set s = (Set) ((TreeSet) elements).clone();
-				s.clear();
-				return s;
-			} else {
-				return elements.getClass().newInstance();
-			}
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new SpoonException(e);
-		}
-	}
-
 	public <T extends CtElement> Set<T> clone(Set<T> elements) {
 		if (elements instanceof EmptyClearableSet) {
 			return elements;
@@ -99,8 +82,7 @@ public class CloneHelper {
 		if (elements == null || elements.isEmpty()) {
 			return EmptyClearableSet.instance();
 		}
-
-		Set<T> others = createRightSet(elements);
+		Set<T> others = new HashSet<>(elements.size());
 		for (T element : elements) {
 			addClone(others, element);
 		}

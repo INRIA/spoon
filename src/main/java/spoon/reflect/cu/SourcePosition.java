@@ -30,6 +30,12 @@ public interface SourcePosition extends Serializable {
 	SourcePosition NOPOSITION = new NoSourcePosition();
 
 	/**
+	 * @return true if this instance holds start/end indexes of related sources.
+	 * false if they are unknown
+	 */
+	boolean isValidPosition();
+
+	/**
 	 * Returns a string representation of this position in the form
 	 * "sourcefile:line", or "sourcefile" if no line number is available.
 	 */
