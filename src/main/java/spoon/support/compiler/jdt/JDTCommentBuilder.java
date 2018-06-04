@@ -579,6 +579,7 @@ class JDTCommentBuilder {
 		StringBuilder ret = new StringBuilder();
 		try (BufferedReader br = new BufferedReader(comment)) {
 			String line = br.readLine();
+
 			if (line.length() < 2 || line.charAt(0) != '/') {
 				throw new SpoonException("Unexpected beginning of comment");
 			}
@@ -590,7 +591,7 @@ class JDTCommentBuilder {
 			} else {
 				//it is potentially multiline comment, which starts with "/*" or "/**"
 				//check end first
-				if (line.endsWith("*/")) {
+				if (line.endsWith("*/") && line.length() > 3) {
 					//it is last line
 					line = endCommentRE.matcher(line).replaceFirst("");
 					isLastLine = true;

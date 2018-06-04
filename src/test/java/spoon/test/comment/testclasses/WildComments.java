@@ -115,5 +115,24 @@ public class WildComments {
 			/**** starts and ends with 4 * ****/
 			"** starts and ends with 4 * ***"
 	};
+
+	/* should not cause "Unexpected next line after last line" exception */
+	public void testSlash() {
+		/*/
+		slash and comment
+		*/
+
+		/*
+		comment and slash
+		/*/
+
+		/*/
+		slash and comment and slash
+		/*/
+
+		//*/
+
+		/*/*/
+	}
 }
  
