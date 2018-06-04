@@ -55,7 +55,7 @@ public class TypeFactoryTest {
 		CtType<Object> ctType = new Launcher().getFactory().Type().get(ComparableExpressionBase.class);
 		assertEquals("ComparableExpressionBase", ctType.getSimpleName());
 		CtMethod<?> method = ctType.getMethodsByName("castToNum").get(0);
-		assertEquals("A extends java.lang.Comparable<? super A>", method.getFormalCtTypeParameters().get(0).toString());
+		assertEquals("A extends java.lang.Number & java.lang.Comparable<? super A>", method.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
