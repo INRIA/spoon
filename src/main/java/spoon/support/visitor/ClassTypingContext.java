@@ -16,15 +16,6 @@
  */
 package spoon.support.visitor;
 
-import java.awt.event.HierarchyListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -43,6 +34,14 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.support.SpoonClassNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper class created from type X or reference to X.
@@ -365,16 +364,18 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 */
 	private CtTypeReference<?> getEnclosingType(CtTypeReference<?> typeRef) {
 		CtType<?> type = typeRef.getTypeDeclaration();
-		if (type.hasModifier(ModifierKind.STATIC)) {
-			return null;
-		}
-		CtType<?> declType = type.getDeclaringType();
-		if (declType == null) {
-			return null;
-		}
-		if (declType.isInterface()) {
-			//nested types of interfaces are static
-			return null;
+		if (type != null) {
+			if (type.hasModifier(ModifierKind.STATIC)) {
+				return null;
+			}
+			CtType<?> declType = type.getDeclaringType();
+			if (declType == null) {
+				return null;
+			}
+			if (declType.isInterface()) {
+				//nested types of interfaces are static
+				return null;
+			}
 		}
 		return typeRef.getDeclaringType();
 	}
