@@ -89,7 +89,7 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 			return false;
 		}
 		final TypeReferenceRuntimeBuilderContext that = (TypeReferenceRuntimeBuilderContext) o;
-		return Objects.equals(typeReference, that.typeReference);
+		return type == that.type;
 	}
 
 	@Override

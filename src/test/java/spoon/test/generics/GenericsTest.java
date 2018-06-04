@@ -229,6 +229,9 @@ public class GenericsTest {
 
 		// an bound type is not an TypeParameterRefernce
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalCtTypeParameters().get(0).toString());
+
+		meth = type.getMethod("m2");
+		assertEquals("A extends java.lang.Number & java.lang.Comparable<? super A>", meth.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
