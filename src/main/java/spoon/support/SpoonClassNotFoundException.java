@@ -31,4 +31,8 @@ public class SpoonClassNotFoundException extends SpoonException {
 	public SpoonClassNotFoundException() {
 		super();
 	}
+
+	public SpoonClassNotFoundException(String msg) {
+		super(msg);
+	}
 }

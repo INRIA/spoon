@@ -222,7 +222,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 						if (typeRef.getFactory().getEnvironment().getNoClasspath()) {
 							typeParams = Collections.emptyList();
 						} else {
-							throw new SpoonClassNotFoundException();
+							throw new SpoonClassNotFoundException(type.getQualifiedName() + " cannot be found in the sourcepath or classpath");
 						}
 					}
 					if (typeParams.size() > 0) {
