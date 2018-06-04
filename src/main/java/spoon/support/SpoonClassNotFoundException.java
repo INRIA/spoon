@@ -22,7 +22,6 @@ import spoon.SpoonException;
  * as a runtime exception)
  */
 public class SpoonClassNotFoundException extends SpoonException {
-	public SpoonClassNotFoundException(String msg) { super (msg); }
 	public SpoonClassNotFoundException(String msg, Throwable cnfe) {
 		super(msg, cnfe);
 	}
