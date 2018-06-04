@@ -110,7 +110,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
-		throw new SpoonClassNotFoundException("you should never call getActualClass", null);
+		throw new SpoonClassNotFoundException("you should never call getActualClass  (" + this.getQualifiedName() + " not found in the classpath)", null);
 	}
 
 	@Override

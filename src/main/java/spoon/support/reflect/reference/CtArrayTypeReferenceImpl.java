@@ -86,7 +86,7 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	public Class<T> getActualClass() {
 		Class<?> c = getComponentType().getActualClass();
 		if (c == null) {
-			throw new SpoonClassNotFoundException("you should never call getActualClass", null);
+			throw new SpoonClassNotFoundException("you should never call getActualClass! (" + getComponentType().getQualifiedName() + " not found in the classpath)", null);
 		}
 		return (Class<T>) Array.newInstance(c, 0).getClass();
 	}

@@ -67,9 +67,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage);
 
 	/**
+	 *
+	 * NEVER USE THIS.
+	 *
 	 * See {@link CtTypeReference#getActualClass()}.
 	 */
 	@DerivedProperty
+	@Deprecated
 	Class<T> getActualClass();
 
 	/**
