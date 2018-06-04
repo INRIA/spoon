@@ -39,15 +39,15 @@ public class MetamodelConcept {
 	/**
 	 * Kind of this concept
 	 */
-	MMTypeKind kind;
+	private MMTypeKind kind;
 	/**
 	 * Name of the concept
 	 */
-	String name;
+	private final String name;
 	/**
 	 * Map of {@link CtRole} to {@link MetamodelProperty}s with values ordered same like CtScanner scans these properties when visiting this {@link MetamodelConcept}
 	 */
-	final Map<CtRole, MetamodelProperty> role2Property = new LinkedHashMap<>();
+	private final Map<CtRole, MetamodelProperty> role2Property = new LinkedHashMap<>();
 
 	/**
 	 * List of super concepts of this concept
@@ -77,8 +77,9 @@ public class MetamodelConcept {
 	 */
 	final List<CtMethod<?>> otherMethods = new ArrayList<>();
 
-	MetamodelConcept() {
+	MetamodelConcept(String name) {
 		super();
+		this.name = name;
 	}
 
 	/**

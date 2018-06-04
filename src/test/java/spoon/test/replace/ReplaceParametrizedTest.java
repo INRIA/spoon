@@ -14,6 +14,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
@@ -23,6 +24,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,13 +42,11 @@ import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatib
 @RunWith(Parameterized.class)
 public class ReplaceParametrizedTest<T extends CtVisitable> {
 
-	private static Factory factory;
 	private static Metamodel metaModel;
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {
 		metaModel = Metamodel.getInstance();
-		factory = metaModel.getFactory();
 
 		List<Object[]> values = new ArrayList<>();
 		for (MetamodelConcept t : metaModel.getConcepts()) {
@@ -67,6 +68,8 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		// contract: all elements are replaceable wherever they are in the model
 		// this test puts them at all possible locations
 		CtType<?> toTest = typeToTest.getModelInterface();
+		Factory factory = toTest.getFactory();
+
 		CtElement o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
 		for (MetamodelProperty mmField : typeToTest.getRoleToProperty().values()) {
 			Class<?> argType = mmField.getItemValueType().getActualClass();

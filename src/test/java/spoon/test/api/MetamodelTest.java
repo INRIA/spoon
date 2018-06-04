@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
@@ -35,6 +36,8 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.template.Parameter;
 
 import java.io.File;
@@ -253,6 +256,7 @@ public class MetamodelTest {
 	 */
 	@Test
 	public void spoonMetaModelTest() {
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 		Metamodel mm = Metamodel.getInstance();
 		List<String> problems = new ArrayList<>();
 
@@ -270,7 +274,7 @@ public class MetamodelTest {
 					problems.add("Missing getter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
-					if (mmConcept.getTypeContext().isSubtypeOf(mm.getFactory().Type().createReference(CtReference.class)) == false
+					if (mmConcept.getTypeContext().isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
 							&& mmConcept.getName().equals("CtTypeInformation") == false) {
 						//only NON references needs a setter
 						problems.add("Missing setter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());

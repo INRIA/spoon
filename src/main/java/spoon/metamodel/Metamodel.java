@@ -27,10 +27,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
-import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
@@ -43,7 +43,6 @@ import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
@@ -67,6 +66,9 @@ public class Metamodel {
 	public static Set<CtType<?>> getAllMetamodelInterfaces() {
 		Set<CtType<?>> result = new HashSet<>();
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		//avoid debug messages: Some annotations might be unreachable from the shadow element:
+		//which causes bad meta model creation performance
+		factory.getEnvironment().setLevel("INFO");
 		result.add(factory.Type().get(spoon.reflect.code.BinaryOperatorKind.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtAbstractInvocation.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtAnnotationFieldAccess.class));
@@ -195,8 +197,6 @@ public class Metamodel {
 			"spoon.reflect.declaration",
 			"spoon.reflect.reference"));
 
-	private final Factory factory;
-
 	/**
 	 * {@link MetamodelConcept}s by name
 	 */
@@ -228,8 +228,6 @@ public class Metamodel {
 	 * @param factory already loaded factory with all Spoon model types
 	 */
 	public Metamodel(Factory factory) {
-		this.factory =  factory;
-
 		for (String apiPackage : MODEL_IFACE_PACKAGES) {
 			if (factory.Package().get(apiPackage) == null) {
 				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
@@ -253,7 +251,6 @@ public class Metamodel {
 	 * creates a {@link Metamodel} in runtime mode when spoon sources are not available
 	 */
 	public Metamodel() {
-		this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 		for (CtType<?> iface : getAllMetamodelInterfaces()) {
 			if (iface instanceof CtInterface) {
 				getOrCreateConcept(iface);
@@ -266,6 +263,20 @@ public class Metamodel {
 	 */
 	public Collection<MetamodelConcept> getConcepts() {
 		return Collections.unmodifiableCollection(nameToConcept.values());
+	}
+
+	/**
+	 * @return List of Spoon model interfaces, which represents instantiable leafs of Spoon model type hierarchy
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
+		List<CtType<? extends CtElement>> result = new ArrayList<>();
+		for (MetamodelConcept mmConcept : getConcepts()) {
+			if (mmConcept.getKind() == MMTypeKind.LEAF) {
+				result.add((CtType) mmConcept.getModelInterface());
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -290,6 +301,37 @@ public class Metamodel {
 		return (CtClass<?>) getType(impl, iface);
 	}
 
+	/**
+	 * @param impl the implementation of spoon model element
+	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
+	 */
+	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
+		String iface = impl.getQualifiedName();
+		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
+			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
+		}
+		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
+		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
+		return (CtInterface<?>) getType(iface, impl);
+	}
+
+	/**
+	 * @param method to be checked method
+	 * @return {@link CtRole} of spoon model method. Looking into all super class/interface implementations of this method
+	 */
+	public static CtRole getRoleOfMethod(CtMethod<?> method) {
+		Factory f = method.getFactory();
+		CtAnnotation<PropertyGetter> getter = getInheritedAnnotation(method, f.createCtTypeReference(PropertyGetter.class));
+		if (getter != null) {
+			return getter.getActualAnnotation().role();
+		}
+		CtAnnotation<PropertySetter> setter = getInheritedAnnotation(method, f.createCtTypeReference(PropertySetter.class));
+		if (setter != null) {
+			return setter.getActualAnnotation().role();
+		}
+		return null;
+	}
+
 	private static CtType<?> getType(String qualifiedName, CtElement anElement) {
 		Class aClass;
 		try {
@@ -309,19 +351,6 @@ public class Metamodel {
 			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
-	}
-	/**
-	 * @param impl the implementation of spoon model element
-	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
-	 */
-	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
-		String iface = impl.getQualifiedName();
-		if (iface.endsWith(CLASS_SUFFIX) == false || iface.startsWith("spoon.support.reflect.") == false) {
-			throw new SpoonException("Unexpected spoon model implementation class: " + impl.getQualifiedName());
-		}
-		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
-		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
-		return (CtInterface<?>) getType(iface, impl);
 	}
 
 	private static Factory createFactory(File spoonJavaSourcesDirectory) {
@@ -347,12 +376,9 @@ public class Metamodel {
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
 		String conceptName = getConceptName(type);
-		MetamodelConcept mmConcept = getOrCreate(nameToConcept, conceptName, () -> new MetamodelConcept());
-		if (mmConcept.name == null) {
-			mmConcept.name = conceptName;
-			initializeConcept(type, mmConcept);
-		}
-		return mmConcept;
+		return getOrCreate(nameToConcept, conceptName,
+				() -> new MetamodelConcept(conceptName),
+				mmConcept -> initializeConcept(type, mmConcept));
 	}
 
 	/**
@@ -450,10 +476,19 @@ public class Metamodel {
 	}
 
 	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
+		return getOrCreate(map, key, valueCreator, null);
+	}
+	/**
+	 * @param initializer is called immediately after the value is added to the map
+	 */
+	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
 		V value = map.get(key);
 		if (value == null) {
 			value = valueCreator.get();
 			map.put(key, value);
+			if (initializer != null) {
+				initializer.accept(value);
+			}
 		}
 		return value;
 	}
@@ -473,22 +508,6 @@ public class Metamodel {
 		return false;
 	}
 
-	/**
-	 * @param method to be checked method
-	 * @return {@link CtRole} of spoon model method. Looking into all super class/interface implementations of this method
-	 */
-	public static CtRole getRoleOfMethod(CtMethod<?> method) {
-		Factory f = method.getFactory();
-		CtAnnotation<PropertyGetter> getter = getInheritedAnnotation(method, f.createCtTypeReference(PropertyGetter.class));
-		if (getter != null) {
-			return getter.getActualAnnotation().role();
-		}
-		CtAnnotation<PropertySetter> setter = getInheritedAnnotation(method, f.createCtTypeReference(PropertySetter.class));
-		if (setter != null) {
-			return setter.getActualAnnotation().role();
-		}
-		return null;
-	}
 
 	/**
 	 * @param method a start method
@@ -515,33 +534,4 @@ public class Metamodel {
 		}
 		return annotation;
 	}
-
-	public Factory getFactory() {
-		return factory;
-	}
-
-	public List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		SpoonAPI interfaces = new Launcher();
-		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
-		interfaces.addInputResource("src/main/java/spoon/reflect/code");
-		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
-		interfaces.buildModel();
-
-		SpoonAPI implementations = new Launcher();
-		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
-		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
-		implementations.addInputResource("src/main/java/spoon/support/reflect/reference");
-		implementations.buildModel();
-
-		List<CtType<? extends CtElement>> result = new ArrayList<>();
-		for (CtType<?> itf : interfaces.getModel().getAllTypes()) {
-			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect") + "Impl";
-			CtType implClass = implementations.getFactory().Type().get(impl);
-			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
-				result.add((CtType<? extends CtElement>) itf);
-			}
-		}
-		return result;
-	}
-
 }
