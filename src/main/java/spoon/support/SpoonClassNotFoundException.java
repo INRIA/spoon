@@ -29,4 +29,11 @@ public class SpoonClassNotFoundException extends SpoonException {
 
 	private static final long serialVersionUID = 1L;
 
+	public SpoonClassNotFoundException() {
+		super();
+	}
+
+	public SpoonClassNotFoundException(String msg) {
+		super(msg);
+	}
 }

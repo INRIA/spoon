@@ -31,6 +31,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
@@ -109,7 +110,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
-		return null;
+		throw new SpoonClassNotFoundException("you should never call getActualClass  (" + this.getQualifiedName() + " not found in the classpath)", null);
 	}
 
 	@Override
