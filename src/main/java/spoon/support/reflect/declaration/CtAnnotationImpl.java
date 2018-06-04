@@ -391,7 +391,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				CtMethod method = type.getMethod(key);
 				if (method != null) {
 					CtTypeReference returnType = method.getType();
-					if (returnType instanceof CtArrayTypeReference && ! (ctExpression instanceof CtNewArray)) {
+					if (returnType instanceof CtArrayTypeReference && !(ctExpression instanceof CtNewArray)) {
 						CtNewArray newArray = getFactory().Core().createNewArray();
 						CtArrayTypeReference typeReference2 = this.getFactory().createArrayTypeReference();
 						typeReference2.setComponentType(ctExpression.getType().clone());
