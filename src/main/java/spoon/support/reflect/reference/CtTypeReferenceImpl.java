@@ -185,7 +185,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t;
 		}
-		return getFactory().Type().get(getActualClass());
+		try {
+			return getFactory().Type().get(getActualClass());
+		} catch (SpoonClassNotFoundException e) {
+			// this only happens in noclasspath
+			return null;
+		}
 	}
 
 	@Override
@@ -396,11 +401,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
-		try {
-			CtType<?> t = getTypeDeclaration();
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getAllFields();
-		} catch (SpoonClassNotFoundException cnfe) {
-			handleParentNotFound(cnfe);
+		} else {
 			return Collections.emptyList();
 		}
 	}

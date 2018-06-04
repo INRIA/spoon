@@ -81,7 +81,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * built with runtime reflection, and the resulting CtType is called a "shadow" class,
 	 * see {@link CtShadowable#isShadow()}).
 	 *
-	 * @return the type declaration that corresponds to the reference.
+	 * @return the type declaration that corresponds to the reference or null if the reference points to a class that is not in the classpath.
 	 */
 	@DerivedProperty
 	CtType<T> getTypeDeclaration();
