@@ -72,7 +72,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * See {@link CtTypeReference#getActualClass()}.
 	 *
-	 * @Deprecated this will be removed from the public API
+	 * @deprecated this will be removed from the public API
 	 */
 	@DerivedProperty
 	Class<T> getActualClass();
