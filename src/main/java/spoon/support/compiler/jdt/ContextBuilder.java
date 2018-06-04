@@ -253,17 +253,15 @@ public class ContextBuilder {
 			if (potentialReferenceToField != null
 					&& potentialReferenceToField instanceof CtTypeReference) {
 				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
-				try {
-					final Class classOfType = typeReference.getActualClass();
-					if (classOfType != null) {
-						final CtType declaringTypeOfField = typeReference.isInterface()
-								? interfaceFactory.get(classOfType) : classFactory.get(classOfType);
-						final CtField field = declaringTypeOfField.getField(name);
-						if (field != null) {
-							return (U) field;
-						}
+				final Class classOfType = typeReference.getActualClass();
+				if (classOfType != null) {
+					final CtType declaringTypeOfField = typeReference.isInterface()
+							? interfaceFactory.get(classOfType) : classFactory.get(classOfType);
+					final CtField field = declaringTypeOfField.getField(name);
+					if (field != null) {
+						return (U) field;
 					}
-				} catch (final SpoonClassNotFoundException scnfe) {
+				} else {
 					// in noclasspath mode we do some heuristics to determine if `name` could be a
 					// field that has been imported statically from another class (or interface).
 					if (environment.getNoClasspath()) {

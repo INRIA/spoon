@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
@@ -61,15 +62,17 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public Member getActualField() {
-		try {
-			if (getDeclaringType().getActualClass().isAnnotation()) {
-				return getDeclaringType().getActualClass().getDeclaredMethod(
-						getSimpleName());
+		Class zeClass = getDeclaringType().getActualClass();
+
+		if (zeClass != null) {
+			try {
+				if (getDeclaringType().getActualClass().isAnnotation()) {
+					return zeClass.getDeclaredMethod(getSimpleName());
+				}
+				return zeClass.getDeclaredField(getSimpleName());
+			} catch (NoSuchFieldException | NoSuchMethodException e) {
+				throw new SpoonException(e);
 			}
-			return getDeclaringType().getActualClass().getDeclaredField(
-					getSimpleName());
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}

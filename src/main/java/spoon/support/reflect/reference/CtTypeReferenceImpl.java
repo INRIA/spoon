@@ -40,12 +40,15 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.SpoonFindClassException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -141,8 +144,20 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				return (Class<T>) void.class;
 			}
 		}
-		return findClass();
-	}
+        try {
+            return findClass();
+        } catch (SpoonFindClassException e) {
+            String msg = "cannot load class: " + getQualifiedName() + " with class loader "
+                    + Thread.currentThread().getContextClassLoader();
+            if (getFactory().getEnvironment().getNoClasspath()) {
+                // should not be thrown in 'noClasspath' environment (#775)
+                Launcher.LOGGER.warn(msg);
+                return null;
+            } else {
+                throw new SpoonClassNotFoundException(msg, e);
+            }
+        }
+    }
 
 	/**
 	 * Finds the class requested in {@link #getActualClass()}.
@@ -150,7 +165,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 * Looks for the class in the standard Java classpath, but also in the sourceClassPath given as option.
 	 */
 	@SuppressWarnings("unchecked")
-	protected Class<T> findClass() {
+	protected Class<T> findClass() throws SpoonFindClassException {
 		try {
 			// creating a classloader on the fly is not the most efficient
 			// but it decreases the amount of state to maintain
@@ -159,7 +174,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			String qualifiedName = getQualifiedName();
 			return (Class<T>) classLoader.loadClass(qualifiedName);
 		} catch (Throwable e) {
-			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
+			throw new SpoonFindClassException("cannot load class: " + getQualifiedName(), e);
 		}
 	}
 
@@ -185,12 +200,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t;
 		}
-		try {
-			return getFactory().Type().get(getActualClass());
-		} catch (SpoonClassNotFoundException e) {
-			// this only happens in noclasspath
-			return null;
-		}
+		if (getActualClass() != null) {
+            return getFactory().Type().get(getActualClass());
+        }
+		return null;
 	}
 
 	@Override
@@ -304,10 +317,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isPrimitive()) {
 			return this;
 		}
-		Class<T> actualClass;
-		try {
-			actualClass = getActualClass();
-		} catch (SpoonClassNotFoundException e) {
+		Class<T> actualClass = getActualClass();
+		if (actualClass == null) {
 			return this;
 		}
 		if (actualClass == Integer.class) {
@@ -342,11 +353,40 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		CtType<?> t = getTypeDeclaration();
-		if (t != null) {
+		CtType<?> t = getDeclaration();
+		if (t == null) {
+		    return getDeclaredFieldReferences();
+		} else {
 			return t.getDeclaredFields();
 		}
-		return Collections.emptyList();
+	}
+
+	/**
+	 * Collects all field references of the declared class.
+	 *
+	 * @return collection of field references
+	 */
+	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
+			Collection<CtFieldReference<?>> references = new ArrayList<>();
+			Class zeClass = getActualClass();
+			if (zeClass == null) {
+			    return Collections.emptyList();
+            }
+			for (Field f : getDeclaredFields(zeClass)) {
+				references.add(getFactory().Field().createReference(f));
+			}
+			if (zeClass.isAnnotation()) {
+				for (Method m : zeClass.getDeclaredMethods()) {
+					CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
+					CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
+					references.add(fr);
+				}
+			}
+			return references;
+	}
+
+	private Field[] getDeclaredFields(Class<?> cls) {
+		return cls.getDeclaredFields();
 	}
 
 	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
@@ -366,11 +406,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (name == null) {
 			return null;
 		}
+
 		CtType<?> t = getTypeDeclaration();
-		if (t != null) {
+		if (t == null) {
+			Collection<CtFieldReference<?>> fields = getDeclaredFieldReferences();
+            for (CtFieldReference<?> field : fields) {
+                if (name.equals(field.getSimpleName())) {
+                    return field;
+                }
+            }
+			return null;
+		} else {
 			return t.getDeclaredField(name);
 		}
-		return null;
 	}
 
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
@@ -386,13 +434,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
 		CtType<T> t = getDeclaration();
 		if (t == null) {
-			try {
+			Class zeClass = getActualClass();
+			if (zeClass != null) {
 				return RtHelper.getAllExecutables(getActualClass(), getFactory());
-			} catch (final SpoonClassNotFoundException e) {
-				if (getFactory().getEnvironment().getNoClasspath()) {
-					return Collections.emptyList();
-				}
-				throw e;
+			} else {
+				return Collections.emptyList();
 			}
 		} else {
 			return t.getDeclaredExecutables();
@@ -402,11 +448,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
 		CtType<?> t = getTypeDeclaration();
-		if (t != null) {
-			return t.getAllFields();
-		} else {
-			return Collections.emptyList();
-		}
+        if (t == null) {
+            return Collections.emptyList();
+        }
+        return t.getAllFields();
 	}
 
 	@Override
@@ -426,7 +471,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return t.getModifiers();
 		}
 		Class<T> c = getActualClass();
-		return RtHelper.getModifiers(c.getModifiers());
+		if (c != null) {
+            return RtHelper.getModifiers(c.getModifiers());
+        }
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -514,7 +562,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
 			Class<?> clazz = getActualClass();
-			if (clazz.isEnum() || clazz.isInterface() || clazz.isAnnotation() || clazz.isArray() || clazz.isPrimitive()) {
+			if (clazz != null && (clazz.isEnum() || clazz.isInterface() || clazz.isAnnotation() || clazz.isArray() || clazz.isPrimitive())) {
 				return false;
 			}
 			return true;
@@ -527,7 +575,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isInterface() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isInterface();
+			Class zeClass = getActualClass();
+			if (zeClass != null) {
+				return zeClass.isInterface();
+			} else {
+				return false;
+			}
 		} else {
 			return t.isInterface();
 		}
@@ -537,7 +590,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isAnnotationType() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isAnnotation();
+			Class zeClass = getActualClass();
+			if (zeClass != null) {
+				return zeClass.isAnnotation();
+			} else {
+				return false;
+			}
 		} else {
 			return t.isAnnotationType();
 		}
@@ -547,7 +605,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isEnum() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isEnum();
+			Class zeClass = getActualClass();
+			if (zeClass != null) {
+				return zeClass.isEnum();
+			} else {
+				return false;
+			}
 		} else {
 			return t.isEnum();
 		}
@@ -555,48 +618,42 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
-		try {
-			Set<ModifierKind> modifiers = type.getModifiers();
+        Set<ModifierKind> modifiers = type.getModifiers();
 
-			if (modifiers.contains(ModifierKind.PUBLIC)) {
-				return true;
-			}
-			if (modifiers.contains(ModifierKind.PROTECTED)) {
-				//the accessed type is protected in scope of declaring type.
-				CtTypeReference<?> declaringType = type.getDeclaringType();
-				if (declaringType == null) {
-					//top level type cannot be protected. So this is a model inconsistency.
-					throw new SpoonException("The protected class " + type.getQualifiedName() + " has no declaring class.");
-				}
-				if (isImplementationOf(declaringType)) {
-					//type is visible in code which implements declaringType
-					return true;
-				} //else it is visible in same package, like package protected
-				return isInSamePackage(type);
-			}
-			if (modifiers.contains(ModifierKind.PRIVATE)) {
-				//it is visible in scope of the same class only
-				return type.getTopLevelType().getQualifiedName().equals(this.getTopLevelType().getQualifiedName());
-			}
-			/*
-			 * no modifier, we have to check if it is nested type and if yes, if parent is interface or class.
-			 * In case of no parent then implicit access is package protected
-			 * In case of parent is interface, then implicit access is PUBLIC
-			 * In case of parent is class, then implicit access is package protected
-			 */
-			CtTypeReference<?> declaringTypeRef = type.getDeclaringType();
-			if (declaringTypeRef != null && declaringTypeRef.isInterface()) {
-				//the declaring type is interface, then implicit access is PUBLIC
-				return true;
-			}
-			//package protected
-			//visible only in scope of the same package
-			return isInSamePackage(type);
-		} catch (SpoonClassNotFoundException e) {
-			handleParentNotFound(e);
-			//if the modifiers cannot be resolved then we expect that it is visible
-			return true;
-		}
+        if (modifiers.contains(ModifierKind.PUBLIC)) {
+            return true;
+        }
+        if (modifiers.contains(ModifierKind.PROTECTED)) {
+            //the accessed type is protected in scope of declaring type.
+            CtTypeReference<?> declaringType = type.getDeclaringType();
+            if (declaringType == null) {
+                //top level type cannot be protected. So this is a model inconsistency.
+                throw new SpoonException("The protected class " + type.getQualifiedName() + " has no declaring class.");
+            }
+            if (isImplementationOf(declaringType)) {
+                //type is visible in code which implements declaringType
+                return true;
+            } //else it is visible in same package, like package protected
+            return isInSamePackage(type);
+        }
+        if (modifiers.contains(ModifierKind.PRIVATE)) {
+            //it is visible in scope of the same class only
+            return type.getTopLevelType().getQualifiedName().equals(this.getTopLevelType().getQualifiedName());
+        }
+        /*
+         * no modifier, we have to check if it is nested type and if yes, if parent is interface or class.
+         * In case of no parent then implicit access is package protected
+         * In case of parent is interface, then implicit access is PUBLIC
+         * In case of parent is class, then implicit access is package protected
+         */
+        CtTypeReference<?> declaringTypeRef = type.getDeclaringType();
+        if (declaringTypeRef != null && declaringTypeRef.isInterface()) {
+            //the declaring type is interface, then implicit access is PUBLIC
+            return true;
+        }
+        //package protected
+        //visible only in scope of the same package
+        return isInSamePackage(type);
 	}
 
 	private boolean isInSamePackage(CtTypeReference<?> type) {
