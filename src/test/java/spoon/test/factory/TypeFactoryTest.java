@@ -1,8 +1,10 @@
 package spoon.test.factory;
 
+import com.mysema.query.types.expr.ComparableExpressionBase;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
@@ -45,6 +47,15 @@ public class TypeFactoryTest {
 		assertEquals("java.lang.String", s.getQualifiedName());
 		assertEquals(3, s.getSuperInterfaces().size());
 		assertEquals(2, s.getMethodsByName("toLowerCase").size());
+	}
+
+	@Test
+	public void reflectionAPIWithTypeParameter() {
+		// check the creation of the ComparableExpressionBase with the reflexion API
+		CtType<Object> ctType = new Launcher().getFactory().Type().get(ComparableExpressionBase.class);
+		assertEquals("ComparableExpressionBase", ctType.getSimpleName());
+		CtMethod<?> method = ctType.getMethodsByName("castToNum").get(0);
+		assertEquals("A extends java.lang.Comparable<? super A>", method.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test

@@ -241,6 +241,12 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.9.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+      <version>3.6.9</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
