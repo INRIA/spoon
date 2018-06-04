@@ -1,21 +1,8 @@
 package spoon.test.replace;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.test.parent.ParentContractTest.createCompatibleObject;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
@@ -32,10 +19,22 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
-import spoon.test.metamodel.MetamodelProperty;
-import spoon.test.metamodel.MetamodelConcept;
 import spoon.test.metamodel.MMTypeKind;
+import spoon.test.metamodel.MetamodelConcept;
+import spoon.test.metamodel.MetamodelProperty;
 import spoon.test.metamodel.SpoonMetaModel;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 
 @RunWith(Parameterized.class)
 public class ReplaceParametrizedTest<T extends CtVisitable> {

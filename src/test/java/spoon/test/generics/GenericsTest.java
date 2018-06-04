@@ -639,8 +639,7 @@ public class GenericsTest {
 		//typeParamRef has got new parent 
 		assertSame(typeRef, typeParamRef.getParent());
 
-		// null because without context
-		assertEquals(null, typeParamRef.getDeclaration());
+		assertEquals(typeParam, typeParamRef.getDeclaration());
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
 		typeParamRef.setSimpleName("Y");
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());

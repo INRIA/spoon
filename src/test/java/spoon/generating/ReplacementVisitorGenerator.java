@@ -45,6 +45,8 @@ public class ReplacementVisitorGenerator extends AbstractProcessor<CtType<?>> {
 	private CtClass<Object> createReplacementVisitor() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_REPLACE_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_REPLACE_VISITOR);
+		//remove type from old package so it can be added into new package
+		target.delete();
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
 		final List<CtTypeReference> references = target.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {

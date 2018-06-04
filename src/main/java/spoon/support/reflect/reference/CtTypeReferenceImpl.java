@@ -389,12 +389,25 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return cls.getDeclaredFields();
 	}
 
+	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
+		String msg = "cannot load class: " + getQualifiedName() + " with class loader "
+				+ Thread.currentThread().getContextClassLoader();
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			// should not be thrown in 'noClasspath' environment (#775)
+			Launcher.LOGGER.warn(msg);
+			return;
+		} else {
+			throw cnfe;
+		}
+	}
+
 	@Override
 	public CtFieldReference<?> getDeclaredField(String name) {
 		if (name == null) {
 			return null;
 		}
-		CtType<?> t = getDeclaration();
+
+		CtType<?> t = getTypeDeclaration();
 		if (t == null) {
 			Collection<CtFieldReference<?>> fields = getDeclaredFieldReferences();
             for (CtFieldReference<?> field : fields) {
@@ -409,30 +422,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			CtFieldReference<?> field = getDeclaredField(fieldName);
-			if (field != null) {
-				return field;
-			}
-			CtTypeReference<?> typeRef = getSuperclass();
-			if (typeRef != null) {
-				field = typeRef.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
-			for (CtTypeReference<?> iface : ifaces) {
-				field = iface.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			return field;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredOrInheritedField(fieldName);
 		}
+		return null;
 	}
 
 
@@ -498,7 +492,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
-		CtType<?> t = getDeclaration();
+		//we need a interface type references whose parent is connected to CtType, otherwise TypeParameterReferences cannot be resolved well
+		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
 			return Collections.unmodifiableSet(t.getSuperInterfaces());
 		} else {
@@ -512,7 +507,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				return Collections.unmodifiableSet(set);
 			}
 		}
-		return Collections.emptySet();
+		throw new SpoonException("Cannot provide CtType for " + getQualifiedName());
 	}
 
 	@Override

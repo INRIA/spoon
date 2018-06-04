@@ -104,6 +104,8 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 	private CtClass<Object> createBiScanner() {
 		final CtPackage aPackage = getFactory().Package().getOrCreate(TARGET_BISCANNER_PACKAGE);
 		final CtClass<Object> target = getFactory().Class().get(GENERATING_BISCANNER);
+		//remove class from the old package so it can be added into new package
+		target.delete();
 		target.setSimpleName("CtBiScannerDefault");
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);

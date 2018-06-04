@@ -37,7 +37,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -48,6 +47,7 @@ import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -55,12 +55,14 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Consumer;
 
 public class ElementPrinterHelper {
 	private final DefaultJavaPrettyPrinter prettyPrinter;
@@ -124,6 +126,13 @@ public class ElementPrinterHelper {
 		for (String s : thirdPosition) {
 			printer.writeKeyword(s).writeSpace();
 		}
+
+		if (modifiable instanceof CtMethod) {
+			CtMethod m = (CtMethod) modifiable;
+			if (m.isDefaultMethod()) {
+				printer.writeKeyword("default").writeSpace();
+			}
+		}
 	}
 
 	public void visitCtNamedElement(CtNamedElement namedElement, CompilationUnit sourceCompilationUnit) {
@@ -143,35 +152,24 @@ public class ElementPrinterHelper {
 	/** writes the implemented interfaces with a ListPrinter */
 	public void writeImplementsClause(CtType<?> type) {
 		if (type.getSuperInterfaces().size() > 0) {
-			printer.writeSpace().writeKeyword("implements").writeSpace();
-			try (ListPrinter lp = createListPrinter(false, null, false, true, ",", true, false, null)) {
-				for (CtTypeReference<?> ref : type.getSuperInterfaces()) {
-					lp.printSeparatorIfAppropriate();
-					prettyPrinter.scan(ref);
-				}
-			}
+			printList(type.getSuperInterfaces(), "implements",
+				false, null, false, true, ",", true, false, null,
+				ref -> prettyPrinter.scan(ref));
 		}
 	}
 
 	public void writeExecutableParameters(CtExecutable<?> executable) {
-		try (ListPrinter lp = createListPrinter(false, "(", false, false, ",", true, false, ")")) {
-			for (CtParameter<?> p : executable.getParameters()) {
-				lp.printSeparatorIfAppropriate();
-				prettyPrinter.scan(p);
-			}
-		}
+		printList(executable.getParameters(), null,
+			false, "(", false, false, ",", true, false, ")",
+			p -> prettyPrinter.scan(p));
 	}
 
 	/** writes the thrown exception with a ListPrinter */
 	public void writeThrowsClause(CtExecutable<?> executable) {
 		if (executable.getThrownTypes().size() > 0) {
-			printer.writeSpace().writeKeyword("throws").writeSpace();
-			try (ListPrinter lp = createListPrinter(false, null, false, false, ",", true, false, null)) {
-				for (CtTypeReference<?> ref : executable.getThrownTypes()) {
-					lp.printSeparatorIfAppropriate();
-					prettyPrinter.scan(ref);
-				}
-			}
+			printList(executable.getThrownTypes(), "throws",
+				false, null, false, false, ",", true, false, null,
+				ref -> prettyPrinter.scan(ref));
 		}
 	}
 
@@ -215,19 +213,13 @@ public class ElementPrinterHelper {
 		} else if (value instanceof String) {
 			printer.writeLiteral("\"" + LiteralHelper.getStringLiteral((String) value, true) + "\"");
 		} else if (value instanceof Collection) {
-			try (ListPrinter lp = createListPrinter(false, "{", false, true, ",", false, false, "}")) {
-				for (Object obj : (Collection<?>) value) {
-					lp.printSeparatorIfAppropriate();
-					writeAnnotationElement(factory, obj);
-				}
-			}
+			printList((Collection<?>) value, null,
+				false, "{", false, true, ",", false, false, "}",
+				obj -> writeAnnotationElement(factory, obj));
 		} else if (value instanceof Object[]) {
-			try (ListPrinter lp = createListPrinter(false, "{", false, true, ",", false, false, "}")) {
-				for (Object obj : (Object[]) value) {
-					lp.printSeparatorIfAppropriate();
-					writeAnnotationElement(factory, obj);
-				}
-			}
+			printList(Arrays.asList((Object[]) value), null,
+				false, "{", false, true, ",", false, false, "}",
+				obj -> writeAnnotationElement(factory, obj));
 		} else if (value instanceof Enum) {
 			try (Writable c = prettyPrinter.getContext().modify().ignoreGenerics(true)) {
 				prettyPrinter.scan(factory.Type().createReference(((Enum<?>) value).getDeclaringClass()));
@@ -252,12 +244,9 @@ public class ElementPrinterHelper {
 			return;
 		}
 		if (parameters.size() > 0) {
-			try (ListPrinter lp = createListPrinter(false, "<", false, false, ",", true, false, ">")) {
-				for (CtTypeParameter parameter : parameters) {
-					lp.printSeparatorIfAppropriate();
-					prettyPrinter.scan(parameter);
-				}
-			}
+			printList(parameters,
+				null,	false, "<", false, false, ",", true, false, ">",
+				parameter -> prettyPrinter.scan(parameter));
 		}
 	}
 
@@ -270,18 +259,15 @@ public class ElementPrinterHelper {
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
 		if (arguments != null && arguments.size() > 0) {
-			try (ListPrinter lp = createListPrinter(false, "<", false, false, ",", true, false, ">")) {
-				for (CtTypeReference<?> argument : arguments) {
-					if (!argument.isImplicit()) {
-						lp.printSeparatorIfAppropriate();
-						if (prettyPrinter.context.forceWildcardGenerics()) {
-							printer.writeSeparator("?");
-						} else {
-							prettyPrinter.scan(argument);
-						}
+			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
+				null, false, "<", false, false, ",", true, false, ">",
+				argument -> {
+					if (prettyPrinter.context.forceWildcardGenerics()) {
+						printer.writeSeparator("?");
+					} else {
+						prettyPrinter.scan(argument);
 					}
-				}
-			}
+				});
 		}
 	}
 
@@ -378,6 +364,17 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Write the compilation unit footer.
+	 */
+	public void writeFooter(List<CtType<?>> types) {
+		if (!types.isEmpty()) {
+			for (CtType<?> ctType : types) {
+				writeComment(ctType, CommentOffset.BOTTOM_FILE);
+			}
+		}
+	}
+
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
@@ -421,14 +418,18 @@ public class ElementPrinterHelper {
 			return commentsToPrint;
 		}
 		for (CtComment comment : element.getComments()) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.TOP_FILE) {
+			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.TOP_FILE && element.getPosition().getSourceEnd() > comment.getPosition().getSourceStart()) {
+				commentsToPrint.add(comment);
+				continue;
+			}
+			if (comment.getCommentType() == CtComment.CommentType.FILE && offset == CommentOffset.BOTTOM_FILE && element.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 				commentsToPrint.add(comment);
 				continue;
 			}
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				continue;
 			}
-			if (comment.getPosition() == null || element.getPosition() == null) {
+			if (comment.getPosition().isValidPosition() == false || element.getPosition().isValidPosition() == false) {
 				if (offset == CommentOffset.BEFORE) {
 					commentsToPrint.add(comment);
 				}
@@ -437,9 +438,9 @@ public class ElementPrinterHelper {
 			final int line = element.getPosition().getLine();
 			final int sourceEnd = element.getPosition().getSourceEnd();
 			final int sourceStart = element.getPosition().getSourceStart();
-			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < line || (sourceStart <= comment.getPosition().getSourceStart() && sourceEnd >= comment.getPosition().getSourceEnd()))) {
+			if (offset == CommentOffset.BEFORE && (comment.getPosition().getLine() < line || (sourceStart <= comment.getPosition().getSourceStart() && sourceEnd > comment.getPosition().getSourceEnd()))) {
 				commentsToPrint.add(comment);
-			} else if (offset == CommentOffset.AFTER && comment.getPosition().getSourceStart() > sourceEnd) {
+			} else if (offset == CommentOffset.AFTER && (comment.getPosition().getSourceStart() > sourceEnd || comment.getPosition().getSourceEnd() == sourceEnd)) {
 				commentsToPrint.add(comment);
 			} else {
 				final int endLine = element.getPosition().getEndLine();
@@ -477,18 +478,18 @@ public class ElementPrinterHelper {
 	/**
 	 * Creates new handler which assures consistent printing of lists
 	 * prefixed with `start`, separated by `next` and suffixed by `end`
-	 * @param startPrefixSpace TODO
+	 * @param startPrefixSpace if true then `start` token is prefixed with space
 	 * @param start the string which has to be printed at the beginning of the list
-	 * @param startSufficSpace TODO
-	 * @param nextPrefixSpace TODO
+	 * @param startSufficSpace if true then `start` token is suffixed with space
+	 * @param nextPrefixSpace if true then `next` token is prefixed with space
 	 * @param next the string which has to be used as separator before each next item
-	 * @param nextSuffixSpace TODO
-	 * @param endPrefixSpace TODO
+	 * @param nextSuffixSpace if true then `next` token is suffixed with space
+	 * @param endPrefixSpace if true then `end` token is prefixed with space
 	 * @param end the string which has to be printed after the list
 	 * @return the {@link ListPrinter} whose {@link ListPrinter#printSeparatorIfAppropriate()} has to be called
 	 * before printing of each item.
 	 */
-	public ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+	private ListPrinter createListPrinter(boolean startPrefixSpace, String start, boolean startSufficSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
 		return new ListPrinter(printer, startPrefixSpace, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
 	}
 
@@ -513,5 +514,41 @@ public class ElementPrinterHelper {
 
 	private PrinterHelper getPrinterHelper() {
 		return printer.getPrinterHelper();
+	}
+
+	/**
+	 * Prints list of elements with defined delimiters using `printer`
+	 * @param iterable the iterable of to be printed elements
+	 * @param startKeyword the optional start keyword. It is always printed if the value is not null
+	 * @param startPrefixSpace if true then `start` token is prefixed with space
+	 * @param start the string which has to be printed at the beginning of the list
+	 * @param startSuffixSpace if true then `start` token is suffixed with space
+	 * @param nextPrefixSpace if true then `next` token is prefixed with space
+	 * @param next the string which has to be used as separator before each next item
+	 * @param nextSuffixSpace if true then `next` token is suffixed with space
+	 * @param endPrefixSpace if true then `end` token is prefixed with space
+	 * @param end the string which has to be printed after the list
+	 * @param elementPrinter the {@link Consumer}, which is called once for each printer element of the `iterable`
+	 */
+	public <T> void printList(Iterable<T> iterable,
+			String startKeyword,
+			boolean startPrefixSpace, String start, boolean startSuffixSpace,
+			boolean nextPrefixSpace, String next, boolean nextSuffixSpace,
+			boolean endPrefixSpace, String end,
+			Consumer<T> elementPrinter) {
+
+		if (startKeyword != null) {
+			printer.writeSpace().writeKeyword(startKeyword).writeSpace();
+		}
+		try (spoon.reflect.visitor.ListPrinter lp = createListPrinter(
+				startPrefixSpace, start, startSuffixSpace,
+				nextPrefixSpace, next, nextSuffixSpace,
+				endPrefixSpace, end
+			)) {
+			for (T item : iterable) {
+				lp.printSeparatorIfAppropriate();
+				elementPrinter.accept(item);
+			}
+		}
 	}
 }
