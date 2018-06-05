@@ -34,6 +34,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -114,7 +115,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(suppressWarning);
 		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
 		assertTrue(suppressWarning.getAnnotations().size() > 0);
-		assertTrue(suppressWarning.getFields().size() > 0);
+		assertTrue(suppressWarning.getTypeMembers().size() > 0);
+		assertTrue(suppressWarning.getTypeMembers().get(0) instanceof CtAnnotationMethod);
+
 		assertTrue(suppressWarning.isShadow());
 
 		assertNotNull(suppressWarning.getAnnotation(Retention.class));
