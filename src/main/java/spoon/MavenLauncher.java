@@ -105,7 +105,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// dependencies
-		ProjectDependence depTree = model.getDependencies();
+		TreeDependency depTree = model.getTreeDependency();
 		List<File> dependencies = depTree.toFiles();
 		String[] classpath = new String[dependencies.size()];
 		for (int i = 0; i < dependencies.size(); i++) {
@@ -152,42 +152,42 @@ public class MavenLauncher extends Launcher {
 		}
 	}
 
-	class ProjectDependence {
+	class TreeDependency {
 		private String groupId;
 		private String artifactId;
 		private String version;
-		private List<ProjectDependence> dependencies = new ArrayList<>();
+		private List<TreeDependency> dependencies = new ArrayList<>();
 
-		ProjectDependence(String groupId, String artifactId, String version) {
+		TreeDependency(String groupId, String artifactId, String version) {
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 			this.version = version;
 		}
 
-		public void addDependence(ProjectDependence dependence) {
+		public void addDependence(TreeDependency dependence) {
 			if (dependence != null) {
 				dependencies.add(dependence);
 			}
 		}
 
-		public List<ProjectDependence> getAllProjectDependences() {
-			List<ProjectDependence> output = new ArrayList<>();
-			for (ProjectDependence projectDependence : dependencies) {
-				output.add(projectDependence);
+		public List<TreeDependency> getListProjectDependencies() {
+			List<TreeDependency> output = new ArrayList<>();
+			for (TreeDependency treeDependency : dependencies) {
+				output.add(treeDependency);
 			}
-			for (ProjectDependence projectDependence : dependencies) {
-				output.addAll(projectDependence.getAllProjectDependences());
+			for (TreeDependency treeDependency : dependencies) {
+				output.addAll(treeDependency.getListProjectDependencies());
 			}
 			return output;
 		}
 
 
 		public List<File> toFiles() {
-			List<ProjectDependence> deps = getAllProjectDependences();
+			List<TreeDependency> deps = getListProjectDependencies();
 			List<File> output = new ArrayList<>();
-			Set<ProjectDependence> addedDep = new HashSet<>();
+			Set<TreeDependency> addedDep = new HashSet<>();
 			for (int i = 0; i < deps.size(); i++) {
-				ProjectDependence dep = deps.get(i);
+				TreeDependency dep = deps.get(i);
 				File file = dep.toFile();
 				if (null != file && !addedDep.contains(dep)) {
 					addedDep.add(dep);
@@ -212,12 +212,12 @@ public class MavenLauncher extends Launcher {
 			return null;
 		}
 
-		public void removeDependence(String groupId, String artifactId) {
-			for (ProjectDependence dep : new ArrayList<>(dependencies)) {
+		public void removeDependency(String groupId, String artifactId) {
+			for (TreeDependency dep : new ArrayList<>(dependencies)) {
 				if (dep.groupId != null && dep.groupId.equals(groupId) && dep.artifactId != null && dep.artifactId.equals(artifactId)) {
 					this.dependencies.remove(dep);
 				} else {
-					dep.removeDependence(groupId, artifactId);
+					dep.removeDependency(groupId, artifactId);
 				}
 			}
 		}
@@ -230,7 +230,7 @@ public class MavenLauncher extends Launcher {
 			if (o == null || getClass() != o.getClass()) {
 				return false;
 			}
-			ProjectDependence that = (ProjectDependence) o;
+			TreeDependency that = (TreeDependency) o;
 			return Objects.equals(groupId, that.groupId)
 					&& Objects.equals(artifactId, that.artifactId);
 		}
@@ -251,7 +251,7 @@ public class MavenLauncher extends Launcher {
 			if (!dependencies.isEmpty()) {
 				sb.append(" {\n");
 				for (int i = 0; i < dependencies.size(); i++) {
-					ProjectDependence dep = dependencies.get(i);
+					TreeDependency dep = dependencies.get(i);
 					String child = dep.toString();
 					for (String s : child.split("\n")) {
 						sb.append("\t");
@@ -426,7 +426,7 @@ public class MavenLauncher extends Launcher {
 			}
 		}
 
-		private ProjectDependence getDependencies(Dependency dependency, boolean isLib, Set<ProjectDependence> hierarchy) {
+		private TreeDependency getTreeDependency(Dependency dependency, boolean isLib, Set<TreeDependency> hierarchy) {
 			String version = extractVersion(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
 			if (version == null) {
 				LOGGER.warn("A dependency version cannot be resolved: " + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
@@ -446,14 +446,14 @@ public class MavenLauncher extends Launcher {
 				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
 				return null;
 			}
-			ProjectDependence dependence = new ProjectDependence(dependency.getGroupId(), dependency.getArtifactId(), version);
+			TreeDependency dependence = new TreeDependency(dependency.getGroupId(), dependency.getArtifactId(), version);
 			if (hierarchy.contains(dependence)) {
 				//return null;
 			}
 			try {
 				InheritanceModel dependencyModel = readPom(dependency.getGroupId(), dependency.getArtifactId(), version);
 				if (dependencyModel != null) {
-					dependence = dependencyModel.getDependencies(true, hierarchy);
+					dependence = dependencyModel.getTreeDependency(true, hierarchy);
 					dependence.groupId = dependency.getGroupId();
 					dependence.artifactId = dependency.getArtifactId();
 					dependence.version = version;
@@ -461,7 +461,7 @@ public class MavenLauncher extends Launcher {
 					if (dependency.getExclusions() != null) {
 						for (int i = 0; i < dependency.getExclusions().size(); i++) {
 							Exclusion exclusion = dependency.getExclusions().get(i);
-							dependence.removeDependence(exclusion.getGroupId(), exclusion.getArtifactId());
+							dependence.removeDependency(exclusion.getGroupId(), exclusion.getArtifactId());
 						}
 					}
 				}
@@ -473,8 +473,8 @@ public class MavenLauncher extends Launcher {
 			return dependence;
 		}
 
-		private ProjectDependence getDependencies() {
-			return getDependencies(false, new HashSet<>());
+		private TreeDependency getTreeDependency() {
+			return getTreeDependency(false, new HashSet<>());
 		}
 
 		/**
@@ -483,8 +483,8 @@ public class MavenLauncher extends Launcher {
 		 * @param isLib: If false take dependency of the main project; if true, take dependencies of a library of the project
 		 * @return the list of  dependencies
 		 */
-		private ProjectDependence getDependencies(boolean isLib, Set<ProjectDependence> hierarchy) {
-			ProjectDependence dependence = new ProjectDependence(model.getGroupId(), model.getArtifactId(), model.getVersion());
+		private TreeDependency getTreeDependency(boolean isLib, Set<TreeDependency> hierarchy) {
+			TreeDependency dependence = new TreeDependency(model.getGroupId(), model.getArtifactId(), model.getVersion());
 			if (hierarchy.contains(dependence)) {
 				return dependence;
 			}
@@ -493,12 +493,12 @@ public class MavenLauncher extends Launcher {
 
 			// add the parent has a dependency
 			if (this.parent != null) {
-				dependence.addDependence(this.parent.getDependencies(isLib, hierarchy));
+				dependence.addDependence(this.parent.getTreeDependency(isLib, hierarchy));
 			}
 
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
-				dependence.addDependence(getDependencies(dependency, isLib, hierarchy));
+				dependence.addDependence(getTreeDependency(dependency, isLib, hierarchy));
 			}
 
 			if (!isLib) {
@@ -509,7 +509,7 @@ public class MavenLauncher extends Launcher {
 					if (module.model.getVersion() == null) {
 						module.model.setVersion(model.getVersion());
 					}
-					dependence.addDependence(module.getDependencies(isLib, hierarchy));
+					dependence.addDependence(module.getTreeDependency(isLib, hierarchy));
 				}
 			}
 			return dependence;
