@@ -10,7 +10,6 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -35,7 +34,6 @@ import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -406,6 +404,7 @@ public class LambdaTest {
 
 	@Test
 	public void testInterfaceWithObjectMethods() throws Exception {
+		// contract Lambda expression works on interfaces with methods inherited from java.lang.Object
 		CtInterface<?> checkPersons = factory.Interface().get(Foo.CheckPersons.class);
 		List<CtLambda<?>> lambdas = foo.filterChildren(new LambdaFilter(checkPersons)).list();
 		assertEquals(2, lambdas.size());
