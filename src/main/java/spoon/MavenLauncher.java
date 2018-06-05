@@ -106,7 +106,7 @@ public class MavenLauncher extends Launcher {
 
 		// dependencies
 		TreeDependency depTree = model.getTreeDependency();
-		List<File> dependencies = depTree.toFiles();
+		List<File> dependencies = depTree.toJarList();
 		String[] classpath = new String[dependencies.size()];
 		for (int i = 0; i < dependencies.size(); i++) {
 			File file = dependencies.get(i);
@@ -170,25 +170,25 @@ public class MavenLauncher extends Launcher {
 			}
 		}
 
-		public List<TreeDependency> getListProjectDependencies() {
+		public List<TreeDependency> getDependencyList() {
 			List<TreeDependency> output = new ArrayList<>();
 			for (TreeDependency treeDependency : dependencies) {
 				output.add(treeDependency);
 			}
 			for (TreeDependency treeDependency : dependencies) {
-				output.addAll(treeDependency.getListProjectDependencies());
+				output.addAll(treeDependency.getDependencyList());
 			}
 			return output;
 		}
 
 
-		public List<File> toFiles() {
-			List<TreeDependency> deps = getListProjectDependencies();
+		public List<File> toJarList() {
+			List<TreeDependency> deps = getDependencyList();
 			List<File> output = new ArrayList<>();
 			Set<TreeDependency> addedDep = new HashSet<>();
 			for (int i = 0; i < deps.size(); i++) {
 				TreeDependency dep = deps.get(i);
-				File file = dep.toFile();
+				File file = dep.getTopLevelJar();
 				if (null != file && !addedDep.contains(dep)) {
 					addedDep.add(dep);
 					output.add(file);
@@ -197,7 +197,7 @@ public class MavenLauncher extends Launcher {
 			return output;
 		}
 
-		private File toFile() {
+		private File getTopLevelJar() {
 			if (groupId != null && version != null) {
 				String fileName = artifactId + "-" + version;
 				Path depPath = Paths.get(m2RepositoryPath, groupId.replaceAll("\\.", "/"), artifactId, version);
