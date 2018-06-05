@@ -21,7 +21,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
-import spoon.metamodel.MMTypeKind;
+import spoon.metamodel.ConceptKind;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtFieldRead;
@@ -39,7 +39,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 
-import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,7 +140,7 @@ public class CtScannerTest {
 		for (MetamodelConcept leafConcept : metaModel.getConcepts()) {
 
 			// we only consider leaf, actual classes of the metamodel (eg CtInvocation) and not abstract ones (eg CtModifiable)
-			if (leafConcept.getKind() != MMTypeKind.LEAF) {
+			if (leafConcept.getKind() != ConceptKind.LEAF) {
 				continue;
 			}
 
@@ -159,7 +158,7 @@ public class CtScannerTest {
 				}
 
 				// ignore fields, which doesn't return CtElement
-				if (mmField.getItemValueType().isSubtypeOf(ctElementRef) == false) {
+				if (mmField.getTypeofItems().isSubtypeOf(ctElementRef) == false) {
 					return; // return of the lambda
 				}
 
@@ -179,7 +178,7 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && leafConcept.getModelInterface().isSubtypeOf(ctRefRef)) {
+				if(getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}

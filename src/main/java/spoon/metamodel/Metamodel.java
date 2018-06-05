@@ -55,7 +55,7 @@ import spoon.support.compiler.FileSystemFolder;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
- * Represents a Spoon meta model of the AST nodes.
+ * Represents the Spoon metamodel (incl. at runtime)
  */
 public class Metamodel {
 	/**
@@ -215,6 +215,9 @@ public class Metamodel {
 	}
 
 	/**
+	 *
+	 * Not in the public API.
+	 *
 	 * Parses spoon sources and creates factory with spoon model.
 	 *
 	 * @param spoonJavaSourcesDirectory the root directory of java sources of spoon model.
@@ -227,7 +230,7 @@ public class Metamodel {
 	/**
 	 * @param factory already loaded factory with all Spoon model types
 	 */
-	public Metamodel(Factory factory) {
+	private Metamodel(Factory factory) {
 		for (String apiPackage : MODEL_IFACE_PACKAGES) {
 			if (factory.Package().get(apiPackage) == null) {
 				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
@@ -248,9 +251,11 @@ public class Metamodel {
 	}
 
 	/**
-	 * creates a {@link Metamodel} in runtime mode when spoon sources are not available
+	 * Creates a {@link Metamodel} in runtime mode when spoon sources are not available.
+	 *
+	 * See also {@link #getInstance()}.
 	 */
-	public Metamodel() {
+	private Metamodel() {
 		for (CtType<?> iface : getAllMetamodelInterfaces()) {
 			if (iface instanceof CtInterface) {
 				getOrCreateConcept(iface);
@@ -266,14 +271,14 @@ public class Metamodel {
 	}
 
 	/**
-	 * @return List of Spoon model interfaces, which represents instantiable leafs of Spoon model type hierarchy
+	 * @return List of Spoon model interfaces, which represents instantiable leafs of Spoon metamodel
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
 		List<CtType<? extends CtElement>> result = new ArrayList<>();
 		for (MetamodelConcept mmConcept : getConcepts()) {
-			if (mmConcept.getKind() == MMTypeKind.LEAF) {
-				result.add((CtType) mmConcept.getModelInterface());
+			if (mmConcept.getKind() == ConceptKind.LEAF) {
+				result.add((CtType) mmConcept.getMetamodelInterface());
 			}
 		}
 		return result;
@@ -302,7 +307,7 @@ public class Metamodel {
 	}
 
 	/**
-	 * @param impl the implementation of spoon model element
+	 * @param impl the implementation class of a Spoon element
 	 * @return {@link CtInterface} of Spoon model which represents API of the spoon model class. null if there is no implementation.
 	 */
 	public static CtInterface<?> getInterfaceOfImplementation(CtClass<?> impl) {
@@ -401,13 +406,13 @@ public class Metamodel {
 		}
 
 		//add fields of class
-		if (mmConcept.getModelClass() != null) {
-			addFieldsOfType(mmConcept, mmConcept.getModelClass());
+		if (mmConcept.getImplementationClass() != null) {
+			addFieldsOfType(mmConcept, mmConcept.getImplementationClass());
 		}
 		//add fields of interface
-		if (mmConcept.getModelInterface() != null) {
+		if (mmConcept.getMetamodelInterface() != null) {
 			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MetamodelConcept already exists in nameToConcept
-			addFieldsOfType(mmConcept, mmConcept.getModelInterface());
+			addFieldsOfType(mmConcept, mmConcept.getMetamodelInterface());
 		}
 		//initialize all fields
 		mmConcept.getRoleToProperty().forEach((role, mmField) -> {

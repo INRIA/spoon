@@ -33,7 +33,7 @@ import java.util.TreeSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.metamodel.MMTypeKind.ABSTRACT;
+import static spoon.metamodel.ConceptKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
@@ -285,8 +285,8 @@ public class SpoonArchitectureEnforcerTest {
 		List<String> missingMethods = new ArrayList<>();
 
 		Metamodel.getInstance().getConcepts().forEach(mmConcept -> {
-			if (mmConcept.getKind() == ABSTRACT && mmConcept.getModelInterface() != null) {
-				CtInterface abstractIface = mmConcept.getModelInterface();
+			if (mmConcept.getKind() == ABSTRACT && mmConcept.getMetamodelInterface() != null) {
+				CtInterface abstractIface = mmConcept.getMetamodelInterface();
 				String methodName = "scan" + abstractIface.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);

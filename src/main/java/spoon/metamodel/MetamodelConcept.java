@@ -33,13 +33,13 @@ import spoon.reflect.path.CtRole;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
- * Represents a concept of Spoon model AST node
+ * Represents a concept of the Spoon metamodel (eg {@link CtClass}).
  */
 public class MetamodelConcept {
 	/**
 	 * Kind of this concept
 	 */
-	private MMTypeKind kind;
+	private ConceptKind kind;
 	/**
 	 * Name of the concept
 	 */
@@ -96,21 +96,21 @@ public class MetamodelConcept {
 	}
 
 	/**
-	 * @return kind of this {@link MetamodelConcept}. Is it abstract concept or concept of leaf AST node?
+	 * @return kind of this {@link MetamodelConcept}.
 	 */
-	public MMTypeKind getKind() {
+	public ConceptKind getKind() {
 		if (kind == null) {
 			if (modelClass == null && modelInterface == null) {
 				return null;
 			} else {
 				// we first consider interface
 				if (modelClass == null) {
-					this.kind = MMTypeKind.ABSTRACT;
+					this.kind = ConceptKind.ABSTRACT;
 				} else {
 					if (modelClass.hasModifier(ModifierKind.ABSTRACT)) {
-						this.kind = MMTypeKind.ABSTRACT;
+						this.kind = ConceptKind.ABSTRACT;
 					} else {
-						this.kind = MMTypeKind.LEAF;
+						this.kind = ConceptKind.LEAF;
 					}
 				}
 			}
@@ -148,7 +148,7 @@ public class MetamodelConcept {
 	/**
 	 * @return {@link CtClass} which represents this {@link MetamodelConcept}
 	 */
-	public CtClass<?> getModelClass() {
+	public CtClass<?> getImplementationClass() {
 		return modelClass;
 	}
 
@@ -159,7 +159,7 @@ public class MetamodelConcept {
 	/**
 	 * @return {@link CtInterface} which represents this {@link MetamodelConcept}
 	 */
-	public CtInterface<?> getModelInterface() {
+	public CtInterface<?> getMetamodelInterface() {
 		return modelInterface;
 	}
 
@@ -169,8 +169,10 @@ public class MetamodelConcept {
 
 	/**
 	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MetamodelConcept}
+	 *
+	 * (package protected, not in the public API)
 	 */
-	public ClassTypingContext getTypeContext() {
+	ClassTypingContext getTypeContext() {
 		if (typeContext == null) {
 			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInterface);
 		}

@@ -17,16 +17,17 @@
 package spoon.metamodel;
 
 /**
- * Represents type of Spoon model class
+ * Represents categories of metamodel types
  */
-public enum MMTypeKind {
+public enum ConceptKind {
 	/**
-	 * Kind of type which represents leaf of Spoon model.
+	 * Types of the metamodel that can be instantiated.
 	 * Examples: CtClass, CtField, CtThrow
 	 */
 	LEAF,
 	/**
-	 * Kind of type which represents some abstract concept of Spoon model
+	 * Types of the metamodel which represent abstract concepts of Spoon
+	 * that cannot be directly instantiated. Some of them are marker interfaces.
 	 * Examples: CtExecutable, CtReference, CtBodyHolder, ...
 	 */
 	ABSTRACT;

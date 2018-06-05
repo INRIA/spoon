@@ -28,8 +28,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.MethodTypingContext;
 
 /**
- * Represents a method of a {@link MetamodelProperty} of a {@link MetamodelConcept}.
- * Each MMMethod belongs to one MMField
+ * Represents a method used to get or set a {@link MetamodelProperty} of a {@link MetamodelConcept}.
  */
 public class MMMethod {
 	private final MetamodelProperty ownerField;
@@ -47,16 +46,16 @@ public class MMMethod {
 	MMMethod(MetamodelProperty field, CtMethod<?> method) {
 		this.ownerField = field;
 		//adapt method to scope of field.ownType
-		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(field.getOwnerConcept().getTypeContext()).setMethod(method);
+		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(field.getOwner().getTypeContext()).setMethod(method);
 		this.method = (CtMethod<?>) mtc.getAdaptationScope();
 		signature = this.method.getSignature();
-		methodKind = MMMethodKind.valueOf(this.method);
+		methodKind = MMMethodKind.kindOf(this.method);
 	}
 
 	/**
 	 * @return a {@link CtMethod}, which represents this {@link MMMethod}
 	 */
-	public CtMethod<?> getMethod() {
+	public CtMethod<?> getActualCtMethod() {
 		return method;
 	}
 
@@ -77,14 +76,14 @@ public class MMMethod {
 	/**
 	 * @return kind of this method. Getter, setter, ...
 	 */
-	public MMMethodKind getMethodKind() {
+	public MMMethodKind getKind() {
 		return methodKind;
 	}
 
 	/**
 	 * @return first own method in super type hierarchy of `targetType`
 	 */
-	public CtMethod<?> getFirstOwnMethod(MetamodelConcept targetType) {
+	CtMethod<?> getFirstOwnMethod(MetamodelConcept targetType) {
 		for (CtMethod<?> ctMethod : ownMethods) {
 			if (targetType.getTypeContext().isSubtypeOf(ctMethod.getDeclaringType().getReference())) {
 				return ctMethod;
@@ -104,7 +103,7 @@ public class MMMethod {
 	 * @return true of this {@link MMMethod} overrides `method`. In different words, if it represents the same method
 	 */
 	public boolean overrides(CtMethod<?> method) {
-		return ownerField.getOwnerConcept().getTypeContext().isOverriding(this.method, method);
+		return ownerField.getOwner().getTypeContext().isOverriding(this.method, method);
 	}
 
 	/**
@@ -116,25 +115,24 @@ public class MMMethod {
 	}
 
 	/**
-	 * @return {@link MetamodelProperty} which owns this {@link MMMethod}
+	 * @return the {@link MetamodelProperty} which is get or set by this {@link MMMethod}
 	 */
-	public MetamodelProperty getOwnerField() {
+	public MetamodelProperty getProperty() {
 		return ownerField;
 	}
 
 	/**
 	 * @return {@link MetamodelConcept} where this {@link MMMethod} belongs to
 	 */
-	public MetamodelConcept getOwnerType() {
-		return getOwnerField().getOwnerConcept();
+	public MetamodelConcept getOwner() {
+		return getProperty().getOwner();
 	}
 
 	/**
-	 * @return {@link CtMethod}s, which are declared directly in the getOwnType().
-	 * It does not return methods which are inherited from super types.
-	 * It returns empty list, if there is no own implementation and method is inherited only
+	 * @return {@link CtMethod}s, which are declared directly in the {@link MetamodelConcept}, that are related to the same {@link MetamodelProperty}.
+	 * (It does not return methods which are inherited from super types.)
 	 */
-	public List<CtMethod<?>> getOwnMethods() {
+	public List<CtMethod<?>> getRelatedMethods() {
 		return Collections.unmodifiableList(ownMethods);
 	}
 
@@ -150,7 +148,7 @@ public class MMMethod {
 	}
 
 	/**
-	 * @return a type returned by this method
+	 * @return the type returned by this method
 	 */
 	public CtTypeReference<?> getReturnType() {
 		return method.getType();
@@ -168,7 +166,7 @@ public class MMMethod {
 
 	@Override
 	public String toString() {
-		return getOwnerType().getName() + "#" + getSignature();
+		return getOwner().getName() + "#" + getSignature();
 	}
 
 }

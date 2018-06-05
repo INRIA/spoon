@@ -19,10 +19,12 @@ package spoon.metamodel;
 import java.util.function.Predicate;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 
 /**
- * Represents type of value accessor
+ * Represents the type of metamodel method.
+ * eg {@link spoon.reflect.declaration.CtType#addField(CtField)} has MMMethodKind{@link #ADD_FIRST}.
  */
 public enum MMMethodKind {
 	/**
@@ -100,7 +102,7 @@ public enum MMMethodKind {
 	}
 
 	/**
-	 * @return true if this accessor provides access to elements of an collection.
+	 * @return true if this accessor provides access to elements of a collection.
 	 * 		 false if it accessed full value of attribute
 	 */
 	public boolean isMulti() {
@@ -108,21 +110,11 @@ public enum MMMethodKind {
 	}
 
 	/**
-	 * @return index of parameter, which contains the field value.
-	 * idx &gt;= 0 - for method parameters
-	 * idx = -1 - for return value of the method
-	 * idx = -2 - unknown
-	 */
-	public int getValueParameterIndex() {
-		return valueParameterIndex;
-	}
-
-	/**
 	 * Detect kind of method
 	 * @param method to be check method
 	 * @return detected {@link MMMethodKind}, which fits to the `method`
 	 */
-	public static MMMethodKind valueOf(CtMethod<?> method) {
+	public static MMMethodKind kindOf(CtMethod<?> method) {
 		MMMethodKind result = OTHER;
 		for (MMMethodKind k : values()) {
 			if (k.detector.test(method) && result.level < k.level) {

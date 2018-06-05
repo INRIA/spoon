@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
-import spoon.metamodel.MMTypeKind;
+import spoon.metamodel.ConceptKind;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
 import spoon.metamodel.Metamodel;
@@ -14,7 +14,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
@@ -24,10 +23,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.StandardEnvironment;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +46,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 
 		List<Object[]> values = new ArrayList<>();
 		for (MetamodelConcept t : metaModel.getConcepts()) {
-			if(t.getKind()==MMTypeKind.LEAF) {
+			if(t.getKind()==ConceptKind.LEAF) {
 				values.add(new Object[] { t });
 			}
 		}
@@ -67,19 +63,19 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		
 		// contract: all elements are replaceable wherever they are in the model
 		// this test puts them at all possible locations
-		CtType<?> toTest = typeToTest.getModelInterface();
+		CtType<?> toTest = typeToTest.getMetamodelInterface();
 		Factory factory = toTest.getFactory();
 
 		CtElement o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
 		for (MetamodelProperty mmField : typeToTest.getRoleToProperty().values()) {
-			Class<?> argType = mmField.getItemValueType().getActualClass();
+			Class<?> argType = mmField.getTypeofItems().getActualClass();
 
 			if (!CtElement.class.isAssignableFrom(argType)) {
 				continue;
 			}
 
 
-			CtTypeReference<?> itemType = mmField.getItemValueType();
+			CtTypeReference<?> itemType = mmField.getTypeofItems();
 			// special cases...
 			if (itemType.getQualifiedName().equals(CtStatement.class.getName())) {
 				//the children of CtLoop wraps CtStatement into an implicit CtBlock. So make a block directly to test plain get/set and not wrapping.

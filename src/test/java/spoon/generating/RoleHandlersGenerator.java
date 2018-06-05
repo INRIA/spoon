@@ -69,12 +69,12 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			if (d != 0) {
 				return d;
 			}
-			return a.getOwnerConcept().getName().compareTo(b.getOwnerConcept().getName());
+			return a.getOwner().getName().compareTo(b.getOwner().getName());
 		});
 		PrinterHelper concept = new PrinterHelper(getFactory().getEnvironment());
 		superFields.forEach(mmField -> {
-			concept.write(mmField.getOwnerConcept().getName() + " CtRole." + mmField.getRole().name()).writeln().incTab()
-			.write("ItemType: ").write(mmField.getValueType().toString()).writeln();
+			concept.write(mmField.getOwner().getName() + " CtRole." + mmField.getRole().name()).writeln().incTab()
+			.write("ItemType: ").write(mmField.getTypeOfField().toString()).writeln();
 			for (MMMethodKind mk : MMMethodKind.values()) {
 				MMMethod mmMethod = mmField.getMethod(mk);
 				if (mmMethod != null) {
@@ -105,11 +105,11 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			}
 			params.put("$Role$", getFactory().Type().createReference(CtRole.class));
 			params.put("ROLE", rim.getRole().name());
-			params.put("$TargetType$", rim.getOwnerConcept().getModelInterface().getReference());
+			params.put("$TargetType$", rim.getOwner().getMetamodelInterface().getReference());
 //			params.put("AbstractHandler", getFactory().Type().createReference("spoon.reflect.meta.impl.AbstractRoleHandler"));
 			params.put("AbstractHandler", getRoleHandlerSuperTypeQName(rim));
-			params.put("Node", rim.getOwnerConcept().getModelInterface().getReference());
-			params.put("ValueType", fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getValueType() : rim.getItemValueType()));
+			params.put("Node", rim.getOwner().getMetamodelInterface().getReference());
+			params.put("ValueType", fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getTypeOfField() : rim.getTypeofItems()));
 			CtClass<?> modelRoleHandlerClass = Substitution.createTypeFromTemplate(
 					getHandlerName(rim),
 					getTemplate("spoon.generating.meta.RoleHandlerTemplate"),
@@ -185,12 +185,12 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	}
 
 	String getHandlerName(MetamodelProperty field) {
-		String typeName = field.getOwnerConcept().getName();
+		String typeName = field.getOwner().getName();
 		return typeName + "_" + field.getRole().name() + "_RoleHandler";
 	}
 
 	public String getRoleHandlerSuperTypeQName(MetamodelProperty field) {
-		switch (field.getValueContainerType()) {
+		switch (field.getContainerKind()) {
 			case LIST:
 				return "spoon.reflect.meta.impl.ListHandler";
 			case SET:
@@ -200,6 +200,6 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			case SINGLE:
 				return "spoon.reflect.meta.impl.SingleHandler";
 		}
-		throw new SpoonException("Unexpected value container type: " + field.getValueContainerType().name());
+		throw new SpoonException("Unexpected value container type: " + field.getContainerKind().name());
 	}
 }

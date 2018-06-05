@@ -38,6 +38,7 @@ import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.visitor.ClassTypingContext;
 import spoon.template.Parameter;
 
 import java.io.File;
@@ -212,13 +213,13 @@ public class MetamodelTest {
 
 	private void assertConceptsEqual(MetamodelConcept expectedConcept, MetamodelConcept runtimeConcept) {
 		assertEquals(expectedConcept.getName(), runtimeConcept.getName());
-		if (expectedConcept.getModelClass() == null) {
-			assertNull(runtimeConcept.getModelClass());
+		if (expectedConcept.getImplementationClass() == null) {
+			assertNull(runtimeConcept.getImplementationClass());
 		} else {
-			assertNotNull(runtimeConcept.getModelClass());
-			assertEquals(expectedConcept.getModelClass().getActualClass(), runtimeConcept.getModelClass().getActualClass());
+			assertNotNull(runtimeConcept.getImplementationClass());
+			assertEquals(expectedConcept.getImplementationClass().getActualClass(), runtimeConcept.getImplementationClass().getActualClass());
 		}
-		assertEquals(expectedConcept.getModelInterface().getActualClass(), runtimeConcept.getModelInterface().getActualClass());
+		assertEquals(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
 		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
 		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());
 		for (int i = 0; i < expectedConcept.getSuperConcepts().size(); i++) {
@@ -236,10 +237,10 @@ public class MetamodelTest {
 	private void assertPropertiesEqual(MetamodelProperty expectedProperty, MetamodelProperty runtimeProperty) {
 		assertSame(expectedProperty.getRole(), runtimeProperty.getRole());
 		assertEquals(expectedProperty.getName(), runtimeProperty.getName());
-		assertEquals(expectedProperty.getItemValueType().getActualClass(), runtimeProperty.getItemValueType().getActualClass());
-		assertEquals(expectedProperty.getOwnerConcept().getName(), runtimeProperty.getOwnerConcept().getName());
-		assertSame(expectedProperty.getValueContainerType(), runtimeProperty.getValueContainerType());
-		assertEquals(expectedProperty.getValueType(), runtimeProperty.getValueType());
+		assertEquals(expectedProperty.getTypeofItems().getActualClass(), runtimeProperty.getTypeofItems().getActualClass());
+		assertEquals(expectedProperty.getOwner().getName(), runtimeProperty.getOwner().getName());
+		assertSame(expectedProperty.getContainerKind(), runtimeProperty.getContainerKind());
+		assertEquals(expectedProperty.getTypeOfField(), runtimeProperty.getTypeOfField());
 		assertEquals(expectedProperty.isDerived(), runtimeProperty.isDerived());
 		assertEquals(expectedProperty.isUnsettable(), runtimeProperty.isUnsettable());
 	}
@@ -271,20 +272,29 @@ public class MetamodelTest {
 				}
 				unhandledRoles.remove(role);
 				if (mmField.getMethod(MMMethodKind.GET) == null) {
-					problems.add("Missing getter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
+					problems.add("Missing getter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
-					if (mmConcept.getTypeContext().isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
+					if (new ClassTypingContext(mmConcept.getMetamodelInterface()).isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
 							&& mmConcept.getName().equals("CtTypeInformation") == false) {
 						//only NON references needs a setter
-						problems.add("Missing setter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
+						problems.add("Missing setter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 					}
 				}
 				//contract: type of field value is never implicit
-				assertFalse("Value type of Field " + mmField.toString() + " is implicit", mmField.getValueType().isImplicit());
-				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getItemValueType().isImplicit());
+				assertFalse("Value type of Field " + mmField.toString() + " is implicit", mmField.getTypeOfField().isImplicit());
+				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getTypeofItems().isImplicit());
 
-				mmField.forEachUnhandledMethod(ctMethod -> problems.add("Unhandled method signature: " + ctMethod.getDeclaringType().getSimpleName() + "#" + ctMethod.getSignature()));
+				mmField.getMethods(MMMethodKind.OTHER).forEach(
+						mmethod -> mmethod.getRelatedMethods().forEach(
+								ctMethod -> problems.add("Unhandled method signature: " + ctMethod.getDeclaringType().getSimpleName() + "#" + ctMethod.getSignature())
+						)
+				);
+
+				// Martin: how to add the test
+				// if (mmMethods.size() > 1) {
+				//					mmMethods.subList(1, mmMethods.size()).forEach(mmMethod -> mmMethod.getRelatedMethods().forEach(consumer));
+				//				}
 			});
 		});
 

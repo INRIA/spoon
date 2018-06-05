@@ -188,8 +188,8 @@ public class JavaReflectionTreeBuilderTest {
 		Metamodel metaModel = new Metamodel(new File("src/main/java"));
 		List<String> allProblems = new ArrayList<>();
 		for (MetamodelConcept concept : metaModel.getConcepts()) {
-			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelClass()));
-			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelInterface()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getImplementationClass()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getMetamodelInterface()));
 		}
 		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
 	}
