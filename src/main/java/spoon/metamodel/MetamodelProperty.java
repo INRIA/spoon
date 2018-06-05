@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Set;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
@@ -538,7 +540,11 @@ public class MetamodelProperty {
 	 *
 	 * Not in the public API.
 	 *
-	 * @return the super MMField which has same valueType and which is in root of most implementations
+	 * @return the super {@link MetamodelProperty} which has same valueType and which is in root of most implementations
+	 * For example:
+	 * The root super property of {@link CtField}#NAME is {@link CtNamedElement}#NAME
+	 * This method can be used optimized generated code, by way it creates SHARED property handlers.
+	 * For example {@link CtNamedElement}#NAME is shared by many subclasses
 	 */
 	public MetamodelProperty getRootSuperField() {
 		List<MetamodelProperty> potentialRootSuperFields = new ArrayList<>();
