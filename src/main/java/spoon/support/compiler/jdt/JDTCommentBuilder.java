@@ -590,7 +590,7 @@ class JDTCommentBuilder {
 			} else {
 				//it is potentially multiline comment, which starts with "/*" or "/**"
 				//check end first
-				if (line.endsWith("*/")) {
+				if (line.endsWith("*/") && line.length() > 3) {
 					//it is last line
 					line = endCommentRE.matcher(line).replaceFirst("");
 					isLastLine = true;
