@@ -20,6 +20,7 @@ import org.apache.log4j.Level;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -103,7 +105,8 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// dependencies
-		List<File> dependencies = model.getDependencies(false, new HashSet<>());
+		ProjectDependence depTree = model.getDependencies();
+		List<File> dependencies = depTree.toFiles();
 		String[] classpath = new String[dependencies.size()];
 		for (int i = 0; i < dependencies.size(); i++) {
 			File file = dependencies.get(i);
@@ -149,6 +152,119 @@ public class MavenLauncher extends Launcher {
 		}
 	}
 
+	class ProjectDependence {
+		private String groupId;
+		private String artifactId;
+		private String version;
+		private List<ProjectDependence> dependencies = new ArrayList<>();
+
+		ProjectDependence(String groupId, String artifactId, String version) {
+			this.groupId = groupId;
+			this.artifactId = artifactId;
+			this.version = version;
+		}
+
+		public void addDependence(ProjectDependence dependence) {
+			if (dependence != null) {
+				dependencies.add(dependence);
+			}
+		}
+
+		public List<ProjectDependence> getAllProjectDependences() {
+			List<ProjectDependence> output = new ArrayList<>();
+			for (ProjectDependence projectDependence : dependencies) {
+				output.add(projectDependence);
+			}
+			for (ProjectDependence projectDependence : dependencies) {
+				output.addAll(projectDependence.getAllProjectDependences());
+			}
+			return output;
+		}
+
+
+		public List<File> toFiles() {
+			List<ProjectDependence> deps = getAllProjectDependences();
+			List<File> output = new ArrayList<>();
+			Set<ProjectDependence> addedDep = new HashSet<>();
+			for (int i = 0; i < deps.size(); i++) {
+				ProjectDependence dep = deps.get(i);
+				File file = dep.toFile();
+				if (null != file && !addedDep.contains(dep)) {
+					addedDep.add(dep);
+					output.add(file);
+				}
+			}
+			return output;
+		}
+
+		private File toFile() {
+			if (groupId != null && version != null) {
+				String fileName = artifactId + "-" + version;
+				Path depPath = Paths.get(m2RepositoryPath, groupId.replaceAll("\\.", "/"), artifactId, version);
+				File depFile = depPath.toFile();
+				if (depFile.exists()) {
+					File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
+					if (jarFile.exists()) {
+						return jarFile;
+					}
+				}
+			}
+			return null;
+		}
+
+		public void removeDependence(String groupId, String artifactId) {
+			for (ProjectDependence dep : new ArrayList<>(dependencies)) {
+				if (dep.groupId != null && dep.groupId.equals(groupId) && dep.artifactId != null && dep.artifactId.equals(artifactId)) {
+					this.dependencies.remove(dep);
+				} else {
+					dep.removeDependence(groupId, artifactId);
+				}
+			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			ProjectDependence that = (ProjectDependence) o;
+			return Objects.equals(groupId, that.groupId)
+					&& Objects.equals(artifactId, that.artifactId);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(groupId, artifactId);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(groupId);
+			sb.append(":");
+			sb.append(artifactId);
+			sb.append(":");
+			sb.append(version);
+			if (!dependencies.isEmpty()) {
+				sb.append(" {\n");
+				for (int i = 0; i < dependencies.size(); i++) {
+					ProjectDependence dep = dependencies.get(i);
+					String child = dep.toString();
+					for (String s : child.split("\n")) {
+						sb.append("\t");
+						sb.append(s);
+						sb.append("\n");
+					}
+				}
+				sb.append("}");
+			}
+			return sb.toString();
+		}
+	}
+
 	class InheritanceModel {
 		private List<InheritanceModel> modules = new ArrayList<>();
 		private Model model;
@@ -169,9 +285,6 @@ public class MavenLauncher extends Launcher {
 						String groupId = model.getParent().getGroupId();
 						String version = model.getParent().getVersion();
 						this.parent = readPom(groupId, model.getParent().getArtifactId(), version);
-						if (this.parent != null) {
-							this.parent.modules.add(this);
-						}
 					}
 				} catch (Exception e) {
 					LOGGER.debug("Parent model cannot be resolved: " + e.getMessage());
@@ -313,90 +426,93 @@ public class MavenLauncher extends Launcher {
 			}
 		}
 
-		private Set<File> getDependencies(String groupId, String artifactId, String version, String scope, boolean isOptional, boolean isLib, Set<String> hierarchy) {
-			Set<File> output = new HashSet<>();
-			version = extractVersion(groupId, artifactId, version);
+		private ProjectDependence getDependencies(Dependency dependency, boolean isLib, Set<ProjectDependence> hierarchy) {
+			String version = extractVersion(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
 			if (version == null) {
-				LOGGER.warn("A dependency version cannot be resolved: " + groupId + ":" + artifactId + ":" + version);
-				return output;
+				LOGGER.warn("A dependency version cannot be resolved: " + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
+				return null;
 			}
-			groupId = groupId.replace(".", "/");
-
 			// pass only the optional dependency if it's in a library dependency
-			if (isLib && isOptional) {
-				return output;
+			if (isLib && dependency.isOptional()) {
+				return null;
 			}
 
 			// ignore test dependencies for app source code
-			if ("test".equals(scope) && SOURCE_TYPE.APP_SOURCE == sourceType) {
-				return output;
+			if ("test".equals(dependency.getScope()) && (SOURCE_TYPE.APP_SOURCE == sourceType || isLib)) {
+				return null;
 			}
 			// ignore not transitive dependencies
-			if (isLib && ("test".equals(scope) || "provided".equals(scope))) {
-				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test): " + groupId + ":" + artifactId + ":" + version);
-				return output;
+			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
+				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
+				return null;
 			}
-			String fileName = artifactId + "-" + version;
-			Path depPath = Paths.get(m2RepositoryPath, groupId, artifactId, version);
-			File depFile = depPath.toFile();
-			if (depFile.exists()) {
-				File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
-				if (jarFile.exists()) {
-					output.add(jarFile);
+			ProjectDependence dependence = new ProjectDependence(dependency.getGroupId(), dependency.getArtifactId(), version);
+			if (hierarchy.contains(dependence)) {
+				//return null;
+			}
+			try {
+				InheritanceModel dependencyModel = readPom(dependency.getGroupId(), dependency.getArtifactId(), version);
+				if (dependencyModel != null) {
+					dependence = dependencyModel.getDependencies(true, hierarchy);
+					dependence.groupId = dependency.getGroupId();
+					dependence.artifactId = dependency.getArtifactId();
+					dependence.version = version;
 
-					String depKey = groupId.replace("/", ".") + ":" + artifactId;
-					if (!dependencyManagements.containsKey(depKey)) {
-						dependencyManagements.put(depKey, version);
+					if (dependency.getExclusions() != null) {
+						for (int i = 0; i < dependency.getExclusions().size(); i++) {
+							Exclusion exclusion = dependency.getExclusions().get(i);
+							dependence.removeDependence(exclusion.getGroupId(), exclusion.getArtifactId());
+						}
 					}
-				} else {
-					// if the a dependency is not found, uses the no classpath mode
-					getEnvironment().setNoClasspath(true);
 				}
 
-				try {
-					InheritanceModel dependencyModel = readPom(groupId.replace("/", "."), artifactId, version);
-					if (dependencyModel != null) {
-						output.addAll(dependencyModel.getDependencies(true, hierarchy));
-					}
-				} catch (Exception ignore) {
-					// ignore the dependencies of the dependency
-					ignore.printStackTrace();
-				}
-			} else {
-				// if the a dependency is not found, uses the no classpath mode
-				getEnvironment().setNoClasspath(true);
+			} catch (Exception ignore) {
+				// ignore the dependencies of the dependency
+				ignore.printStackTrace();
 			}
-			return output;
+			return dependence;
 		}
+
+		private ProjectDependence getDependencies() {
+			return getDependencies(false, new HashSet<>());
+		}
+
 		/**
 		 * Get the list of dependencies available in the local maven repository
 		 *
 		 * @param isLib: If false take dependency of the main project; if true, take dependencies of a library of the project
 		 * @return the list of  dependencies
 		 */
-		public List<File> getDependencies(boolean isLib, Set<String> hierarchy) {
-			Set<File> output = new HashSet<>();
-
-			String modelKey = model.getGroupId() + ":" + model.getArtifactId() + ":" + model.getVersion();
-			if (hierarchy.contains(modelKey)) {
-				return new ArrayList<>(output);
+		private ProjectDependence getDependencies(boolean isLib, Set<ProjectDependence> hierarchy) {
+			ProjectDependence dependence = new ProjectDependence(model.getGroupId(), model.getArtifactId(), model.getVersion());
+			if (hierarchy.contains(dependence)) {
+				return dependence;
 			}
-			hierarchy.add(modelKey);
+			hierarchy.add(dependence);
+
 
 			// add the parent has a dependency
 			if (this.parent != null) {
-				output.addAll(this.parent.getDependencies(isLib, hierarchy));
+				dependence.addDependence(this.parent.getDependencies(isLib, hierarchy));
 			}
 
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
-				output.addAll(getDependencies(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getScope(), dependency.isOptional(), isLib, hierarchy));
+				dependence.addDependence(getDependencies(dependency, isLib, hierarchy));
 			}
 
-			for (InheritanceModel module : modules) {
-				output.addAll(module.getDependencies(isLib, hierarchy));
+			if (!isLib) {
+				for (InheritanceModel module : modules) {
+					if (module.model.getGroupId() == null) {
+						module.model.setGroupId(model.getGroupId());
+					}
+					if (module.model.getVersion() == null) {
+						module.model.setVersion(model.getVersion());
+					}
+					dependence.addDependence(module.getDependencies(isLib, hierarchy));
+				}
 			}
-			return new ArrayList<>(output);
+			return dependence;
 		}
 
 		/**
