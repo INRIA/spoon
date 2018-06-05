@@ -372,7 +372,7 @@ public class LambdaTest {
 		CtExecutableReference<?> methodRef = lambdaRef.getOverridingExecutable();
 // because methodRef is null
 		CtExecutable<?> method2 = methodRef.getDeclaration();
-		assertEquals("The lambda.getActualCtMethod() != lambda.getReference().getOverridingExecutable().getDeclaration()", method, method2);
+		assertEquals("The lambda.getMethod() != lambda.getReference().getOverridingExecutable().getDeclaration()", method, method2);
 */
 	}
 
