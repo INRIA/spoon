@@ -17,6 +17,7 @@
 package spoon.support.visitor.java;
 
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -206,11 +207,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		enter(new TypeRuntimeBuilderContext(clazz, ctAnnotationType) {
 			@Override
 			public void addMethod(CtMethod ctMethod) {
-				final CtField<Object> field = factory.Core().createField();
+				final CtAnnotationMethod<Object> field = factory.Core().createAnnotationMethod();
 				field.setSimpleName(ctMethod.getSimpleName());
 				field.setModifiers(ctMethod.getModifiers());
 				field.setType(ctMethod.getType());
-				ctAnnotationType.addField(field);
+				ctAnnotationType.addMethod(field);
 			}
 		});
 		super.visitAnnotationClass(clazz);
