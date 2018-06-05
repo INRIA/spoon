@@ -113,26 +113,26 @@ public class WildComments {
 			/*** starts and ends with 3 * ***/
 			"* starts and ends with 3 * **",
 			/**** starts and ends with 4 * ****/
-			"** starts and ends with 4 * ***"
+			"** starts and ends with 4 * ***",
+
+			/* these comments should not cause 'Unexpected next line after last line' exception */
+			"these comments should not cause 'Unexpected next line after last line' exception",
+			/*/
+			slash and comment
+			*/
+			"/\nslash and comment",
+			/*
+			comment and slash
+			/*/
+			"comment and slash\n/",
+			/*/
+			slash and comment and slash
+			/*/
+			"/\nslash and comment and slash\n/",
+			//*/
+			"*/",
+			/*/*/
+			"/"
 	};
-
-	/* should not cause "Unexpected next line after last line" exception */
-	public void testSlash() {
-		/*/
-		slash and comment
-		*/
-
-		/*
-		comment and slash
-		/*/
-
-		/*/
-		slash and comment and slash
-		/*/
-
-		//*/
-
-		/*/*/
-	}
 }
  
