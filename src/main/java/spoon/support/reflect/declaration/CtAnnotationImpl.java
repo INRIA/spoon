@@ -312,7 +312,18 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return (T) getValueAsExpression(key);
 	}
 
-	private Object getValueAsObject(String key) {
+	@Override
+	public int getValueAsInt(String key) {
+		return (int) getValueAsObject(key);
+	}
+
+	@Override
+	public String getValueAsString(String key) {
+		return (String) getValueAsObject(key);
+	}
+
+	@Override
+	public Object getValueAsObject(String key) {
 		CtExpression expr = getWrappedValue(key);
 		Object ret = convertElementToRuntimeObject(expr);
 		Class<?> type = getElementType(key);
