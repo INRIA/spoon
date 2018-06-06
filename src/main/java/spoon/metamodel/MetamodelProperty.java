@@ -459,15 +459,15 @@ public class MetamodelProperty {
 			}
 			CtTypeReference<DerivedProperty> derivedProperty = getter.getActualCtMethod().getFactory().createCtTypeReference(DerivedProperty.class);
 
-			boolean isConreteMethod = false;
+			boolean isConcreteMethod = false;
 			for (CtMethod<?> ctMethod : getter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(derivedProperty) != null) {
 					derived = Boolean.TRUE;
 					return true;
 				}
-				isConreteMethod = isConreteMethod || ctMethod.getBody() != null;
+				isConcreteMethod = isConcreteMethod || ctMethod.getBody() != null;
 			}
-			if (isConreteMethod) {
+			if (isConcreteMethod) {
 				//there exists a implementation of getter for this field in this type and there is no  DerivedProperty here, so it is not derived!
 				derived = Boolean.FALSE;
 				return false;
