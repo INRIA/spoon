@@ -229,6 +229,9 @@ public class GenericsTest {
 
 		// an bound type is not an TypeParameterRefernce
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalCtTypeParameters().get(0).toString());
+
+		meth = type.getMethod("m2");
+		assertEquals("A extends java.lang.Number & java.lang.Comparable<? super A>", meth.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
@@ -639,8 +642,7 @@ public class GenericsTest {
 		//typeParamRef has got new parent 
 		assertSame(typeRef, typeParamRef.getParent());
 
-		// null because without context
-		assertEquals(null, typeParamRef.getDeclaration());
+		assertEquals(typeParam, typeParamRef.getDeclaration());
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
 		typeParamRef.setSimpleName("Y");
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());

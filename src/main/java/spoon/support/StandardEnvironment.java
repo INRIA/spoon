@@ -47,6 +47,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -87,7 +88,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean shouldCompile = false;
 
-	private boolean skipSelfChecks;
+	private boolean skipSelfChecks = false;
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
@@ -99,7 +100,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private OutputType outputType = OutputType.CLASSES;
 
+
 	private String moduleSourcePath;
+
+	private Boolean noclasspath = null;
+
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -158,6 +163,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSelfChecks(boolean skip) {
 		skipSelfChecks = skip;
+	}
+
+	@Override
+	public void disableConsistencyChecks() {
+		skipSelfChecks = true;
 	}
 
 	private Level toLevel(String level) {
@@ -400,7 +410,7 @@ public class StandardEnvironment implements Serializable, Environment {
 			try {
 				urls[i] = new File(classpath[i]).toURI().toURL();
 			} catch (MalformedURLException e) {
-				throw new IllegalStateException("Invalid classpath: " + classpath, e);
+				throw new IllegalStateException("Invalid classpath: " + Arrays.toString(classpath), e);
 			}
 		}
 		return urls;
@@ -433,6 +443,7 @@ public class StandardEnvironment implements Serializable, Environment {
 				if (javaFiles.size() > 0) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
+				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
 			} else if (classOrJarFolder.getName().endsWith(".class")) {
 				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}
@@ -459,8 +470,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.preserveLineNumbers = preserveLineNumbers;
 	}
 
-	private boolean noclasspath = false;
-
 	@Override
 	public void setNoClasspath(boolean option) {
 		noclasspath = option;
@@ -468,6 +477,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean getNoClasspath() {
+		if (this.noclasspath == null) {
+			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
+			this.noclasspath = true;
+		}
 		return noclasspath;
 	}
 

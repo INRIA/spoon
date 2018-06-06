@@ -23,6 +23,7 @@ import spoon.reflect.factory.Factory;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,13 +74,14 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler setModifiers(Set<ModifierKind> modifiers) {
-		if (modifiers != null && modifiers.size() > 0) {
+		if (modifiers == null) {
+			modifiers = Collections.emptySet();
+		}
 			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			this.modifiers.clear();
 			for (ModifierKind modifier : modifiers) {
 				addModifier(modifier);
 			}
-		}
 		return this;
 	}
 

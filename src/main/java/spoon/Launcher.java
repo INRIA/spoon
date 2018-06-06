@@ -346,17 +346,6 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
-			// Enable building only outdated files
-			sw1 = new Switch("buildOnlyOutdatedFiles");
-			sw1.setLongFlag("buildOnlyOutdatedFiles");
-			sw1.setHelp(
-					"Set Spoon to build only the source files that " + "have been modified since the latest " + "source code generation, for performance " + "purpose. Note that this option requires "
-							+ "to have the --ouput-type option not set " + "to none. This option is not appropriate " + "to all kinds of processing. In particular "
-							+ "processings that implement or rely on a " + "global analysis should avoid this option " + "because the processor will only have access "
-							+ "to the outdated source code (the files " + "modified since the latest processing).");
-			sw1.setDefault("false");
-			jsap.registerParameter(sw1);
-
 			sw1 = new Switch("lines");
 			sw1.setLongFlag("lines");
 			sw1.setHelp("Set Spoon to try to preserve the original line " + "numbers when generating the source " + "code (may lead to human-unfriendly " + "formatting).");
@@ -562,7 +551,6 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 
 		// backward compatibility

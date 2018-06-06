@@ -469,11 +469,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		if (child instanceof CtConstructor) {
-			CtConstructor<T> c = (CtConstructor<T>) child;
-			if (c.getPosition() != null && c.getPosition().getSourceStart() == -1) {
-				c.setImplicit(true);
-			}
-			ctClass.addConstructor(c);
+			ctClass.addConstructor((CtConstructor<T>) child);
 		}
 		if (child instanceof CtAnonymousExecutable) {
 			ctClass.addAnonymousExecutable((CtAnonymousExecutable) child);
@@ -790,7 +786,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				ctPackage.removeType((CtType<?>) child);
 			}
 			ctPackage.addType((CtType<?>) child);
-			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
+			if (child.getPosition().getCompilationUnit() != null) {
 				CompilationUnit cu = child.getPosition().getCompilationUnit();
 				List<CtType<?>> declaredTypes = new ArrayList<>(cu.getDeclaredTypes());
 				declaredTypes.add((CtType<?>) child);

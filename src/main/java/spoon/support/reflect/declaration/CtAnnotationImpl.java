@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -216,8 +217,12 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return addValueExpression(elementName, value);
 	}
 
+	/**
+	 * Convert CtExpression (mostly) to their equivalent runtime objects
+	 * eg CtLiteral(3) -> 3
+	 */
 	@SuppressWarnings("unchecked")
-	private Object convertValue(Object value) {
+	private Object convertElementToRuntimeObject(CtElement value) {
 		if (value instanceof CtFieldReference) {
 			Class<?> c = null;
 			try {
@@ -237,7 +242,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			}
 			// Value is a static final
 			if (field != null) {
-				return convertValue(field.getDefaultExpression());
+				return convertElementToRuntimeObject(field.getDefaultExpression());
 			} else {
 				try {
 					return ((Field) ((CtFieldReference<?>) value).getActualField()).get(null);
@@ -248,19 +253,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			}
 		} else if (value instanceof CtFieldAccess) {
 			// Get variable
-			return convertValue(((CtFieldAccess<?>) value).getVariable());
+			return convertElementToRuntimeObject(((CtFieldAccess<?>) value).getVariable());
 		} else if (value instanceof CtNewArray) {
-			CtNewArray<?> arrayExpression = (CtNewArray<?>) value;
-
-			Class<?> componentType = arrayExpression.getType().getActualClass().getComponentType();
-			List<CtExpression<?>> elements = arrayExpression.getElements();
-
-			Object array = Array.newInstance(componentType, elements.size());
-			for (int i = 0; i < elements.size(); i++) {
-				Array.set(array, i, this.convertValue(elements.get(i)));
-			}
-
-			return array;
+			return toArray((CtNewArray) value);
 		} else if (value instanceof CtAnnotation) {
 			// Get proxy
 			return ((CtAnnotation<?>) value).getActualAnnotation();
@@ -270,9 +265,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		} else if (value instanceof CtCodeElement) {
 			// Evaluate code elements
 			PartialEvaluator eval = getFactory().Eval().createPartialEvaluator();
-			Object ret = eval.evaluate((CtCodeElement) value);
+			CtElement ret = eval.evaluate((CtCodeElement) value);
 
-			return this.convertValue(ret);
+			return this.convertElementToRuntimeObject(ret);
 		} else if (value instanceof CtTypeReference) {
 			// Get RT class for References
 			return ((CtTypeReference<?>) value).getActualClass();
@@ -301,8 +296,8 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return annotationType;
 	}
 
-	private Object getDefaultValue(String fieldName) {
-		Object ret = null;
+	private CtExpression getDefaultExpression(String fieldName) {
+		CtExpression ret = null;
 		CtAnnotationType<?> at = (CtAnnotationType<?>) getAnnotationType().getDeclaration();
 		if (at != null) {
 			CtAnnotationMethod<?> f = (CtAnnotationMethod) at.getMethod(fieldName);
@@ -311,50 +306,102 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return ret;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T getElementValue(String key) {
-		Object ret = this.elementValues.get(key);
-		if (ret == null) {
-			ret = getDefaultValue(key);
-		}
-		if (ret == null) {
-			ret = getReflectValue(key);
-		}
+	public <T extends CtExpression> T getValue(String key) {
+		return (T) getValueAsExpression(key);
+	}
 
+	private Object getValueAsObject(String key) {
+		CtExpression expr = getWrappedValue(key);
+		Object ret = convertElementToRuntimeObject(expr);
 		Class<?> type = getElementType(key);
+		return forceObjectToType(ret, type);
+	}
 
-		ret = this.convertValue(ret);
-
+	private Object forceObjectToType(Object ret, Class<?> type) {
 		if (type.isPrimitive()) {
 			if ((type == boolean.class) && (ret.getClass() != boolean.class)) {
-				ret = Boolean.parseBoolean(ret.toString());
+				return Boolean.parseBoolean(ret.toString());
 			} else if ((type == byte.class) && (ret.getClass() != byte.class)) {
-				ret = Byte.parseByte(ret.toString());
+				return Byte.parseByte(ret.toString());
 			} else if ((type == char.class) && (ret.getClass() != char.class)) {
-				ret = ret.toString().charAt(0);
+				return ret.toString().charAt(0);
 			} else if ((type == double.class) && (ret.getClass() != double.class)) {
-				ret = Double.parseDouble(ret.toString());
+				return Double.parseDouble(ret.toString());
 			} else if ((type == float.class) && (ret.getClass() != float.class)) {
-				ret = Float.parseFloat(ret.toString());
+				return Float.parseFloat(ret.toString());
 			} else if ((type == int.class) && (ret.getClass() != int.class)) {
-				ret = Integer.parseInt(ret.toString());
+				return Integer.parseInt(ret.toString());
 			} else if ((type == long.class) && (ret.getClass() != long.class)) {
-				ret = Long.parseLong(ret.toString());
+				return Long.parseLong(ret.toString());
 			} else if (type == short.class && ret.getClass() != short.class) {
-				ret = Short.parseShort(ret.toString());
+				return Short.parseShort(ret.toString());
 			}
 		}
-		if (type.isArray() && ret != null && ret.getClass() != type) {
-			final Object array = Array.newInstance(ret.getClass(), 1);
-			((Object[]) array)[0] = ret;
-			ret = array;
+		return ret;
+	}
+
+
+	/** creating a real low level Java array from a CtNewArray */
+	private Object toArray(CtNewArray value) {
+		CtNewArray<?> arrayExpression = (CtNewArray<?>) value;
+
+		Class<?> componentType = arrayExpression.getType().getActualClass().getComponentType();
+		List<CtExpression<?>> elements = arrayExpression.getElements();
+
+		Object array = Array.newInstance(componentType, elements.size());
+		for (int i = 0; i < elements.size(); i++) {
+			Array.set(array, i, this.convertElementToRuntimeObject(elements.get(i)));
 		}
-		return (T) ret;
+
+		return array;
+	}
+
+	private CtExpression getValueAsExpression(String key) {
+
+		// get specified field in annotation directly
+		CtExpression ret = this.elementValues.get(key);
+		if (ret != null) {
+			return ret;
+		}
+
+		// get default value in annotation declaration in source code
+		ret = getDefaultExpression(key);
+		if (ret != null) {
+			return ret;
+		}
+
+		// get default value in annotation declaration in classpath
+		Object value = getReflectValue(key);
+		if (value != null) {
+			return convertValueToExpression(value);
+		}
+
+		return null;
 	}
 
 	@Override
-	public <T extends CtExpression> T getValue(String key) {
-		return (T) this.elementValues.get(key);
+	public <T extends CtExpression> T getWrappedValue(String key) {
+		CtExpression ctExpression = this.getValue(key);
+
+			CtTypeReference typeReference = this.getAnnotationType();
+			CtType type = typeReference.getTypeDeclaration();
+			if (type != null) {
+				CtMethod method = type.getMethod(key);
+				if (method != null) {
+					CtTypeReference returnType = method.getType();
+					if (returnType instanceof CtArrayTypeReference && !(ctExpression instanceof CtNewArray)) {
+						CtNewArray newArray = getFactory().Core().createNewArray();
+						CtArrayTypeReference typeReference2 = this.getFactory().createArrayTypeReference();
+						typeReference2.setComponentType(ctExpression.getType().clone());
+						newArray.setType(typeReference2);
+						newArray.addElement(ctExpression.clone());
+						return (T) newArray;
+					}
+				}
+		}
+		return (T) ctExpression;
 	}
 
 	public Map<String, Object> getElementValues() {
@@ -440,15 +487,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				} else if ("annotationType".equals(fieldname)) {
 					return annotation.getAnnotationType().getActualClass();
 				}
-				Object ret = getElementValue(fieldname);
-
-				// This is done here because return types should not be CT types;
-				// CtLiteral<String> vs String.
-				if (ret instanceof CtLiteral<?>) {
-					CtLiteral<?> l = (CtLiteral<?>) ret;
-					return l.getValue();
-				}
-
+				Object ret = getValueAsObject(fieldname);
 				return ret;
 			}
 		}

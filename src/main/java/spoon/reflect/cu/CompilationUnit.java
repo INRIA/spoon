@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
-public interface CompilationUnit extends FactoryAccessor {
+public interface CompilationUnit extends FactoryAccessor, Serializable {
 
 	enum UNIT_TYPE {
 		TYPE_DECLARATION,

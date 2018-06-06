@@ -1,6 +1,7 @@
 package spoon.test.lambda.testclasses;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -110,5 +111,6 @@ public class Foo {
 
 	public interface CheckPersons {
 		boolean test(Person p1, Person p2);
+		boolean equals(Object other);
 	}
 }
