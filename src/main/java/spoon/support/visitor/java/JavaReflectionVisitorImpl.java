@@ -49,28 +49,28 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 				visitTypeParameter(generic);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
 				visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
 				visitTypeReference(CtRole.INTERFACE, anInterface);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 				visitAnnotation(annotation);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -80,7 +80,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitConstructor(constructor);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -90,7 +90,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitMethod(method);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -100,14 +100,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitField(field);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Class<?> aClass : clazz.getDeclaredClasses()) {
 				visitType(aClass);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 	}
@@ -134,7 +134,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
 				visitTypeReference(CtRole.INTERFACE, anInterface);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 
@@ -142,7 +142,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 				visitAnnotation(annotation);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -152,7 +152,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitMethod(method);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -162,21 +162,21 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitField(field);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Class<?> aClass : clazz.getDeclaredClasses()) {
 				visitType(aClass);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 				visitTypeParameter(generic);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 	}
@@ -191,14 +191,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
 				visitTypeReference(CtRole.INTERFACE, anInterface);
 			}
-		}  catch (Throwable ignore) {
+		}  catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 				visitAnnotation(annotation);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -215,7 +215,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitConstructor(constructor);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -228,7 +228,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitMethod(method);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -242,14 +242,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 					visitField(field);
 				}
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Class<?> aClass : clazz.getDeclaredClasses()) {
 				visitType(aClass);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 	}
@@ -264,7 +264,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 				visitAnnotation(annotation);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -274,7 +274,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitMethod(method);
 			}
-		}  catch (Throwable ignore) {
+		}  catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
@@ -284,14 +284,14 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 				}
 				visitField(field);
 			}
-		}  catch (Throwable ignore) {
+		}  catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 		try {
 			for (Class<?> aClass : clazz.getDeclaredClasses()) {
 				visitType(aClass);
 			}
-		} catch (Throwable ignore) {
+		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
 	}
