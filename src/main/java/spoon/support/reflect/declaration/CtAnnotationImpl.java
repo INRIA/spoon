@@ -314,7 +314,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public int getValueAsInt(String key) {
-		return (int) getValueAsObject(key);
+		Object val = getValueAsObject(key);
+		if (val == null) {
+			throw new IllegalStateException(key + " not in the annotation");
+		}
+		return (int) val;
 	}
 
 	@Override
