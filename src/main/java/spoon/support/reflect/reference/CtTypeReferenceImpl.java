@@ -449,17 +449,24 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return Collections.unmodifiableSet(t.getSuperInterfaces());
 		} else {
-			Class<?> c = getActualClass();
-			Class<?>[] sis = c.getInterfaces();
-			if ((sis != null) && (sis.length > 0)) {
-				Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
-				for (Class<?> si : sis) {
-					set.add(getFactory().Type().createReference(si));
+			try {
+				Class<?> c = getActualClass();
+				Class<?>[] sis = c.getInterfaces();
+				if ((sis != null) && (sis.length > 0)) {
+					Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
+					for (Class<?> si : sis) {
+						CtTypeReference<?> reference = getFactory().Type().createReference(si);
+						reference.setParent(this);
+						set.add(reference);
+					}
+					return Collections.unmodifiableSet(set);
 				}
-				return Collections.unmodifiableSet(set);
+			} catch (SpoonClassNotFoundException e) {
+				return Collections.emptySet();
 			}
+			// when c.getInterfaces() is empty
+			return Collections.emptySet();
 		}
-		throw new SpoonException("Cannot provide CtType for " + getQualifiedName());
 	}
 
 	@Override
