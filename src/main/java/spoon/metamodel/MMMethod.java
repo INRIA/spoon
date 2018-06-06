@@ -31,7 +31,10 @@ import java.util.List;
 public class MMMethod {
 	private final MetamodelProperty ownerField;
 	private final CtMethod<?> method;
-	private final List<CtMethod<?>> ownMethods = new ArrayList<>();
+
+	/** methods with the same role and same signature in the type hierarchy */
+	private final List<CtMethod<?>> relatedMethods = new ArrayList<>();
+
 	private final String signature;
 	private final MMMethodKind methodKind;
 
@@ -82,7 +85,7 @@ public class MMMethod {
 	 * @return first own method in super type hierarchy of `targetType`
 	 */
 	CtMethod<?> getCompatibleMethod(MetamodelConcept targetType) {
-		for (CtMethod<?> ctMethod : ownMethods) {
+		for (CtMethod<?> ctMethod : relatedMethods) {
 			if (targetType.getTypeContext().isSubtypeOf(ctMethod.getDeclaringType().getReference())) {
 				return ctMethod;
 			}
@@ -113,18 +116,17 @@ public class MMMethod {
 	}
 
 	/**
-	 * @return {@link CtMethod}s, which are declared directly in the {@link MetamodelConcept}, that are related to the same {@link MetamodelProperty}.
-	 * (It does not return methods which are inherited from super types.)
+	 * @return {@link CtMethod}s, which are declared in the {@link MetamodelConcept} or in the hierarchy, that have the same role and {@link MMMethodKind}.
 	 */
 	public List<CtMethod<?>> getDeclaredMethods() {
-		return Collections.unmodifiableList(ownMethods);
+		return Collections.unmodifiableList(relatedMethods);
 	}
 
 	void addVariantMethod(CtMethod<?> method) {
 		if (method.getDeclaringType().getSimpleName().endsWith("Impl")) {
 			throw new SpoonException("the metametamodel should be entirely specified in the Spoon interfaces");
 		}
-		ownMethods.add(method);
+		relatedMethods.add(method);
 	}
 
 	/**
