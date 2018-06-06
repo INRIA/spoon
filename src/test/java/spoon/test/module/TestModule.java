@@ -268,7 +268,7 @@ public class TestModule {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
-		launcher.getEnvironment().setModuleSourcePath("./src/test/resources/spoon/test/module/simple_module_with_code/module-info.java");
+		//launcher.getEnvironment().setModuleSourcePath("./src/test/resources/spoon/test/module/simple_module_with_code/module-info.java");
 		launcher.run();
 
 		assertEquals(2, launcher.getModel().getAllModules().size());
