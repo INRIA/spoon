@@ -421,7 +421,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return t.getModifiers();
 		}
 		if (getFactory().getEnvironment().getNoClasspath()) {
-			return null;
+			return Collections.emptySet();
 		}
 		throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 	}
@@ -432,10 +432,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t.getSuperclass();
 		}
-		if (getFactory().getEnvironment().getNoClasspath()) {
-			return null;
-		}
-		throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+		return null;
 	}
 
 	@Override
@@ -558,6 +555,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
 		try {
+			if (type.getTypeDeclaration() == null) {
+				return true;
+			}
 			Set<ModifierKind> modifiers = type.getModifiers();
 
 			if (modifiers.contains(ModifierKind.PUBLIC)) {
