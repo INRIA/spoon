@@ -438,9 +438,11 @@ public class MavenLauncher extends Launcher {
 		}
 
 		private TreeDependency getTreeDependency(Dependency dependency, boolean isLib, Set<TreeDependency> hierarchy) {
-			String version = extractVersion(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
+			String groupId = getProperty(dependency.getGroupId());
+			String artifactId = getProperty(dependency.getArtifactId());
+			String version = extractVersion(groupId, artifactId, dependency.getVersion());
 			if (version == null) {
-				LOGGER.warn("A dependency version cannot be resolved: " + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
+				LOGGER.warn("A dependency version cannot be resolved: " + groupId + ":" + artifactId + ":" + version);
 				return null;
 			}
 			// pass only the optional dependency if it's in a library dependency
@@ -457,13 +459,13 @@ public class MavenLauncher extends Launcher {
 				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
 				return null;
 			}*/
-			TreeDependency dependence = new TreeDependency(dependency.getGroupId(), dependency.getArtifactId(), version, dependency.getType());
+			TreeDependency dependence = new TreeDependency(groupId, artifactId, version, dependency.getType());
 			try {
-				InheritanceModel dependencyModel = readPom(dependency.getGroupId(), dependency.getArtifactId(), version);
+				InheritanceModel dependencyModel = readPom(groupId, artifactId, version);
 				if (dependencyModel != null) {
 					dependence = dependencyModel.getTreeDependency(true, hierarchy);
-					dependence.groupId = dependency.getGroupId();
-					dependence.artifactId = dependency.getArtifactId();
+					dependence.groupId = groupId;
+					dependence.artifactId = artifactId;
 					dependence.version = version;
 
 					if (dependency.getExclusions() != null) {
@@ -491,7 +493,10 @@ public class MavenLauncher extends Launcher {
 		 * @return the list of  dependencies
 		 */
 		private TreeDependency getTreeDependency(boolean isLib, Set<TreeDependency> hierarchy) {
-			TreeDependency dependence = new TreeDependency(model.getGroupId(), model.getArtifactId(), model.getVersion(), model.getPackaging());
+			String groupId = extractVariable(model.getGroupId());
+			String artifactId = extractVariable(model.getArtifactId());
+			String version = extractVersion(groupId, artifactId, model.getVersion());
+			TreeDependency dependence = new TreeDependency(groupId, artifactId, version, model.getPackaging());
 			if (hierarchy.contains(dependence)) {
 				return dependence;
 			}
@@ -511,10 +516,10 @@ public class MavenLauncher extends Launcher {
 			if (true) {
 				for (InheritanceModel module : modules) {
 					if (module.model.getGroupId() == null) {
-						module.model.setGroupId(model.getGroupId());
+						module.model.setGroupId(groupId);
 					}
 					if (module.model.getVersion() == null) {
-						module.model.setVersion(model.getVersion());
+						module.model.setVersion(version);
 					}
 					dependence.addDependence(module.getTreeDependency(isLib, hierarchy));
 				}
@@ -531,6 +536,14 @@ public class MavenLauncher extends Launcher {
 			if ("project.version".equals(key)) {
 				if (model.getVersion() != null) {
 					return model.getVersion();
+				}
+			} else if ("project.groupId".equals(key)) {
+				if (model.getGroupId() != null) {
+					return model.getGroupId();
+				}
+			} else if ("project.artifactId".equals(key)) {
+				if (model.getArtifactId() != null) {
+					return model.getArtifactId();
 				}
 			}
 			String value = extractVariable(model.getProperties().getProperty(key));
