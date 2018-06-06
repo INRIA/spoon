@@ -417,6 +417,11 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return Collections.unmodifiableMap(elementValues);
 	}
 
+	@Override
+	public Map<String, CtExpression> getAllValues() {
+		return Collections.unmodifiableMap(elementValues);
+	}
+
 	private Object getReflectValue(String fieldname) {
 		try {
 			Class<?> c = getAnnotationType().getActualClass();
