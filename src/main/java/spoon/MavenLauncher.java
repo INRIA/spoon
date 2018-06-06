@@ -497,7 +497,7 @@ public class MavenLauncher extends Launcher {
 				dependence.addDependence(getTreeDependency(dependency, isLib, hierarchy));
 			}
 
-			if (!isLib) {
+			if (true) {
 				for (InheritanceModel module : modules) {
 					if (module.model.getGroupId() == null) {
 						module.model.setGroupId(model.getGroupId());
