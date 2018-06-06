@@ -34,7 +34,6 @@ public class MMMethod {
 	private final MetamodelProperty ownerField;
 	private final CtMethod<?> method;
 	private final List<CtMethod<?>> ownMethods = new ArrayList<>();
-	private final List<MMMethod> superMethods = new ArrayList<>();
 	private final String signature;
 	private final MMMethodKind methodKind;
 
@@ -50,6 +49,7 @@ public class MMMethod {
 		this.method = (CtMethod<?>) mtc.getAdaptationScope();
 		signature = this.method.getSignature();
 		methodKind = MMMethodKind.kindOf(this.method);
+		this.addVariantMethod(method);
 	}
 
 	/**
@@ -83,16 +83,10 @@ public class MMMethod {
 	/**
 	 * @return first own method in super type hierarchy of `targetType`
 	 */
-	CtMethod<?> getFirstOwnMethod(MetamodelConcept targetType) {
+	CtMethod<?> getCompatibleMethod(MetamodelConcept targetType) {
 		for (CtMethod<?> ctMethod : ownMethods) {
 			if (targetType.getTypeContext().isSubtypeOf(ctMethod.getDeclaringType().getReference())) {
 				return ctMethod;
-			}
-		}
-		for (MMMethod mmMethod : superMethods) {
-			CtMethod<?> m = mmMethod.getFirstOwnMethod(targetType);
-			if (m != null) {
-				return m;
 			}
 		}
 		throw new SpoonException("No own method exists in type " + ownerField);
@@ -104,14 +98,6 @@ public class MMMethod {
 	 */
 	public boolean overrides(CtMethod<?> method) {
 		return ownerField.getOwner().getTypeContext().isOverriding(this.method, method);
-	}
-
-	/**
-	 * Adds a `mmMethod` as super method of this {@link MMMethod}
-	 * @param mmMethod
-	 */
-	void addSuperMethod(MMMethod mmMethod) {
-		addUniqueObject(superMethods, mmMethod);
 	}
 
 	/**
@@ -136,15 +122,11 @@ public class MMMethod {
 		return Collections.unmodifiableList(ownMethods);
 	}
 
-	void addOwnMethod(CtMethod<?> method) {
+	void addVariantMethod(CtMethod<?> method) {
+		if (method.getDeclaringType().getSimpleName().endsWith("Impl")) {
+			throw new SpoonException();
+		}
 		ownMethods.add(method);
-	}
-
-	/**
-	 * @return List of {@link MMMethod}s, which comes from super types of type getOwnType()
-	 */
-	public List<MMMethod> getSuperMethods() {
-		return Collections.unmodifiableList(superMethods);
 	}
 
 	/**

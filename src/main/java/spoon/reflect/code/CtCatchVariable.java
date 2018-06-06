@@ -17,6 +17,7 @@
 package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtMultiTypedElement;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -53,4 +54,8 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	@Override
 	@DerivedProperty
 	CtTypeReference<T> getType();
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type);
 }

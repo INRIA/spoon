@@ -39,6 +39,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 
+import java.rmi.ServerError;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,8 +153,8 @@ public class CtScannerTest {
 			// go over the roles and the corresponding fields of this type
 			leafConcept.getRoleToProperty().forEach((role, mmField) -> {
 
-				if (mmField.isDerived()) {
-					//ignore derived fields
+				if (mmField.isDerived() || mmField.isUnsettable()) {
+					//ignore derived or unsettable fields
 					return; // return of the lambda
 				}
 
@@ -163,6 +164,7 @@ public class CtScannerTest {
 				}
 
 				MMMethod getter = mmField.getMethod(MMMethodKind.GET);
+				System.err.println("---"+getter.getSignature());
 				checkedMethods.add(getter.getSignature());
 				//System.out.println("checking "+m.getSignature() +" in "+visitMethod.getSignature());
 
@@ -178,7 +180,8 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)) {
+				if(getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)
+						) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}
@@ -204,7 +207,7 @@ public class CtScannerTest {
 
 			// contract: CtScanner only calls methods that have a role and the associated getter
 			if (calledMethods.size() > 0) {
-				problems.add("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: "+calledMethods);
+				fail("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: "+calledMethods);
 			}
 		}
 
@@ -215,7 +218,7 @@ public class CtScannerTest {
 		if(problems.size()>0) {
 			fail(String.join("\n", problems));
 		}
-		assertTrue("not enough checks", c.nbChecks >= 200);
+		assertTrue("not enough checks " + c.nbChecks, c.nbChecks >= 200);
 	}
 
 	@Test

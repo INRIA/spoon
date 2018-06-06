@@ -103,8 +103,7 @@ public class MetamodelProperty {
 	}
 
 	void addMethod(CtMethod<?> method) {
-		MMMethod mmMethod = getOwnMethod(method, true);
-		mmMethod.addOwnMethod(method);
+		MMMethod mmMethod = addMethod(method, true);
 	}
 
 	/**
@@ -112,9 +111,11 @@ public class MetamodelProperty {
 	 * @param createIfNotExist
 	 * @return existing {@link MMMethod}, which overrides `method` or creates and registers new one if `createIfNotExist`==true
 	 */
-	MMMethod getOwnMethod(CtMethod<?> method, boolean createIfNotExist) {
+	MMMethod addMethod(CtMethod<?> method, boolean createIfNotExist) {
 		for (MMMethod mmMethod : roleMethods) {
 			if (mmMethod.overrides(method)) {
+				// linking this ctMethod to this mmMethod
+				mmMethod.addVariantMethod(method);
 				return mmMethod;
 			}
 		}
@@ -133,8 +134,13 @@ public class MetamodelProperty {
 
 	void addSuperField(MetamodelProperty superMMField) {
 		if (addUniqueObject(superProperties, superMMField)) {
+			// we copy all methods of the super property
 			for (MMMethod superMethod : superMMField.getRoleMethods()) {
-				getOwnMethod(superMethod.getFirstOwnMethod(getOwner()), true).addSuperMethod(superMethod);
+				CtMethod<?> method;
+				// we want the super method that is compatible with this property
+				method = superMethod.getCompatibleMethod(getOwner());
+				// we add this CtMethod to this property
+				addMethod(method, true);
 			}
 		}
 	}
@@ -447,11 +453,9 @@ public class MetamodelProperty {
 	 */
 	public boolean isDerived() {
 		if (derived == null) {
-			if (isUnsettable()) {
-				//all unsettable properties are derived too
-				derived = true;
-				return true;
-			}
+			// by default it's derived
+			derived = Boolean.FALSE;
+
 			//if DerivedProperty is found on any getter of this type, then this field is derived
 			MMMethod getter = getMethod(MMMethodKind.GET);
 			if (getter == null) {
@@ -459,27 +463,21 @@ public class MetamodelProperty {
 			}
 			CtTypeReference<DerivedProperty> derivedProperty = getter.getActualCtMethod().getFactory().createCtTypeReference(DerivedProperty.class);
 
-			boolean isConcreteMethod = false;
 			for (CtMethod<?> ctMethod : getter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(derivedProperty) != null) {
 					derived = Boolean.TRUE;
-					return true;
+					return derived;
 				}
-				isConcreteMethod = isConcreteMethod || ctMethod.getBody() != null;
 			}
-			if (isConcreteMethod) {
-				//there exists a implementation of getter for this field in this type and there is no  DerivedProperty here, so it is not derived!
-				derived = Boolean.FALSE;
-				return false;
-			}
+
 			//inherit derived property from super type
 			//if DerivedProperty annotation is not found on any get method, then it is not derived
-			derived = Boolean.FALSE;
+
 			//check all super fields. If any of them is derived then this field is derived too
 			for (MetamodelProperty superField : superProperties) {
 				if (superField.isDerived()) {
 					derived = Boolean.TRUE;
-					break;
+					return derived;
 				}
 			}
 		}
@@ -491,38 +489,26 @@ public class MetamodelProperty {
 	 * ie. if the property has the annotation @{@link UnsettableProperty}
 	 */
 	public boolean isUnsettable() {
-		if (unsettable == null) {
+		if (unsettable == null)
+		{
+			// by default it's unsettable
+			unsettable = Boolean.FALSE;
+
 			//if UnsettablePropertyis found on any setter of this type, then this field is unsettable
 			MMMethod setter = getMethod(MMMethodKind.SET);
 			if (setter == null) {
 				unsettable = Boolean.TRUE;
-				return true;
+				return unsettable;
 			}
 			CtTypeReference<UnsettableProperty> unsettableProperty = setter.getActualCtMethod().getFactory().createCtTypeReference(UnsettableProperty.class);
 
-			boolean isConreteMethod = false;
 			for (CtMethod<?> ctMethod : setter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(unsettableProperty) != null) {
 					unsettable = Boolean.TRUE;
-					return true;
-				}
-				isConreteMethod = isConreteMethod || ctMethod.getBody() != null;
-			}
-			if (isConreteMethod) {
-				//there exists a implementation of setter for this field in this type and there is no  UnsettableProperty here, so it is settable!
-				unsettable = Boolean.FALSE;
-				return false;
-			}
-			//inherit unsettable property from super type
-			//if UnsettableProperty annotation is not found on any set method, then it is settable
-			unsettable = Boolean.FALSE;
-			//check all super fields. If any of them is derived then this field is derived too
-			for (MetamodelProperty superField : superProperties) {
-				if (superField.isUnsettable()) {
-					unsettable = Boolean.TRUE;
-					break;
+					return unsettable;
 				}
 			}
+
 		}
 		return unsettable;
 	}

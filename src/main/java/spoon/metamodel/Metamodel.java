@@ -405,10 +405,6 @@ public class Metamodel {
 			throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
 		}
 
-		//add fields of class
-		if (mmConcept.getImplementationClass() != null) {
-			addFieldsOfType(mmConcept, mmConcept.getImplementationClass());
-		}
 		//add fields of interface
 		if (mmConcept.getMetamodelInterface() != null) {
 			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MetamodelConcept already exists in nameToConcept

@@ -27,6 +27,7 @@ import spoon.reflect.visitor.Filter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -67,7 +68,8 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		Factory factory = toTest.getFactory();
 
 		CtElement o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
-		for (MetamodelProperty mmField : typeToTest.getRoleToProperty().values()) {
+		Map<CtRole, MetamodelProperty> roleToProperty = typeToTest.getRoleToProperty();
+		for (MetamodelProperty mmField : roleToProperty.values()) {
 			Class<?> argType = mmField.getTypeofItems().getActualClass();
 
 			if (!CtElement.class.isAssignableFrom(argType)) {
@@ -94,6 +96,9 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			CtElement receiver = ((CtElement) o).clone();
 
 			RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getClass(), mmField.getRole());
+			if (mmField.getName().equals("interface")) {
+				System.out.println("");
+			}
 			if (mmField.isUnsettable()) {
 				try {
 					// we invoke the setter
