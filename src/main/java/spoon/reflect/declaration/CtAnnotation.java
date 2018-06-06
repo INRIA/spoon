@@ -105,11 +105,11 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 * @return this annotation's element names and their values, or an empty map
 	 * if there are none
 	 */
-	@PropertyGetter(role = VALUE)
+	@DerivedProperty
 	Map<String, CtExpression> getValues();
 
 	/** Get all values of {@link #getValues()}, plus the default ones */
-	@DerivedProperty
+	@PropertyGetter(role = VALUE)
 	Map<String, CtExpression> getAllValues();
 
 	/**
