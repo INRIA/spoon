@@ -16,6 +16,7 @@
  */
 package spoon;
 
+import org.apache.log4j.Level;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
@@ -207,10 +208,10 @@ public class MavenLauncher extends Launcher {
 					if (jarFile.exists()) {
 						return jarFile;
 					} else {
-						System.err.println("Jar not found at " + jarFile);
+						LOGGER.log(Level.ERROR, "Jar not found at " + jarFile);
 					}
 				} else {
-					System.err.println("Dependency not found at " + depPath);
+					LOGGER.log(Level.ERROR, "Dependency not found at " + depPath);
 				}
 			}
 			return null;
@@ -431,7 +432,7 @@ public class MavenLauncher extends Launcher {
 			try {
 				return readPOM(depPath.toString(), null);
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath.toString(), e);
 				return null;
 			}
 		}
