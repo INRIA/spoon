@@ -438,8 +438,8 @@ public class MavenLauncher extends Launcher {
 		}
 
 		private TreeDependency getTreeDependency(Dependency dependency, boolean isLib, Set<TreeDependency> hierarchy) {
-			String groupId = getProperty(dependency.getGroupId());
-			String artifactId = getProperty(dependency.getArtifactId());
+			String groupId = extractVariable(dependency.getGroupId());
+			String artifactId = extractVariable(dependency.getArtifactId());
 			String version = extractVersion(groupId, artifactId, dependency.getVersion());
 			if (version == null) {
 				LOGGER.warn("A dependency version cannot be resolved: " + groupId + ":" + artifactId + ":" + version);
@@ -455,10 +455,10 @@ public class MavenLauncher extends Launcher {
 				return null;
 			}
 			// ignore not transitive dependencies
-			/*if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
+			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
 				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
 				return null;
-			}*/
+			}
 			TreeDependency dependence = new TreeDependency(groupId, artifactId, version, dependency.getType());
 			try {
 				InheritanceModel dependencyModel = readPom(groupId, artifactId, version);
@@ -513,7 +513,7 @@ public class MavenLauncher extends Launcher {
 				dependence.addDependence(getTreeDependency(dependency, isLib, hierarchy));
 			}
 
-			if (true) {
+			if (!isLib) {
 				for (InheritanceModel module : modules) {
 					if (module.model.getGroupId() == null) {
 						module.model.setGroupId(groupId);
