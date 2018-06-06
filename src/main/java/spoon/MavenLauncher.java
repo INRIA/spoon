@@ -16,7 +16,6 @@
  */
 package spoon;
 
-import org.apache.log4j.Level;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
@@ -433,7 +432,7 @@ public class MavenLauncher extends Launcher {
 				return null;
 			}
 			// pass only the optional dependency if it's in a library dependency
-			if (isLib && dependency.isOptional()) {
+			/*if (isLib && dependency.isOptional()) {
 				return null;
 			}
 
@@ -445,11 +444,8 @@ public class MavenLauncher extends Launcher {
 			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
 				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
 				return null;
-			}
+			}*/
 			TreeDependency dependence = new TreeDependency(dependency.getGroupId(), dependency.getArtifactId(), version);
-			if (hierarchy.contains(dependence)) {
-				//return null;
-			}
 			try {
 				InheritanceModel dependencyModel = readPom(dependency.getGroupId(), dependency.getArtifactId(), version);
 				if (dependencyModel != null) {
