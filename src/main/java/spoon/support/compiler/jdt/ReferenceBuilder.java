@@ -18,7 +18,6 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
@@ -94,7 +93,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,7 +105,6 @@ public class ReferenceBuilder {
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
 	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
-	private Map<String, CtTypeReference<?>> basestypes = new TreeMap<>();
 
 	private boolean bounds = false;
 
@@ -202,12 +199,13 @@ public class ReferenceBuilder {
 				}
 			}
 			if (type.getTypeArguments() != null && type.getTypeArguments().length - 1 <= position && type.getTypeArguments()[position] != null && type.getTypeArguments()[position].length > 0) {
-				currentReference.getActualTypeArguments().clear();
+				CtTypeReference<?> componentReference = getTypeReferenceOfArrayComponent(currentReference);
+				componentReference.getActualTypeArguments().clear();
 				for (TypeReference typeArgument : type.getTypeArguments()[position]) {
 					if (typeArgument instanceof Wildcard || typeArgument.resolvedType instanceof WildcardBinding || typeArgument.resolvedType instanceof TypeVariableBinding) {
-						currentReference.addActualTypeArgument(buildTypeParameterReference(typeArgument, scope));
+						componentReference.addActualTypeArgument(buildTypeParameterReference(typeArgument, scope));
 					} else {
-						currentReference.addActualTypeArgument(buildTypeReference(typeArgument, scope));
+						componentReference.addActualTypeArgument(buildTypeReference(typeArgument, scope));
 					}
 				}
 			} else if ((type instanceof ParameterizedSingleTypeReference || type instanceof ParameterizedQualifiedTypeReference)
@@ -226,6 +224,13 @@ public class ReferenceBuilder {
 			currentReference = currentReference.getDeclaringType();
 		}
 		return typeReference;
+	}
+
+	private CtTypeReference<?> getTypeReferenceOfArrayComponent(CtTypeReference<?> currentReference) {
+		while (currentReference instanceof CtArrayTypeReference) {
+			currentReference = ((CtArrayTypeReference<?>) currentReference).getComponentType();
+		}
+		return currentReference;
 	}
 
 	private boolean isTypeArgumentExplicit(TypeReference[][] typeArguments) {
@@ -539,6 +544,9 @@ public class ReferenceBuilder {
 	 * reference with a name that correspond to the name of the JDT type reference.
 	 */
 	<T> CtTypeReference<T> getTypeReference(TypeReference ref) {
+		if (ref == null) {
+			return null;
+		}
 		CtTypeReference<T> res = null;
 		CtTypeReference inner = null;
 		final String[] namesParameterized = CharOperation.charArrayToStringArray(ref.getParameterizedTypeName());
@@ -787,14 +795,9 @@ public class ReferenceBuilder {
 			}
 		} else if (binding instanceof BaseTypeBinding) {
 			String name = new String(binding.sourceName());
-			ref = basestypes.get(name);
-			if (ref == null) {
-				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-				ref.setSimpleName(name);
-				basestypes.put(name, ref);
-			} else {
-				ref = ref == null ? ref : ref.clone();
-			}
+			//always create new TypeReference, because clonning from a cache clones invalid SourcePosition
+			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			ref.setSimpleName(name);
 		} else if (binding instanceof WildcardBinding) {
 			WildcardBinding wildcardBinding = (WildcardBinding) binding;
 			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
@@ -941,11 +944,6 @@ public class ReferenceBuilder {
 				ref.setSimpleName(new String(varbin.name));
 				ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
 				final ReferenceContext referenceContext = localVariableBinding.declaringScope.referenceContext();
-				if (referenceContext instanceof LambdaExpression) {
-					ref.setDeclaringExecutable(getExecutableReference(((LambdaExpression) referenceContext).binding));
-				} else {
-					ref.setDeclaringExecutable(getExecutableReference(((AbstractMethodDeclaration) referenceContext).binding));
-				}
 				return ref;
 			} else if (localVariableBinding.declaration.binding instanceof CatchParameterBinding) {
 				CtCatchVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createCatchVariableReference();
@@ -1001,7 +999,7 @@ public class ReferenceBuilder {
 				CtPackageReference javaLangPackageReference = this.jdtTreeBuilder.getFactory().Core().createPackageReference();
 				javaLangPackageReference.setSimpleName("java.lang");
 				ref.setPackage(javaLangPackageReference);
-			} catch (ClassNotFoundException e) {
+			} catch (NoClassDefFoundError | ClassNotFoundException e) {
 				// in that case we consider the package should be the same as the current one. Fix #1293
 				ref.setPackage(jdtTreeBuilder.getContextBuilder().compilationUnitSpoon.getDeclaredPackage().getReference());
 			}

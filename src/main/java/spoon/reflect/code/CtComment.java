@@ -80,4 +80,7 @@ public interface CtComment extends CtStatement {
 
 	@Override
 	CtComment clone();
+
+	/** Utility method to for casting the object, throws an exception if not of the correct type */
+	CtJavaDoc asJavaDoc();
 }

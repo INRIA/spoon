@@ -18,6 +18,7 @@ package spoon.compiler;
 
 import org.apache.log4j.Level;
 import spoon.OutputType;
+import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -25,7 +26,7 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.OutputDestinationHandler;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -239,8 +240,8 @@ public interface Environment {
 	/**
 	 * Sets the source class path of the Spoon model.
 	 * After the class path is set, it can be retrieved by
-	 * {@link #getSourceClasspath()}. Only .jar files or directories
-	 * are accepted.
+	 * {@link #getSourceClasspath()}. Only .jar files or directories with *.class files are accepted.
+	 * The *.jar or *.java files contained in given directories are ignored.
 	 *
 	 * @throws InvalidClassPathException if a given classpath does not exists or
 	 * does not have the right format (.jar file or directory)
@@ -315,18 +316,31 @@ public interface Environment {
 	void setShouldCompile(boolean shouldCompile);
 
 	/**
-	 * Checks if {@link spoon.reflect.visitor.AstParentConsistencyChecker},
-	 * hashcode violation declared in CtElement#equals(CtElement) and
-	 * method violation declared in {@link spoon.reflect.declaration.CtType#addMethod(CtMethod)}
+	 * Tells whether Spoon does no checks at all.
+	 * - parents are consistent (see {@link spoon.reflect.visitor.AstParentConsistencyChecker})
+	 * - hashcode violation (see {@link spoon.support.reflect.declaration.CtElementImpl#equals(Object)})
+	 * - method violation (see {@link spoon.reflect.declaration.CtType#addMethod(CtMethod)})
 	 * are active or not.
+	 *
+	 * By default all checks are enabled and {@link #checksAreSkipped()} return false.
 	 */
 	boolean checksAreSkipped();
 
 	/**
-	 * Enable or not checks on the AST. See {@link #checksAreSkipped()} to know all checks enabled.
-	 * true means that no self checks are made.
+	 * Enable or not consistency checks on the AST. See {@link #checksAreSkipped()} for a list of all checks.
+	 * @param skip false means that all checks are made (default), true means that no checks are made.
+	 *
+	 * Use {@link #disableConsistencyChecks()} instead.
 	 */
+	@Deprecated // method name is super confusing "skip" is missing
 	void setSelfChecks(boolean skip);
+
+	/**
+	 * Disable all consistency checks on the AST. Dangerous! The only valid usage of this is to keep
+	 * full backward-compatibility.
+	 */
+	void disableConsistencyChecks();
+
 
 	/** Return the directory where binary .class files are created */
 	void setBinaryOutputDirectory(String directory);
@@ -343,6 +357,16 @@ public interface Environment {
 	 * Returns the directory where source files are written
 	 */
 	File getSourceOutputDirectory();
+
+	/**
+	 * Set the output destination that handles where source files are written
+	 */
+	void setOutputDestinationHandler(OutputDestinationHandler outputDestinationHandler);
+
+	/**
+	 * Returns the output destination that handles where source files are written
+	 */
+	OutputDestinationHandler getOutputDestinationHandler();
 
 	/**
 	 * get the model change listener that is used to follow the change of the AST.

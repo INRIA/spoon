@@ -18,29 +18,38 @@ package spoon.test.metamodel;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import spoon.Launcher;
+import spoon.Metamodel;
+import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.visitor.ClassTypingContext;
 
@@ -60,9 +69,9 @@ public class SpoonMetaModel {
 	private final Factory factory;
 	
 	/**
-	 * {@link MMType}s by name
+	 * {@link MetamodelConcept}s by name
 	 */
-	private final Map<String, MMType> name2mmType = new HashMap<>();
+	private final Map<String, MetamodelConcept> nameToConcept = new HashMap<>();
 
 	/**
 	 * Parses spoon sources and creates factory with spoon model.
@@ -90,27 +99,39 @@ public class SpoonMetaModel {
 			}
 		}
 		
-		//search for all interfaces of spoon model and create MMTypes for them
+		//search for all interfaces of spoon model and create MetamodelConcepts for them
 		factory.getModel().filterChildren(new TypeFilter<>(CtInterface.class))
 			.forEach((CtInterface<?> iface) -> {
 				if (MODEL_IFACE_PACKAGES.contains(iface.getPackage().getQualifiedName())) {
-					getOrCreateMMType(iface);
+					getOrCreateConcept(iface);
 				}
 			});
 	}
+	
+	/**
+	 * creates a {@link SpoonMetaModel} in runtime mode when spoon sources are not available
+	 */
+	public SpoonMetaModel() {
+		this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		for (CtType<?> iface : Metamodel.getAllMetamodelInterfaces()) {
+			if (iface instanceof CtInterface) {
+				getOrCreateConcept(iface);
+			}
+		}
+	}
 
 	/**
-	 * @return all {@link MMType}s of spoon meta model
+	 * @return all {@link MetamodelConcept}s of spoon meta model
 	 */
-	public Collection<MMType> getMMTypes() {
-		return Collections.unmodifiableCollection(name2mmType.values());
+	public Collection<MetamodelConcept> getConcepts() {
+		return Collections.unmodifiableCollection(nameToConcept.values());
 	}
 	
 	/**
-	 * @param type a spoon model type
-	 * @return name of {@link MMType}, which represents Spoon model {@link CtType}
+	 * @param type a spoon model class or interface, whose concept name has to be returned
+	 * @return name of {@link MetamodelConcept}, which represents Spoon model {@link CtType}
 	 */
-	public static String getMMTypeIntefaceName(CtType<?> type) {
+	public static String getConceptName(CtType<?> type) {
 		String name = type.getSimpleName();
 		if (name.endsWith(CLASS_SUFFIX)) {
 			name = name.substring(0, name.length() - CLASS_SUFFIX.length());
@@ -125,7 +146,18 @@ public class SpoonMetaModel {
 	 */
 	public static CtClass<?> getImplementationOfInterface(CtInterface<?> iface) {
 		String impl = replaceApiToImplPackage(iface.getQualifiedName()) + CLASS_SUFFIX;
-		return (CtClass<?>) iface.getFactory().Type().get(impl);
+		return (CtClass<?>) getType(impl, iface);
+	}
+	
+	private static CtType<?> getType(String qualifiedName, CtElement anElement) {
+		Class aClass;
+		try {
+			aClass = anElement.getClass().getClassLoader().loadClass(qualifiedName);
+		} catch (ClassNotFoundException e) {
+			//OK, that interface has no implementation class
+			return null;
+		}
+		return anElement.getFactory().Type().get(aClass);
 	}
 
 	private static final String modelApiPackage = "spoon.reflect";
@@ -133,7 +165,7 @@ public class SpoonMetaModel {
 	
 	private static String replaceApiToImplPackage(String modelInterfaceQName) {
 		if (modelInterfaceQName.startsWith(modelApiPackage) == false) {
-			throw new SpoonException("The qualified name doesn't belong to Spoon model API package: " + modelApiPackage);
+			throw new SpoonException("The qualified name " + modelInterfaceQName + " doesn't belong to Spoon model API package: " + modelApiPackage);
 		}
 		return modelApiImplPackage + modelInterfaceQName.substring(modelApiPackage.length());
 	}
@@ -148,7 +180,7 @@ public class SpoonMetaModel {
 		}
 		iface = iface.substring(0, iface.length() - CLASS_SUFFIX.length());
 		iface = iface.replace("spoon.support.reflect", "spoon.reflect");
-		return (CtInterface<?>) impl.getFactory().Type().get(iface);
+		return (CtInterface<?>) getType(iface, impl);
 	}
 
 	private static Factory createFactory(File spoonJavaSourcesDirectory) {
@@ -170,48 +202,48 @@ public class SpoonMetaModel {
 
 	/**
 	 * @param type can be class or interface of Spoon model element
-	 * @return existing or creates and initializes new {@link MMType} which represents `type`, which 
+	 * @return existing or creates and initializes new {@link MetamodelConcept} which represents the `type` 
 	 */
-	private MMType getOrCreateMMType(CtType<?> type) {
-		String mmTypeName = getMMTypeIntefaceName(type);
-		MMType mmType = getOrCreate(name2mmType, mmTypeName, () -> new MMType());
-		if (mmType.name == null) {
-			mmType.name = mmTypeName;
-			initializeMMType(type, mmType);
+	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
+		String conceptName = getConceptName(type);
+		MetamodelConcept mmConcept = getOrCreate(nameToConcept, conceptName, () -> new MetamodelConcept());
+		if (mmConcept.name == null) {
+			mmConcept.name = conceptName;
+			initializeConcept(type, mmConcept);
 		}
-		return mmType;
+		return mmConcept;
 	}
 	
 	/**
-	 * is called once for each MMType, to initialize it.
+	 * is called once for each {@link MetamodelConcept}, to initialize it.
 	 * @param type a class or inteface of the spoon model element
-	 * @param mmType to be initialize MMType
+	 * @param mmConcept to be initialize {@link MetamodelConcept}
 	 */
-	private void initializeMMType(CtType<?> type, MMType mmType) {
+	private void initializeConcept(CtType<?> type, MetamodelConcept mmConcept) {
 		//it is not initialized yet. Do it now
 		if (type instanceof CtInterface<?>) {
 			CtInterface<?> iface = (CtInterface<?>) type;
-			mmType.setModelClass(getImplementationOfInterface(iface));
-			mmType.setModelInterface(iface);
+			mmConcept.setModelClass(getImplementationOfInterface(iface));
+			mmConcept.setModelInterface(iface);
 		} else if (type instanceof CtClass<?>) {
 			CtClass<?> clazz = (CtClass<?>) type;
-			mmType.setModelClass(clazz);
-			mmType.setModelInterface(getInterfaceOfImplementation(clazz));
+			mmConcept.setModelClass(clazz);
+			mmConcept.setModelInterface(getInterfaceOfImplementation(clazz));
 		} else {
 			throw new SpoonException("Unexpected spoon model type: " + type.getQualifiedName());
 		}
 
 		//add fields of class
-		if (mmType.getModelClass() != null) {
-			addFieldsOfType(mmType, mmType.getModelClass());
+		if (mmConcept.getModelClass() != null) {
+			addFieldsOfType(mmConcept, mmConcept.getModelClass());
 		}
 		//add fields of interface
-		if (mmType.getModelInterface() != null) {
-			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MMType already exists in name2mmType
-			addFieldsOfType(mmType, mmType.getModelInterface());
+		if (mmConcept.getModelInterface() != null) {
+			//add fields of interface too. They are not added by above call of addFieldsOfType, because the MetamodelConcept already exists in nameToConcept
+			addFieldsOfType(mmConcept, mmConcept.getModelInterface());
 		}
 		//initialize all fields
-		mmType.getRole2field().forEach((role, mmField) -> {
+		mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 			//if there are more methods for the same field then choose the one which best matches the field type
 			mmField.sortByBestMatch();
 			//finally initialize value type of this field
@@ -220,29 +252,30 @@ public class SpoonMetaModel {
 	}
 
 	/**
-	 * adds all {@link MMField}s of `ctType`
-	 * @param mmType the owner of to be created fields
+	 * adds all {@link MetamodelProperty}s of `ctType`
+	 * @param mmConcept the owner of to be created fields
 	 * @param ctType to be scanned {@link CtType}
 	 */
-	private void addFieldsOfType(MMType mmType, CtType<?> ctType) {
+	private void addFieldsOfType(MetamodelConcept mmConcept, CtType<?> ctType) {
 		ctType.getTypeMembers().forEach(typeMember -> {
 			if (typeMember instanceof CtMethod<?>) {
 				CtMethod<?> method = (CtMethod<?>) typeMember;
 				CtRole role = getRoleOfMethod(method);
 				if (role != null) {
-					MMField field = mmType.getOrCreateMMField(role);
+					MetamodelProperty field = mmConcept.getOrCreateMMField(role);
 					field.addMethod(method);
 				} else {
-					mmType.otherMethods.add(method);
+					mmConcept.otherMethods.add(method);
 				}
 			}
 		});
-		addFieldsOfSuperType(mmType, ctType.getSuperclass());
-		ctType.getSuperInterfaces().forEach(superIfaceRef -> addFieldsOfSuperType(mmType, superIfaceRef));
+		addFieldsOfSuperType(mmConcept, ctType.getSuperclass());
+		ctType.getSuperInterfaces().forEach(superIfaceRef -> addFieldsOfSuperType(mmConcept, superIfaceRef));
 	}
 
 	private static Set<String> EXPECTED_TYPES_NOT_IN_CLASSPATH = new HashSet<>(Arrays.asList(
 			"java.lang.Cloneable",
+			"java.lang.Object",
 			"spoon.processing.FactoryAccessor",
 			"spoon.reflect.visitor.CtVisitable",
 			"spoon.reflect.visitor.chain.CtQueryable",
@@ -252,25 +285,26 @@ public class SpoonMetaModel {
 
 
 	/**
-	 * add all fields of `superTypeRef` into `mmType`
-	 * @param mmType sub type
+	 * add all fields of `superTypeRef` into `mmConcept`
+	 * @param concept sub type
 	 * @param superTypeRef super type
 	 */
-	private void addFieldsOfSuperType(MMType mmType, CtTypeReference<?> superTypeRef) {
+	private void addFieldsOfSuperType(MetamodelConcept concept, CtTypeReference<?> superTypeRef) {
 		if (superTypeRef == null) {
 			return;
 		}
-		CtType<?> superType = superTypeRef.getDeclaration();
-		if (superType == null) {
-			if (EXPECTED_TYPES_NOT_IN_CLASSPATH.contains(superTypeRef.getQualifiedName()) == false) {
-				throw new SpoonException("Cannot create spoon meta model. The class " + superTypeRef.getQualifiedName() + " is missing class path");
-			}
+		if (EXPECTED_TYPES_NOT_IN_CLASSPATH.contains(superTypeRef.getQualifiedName())) {
+			//ignore classes which are not part of spoon model
 			return;
 		}
-		//call getOrCreateMMType recursively for super types
-		MMType superMMType = getOrCreateMMType(superType);
-		if (superMMType != mmType) {
-			mmType.addSuperType(superMMType);
+		CtType<?> superType = superTypeRef.getTypeDeclaration();
+		if (superType == null) {
+			throw new SpoonException("Cannot create spoon meta model. The class " + superTypeRef.getQualifiedName() + " is missing class path");
+		}
+		//call getOrCreateConcept recursively for super concepts
+		MetamodelConcept superConcept = getOrCreateConcept(superType);
+		if (superConcept != concept) {
+			concept.addSuperConcept(superConcept);
 		}
 	}
 
@@ -344,4 +378,29 @@ public class SpoonMetaModel {
 	public Factory getFactory() {
 		return factory;
 	}
+
+	public List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
+		SpoonAPI interfaces = new Launcher();
+		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
+		interfaces.addInputResource("src/main/java/spoon/reflect/code");
+		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
+		interfaces.buildModel();
+
+		SpoonAPI implementations = new Launcher();
+		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
+		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
+		implementations.addInputResource("src/main/java/spoon/support/reflect/reference");
+		implementations.buildModel();
+
+		List<CtType<? extends CtElement>> result = new ArrayList<>();
+		for(CtType<? > itf : interfaces.getModel().getAllTypes()) {
+			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect")+"Impl";
+			CtType implClass = implementations.getFactory().Type().get(impl);
+			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
+				result.add((CtType<? extends CtElement>) itf);
+			}
+		}
+		return result;
+	}
+
 }

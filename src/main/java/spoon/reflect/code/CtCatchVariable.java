@@ -19,6 +19,7 @@ package spoon.reflect.code;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
@@ -44,4 +45,12 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 	@Override
 	@UnsettableProperty
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+
+	/**
+	 * Returns type reference of the exception variable in a catch.
+	 * If type is unknown, or any of the types in a multi-catch is unknown, returns null.
+	 */
+	@Override
+	@DerivedProperty
+	CtTypeReference<T> getType();
 }

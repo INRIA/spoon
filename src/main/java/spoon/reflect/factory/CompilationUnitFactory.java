@@ -21,7 +21,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
@@ -60,32 +59,18 @@ public class CompilationUnitFactory extends SubFactory {
 		return cu;
 	}
 
-	private File getBaseDirectory() {
-		return this.factory.getEnvironment().getSourceOutputDirectory().getAbsoluteFile();
-	}
-
-	private File getModuleDirectory(CtModule module) {
-		return new File(this.getBaseDirectory(), module.getSimpleName() + File.separatorChar);
-	}
-
-	private File getPackageDirectory(CtPackage ctPackage) {
-		CtModule module = ctPackage.getParent(CtModule.class);
-		File baseDir;
-
-		if (module == null || module.isUnnamedModule() || factory.getEnvironment().getComplianceLevel() <= 8) {
-			baseDir = this.getBaseDirectory();
-		} else {
-			baseDir = this.getModuleDirectory(module);
-		}
-
-		return new File(baseDir, ctPackage.getQualifiedName().replace(CtPackage.PACKAGE_SEPARATOR_CHAR, File.separatorChar));
-	}
-
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {
-		if (ctPackage.getPosition() != null && ctPackage.getPosition().getCompilationUnit() != null) {
+		if (ctPackage.getPosition().getCompilationUnit() != null) {
 			return ctPackage.getPosition().getCompilationUnit();
 		} else {
-			File file = new File(this.getPackageDirectory(ctPackage), DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+
+			CtModule module;
+			if (factory.getEnvironment().getComplianceLevel() > 8) {
+				module = ctPackage.getParent(CtModule.class);
+			} else {
+				module = null;
+			}
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, ctPackage, null).toFile();
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
@@ -103,12 +88,18 @@ public class CompilationUnitFactory extends SubFactory {
 		if (type == null) {
 			return null;
 		}
-		if (type.getPosition() != null && type.getPosition().getCompilationUnit() != null) {
+		if (type.getPosition().getCompilationUnit() != null) {
 			return type.getPosition().getCompilationUnit();
 		}
 
 		if (type.isTopLevel()) {
-			File file = new File(this.getPackageDirectory(type.getPackage()), type.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			CtModule module;
+			if (type.getPackage() != null && factory.getEnvironment().getComplianceLevel() > 8) {
+				module = type.getPackage().getParent(CtModule.class);
+			} else {
+				module = null;
+			}
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, type.getPackage(), type).toFile();
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
@@ -126,10 +117,10 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {
-		if (module.getPosition() != null && module.getPosition().getCompilationUnit() != null) {
+		if (module.getPosition().getCompilationUnit() != null) {
 			return module.getPosition().getCompilationUnit();
 		} else {
-			File file = new File(this.getModuleDirectory(module) + DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION);
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile();
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);

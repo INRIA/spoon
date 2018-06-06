@@ -43,7 +43,7 @@ public class ProcessingTest {
 
 	@Test
 	public void testInsertBegin() throws Exception {
-		CtClass<?> type = build("spoon.test.processing", "SampleForInsertBefore");
+		CtClass<?> type = build("spoon.test.processing.testclasses", "SampleForInsertBefore");
 		for (CtMethod<?> meth : type.getMethods()) {
 			int i = meth.getBody().getStatements().size();
 			meth.getBody().insertBegin(type.getFactory().Code()
@@ -82,7 +82,7 @@ public class ProcessingTest {
 
 	@Test
 	public void testInsertEnd() throws Exception {
-		CtClass<?> type = build("spoon.test.processing", "SampleForInsertBefore");
+		CtClass<?> type = build("spoon.test.processing.testclasses", "SampleForInsertBefore");
 		for (CtMethod<?> meth : type.getMethods()) {
 			int i = meth.getBody().getStatements().size();
 			meth.getBody().insertEnd(type.getFactory().Code()

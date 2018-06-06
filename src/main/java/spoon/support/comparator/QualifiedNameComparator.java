@@ -29,6 +29,8 @@ import spoon.reflect.reference.CtReference;
 public class QualifiedNameComparator implements Comparator<CtElement>, Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static final QualifiedNameComparator INSTANCE = new QualifiedNameComparator();
+
 	@Override
 	public int compare(CtElement o1, CtElement o2) {
 		try {

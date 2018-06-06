@@ -27,7 +27,7 @@ public class ConstructorFactoryTest {
 	@Test
 	public void testCreate() throws Exception {
 
-		CtClass<?> type = build("spoon.test", "SampleClass");
+		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 
 		Factory factory = type.getFactory();
 		ConstructorFactory ctorf = factory.Constructor();

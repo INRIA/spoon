@@ -16,20 +16,24 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.SpoonException;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
@@ -42,29 +46,50 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		if (clazz.getSuperclass() != null) {
-			visitClassReference(clazz.getSuperclass());
+		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+			visitTypeParameter(generic);
 		}
-		for (Class<?> anInterface : clazz.getInterfaces()) {
-			visitInterfaceReference(anInterface);
+		if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
+			visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
+		}
+		for (Type anInterface : clazz.getGenericInterfaces()) {
+			visitTypeReference(CtRole.INTERFACE, anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
 		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			if (constructor.isSynthetic()) {
+				continue;
+			}
 			visitConstructor(constructor);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
+			if (field.isSynthetic()) {
+				continue;
+			}
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
-		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-			visitTypeParameter(generic);
+	}
+
+	protected final <T> void visitType(Class<T> aClass) {
+		if (aClass.isAnnotation()) {
+			visitAnnotationClass((Class<Annotation>) aClass);
+		} else if (aClass.isInterface()) {
+			visitInterface(aClass);
+		} else if (aClass.isEnum()) {
+			visitEnum(aClass);
+		} else {
+			visitClass(aClass);
 		}
 	}
 
@@ -74,20 +99,26 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Class<?> anInterface : clazz.getInterfaces()) {
-			visitInterfaceReference(anInterface);
+		for (Type anInterface : clazz.getGenericInterfaces()) {
+			visitTypeReference(CtRole.INTERFACE, anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
+			if (field.isSynthetic()) {
+				continue;
+			}
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
 		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
 			visitTypeParameter(generic);
@@ -100,23 +131,36 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Class<?> anInterface : clazz.getInterfaces()) {
-			visitInterfaceReference(anInterface);
+		for (Type anInterface : clazz.getGenericInterfaces()) {
+			visitTypeReference(CtRole.INTERFACE, anInterface);
 		}
 		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
 		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			if (Modifier.isPrivate(constructor.getModifiers())) {
+				Class<?>[] paramTypes = constructor.getParameterTypes();
+				if (paramTypes.length == 2 && paramTypes[0] == String.class && paramTypes[1] == int.class) {
+					//ignore implicit enum constructor
+					continue;
+				}
+			}
+			if (constructor.isSynthetic()) {
+				continue;
+			}
 			visitConstructor(constructor);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
 			if (("valueOf".equals(method.getName()) && method.getParameterTypes().length == 1 && String.class.equals(method.getParameterTypes()[0])) || "values".equals(method.getName())) {
 				continue;
 			}
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
-			if ("$VALUES".equals(field.getName())) {
+			if (field.isSynthetic()) {
 				continue;
 			}
 			if (field.isEnumConstant()) {
@@ -126,7 +170,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			}
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
 	}
 
@@ -140,20 +184,26 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		for (RtMethod method : getDeclaredMethods(clazz)) {
+			if (method.getMethod().isSynthetic()) {
+				continue;
+			}
 			visitMethod(method);
 		}
 		for (Field field : clazz.getDeclaredFields()) {
+			if (field.isSynthetic()) {
+				continue;
+			}
 			visitField(field);
 		}
 		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitClass(aClass);
+			visitType(aClass);
 		}
 	}
 
 	@Override
 	public void visitAnnotation(Annotation annotation) {
 		if (annotation.annotationType() != null) {
-			visitClassReference(annotation.annotationType());
+			visitTypeReference(CtRole.ANNOTATION_TYPE, annotation.annotationType());
 			List<RtMethod> methods = getDeclaredMethods(annotation.annotationType());
 			for (RtMethod method : methods) {
 				visitMethod(method, annotation);
@@ -166,41 +216,53 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : constructor.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
+		int nrEnclosingClasses = getNumberOfEnclosingClasses(constructor.getDeclaringClass());
 		for (RtParameter parameter : RtParameter.parametersOf(constructor)) {
+			//ignore implicit parameters of enclosing classes
+			if (nrEnclosingClasses > 0) {
+				nrEnclosingClasses--;
+				continue;
+			}
 			visitParameter(parameter);
 		}
 		for (TypeVariable<Constructor<T>> aTypeParameter : constructor.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
 		}
+		for (Class<?> exceptionType : constructor.getExceptionTypes()) {
+			visitTypeReference(CtRole.THROWN, exceptionType);
+		}
+	}
+
+	private int getNumberOfEnclosingClasses(Class<?> clazz) {
+		int depth = 0;
+		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
+			depth++;
+		}
+		return depth;
 	}
 
 	@Override
-	public void visitMethod(RtMethod method) {
+	public final void visitMethod(RtMethod method) {
 		this.visitMethod(method, null);
 	}
 
-	public void visitMethod(RtMethod method, Annotation parent) {
+	protected void visitMethod(RtMethod method, Annotation parent) {
 		for (Annotation annotation : method.getDeclaredAnnotations()) {
 			if (parent == null || !annotation.annotationType().equals(parent.annotationType())) {
 				visitAnnotation(annotation);
 			}
 		}
-		for (RtParameter parameter : RtParameter.parametersOf(method)) {
-			visitParameter(parameter);
-		}
 		for (TypeVariable<Method> aTypeParameter : method.getTypeParameters()) {
 			visitTypeParameter(aTypeParameter);
 		}
+		for (RtParameter parameter : RtParameter.parametersOf(method)) {
+			visitParameter(parameter);
+		}
 		if (method.getReturnType() != null) {
-			if (method.getReturnType().isArray() && method.getReturnType().getComponentType() != null) {
-				visitArrayReference(method.getReturnType().getComponentType());
-			} else if (method.getGenericReturnType() instanceof Class) {
-				visitClassReference(method.getReturnType());
-			} else if (method.getGenericReturnType() instanceof ParameterizedType) {
-				visitType((ParameterizedType) method.getGenericReturnType());
-			} else {
-				visitTypeParameterReference((TypeVariable) method.getGenericReturnType());
-			}
+			visitTypeReference(CtRole.TYPE, method.getGenericReturnType());
+		}
+		for (Class<?> exceptionType : method.getExceptionTypes()) {
+			visitTypeReference(CtRole.THROWN, exceptionType);
 		}
 	}
 
@@ -210,12 +272,8 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 			visitAnnotation(annotation);
 		}
-		if (field.getType() != null) {
-			if (field.getType().isArray() && field.getType().getComponentType() != null) {
-				visitArrayReference(field.getType().getComponentType());
-			} else {
-				visitClassReference(field.getType());
-			}
+		if (field.getGenericType() != null) {
+			visitTypeReference(CtRole.TYPE, field.getGenericType());
 		}
 	}
 
@@ -225,7 +283,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 			visitAnnotation(annotation);
 		}
 		if (field.getType() != null) {
-			visitClassReference(field.getType());
+			visitTypeReference(CtRole.TYPE, field.getType());
 		}
 	}
 
@@ -234,129 +292,130 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		for (Annotation annotation : parameter.getDeclaredAnnotations()) {
 			visitAnnotation(annotation);
 		}
-		if (parameter.getType() != null) {
-			if ((parameter.isVarArgs() || parameter.getType().isArray()) && parameter.getType().getComponentType() != null) {
-				visitArrayReference(parameter.getType().getComponentType());
-			} else if (parameter.getGenericType() instanceof Class) {
-				visitClassReference(parameter.getType());
-			} else if (parameter.getGenericType() instanceof ParameterizedType) {
-				visitType((ParameterizedType) parameter.getGenericType());
-			} else {
-				visitTypeParameterReference((TypeVariable) parameter.getGenericType());
-			}
+		if (parameter.getGenericType() != null) {
+			visitTypeReference(CtRole.TYPE, parameter.getGenericType());
 		}
 	}
 
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter) {
 		for (Type type : parameter.getBounds()) {
-			if (type instanceof ParameterizedType) {
-				visitType((ParameterizedType) type);
-			} else if (type instanceof WildcardType) {
-				visitType((WildcardType) type);
-			} else {
-				visitType(type);
+			if (type == Object.class) {
+				// we want to ignore Object to avoid <T extends Object>
+				continue;
 			}
+			visitTypeReference(CtRole.SUPER_TYPE, type);
 		}
 	}
 
 	@Override
-	public <T extends GenericDeclaration> void visitTypeParameterReference(TypeVariable<T> parameter) {
+	public <T extends GenericDeclaration> void visitTypeParameterReference(CtRole role, TypeVariable<T> parameter) {
 		for (Type type : parameter.getBounds()) {
-			if (type instanceof ParameterizedType) {
-				visitType((ParameterizedType) type);
-			} else if (type instanceof WildcardType) {
-				visitType((WildcardType) type);
-			} else {
+			if (type == Object.class) {
 				// we bypass Object.class: if a generic type extends Object we don't put it in the model, it's implicit
 				// we do the same thing in ReferenceBuilder
-				if (!(type instanceof Class && type == Object.class)) {
-					visitType(type);
-				}
+				continue;
 			}
+			visitTypeReference(CtRole.SUPER_TYPE, type);
 		}
 	}
 
 	@Override
-	public void visitType(Type type) {
-	}
-
-	@Override
-	public void visitType(ParameterizedType type) {
-		if (type.getRawType() != null) {
-			visitClassReference((Class) type.getRawType());
+	public final void visitTypeReference(CtRole role, Type type) {
+		CtTypeReference<?> ctTypeReference;
+		if (type instanceof TypeVariable) {
+			this.visitTypeParameterReference(role, (TypeVariable<?>) type);
+			return;
 		}
-		for (Type actualType : type.getActualTypeArguments()) {
-			if (actualType instanceof ParameterizedType) {
-				visitType((ParameterizedType) actualType);
-			} else if (actualType instanceof WildcardType) {
-				visitType((WildcardType) actualType);
-			} else {
-				visitType(actualType);
+		if (type instanceof ParameterizedType) {
+			this.visitTypeReference(role, (ParameterizedType) type);
+			return;
+		}
+		if (type instanceof WildcardType) {
+			this.visitTypeReference(role, (WildcardType) type);
+			return;
+		}
+		if (type instanceof GenericArrayType) {
+			visitArrayReference(role, ((GenericArrayType) type).getGenericComponentType());
+			return;
+		}
+		if (type instanceof Class) {
+			Class<?> clazz = (Class<?>) type;
+			if (clazz.isArray()) {
+				visitArrayReference(role, clazz.getComponentType());
+				return;
 			}
+			this.visitTypeReference(role, clazz);
+			return;
+		}
+		throw new SpoonException("Unexpected java reflection type: " + type.getClass().getName());
+	}
+
+	@Override
+	public void visitTypeReference(CtRole role, ParameterizedType type) {
+		Type rawType = type.getRawType();
+
+		if (!(rawType instanceof Class)) {
+			throw new UnsupportedOperationException("Rawtype of the parameterized type should be a class.");
+		}
+
+		Class<?> classRaw = (Class<?>) rawType;
+
+		if (classRaw.getPackage() != null) {
+			visitPackage(classRaw.getPackage());
+		}
+		if (classRaw.getEnclosingClass() != null) {
+			visitTypeReference(CtRole.DECLARING_TYPE, classRaw.getEnclosingClass());
+		}
+
+		for (Type generic : type.getActualTypeArguments()) {
+			visitTypeReference(CtRole.TYPE_ARGUMENT, generic);
 		}
 	}
 
 	@Override
-	public void visitType(WildcardType type) {
-		if (!type.getUpperBounds()[0].equals(Object.class)) {
+	public void visitTypeReference(CtRole role, WildcardType type) {
+		if (type.getUpperBounds() != null && type.getUpperBounds().length > 0 && !type.getUpperBounds()[0].equals(Object.class)) {
 			for (Type upper : type.getUpperBounds()) {
-				if (upper instanceof ParameterizedType) {
-					visitType((ParameterizedType) upper);
-				} else if (upper instanceof WildcardType) {
-					visitType((WildcardType) upper);
-				} else {
-					visitType(upper);
-				}
+				visitTypeReference(CtRole.BOUNDING_TYPE, upper);
 			}
 		}
 		for (Type lower : type.getLowerBounds()) {
-			if (lower instanceof ParameterizedType) {
-				visitType((ParameterizedType) lower);
-			} else if (lower instanceof WildcardType) {
-				visitType((WildcardType) lower);
-			} else {
-				visitType(lower);
-			}
+			visitTypeReference(CtRole.BOUNDING_TYPE, lower);
 		}
 	}
 
 	@Override
-	public <T> void visitArrayReference(Class<T> typeArray) {
-		if (typeArray.isArray() && typeArray.getComponentType() != null) {
-			visitArrayReference(typeArray.getComponentType());
-		} else {
-			visitClassReference(typeArray);
-		}
+	public <T> void visitArrayReference(CtRole role, Type typeArray) {
+		visitTypeReference(role, typeArray);
 	}
 
 	@Override
-	public <T> void visitClassReference(Class<T> clazz) {
+	public <T> void visitTypeReference(CtRole role, Class<T> clazz) {
 		if (clazz.getPackage() != null && clazz.getEnclosingClass() == null) {
 			visitPackage(clazz.getPackage());
 		}
 		if (clazz.getEnclosingClass() != null) {
-			visitClassReference(clazz.getEnclosingClass());
+			visitTypeReference(CtRole.DECLARING_TYPE, clazz.getEnclosingClass());
 		}
-	}
-
-	@Override
-	public <T> void visitInterfaceReference(Class<T> type) {
-		if (type.getPackage() != null) {
-			visitPackage(type.getPackage());
-		}
-		if (type.getEnclosingClass() != null) {
-			visitClassReference(type.getEnclosingClass());
-		}
+// TODO in case of interfaces this was used!! But not in case of class?
+//		if (clazz.isInterface()) {
+//			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+//				visitTypeParameter(generic);
+//			}
+//		}
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {
-		final List<RtMethod> methods = new ArrayList<>();
-		methods.addAll(Arrays.asList(RtMethod.methodsOf(clazz)));
-		final Class<?> superclass = clazz.getSuperclass();
-		if (superclass != null) {
-			methods.removeAll(Arrays.asList(RtMethod.sameMethodsWithDifferentTypeOf(superclass, methods)));
+		Method[] javaMethods = clazz.getDeclaredMethods();
+		List<RtMethod> rtMethods = new ArrayList<>();
+		for (Method method : javaMethods) {
+			if (method.isSynthetic()) {
+				//ignore synthetic methods.
+				continue;
+			}
+			rtMethods.add(RtMethod.create(method));
 		}
-		return methods;
+		return rtMethods;
 	}
 }

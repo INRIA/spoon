@@ -16,10 +16,12 @@
  */
 package spoon.reflect.path;
 
+import spoon.SpoonException;
+
 /**
  *  This exception is throw when there are errors during a CtPath building or evaluation.
  */
-public class CtPathException extends Exception {
+public class CtPathException extends SpoonException {
 	public CtPathException() {
 	}
 

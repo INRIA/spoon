@@ -30,6 +30,7 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 		super(SourceOptions.class);
 	}
 
+	/** adds the given paths as concatenated string with File.pathSeparator as sources */
 	public T sources(String sources) {
 		if (sources == null || sources.isEmpty()) {
 			return myself;
@@ -37,6 +38,7 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 		return sources(sources.split(File.pathSeparator));
 	}
 
+	/** adds the given paths as sources */
 	public T sources(String... sources) {
 		if (sources == null || sources.length == 0) {
 			args.add(".");
@@ -46,6 +48,7 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 		return myself;
 	}
 
+	/** adds the given {@link spoon.compiler.SpoonFile} as sources */
 	public T sources(List<SpoonFile> sources) {
 		if (sources == null || sources.size() == 0) {
 			args.add(".");

@@ -134,38 +134,55 @@ public interface Factory {
 	/** returns the Spoon model that has been built with this factory or one of its subfactories */
 	CtModel getModel();
 
-	CoreFactory Core(); // used 238 times
+	/** Access to {@link CoreFactory} subfactory */
+	CoreFactory Core();
 
+	/** Access to {@link TypeFactory} subfactory */
 	TypeFactory Type(); // used 107 times
 
+	/** Access to {@link EnumFactory} subfactory */
 	EnumFactory Enum();
 
-	Environment getEnvironment(); // used 71 times
+	/** Access to the {@link Environment} */
+	Environment getEnvironment();
 
-	PackageFactory Package(); // used 30 times
+	/** Access to {@link PackageFactory} subfactory */
+	PackageFactory Package();
 
-	CodeFactory Code(); // used 28 times
+	/** Access to {@link CodeFactory} subfactory */
+	CodeFactory Code();
 
-	ClassFactory Class(); // used 27 times
+	/** Access to {@link ClassFactory} subfactory */
+	ClassFactory Class();
 
-	FieldFactory Field(); // used 9 times
+	/** Access to {@link FieldFactory} subfactory */
+	FieldFactory Field();
 
-	ExecutableFactory Executable(); // used 8 times
+	/** Access to {@link ExecutableFactory} subfactory */
+	ExecutableFactory Executable();
 
-	CompilationUnitFactory CompilationUnit(); // used 7 times
+	/** Access to {@link CompilationUnitFactory} subfactory */
+	CompilationUnitFactory CompilationUnit();
 
+	/** Access to {@link InterfaceFactory} subfactory */
 	InterfaceFactory Interface();
 
-	MethodFactory Method(); // used 5 times
+	/** Access to {@link MethodFactory} subfactory */
+	MethodFactory Method();
 
-	AnnotationFactory Annotation(); // used 4 times
+	/** Access to {@link AnnotationFactory} subfactory */
+	AnnotationFactory Annotation();
 
-	EvalFactory Eval(); // used 4 times
+	/** Access to {@link EvalFactory} subfactory */
+	EvalFactory Eval();
 
-	ConstructorFactory Constructor(); // used 3 times
+	/** Access to {@link ConstructorFactory} subfactory */
+	ConstructorFactory Constructor();
 
+	/** Access to {@link QueryFactory} subfactory */
 	QueryFactory Query();
 
+	/** Access to {@link ModuleFactory} subfactory for Java 9 modules */
 	ModuleFactory Module();
 
 	/**

@@ -19,7 +19,9 @@ import spoon.reflect.reference.CtModuleReference;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,29 +35,33 @@ public class TestModule {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		File directory = new File(MODULE_RESOURCES_PATH);
-		Files.walk(directory.toPath()).forEach(path -> {
-			if (path.toFile().getName().equals("module-info-tpl")) {
-				try {
-					Files.copy(path, new File(path.getParent().toFile(), "module-info.java").toPath());
-				} catch (IOException e) {
-					e.printStackTrace();
+		try (Stream<Path> paths = Files.walk(directory.toPath())) {
+			paths.forEach(path -> {
+				if (path.toFile().getName().equals("module-info-tpl")) {
+					try {
+						Files.copy(path, new File(path.getParent().toFile(), "module-info.java").toPath());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	@AfterClass
 	public static void tearDown() throws IOException {
 		File directory = new File(MODULE_RESOURCES_PATH);
-		Files.walk(directory.toPath()).forEach(path -> {
-			if (path.toFile().getName().equals("module-info.java")) {
-				try {
-					Files.delete(path);
-				} catch (IOException e) {
-					e.printStackTrace();
+		try (Stream<Path> paths = Files.walk(directory.toPath())) {
+			paths.forEach(path -> {
+				if (path.toFile().getName().equals("module-info.java")) {
+					try {
+						Files.delete(path);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	@Test
@@ -145,7 +151,9 @@ public class TestModule {
 
 		assertEquals(2, launcher.getModel().getAllModules().size());
 
-		assertEquals(2, Files.list(output.toPath()).count()); // should be 1 but for now we also have the module-info-tpl.
+		try (Stream<Path> files = Files.list(output.toPath())) {
+			assertEquals(2, files.count()); // should be 1 but for now we also have the module-info-tpl.
+		}
 		File fileOuput = new File(output, "simple_module/module-info.java");
 		List<String> originalLines = Files.readAllLines(input.toPath());
 		List<String> createdLines = Files.readAllLines(fileOuput.toPath());

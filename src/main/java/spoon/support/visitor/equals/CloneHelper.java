@@ -16,8 +16,9 @@
  */
 package spoon.support.visitor.equals;
 
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.clone.CloneVisitor;
@@ -25,10 +26,10 @@ import spoon.support.visitor.clone.CloneVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * {@link CloneHelper} is responsible for creating clones of {@link CtElement} AST nodes including the whole subtree.
@@ -74,22 +75,6 @@ public class CloneHelper {
 		return others;
 	}
 
-	private <T extends CtElement> Set<T> createRightSet(Set<T> elements) {
-		try {
-			if (elements instanceof TreeSet) {
-				// we copy the set, incl its comparator
-				// we may also do this with reflection
-				Set s = (Set) ((TreeSet) elements).clone();
-				s.clear();
-				return s;
-			} else {
-				return elements.getClass().newInstance();
-			}
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new SpoonException(e);
-		}
-	}
-
 	public <T extends CtElement> Set<T> clone(Set<T> elements) {
 		if (elements instanceof EmptyClearableSet) {
 			return elements;
@@ -97,8 +82,7 @@ public class CloneHelper {
 		if (elements == null || elements.isEmpty()) {
 			return EmptyClearableSet.instance();
 		}
-
-		Set<T> others = createRightSet(elements);
+		Set<T> others = new HashSet<>(elements.size());
 		for (T element : elements) {
 			addClone(others, element);
 		}
@@ -134,4 +118,23 @@ public class CloneHelper {
 	protected <T extends CtElement> void addClone(Map<String, T> targetMap, String key, T value) {
 		targetMap.put(key, clone(value));
 	}
+
+
+	/** Is called by {@link CloneVisitor} at the end of the cloning for each element. */
+	public void tailor(final spoon.reflect.declaration.CtElement topLevelElement, final spoon.reflect.declaration.CtElement topLevelClone) {
+		// this scanner visit certain nodes to done some additional work after cloning
+		new CtScanner() {
+			@Override
+			public <T> void visitCtExecutableReference(CtExecutableReference<T> clone) {
+				// for instance, here we can do additional things
+				// after cloning an executable reference
+				// we have access here to "topLevelElement" and "topLevelClone"
+				// if we want to analyze them as well.
+
+				// super must be called to visit the subelements
+				super.visitCtExecutableReference(clone);
+			}
+		}.scan(topLevelClone);
+	}
+
 }

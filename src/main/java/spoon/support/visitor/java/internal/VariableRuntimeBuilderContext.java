@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
@@ -44,17 +44,12 @@ public class VariableRuntimeBuilderContext extends AbstractRuntimeBuilderContext
 	}
 
 	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		ctVariable.setType(typeReference);
-	}
-
-	@Override
-	public void addTypeName(CtTypeReference<?> ctTypeReference) {
-		ctVariable.setType(ctTypeReference);
-	}
-
-	@Override
-	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
-		ctVariable.setType(arrayTypeReference);
+	public void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference) {
+		switch (role) {
+		case TYPE:
+			ctVariable.setType(ctTypeReference);
+			return;
+		}
+		super.addTypeReference(role, ctTypeReference);
 	}
 }

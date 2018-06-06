@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<plugin>
+  <version>1.2.0</version>
+  <configuration>
+    <mutationEngine>descartes</mutationEngine>
+    <mutators>
+      <mutator>void</mutator>
+      <mutator>null</mutator>
+      <mutator>true</mutator>
+      <mutator>false</mutator>
+      <mutator>empty</mutator>
+      <mutator>0</mutator>
+      <mutator>1</mutator>
+      <mutator>(byte)0</mutator>
+      <mutator>(byte)1</mutator>
+      <mutator>(short)1</mutator>
+      <mutator>(short)2</mutator>
+      <mutator>0L</mutator>
+      <mutator>1L</mutator>
+      <mutator>0.0</mutator>
+      <mutator>1.0</mutator>
+      <mutator>0.0f</mutator>
+      <mutator>1.0f</mutator>
+      <mutator>'\40'</mutator>
+      <mutator>'A'</mutator>
+      <mutator>""</mutator>
+      <mutator>"A"</mutator>
+    </mutators>
+    <excludedClasses>
+      <excludedClass>spoon.test.intercession.IntercessionTest</excludedClass>
+      <excludedClass>spoon.test.template.TemplateTest</excludedClass>
+      <excludedClass>spoon.test.main.MainTest</excludedClass>
+    </excludedClasses>
+    <timestampedReports>false</timestampedReports>
+  </configuration>
+  <dependencies>
+    <dependency>
+      <groupId>fr.inria.stamp</groupId>
+      <artifactId>descartes</artifactId>
+      <version>0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</plugin>
+</project>

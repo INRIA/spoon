@@ -56,7 +56,7 @@ public class PackageTest {
 
 		CtPackage ctPackage = clazz.getPackage();
 		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		Assert.assertEquals("", ctPackage.getDocComment());
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
@@ -64,6 +64,8 @@ public class PackageTest {
 		Assert.assertNotNull(ctPackage.getPosition());
 		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
 		Assert.assertEquals(1, ctPackage.getPosition().getLine());
+		Assert.assertEquals(0, ctPackage.getPosition().getSourceStart());
+		Assert.assertEquals(71, ctPackage.getPosition().getSourceEnd());
 		Assert.assertEquals(1, ctPackage.getAnnotations().size());
 		Assert.assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
 
@@ -76,13 +78,14 @@ public class PackageTest {
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		Assert.assertEquals("", ctPackage.getDocComment());
 	}
 
 	@Test
 	public void testAnnotationOnPackage() throws Exception {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
+
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
 		launcher.setSourceOutputDirectory("./target/spooned/");

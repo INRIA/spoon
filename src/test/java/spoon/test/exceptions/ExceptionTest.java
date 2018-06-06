@@ -26,6 +26,7 @@ public class ExceptionTest {
 		try {
 			Launcher spoon = new Launcher();
 			Factory factory = spoon.createFactory();
+			factory.getEnvironment().setNoClasspath(false);
 			spoon.createCompiler(
 					factory,
 					SpoonResourceHelper

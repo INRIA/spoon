@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
@@ -31,6 +32,7 @@ import spoon.reflect.annotations.PropertySetter;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +51,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Searches for an annotation of the given class that annotates the
 	 * current element.
+	 *
+	 * When used with a shadow element, this method might return an empty list even on an annotated element
+	 * because annotations without a RUNTIME retention policy are lost after compilation.
 	 *
 	 * WARNING: this method uses a class loader proxy, which is costly.
 	 * Use {@link #getAnnotation(CtTypeReference)} preferably.
@@ -69,6 +74,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Gets the annotation element for a given annotation type.
+	 *
+	 * When used with a shadow element, this method might return an empty list even on an annotated element
+	 * because annotations without a RUNTIME retention policy are lost after compilation.
 	 *
 	 * @param annotationType
 	 * 		the annotation type
@@ -99,7 +107,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Returns the text of the documentation ("javadoc") comment of this
-	 * element. The documentation is also accessible via {@link #getComments()}.
+	 * element. It contains the text of Javadoc together with the tags.
+	 *
+	 * If one only wants only the text without the tag, one can call `getComments().get(0).getContent()`
+	 *
+	 * If one wants to analyze the tags, one can call `getComments().get(0).asJavaDoc().getTags()`
+	 *
+	 * See also {@link #getComments()}.and {@link spoon.reflect.code.CtJavaDoc}
 	 */
 	@DerivedProperty
 	String getDocComment();
@@ -113,7 +127,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Gets the position of this element in input source files
 	 *
-	 * @return Source file and line number of this element or null
+	 * @return Source file and line number of this element.
+	 * It never returns null. Use {@link SourcePosition#isValidPosition()}
+	 * to detect whether return instance contains start/end indexes.
 	 */
 	@PropertyGetter(role = POSITION)
 	SourcePosition getPosition();
@@ -274,22 +290,22 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 */
 	CtRole getRoleInParent();
 
-	/*
+	/**
 	 * Deletes the element. For instance, delete a statement from its containing block. Warning: it may result in an incorrect AST, use at your own risk.
 	 */
 	void delete();
 
-	/*
+	/**
 	 * Saves metadata inside an Element.
 	 */
 	<E extends CtElement> E putMetadata(String key, Object val);
 
-	/*
+	/**
 	 * Retrieves metadata stored in an element. Returns null if it does not exist.
 	 */
 	Object getMetadata(String key);
 
-	/*
+	/**
 	 * Returns the metadata keys stored in an element.
 	 */
 	Set<String> getMetadataKeys();
@@ -324,6 +340,10 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * Clone the element which calls this method in a new object.
+	 *
+	 * Note that that references are kept as is, and thus, so if you clone whole classes
+	 * or methods, some parts of the cloned element (eg executable references) may still point to the initial element.
+	 * In this case, consider using methods {@link spoon.refactoring.Refactoring#copyType(CtType)} and {@link spoon.refactoring.Refactoring#copyMethod(CtMethod)} instead which does additional work beyond cloning.
 	 */
 	CtElement clone();
 
@@ -343,4 +363,22 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param value to be assigned to this field.
 	 */
 	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
+
+	/**
+	 * Return the path from the model root to this CtElement, eg `.spoon.test.path.Foo.foo#body#statement[index=0]`
+	 */
+	CtPath getPath();
+
+	/**
+	 * Returns an iterator over this CtElement's descendants.
+	 * @return An iterator over this CtElement's descendants.
+	 */
+	Iterator<CtElement> descendantIterator();
+
+	/**
+	 * Returns an Iterable instance of this CtElement, allowing for dfs traversal of its descendants.
+	 * @return an Iterable object that allows iterating through this CtElement's descendants.
+	 */
+	Iterable<CtElement> asIterable();
+
 }

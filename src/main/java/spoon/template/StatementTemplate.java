@@ -50,7 +50,13 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 		if (statements.size() > 1) {
 			throw new SpoonException("StatementTemplate cannot return more then one statement");
 		}
-		return statements.isEmpty() ? null : statements.get(0);
+
+		if (statements.size() == 1) {
+			statements.get(0).setParent(null);
+			return statements.get(0);
+		}
+
+		return null;
 	}
 
 	public Void S() {

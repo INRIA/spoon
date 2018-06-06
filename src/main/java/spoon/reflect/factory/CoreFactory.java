@@ -395,6 +395,7 @@ public interface CoreFactory {
 			CompilationUnit compilationUnit,
 			int startSource, int end, int[] lineSeparatorPositions);
 
+	/** Creates a source position that points to the given compilation unit */
 	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
 
 	/**
@@ -561,15 +562,21 @@ public interface CoreFactory {
 	 */
 	CtTypeReference createWildcardStaticTypeMemberReference();
 
+	/** Creates a Java 9 module */
 	CtModule createModule();
 
+	/** Creates a reference to a Java 9 module */
 	CtModuleReference createModuleReference();
 
+	/** Creates a "requires" directive for a Java 9 module file */
 	CtModuleRequirement createModuleRequirement();
 
+	/** Creates a "export" directive for a Java 9 module file */
 	CtPackageExport createPackageExport();
 
+	/** Creates a "provides" directive for a Java 9 module file */
 	CtProvidedService createProvidedService();
 
+	/** Creates a "uses" directive for a Java 9 module file */
 	CtUsedService createUsedService();
 }

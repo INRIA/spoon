@@ -204,8 +204,8 @@ public class JDTTreeBuilderHelper {
 			// create variable of concrete type to avoid type casting while calling methods
 			final CtParameterReference<T> parameterReference = coreFactory.createParameterReference();
 			if (variable.getParent() instanceof CtLambda) {
-				parameterReference.setDeclaringExecutable(
-						referenceBuilder.getLambdaExecutableReference(singleNameReference));
+				// nothing
+
 			} else {
 				// Unfortunately, we can not use `variable.getReference()` here as some parent
 				// references (in terms of Java objects) have not been set up yet. Thus, we need to
@@ -256,18 +256,6 @@ public class JDTTreeBuilderHelper {
 						? declaringReferenceOfExecutable.clone()
 						: executable.getType().clone();
 
-				// create a reference to the executable of the currently processed parameter
-				// reference
-				@SuppressWarnings("unchecked")
-				final CtExecutableReference executableReference =
-						executableFactory.createReference(
-								declaringReferenceOfExecutable,
-								executableTypeReference,
-								executable.getSimpleName(),
-								parameterTypesOfExecutable);
-
-				// finally, we can set the executable reference...
-				parameterReference.setDeclaringExecutable(executableReference);
 			}
 			variableReference = parameterReference;
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
@@ -645,6 +633,10 @@ public class JDTTreeBuilderHelper {
 		} else {
 			type = jdtTreeBuilder.getFactory().Core().createClass();
 		}
+
+		// Setting modifiers
+		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
+
 		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
 
 		if (typeDeclaration.superInterfaces != null) {
@@ -666,9 +658,6 @@ public class JDTTreeBuilderHelper {
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
-
-		// Setting modifiers
-		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
 
 		return type;
 	}

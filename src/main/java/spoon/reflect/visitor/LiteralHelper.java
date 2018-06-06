@@ -43,7 +43,7 @@ abstract class LiteralHelper {
 			boolean mayContainsSpecialCharacter = true;
 
 			SourcePosition position = literal.getPosition();
-			if (position != null) {
+			if (position.isValidPosition()) {
 				// the size of the string in the source code, the -1 is the size of the ' or " in the source code
 				int stringLength = position.getSourceEnd() - position.getSourceStart() - 1;
 				// if the string in the source is not the same as the string in the literal, the string may contains special characters
@@ -58,7 +58,7 @@ abstract class LiteralHelper {
 			boolean mayContainsSpecialCharacters = true;
 
 			SourcePosition position = literal.getPosition();
-			if (position != null) {
+			if (position.isValidPosition()) {
 				// the size of the string in the source code, the -1 is the size of the ' or " in the source code
 				int stringLength = position.getSourceEnd() - position.getSourceStart() - 1;
 				// if the string in the source is not the same as the string in the literal, the string may contains special characters

@@ -166,7 +166,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutable<T> getExecutableDeclaration() {
-		return getCtExecutable(getDeclaringType().getTypeDeclaration());
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
+		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 
 	private CtExecutable<T> getCtExecutable(CtType<?> typeDecl) {

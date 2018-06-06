@@ -479,15 +479,33 @@ public interface CtVisitor {
 	 */
 	void visitCtImport(CtImport ctImport);
 
+	/**
+	 * Visits a module declaration
+	 */
 	void visitCtModule(CtModule module);
 
+	/**
+	 * Visits a module reference
+	 */
 	void visitCtModuleReference(CtModuleReference moduleReference);
 
+	/**
+	 * Visits a package export in a module declaration.
+	 */
 	void visitCtPackageExport(CtPackageExport moduleExport);
 
+	/**
+	 * Visits a "require" directive in a module declaration.
+	 */
 	void visitCtModuleRequirement(CtModuleRequirement moduleRequirement);
 
+	/**
+	 * Visits a "provides" directive in a module declaration.
+	 */
 	void visitCtProvidedService(CtProvidedService moduleProvidedService);
 
+	/**
+	 * Visits a "uses" directive in a module declaration.
+	 */
 	void visitCtUsedService(CtUsedService usedService);
 }

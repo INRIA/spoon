@@ -2,7 +2,6 @@ package spoon.test.generics;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.MavenLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -11,6 +10,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -56,6 +56,7 @@ import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
 import spoon.test.generics.testclasses.Mole;
 import spoon.test.generics.testclasses.Orange;
+import spoon.test.generics.testclasses.OuterTypeParameter;
 import spoon.test.generics.testclasses.Paella;
 import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.SameSignature;
@@ -228,6 +229,9 @@ public class GenericsTest {
 
 		// an bound type is not an TypeParameterRefernce
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalCtTypeParameters().get(0).toString());
+
+		meth = type.getMethod("m2");
+		assertEquals("A extends java.lang.Number & java.lang.Comparable<? super A>", meth.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
@@ -638,8 +642,7 @@ public class GenericsTest {
 		//typeParamRef has got new parent 
 		assertSame(typeRef, typeParamRef.getParent());
 
-		// null because without context
-		assertEquals(null, typeParamRef.getDeclaration());
+		assertEquals(typeParam, typeParamRef.getDeclaration());
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
 		typeParamRef.setSimpleName("Y");
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
@@ -808,7 +811,9 @@ public class GenericsTest {
 
 		// spoon.test.generics.testclasses.Tacos<K, java.lang.String>.Burritos<K, V>
 		CtTypeReference<?> burritosRef = factory.getModel().filterChildren(new NamedElementFilter(CtVariable.class, "burritos")).first(CtVariable.class).getType();
-		assertEquals(true, burritosRef.isGenerics());
+		// now that the order of type members is correct
+		// this burritos is indeed "IBurritos<?, ?> burritos = new Burritos<>()" with no generics
+		assertEquals(false, burritosRef.isGenerics());
 
 		// int
 		CtTypeReference<?> nbTacosRef = factory.getModel().filterChildren(new NamedElementFilter(CtVariable.class, "nbTacos")).first(CtVariable.class).getType();
@@ -1402,5 +1407,20 @@ public class GenericsTest {
 		
 		MainTest.checkParentConsistency(launcher.getFactory().getModel().getRootPackage());
 		MainTest.checkParentConsistency(adaptedMethod);
+	}
+
+	@Test
+	public void testCannotAdaptTypeOfNonTypeScope() throws Exception {
+		//contract: ClassTypingContext doesn't fail on type parameters, which are defined out of the scope of ClassTypingContext
+		CtType<?> ctClass = ModelUtils.buildClass(OuterTypeParameter.class);
+		//the method defines type parameter, which is used in super of local class
+		CtReturn<?> retStmt = (CtReturn<?>) ctClass.getMethodsByName("method").get(0).getBody().getStatements().get(0);
+		CtNewClass<?> newClassExpr = (CtNewClass<?>) retStmt.getReturnedExpression();
+		CtType<?> declaringType = newClassExpr.getAnonymousClass();
+		CtMethod<?> m1 = declaringType.getMethodsByName("iterator").get(0);
+		ClassTypingContext c = new ClassTypingContext(declaringType);
+		//the adaptation of such type parameter keeps that parameter as it is.
+		assertFalse(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("add").get(0)));
+		assertTrue(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("iterator").get(0)));
 	}
 }

@@ -22,12 +22,10 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -348,17 +346,6 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
-			// Enable building only outdated files
-			sw1 = new Switch("buildOnlyOutdatedFiles");
-			sw1.setLongFlag("buildOnlyOutdatedFiles");
-			sw1.setHelp(
-					"Set Spoon to build only the source files that " + "have been modified since the latest " + "source code generation, for performance " + "purpose. Note that this option requires "
-							+ "to have the --ouput-type option not set " + "to none. This option is not appropriate " + "to all kinds of processing. In particular "
-							+ "processings that implement or rely on a " + "global analysis should avoid this option " + "because the processor will only have access "
-							+ "to the outdated source code (the files " + "modified since the latest processing).");
-			sw1.setDefault("false");
-			jsap.registerParameter(sw1);
-
 			sw1 = new Switch("lines");
 			sw1.setLongFlag("lines");
 			sw1.setHelp("Set Spoon to try to preserve the original line " + "numbers when generating the source " + "code (may lead to human-unfriendly " + "formatting).");
@@ -564,9 +551,7 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
-		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 
 		// backward compatibility
 		// we don't have to set the source classpath
@@ -574,7 +559,6 @@ public class Launcher implements SpoonAPI {
 			comp.setSourceClasspath(jsapActualArgs.getString("source-classpath").split(System.getProperty("path.separator")));
 		}
 
-		env.debugMessage("output: " + comp.getSourceOutputDirectory());
 		env.debugMessage("destination: " + comp.getBinaryOutputDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
@@ -750,7 +734,7 @@ public class Launcher implements SpoonAPI {
 					for (Object resource : resources) {
 						final String resourceParentPath = ((File) resource).getParent();
 						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
-						final String targetDirectory = modelBuilder.getSourceOutputDirectory() + packageDir;
+						final String targetDirectory = getEnvironment().getDefaultFileGenerator().getOutputDirectory() + packageDir;
 						try {
 							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
 						} catch (IOException e) {

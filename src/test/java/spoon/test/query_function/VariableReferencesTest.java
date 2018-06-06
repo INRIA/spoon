@@ -39,6 +39,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.reflect.visitor.filter.VariableScopeFunction;
 import spoon.test.query_function.testclasses.VariableReferencesFromStaticMethod;
+import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class VariableReferencesTest {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.addInputResource("./src/test/java/spoon/test/query_function/VariableReferencesModelTest.java");
+		launcher.addInputResource("./src/test/java/spoon/test/query_function/testclasses/VariableReferencesModelTest.java");
 		launcher.run();
 		Factory factory = launcher.getFactory();
 		modelClass = factory.Class().get(VariableReferencesModelTest.class);
@@ -202,7 +203,7 @@ public class VariableReferencesTest {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{
 			if(isTestFieldName(varRef.getSimpleName())) {
 				CtLocalVariable<?> var = varRef.getDeclaration();
-				assertNotNull("The declaration of variable "+varRef.getSimpleName()+" in "+getParentMethodName(varRef)+" on line "+varRef.getPosition().getLine()+" with value "+getVariableReferenceValue(varRef)+" was not found", var);
+				assertNotNull("The declaration of variable "+varRef.getSimpleName()+" in "+getParentMethodName(varRef)+" on line "+var.getPosition().getLine()+" with value "+getVariableReferenceValue(varRef)+" was not found", var);
 				assertEquals("CtLocalVariableReference#getDeclaration returned wrong declaration in "+getParentMethodName(varRef), getVariableReferenceValue(varRef), (int)getLiteralValue(var));
 			}
 			return false;
