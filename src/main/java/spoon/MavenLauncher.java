@@ -155,12 +155,14 @@ public class MavenLauncher extends Launcher {
 		private String groupId;
 		private String artifactId;
 		private String version;
+		private String type;
 		private List<TreeDependency> dependencies = new ArrayList<>();
 
-		TreeDependency(String groupId, String artifactId, String version) {
+		TreeDependency(String groupId, String artifactId, String version, String type) {
 			this.groupId = groupId;
 			this.artifactId = artifactId;
 			this.version = version;
+			this.type = type;
 		}
 
 		void addDependence(TreeDependency dependence) {
@@ -193,6 +195,9 @@ public class MavenLauncher extends Launcher {
 		}
 
 		private File getTopLevelJar() {
+			if ("pom".equals(type)) {
+				return null;
+			}
 			if (groupId != null && version != null) {
 				String fileName = artifactId + "-" + version;
 				Path depPath = Paths.get(m2RepositoryPath, groupId.replaceAll("\\.", "/"), artifactId, version);
@@ -201,7 +206,11 @@ public class MavenLauncher extends Launcher {
 					File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
 					if (jarFile.exists()) {
 						return jarFile;
+					} else {
+						System.err.println("Jar not found at " + jarFile);
 					}
+				} else {
+					System.err.println("Dependency not found at " + depPath);
 				}
 			}
 			return null;
@@ -279,6 +288,12 @@ public class MavenLauncher extends Launcher {
 						String groupId = model.getParent().getGroupId();
 						String version = model.getParent().getVersion();
 						this.parent = readPom(groupId, model.getParent().getArtifactId(), version);
+						if (this.model.getGroupId() == null && this.parent != null) {
+							this.model.setGroupId(this.parent.model.getGroupId());
+						}
+						if (this.model.getVersion() == null && this.parent != null) {
+							this.model.setVersion(this.parent.model.getVersion());
+						}
 					}
 				} catch (Exception e) {
 					LOGGER.debug("Parent model cannot be resolved: " + e.getMessage());
@@ -416,6 +431,7 @@ public class MavenLauncher extends Launcher {
 			try {
 				return readPOM(depPath.toString(), null);
 			} catch (Exception e) {
+				e.printStackTrace();
 				return null;
 			}
 		}
@@ -427,7 +443,7 @@ public class MavenLauncher extends Launcher {
 				return null;
 			}
 			// pass only the optional dependency if it's in a library dependency
-			/*if (isLib && dependency.isOptional()) {
+			if (isLib && dependency.isOptional()) {
 				return null;
 			}
 
@@ -436,11 +452,11 @@ public class MavenLauncher extends Launcher {
 				return null;
 			}
 			// ignore not transitive dependencies
-			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
+			/*if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
 				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
 				return null;
 			}*/
-			TreeDependency dependence = new TreeDependency(dependency.getGroupId(), dependency.getArtifactId(), version);
+			TreeDependency dependence = new TreeDependency(dependency.getGroupId(), dependency.getArtifactId(), version, dependency.getType());
 			try {
 				InheritanceModel dependencyModel = readPom(dependency.getGroupId(), dependency.getArtifactId(), version);
 				if (dependencyModel != null) {
@@ -474,7 +490,7 @@ public class MavenLauncher extends Launcher {
 		 * @return the list of  dependencies
 		 */
 		private TreeDependency getTreeDependency(boolean isLib, Set<TreeDependency> hierarchy) {
-			TreeDependency dependence = new TreeDependency(model.getGroupId(), model.getArtifactId(), model.getVersion());
+			TreeDependency dependence = new TreeDependency(model.getGroupId(), model.getArtifactId(), model.getVersion(), model.getPackaging());
 			if (hierarchy.contains(dependence)) {
 				return dependence;
 			}
