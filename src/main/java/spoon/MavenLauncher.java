@@ -163,17 +163,14 @@ public class MavenLauncher extends Launcher {
 			this.version = version;
 		}
 
-		public void addDependence(TreeDependency dependence) {
+		void addDependence(TreeDependency dependence) {
 			if (dependence != null) {
 				dependencies.add(dependence);
 			}
 		}
 
-		public List<TreeDependency> getDependencyList() {
-			List<TreeDependency> output = new ArrayList<>();
-			for (TreeDependency treeDependency : dependencies) {
-				output.add(treeDependency);
-			}
+		List<TreeDependency> getDependencyList() {
+			List<TreeDependency> output = new ArrayList<>(dependencies);
 			for (TreeDependency treeDependency : dependencies) {
 				output.addAll(treeDependency.getDependencyList());
 			}
@@ -181,12 +178,11 @@ public class MavenLauncher extends Launcher {
 		}
 
 
-		public List<File> toJarList() {
-			List<TreeDependency> deps = getDependencyList();
+		List<File> toJarList() {
+			List<TreeDependency> dependencyList = getDependencyList();
 			List<File> output = new ArrayList<>();
 			Set<TreeDependency> addedDep = new HashSet<>();
-			for (int i = 0; i < deps.size(); i++) {
-				TreeDependency dep = deps.get(i);
+			for (TreeDependency dep : dependencyList) {
 				File file = dep.getTopLevelJar();
 				if (null != file && !addedDep.contains(dep)) {
 					addedDep.add(dep);
@@ -211,7 +207,7 @@ public class MavenLauncher extends Launcher {
 			return null;
 		}
 
-		public void removeDependency(String groupId, String artifactId) {
+		void removeDependency(String groupId, String artifactId) {
 			for (TreeDependency dep : new ArrayList<>(dependencies)) {
 				if (dep.groupId != null && dep.groupId.equals(groupId) && dep.artifactId != null && dep.artifactId.equals(artifactId)) {
 					this.dependencies.remove(dep);
@@ -249,8 +245,7 @@ public class MavenLauncher extends Launcher {
 			sb.append(version);
 			if (!dependencies.isEmpty()) {
 				sb.append(" {\n");
-				for (int i = 0; i < dependencies.size(); i++) {
-					TreeDependency dep = dependencies.get(i);
+				for (TreeDependency dep : dependencies) {
 					String child = dep.toString();
 					for (String s : child.split("\n")) {
 						sb.append("\t");
@@ -312,7 +307,7 @@ public class MavenLauncher extends Launcher {
 			}
 		}
 
-		public void addModule(InheritanceModel module) {
+		void addModule(InheritanceModel module) {
 			modules.add(module);
 		}
 
@@ -332,7 +327,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the list of source directories of the project
 		 * @return the list of source directories
 		 */
-		public List<File> getSourceDirectories() {
+		List<File> getSourceDirectories() {
 			List<File> output = new ArrayList<>();
 			String sourcePath = null;
 
@@ -361,7 +356,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the list of test directories of the project
 		 * @return the list of test directories
 		 */
-		public List<File> getTestDirectories() {
+		List<File> getTestDirectories() {
 			List<File> output = new ArrayList<>();
 			String sourcePath = null;
 
@@ -464,7 +459,6 @@ public class MavenLauncher extends Launcher {
 
 			} catch (Exception ignore) {
 				// ignore the dependencies of the dependency
-				ignore.printStackTrace();
 			}
 			return dependence;
 		}
@@ -536,7 +530,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the source version of the project
 		 * @return the source version of the project
 		 */
-		public int getSourceVersion() {
+		int getSourceVersion() {
 			if (model.getBuild() != null) {
 				for (Plugin plugin : model.getBuild().getPlugins()) {
 					if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
@@ -573,13 +567,16 @@ public class MavenLauncher extends Launcher {
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			sb.append(model.getGroupId() + ":" + model.getArtifactId() + ":" + model.getVersion());
+			sb.append(model.getGroupId());
+			sb.append(":");
+			sb.append(model.getArtifactId());
+			sb.append(":");
+			sb.append(model.getVersion());
 			if (modules.isEmpty()) {
 				return sb.toString();
 			}
 			sb.append(" {\n");
-			for (int i = 0; i < modules.size(); i++) {
-				InheritanceModel inheritanceModel =  modules.get(i);
+			for (InheritanceModel inheritanceModel : modules) {
 				String child = inheritanceModel.toString();
 				for (String s : child.split("\n")) {
 					sb.append("\t");
