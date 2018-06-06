@@ -57,5 +57,5 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
 }

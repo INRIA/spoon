@@ -489,8 +489,7 @@ public class MetamodelProperty {
 	 * ie. if the property has the annotation @{@link UnsettableProperty}
 	 */
 	public boolean isUnsettable() {
-		if (unsettable == null)
-		{
+		if (unsettable == null) {
 			// by default it's unsettable
 			unsettable = Boolean.FALSE;
 
