@@ -286,14 +286,14 @@ public class MetamodelTest {
 				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getTypeofItems().isImplicit());
 
 				mmField.getMethods(MMMethodKind.OTHER).forEach(
-						mmethod -> mmethod.getRelatedMethods().forEach(
+						mmethod -> mmethod.getDeclaredMethods().forEach(
 								ctMethod -> problems.add("Unhandled method signature: " + ctMethod.getDeclaringType().getSimpleName() + "#" + ctMethod.getSignature())
 						)
 				);
 
 				// Martin: how to add the test
 				// if (mmMethods.size() > 1) {
-				//					mmMethods.subList(1, mmMethods.size()).forEach(mmMethod -> mmMethod.getRelatedMethods().forEach(consumer));
+				//					mmMethods.subList(1, mmMethods.size()).forEach(mmMethod -> mmMethod.getDeclaredMethods().forEach(consumer));
 				//				}
 			});
 		});

@@ -216,7 +216,7 @@ public class MetamodelProperty {
 
 	/**
 	 * Return the type of the field
-	 * for List&lt;String> field the ValueType is List
+	 * for List&lt;String&gt; field the ValueType is List
 	 * for String field the ValueType is String
 	 *
 	 */
@@ -230,7 +230,7 @@ public class MetamodelProperty {
 
 	/**
 	 * Returns the type of the property
-	 * for List&lt;String> field the ValueType is String
+	 * for List&lt;String&gt; field the ValueType is String
 	 * for String field the ValueType is String (when getContainerKind == {@link ContainerKind#SINGLE}, {@link #getTypeofItems()} == {@link #getTypeOfField()}.
 	 *
 	 */
@@ -460,7 +460,7 @@ public class MetamodelProperty {
 			CtTypeReference<DerivedProperty> derivedProperty = getter.getActualCtMethod().getFactory().createCtTypeReference(DerivedProperty.class);
 
 			boolean isConreteMethod = false;
-			for (CtMethod<?> ctMethod : getter.getRelatedMethods()) {
+			for (CtMethod<?> ctMethod : getter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(derivedProperty) != null) {
 					derived = Boolean.TRUE;
 					return true;
@@ -501,7 +501,7 @@ public class MetamodelProperty {
 			CtTypeReference<UnsettableProperty> unsettableProperty = setter.getActualCtMethod().getFactory().createCtTypeReference(UnsettableProperty.class);
 
 			boolean isConreteMethod = false;
-			for (CtMethod<?> ctMethod : setter.getRelatedMethods()) {
+			for (CtMethod<?> ctMethod : setter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(unsettableProperty) != null) {
 					unsettable = Boolean.TRUE;
 					return true;
@@ -537,22 +537,18 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 *
-	 * Not in the public API.
-	 *
-	 * @return the super {@link MetamodelProperty} which has same valueType and which is in root of most implementations
+	 * @return the super {@link MetamodelProperty} which has same valueType and which is upper in the metamodel hierarchy
 	 * For example:
-	 * The root super property of {@link CtField}#NAME is {@link CtNamedElement}#NAME
-	 * This method can be used optimized generated code, by way it creates SHARED property handlers.
-	 * For example {@link CtNamedElement}#NAME is shared by many subclasses
+	 * The super property of {@link CtField}#NAME is {@link CtNamedElement}#NAME
+	 * This method can be used to optimize generated code.
 	 */
-	public MetamodelProperty getRootSuperField() {
+	public MetamodelProperty getSuperProperty() {
 		List<MetamodelProperty> potentialRootSuperFields = new ArrayList<>();
 		if (roleMethods.size() > 0) {
 			potentialRootSuperFields.add(this);
 		}
 		superProperties.forEach(superField -> {
-			addUniqueObject(potentialRootSuperFields, superField.getRootSuperField());
+			addUniqueObject(potentialRootSuperFields, superField.getSuperProperty());
 		});
 		int idx = 0;
 		if (potentialRootSuperFields.size() > 1) {

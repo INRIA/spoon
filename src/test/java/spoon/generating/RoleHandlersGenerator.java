@@ -60,7 +60,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 
 		metaModel.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, rim) -> {
-				addUniqueObject(superFields, rim.getRootSuperField());
+				addUniqueObject(superFields, rim.getSuperProperty());
 			});
 		});
 

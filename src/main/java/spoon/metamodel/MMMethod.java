@@ -132,7 +132,7 @@ public class MMMethod {
 	 * @return {@link CtMethod}s, which are declared directly in the {@link MetamodelConcept}, that are related to the same {@link MetamodelProperty}.
 	 * (It does not return methods which are inherited from super types.)
 	 */
-	public List<CtMethod<?>> getRelatedMethods() {
+	public List<CtMethod<?>> getDeclaredMethods() {
 		return Collections.unmodifiableList(ownMethods);
 	}
 
