@@ -41,8 +41,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.util.QualifiedNameBasedSortedSet;
-import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
@@ -384,15 +382,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		CtType<T> t = getDeclaration();
+		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			try {
-				return RtHelper.getAllExecutables(getActualClass(), getFactory());
-			} catch (final SpoonClassNotFoundException e) {
-				if (getFactory().getEnvironment().getNoClasspath()) {
-					return Collections.emptyList();
-				}
-				throw e;
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return Collections.emptyList();
+			} else {
+				throw new SpoonException("Type not found " + getQualifiedName());
 			}
 		} else {
 			return t.getDeclaredExecutables();
@@ -421,23 +416,21 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		CtType<T> t = getDeclaration();
+		CtType<T> t = getTypeDeclaration();
 		if (t != null) {
 			return t.getModifiers();
 		}
-		Class<T> c = getActualClass();
-		return RtHelper.getModifiers(c.getModifiers());
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			return Collections.emptySet();
+		}
+		throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 	}
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
-		try {
-			CtType<T> t = getTypeDeclaration();
-			if (t != null) {
-				return t.getSuperclass();
-			}
-		} catch (SpoonClassNotFoundException e) {
-			return null;
+		CtType<T> t = getTypeDeclaration();
+		if (t != null) {
+			return t.getSuperclass();
 		}
 		return null;
 	}
@@ -448,18 +441,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
 			return Collections.unmodifiableSet(t.getSuperInterfaces());
-		} else {
-			Class<?> c = getActualClass();
-			Class<?>[] sis = c.getInterfaces();
-			if ((sis != null) && (sis.length > 0)) {
-				Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
-				for (Class<?> si : sis) {
-					set.add(getFactory().Type().createReference(si));
-				}
-				return Collections.unmodifiableSet(set);
-			}
 		}
-		throw new SpoonException("Cannot provide CtType for " + getQualifiedName());
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			return Collections.emptySet();
+		}
+		throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 	}
 
 	@Override
@@ -512,12 +498,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean isClass() {
 		CtType<T> t = getTypeDeclaration();
+
 		if (t == null) {
-			Class<?> clazz = getActualClass();
-			if (clazz.isEnum() || clazz.isInterface() || clazz.isAnnotation() || clazz.isArray() || clazz.isPrimitive()) {
+			if (getFactory().getEnvironment().getNoClasspath()) {
 				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 			}
-			return true;
 		} else {
 			return t.isClass();
 		}
@@ -527,7 +514,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isInterface() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isInterface();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+			}
 		} else {
 			return t.isInterface();
 		}
@@ -537,7 +528,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isAnnotationType() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isAnnotation();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+			}
 		} else {
 			return t.isAnnotationType();
 		}
@@ -547,7 +542,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isEnum() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isEnum();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+			}
 		} else {
 			return t.isEnum();
 		}
@@ -556,6 +555,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
 		try {
+			if (type.getTypeDeclaration() == null) {
+				return true;
+			}
 			Set<ModifierKind> modifiers = type.getModifiers();
 
 			if (modifiers.contains(ModifierKind.PUBLIC)) {
