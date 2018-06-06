@@ -26,12 +26,14 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
 
 abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
+
 	protected AbstractRuntimeBuilderContext(CtShadowable element) {
 		element.setShadow(true);
 	}
@@ -77,27 +79,17 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 	}
 
 	@Override
-	public void addInterfaceReference(CtTypeReference<?> typeReference) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void addTypeName(CtTypeReference<?> ctTypeReference) {
+	public void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+		return null;
 	}
 }

@@ -53,13 +53,12 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * Gets the Java runtime class of the referenced type.
 	 *
 	 * This is a low-level feature, it should never been used.
-	 * Use {@link #getTypeDeclaration()} instead,
-	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class
+	 * For CtTypeReference, use {@link #getTypeDeclaration()} instead,
+	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class.
 	 *
-	 * @return the Java class or null if the class is not found (not in
-	 * classpath)
-	 * @throws SpoonClassNotFoundException
-	 * 		if the class is not in the classpath
+	 * @return the Java class or throws a {@link SpoonClassNotFoundException} if the class is not found.
+	 * @throws SpoonClassNotFoundException if the class is not in the classpath
+	 * @deprecated use {@link #getTypeDeclaration()} instead
 	 */
 	Class<T> getActualClass();
 
@@ -82,7 +81,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * built with runtime reflection, and the resulting CtType is called a "shadow" class,
 	 * see {@link CtShadowable#isShadow()}).
 	 *
-	 * @return the type declaration that corresponds to the reference.
+	 * @return the type declaration that corresponds to the reference or null if the reference points to a class that is not in the classpath.
 	 */
 	@DerivedProperty
 	CtType<T> getTypeDeclaration();

@@ -115,7 +115,7 @@ public class GetBinaryFilesTest {
 
 	@Test
 	public void testAnonymousClasses() throws IOException {
-		final String input = "./src/test/java/spoon/test/secondaryclasses/AnonymousClass.java";
+		final String input = "./src/test/java/spoon/test/secondaryclasses/testclasses/AnonymousClass.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
 		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());

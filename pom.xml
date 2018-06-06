@@ -10,7 +10,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>6.1.0-SNAPSHOT</version>
+  <version>6.3.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -149,10 +149,9 @@
   </developers>
 
   <scm>
-    <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
-    <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
-    <developerConnection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</developerConnection>
-    <tag>HEAD</tag>
+    <url>https://github.com/INRIA/spoon</url>
+    <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
+    <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
   </scm>
 
   <properties>
@@ -162,28 +161,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>gforge.inria.fr-release</id>
-      <name>Maven Repository for JDT Compiler release</name>
-      <url>http://spoon.gforge.inria.fr/repositories/releases</url>
-    </repository>
-    <repository>
-      <id>gforge.inria.fr-snapshot</id>
-      <name>Maven Repository for Spoon Snapshots</name>
-      <url>http://spoon.gforge.inria.fr/repositories/snapshots</url>
-    </repository>
-  </repositories>
-
   <distributionManagement>
     <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>gforge.inria.fr-snapshot</id>
-      <name>inria-snapshots</name>
-      <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/snapshots</url>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
     </snapshotRepository>
     <site>
       <id>gforge.inria.fr-site</id>
@@ -191,6 +177,15 @@
       <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/spoon-core</url>
     </site>
   </distributionManagement>
+
+  <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
+  <repositories>
+    <repository>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -234,7 +229,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.5.0</version>
+      <version>3.3.9</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -245,6 +240,20 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.9.2</version>
+    </dependency>
+    <dependency>
+      <!-- to reproduce JTD error with nullable annotation -->
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- to reproduce and fix a bug -->
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+      <version>3.6.9</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -292,8 +301,14 @@
           <testTarget>${java.test.version}</testTarget>
           <showWarnings>true</showWarnings>
           <compilerArgs>
-              <arg>-Xlint:deprecation</arg>
+              <arg>-Xlint:deprecation,unchecked</arg>
+              <!-- always generate class files for package-info -->
+              <arg>-Xpkginfo:always</arg>
           </compilerArgs>
+          <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
+          <!-- useIncrementalCompilation=false actually means that we won't recompile everything each time -->
+          <!-- it's not a joka, test by yourself :-) -->
+          <useIncrementalCompilation>false</useIncrementalCompilation>
         </configuration>
       </plugin>
 
@@ -473,6 +488,13 @@
           </analysisConfigurationFiles>
         </configuration>
       </plugin>
+
+      <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <!--           We use the latest, so we don't specify an actual version number       -->
+            <!--          <version></version>-->
+      </plugin>
     </plugins>
 
 
@@ -541,7 +563,9 @@
         <configuration>
           <quiet>true</quiet>
           <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
+          <!--maven-javadoc-plugin version 2.9 onwards uses additionalJOption, see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin/48511911#48511911 -->
+          <additionalJOption>-Xdoclint:none</additionalJOption>
+      </configuration>
         <reportSets>
           <reportSet>
             <id>html</id>

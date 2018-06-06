@@ -18,6 +18,7 @@ package spoon.reflect;
 
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
@@ -28,11 +29,11 @@ import java.util.Collection;
 import java.util.List;
 
 /** represents a Java program, modeled by a set of compile-time (Ct) objects
- * where each objects is a program element (for instance, a CtClass represents a class).
+ * where each object is a program element (for instance, a CtClass represents a class).
  */
 public interface CtModel extends Serializable, CtQueryable {
 
-	/** returns the root package */
+	/** returns the root package of the unnamed module */
 	CtPackage getRootPackage();
 
 	/** returns all top-level types of the model */
@@ -40,6 +41,16 @@ public interface CtModel extends Serializable, CtQueryable {
 
 	/** returns all packages of the model */
 	Collection<CtPackage> getAllPackages();
+
+	/**
+	 * Returns the unnamed module.
+	 */
+	CtModule getUnnamedModule();
+
+	/**
+	 * returns all modules of the model
+	 */
+	Collection<CtModule> getAllModules();
 
 	/** process this model with the given processor */
 	void processWith(Processor<?> processor);

@@ -92,6 +92,9 @@ public class SnippetCompilationHelper {
 		// Clean up
 		c.getPackage().removeType(c);
 
+		//disconnect element from the parent, so it can be added to another model
+		ret.delete();
+
 		if (ret instanceof CtClass) {
 			CtClass klass = (CtClass) ret;
 			ret.getFactory().Package().getRootPackage().addType(klass);

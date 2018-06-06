@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
@@ -17,7 +18,9 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -35,7 +38,7 @@ public class NoClasspathTest {
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.getEnvironment().setLevel("OFF");
 		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath/fields");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		CtClass<Object> clazz = factory.Class().get("Foo");
@@ -129,7 +132,7 @@ public class NoClasspathTest {
 		final Factory factory = spoon.getFactory();
 		factory.getEnvironment().setAutoImports(false);
 		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 
 		CtTypeReference<?> expectedType = factory.Type().createReference(javax.sound.sampled.AudioFormat.Encoding.class);
@@ -141,4 +144,45 @@ public class NoClasspathTest {
 		assertEquals(true, ctReturn.getReferencedTypes().contains(expectedType));
 	}
 
+	@Test
+	public void testIssue1747() {
+		Launcher spoon = new Launcher();
+		final Factory factory = spoon.getFactory();
+		factory.getEnvironment().setNoClasspath(true);
+		spoon.addInputResource("./src/test/resources/noclasspath/SubscriptionAdapter.java");
+		spoon.buildModel();
+	}
+
+	@Test
+	public void testInheritanceInNoClassPathWithClasses() throws IOException {
+		// contract: when using noclasspath in combination with a source classpath
+		// spoon is able to resolve the inheritance between classes contained in source cp
+		String sourceInputDirPath = "./src/test/resources/spoon/test/inheritance";
+		String targetBinPath = "./target/spoon-nocp-bin";
+
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setShouldCompile(true);
+		spoon.addInputResource(sourceInputDirPath);
+		spoon.setBinaryOutputDirectory(targetBinPath);
+		spoon.run();
+
+		spoon = new Launcher();
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.getEnvironment().setSourceClasspath(new String[] { targetBinPath });
+		spoon.addInputResource(sourceInputDirPath+"/AnotherClass.java");
+		spoon.buildModel();
+
+		CtType anotherclass = spoon.getFactory().Type().get("org.acme.AnotherClass");
+		assertEquals(1, anotherclass.getFields().size());
+
+		CtField field = (CtField)anotherclass.getFields().get(0);
+
+		CtTypeReference myClassReference = spoon.getFactory().Type().createReference("fr.acme.MyClass");
+		assertEquals(myClassReference, field.getType());
+		assertNotNull(myClassReference.getActualClass());
+
+		CtTypeReference myInterfaceReference = spoon.getFactory().Type().createReference("org.myorganization.MyInterface");
+		assertTrue(myClassReference.isSubtypeOf(myInterfaceReference));
+		assertTrue(field.getType().isSubtypeOf(myInterfaceReference));
+	}
 }

@@ -18,16 +18,15 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -194,9 +193,14 @@ public class ImportTest {
 		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
 		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString());
-		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
-				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
-				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
+
+		// here the buggy behavior with type members was encoded
+		// so we fix it
+		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" +
+		System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
+				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");"+   System.lineSeparator() + "    }"
+				+   System.lineSeparator() + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
+				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
 		assertEquals(expected, subClass.toString());
 	}
 
@@ -341,6 +345,8 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfPrivateClass() throws Exception {
+		System.setProperty("line.separator", "\n");
+		
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
@@ -351,7 +357,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
@@ -376,6 +382,8 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfStaticMethod() throws Exception {
+		System.setProperty("line.separator", "\n");
+
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
@@ -386,7 +394,7 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
@@ -1301,5 +1309,16 @@ public class ImportTest {
 
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
+	}
+
+	@Test
+	public void testNullable() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/resources/noclasspath/TestNullable.java"));
+		comp.build();
+		// should build
+		assertNotNull(launcher.getFactory().Type().get("TestNullable"));
 	}
 }

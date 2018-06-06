@@ -31,7 +31,6 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtComment;
@@ -89,11 +88,17 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -104,6 +109,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -120,7 +126,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -138,6 +143,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Package declaration file name.
 	 */
 	public static final String JAVA_PACKAGE_DECLARATION = "package-info" + JAVA_FILE_EXTENSION;
+
+	/**
+	 * Module declaration file name.
+	 */
+	public static final String JAVA_MODULE_DECLARATION = "module-info" + JAVA_FILE_EXTENSION;
 
 	/**
 	 * Line separator which is used by the system
@@ -336,7 +346,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			} catch (Exception ex) {
 				String elementInfo = e.getClass().getName();
 				elementInfo += " on path " + getPath(e) + "\n";
-				if (e.getPosition() != null) {
+				if (e.getPosition().isValidPosition()) {
 					elementInfo += "at position " + e.getPosition().toString() + " ";
 				}
 				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
@@ -401,16 +411,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSeparator("@");
 		scan(annotation.getAnnotationType());
 		if (annotation.getValues().size() > 0) {
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "(", false, false, ",", true, false, ")")) {
-				for (Entry<String, CtExpression> e : annotation.getValues().entrySet()) {
-					lp.printSeparatorIfAppropriate();
+			elementPrinterHelper.printList(annotation.getValues().entrySet(),
+				null, false, "(", false, false, ",", true, false, ")",
+				e -> {
 					if ((annotation.getValues().size() == 1 && "value".equals(e.getKey())) == false) {
 						//it is not a default value attribute. We must print a attribute name too.
 						printer.writeIdentifier(e.getKey()).writeSpace().writeOperator("=").writeSpace();
 					}
 					elementPrinterHelper.writeAnnotationElement(annotation.getFactory(), e.getValue());
-				}
-			}
+				});
 		}
 	}
 
@@ -575,13 +584,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeKeyword("catch").writeSpace().writeSeparator("(");
 		CtCatchVariable<? extends Throwable> parameter = catchBlock.getParameter();
 		if (parameter != null && parameter.getMultiTypes().size() > 1) {
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, true, "|", true, false, null)) {
-			for (int i = 0; i < parameter.getMultiTypes().size(); i++) {
-					lp.printSeparatorIfAppropriate();
-					CtTypeReference<?> type = parameter.getMultiTypes().get(i);
-					scan(type);
-				}
-			}
+			elementPrinterHelper.printList(parameter.getMultiTypes(),
+					null, false, null, false, true, "|", true, false, null,
+					type -> scan(type));
 			printer.writeSpace().writeIdentifier(parameter.getSimpleName());
 		} else {
 			scan(parameter);
@@ -722,12 +727,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (ctEnum.getEnumValues().size() == 0) {
 			printer.writeSeparator(";").writeln();
 		} else {
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, false, ",", true, false, ";")) {
-				for (CtEnumValue<?> enumValue : ctEnum.getEnumValues()) {
-					lp.printSeparatorIfAppropriate();
-					scan(enumValue);
-				}
-			}
+			elementPrinterHelper.printList(ctEnum.getEnumValues(),
+					null, false, null, false, false, ",", true, false, ";",
+					enumValue -> scan(enumValue));
 		}
 
 		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
@@ -743,7 +745,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtField(CtField<T> f) {
-		elementPrinterHelper.writeComment(f);
+		elementPrinterHelper.writeComment(f, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
 		scan(f.getType());
@@ -755,6 +757,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(f.getDefaultExpression());
 		}
 		printer.writeSeparator(";");
+		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
 	}
 
 	@Override
@@ -842,14 +845,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 						 * Search for potential variable declaration until we found a class which declares or inherits this field
 						 */
 						final CtField<?> field = f.getVariable().getFieldDeclaration();
-						if (field == null) {
-							throw new SpoonException("The reference to field named \"" + f.getVariable().getSimpleName() + "\" is invalid, because there is no field with such name on path:" + getPath(f));
-						}
-						final String fieldName = field.getSimpleName();
-						CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
-						if (var != field) {
-							//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
-							target.setImplicit(false);
+						if (field != null) {
+							final String fieldName = field.getSimpleName();
+							CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
+							if (var != field) {
+								//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
+								target.setImplicit(false);
+							}
+						} else {
+							//There is a model inconsistency
+							printer.writeComment(f.getFactory().createComment("ERROR: Missing field \"" + f.getVariable().getSimpleName() + "\", please check your model. The code may not compile.", CommentType.BLOCK)).writeSpace();
 						}
 					}
 					// the implicit drives the separator
@@ -1015,6 +1020,77 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public void visitCtModule(CtModule module) {
+		enter(module);
+		if (module.isOpenModule()) {
+			printer.writeKeyword("open").writeSpace();
+		}
+		printer.writeKeyword("module").writeSpace().writeIdentifier(module.getSimpleName());
+		printer.writeSpace().writeSeparator("{").incTab().writeln();
+
+		for (CtModuleDirective moduleDirective : module.getModuleDirectives()) {
+			scan(moduleDirective);
+		}
+
+		printer.decTab().writeSeparator("}");
+		exit(module);
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+		printer.writeIdentifier(moduleReference.getSimpleName());
+	}
+
+	@Override
+	public void visitCtPackageExport(CtPackageExport moduleExport) {
+		if (moduleExport.isOpenedPackage()) {
+			printer.writeKeyword("opens");
+		} else {
+			printer.writeKeyword("exports");
+		}
+		printer.writeSpace();
+
+		visitCtPackageReference(moduleExport.getPackageReference());
+		if (!moduleExport.getTargetExport().isEmpty()) {
+			this.elementPrinterHelper.printList(moduleExport.getTargetExport(),
+				null, false, " to", true, false, ",", true, false, null,
+				moduleReference -> scan(moduleReference));
+		}
+		printer.writeSeparator(";").writeln();
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		printer.writeKeyword("requires").writeSpace();
+
+		if (!moduleRequirement.getRequiresModifiers().isEmpty()) {
+			this.elementPrinterHelper.printList(moduleRequirement.getRequiresModifiers(),
+				null, false, null, false, false, " ", false, false, " ",
+				modifier -> printer.writeKeyword(modifier.name().toLowerCase()));
+		}
+
+		scan(moduleRequirement.getModuleReference());
+		printer.writeSeparator(";").writeln();
+	}
+
+	@Override
+	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
+		printer.writeKeyword("provides").writeSpace();
+		scan(moduleProvidedService.getServiceType());
+		this.elementPrinterHelper.printList(moduleProvidedService.getImplementationTypes(),
+			null, false, " with", true, false, ",", true, false, null,
+			implementations -> scan(implementations));
+		printer.writeSeparator(";").writeln();
+	}
+
+	@Override
+	public void visitCtUsedService(CtUsedService usedService) {
+		printer.writeKeyword("uses").writeSpace();
+		scan(usedService.getServiceType());
+		printer.writeSeparator(";").writeln();
+	}
+
+	@Override
 	public void visitCtComment(CtComment comment) {
 		if (!env.isCommentsEnabled() && context.elementStack.size() > 1) {
 			return;
@@ -1092,12 +1168,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!forLoop.getForUpdate().isEmpty()) {
 			printer.writeSpace();
 		}
-		try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, true, ",", true, false, null)) {
-			for (CtStatement s : forLoop.getForUpdate()) {
-				lp.printSeparatorIfAppropriate();
-				scan(s);
-			}
-		}
+		elementPrinterHelper.printList(forLoop.getForUpdate(),
+			null, false, null, false, true, ",", true, false, null,
+			s -> scan(s));
 		printer.writeSeparator(")");
 		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getBody());
 	}
@@ -1124,7 +1197,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
 			for (CtComment comment : comments) {
 				SourcePosition thenPosition =
-						ifElement.getThenStatement().getPosition() == null ? ((CtBlock) ifElement.getThenStatement()).getStatement(0).getPosition() : ifElement.getThenStatement().getPosition();
+						ifElement.getThenStatement().getPosition().isValidPosition() ? ifElement.getThenStatement().getPosition() : ((CtBlock) ifElement.getThenStatement()).getStatement(0).getPosition();
 				if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd()) {
 					elementPrinterHelper.writeComment(comment);
 				}
@@ -1143,13 +1216,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 
 		if (intrface.getSuperInterfaces().size() > 0) {
-			printer.writeSpace().writeKeyword("extends").writeSpace();
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, true, ",", true, false, null)) {
-				for (CtTypeReference<?> ref : intrface.getSuperInterfaces()) {
-					lp.printSeparatorIfAppropriate();
-					scan(ref);
-				}
-			}
+			elementPrinterHelper.printList(intrface.getSuperInterfaces(),
+				"extends", false, null, false, true, ",", true, false, null,
+				ref -> scan(ref));
 		}
 		context.pushCurrentThis(intrface);
 		printer.writeSpace().writeSeparator("{").incTab();
@@ -1202,12 +1271,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.writeIdentifier(invocation.getExecutable().getSimpleName());
 		}
-		try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "(", false, false, ",", true, false, ")")) {
-			for (CtExpression<?> e : invocation.getArguments()) {
-				lp.printSeparatorIfAppropriate();
-				scan(e);
-			}
-		}
+		elementPrinterHelper.printList(invocation.getArguments(),
+			null, false, "(", false, false, ",", true, false, ")",
+			e -> scan(e));
 		exitCtExpression(invocation);
 	}
 
@@ -1261,12 +1327,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> m) {
-		elementPrinterHelper.writeComment(m);
+		elementPrinterHelper.writeComment(m, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(m, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(m);
-		if (m.isDefaultMethod()) {
-			printer.writeKeyword("default").writeSpace();
-		}
 		elementPrinterHelper.writeFormalTypeParameters(m);
 		if (m.getFormalCtTypeParameters().size() > 0) {
 			printer.writeSpace();
@@ -1281,7 +1344,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (m.getBody() != null) {
 			printer.writeSpace();
 			scan(m.getBody());
-			if (m.getBody().getPosition() != null) {
+			if (m.getBody().getPosition().isValidPosition()) {
 				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
 					if (m.getBody().getStatements().isEmpty() || !(m.getBody().getStatements().get(m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
 						getPrinterHelper().putLineNumberMapping(m.getBody().getPosition().getEndLine());
@@ -1295,6 +1358,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.writeSeparator(";");
 		}
+		elementPrinterHelper.writeComment(m, CommentOffset.AFTER);
 	}
 
 	@Override
@@ -1346,13 +1410,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		if (newArray.getDimensionExpressions().size() == 0) {
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "{", true, false, ",", true, true, "}")) {
-				for (CtExpression e : newArray.getElements()) {
-					lp.printSeparatorIfAppropriate();
-					scan(e);
-				}
-				elementPrinterHelper.writeComment(newArray, CommentOffset.INSIDE);
-			}
+			elementPrinterHelper.printList(newArray.getElements(),
+				null, false, "{", true, false, ",", true, true, "}",
+				e -> scan(e));
+			elementPrinterHelper.writeComment(newArray, CommentOffset.INSIDE);
 		}
 		elementPrinterHelper.writeComment(newArray, CommentOffset.AFTER);
 		exitCtExpression(newArray);
@@ -1401,12 +1462,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(ctConstructorCall.getType());
 		}
 
-		try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "(", false, false, ",", true, false, ")")) {
-			for (CtCodeElement exp : ctConstructorCall.getArguments()) {
-				lp.printSeparatorIfAppropriate();
-				scan(exp);
-			}
-		}
+		elementPrinterHelper.printList(ctConstructorCall.getArguments(),
+			null, false, "(", false, false, ",", true, false, ")",
+			exp -> scan(exp));
 	}
 
 	/**
@@ -1442,14 +1500,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public <T> void visitCtLambda(CtLambda<T> lambda) {
 		enterCtExpression(lambda);
 
-		try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "(", false, false, ",", false, false, ")")) {
-			if (lambda.getParameters().size() > 0) {
-				for (CtParameter<?> parameter : lambda.getParameters()) {
-					lp.printSeparatorIfAppropriate();
-					scan(parameter);
-				}
-			}
-		}
+		elementPrinterHelper.printList(lambda.getParameters(),
+			null, false, "(", false, false, ",", false, false, ")",
+			parameter -> scan(parameter));
 		printer.writeSpace();
 		printer.writeSeparator("->");
 		printer.writeSpace();
@@ -1532,7 +1585,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		enterCtStatement(returnStatement);
-		printer.writeKeyword("return").writeSpace();
+		printer.writeKeyword("return");
+		// checkstyle wants "return;" and not "return ;"
+		if (returnStatement.getReturnedExpression() != null) {
+			printer.writeSpace();
+		}
 		scan(returnStatement.getReturnedExpression());
 	}
 
@@ -1609,12 +1666,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(tryWithResource);
 		printer.writeKeyword("try").writeSpace();
 		if (tryWithResource.getResources() != null && !tryWithResource.getResources().isEmpty()) {
-			try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, "(", false, false, ";", false, false, ")")) {
-				for (CtLocalVariable<?> r : tryWithResource.getResources()) {
-					lp.printSeparatorIfAppropriate();
-					scan(r);
-				}
-			}
+			elementPrinterHelper.printList(tryWithResource.getResources(),
+				null, false, "(", false, false, ";", false, false, ")",
+				r -> scan(r));
 		}
 		printer.writeSpace();
 		scan(tryWithResource.getBody());
@@ -1683,12 +1737,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
-		try (ListPrinter lp = elementPrinterHelper.createListPrinter(false, null, false, true, "&", true, false, null)) {
-			for (CtTypeReference<?> bound : reference.getBounds()) {
-				lp.printSeparatorIfAppropriate();
-				scan(bound);
-			}
-		}
+		elementPrinterHelper.printList(reference.getBounds(),
+			null, false, null, false, true, "&", true, false, null,
+			bound -> scan(bound));
 	}
 
 	@Override
@@ -1842,6 +1893,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public String printModuleInfo(CtModule module) {
+		reset();
+		scan(module);
+		return this.getResult();
+	}
+
+	@Override
 	public String getResult() {
 		return printer.getPrinterHelper().toString();
 	}
@@ -1854,6 +1912,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			this.importsContext = new MinimalImportScanner();
 		}
+	}
+
+
+	/**
+	 * Write the compilation unit header.
+	 */
+	public DefaultJavaPrettyPrinter writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
+		elementPrinterHelper.writeHeader(types, imports);
+		return this;
+	}
+
+	/**
+	 * Write the compilation unit footer.
+	 */
+	public DefaultJavaPrettyPrinter writeFooter(List<CtType<?>> types) {
+		elementPrinterHelper.writeFooter(types);
+		return this;
 	}
 
 	@Override
@@ -1870,7 +1945,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}
-		elementPrinterHelper.writeHeader(types, imports);
+		this.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {
@@ -1880,11 +1955,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				getPrinterHelper().adjustEndPosition(t);
 			}
 		}
+		this.writeFooter(types);
 	}
 
 	@Override
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return getPrinterHelper().getLineNumberMapping();
+	}
+
+	/**
+	 * @return current {@link TokenWriter}, so the subclasses of {@link DefaultJavaPrettyPrinter} can print tokens too
+	 */
+	protected TokenWriter getPrinterTokenWriter() {
+		return printer;
 	}
 
 	/**

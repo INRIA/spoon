@@ -20,6 +20,7 @@ import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -33,6 +34,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSynchronized;
@@ -101,8 +103,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 		element.accept(this);
 		if (result != null) {
-			result.setParent(element.getParent());
-			return (R) result;
+			CtElement r = result;
+			//reset result, to not influence another evaluation.
+			result = null;
+			if (element.isParentInitialized()) {
+				r.setParent(element.getParent());
+			}
+			return (R) r;
 		}
 
 		// otherwise nothing has been changed
@@ -246,7 +253,12 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		for (CtStatement s : block.getStatements()) {
 			CtElement res = evaluate(s);
 			if (res != null) {
-				b.addStatement((CtStatement) res);
+				if (res instanceof CtStatement) {
+					b.addStatement((CtStatement) res);
+				} else {
+					//the context expects statement. We cannot simplify in this case
+					b.addStatement(s.clone());
+				}
 			}
 			// do not copy unreachable statements
 			if (flowEnded) {
@@ -283,7 +295,16 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				return;
 			}
 		}
-		if (fieldAccess.getFactory().Type().createReference(Enum.class)
+		if ("length".equals(fieldAccess.getVariable().getSimpleName())) {
+			CtExpression<?> target = fieldAccess.getTarget();
+			if (target instanceof CtNewArray<?>) {
+				CtNewArray<?> newArr = (CtNewArray<?>) target;
+				CtLiteral<Number> literal = fieldAccess.getFactory().createLiteral(newArr.getElements().size());
+				setResult(literal);
+				return;
+			}
+		}
+		if (fieldAccess.getFactory().Type().ENUM
 				.isSubtypeOf(fieldAccess.getVariable().getDeclaringType())) {
 			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
 			l.setValue(fieldAccess.getVariable());
@@ -368,6 +389,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		CtInvocation<T> i = invocation.getFactory().Core().createInvocation();
 		i.setExecutable(invocation.getExecutable());
+		i.setTypeCasts(invocation.getTypeCasts());
 		boolean constant = true;
 		i.setTarget(evaluate(invocation.getTarget()));
 		if ((i.getTarget() != null) && !(i.getTarget() instanceof CtLiteral)) {
@@ -387,10 +409,12 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 		if (constant) {
 			CtExecutable<?> executable = invocation.getExecutable().getDeclaration();
+			CtType<?> aType = invocation.getParent(CtType.class);
+			CtTypeReference<?> execDeclaringType = invocation.getExecutable().getDeclaringType();
 			// try to inline partial evaluation results for local calls
 			// (including to superclasses)
-			if ((executable != null) && (invocation.getType() != null) && invocation.getExecutable().getDeclaringType()
-					.isSubtypeOf(((CtType<?>) invocation.getParent(CtType.class)).getReference())) {
+			if (executable != null && aType != null && invocation.getType() != null && execDeclaringType != null
+					&& execDeclaringType.isSubtypeOf(aType.getReference())) {
 				CtBlock<?> b = evaluate(executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
@@ -406,15 +430,36 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				try {
 					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
-					CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
-					l.setValue(r);
-					setResult(l);
-					return;
+					if (isLiteralType(r)) {
+						CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
+						l.setValue(r);
+						setResult(l);
+						return;
+					}
 				} catch (Exception e) {
 				}
 			}
 		}
 		setResult(i);
+	}
+
+	private boolean isLiteralType(Object object) {
+		if (object == null) {
+			return true;
+		}
+		if (object instanceof String) {
+			return true;
+		}
+		if (object instanceof Number) {
+			return true;
+		}
+		if (object instanceof Character) {
+			return true;
+		}
+		if (object instanceof Class) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -455,6 +500,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		r.setThrownExpression(evaluate(throwStatement.getThrownExpression()));
 		setResult(r);
 		flowEnded = true;
+	}
+
+	@Override
+	public void visitCtCatch(CtCatch catchBlock) {
+		super.visitCtCatch(catchBlock);
+		//the flowEnded = true set by throw in catch block does not stops flow of parent
+		flowEnded = false;
 	}
 
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {

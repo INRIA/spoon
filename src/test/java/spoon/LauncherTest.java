@@ -40,7 +40,7 @@ public class LauncherTest {
 
 		// now assertions on the model builder
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
-		assertEquals(new File("spooned"), builder.getSourceOutputDirectory());
+		assertEquals(new File("spooned").getCanonicalFile(), builder.getSourceOutputDirectory());
 		assertEquals(0, builder.getInputSources().size());
 		assertEquals("UTF-8", environment.getEncoding().displayName());
 	}
@@ -64,7 +64,7 @@ public class LauncherTest {
 		Assert.assertFalse(environment.isCopyResources());
 
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
-		assertEquals(new File("spooned2"), builder.getSourceOutputDirectory());
+		assertEquals(new File("spooned2").getCanonicalFile(), builder.getSourceOutputDirectory());
 
 		// the input directories
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());

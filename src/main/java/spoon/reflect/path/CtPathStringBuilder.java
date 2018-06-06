@@ -16,11 +16,12 @@
  */
 package spoon.reflect.path;
 
+
 import spoon.reflect.path.impl.CtNamedPathElement;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
-import spoon.reflect.path.impl.CtRolePathElement;
 import spoon.reflect.path.impl.CtTypedNameElement;
+import spoon.reflect.path.impl.CtRolePathElement;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,7 +52,7 @@ public class CtPathStringBuilder {
 			return Class.forName("spoon.reflect.code." + name);
 		} catch (ClassNotFoundException ex) {
 			throw new CtPathException(
-					String.format("Unable to locate element with name $s in Spoon model", name));
+					String.format("Unable to locate element with type %s in Spoon model", name));
 		}
 	}
 

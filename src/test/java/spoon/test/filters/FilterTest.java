@@ -1,28 +1,12 @@
 package spoon.test.filters;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
@@ -36,6 +20,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -48,13 +33,13 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
+import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.chain.CtFunction;
+import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.chain.CtQueryImpl;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.QueryFailurePolicy;
 import spoon.reflect.visitor.chain.ScanningMode;
-import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.reflect.visitor.chain.CtFunction;
-import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -83,6 +68,17 @@ import spoon.test.filters.testclasses.Tacos;
 import spoon.test.filters.testclasses.Tostada;
 import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
+
+import static org.junit.Assert.*;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class FilterTest {
 
@@ -128,6 +124,12 @@ public class FilterTest {
 		assertEquals(2, expressions.size());
 		assertNull(expressions.get(0).getParent(new LineFilter()));
 		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtLoop);
+
+		method = foo.getMethod("loopNoBody");
+		CtFor lastStatement = (CtFor) method.getBody().getLastStatement();
+		expressions = method.getElements(new LineFilter());
+		assertEquals(1, expressions.size());
+		assertEquals(lastStatement, lastStatement.getExpression().getParent(new LineFilter()));
 
 		method = foo.getMethod("ifBlock");
 		expressions = method.getElements(new LineFilter());
@@ -190,7 +192,7 @@ public class FilterTest {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void filteredElementsAreOfTheCorrectType() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		Class<CtMethod> filterClass = CtMethod.class;
 		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(filterClass);
 		List<CtMethod> elements = Query.getElements(factory, statementFilter);
@@ -202,7 +204,7 @@ public class FilterTest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void intersectionOfTwoFilters() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(CtMethod.class);
 		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<CtMethodImpl>(CtMethodImpl.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, statementFilter, statementImplFilter);
@@ -222,7 +224,7 @@ public class FilterTest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void unionOfTwoFilters() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<CtNewClass>(CtNewClass.class);
 		TypeFilter<CtMethod> methodFilter = new TypeFilter<CtMethod>(CtMethod.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.UNION, methodFilter, newClassFilter);
@@ -243,7 +245,7 @@ public class FilterTest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void classCastExceptionIsNotThrown() throws Exception {
-		Factory factory = build("spoon.test", "SampleClass").getFactory();
+		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		NamedElementFilter<CtVariable> nameFilterA = new NamedElementFilter<>(CtVariable.class,"j");
 		NamedElementFilter<CtVariable> nameFilterB = new NamedElementFilter<>(CtVariable.class,"k");
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, nameFilterA, nameFilterB);
@@ -378,6 +380,51 @@ public class FilterTest {
 		assertEquals(2, overridenMethodsFromSub.size());
 		assertEquals(AbstractTostada.class, overridenMethodsFromSub.get(0).getParent(CtClass.class).getActualClass());
 		assertEquals(Tostada.class, overridenMethodsFromSub.get(1).getParent(CtClass.class).getActualClass());
+	}
+
+	@Test
+	public void testgetTopDefinitions() throws Exception {
+		// contract: getTopDefinitions returns the correct number of definitions
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		launcher.run();
+
+		// start with ToStatda
+		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
+		List<CtMethod<?>> methods;
+
+		methods = orderByName(aTostada.getMethodsByName("make").get(0).getTopDefinitions());
+		assertEquals(2, methods.size());
+		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
+		assertEquals("ITostada", methods.get(1).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("prepare").get(0).getTopDefinitions());
+		assertEquals(1, methods.size());
+		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("toString").get(0).getTopDefinitions());
+		assertEquals(1, methods.size());
+		assertEquals("Object", methods.get(0).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("honey").get(0).getTopDefinitions());
+		assertEquals(2, methods.size());
+		assertEquals("AbstractTostada", methods.get(0).getDeclaringType().getSimpleName());
+		assertEquals("Honey", methods.get(1).getDeclaringType().getSimpleName());
+
+		methods = orderByName(aTostada.getMethodsByName("foo").get(0).getTopDefinitions());
+		assertEquals(0, methods.size());
+	}
+
+	private List<CtMethod<?>> orderByName(Collection<CtMethod<?>> meths) {
+		List<CtMethod<?>> ordered = new ArrayList<>(meths);
+		ordered.sort(new Comparator<CtMethod<?>>() {
+			@Override
+			public int compare(CtMethod<?> o1, CtMethod<?> o2) {
+				return o1.getParent(CtType.class).getQualifiedName().compareTo(o2.getParent(CtType.class).getQualifiedName());
+			}
+		});
+		return ordered;
 	}
 
 	@Test
@@ -755,6 +802,7 @@ public class FilterTest {
 	@Test
 	public void testQueryWithOptionalNumberOfInputs() throws Exception {
 		// contract: QueryFactory allows to create query with an optional number of inputs
+		// the input can be provided as Array or Iterable
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -767,13 +815,19 @@ public class FilterTest {
 		// here is the query
 		CtQuery q1 = launcher.getFactory().Query().createQuery(cls, cls2).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1.list().toArray());
+		CtQuery q1b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls2)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada"}, q1b.list().toArray());
 
 		CtQuery q2 = launcher.getFactory().Query().createQuery(cls, cls3).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2.list().toArray());
+		CtQuery q2b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls3)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Antojito"}, q2b.list().toArray());
 
 		CtQuery q3 = launcher.getFactory().Query().createQuery(cls, cls2, cls3).map((CtClass c) -> c.getSimpleName());
 		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3.list().toArray());
-	}
+		CtQuery q3b = launcher.getFactory().Query().createQuery(Arrays.asList(cls, cls2, cls3)).map((CtClass c) -> c.getSimpleName());
+		assertArrayEquals(new String[]{"Tacos", "Tostada", "Antojito"}, q3b.list().toArray());
+}
 
 	// now testing map(CtConsumableFunction)
 
@@ -864,16 +918,16 @@ public class FilterTest {
 		
 		//contract: empty query returns no element
 		assertEquals(0, launcher.getFactory().createQuery().list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).list().size());
 		//contract: empty query returns no element
 		launcher.getFactory().createQuery().forEach(x->fail());
-		launcher.getFactory().createQuery(null).forEach(x->fail());
+		launcher.getFactory().createQuery((Object) null).forEach(x->fail());
 		//contract: empty query calls no mapping
 		assertEquals(0, launcher.getFactory().createQuery().map(x->{fail();return true;}).list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).map(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).map(x->{fail();return true;}).list().size());
 		//contract: empty query calls no filterChildren
 		assertEquals(0, launcher.getFactory().createQuery().filterChildren(x->{fail();return true;}).list().size());
-		assertEquals(0, launcher.getFactory().createQuery(null).filterChildren(x->{fail();return true;}).list().size());
+		assertEquals(0, launcher.getFactory().createQuery((Object) null).filterChildren(x->{fail();return true;}).list().size());
 	}
 	
 	@Test
@@ -1110,12 +1164,14 @@ public class FilterTest {
 		//context.expectedParent is last visited element
 		
 		//Check that last visited element was root package
-		assertSame(launcher.getFactory().getModel().getRootPackage(), context.expectedParent);
+		assertSame(launcher.getFactory().getModel().getUnnamedModule(), context.expectedParent);
 		
 		//contract: if includingSelf(false), then parent of input element is first element
 		assertSame(varStrings.getParent(), varStrings.map(new ParentFunction().includingSelf(false)).first());
 		//contract: if includingSelf(true), then input element is first element
 		assertSame(varStrings, varStrings.map(new ParentFunction().includingSelf(true)).first());
+		//contract: do not fail on unitialized parent
+		assertNull(factory.Type().createReference("p.T").map(new ParentFunction()).first());
 	}
 	@Test
 	public void testCtScannerListener() throws Exception {
@@ -1189,7 +1245,7 @@ public class FilterTest {
 			
 		})).forEach(ele->{
 			context2.nrOfResults++;
-			assertTrue(ele instanceof CtPackage || ele instanceof CtType);
+			assertTrue("ele instanceof "+ele.getClass(),ele instanceof CtPackage || ele instanceof CtType || ele instanceof CtModule);
 			//check that first and second query returned same results
 			assertSame(ele, iter.next());
 		});

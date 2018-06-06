@@ -19,6 +19,7 @@ package spoon.support;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
@@ -39,12 +40,14 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.compiler.FileSystemFolder;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -85,13 +88,19 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean shouldCompile = false;
 
-	private boolean skipSelfChecks;
+	private boolean skipSelfChecks = false;
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
 	private Charset encoding = Charset.defaultCharset();
 
-	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
+	private OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+
+	private OutputType outputType = OutputType.CLASSES;
+
+	private Boolean noclasspath = null;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -150,6 +159,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSelfChecks(boolean skip) {
 		skipSelfChecks = skip;
+	}
+
+	@Override
+	public void disableConsistencyChecks() {
+		skipSelfChecks = true;
 	}
 
 	private Level toLevel(String level) {
@@ -392,7 +406,7 @@ public class StandardEnvironment implements Serializable, Environment {
 			try {
 				urls[i] = new File(classpath[i]).toURI().toURL();
 			} catch (MalformedURLException e) {
-				throw new IllegalStateException("Invalid classpath: " + classpath, e);
+				throw new IllegalStateException("Invalid classpath: " + Arrays.toString(classpath), e);
 			}
 		}
 		return urls;
@@ -425,6 +439,9 @@ public class StandardEnvironment implements Serializable, Environment {
 				if (javaFiles.size() > 0) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
+				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
+			} else if (classOrJarFolder.getName().endsWith(".class")) {
+				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}
 		}
 	}
@@ -449,8 +466,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.preserveLineNumbers = preserveLineNumbers;
 	}
 
-	private boolean noclasspath = false;
-
 	@Override
 	public void setNoClasspath(boolean option) {
 		noclasspath = option;
@@ -458,6 +473,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean getNoClasspath() {
+		if (this.noclasspath == null) {
+			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
+			this.noclasspath = true;
+		}
 		return noclasspath;
 	}
 
@@ -495,6 +514,39 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
+	public void setSourceOutputDirectory(File directory) {
+		if (directory == null) {
+			throw new SpoonException("You must specify a directory.");
+		}
+		if (directory.isFile()) {
+			throw new SpoonException("Output must be a directory");
+		}
+
+		try {
+			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(),
+					this);
+		} catch (IOException e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+			throw new SpoonException(e);
+		}
+	}
+
+	@Override
+	public File getSourceOutputDirectory() {
+		return this.outputDestinationHandler.getDefaultOutputDirectory();
+	}
+
+	@Override
+	public void setOutputDestinationHandler(OutputDestinationHandler outputDestinationHandler) {
+		this.outputDestinationHandler = outputDestinationHandler;
+	}
+
+	@Override
+	public OutputDestinationHandler getOutputDestinationHandler() {
+		return outputDestinationHandler;
+	}
+
+	@Override
 	public FineModelChangeListener getModelChangeListener() {
 		return modelChangeListener;
 	}
@@ -512,5 +564,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public void setOutputType(OutputType outputType) {
+		this.outputType = outputType;
+	}
+
+	@Override
+	public OutputType getOutputType() {
+		return this.outputType;
 	}
 }

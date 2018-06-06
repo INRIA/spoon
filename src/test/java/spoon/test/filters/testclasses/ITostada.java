@@ -16,6 +16,8 @@
  */
 package spoon.test.filters.testclasses;
 
-public interface ITostada {
+public interface ITostada extends Foo {
 	ITostada make();
+}
+interface Foo {
 }

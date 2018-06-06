@@ -220,7 +220,7 @@ public class CompilationTest {
 							public CompilationUnit[] getCompilationUnits() {
 								List<CompilationUnit> units = new ArrayList<>();
 								for (CompilationUnit u : super.getCompilationUnits()) {
-									if (new String(u.getFileName()).contains("/reference/")) {
+									if (new String(u.getFileName()).replace('\\', '/').contains("/reference/")) {
 										units.add(u);
 									}
 								}
@@ -237,7 +237,7 @@ public class CompilationTest {
 
 		// we indeed only have types declared in a file in package reference
 		int n=0;
-		for (CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
+		for (CtType<?> t : launcher.getModel().getAllTypes()) {
 			n++;
 			assertTrue(t.getQualifiedName().contains("reference"));
 		}

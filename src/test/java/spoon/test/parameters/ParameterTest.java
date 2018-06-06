@@ -79,12 +79,8 @@ public class ParameterTest {
 						.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			for (final CtTypeReference refType :
-					(List<CtTypeReference>) param.getReference()
-							.getDeclaringExecutable()
-							.getParameters()) {
-				assertEquals(launcher.getFactory().Type().STRING, refType);
-			}
+			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			assertEquals(launcher.getFactory().Type().STRING, refType);
 		}
 
 		// test integer parameters
@@ -94,12 +90,8 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			for (final CtTypeReference refType :
-					(List<CtTypeReference>) param.getReference()
-					.getDeclaringExecutable()
-					.getParameters()) {
-				assertEquals(launcher.getFactory().Type().INTEGER, refType);
-			}
+			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			assertEquals(launcher.getFactory().Type().INTEGER, refType);
 		}
 
 		// test unknown parameters
@@ -109,12 +101,9 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			for (final CtTypeReference refType :
-					(List<CtTypeReference>) param.getReference()
-							.getDeclaringExecutable()
-							.getParameters()) {
-				assertEquals(launcher.getFactory().Type().OBJECT, refType);
-			}
+			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			// unknown parameters have no type
+			assertEquals(null, refType);
 		}
 	}
 }

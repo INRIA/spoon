@@ -23,5 +23,6 @@ package spoon.reflect.visitor.chain;
  * @param <T> - the type of accepted elements
  */
 public interface CtConsumer<T> {
+	/** Implement this method to do something with object "t" passed as parameter */
 	void accept(T t);
 }

@@ -37,64 +37,65 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtWhile;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtAnnotatedElementType;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -113,7 +114,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
-	private Map<CtTypedElement<?>, List<CtTypeReference<? extends java.lang.annotation.Annotation>>> annotationsMap = new HashMap<>();
+	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
 	 * @param jdtTreeBuilder
@@ -133,29 +134,43 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public void scanCtElement(CtElement e) {
 		if (child instanceof CtAnnotation && this.jdtTreeBuilder.getContextBuilder().annotationValueName.isEmpty()) {
-			e.addAnnotation((CtAnnotation<?>) child);
+			// we check if the current element can have the annotation attached
+			CtAnnotatedElementType annotatedElementType = CtAnnotation.getAnnotatedElementTypeForCtElement(e);
+			annotatedElementType = (e instanceof CtTypeParameter || e instanceof CtTypeParameterReference) ? CtAnnotatedElementType.TYPE_USE : annotatedElementType;
+
+			// in case of noclasspath, we cannot be 100% sure, so we guess it must be attached...
+			if (this.jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath() || (annotatedElementType != null && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, annotatedElementType))) {
+				e.addAnnotation((CtAnnotation<?>) child);
+			}
+
+			// in this case the annotation should be (also) attached to the type
 			if (e instanceof CtTypedElement && JDTTreeBuilderQuery.hasAnnotationWithType((Annotation) childJDT, CtAnnotatedElementType.TYPE_USE)) {
-				List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = new ArrayList<>();
+				List<CtAnnotation> annotations = new ArrayList<>();
 				if (!annotationsMap.containsKey(e)) {
 					annotationsMap.put((CtTypedElement<?>) e, annotations);
 				} else {
 					annotations = annotationsMap.get(e);
 				}
-				annotations.add(((CtAnnotation) child).getType());
+				annotations.add((CtAnnotation) child.clone());
 				annotationsMap.put((CtTypedElement<?>) e, annotations);
 			}
-			return;
 		}
 	}
 
 	private void substituteAnnotation(CtTypedElement ele) {
 		if (annotationsMap.containsKey(ele)) {
-			List<CtTypeReference<? extends java.lang.annotation.Annotation>> annotations = annotationsMap.get(ele);
-			for (CtTypeReference<? extends java.lang.annotation.Annotation> annotation : annotations) {
-				final CtAnnotation<? extends java.lang.annotation.Annotation> targetAnnotation = ele.getAnnotation(annotation);
-				ele.removeAnnotation(targetAnnotation);
-				if (!ele.getType().getAnnotations().contains(targetAnnotation)) {
-					ele.getType().addAnnotation(targetAnnotation);
+			List<CtAnnotation> annotations = annotationsMap.get(ele);
+			for (CtAnnotation annotation : annotations) {
+
+				// in case of noclasspath we attached previously the element:
+				// if we are here, we may have find an element for whom it's a better place
+				if (this.jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath() && annotation.isParentInitialized()) {
+					CtElement parent = annotation.getParent();
+					parent.removeAnnotation(annotation);
+				}
+
+				if (!ele.getType().getAnnotations().contains(annotation)) {
+					ele.getType().addAnnotation(annotation.clone());
 				}
 			}
 			annotationsMap.remove(ele);
@@ -454,11 +469,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		if (child instanceof CtConstructor) {
-			CtConstructor<T> c = (CtConstructor<T>) child;
-			ctClass.addConstructor(c);
-			if (c.getPosition() != null && c.getPosition().getSourceStart() == -1) {
-				c.setImplicit(true);
-			}
+			ctClass.addConstructor((CtConstructor<T>) child);
 		}
 		if (child instanceof CtAnonymousExecutable) {
 			ctClass.addAnonymousExecutable((CtAnonymousExecutable) child);
@@ -775,8 +786,11 @@ public class ParentExiter extends CtInheritanceScanner {
 				ctPackage.removeType((CtType<?>) child);
 			}
 			ctPackage.addType((CtType<?>) child);
-			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
-				child.getPosition().getCompilationUnit().getDeclaredTypes().add((CtType<?>) child);
+			if (child.getPosition().getCompilationUnit() != null) {
+				CompilationUnit cu = child.getPosition().getCompilationUnit();
+				List<CtType<?>> declaredTypes = new ArrayList<>(cu.getDeclaredTypes());
+				declaredTypes.add((CtType<?>) child);
+				cu.setDeclaredTypes(declaredTypes);
 			}
 			return;
 		}

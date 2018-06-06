@@ -19,13 +19,20 @@ package spoon.support.compiler.jdt;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ExportsStatement;
 import org.eclipse.jdt.internal.compiler.ast.FieldReference;
+import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
+import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
+import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
+import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.UsesStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
@@ -46,8 +53,13 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.ExecutableFactory;
@@ -55,6 +67,8 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -62,6 +76,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -189,8 +204,8 @@ public class JDTTreeBuilderHelper {
 			// create variable of concrete type to avoid type casting while calling methods
 			final CtParameterReference<T> parameterReference = coreFactory.createParameterReference();
 			if (variable.getParent() instanceof CtLambda) {
-				parameterReference.setDeclaringExecutable(
-						referenceBuilder.getLambdaExecutableReference(singleNameReference));
+				// nothing
+
 			} else {
 				// Unfortunately, we can not use `variable.getReference()` here as some parent
 				// references (in terms of Java objects) have not been set up yet. Thus, we need to
@@ -241,18 +256,6 @@ public class JDTTreeBuilderHelper {
 						? declaringReferenceOfExecutable.clone()
 						: executable.getType().clone();
 
-				// create a reference to the executable of the currently processed parameter
-				// reference
-				@SuppressWarnings("unchecked")
-				final CtExecutableReference executableReference =
-						executableFactory.createReference(
-								declaringReferenceOfExecutable,
-								executableTypeReference,
-								executable.getSimpleName(),
-								parameterTypesOfExecutable);
-
-				// finally, we can set the executable reference...
-				parameterReference.setDeclaringExecutable(executableReference);
 			}
 			variableReference = parameterReference;
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
@@ -630,6 +633,10 @@ public class JDTTreeBuilderHelper {
 		} else {
 			type = jdtTreeBuilder.getFactory().Core().createClass();
 		}
+
+		// Setting modifiers
+		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
+
 		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
 
 		if (typeDeclaration.superInterfaces != null) {
@@ -652,9 +659,150 @@ public class JDTTreeBuilderHelper {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}
 
-		// Setting modifiers
-		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
-
 		return type;
+	}
+
+	/**
+	 * Creates an entire object CtModule from a module declaration.
+	 * @return a CtModule
+	 */
+	CtModule createModule(ModuleDeclaration moduleDeclaration) {
+		CtModule module = jdtTreeBuilder.getFactory().Module().getOrCreate(new String(moduleDeclaration.moduleName));
+		module.setIsOpenModule(moduleDeclaration.isOpen());
+		jdtTreeBuilder.getContextBuilder().enter(module, moduleDeclaration);
+
+		if (moduleDeclaration.requires != null && moduleDeclaration.requires.length > 0) {
+			List<CtModuleRequirement> moduleRequirements = new ArrayList<>();
+			for (RequiresStatement requiresStatement : moduleDeclaration.requires) {
+				moduleRequirements.add(this.createModuleRequirement(requiresStatement));
+			}
+
+			module.setRequiredModules(moduleRequirements);
+		}
+
+		if (moduleDeclaration.exports != null && moduleDeclaration.exports.length > 0) {
+			List<CtPackageExport> moduleExports = new ArrayList<>();
+			for (ExportsStatement exportsStatement : moduleDeclaration.exports) {
+				moduleExports.add(this.createModuleExport(exportsStatement));
+			}
+
+			module.setExportedPackages(moduleExports);
+		}
+
+		if (moduleDeclaration.opens != null && moduleDeclaration.opens.length > 0) {
+			List<CtPackageExport> moduleOpens = new ArrayList<>();
+			for (OpensStatement opensStatement : moduleDeclaration.opens) {
+				moduleOpens.add(this.createModuleExport(opensStatement));
+			}
+
+			module.setOpenedPackages(moduleOpens);
+		}
+
+		if (moduleDeclaration.uses != null && moduleDeclaration.uses.length > 0) {
+			List<CtUsedService> consumedServices = new ArrayList<>();
+			for (UsesStatement consumedService : moduleDeclaration.uses) {
+				consumedServices.add(this.createUsedService(consumedService));
+			}
+
+			module.setUsedServices(consumedServices);
+		}
+
+		if (moduleDeclaration.services != null && moduleDeclaration.services.length > 0) {
+			List<CtProvidedService> moduleProvidedServices = new ArrayList<>();
+			for (ProvidesStatement providesStatement : moduleDeclaration.services) {
+				moduleProvidedServices.add(this.createModuleProvidedService(providesStatement));
+			}
+
+			module.setProvidedServices(moduleProvidedServices);
+		}
+		module.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(moduleDeclaration.declarationSourceStart, moduleDeclaration.declarationSourceEnd));
+		return module;
+	}
+
+	CtUsedService createUsedService(UsesStatement usesStatement) {
+		CtTypeReference typeReference = this.jdtTreeBuilder.references.getTypeReference(usesStatement.serviceInterface);
+		CtUsedService usedService = this.jdtTreeBuilder.getFactory().Module().createUsedService(typeReference);
+		usedService.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(usesStatement.sourceStart, usesStatement.sourceEnd));
+		return usedService;
+	}
+
+	CtModuleRequirement createModuleRequirement(RequiresStatement requiresStatement) {
+		int sourceStart = requiresStatement.sourceStart;
+		int sourceEnd = requiresStatement.sourceEnd;
+
+		CtModuleReference ctModuleReference = jdtTreeBuilder.references.getModuleReference(requiresStatement.module);
+		CtModuleRequirement moduleRequirement = jdtTreeBuilder.getFactory().Module().createModuleRequirement(ctModuleReference);
+
+		Set<CtModuleRequirement.RequiresModifier> modifiers = new HashSet<>();
+		if (requiresStatement.isStatic()) {
+			modifiers.add(CtModuleRequirement.RequiresModifier.STATIC);
+		}
+		if (requiresStatement.isTransitive()) {
+			modifiers.add(CtModuleRequirement.RequiresModifier.TRANSITIVE);
+		}
+		moduleRequirement.setRequiresModifiers(modifiers);
+		moduleRequirement.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return moduleRequirement;
+	}
+
+	CtPackageExport createModuleExport(ExportsStatement exportsStatement) {
+		String packageName = new String(exportsStatement.pkgName);
+		int sourceStart = exportsStatement.sourceStart;
+		int sourceEnd = exportsStatement.sourceEnd;
+
+		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
+		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
+
+		if (exportsStatement.targets != null && exportsStatement.targets.length > 0) {
+			List<CtModuleReference> moduleReferences = new ArrayList<>();
+
+			for (ModuleReference moduleReference : exportsStatement.targets) {
+				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
+			}
+
+			moduleExport.setTargetExport(moduleReferences);
+		}
+
+		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return moduleExport;
+	}
+
+	CtPackageExport createModuleExport(OpensStatement opensStatement) {
+		String packageName = new String(opensStatement.pkgName);
+		int sourceStart = opensStatement.sourceStart;
+		int sourceEnd = opensStatement.sourceEnd;
+
+		CtPackageReference ctPackageReference = jdtTreeBuilder.references.getPackageReference(packageName);
+		CtPackageExport moduleExport = jdtTreeBuilder.getFactory().Module().createPackageExport(ctPackageReference);
+
+		if (opensStatement.targets != null && opensStatement.targets.length > 0) {
+			List<CtModuleReference> moduleReferences = new ArrayList<>();
+
+			for (ModuleReference moduleReference : opensStatement.targets) {
+				moduleReferences.add(this.jdtTreeBuilder.references.getModuleReference(moduleReference));
+			}
+
+			moduleExport.setTargetExport(moduleReferences);
+		}
+
+		moduleExport.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return moduleExport;
+	}
+
+	CtProvidedService createModuleProvidedService(ProvidesStatement providesStatement) {
+		int sourceStart = providesStatement.sourceStart;
+		int sourceEnd = providesStatement.sourceEnd;
+
+		CtTypeReference provideService = this.jdtTreeBuilder.references.getTypeReference(providesStatement.serviceInterface);
+		List<CtTypeReference> implementations = new ArrayList<>();
+
+		for (TypeReference typeReference : providesStatement.implementations) {
+			implementations.add(this.jdtTreeBuilder.references.getTypeReference(typeReference));
+		}
+
+		CtProvidedService providedService = this.jdtTreeBuilder.getFactory().Module().createProvidedService(provideService);
+		providedService.setImplementationTypes(implementations);
+		providedService.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+		return providedService;
 	}
 }

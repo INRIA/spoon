@@ -14,11 +14,11 @@ import spoon.reflect.visitor.Filter;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.List;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -42,12 +42,14 @@ public class CtGenerationTest {
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 
-		Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())
-				.forEach(path -> {
-					if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
-						launcher.addInputResource(path.toString());
-					}
-		});
+		try (Stream<Path> files = Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())) {
+			files.forEach(path -> {
+				if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
+					launcher.addInputResource(path.toString());
+				}
+			});
+		}
+
 		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
 		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());

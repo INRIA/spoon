@@ -14,6 +14,8 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ElementPrinterHelper;
+import spoon.reflect.visitor.ListPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
@@ -161,17 +163,7 @@ public class PrinterTest {
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
 		//contract: printer fails with descriptive exception and not with NPE
-		try {
-			type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString();
-			fail();
-		} catch (SpoonException e) {
-			//the name of the missing field declaration is part of exception
-			assertTrue(e.getMessage().indexOf("testedField")>=0);
-			//the name of the method where field declaration is missing is part of exception
-			assertTrue(e.getMessage().indexOf("failingMethod")>=0);
-			//the name of the class where field is missing is part of exception
-			assertTrue(e.getMessage().indexOf("MissingVariableDeclaration")>=0);
-		} //other exceptions are not OK
+		assertEquals("/* ERROR: Missing field \"testedField\", please check your model. The code may not compile. */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));
@@ -447,5 +439,25 @@ public class PrinterTest {
 				assertTrue(Character.isWhitespace(c)==false);
 			}
 		}
+	}
+
+	@Test
+	public void testListPrinter() {
+
+		Launcher spoon = new Launcher();
+		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) spoon.createPrettyPrinter();
+
+		PrinterHelper ph = new PrinterHelper(spoon.getEnvironment());
+		TokenWriter tw = new DefaultTokenWriter(ph);
+		pp.setPrinterTokenWriter(tw);
+
+		ElementPrinterHelper elementPrinterHelper = pp.getElementPrinterHelper();
+
+		String[] listString = new String[] {"un", "deux", "trois"};
+
+		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
+
+		String expectedResult = " start un next deux next trois end";
+		assertEquals(expectedResult, pp.toString());
 	}
 }

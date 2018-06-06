@@ -17,11 +17,13 @@
 package spoon.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +31,19 @@ import java.util.List;
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
-public interface CompilationUnit extends FactoryAccessor {
+public interface CompilationUnit extends FactoryAccessor, Serializable {
+
+	enum UNIT_TYPE {
+		TYPE_DECLARATION,
+		PACKAGE_DECLARATION,
+		MODULE_DECLARATION,
+		UNKNOWN
+	}
+
+	/**
+	 * Returns the declaration type of the compilation unit.
+	 */
+	UNIT_TYPE getUnitType();
 
 	/**
 	 * Gets the file that corresponds to this compilation unit if any (contains
@@ -58,6 +72,21 @@ public interface CompilationUnit extends FactoryAccessor {
 	 * Sets the types declared in this compilation unit.
 	 */
 	void setDeclaredTypes(List<CtType<?>> types);
+
+	/**
+	 * Add a type to the list of declared types
+	 */
+	void addDeclaredType(CtType type);
+
+	/**
+	 * Gets the declared module if the compilationUnit is "module-info.java"
+	 */
+	CtModule getDeclaredModule();
+
+	/**
+	 * Sets the declared module if the compilationUnit is "module-info.java"
+	 */
+	void setDeclaredModule(CtModule module);
 
 	/**
 	 * Gets the package declared in the top level type of the compilation unit.

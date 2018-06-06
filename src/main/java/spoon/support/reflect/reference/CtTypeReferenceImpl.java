@@ -46,8 +46,6 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -157,7 +155,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			// creating a classloader on the fly is not the most efficient
 			// but it decreases the amount of state to maintain
 			// since getActualClass is only used in rare cases, that's OK.
-			return (Class<T>) getFactory().getEnvironment().getInputClassLoader().loadClass(getQualifiedName());
+			ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+			String qualifiedName = getQualifiedName();
+			return (Class<T>) classLoader.loadClass(qualifiedName);
 		} catch (Throwable e) {
 			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
 		}
@@ -185,7 +185,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t;
 		}
-		return getFactory().Type().get(getActualClass());
+		try {
+			return getFactory().Type().get(getActualClass());
+		} catch (SpoonClassNotFoundException e) {
+			// this only happens in noclasspath
+			return null;
+		}
 	}
 
 	@Override
@@ -337,45 +342,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				return getDeclaredFieldReferences();
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return Collections.emptyList();
-			}
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredFields();
 		}
-	}
-
-	/**
-	 * Collects all field references of the declared class.
-	 *
-	 * @return collection of field references
-	 */
-	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
-			Collection<CtFieldReference<?>> references = new ArrayList<>();
-			for (Field f : getDeclaredFields(getActualClass())) {
-				references.add(getFactory().Field().createReference(f));
-			}
-			if (getActualClass().isAnnotation()) {
-				for (Method m : getActualClass().getDeclaredMethods()) {
-					CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
-					CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
-					references.add(fr);
-				}
-			}
-			return references;
-	}
-
-	private Field[] getDeclaredFields(Class<?> cls) {
-		try {
-			return cls.getDeclaredFields();
-		} catch (Throwable e) {
-			throw new SpoonClassNotFoundException("cannot load fields of class: " + getQualifiedName(), e);
-		}
+		return Collections.emptyList();
 	}
 
 	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
@@ -395,50 +366,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (name == null) {
 			return null;
 		}
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				Collection<CtFieldReference<?>> fields = getDeclaredFieldReferences();
-				for (CtFieldReference<?> field : fields) {
-					if (name.equals(field.getSimpleName())) {
-						return field;
-					}
-				}
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return null;
-			}
-			return null;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredField(name);
 		}
+		return null;
 	}
 
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			CtFieldReference<?> field = getDeclaredField(fieldName);
-			if (field != null) {
-				return field;
-			}
-			CtTypeReference<?> typeRef = getSuperclass();
-			if (typeRef != null) {
-				field = typeRef.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
-			for (CtTypeReference<?> iface : ifaces) {
-				field = iface.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			return field;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredOrInheritedField(fieldName);
 		}
+		return null;
 	}
 
 
@@ -461,11 +401,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
-		try {
-			CtType<?> t = getTypeDeclaration();
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getAllFields();
-		} catch (SpoonClassNotFoundException cnfe) {
-			handleParentNotFound(cnfe);
+		} else {
 			return Collections.emptyList();
 		}
 	}
@@ -505,9 +444,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
-		CtType<?> t = getDeclaration();
+		//we need a interface type references whose parent is connected to CtType, otherwise TypeParameterReferences cannot be resolved well
+		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
-			return t.getSuperInterfaces();
+			return Collections.unmodifiableSet(t.getSuperInterfaces());
 		} else {
 			Class<?> c = getActualClass();
 			Class<?>[] sis = c.getInterfaces();
@@ -516,10 +456,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				for (Class<?> si : sis) {
 					set.add(getFactory().Type().createReference(si));
 				}
-				return set;
+				return Collections.unmodifiableSet(set);
 			}
 		}
-		return Collections.emptySet();
+		throw new SpoonException("Cannot provide CtType for " + getQualifiedName());
 	}
 
 	@Override
@@ -686,7 +626,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
-		if (contextType != null && contextTypeRef.canAccess(declType) == false) {
+		if (contextTypeRef != null && contextTypeRef.canAccess(declType) == false) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;

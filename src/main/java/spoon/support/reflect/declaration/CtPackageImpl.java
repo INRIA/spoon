@@ -17,16 +17,18 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.QualifiedNameBasedSortedSet;
+import spoon.support.comparator.QualifiedNameComparator;
+import spoon.support.util.ModelSet;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -42,10 +44,54 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = SUB_PACKAGE)
-	protected Set<CtPackage> packs = orderedPackageSet();
+	protected ModelSet<CtPackage> packs = new ModelSet<CtPackage>(QualifiedNameComparator.INSTANCE) {
+		private static final long serialVersionUID = 1L;
+		@Override
+		protected CtElement getOwner() {
+			return CtPackageImpl.this;
+		}
+
+		@Override
+		protected CtRole getRole() {
+			return SUB_PACKAGE;
+		}
+
+		@Override
+		public boolean add(CtPackage pack) {
+			if (pack == null) {
+				return false;
+			}
+			// they are the same
+			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
+				addAllTypes(pack, CtPackageImpl.this);
+				addAllPackages(pack, CtPackageImpl.this);
+				return false;
+			}
+
+			// it already exists
+			for (CtPackage p1 : packs) {
+				if (p1.getQualifiedName().equals(pack.getQualifiedName())) {
+					addAllTypes(pack, p1);
+					addAllPackages(pack, p1);
+						return false;
+				}
+			}
+			return super.add(pack);
+		};
+	};
 
 	@MetamodelPropertyField(role = CONTAINED_TYPE)
-	private Set<CtType<?>> types = orderedTypeSet();
+	private ModelSet<CtType<?>> types = new ModelSet<CtType<?>>(QualifiedNameComparator.INSTANCE) {
+		private static final long serialVersionUID = 1L;
+		@Override
+		protected CtElement getOwner() {
+			return CtPackageImpl.this;
+		}
+		@Override
+		protected CtRole getRole() {
+			return CtRole.CONTAINED_TYPE;
+		}
+	};
 
 	public CtPackageImpl() {
 		super();
@@ -58,41 +104,8 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addPackage(CtPackage pack) {
-		if (pack == null) {
-			return (T) this;
-		}
-		if (packs == CtElementImpl.<CtPackage>emptySet()) {
-			this.packs = orderedPackageSet();
-		}
-		// they are the same
-		if (this.getQualifiedName().equals(pack.getQualifiedName())) {
-			addAllTypes(pack, this);
-			addAllPackages(pack, this);
-			return (T) this;
-		}
-
-		// it already exists
-		for (CtPackage p1 : packs) {
-			if (p1.getQualifiedName().equals(pack.getQualifiedName())) {
-				addAllTypes(pack, p1);
-				addAllPackages(pack, p1);
-				return (T) this;
-			}
-		}
-
-		pack.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, SUB_PACKAGE, this.packs, pack);
 		this.packs.add(pack);
-
 		return (T) this;
-	}
-
-	private Set<CtPackage> orderedPackageSet() {
-		return new QualifiedNameBasedSortedSet<>();
-	}
-
-	private Set<CtType<?>> orderedTypeSet() {
-		return new QualifiedNameBasedSortedSet<>();
 	}
 
 	/** add all types of "from" in "to" */
@@ -116,11 +129,16 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean removePackage(CtPackage pack) {
-		if (packs == CtElementImpl.<CtPackage>emptySet()) {
-			return false;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, SUB_PACKAGE, packs, pack);
 		return packs.remove(pack);
+	}
+
+	@Override
+	public CtModule getDeclaringModule() {
+		try {
+			return getParent(CtModule.class);
+		} catch (ParentNotInitializedException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -174,31 +192,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
-		if (packs == null || packs.isEmpty()) {
-			this.packs = CtElementImpl.emptySet();
+		this.packs.set(packs);
 			return (T) this;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, SUB_PACKAGE, this.packs, new HashSet<>(this.packs));
-		this.packs.clear();
-		for (CtPackage p : packs) {
-			addPackage(p);
-		}
-		return (T) this;
-	}
 
 	@Override
 	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
-		if (types == null || types.isEmpty()) {
-			this.types = CtElementImpl.emptySet();
+		this.types.set(types);
 			return (T) this;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CONTAINED_TYPE, this.types, new HashSet<>(this.types));
-		this.types.clear();
-		for (CtType<?> t : types) {
-			addType(t);
-		}
-		return (T) this;
-	}
 
 	@Override
 	public CtPackageReference getReference() {
@@ -207,38 +209,13 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
-		if (type == null) {
-			return (T) this;
-		}
-		if (types == CtElementImpl.<CtType<?>>emptySet()) {
-			this.types = orderedTypeSet();
-		}
-		type.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CONTAINED_TYPE, this.types, type);
 		types.add(type);
 		return (T) this;
 	}
 
 	@Override
 	public void removeType(CtType<?> type) {
-		if (types == CtElementImpl.<CtType<?>>emptySet()) {
-			return;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CONTAINED_TYPE, types, type);
 		types.remove(type);
-	}
-
-	@Override
-	public SourcePosition getPosition() {
-		/*
-		 * The super.getPosition() method returns the own position
-		 * or if it's null the position of the parent element,
-		 * but that isn't possible for packages.
-		 * A package should return the position of the package-info file
-		 * if it exists. The parent of a package is another package which
-		 * needs to have an own package-info file.
-		 */
-		return this.position;
 	}
 
 	@Override

@@ -3,20 +3,25 @@ package spoon.test.invocations;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.invocations.testclasses.Bar;
 import spoon.test.invocations.testclasses.Foo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -57,5 +62,22 @@ public class InvocationTest {
 		} catch (NullPointerException e) {
 			fail();
 		}
+	}
+
+	@Test
+	public void testIssue1753() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/elasticsearch1753");
+
+		final CtModel model = launcher.buildModel();
+		final List<CtExecutable> executables =
+				model.getElements(new TypeFilter<>(CtExecutable.class))
+						.stream()
+						.filter(i -> i.getPosition().getLine() == 190)
+						.collect(Collectors.toList());
+		assertEquals(1, executables.size());
+		final CtExecutable exe = executables.get(0);
+		assertNotNull(exe.getReference().getDeclaration());
 	}
 }

@@ -16,10 +16,15 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -52,6 +57,81 @@ public class CompilationUnitFactory extends SubFactory {
 	public CompilationUnit create() {
 		CompilationUnit cu = factory.Core().createCompilationUnit();
 		return cu;
+	}
+
+	public CompilationUnit getOrCreate(CtPackage ctPackage) {
+		if (ctPackage.getPosition().getCompilationUnit() != null) {
+			return ctPackage.getPosition().getCompilationUnit();
+		} else {
+
+			CtModule module;
+			if (factory.getEnvironment().getComplianceLevel() > 8) {
+				module = ctPackage.getParent(CtModule.class);
+			} else {
+				module = null;
+			}
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, ctPackage, null).toFile();
+			try {
+				String path = file.getCanonicalPath();
+				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredPackage(ctPackage);
+				ctPackage.setPosition(this.factory.createPartialSourcePosition(result));
+
+				return result;
+			} catch (IOException e) {
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
+			}
+		}
+	}
+
+	public CompilationUnit getOrCreate(CtType type) {
+		if (type == null) {
+			return null;
+		}
+		if (type.getPosition().getCompilationUnit() != null) {
+			return type.getPosition().getCompilationUnit();
+		}
+
+		if (type.isTopLevel()) {
+			CtModule module;
+			if (type.getPackage() != null && factory.getEnvironment().getComplianceLevel() > 8) {
+				module = type.getPackage().getParent(CtModule.class);
+			} else {
+				module = null;
+			}
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, type.getPackage(), type).toFile();
+			try {
+				String path = file.getCanonicalPath();
+				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredPackage(type.getPackage());
+				result.addDeclaredType(type);
+				type.setPosition(this.factory.createPartialSourcePosition(result));
+
+				return result;
+			} catch (IOException e) {
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
+			}
+		} else {
+			return getOrCreate(type.getTopLevelType());
+		}
+	}
+
+	public CompilationUnit getOrCreate(CtModule module) {
+		if (module.getPosition().getCompilationUnit() != null) {
+			return module.getPosition().getCompilationUnit();
+		} else {
+			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile();
+			try {
+				String path = file.getCanonicalPath();
+				CompilationUnit result = this.getOrCreate(path);
+				result.setDeclaredModule(module);
+				module.setPosition(this.factory.createPartialSourcePosition(result));
+
+				return result;
+			} catch (IOException e) {
+				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
+			}
+		}
 	}
 
 	/**

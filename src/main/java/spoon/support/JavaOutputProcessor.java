@@ -17,26 +17,27 @@
 package spoon.support;
 
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-//import spoon.reflect.cu.CompilationUnit;
 
 /**
  * A processor that generates compilable Java source files from the meta-model.
@@ -44,24 +45,39 @@ import java.util.Map;
 public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> implements FileGenerator<CtNamedElement> {
 	PrettyPrinter printer;
 
-	File directory;
-
 	List<File> printedFiles = new ArrayList<>();
+
+	/**
+	 * @param printer  the PrettyPrinter to use for written the files
+	 */
+	public JavaOutputProcessor(PrettyPrinter printer) {
+		this.printer = printer;
+	}
 
 	/**
 	 * Creates a new processor for generating Java source files.
 	 *
 	 * @param outputDirectory the root output directory
+	 * @param printer the PrettyPrinter to use for written the files
+	 *
+	 * @deprecated The outputDirectory should be get from the environment given to the pretty printer
+	 * (see {@link Environment#setSourceOutputDirectory(File)}. You should use the constructor with only one parameter.
 	 */
+	@Deprecated
 	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
-		this.directory = outputDirectory;
-		this.printer = printer;
+		this(printer);
+		this.setOutputDirectory(outputDirectory);
 	}
 
 	/**
 	 * usedful for testing
 	 */
 	public JavaOutputProcessor() {
+	}
+
+	@Override
+	public Environment getEnvironment() {
+		return this.getFactory().getEnvironment();
 	}
 
 	public PrettyPrinter getPrinter() {
@@ -73,32 +89,24 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	public File getOutputDirectory() {
-		return directory;
+		return this.getEnvironment().getSourceOutputDirectory();
 	}
 
 	@Override
 	public void init() {
 		// Skip loading properties
 		// super.init();
+		File directory = getOutputDirectory();
 
 		// Check output directory
 		if (directory == null) {
-			throw new RuntimeException("You should set output directory before printing");
+			throw new SpoonException("You should set output directory before printing");
 		}
-		// Create spooned dir
-		if (directory.isFile()) {
-			throw new RuntimeException("Output must be a directory");
-		}
+
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
-				throw new RuntimeException("Error creating output directory");
+				throw new SpoonException("Error creating output directory");
 			}
-		}
-		try {
-			directory = directory.getCanonicalFile();
-		} catch (IOException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -110,36 +118,25 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 * original sources).
 	 */
 	public void createJavaFile(CtType<?> element) {
-
-		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + directory);
+		Path typePath = getElementPath(element);
+		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + typePath);
 
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
 			throw new IllegalArgumentException();
 		}
 
-		CompilationUnit cu = null;
-		if (element.getPosition() != null) {
-			cu = element.getPosition().getCompilationUnit();
-			// this is a top level type (see check above)
-			// if the compilation unit is not set, we use a default one
-			if (cu == null) {
-				cu = element.getFactory().CompilationUnit().getOrCreate(element.getQualifiedName());
-				cu.setDeclaredPackage(element.getPackage());
-			}
-		}
+		CompilationUnit cu = this.getFactory().CompilationUnit().getOrCreate(element);
 		List<CtType<?>> toBePrinted = new ArrayList<>();
 		toBePrinted.add(element);
 
 		printer.calculate(cu, toBePrinted);
 
-		CtPackage pack = element.getPackage();
-
 		PrintStream stream = null;
 
 		// print type
 		try {
-			File file = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION);
+			File file = typePath.toFile();
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
@@ -162,7 +159,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	@Override
 	public boolean isToBeProcessed(CtNamedElement candidate) {
-		return candidate instanceof CtType<?> || candidate instanceof CtPackage && (candidate.getComments().size() > 0 || candidate.getAnnotations().size() > 0);
+		return candidate instanceof CtType<?> || candidate instanceof CtModule || candidate instanceof CtPackage && (candidate.getComments().size() > 0 || candidate.getAnnotations().size() > 0);
 	}
 
 	/**
@@ -174,12 +171,14 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			createJavaFile((CtType<?>) nameElement);
 		} else if (nameElement instanceof CtPackage) {
 			createPackageFile((CtPackage) nameElement);
+		} else if (nameElement instanceof CtModule) {
+			createModuleFile((CtModule) nameElement);
 		}
 	}
 
 	private void createPackageFile(CtPackage pack) {
 		// Create package annotation file
-		File packageAnnot = new File(getPackageFile(pack).getAbsolutePath() + File.separatorChar + DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION);
+		File packageAnnot = getElementPath(pack).toFile();
 		if (!printedFiles.contains(packageAnnot)) {
 			printedFiles.add(packageAnnot);
 		}
@@ -197,24 +196,55 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		}
 	}
 
-	private File getPackageFile(CtPackage pack) {
-		File packageDir;
-		if (pack.isUnnamedPackage()) {
-			packageDir = new File(directory.getAbsolutePath());
-		} else {
-			// Create current package dir
-			packageDir = new File(directory.getAbsolutePath() + File.separatorChar + pack.getQualifiedName().replace('.', File.separatorChar));
+	private void createModuleFile(CtModule module) {
+		if (getEnvironment().getComplianceLevel() > 8 && module != getFactory().getModel().getUnnamedModule()) {
+			File moduleFile = getElementPath(module).toFile();
+			if (!printedFiles.contains(moduleFile)) {
+				printedFiles.add(moduleFile);
+			}
+			PrintStream stream = null;
+			try {
+				stream = new PrintStream(moduleFile);
+				stream.println(printer.printModuleInfo(module));
+				stream.close();
+			} catch (FileNotFoundException e) {
+				Launcher.LOGGER.error(e.getMessage(), e);
+			} finally {
+				if (stream != null) {
+					stream.close();
+				}
+			}
 		}
-		if (!packageDir.exists()) {
-			if (!packageDir.mkdirs()) {
+	}
+
+	private Path getElementPath(CtModule type) {
+		return createFolders(getEnvironment().getOutputDestinationHandler()
+				.getOutputPath(type, null, null));
+	}
+
+	private Path getElementPath(CtPackage type) {
+		return createFolders(getEnvironment().getOutputDestinationHandler()
+				.getOutputPath(type.getDeclaringModule(), type, null));
+	}
+
+	private Path getElementPath(CtType type) {
+		return createFolders(getEnvironment().getOutputDestinationHandler()
+				.getOutputPath(type.getPackage().getDeclaringModule(),
+						type.getPackage(), type));
+	}
+
+	private Path createFolders(Path outputPath) {
+		if (!outputPath.getParent().toFile().exists()) {
+			if (!outputPath.getParent().toFile().mkdirs()) {
 				throw new RuntimeException("Error creating output directory");
 			}
 		}
-		return packageDir;
+		return outputPath;
 	}
 
+	@Override
 	public void setOutputDirectory(File directory) {
-		this.directory = directory;
+		this.getEnvironment().setSourceOutputDirectory(directory);
 	}
 
 	public Map<String, Map<Integer, Integer>> getLineNumberMappings() {

@@ -2,6 +2,7 @@ package spoon.test.interfaces;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -12,7 +13,6 @@ import spoon.support.reflect.CtExtendedModifier;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -64,6 +64,8 @@ public class TestInterfaceWithoutSetup {
                 counter++;
             } else {
                 assertFalse(extendedModifier.isImplicit());
+                assertTrue(extendedModifier.getPosition().isValidPosition());
+                assertEquals(extendedModifier.getKind().toString(), extendedModifier.getPosition().getCompilationUnit().getOriginalSourceCode().substring(extendedModifier.getPosition().getSourceStart(),extendedModifier.getPosition().getSourceEnd() + 1));
                 counter++;
             }
         }

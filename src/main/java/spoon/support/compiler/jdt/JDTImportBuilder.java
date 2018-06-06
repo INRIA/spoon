@@ -55,7 +55,10 @@ class JDTImportBuilder {
 		this.imports = new HashSet<>();
 	}
 
-	public void build() {
+	// package visible method in a package visible class, not in the public API
+	void build() {
+		// sets the imports of the Spoon compilation unit corresponding to `declarationUnit`
+
 		if (declarationUnit.imports == null || declarationUnit.imports.length == 0) {
 			return;
 		}
@@ -116,7 +119,7 @@ class JDTImportBuilder {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 					klass = this.factory.Type().get(zeClass);
 					return klass;
-				} catch (ClassNotFoundException e) {
+				} catch (NoClassDefFoundError | ClassNotFoundException e) {
 					// in some cases we want to import an inner class.
 					if (!className.contains(CtType.INNERTTYPE_SEPARATOR) && className.contains(CtPackage.PACKAGE_SEPARATOR)) {
 						int lastIndexOfDot = className.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);

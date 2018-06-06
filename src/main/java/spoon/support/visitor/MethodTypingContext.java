@@ -35,6 +35,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 /**
  * For the scope method or constructor and super type hierarchy of it's declaring type,
@@ -240,7 +241,7 @@ public class MethodTypingContext extends AbstractTypingContext {
 		int idxOfScopeBoundTypeParam = getIndexOfTypeParam(scopeParam.getTypeParameterDeclarer(), scopeBound);
 		if (idxOfScopeBoundTypeParam >= 0) {
 			int idxOfSuperBoundTypeParam = getIndexOfTypeParam(superParam.getTypeParameterDeclarer(), superBound);
-			if (idxOfScopeBoundTypeParam >= 0) {
+			if (idxOfSuperBoundTypeParam >= 0) {
 				/*
 				 * Both type parameters have bound defined as sibling type parameter.
 				 * Do not try to adaptType, because it would end with StackOverflowError
@@ -249,6 +250,27 @@ public class MethodTypingContext extends AbstractTypingContext {
 				return idxOfScopeBoundTypeParam == idxOfSuperBoundTypeParam;
 			}
 		}
+		if (scopeBound.getActualTypeArguments().size() != superBound.getActualTypeArguments().size()) {
+			return false;
+		}
+
+		for (int i = 0; i < scopeBound.getActualTypeArguments().size(); i++) {
+			CtTypeReference scopeBoundATArg = scopeBound.getActualTypeArguments().get(i);
+			CtTypeReference superBoundATArg = superBound.getActualTypeArguments().get(i);
+
+			if (scopeBoundATArg instanceof CtWildcardReference && superBoundATArg instanceof CtWildcardReference) {
+				CtWildcardReference scopeBoundWildcard = (CtWildcardReference) scopeBoundATArg;
+
+				// we are in a case where we compare Thing<?> with Thing<? super X>
+				// here we choose to not care about X to avoid recursive calls, for example in the case of:
+				// T extends Comparable<? super T>
+				if (scopeBoundWildcard.getBoundingType().equals(scopeMethod.getFactory().Type().getDefaultBoundingType())) {
+					return true;
+				}
+			}
+		}
+
+
 		CtTypeReference<?> superBoundAdapted = adaptType(superBound);
 		if (superBoundAdapted == null) {
 			return false;

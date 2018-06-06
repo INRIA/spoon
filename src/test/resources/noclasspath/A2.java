@@ -11,4 +11,9 @@ public class A2 {
 			throw e;
 		}
 	}
+
+	public void c(int param) {
+		c(param);
+	}
+}
 }

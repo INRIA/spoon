@@ -35,7 +35,7 @@ public class ListPrinter implements Closeable {
 	private final String end;
 	private boolean isFirst = true;
 
-	public ListPrinter(TokenWriter printerHelper, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
+	public ListPrinter(TokenWriter printerHelper, boolean startPrefixSpace, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
 		super();
 		this.printerTokenWriter = printerHelper;
 		this.nextPrefixSpace = nextPrefixSpace;
@@ -44,6 +44,9 @@ public class ListPrinter implements Closeable {
 		this.endPrefixSpace = endPrefixSpace;
 		this.end = end;
 
+		if (startPrefixSpace) {
+			printerHelper.writeSpace();
+		}
 		if (start != null && start.length() > 0) {
 			printerTokenWriter.writeSeparator(start);
 		}

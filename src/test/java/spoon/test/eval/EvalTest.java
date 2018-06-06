@@ -9,8 +9,6 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.eval.PartialEvaluator;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -32,6 +30,63 @@ public class EvalTest {
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("// if removed", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testArrayLength() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testArray").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals("// if removed", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testDoNotSimplify() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testDoNotSimplifyCasts() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testTryCatchAndStatement() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("tryCatchAndStatement").get(0).getBody();
+		assertEquals(2, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals(2, b.getStatements().size());
+	}
+
+	@Test
+	public void testDoNotSimplifyToExpressionWhenStatementIsExpected() throws Exception {
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("simplifyOnlyWhenPossible").get(0).getBody();
+		assertEquals(3, b.getStatements().size());
+		b = b.partiallyEvaluate();
+		assertEquals("spoon.test.eval.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
+		assertEquals("java.lang.System.out.println(spoon.test.eval.ToEvaluate.getClassLoader())", b.getStatements().get(1).toString());
+		assertEquals("return \"spoon.test.eval.ToEvaluate\"", b.getStatements().get(2).toString());
 	}
 
 	@Test
@@ -94,5 +149,4 @@ public class EvalTest {
 		// the if has been removed
 		assertEquals(0, foo.getElements(new TypeFilter<>(CtIf.class)).size());
 	}
-
 }

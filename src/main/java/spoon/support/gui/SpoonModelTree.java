@@ -45,6 +45,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import spoon.Launcher;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.support.SerializationModelStreamer;
 
@@ -77,6 +78,15 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		SpoonTreeBuilder cst = new SpoonTreeBuilder();
 		cst.scan(factory.Package().getRootPackage());
 		this.factory = factory;
+		root = cst.getRoot();
+		initialize();
+	}
+
+	public SpoonModelTree(CtElement rootElement) {
+		super();
+		SpoonTreeBuilder cst = new SpoonTreeBuilder();
+		cst.scan(rootElement);
+		this.factory = rootElement.getFactory();
 		root = cst.getRoot();
 		initialize();
 	}
@@ -272,6 +282,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		maybeShowPopup(e);
 	}
 
+	/** move to the next node matching the search criterion */
 	public DefaultMutableTreeNode next() {
 		DefaultMutableTreeNode current = null;
 		while ((enume != null) && enume.hasMoreElements()) {
@@ -285,6 +296,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		return null;
 	}
 
+	/** shows a dialog to enter the value to search for in the AST */
 	public DefaultMutableTreeNode search() {
 		searchValue = JOptionPane.showInputDialog(this,
 				"Enter value to search:", "Search");
@@ -302,6 +314,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		return null;
 	}
 
+	/** expand all AST nodes in the GUI */
 	public DefaultMutableTreeNode expandAll(final DefaultMutableTreeNode node) {
 		if (node == null || node.isLeaf()) {
 			return null;

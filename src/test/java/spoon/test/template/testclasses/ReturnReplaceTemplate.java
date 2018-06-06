@@ -1,6 +1,5 @@
 package spoon.test.template.testclasses;
 
-import spoon.reflect.code.CtBlock;
 import spoon.template.ExtensionTemplate;
 import spoon.template.Local;
 import spoon.template.TemplateParameter;
@@ -14,7 +13,7 @@ public class ReturnReplaceTemplate extends ExtensionTemplate {
 	TemplateParameter<String> _statement_;
 
 	@Local
-	public ReturnReplaceTemplate(CtBlock<String> statement) {
+	public ReturnReplaceTemplate(TemplateParameter<String> statement) {
 		this._statement_ = statement;
 	}
 	

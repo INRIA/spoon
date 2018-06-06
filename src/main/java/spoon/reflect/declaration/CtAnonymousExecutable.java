@@ -42,4 +42,13 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 	@Override
 	@UnsettableProperty
 	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtExecutable<Void>> T addParameter(CtParameter<?> parameter);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtExecutable<Void>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
+
 }

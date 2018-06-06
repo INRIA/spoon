@@ -11,6 +11,7 @@ public class CheckBoundMatcher {
 	
 	public TemplateParameter<Collection<?>> _col_;
 	public TemplateParameter<Integer> _x_;
+	public TemplateParameter<Integer> _y_;
 	public TemplateParameter<CtBlock> _block_;
 	public TemplateParameter<CtStatement> _stmt_;
 
@@ -31,16 +32,16 @@ public class CheckBoundMatcher {
 	}
 	
 	public void matcher4() {
-		if (_x_.S() > _x_.S())
+		if (_x_.S() > _y_.S())
 			throw new IndexOutOfBoundsException();
 	}
 
 	public void matcher5() {
-		if (_x_.S() > _x_.S()) _block_.S();
+		if (_x_.S() > _y_.S()) _block_.S();
 	}
 
 	public void matcher6() {
-		if (_x_.S() > _x_.S()) { _stmt_.S(); }
+		if (_x_.S() > _y_.S()) { _stmt_.S(); }
 	}
 
 	/** defines a matcher f* for named templates */

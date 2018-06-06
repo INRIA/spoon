@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtReturn;
@@ -19,6 +20,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.util.ModelList;
+import spoon.support.util.ModelSet;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -119,8 +122,12 @@ public class AstCheckerTest {
 					"CtElementImpl#setValueByRole", //
 					"CtTypeParameterReferenceImpl#addBound", //
 					"CtTypeParameterReferenceImpl#removeBound", //
-					"CtTypeParameterReferenceImpl#setBounds" //
-					
+					"CtTypeParameterReferenceImpl#setBounds", //
+					"CtModuleImpl#addUsedService", //
+					"CtModuleImpl#addExportedPackage", //
+					"CtModuleImpl#addOpenedPackage", //
+					"CtModuleImpl#addRequiredModule", //
+					"CtModuleImpl#addProvidedService"
 			);
 		}
 
@@ -142,6 +149,7 @@ public class AstCheckerTest {
 					&& !isSurcharged(candidate) //
 					&& !isDelegateMethod(candidate) //
 					&& !isUnsupported(candidate.getBody()) //
+					&& !isCallModelCollection(candidate.getBody()) //
 					&& !hasPushToStackInvocation(candidate.getBody());
 		}
 
@@ -209,6 +217,28 @@ public class AstCheckerTest {
 			return body.getStatements().size() != 0 //
 					&& body.getStatements().get(0) instanceof CtThrow //
 					&& "UnsupportedOperationException".equals(((CtThrow) body.getStatements().get(0)).getThrownExpression().getType().getSimpleName());
+		}
+		
+		private boolean isCallModelCollection(CtBlock<?> body) {
+			
+			return body.filterChildren((CtInvocation inv) -> {
+				if (inv.getTarget() instanceof CtFieldRead) {
+					CtFieldRead fielRead = (CtFieldRead) inv.getTarget();
+					if (isModelCollection(fielRead.getType()) ) {
+						//it is invocation on ModelList, ModelSet or ModelMap
+						return true;
+					}
+				} 
+				return false;
+			}).first() != null;
+		}
+		
+		private boolean isModelCollection(CtTypeReference<?> typeRef) {
+			Factory f = typeRef.getFactory();
+			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) return true;
+			if (typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class))) return true;
+//			if (typeRef.isSubtypeOf(f.Type().createReference(ModelMap.class))) return true;
+			return false;
 		}
 
 		private boolean hasPushToStackInvocation(CtBlock<?> body) {

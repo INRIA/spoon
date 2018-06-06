@@ -16,11 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -73,6 +68,7 @@ import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
 import org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
@@ -120,7 +116,6 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
@@ -145,6 +140,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -158,6 +154,11 @@ import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -219,8 +220,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
-	interface OnAccessListener {
-		boolean onAccess(char[][] tokens, int index);
+	// an abstract class here is better because the method is actually package-protected, as the type, (and not public as in the case of interface methods in Java)
+	abstract static class OnAccessListener {
+		abstract boolean onAccess(char[][] tokens, int index);
 	}
 
 	class SpoonReferenceBinding extends ReferenceBinding {
@@ -972,11 +974,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
+		// if the source start of the class is equals to the source start of the constructor
+		// it means that the constructor is implicit.
+		c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
 		}
-		for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
-			c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		// avoid to add explicit modifier to implicit constructor
+		if (!c.isImplicit()) {
+			for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
+				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+			}
 		}
 		context.enter(c, constructorDeclaration);
 
@@ -1073,7 +1081,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (fieldDeclaration.binding != null) {
-			field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
+			if (fieldDeclaration.binding.declaringClass != null && fieldDeclaration.binding.declaringClass.isEnum()) {
+				//enum values take over visibility from enum type
+				//JDT compiler has a bug that enum values are always public static final, even for private enum
+				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.declaringClass.modifiers, true, false));
+			} else {
+				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
+			}
 		}
 		for (CtExtendedModifier extendedModifier : getModifiers(fieldDeclaration.modifiers, false, false)) {
 			field.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
@@ -1571,6 +1585,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(WhileStatement whileStatement, BlockScope scope) {
 		context.enter(factory.Core().createWhile(), whileStatement);
+		return true;
+	}
+
+	@Override
+	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
+		CtModule module = getHelper().createModule(moduleDeclaration);
+		context.compilationUnitSpoon.setDeclaredModule(module);
 		return true;
 	}
 }

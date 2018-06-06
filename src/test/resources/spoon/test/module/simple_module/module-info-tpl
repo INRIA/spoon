@@ -1,0 +1,9 @@
+module simple_module {
+    requires transitive java.logging;
+    exports com.greetings.pkg to com.other.module, com.second.module;
+    opens com.greetings.otherpkg;
+    opens com.greetings.openpkg to com.third.module;
+    uses com.greetings.pkg.ConsumedService;
+    provides com.greetings.pkg.ConsumedService with com.greetings.pkg.ProvidedClass1, com.greetings.otherpkg.ProvidedClass2;
+    provides java.logging.Service with com.greetings.logging.Logger;
+}

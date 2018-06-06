@@ -16,14 +16,6 @@
  */
 package spoon.support.visitor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -42,6 +34,14 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.support.SpoonClassNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper class created from type X or reference to X.
@@ -197,6 +197,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 		 * visit super inheritance class hierarchy of lastResolve type of level of `type` to found it's actual type arguments.
 		 */
 		((CtElement) lastResolvedSuperclass).map(new SuperInheritanceHierarchyFunction()
+				.interfacesExtendObject(true)
 				.includingSelf(false)
 				.returnTypeReferences(true)
 				.setListener(listener))
@@ -213,14 +214,15 @@ public class ClassTypingContext extends AbstractTypingContext {
 				if (actualTypeArguments.isEmpty()) {
 					//may be they are not set - check whether type declares some generic parameters
 					List<CtTypeParameter> typeParams;
-					try {
-						CtType<?> type = typeRef.getTypeDeclaration();
+					CtType<?> type = typeRef.getTypeDeclaration();
+					if (type != null) {
 						typeParams = type.getFormalCtTypeParameters();
-					} catch (final SpoonClassNotFoundException e) {
+					} else {
+						// not in classpath
 						if (typeRef.getFactory().getEnvironment().getNoClasspath()) {
 							typeParams = Collections.emptyList();
 						} else {
-							throw e;
+							throw new SpoonClassNotFoundException(type.getQualifiedName() + " cannot be found in the sourcepath or classpath");
 						}
 					}
 					if (typeParams.size() > 0) {
@@ -363,16 +365,18 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 */
 	private CtTypeReference<?> getEnclosingType(CtTypeReference<?> typeRef) {
 		CtType<?> type = typeRef.getTypeDeclaration();
-		if (type.hasModifier(ModifierKind.STATIC)) {
-			return null;
-		}
-		CtType<?> declType = type.getDeclaringType();
-		if (declType == null) {
-			return null;
-		}
-		if (declType.isInterface()) {
-			//nested types of interfaces are static
-			return null;
+		if (type != null) {
+			if (type.hasModifier(ModifierKind.STATIC)) {
+				return null;
+			}
+			CtType<?> declType = type.getDeclaringType();
+			if (declType == null) {
+				return null;
+			}
+			if (declType.isInterface()) {
+				//nested types of interfaces are static
+				return null;
+			}
 		}
 		return typeRef.getDeclaringType();
 	}
@@ -468,35 +472,54 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (typeRef instanceof CtTypeParameterReference) {
 				CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
 				CtTypeParameter typeParam = typeParamRef.getDeclaration();
+				if (typeParam == null) {
+					throw new SpoonException("The typeParam " + typeRef.getQualifiedName() + " declaration cannot be resolved");
+				}
 				CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
-				if ((declarer instanceof CtType<?>) == false) {
-					throw new SpoonException("Cannot adapt type parameters of non type scope");
-				}
-				CtType<?> typeDeclarer = (CtType<?>) declarer;
-				List<CtTypeReference<?>> actualTypeArguments = getActualTypeArguments(typeDeclarer.getQualifiedName());
-				if (actualTypeArguments == null) {
-					/*
-					 * the actualTypeArguments of this declarer cannot be resolved.
-					 * There is probably a model inconsistency
-					 */
-					throw new SpoonException("Cannot resolve " + (result.size() + 1) + ") type parameter <" + typeParamRef.getSimpleName() + ">  of declarer " + declarer);
-				}
-				if (actualTypeArguments.size() != typeDeclarer.getFormalCtTypeParameters().size()) {
-					if (actualTypeArguments.isEmpty() == false) {
-						throw new SpoonException("Unexpected actual type arguments " + actualTypeArguments + " on " + typeDeclarer);
-					}
-					/*
-					 * the scope type was delivered as type reference without appropriate type arguments.
-					 * Use references to formal type parameters
-					 */
-					actualTypeArguments = getTypeReferences(typeDeclarer.getFormalCtTypeParameters());
-					typeToArguments.put(typeDeclarer.getQualifiedName(), actualTypeArguments);
-				}
-				typeRef = getValue(actualTypeArguments, typeParam, declarer);
+				typeRef = resolveTypeParameter(declarer, typeParamRef, typeParam, typeRef);
 			}
 			result.add(typeRef);
 		}
 		return result;
+	}
+
+	private CtTypeReference<?> resolveTypeParameter(CtFormalTypeDeclarer declarer, CtTypeParameterReference typeParamRef, CtTypeParameter typeParam, CtTypeReference<?> typeRef) {
+		if ((declarer instanceof CtType<?>) == false) {
+			/*
+			 * The declarer is probably out of the scope of this ClassTypingContext.
+			 * For example outer class or method declares type parameter,
+			 * which is then used as argument in inner class, whose ClassTypingContext we have now
+			 * See GenericsTest#testCannotAdaptTypeOfNonTypeScope.
+			 *
+			 * Use that outer type parameter reference directly without adaptation
+			 */
+			return typeRef;
+		}
+		CtType<?> typeDeclarer = (CtType<?>) declarer;
+		List<CtTypeReference<?>> actualTypeArguments = getActualTypeArguments(typeDeclarer.getQualifiedName());
+		if (actualTypeArguments == null) {
+			/*
+			 * The declarer is probably out of the scope of this ClassTypingContext.
+			 * For example outer class or method declares type parameter,
+			 * which is then used as argument in inner class, whose ClassTypingContext we have now
+			 * See GenericsTest#testCannotAdaptTypeOfNonTypeScope.
+			 *
+			 * Use that outer type parameter reference directly without adaptation
+			 */
+			return typeRef;
+		}
+		if (actualTypeArguments.size() != typeDeclarer.getFormalCtTypeParameters().size()) {
+			if (actualTypeArguments.isEmpty() == false) {
+				throw new SpoonException("Unexpected actual type arguments " + actualTypeArguments + " on " + typeDeclarer);
+			}
+			/*
+			 * the scope type was delivered as type reference without appropriate type arguments.
+			 * Use references to formal type parameters
+			 */
+			actualTypeArguments = getTypeReferences(typeDeclarer.getFormalCtTypeParameters());
+			typeToArguments.put(typeDeclarer.getQualifiedName(), actualTypeArguments);
+		}
+		return getValue(actualTypeArguments, typeParam, declarer);
 	}
 
 	private List<CtTypeReference<?>> getActualTypeArguments(String qualifiedName) {

@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
@@ -57,7 +58,6 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
-import spoon.support.util.SortedList;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -107,12 +108,37 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return Collections.unmodifiableList(typeMembers);
 	}
 
+	/** Adds a type member.
+	 * If it has a position, adds it at the right place according to the position (sourceStart).
+	 * If it is implicit, adds it at the beginning.
+	 * Otherwise, adds it at the end.
+	 */
 	@Override
 	public <C extends CtType<T>> C addTypeMember(CtTypeMember member) {
 		if (member == null) {
 			return (C) this;
 		}
-		return addTypeMemberAt(typeMembers.size(), member);
+		Comparator c = new CtLineElementComparator();
+
+		if (member.isImplicit()) {
+			return addTypeMemberAt(0, member);
+		}
+
+		// by default, inserting at the end
+		int insertionPosition = typeMembers.size();
+
+		// we search for an insertion position only if this one has one position
+		if (member.getPosition().isValidPosition()) {
+			for (int i = typeMembers.size() - 1; i >= 0; i--) {
+				CtTypeMember m = this.typeMembers.get(i);
+
+				if (m.isImplicit() || (m.getPosition().isValidPosition() && c.compare(member, m) > 0)) {
+					break;
+				}
+				insertionPosition--;
+			}
+		}
+		return addTypeMemberAt(insertionPosition, member);
 	}
 
 	@Override
@@ -121,9 +147,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return (C) this;
 		}
 		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
-			this.typeMembers = new SortedList<>(new CtLineElementComparator());
+			this.typeMembers = new ArrayList<>();
 		}
-		if (!this.typeMembers.contains(member)) {
+		if (!this.typeMembers.stream().anyMatch(m -> m == member)) {
 			member.setParent(this);
 			CtRole role;
 			if (member instanceof CtMethod) {
@@ -138,7 +164,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				role = NESTED_TYPE;
 			}
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.typeMembers, position, member);
-			this.typeMembers.add(position, member);
+			if (position < typeMembers.size()) {
+				this.typeMembers.add(position, member);
+			} else {
+				this.typeMembers.add(member);
+			}
 		}
 		return (C) this;
 	}
@@ -255,7 +285,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				fields.add((CtField<?>) typeMember);
 			}
 		}
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	@Override
@@ -427,7 +457,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				nestedTypes.add((CtType<?>) typeMember);
 			}
 		}
-		return nestedTypes;
+		return Collections.unmodifiableSet(nestedTypes);
 	}
 
 	@Override
@@ -760,28 +790,31 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			}
 		}
 		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
-			// Check if Object or extended.
+			// both types are generic
 			if (!ctParameterType.equals(expectedType)) {
 				return false;
 			}
 		} else if (expectedType instanceof CtTypeParameterReference) {
-			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(expectedType.getActualClass()))) {
+			// expectedType type is generic, ctParameterType is real type
+			if (!expectedType.getTypeErasure().getQualifiedName().equals(ctParameterType.getQualifiedName())) {
 				return false;
 			}
 		} else if (ctParameterType instanceof CtTypeParameterReference) {
+			// ctParameterType is generic, expectedType type is real type
 			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
-			if (declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
+			if (declaration != null && declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
 				for (CtTypeReference<?> ctTypeReference : declaration.getSuperclass().asCtIntersectionTypeReference().getBounds()) {
 					if (ctTypeReference.equals(expectedType)) {
 						return true;
 					}
 				}
-			} else if (declaration.getSuperclass() != null) {
+			} else if (declaration != null && declaration.getSuperclass() != null) {
 				return declaration.getSuperclass().equals(expectedType);
 			} else {
 				return getFactory().Type().objectType().equals(expectedType);
 			}
 		} else if (!expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName())) {
+			// both are real types
 			return false;
 		}
 		return true;
@@ -795,7 +828,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				methods.add((CtMethod<?>) typeMember);
 			}
 		}
-		return methods;
+		return Collections.unmodifiableSet(methods);
 	}
 
 	@Override
@@ -1020,5 +1053,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
+	}
+
+	@Override
+	public CtType<?> copyType() {
+		return Refactoring.copyType(this);
 	}
 }

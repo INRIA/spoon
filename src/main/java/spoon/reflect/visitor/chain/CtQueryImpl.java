@@ -86,6 +86,17 @@ public class CtQueryImpl implements CtQuery {
 		}
 		return this;
 	}
+	public CtQueryImpl addInput(Iterable<?> input) {
+		if (this.inputs == null) {
+			this.inputs = new ArrayList<>();
+		}
+		if (input != null) {
+			for (Object in : input) {
+				this.inputs.add(in);
+			}
+		}
+		return this;
+	}
 
 	@Override
 	public <R> void forEach(CtConsumer<R> consumer) {
@@ -409,6 +420,22 @@ public class CtQueryImpl implements CtQuery {
 			}
 			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
 			StackTraceElement[] stackEles = e.getStackTrace();
+			if (stackEles.length == 0) {
+				/*
+				 * The java runtime detected that this ClassCastException is thrown often and recompiled code to use faster pre-alocated exception,
+				 * which doesn't provide stacktrace.
+				 * So exceptions, which doesn't provide stacktrace can be ignored too, because they were already ignored before many times.
+				 *
+				 * See http://www.oracle.com/technetwork/java/javase/relnotes-139183.html#vm
+				 *---------------------------------------------------------------------------------------------------------------
+				 * The compiler in the server VM now provides correct stack backtraces for all "cold" built-in exceptions.
+				 * For performance purposes, when such an exception is thrown a few times, the method may be recompiled.
+				 * After recompilation, the compiler may choose a faster tactic using preallocated exceptions that do not provide a stack trace.
+				 * To disable completely the use of preallocated exceptions, use this new flag: -XX:-OmitStackTraceInFastThrow.
+				 *---------------------------------------------------------------------------------------------------------------
+				 */
+				return;
+			}
 			StackTraceElement stackEle = stackEles[indexOfCallerInStack];
 			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
 				/*
@@ -558,7 +585,7 @@ public class CtQueryImpl implements CtQuery {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
 					Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
-					if (CtType.class.equals(detectectedClass) == false) {
+					if (detectectedClass == null || CtType.class.equals(detectectedClass) == false) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;
@@ -586,7 +613,10 @@ public class CtQueryImpl implements CtQuery {
 					try {
 						return Class.forName(expectedClassName);
 					} catch (ClassNotFoundException e1) {
-						throw new SpoonException("The class detected from ClassCastException not found.", e1);
+						/*
+						 * It wasn't able to load the expected class from the CCE.
+						 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
+						 */
 					}
 				}
 			}

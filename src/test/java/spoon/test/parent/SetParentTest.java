@@ -1,38 +1,25 @@
 package spoon.test.parent;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import spoon.SpoonException;
 import spoon.reflect.CtModelImpl;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.visitor.CtVisitable;
-import spoon.support.UnsettableProperty;
-import spoon.test.SpoonTestHelpers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.parent.ParentContractTest.createCompatibleObject;
-import static spoon.test.parent.ParentContractTest.createReceiverList;
+import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
+import static spoon.test.parent.ContractOnSettersParametrizedTest.createReceiverList;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 // contract: setParent does not modifiy the state of the parent
@@ -71,6 +58,9 @@ public class SetParentTest<T extends CtVisitable> {
 				) {
 			// contract: root package is the parent for those classes
 			assertTrue(receiver.getParent() instanceof CtModelImpl.CtRootPackage);
+		} else if ("CtModule".equals(toTest.getSimpleName())) {
+			// contract: module parent is necessarily the unnamedmodule
+			assertTrue(receiver.getParent() instanceof ModuleFactory.CtUnnamedModule);
 		} else {
 			// contract: there is no parent before
 			try {

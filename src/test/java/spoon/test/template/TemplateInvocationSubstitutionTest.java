@@ -12,6 +12,7 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFile;
 import spoon.test.template.testclasses.InvocationSubstitutionByExpressionTemplate;
 import spoon.test.template.testclasses.InvocationSubstitutionByStatementTemplate;
+import spoon.test.template.testclasses.SubstitutionByExpressionTemplate;
 
 public class TemplateInvocationSubstitutionTest {
 
@@ -44,5 +45,19 @@ public class TemplateInvocationSubstitutionTest {
 		CtBlock<?> result = new InvocationSubstitutionByExpressionTemplate(factory.createLiteral("abc")).apply(resultKlass);
 		assertEquals("java.lang.System.out.println(\"abc\".substring(1))", result.getStatement(0).toString());
 		assertEquals("java.lang.System.out.println(\"abc\".substring(1))", result.getStatement(1).toString());
+	}
+
+	@Test
+	public void testSubstitutionByExpression() throws Exception {
+		//contract: the template engine understands fields whose type extends from TemplateParameter as template parameter automatically. No need for extra annotation
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstitutionByExpressionTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> resultKlass = factory.Class().create("Result");
+		CtBlock<?> result = new SubstitutionByExpressionTemplate(factory.createLiteral("abc")).apply(resultKlass);
+		assertEquals("java.lang.System.out.println(\"abc\".substring(1))", result.getStatement(0).toString());
 	}
 }
