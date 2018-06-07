@@ -168,8 +168,11 @@ public class AnnotationTest {
 		assertEquals(0, annot.getValues().size());
 
 		// direct values and default ones in getValues()
-		assertEquals(1, a.getValues().size());
+		assertEquals(1, a.getAllValues().size());
 		assertEquals(1, annot.getAllValues().size());
+
+		// the good value is selected, not the default value
+		assertEquals("8", a.getAllValues().get("max").toString());
 
 
 	}
