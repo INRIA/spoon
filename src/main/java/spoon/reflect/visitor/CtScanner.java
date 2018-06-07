@@ -189,7 +189,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, annotation.getComments());
 		scan(CtRole.ANNOTATION_TYPE, annotation.getAnnotationType());
 		scan(CtRole.ANNOTATION, annotation.getAnnotations());
-		scan(CtRole.VALUE, annotation.getAllValues());
+		scan(CtRole.VALUE, annotation.getValues());
 		exit(annotation);
 	}
 
