@@ -115,7 +115,7 @@ public class MetamodelProperty {
 		for (MMMethod mmMethod : roleMethods) {
 			if (mmMethod.overrides(method)) {
 				// linking this ctMethod to this mmMethod
-				mmMethod.addVariantMethod(method);
+				mmMethod.addRelatedMethod(method);
 				return mmMethod;
 			}
 		}

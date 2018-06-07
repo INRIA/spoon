@@ -33,7 +33,7 @@ public class MMMethod {
 	private final CtMethod<?> method;
 
 	/** methods with the same role and same signature in the type hierarchy */
-	private final List<CtMethod<?>> relatedMethods = new ArrayList<>();
+	private final List<CtMethod<?>> ownMethods = new ArrayList<>();
 
 	private final String signature;
 	private final MMMethodKind methodKind;
@@ -50,7 +50,7 @@ public class MMMethod {
 		this.method = (CtMethod<?>) mtc.getAdaptationScope();
 		signature = this.method.getSignature();
 		methodKind = MMMethodKind.kindOf(this.method);
-		this.addVariantMethod(method);
+		this.addRelatedMethod(method);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class MMMethod {
 	 * @return first own method in super type hierarchy of `targetType`
 	 */
 	CtMethod<?> getCompatibleMethod(MetamodelConcept targetType) {
-		for (CtMethod<?> ctMethod : relatedMethods) {
+		for (CtMethod<?> ctMethod : ownMethods) {
 			if (targetType.getTypeContext().isSubtypeOf(ctMethod.getDeclaringType().getReference())) {
 				return ctMethod;
 			}
@@ -119,14 +119,14 @@ public class MMMethod {
 	 * @return {@link CtMethod}s, which are declared in the {@link MetamodelConcept} or in the hierarchy, that have the same role and {@link MMMethodKind}.
 	 */
 	public List<CtMethod<?>> getDeclaredMethods() {
-		return Collections.unmodifiableList(relatedMethods);
+		return Collections.unmodifiableList(ownMethods);
 	}
 
-	void addVariantMethod(CtMethod<?> method) {
+	void addRelatedMethod(CtMethod<?> method) {
 		if (method.getDeclaringType().getSimpleName().endsWith("Impl")) {
 			throw new SpoonException("the metametamodel should be entirely specified in the Spoon interfaces");
 		}
-		relatedMethods.add(method);
+		ownMethods.add(method);
 	}
 
 	/**
