@@ -419,7 +419,16 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	public Map<String, CtExpression> getAllValues() {
-		return Collections.unmodifiableMap(elementValues);
+		Map<String, CtExpression> values = new TreeMap();
+		// first, we put the default values
+		CtAnnotationType<?> annotationType = (CtAnnotationType) getAnnotationType().getTypeDeclaration();
+		for (CtAnnotationMethod m : annotationType.getAnnotationMethods()) {
+			values.put(m.getSimpleName(), m.getDefaultExpression());
+		}
+
+		// we override the values with ones of this expression
+		values.putAll(elementValues);
+		return Collections.unmodifiableMap(values);
 	}
 
 	private Object getReflectValue(String fieldname) {
