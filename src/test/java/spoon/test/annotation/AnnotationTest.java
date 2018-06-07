@@ -199,13 +199,16 @@ public class AnnotationTest {
 
 		CtAnnotation<?> a = annotations.get(0);
 		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
+		assertEquals(42, a.getValueAsInt("integer"));
 		assertEquals(42, annot.integer());
 		assertEquals(1, annot.integers().length);
 		assertEquals(42, annot.integers()[0]);
+		assertEquals("Hello World!", a.getValueAsString("string"));
 		assertEquals("Hello World!", annot.string());
 		assertEquals(2, annot.strings().length);
 		assertEquals("Hello", annot.strings()[0]);
 		assertEquals("World", annot.strings()[1]);
+		assertEquals(Integer.class, a.getValueAsObject("clazz"));
 		assertEquals(Integer.class, annot.clazz());
 		assertEquals(2, annot.classes().length);
 		assertEquals(Integer.class, annot.classes()[0]);
