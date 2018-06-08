@@ -459,7 +459,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
 		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().start(SpoonProgress.STEP.MODEL);
+			getEnvironment().getSpoonProgress().start(SpoonProgress.PROCESS.MODEL);
 		}
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
@@ -480,29 +480,29 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					new JDTCommentBuilder(unit, factory).build();
 				}
 				if (getEnvironment().getSpoonProgress() != null) {
-					getEnvironment().getSpoonProgress().step(SpoonProgress.STEP.MODEL, new String(unit.getFileName()), ++i, unitList.size());
+					getEnvironment().getSpoonProgress().step(SpoonProgress.PROCESS.MODEL, new String(unit.getFileName()), ++i, unitList.size());
 				}
 			}
 		}
 		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().end(SpoonProgress.STEP.MODEL);
+			getEnvironment().getSpoonProgress().end(SpoonProgress.PROCESS.MODEL);
 		}
 
 		// we need first to go through the whole model before getting the right reference for imports
 		if (getFactory().getEnvironment().isAutoImports()) {
 			if (getEnvironment().getSpoonProgress() != null) {
-				getEnvironment().getSpoonProgress().start(SpoonProgress.STEP.IMPORT);
+				getEnvironment().getSpoonProgress().start(SpoonProgress.PROCESS.IMPORT);
 			}
 
 			i = 0;
 			for (CompilationUnitDeclaration unit : units) {
 				new JDTImportBuilder(unit, factory).build();
 				if (getEnvironment().getSpoonProgress() != null) {
-					getEnvironment().getSpoonProgress().step(SpoonProgress.STEP.IMPORT, new String(unit.getFileName()), ++i, units.length);
+					getEnvironment().getSpoonProgress().step(SpoonProgress.PROCESS.IMPORT, new String(unit.getFileName()), ++i, units.length);
 				}
 			}
 			if (getEnvironment().getSpoonProgress() != null) {
-				getEnvironment().getSpoonProgress().end(SpoonProgress.STEP.IMPORT);
+				getEnvironment().getSpoonProgress().end(SpoonProgress.PROCESS.IMPORT);
 			}
 		}
 	}

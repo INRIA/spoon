@@ -195,7 +195,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 					totalTask = remaining + 1;
 				}
 				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.STEP.COMPILE, currentElement, totalTask - remaining, totalTask);
+					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.PROCESS.COMPILE, currentElement, totalTask - remaining, totalTask);
 				}
 			}
 		});
@@ -210,17 +210,17 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 			treeBuilderCompiler.lookupEnvironment.mayTolerateMissingType = true;
 		}
 		if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-			jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.STEP.COMPILE);
+			jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.PROCESS.COMPILE);
 		}
 		// they have to be done all at once
 		final CompilationUnitDeclaration[] result = treeBuilderCompiler.buildUnits(getCompilationUnits());
 		if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-			jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.STEP.COMPILE);
+			jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.PROCESS.COMPILE);
 		}
 		// now adding the doc
 		if (jdtCompiler.getEnvironment().isCommentsEnabled()) {
 			if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-				jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.STEP.COMMENT);
+				jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.PROCESS.COMMENT);
 			}
 			//compile comments only if they are needed
 			for (int i = 0; i < result.length; i++) {
@@ -241,11 +241,11 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 				unit.comments = tmpDeclForComment.comments;
 
 				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.STEP.COMMENT, new String(unit.getFileName()), i + 1, result.length);
+					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.PROCESS.COMMENT, new String(unit.getFileName()), i + 1, result.length);
 				}
 			}
 			if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-				jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.STEP.COMMENT);
+				jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.PROCESS.COMMENT);
 			}
 		}
 		return result;
