@@ -123,7 +123,7 @@ class JDTImportBuilder {
 					// in some cases we want to import an inner class.
 					if (!className.contains(CtType.INNERTTYPE_SEPARATOR) && className.contains(CtPackage.PACKAGE_SEPARATOR)) {
 						int lastIndexOfDot = className.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-						String classNameWithInnerSep = className.substring(0, lastIndexOfDot) + CtType.INNERTTYPE_SEPARATOR + className.substring(lastIndexOfDot+1);
+						String classNameWithInnerSep = className.substring(0, lastIndexOfDot) + CtType.INNERTTYPE_SEPARATOR + className.substring(lastIndexOfDot + 1);
 						return getOrLoadClass(classNameWithInnerSep);
 					}
 					return null;
