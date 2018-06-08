@@ -141,11 +141,11 @@ public class ImportScannerTest {
 
 			Launcher.LOGGER.warn("ImportScannerTest: Import scanner imports " + countUnusedImports + " unused imports and misses " + countMissingImports + " imports");
 
+			// Uncomment for the complete list
+			/*
 			Set<CtType> keys = new HashSet<>(unusedImports.keySet());
 			keys.addAll(missingImports.keySet());
 
-			// Uncomment for the complete list
-			/*
 			for (CtType type : keys) {
 				System.err.println(type.getQualifiedName());
 				if (missingImports.containsKey(type)) {
@@ -162,9 +162,12 @@ public class ImportScannerTest {
 				}
 			}
 			*/
-			// FIXME: the imports should be resolved
-			//assertEquals("Import scanner imports " + countUnusedImports + " unused imports and misses " + countMissingImports + " imports",
-			//	0, countMissingImports+countUnusedImports);
+
+			assertEquals("Import scanner missed " + countMissingImports + " imports",0, countMissingImports);
+
+			// FIXME: the unused imports should be resolved
+			//assertEquals("Import scanner imports " + countUnusedImports + " unused imports",
+			//	0, countUnusedImports);
 		}
 	}
 
