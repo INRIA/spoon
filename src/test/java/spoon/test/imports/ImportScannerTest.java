@@ -48,6 +48,7 @@ public class ImportScannerTest {
 		spoon.getEnvironment().setAutoImports(true);
 		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.getEnvironment().setSourceOutputDirectory(targetDir);
+		spoon.getEnvironment().setLevel("warn");
 		spoon.buildModel();
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
