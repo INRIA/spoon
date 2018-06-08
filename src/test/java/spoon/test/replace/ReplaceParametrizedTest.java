@@ -96,9 +96,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			CtElement receiver = ((CtElement) o).clone();
 
 			RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getClass(), mmField.getRole());
-			if (mmField.getName().equals("interface")) {
-				System.out.println("");
-			}
+
 			if (mmField.isUnsettable()) {
 				try {
 					// we invoke the setter

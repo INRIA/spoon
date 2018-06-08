@@ -164,7 +164,6 @@ public class CtScannerTest {
 				}
 
 				MMMethod getter = mmField.getMethod(MMMethodKind.GET);
-				System.err.println("---"+getter.getSignature());
 				checkedMethods.add(getter.getSignature());
 				//System.out.println("checking "+m.getSignature() +" in "+visitMethod.getSignature());
 
@@ -207,7 +206,7 @@ public class CtScannerTest {
 
 			// contract: CtScanner only calls methods that have a role and the associated getter
 			if (calledMethods.size() > 0) {
-				fail("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: "+calledMethods);
+				problems.add("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: "+calledMethods);
 			}
 		}
 
