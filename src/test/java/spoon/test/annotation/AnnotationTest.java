@@ -162,6 +162,19 @@ public class AnnotationTest {
 		Bound actualAnnotation2 = (Bound) annot.getActualAnnotation();
 		assertEquals(10, actualAnnotation2.max());
 
+		// contract: getAllvalues
+		// only direct value, no default ones in getValues()
+		assertEquals(1, a.getValues().size());
+		assertEquals(0, annot.getValues().size());
+
+		// direct values and default ones in getValues()
+		assertEquals(1, a.getAllValues().size());
+		assertEquals(1, annot.getAllValues().size());
+
+		// the good value is selected, not the default value
+		assertEquals("8", a.getAllValues().get("max").toString());
+
+
 	}
 
 	@Test
@@ -198,6 +211,9 @@ public class AnnotationTest {
 		assertEquals(1, annotations.size());
 
 		CtAnnotation<?> a = annotations.get(0);
+
+		assertEquals(15, a.getAllValues().size());
+
 		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
 		assertEquals(42, a.getValueAsInt("integer"));
 		assertEquals(42, annot.integer());
