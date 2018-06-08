@@ -1160,6 +1160,7 @@ public class ImportTest {
 		while(st.hasMoreTokens()) {
 			String line = st.nextToken();
 			if(line.startsWith("import")) {
+				line = line.substring(0, line.length() - 2); // we remove the last ';' to be able to compare x.y and x.y.z
 				countOfImports++;
 				if(lastImport!=null) {
 					//check that next import is alphabetically higher then last import
