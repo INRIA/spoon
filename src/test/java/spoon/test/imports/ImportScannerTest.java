@@ -47,6 +47,7 @@ public class ImportScannerTest {
 		spoon.addInputResource("./src/main/java/spoon/");
 		spoon.getEnvironment().setAutoImports(true);
 		spoon.getEnvironment().setCommentEnabled(true);
+		spoon.getEnvironment().setSourceOutputDirectory(targetDir);
 		spoon.buildModel();
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
@@ -61,7 +62,7 @@ public class ImportScannerTest {
 				continue;
 			}
 
-			outputProcessor = new JavaOutputProcessor(targetDir, prettyPrinter);
+			outputProcessor = new JavaOutputProcessor(prettyPrinter);
 			outputProcessor.setFactory(spoon.getFactory());
 			outputProcessor.init();
 

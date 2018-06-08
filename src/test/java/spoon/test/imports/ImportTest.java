@@ -1163,7 +1163,7 @@ public class ImportTest {
 				countOfImports++;
 				if(lastImport!=null) {
 					//check that next import is alphabetically higher then last import
-					assertTrue(lastImport+" should be before "+line, lastImport.compareTo(line)<0);
+					assertTrue(lastImport+" should be before "+line, lastImport.compareTo(line) < 0);
 				}
 				lastImport = line;
 			} else {
