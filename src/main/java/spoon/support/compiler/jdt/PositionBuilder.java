@@ -104,7 +104,7 @@ public class PositionBuilder {
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
 
 			int length = variableDeclaration.toString().length();
-			if (length > (declarationSourceEnd-declarationSourceStart)) {
+			if (length > (declarationSourceEnd - declarationSourceStart)) {
 				declarationSourceEnd = declarationSourceStart + length - 1;
 			}
 
