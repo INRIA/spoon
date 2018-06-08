@@ -27,6 +27,7 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.support.OutputDestinationHandler;
+import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -397,4 +398,8 @@ public interface Environment {
 	 * Get the output type
 	 */
 	OutputType getOutputType();
+
+	SpoonProgress getSpoonProgress();
+
+	void setSpoonProgress(SpoonProgress spoonProgress);
 }

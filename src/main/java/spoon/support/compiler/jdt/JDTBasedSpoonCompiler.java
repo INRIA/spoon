@@ -51,6 +51,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
+import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
 
 import java.io.ByteArrayInputStream;
@@ -457,9 +458,13 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().start(SpoonProgress.STEP.MODEL);
+		}
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
+		int i = 0;
 		unitLoop:
 		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
@@ -471,17 +476,33 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					}
 				}
 				unit.traverse(builder, unit.scope);
-
 				if (getFactory().getEnvironment().isCommentsEnabled()) {
 					new JDTCommentBuilder(unit, factory).build();
 				}
+				if (getEnvironment().getSpoonProgress() != null) {
+					getEnvironment().getSpoonProgress().step(SpoonProgress.STEP.MODEL, new String(unit.getFileName()), ++i, unitList.size());
+				}
 			}
+		}
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().end(SpoonProgress.STEP.MODEL);
 		}
 
 		// we need first to go through the whole model before getting the right reference for imports
 		if (getFactory().getEnvironment().isAutoImports()) {
+			if (getEnvironment().getSpoonProgress() != null) {
+				getEnvironment().getSpoonProgress().start(SpoonProgress.STEP.IMPORT);
+			}
+
+			i = 0;
 			for (CompilationUnitDeclaration unit : units) {
 				new JDTImportBuilder(unit, factory).build();
+				if (getEnvironment().getSpoonProgress() != null) {
+					getEnvironment().getSpoonProgress().step(SpoonProgress.STEP.IMPORT, new String(unit.getFileName()), ++i, units.length);
+				}
+			}
+			if (getEnvironment().getSpoonProgress() != null) {
+				getEnvironment().getSpoonProgress().end(SpoonProgress.STEP.IMPORT);
 			}
 		}
 	}
