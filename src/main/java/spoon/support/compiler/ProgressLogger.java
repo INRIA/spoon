@@ -9,20 +9,20 @@ public class ProgressLogger implements SpoonProgress {
 	private long timer;
 
 	@Override
-	public void start(PROCESS process) {
+	public void start(Process process) {
 		System.out.println("Start " + process);
 		timer = getCurrentTimeInMillis();
 		stepTimer = timer;
 	}
 
 	@Override
-	public void step(PROCESS process, String task, int taskId, int nbTask) {
+	public void step(Process process, String task, int taskId, int nbTask) {
 		JDTTreeBuilder.getLogger().trace("Step " + process + " " + taskId + "/" + nbTask + " " + task + " in " + (getCurrentTimeInMillis() - timer) + " ms");
 		timer = getCurrentTimeInMillis();
 	}
 
 	@Override
-	public void end(PROCESS process) {
+	public void end(Process process) {
 		JDTTreeBuilder.getLogger().trace("End " + process + " in " + (getCurrentTimeInMillis() - stepTimer) + " ms");
 	}
 
