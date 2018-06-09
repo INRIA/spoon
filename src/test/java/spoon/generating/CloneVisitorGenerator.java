@@ -330,6 +330,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Check if the candidate method throw an UnsupportedOperationException.
 			 */
 			private boolean avoidThrowUnsupportedOperationException(CtMethod<?> candidate) {
+				if (candidate.getBody() == null) {
+					return true;
+				}
 				if (candidate.getBody().getStatements().size() != 1) {
 					return true;
 				}
