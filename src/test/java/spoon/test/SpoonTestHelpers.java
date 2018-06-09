@@ -1,5 +1,6 @@
 package spoon.test;
 
+import spoon.metamodel.Metamodel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -7,7 +8,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
-import spoon.test.metamodel.SpoonMetaModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class SpoonTestHelpers {
 	}
 
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		return new SpoonMetaModel(new File("src/main/java")).getAllInstantiableMetamodelInterfaces();
+		return Metamodel.getInstance().getAllInstantiableMetamodelInterfaces();
 	}
 
 	/**

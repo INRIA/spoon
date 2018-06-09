@@ -4,6 +4,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
+import spoon.metamodel.ConceptKind;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.MetamodelProperty;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtStatement;
@@ -19,15 +23,11 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.Filter;
-import spoon.test.metamodel.MMTypeKind;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.MetamodelProperty;
-import spoon.test.metamodel.SpoonMetaModel;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -39,17 +39,15 @@ import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatib
 @RunWith(Parameterized.class)
 public class ReplaceParametrizedTest<T extends CtVisitable> {
 
-	private static Factory factory;
-	private static SpoonMetaModel metaModel;
+	private static Metamodel metaModel;
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Collection<Object[]> data() throws Exception {
-		metaModel = new SpoonMetaModel(new File("src/main/java"));
-		factory = metaModel.getFactory();
+		metaModel = Metamodel.getInstance();
 
 		List<Object[]> values = new ArrayList<>();
 		for (MetamodelConcept t : metaModel.getConcepts()) {
-			if(t.getKind()==MMTypeKind.LEAF) {
+			if(t.getKind()==ConceptKind.LEAF) {
 				values.add(new Object[] { t });
 			}
 		}
@@ -66,17 +64,20 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		
 		// contract: all elements are replaceable wherever they are in the model
 		// this test puts them at all possible locations
-		CtType<?> toTest = typeToTest.getModelInterface();
+		CtType<?> toTest = typeToTest.getMetamodelInterface();
+		Factory factory = toTest.getFactory();
+
 		CtElement o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
-		for (MetamodelProperty mmField : typeToTest.getRoleToProperty().values()) {
-			Class<?> argType = mmField.getItemValueType().getActualClass();
+		Map<CtRole, MetamodelProperty> roleToProperty = typeToTest.getRoleToProperty();
+		for (MetamodelProperty mmField : roleToProperty.values()) {
+			Class<?> argType = mmField.getTypeofItems().getActualClass();
 
 			if (!CtElement.class.isAssignableFrom(argType)) {
 				continue;
 			}
 
 
-			CtTypeReference<?> itemType = mmField.getItemValueType();
+			CtTypeReference<?> itemType = mmField.getTypeofItems();
 			// special cases...
 			if (itemType.getQualifiedName().equals(CtStatement.class.getName())) {
 				//the children of CtLoop wraps CtStatement into an implicit CtBlock. So make a block directly to test plain get/set and not wrapping.
@@ -95,6 +96,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			CtElement receiver = ((CtElement) o).clone();
 
 			RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getClass(), mmField.getRole());
+
 			if (mmField.isUnsettable()) {
 				try {
 					// we invoke the setter
@@ -138,7 +140,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 							found = true;
 							return;
 						}
-//						if (rh.getRole()==CtRole.TYPE && role==CtRole.MULTI_TYPE) {
+//						if (rh.getRole()==CtRole.TYPE && role == CtRole.MULTI_TYPE) {
 //							//CtCatchVaraible#type sets CtCatchVaraible#multiType - OK 
 //							found = true;
 //							return;

@@ -16,6 +16,10 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtRHSReceiver;
+import spoon.support.UnsettableProperty;
+
 /**
  * Corresponds to one enum value specified in an enumeration.
  * If the enum value implicitly calls a constructor (see example below),
@@ -33,4 +37,8 @@ package spoon.reflect.declaration;
 public interface CtEnumValue<T> extends CtField<T> {
 	@Override
 	CtEnumValue clone();
+
+	@Override
+	@UnsettableProperty
+	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
 }

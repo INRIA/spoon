@@ -14,9 +14,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
-import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
+import static spoon.metamodel.Metamodel.addUniqueObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,21 +33,21 @@ import spoon.reflect.path.CtRole;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
- * Represents a concept of Spoon model AST node
+ * Represents a concept of the Spoon metamodel (eg {@link CtClass}).
  */
 public class MetamodelConcept {
 	/**
 	 * Kind of this concept
 	 */
-	MMTypeKind kind;
+	private ConceptKind kind;
 	/**
 	 * Name of the concept
 	 */
-	String name;
+	private final String name;
 	/**
 	 * Map of {@link CtRole} to {@link MetamodelProperty}s with values ordered same like CtScanner scans these properties when visiting this {@link MetamodelConcept}
 	 */
-	final Map<CtRole, MetamodelProperty> role2Property = new LinkedHashMap<>();
+	private final Map<CtRole, MetamodelProperty> role2Property = new LinkedHashMap<>();
 
 	/**
 	 * List of super concepts of this concept
@@ -77,8 +77,9 @@ public class MetamodelConcept {
 	 */
 	final List<CtMethod<?>> otherMethods = new ArrayList<>();
 
-	MetamodelConcept() {
+	MetamodelConcept(String name) {
 		super();
+		this.name = name;
 	}
 
 	/**
@@ -91,25 +92,25 @@ public class MetamodelConcept {
 
 
 	MetamodelProperty getOrCreateMMField(CtRole role) {
-		return SpoonMetaModel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
+		return Metamodel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
 	}
 
 	/**
-	 * @return kind of this {@link MetamodelConcept}. Is it abstract concept or concept of leaf AST node?
+	 * @return kind of this {@link MetamodelConcept}.
 	 */
-	public MMTypeKind getKind() {
+	public ConceptKind getKind() {
 		if (kind == null) {
 			if (modelClass == null && modelInterface == null) {
 				return null;
 			} else {
 				// we first consider interface
 				if (modelClass == null) {
-					this.kind = MMTypeKind.ABSTRACT;
+					this.kind = ConceptKind.ABSTRACT;
 				} else {
 					if (modelClass.hasModifier(ModifierKind.ABSTRACT)) {
-						this.kind = MMTypeKind.ABSTRACT;
+						this.kind = ConceptKind.ABSTRACT;
 					} else {
-						this.kind = MMTypeKind.LEAF;
+						this.kind = ConceptKind.LEAF;
 					}
 				}
 			}
@@ -147,7 +148,7 @@ public class MetamodelConcept {
 	/**
 	 * @return {@link CtClass} which represents this {@link MetamodelConcept}
 	 */
-	public CtClass<?> getModelClass() {
+	public CtClass<?> getImplementationClass() {
 		return modelClass;
 	}
 
@@ -158,7 +159,7 @@ public class MetamodelConcept {
 	/**
 	 * @return {@link CtInterface} which represents this {@link MetamodelConcept}
 	 */
-	public CtInterface<?> getModelInterface() {
+	public CtInterface<?> getMetamodelInterface() {
 		return modelInterface;
 	}
 
@@ -168,8 +169,10 @@ public class MetamodelConcept {
 
 	/**
 	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MetamodelConcept}
+	 *
+	 * (package protected, not in the public API)
 	 */
-	public ClassTypingContext getTypeContext() {
+	ClassTypingContext getTypeContext() {
 		if (typeContext == null) {
 			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInterface);
 		}

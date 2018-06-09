@@ -3,9 +3,12 @@ package spoon.test.api;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.Metamodel;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
+import spoon.metamodel.MMMethodKind;
+import spoon.metamodel.Metamodel;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
@@ -21,6 +24,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
@@ -32,13 +36,13 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
+import spoon.support.visitor.ClassTypingContext;
 import spoon.template.Parameter;
-import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.MetamodelProperty;
-import spoon.test.metamodel.SpoonMetaModel;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -191,10 +195,10 @@ public class MetamodelTest {
 	@Test
 	public void testMetamodelWithoutSources() {
 		//contract: metamodel based on spoon sources delivers is same like metamodel based on shadow classes
-		SpoonMetaModel runtimeMM = new SpoonMetaModel();
+		Metamodel runtimeMM = Metamodel.getInstance();
 		Collection<MetamodelConcept> concepts = runtimeMM.getConcepts();
 		
-		SpoonMetaModel sourceBasedMM = new SpoonMetaModel(new File("src/main/java"));
+		Metamodel sourceBasedMM = new Metamodel(new File("src/main/java"));
 		Map<String, MetamodelConcept> expectedConceptsByName = new HashMap<>();
 		sourceBasedMM.getConcepts().forEach(c -> {
 			expectedConceptsByName.put(c.getName(), c);
@@ -209,13 +213,13 @@ public class MetamodelTest {
 
 	private void assertConceptsEqual(MetamodelConcept expectedConcept, MetamodelConcept runtimeConcept) {
 		assertEquals(expectedConcept.getName(), runtimeConcept.getName());
-		if (expectedConcept.getModelClass() == null) {
-			assertNull(runtimeConcept.getModelClass());
+		if (expectedConcept.getImplementationClass() == null) {
+			assertNull(runtimeConcept.getImplementationClass());
 		} else {
-			assertNotNull(runtimeConcept.getModelClass());
-			assertEquals(expectedConcept.getModelClass().getActualClass(), runtimeConcept.getModelClass().getActualClass());
+			assertNotNull(runtimeConcept.getImplementationClass());
+			assertEquals(expectedConcept.getImplementationClass().getActualClass(), runtimeConcept.getImplementationClass().getActualClass());
 		}
-		assertEquals(expectedConcept.getModelInterface().getActualClass(), runtimeConcept.getModelInterface().getActualClass());
+		assertEquals(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
 		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
 		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());
 		for (int i = 0; i < expectedConcept.getSuperConcepts().size(); i++) {
@@ -233,14 +237,19 @@ public class MetamodelTest {
 	private void assertPropertiesEqual(MetamodelProperty expectedProperty, MetamodelProperty runtimeProperty) {
 		assertSame(expectedProperty.getRole(), runtimeProperty.getRole());
 		assertEquals(expectedProperty.getName(), runtimeProperty.getName());
-		assertEquals(expectedProperty.getItemValueType().getActualClass(), runtimeProperty.getItemValueType().getActualClass());
-		assertEquals(expectedProperty.getOwnerConcept().getName(), runtimeProperty.getOwnerConcept().getName());
-		assertSame(expectedProperty.getValueContainerType(), runtimeProperty.getValueContainerType());
-		assertEquals(expectedProperty.getValueType(), runtimeProperty.getValueType());
+		assertEquals(expectedProperty.getTypeofItems().getActualClass(), runtimeProperty.getTypeofItems().getActualClass());
+		assertEquals(expectedProperty.getOwner().getName(), runtimeProperty.getOwner().getName());
+		assertSame(expectedProperty.getContainerKind(), runtimeProperty.getContainerKind());
+		assertEquals(expectedProperty.getTypeOfField(), runtimeProperty.getTypeOfField());
 		assertEquals(expectedProperty.isDerived(), runtimeProperty.isDerived());
 		assertEquals(expectedProperty.isUnsettable(), runtimeProperty.isUnsettable());
 	}
 
+	@Test
+	public void testMetamodelCachedInFactory() throws IOException {
+		//contract: Metamodel concepts are accessible
+		Metamodel.getInstance().getConcepts();
+	}
 
 	/*
 	 * this test reports all spoon model elements which are not yet handled by meta model
@@ -248,7 +257,8 @@ public class MetamodelTest {
 	 */
 	@Test
 	public void spoonMetaModelTest() {
-		SpoonMetaModel mm = new SpoonMetaModel(new File("./src/main/java"));
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		Metamodel mm = Metamodel.getInstance();
 		List<String> problems = new ArrayList<>();
 
 		//detect unused CtRoles
@@ -256,26 +266,27 @@ public class MetamodelTest {
 
 		mm.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
-				if (mmField.isUnsettable()) {
-					//contract: all unsettable fields are derived too
-					assertTrue("Unsettable field " + mmField + " must be derived too", mmField.isDerived());
-				}
 				unhandledRoles.remove(role);
 				if (mmField.getMethod(MMMethodKind.GET) == null) {
-					problems.add("Missing getter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
+					problems.add("Missing getter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
-					if (mmConcept.getTypeContext().isSubtypeOf(mm.getFactory().Type().createReference(CtReference.class)) == false
+					if (new ClassTypingContext(mmConcept.getMetamodelInterface()).isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
 							&& mmConcept.getName().equals("CtTypeInformation") == false) {
 						//only NON references needs a setter
-						problems.add("Missing setter for " + mmField.getOwnerConcept().getName() + " and CtRole." + mmField.getRole());
+						problems.add("Missing setter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 					}
 				}
 				//contract: type of field value is never implicit
-				assertFalse("Value type of Field " + mmField.toString() + " is implicit", mmField.getValueType().isImplicit());
-				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getItemValueType().isImplicit());
+				assertFalse("Value type of Field " + mmField.toString() + " is implicit", mmField.getTypeOfField().isImplicit());
+				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getTypeofItems().isImplicit());
 
-				mmField.forEachUnhandledMethod(ctMethod -> problems.add("Unhandled method signature: " + ctMethod.getDeclaringType().getSimpleName() + "#" + ctMethod.getSignature()));
+				mmField.getMethods(MMMethodKind.OTHER).forEach(
+						mmethod -> mmethod.getDeclaredMethods().forEach(
+								ctMethod -> problems.add("Unhandled method signature: " + ctMethod.getDeclaringType().getSimpleName() + "#" + ctMethod.getSignature())
+						)
+				);
+
 			});
 		});
 

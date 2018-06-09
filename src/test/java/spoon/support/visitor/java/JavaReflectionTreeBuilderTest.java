@@ -30,6 +30,8 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
@@ -68,8 +70,6 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.SpoonMetaModel;
 
 public class JavaReflectionTreeBuilderTest {
 	@Test
@@ -185,11 +185,11 @@ public class JavaReflectionTreeBuilderTest {
 		//contract: CtType made from sources is equal to CtType made by reflection
 		//with exception of CtExecutable#body, CtParameter#simpleName
 		//with exception of Annotations with retention policy SOURCE
-		SpoonMetaModel metaModel = new SpoonMetaModel(new File("src/main/java"));
+		Metamodel metaModel = new Metamodel(new File("src/main/java"));
 		List<String> allProblems = new ArrayList<>();
 		for (MetamodelConcept concept : metaModel.getConcepts()) {
-			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelClass()));
-			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelInterface()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getImplementationClass()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getMetamodelInterface()));
 		}
 		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
 	}
