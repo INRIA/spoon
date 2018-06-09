@@ -90,6 +90,7 @@ public class MetamodelTest {
 				expectedTypesByName.put(t.getName(), t);	
 			}
 		});
+		List<String> problems = new ArrayList<>();
 		for (spoon.Metamodel.Type type : spoon.Metamodel.getAllMetamodelTypes()) {
 			MetamodelConcept expectedType = expectedTypesByName.remove(type.getName());
 			assertSame(expectedType.getImplementationClass().getActualClass(), type.getModelClass());
@@ -97,12 +98,21 @@ public class MetamodelTest {
 			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
 			for (spoon.Metamodel.Field field : type.getFields()) {
 				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
-				assertSame("Field " + expectedField + ".derived", expectedField.isDerived(), field.isDerived());
-				assertSame("Field " + expectedField + ".unsettable", expectedField.isUnsettable(), field.isUnsettable());
+				if (expectedField.isDerived() != field.isDerived()) {
+					problems.add("Field " + expectedField + ".derived hardcoded value = " + field.isDerived() + " but computed value is " + expectedField.isDerived());
+				}
+				if (expectedField.isUnsettable() != field.isUnsettable()) {
+					problems.add("Field " + expectedField + ".unsettable hardcoded value = " + field.isUnsettable() + " but computed value is " + expectedField.isUnsettable());
+				}
 			}
-			assertTrue("These Metamodel.Field instances are missing on Type " + type.getName() +": " + expectedRoleToField.keySet(), expectedRoleToField.isEmpty());
+			if (expectedRoleToField.isEmpty() == false) {
+				problems.add("These Metamodel.Field instances are missing on Type " + type.getName() +": " + expectedRoleToField.keySet());
+			}
 		}
-		assertTrue("These Metamodel.Type instances are missing: " + expectedTypesByName.keySet(), expectedTypesByName.isEmpty());
+		if (expectedTypesByName.isEmpty() == false) {
+			problems.add("These Metamodel.Type instances are missing:" + expectedTypesByName.keySet());
+		}
+		assertTrue(String.join("\n", problems), problems.isEmpty());
 	}
 
 
