@@ -18,7 +18,6 @@ package spoon.support.visitor.java;
 
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
@@ -46,38 +45,70 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-			visitTypeParameter(generic);
-		}
-		if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
-			visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
-		}
-		for (Type anInterface : clazz.getGenericInterfaces()) {
-			visitTypeReference(CtRole.INTERFACE, anInterface);
-		}
-		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
-			visitAnnotation(annotation);
-		}
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			if (constructor.isSynthetic()) {
-				continue;
+		try {
+			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+				visitTypeParameter(generic);
 			}
-			visitConstructor(constructor);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (RtMethod method : getDeclaredMethods(clazz)) {
-			if (method.getMethod().isSynthetic()) {
-				continue;
+		try {
+			if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
+				visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
 			}
-			visitMethod(method);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Field field : clazz.getDeclaredFields()) {
-			if (field.isSynthetic()) {
-				continue;
+		try {
+			for (Type anInterface : clazz.getGenericInterfaces()) {
+				visitTypeReference(CtRole.INTERFACE, anInterface);
 			}
-			visitField(field);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitType(aClass);
+		try {
+			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+				visitAnnotation(annotation);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+				if (constructor.isSynthetic()) {
+					continue;
+				}
+				visitConstructor(constructor);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (RtMethod method : getDeclaredMethods(clazz)) {
+				if (method.getMethod().isSynthetic()) {
+					continue;
+				}
+				visitMethod(method);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				if (field.isSynthetic()) {
+					continue;
+				}
+				visitField(field);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Class<?> aClass : clazz.getDeclaredClasses()) {
+				visitType(aClass);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
 	}
 
@@ -99,29 +130,54 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Type anInterface : clazz.getGenericInterfaces()) {
-			visitTypeReference(CtRole.INTERFACE, anInterface);
-		}
-		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
-			visitAnnotation(annotation);
-		}
-		for (RtMethod method : getDeclaredMethods(clazz)) {
-			if (method.getMethod().isSynthetic()) {
-				continue;
+		try {
+			for (Type anInterface : clazz.getGenericInterfaces()) {
+				visitTypeReference(CtRole.INTERFACE, anInterface);
 			}
-			visitMethod(method);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Field field : clazz.getDeclaredFields()) {
-			if (field.isSynthetic()) {
-				continue;
+
+		try {
+			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+				visitAnnotation(annotation);
 			}
-			visitField(field);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitType(aClass);
+		try {
+			for (RtMethod method : getDeclaredMethods(clazz)) {
+				if (method.getMethod().isSynthetic()) {
+					continue;
+				}
+				visitMethod(method);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-			visitTypeParameter(generic);
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				if (field.isSynthetic()) {
+					continue;
+				}
+				visitField(field);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Class<?> aClass : clazz.getDeclaredClasses()) {
+				visitType(aClass);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+				visitTypeParameter(generic);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
 	}
 
@@ -131,46 +187,70 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Type anInterface : clazz.getGenericInterfaces()) {
-			visitTypeReference(CtRole.INTERFACE, anInterface);
+		try {
+			for (Type anInterface : clazz.getGenericInterfaces()) {
+				visitTypeReference(CtRole.INTERFACE, anInterface);
+			}
+		}  catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
-			visitAnnotation(annotation);
+		try {
+			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+				visitAnnotation(annotation);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			if (Modifier.isPrivate(constructor.getModifiers())) {
-				Class<?>[] paramTypes = constructor.getParameterTypes();
-				if (paramTypes.length == 2 && paramTypes[0] == String.class && paramTypes[1] == int.class) {
-					//ignore implicit enum constructor
+		try {
+			for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+				if (Modifier.isPrivate(constructor.getModifiers())) {
+					Class<?>[] paramTypes = constructor.getParameterTypes();
+					if (paramTypes.length == 2 && paramTypes[0] == String.class && paramTypes[1] == int.class) {
+						//ignore implicit enum constructor
+						continue;
+					}
+				}
+				if (constructor.isSynthetic()) {
 					continue;
 				}
+				visitConstructor(constructor);
 			}
-			if (constructor.isSynthetic()) {
-				continue;
-			}
-			visitConstructor(constructor);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (RtMethod method : getDeclaredMethods(clazz)) {
-			if (("valueOf".equals(method.getName()) && method.getParameterTypes().length == 1 && String.class.equals(method.getParameterTypes()[0])) || "values".equals(method.getName())) {
-				continue;
+		try {
+			for (RtMethod method : getDeclaredMethods(clazz)) {
+				if (("valueOf".equals(method.getName()) && method.getParameterTypes().length == 1 && String.class.equals(method.getParameterTypes()[0])) || "values".equals(method.getName())) {
+					continue;
+				}
+				if (method.getMethod().isSynthetic()) {
+					continue;
+				}
+				visitMethod(method);
 			}
-			if (method.getMethod().isSynthetic()) {
-				continue;
-			}
-			visitMethod(method);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Field field : clazz.getDeclaredFields()) {
-			if (field.isSynthetic()) {
-				continue;
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				if (field.isSynthetic()) {
+					continue;
+				}
+				if (field.isEnumConstant()) {
+					visitEnumValue(field);
+				} else {
+					visitField(field);
+				}
 			}
-			if (field.isEnumConstant()) {
-				visitEnumValue(field);
-			} else {
-				visitField(field);
-			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitType(aClass);
+		try {
+			for (Class<?> aClass : clazz.getDeclaredClasses()) {
+				visitType(aClass);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
 	}
 
@@ -180,23 +260,39 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getPackage() != null) {
 			clazz.getPackage();
 		}
-		for (Annotation annotation : clazz.getDeclaredAnnotations()) {
-			visitAnnotation(annotation);
-		}
-		for (RtMethod method : getDeclaredMethods(clazz)) {
-			if (method.getMethod().isSynthetic()) {
-				continue;
+		try {
+			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+				visitAnnotation(annotation);
 			}
-			visitMethod(method);
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Field field : clazz.getDeclaredFields()) {
-			if (field.isSynthetic()) {
-				continue;
+		try {
+			for (RtMethod method : getDeclaredMethods(clazz)) {
+				if (method.getMethod().isSynthetic()) {
+					continue;
+				}
+				visitMethod(method);
 			}
-			visitField(field);
+		}  catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
-		for (Class<?> aClass : clazz.getDeclaredClasses()) {
-			visitType(aClass);
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				if (field.isSynthetic()) {
+					continue;
+				}
+				visitField(field);
+			}
+		}  catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Class<?> aClass : clazz.getDeclaredClasses()) {
+				visitType(aClass);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
 		}
 	}
 
@@ -322,7 +418,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public final void visitTypeReference(CtRole role, Type type) {
-		CtTypeReference<?> ctTypeReference;
 		if (type instanceof TypeVariable) {
 			this.visitTypeParameterReference(role, (TypeVariable<?>) type);
 			return;

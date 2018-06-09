@@ -1,33 +1,7 @@
 package spoon.support.visitor.java;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.lang.annotation.Retention;
-import java.net.CookieManager;
-import java.net.URLClassLoader;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import com.mysema.query.support.ProjectableQuery;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.metamodel.MetamodelConcept;
@@ -70,6 +44,32 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
+
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.lang.annotation.Retention;
+import java.net.CookieManager;
+import java.net.URLClassLoader;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
 	@Test
@@ -567,5 +567,17 @@ public class JavaReflectionTreeBuilderTest {
 
 		assertEquals("T", typeParameter.getSimpleName());
 		assertTrue(typeParameter.getSuperclass() == null);
+	}
+
+
+
+	@Test
+	public void testPartialShadow() {
+		// contract: the shadow class can be partially created
+		Factory factory = createFactory();
+		CtType<Object> type = factory.Type().get(ProjectableQuery.class);
+		assertEquals("ProjectableQuery", type.getSimpleName());
+		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
+		assertEquals(0, type.getMethods().size());
 	}
 }
