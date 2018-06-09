@@ -103,6 +103,11 @@ public class PositionBuilder {
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
 
+			int length = variableDeclaration.toString().length();
+			if (length > (declarationSourceEnd - declarationSourceStart)) {
+				declarationSourceEnd = declarationSourceStart + length - 1;
+			}
+
 			if (modifiersSourceStart <= 0) {
 				modifiersSourceStart = declarationSourceStart;
 			}

@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
@@ -744,5 +745,27 @@ public class PositionTest {
 
 
 
+	}
+	@Test
+	public void testArrayArgParameter() throws Exception {
+		//contract: the parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
+		final CtType<?> foo = ModelUtils.buildClass(ArrayArgParameter.class);
+		String classContent = getClassContent(foo);
+
+		{
+			CtParameter<?> param = foo.getMethodsByName("m1").get(0).getParameters().get(0);
+			assertEquals("String[] arg", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String[]", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m2").get(0).getParameters().get(0);
+			assertEquals("String []arg", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String []", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m3").get(0).getParameters().get(0);
+			assertEquals("String arg[]", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String arg[]", contentAtPosition(classContent, param.getType().getPosition()));
+		}
 	}
 }
