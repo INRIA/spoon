@@ -1,6 +1,8 @@
 package spoon.test.template;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -43,8 +45,12 @@ public class TemplateInvocationSubstitutionTest {
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtBlock<?> result = new InvocationSubstitutionByExpressionTemplate(factory.createLiteral("abc")).apply(resultKlass);
+
 		assertEquals("java.lang.System.out.println(\"abc\".substring(1))", result.getStatement(0).toString());
 		assertEquals("java.lang.System.out.println(\"abc\".substring(1))", result.getStatement(1).toString());
+
+		// contract: the result of the template has no parent, and can be put anywhere in an AST
+		assertFalse(result.isParentInitialized());
 	}
 
 	@Test

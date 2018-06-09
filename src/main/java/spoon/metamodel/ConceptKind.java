@@ -14,19 +14,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
 /**
- * Represents type of Spoon model class
+ * Represents categories of metamodel types
  */
-public enum MMTypeKind {
+public enum ConceptKind {
 	/**
-	 * Kind of type which represents leaf of Spoon model.
+	 * Types of the metamodel that can be instantiated.
 	 * Examples: CtClass, CtField, CtThrow
 	 */
 	LEAF,
 	/**
-	 * Kind of type which represents some abstract concept of Spoon model
+	 * Types of the metamodel which represent abstract concepts of Spoon
+	 * that cannot be directly instantiated. Some of them are marker interfaces.
 	 * Examples: CtExecutable, CtReference, CtBodyHolder, ...
 	 */
 	ABSTRACT;

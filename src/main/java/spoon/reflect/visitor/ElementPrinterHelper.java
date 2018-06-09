@@ -52,11 +52,12 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.PrintingContext.Writable;
-import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import spoon.support.reflect.CtExtendedModifier;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -286,7 +287,7 @@ public class ElementPrinterHelper {
 					CtTypeReference typeRef = (CtTypeReference) ctImport.getReference();
 					importTypeStr = typeRef.getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
-						setImports.add(importTypeStr);
+						setImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
 					break;
 
@@ -294,7 +295,7 @@ public class ElementPrinterHelper {
 					CtPackageReference packageRef = (CtPackageReference) ctImport.getReference();
 					importTypeStr = packageRef.getQualifiedName() + ".*";
 					if (!isJavaLangClasses(importTypeStr)) {
-						setImports.add(importTypeStr);
+						setImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
 					break;
 
@@ -314,7 +315,7 @@ public class ElementPrinterHelper {
 					CtTypeReference typeStarRef = (CtTypeReference) ctImport.getReference();
 					importTypeStr = typeStarRef.getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
-						setStaticImports.add(importTypeStr);
+						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}
 					break;
 			}

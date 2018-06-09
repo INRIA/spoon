@@ -264,8 +264,10 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 		try {
 			JDTBasedSpoonCompiler spooner = new JDTBasedSpoonCompiler(getFactory());
 			spooner.compile(InputType.CTTYPES); // compiling the types of the factory
-			Class<?> klass = new NewInstanceClassloader(spooner.getBinaryOutputDirectory()).loadClass(getQualifiedName());
-			return (T) klass.newInstance();
+			try (NewInstanceClassloader classloader = new NewInstanceClassloader(spooner.getBinaryOutputDirectory())) {
+				Class<?> klass = classloader.loadClass(getQualifiedName());
+				return (T) klass.newInstance();
+			}
 		} catch (Exception e) {
 			throw new SpoonException(e);
 		}

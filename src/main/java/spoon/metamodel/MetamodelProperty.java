@@ -14,10 +14,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.metamodel;
+package spoon.metamodel;
 
-import static spoon.test.metamodel.SpoonMetaModel.addUniqueObject;
-import static spoon.test.metamodel.SpoonMetaModel.getOrCreate;
+import static spoon.metamodel.Metamodel.addUniqueObject;
+import static spoon.metamodel.Metamodel.getOrCreate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,10 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
@@ -38,8 +39,12 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 /**
- * Represents a property of Spoon model concept.
- * Each {@link MetamodelProperty} belongs to one {@link MetamodelConcept}
+ * Represents a property of the Spoon metamodel.
+ * A property:
+ *   - is an abstraction of a concrete field in an implementation class
+ *   - the {@link MetamodelConcept} is the owner of this role, it models the implementation class that contains the field.
+ *   - encapsulates a pair ({@link CtRole}, {@link MetamodelConcept}).
+ *   - captures both the type of the field (eg list) and the type of items (eg String).
  */
 public class MetamodelProperty {
 	/**
@@ -98,8 +103,7 @@ public class MetamodelProperty {
 	}
 
 	void addMethod(CtMethod<?> method) {
-		MMMethod mmMethod = getOwnMethod(method, true);
-		mmMethod.addOwnMethod(method);
+		MMMethod mmMethod = addMethod(method, true);
 	}
 
 	/**
@@ -107,19 +111,21 @@ public class MetamodelProperty {
 	 * @param createIfNotExist
 	 * @return existing {@link MMMethod}, which overrides `method` or creates and registers new one if `createIfNotExist`==true
 	 */
-	MMMethod getOwnMethod(CtMethod<?> method, boolean createIfNotExist) {
+	MMMethod addMethod(CtMethod<?> method, boolean createIfNotExist) {
 		for (MMMethod mmMethod : roleMethods) {
 			if (mmMethod.overrides(method)) {
+				// linking this ctMethod to this mmMethod
+				mmMethod.addRelatedMethod(method);
 				return mmMethod;
 			}
 		}
 		if (createIfNotExist) {
 			MMMethod mmMethod = new MMMethod(this, method);
 			roleMethods.add(mmMethod);
-			getOrCreate(methodsByKind, mmMethod.getMethodKind(), () -> new ArrayList<>()).add(mmMethod);
+			getOrCreate(methodsByKind, mmMethod.getKind(), () -> new ArrayList<>()).add(mmMethod);
 			MMMethod conflict = roleMethodsBySignature.put(mmMethod.getSignature(), mmMethod);
 			if (conflict != null) {
-				throw new SpoonException("Conflict on " + getOwnerConcept().getName() + "." + name + " method signature: " + mmMethod.getSignature());
+				throw new SpoonException("Conflict on " + getOwner().getName() + "." + name + " method signature: " + mmMethod.getSignature());
 			}
 			return mmMethod;
 		}
@@ -128,8 +134,13 @@ public class MetamodelProperty {
 
 	void addSuperField(MetamodelProperty superMMField) {
 		if (addUniqueObject(superProperties, superMMField)) {
+			// we copy all methods of the super property
 			for (MMMethod superMethod : superMMField.getRoleMethods()) {
-				getOwnMethod(superMethod.getFirstOwnMethod(getOwnerConcept()), true).addSuperMethod(superMethod);
+				CtMethod<?> method;
+				// we want the super method that is compatible with this property
+				method = superMethod.getCompatibleMethod(getOwner());
+				// we add this CtMethod to this property
+				addMethod(method, true);
 			}
 		}
 	}
@@ -142,25 +153,20 @@ public class MetamodelProperty {
 		return role;
 	}
 
-	public MetamodelConcept getOwnerConcept() {
+	/** returns the concept that holds this property */
+	public MetamodelConcept getOwner() {
 		return ownerConcept;
 	}
 
-	public ContainerKind getValueContainerType() {
+	/** returns the kind of property (list, value, etc) */
+	public ContainerKind getContainerKind() {
 		return valueContainerType;
-	}
-
-	public CtTypeReference<?> getValueType() {
-		if (valueType == null) {
-			throw new SpoonException("Model is not initialized yet");
-		}
-		return valueType;
 	}
 
 	CtTypeReference<?> detectValueType() {
 		MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
 		if (mmGetMethod == null) {
-			throw new SpoonException("No getter exists for " + getOwnerConcept().getName() + "." + getName());
+			throw new SpoonException("No getter exists for " + getOwner().getName() + "." + getName());
 		}
 		MMMethod mmSetMethod = getMethod(MMMethodKind.SET);
 		if (mmSetMethod == null) {
@@ -172,8 +178,8 @@ public class MetamodelProperty {
 			return mmGetMethod.getReturnType();
 		}
 		if (containerKindOf(getterValueType.getActualClass()) != ContainerKind.SINGLE) {
-			getterValueType = getItemValueType(getterValueType);
-			setterValueType = getItemValueType(setterValueType);
+			getterValueType = getTypeofItems(getterValueType);
+			setterValueType = getTypeofItems(setterValueType);
 		}
 		if (getterValueType.equals(setterValueType)) {
 			return mmGetMethod.getReturnType();
@@ -189,7 +195,7 @@ public class MetamodelProperty {
 			 */
 			return mmSetMethod.getValueType();
 		}
-		throw new SpoonException("Incompatible getter and setter for " + getOwnerConcept().getName() + "." + getName());
+		throw new SpoonException("Incompatible getter and setter for " + getOwner().getName() + "." + getName());
 	}
 
 	void setValueType(CtTypeReference<?> valueType) {
@@ -208,20 +214,37 @@ public class MetamodelProperty {
 		this.valueType = valueType;
 		this.valueContainerType = containerKindOf(valueType.getActualClass());
 		if (valueContainerType != ContainerKind.SINGLE) {
-			itemValueType = getItemValueType(valueType);
+			itemValueType = getTypeofItems(valueType);
 		} else {
 			itemValueType = valueType;
 		}
 	}
 
-	public CtTypeReference<?> getItemValueType() {
+	/**
+	 * Return the type of the field
+	 * for List&lt;String&gt; field the ValueType is List
+	 * for String field the ValueType is String
+	 *
+	 */
+	public CtTypeReference<?> getTypeOfField() {
+		if (valueType == null) {
+			throw new SpoonException("Model is not initialized yet");
+		}
+		return valueType;
+	}
+
+
+	/**
+	 * Returns the type of the property
+	 * for List&lt;String&gt; field the ValueType is String
+	 * for String field the ValueType is String (when getContainerKind == {@link ContainerKind#SINGLE}, {@link #getTypeofItems()} == {@link #getTypeOfField()}.
+	 *
+	 */
+	public CtTypeReference<?> getTypeofItems() {
 		if (itemValueType == null) {
-			getValueType();
+			getTypeOfField();
 		}
 		return itemValueType;
-	}
-	public void setItemValueType(CtTypeReference<?> itemValueType) {
-		this.itemValueType = itemValueType;
 	}
 
 	public MMMethod getMethod(MMMethodKind kind) {
@@ -233,21 +256,7 @@ public class MetamodelProperty {
 		List<MMMethod> ms = methodsByKind.get(kind);
 		return ms == null ? Collections.emptyList() : Collections.unmodifiableList(ms);
 	}
-	
-	/**
-	 * @param consumer is called for each CtMethod of this field which is not covered by this meta model
-	 */
-	public void forEachUnhandledMethod(Consumer<CtMethod<?>> consumer) {
-		methodsByKind.forEach((kind, mmMethods) -> {
-			if(kind == MMMethodKind.OTHER) {
-				mmMethods.forEach(mmMethod -> mmMethod.getOwnMethods().forEach(consumer));
-			} else {
-				if (mmMethods.size() > 1) {
-					mmMethods.subList(1, mmMethods.size()).forEach(mmMethod -> mmMethod.getOwnMethods().forEach(consumer));
-				}
-			}
-		});
-	}
+
 
 	void sortByBestMatch() {
 		//resolve conflicts using value type. Move the most matching method to 0 index
@@ -281,7 +290,7 @@ public class MetamodelProperty {
 	 */
 	private int getIdxOfBestMatch(List<MMMethod> methods, MMMethodKind key) {
 		MMMethod mmMethod = methods.get(0);
-		if (mmMethod.getMethod().getParameters().size() == 0) {
+		if (mmMethod.getActualCtMethod().getParameters().size() == 0) {
 			return getIdxOfBestMatchByReturnType(methods, key);
 		} else {
 			MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
@@ -300,8 +309,8 @@ public class MetamodelProperty {
 		// There is no input parameter. We are resolving getter field.
 		// choose the getter whose return value is a collection
 		// of second one
-		CtTypeReference<?> returnType1 = methods.get(0).getMethod().getType();
-		CtTypeReference<?> returnType2 = methods.get(1).getMethod().getType();
+		CtTypeReference<?> returnType1 = methods.get(0).getActualCtMethod().getType();
+		CtTypeReference<?> returnType2 = methods.get(1).getActualCtMethod().getType();
 		Factory f = returnType1.getFactory();
 		boolean is1Iterable = returnType1.isSubtypeOf(f.Type().ITERABLE);
 		boolean is2Iterable = returnType2.isSubtypeOf(f.Type().ITERABLE);
@@ -329,7 +338,7 @@ public class MetamodelProperty {
 	 * @return true if item type of `iterableType` is super type of `itemType`
 	 */
 	private boolean isIterableOf(CtTypeReference<?> iterableType, CtTypeReference<?> itemType) {
-		CtTypeReference<?> iterableItemType = getItemValueType(iterableType);
+		CtTypeReference<?> iterableItemType = getTypeofItems(iterableType);
 		if (iterableItemType != null) {
 			return itemType.isSubtypeOf(iterableItemType);
 		}
@@ -341,7 +350,7 @@ public class MetamodelProperty {
 		MatchLevel maxMatchLevel = null;
 		CtTypeReference<?> newValueType = null;
 		if (key.isMulti()) {
-			expectedValueType = getItemValueType(expectedValueType);
+			expectedValueType = getTypeofItems(expectedValueType);
 		}
 
 		for (int i = 0; i < methods.size(); i++) {
@@ -369,7 +378,7 @@ public class MetamodelProperty {
 		return idx;
 	}
 
-	private static CtTypeReference<?> getItemValueType(CtTypeReference<?> valueType) {
+	private static CtTypeReference<?> getTypeofItems(CtTypeReference<?> valueType) {
 		ContainerKind valueContainerType = containerKindOf(valueType.getActualClass());
 		if (valueContainerType == ContainerKind.SINGLE) {
 			return null;
@@ -440,43 +449,35 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 * @return true if this {@link MetamodelProperty} is derived in owner concept
+	 * @return true if this {@link MetamodelProperty} is derived in owner concept, ig has the annotation @{@link DerivedProperty}.
 	 */
 	public boolean isDerived() {
 		if (derived == null) {
-			if (isUnsettable()) {
-				//all unsettable properties are derived too 
-				derived = true;
-				return true;
-			}
+			// by default it's derived
+			derived = Boolean.FALSE;
+
 			//if DerivedProperty is found on any getter of this type, then this field is derived
 			MMMethod getter = getMethod(MMMethodKind.GET);
 			if (getter == null) {
 				throw new SpoonException("No getter defined for " + this);
 			}
-			CtTypeReference<DerivedProperty> derivedProperty = getter.getMethod().getFactory().createCtTypeReference(DerivedProperty.class);
+			CtTypeReference<DerivedProperty> derivedProperty = getter.getActualCtMethod().getFactory().createCtTypeReference(DerivedProperty.class);
 
-			boolean isConreteMethod = false;
-			for (CtMethod<?> ctMethod : getter.getOwnMethods()) {
+			for (CtMethod<?> ctMethod : getter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(derivedProperty) != null) {
 					derived = Boolean.TRUE;
-					return true;
+					return derived;
 				}
-				isConreteMethod = isConreteMethod || ctMethod.getBody() != null;
 			}
-			if (isConreteMethod) {
-				//there exists a implementation of getter for this field in this type and there is no  DerivedProperty here, so it is not derived!
-				derived = Boolean.FALSE;
-				return false;
-			}
+
 			//inherit derived property from super type
 			//if DerivedProperty annotation is not found on any get method, then it is not derived
-			derived = Boolean.FALSE;
+
 			//check all super fields. If any of them is derived then this field is derived too
 			for (MetamodelProperty superField : superProperties) {
 				if (superField.isDerived()) {
 					derived = Boolean.TRUE;
-					break;
+					return derived;
 				}
 			}
 		}
@@ -485,54 +486,34 @@ public class MetamodelProperty {
 
 	/**
 	 * @return true if this {@link MetamodelProperty} is unsettable in owner concept
+	 * ie. if the property has the annotation @{@link UnsettableProperty}
 	 */
 	public boolean isUnsettable() {
 		if (unsettable == null) {
+			// by default it's unsettable
+			unsettable = Boolean.FALSE;
+
 			//if UnsettablePropertyis found on any setter of this type, then this field is unsettable
 			MMMethod setter = getMethod(MMMethodKind.SET);
 			if (setter == null) {
 				unsettable = Boolean.TRUE;
-				return true;
+				return unsettable;
 			}
-			CtTypeReference<UnsettableProperty> unsettableProperty = setter.getMethod().getFactory().createCtTypeReference(UnsettableProperty.class);
+			CtTypeReference<UnsettableProperty> unsettableProperty = setter.getActualCtMethod().getFactory().createCtTypeReference(UnsettableProperty.class);
 
-			boolean isConreteMethod = false;
-			for (CtMethod<?> ctMethod : setter.getOwnMethods()) {
+			for (CtMethod<?> ctMethod : setter.getDeclaredMethods()) {
 				if (ctMethod.getAnnotation(unsettableProperty) != null) {
 					unsettable = Boolean.TRUE;
-					return true;
-				}
-				isConreteMethod = isConreteMethod || ctMethod.getBody() != null;
-			}
-			if (isConreteMethod) {
-				//there exists a implementation of setter for this field in this type and there is no  UnsettableProperty here, so it is settable!
-				unsettable = Boolean.FALSE;
-				return false;
-			}
-			//inherit unsettable property from super type
-			//if UnsettableProperty annotation is not found on any set method, then it is settable
-			unsettable = Boolean.FALSE;
-			//check all super fields. If any of them is derived then this field is derived too
-			for (MetamodelProperty superField : superProperties) {
-				if (superField.isUnsettable()) {
-					unsettable = Boolean.TRUE;
-					break;
+					return unsettable;
 				}
 			}
+
 		}
 		return unsettable;
 	}
 
-	public List<MMMethod> getRoleMethods() {
+	private List<MMMethod> getRoleMethods() {
 		return Collections.unmodifiableList(roleMethods);
-	}
-
-	public Map<String, MMMethod> getRoleMethodsBySignature() {
-		return Collections.unmodifiableMap(roleMethodsBySignature);
-	}
-
-	public List<MetamodelProperty> getSuperFields() {
-		return Collections.unmodifiableList(superProperties);
 	}
 
 	@Override
@@ -541,23 +522,26 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 * @return the super MMField which has same valueType and which is in root of the most implementations
+	 * @return the super {@link MetamodelProperty} which has same valueType and which is upper in the metamodel hierarchy
+	 * For example:
+	 * The super property of {@link CtField}#NAME is {@link CtNamedElement}#NAME
+	 * This method can be used to optimize generated code.
 	 */
-	public MetamodelProperty getRootSuperField() {
+	public MetamodelProperty getSuperProperty() {
 		List<MetamodelProperty> potentialRootSuperFields = new ArrayList<>();
 		if (roleMethods.size() > 0) {
 			potentialRootSuperFields.add(this);
 		}
 		superProperties.forEach(superField -> {
-			addUniqueObject(potentialRootSuperFields, superField.getRootSuperField());
+			addUniqueObject(potentialRootSuperFields, superField.getSuperProperty());
 		});
 		int idx = 0;
 		if (potentialRootSuperFields.size() > 1) {
 			boolean needsSetter = getMethod(MMMethodKind.SET) != null;
-			CtTypeReference<?> expectedValueType = this.getValueType().getTypeErasure();
+			CtTypeReference<?> expectedValueType = this.getTypeOfField().getTypeErasure();
 			for (int i = 1; i < potentialRootSuperFields.size(); i++) {
 				MetamodelProperty superField = potentialRootSuperFields.get(i);
-				if (superField.getValueType().getTypeErasure().equals(expectedValueType) == false) {
+				if (superField.getTypeOfField().getTypeErasure().equals(expectedValueType) == false) {
 					break;
 				}
 				if (needsSetter && superField.getMethod(MMMethodKind.SET) == null) {
@@ -569,7 +553,7 @@ public class MetamodelProperty {
 		}
 		return potentialRootSuperFields.get(idx);
 	}
-	
+
 	private	static ContainerKind containerKindOf(Class<?> valueClass) {
 		if (List.class.isAssignableFrom(valueClass)) {
 			return ContainerKind.LIST;

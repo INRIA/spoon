@@ -881,6 +881,7 @@ public class TemplateTest {
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtExpression result = new AnExpressionTemplate(factory.createCodeSnippetExpression("\"Spoon is cool!\"")).apply(resultKlass);
+		assertFalse(result.isParentInitialized());
 		assertEquals("new java.lang.String(\"Spoon is cool!\")", result.toString());
 	}
 

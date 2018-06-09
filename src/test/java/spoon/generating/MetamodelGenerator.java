@@ -10,38 +10,35 @@ import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
-import spoon.Metamodel.Type;
 import spoon.SpoonException;
-import spoon.reflect.declaration.CtClass;
+import spoon.metamodel.ConceptKind;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
-import spoon.test.metamodel.MetamodelProperty;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.MMTypeKind;
-import spoon.test.metamodel.SpoonMetaModel;
 
 public class MetamodelGenerator {
 
 	public static void main(String[] args) {
-		SpoonMetaModel mm = new SpoonMetaModel(new File("src/main/java"));
-		mm.getFactory().getEnvironment().useTabulations(true);
+		Metamodel mm = Metamodel.getInstance();
+		Factory factory = mm.getConcepts().iterator().next().getMetamodelInterface().getFactory();
+		factory.getEnvironment().useTabulations(true);
 		StringBuilder sb = new StringBuilder();
-		for (MetamodelConcept type : mm.getConcepts()) {
-			if (type.getKind()==MMTypeKind.LEAF) {
-				sb.append(printType(mm.getFactory(), type));
+		for (spoon.metamodel.MetamodelConcept type : mm.getConcepts()) {
+			if (type.getKind()==ConceptKind.LEAF) {
+				sb.append(printType(factory, type));
 			}
 		}
 		System.out.println(sb.toString());
 	}
 	
 
-	private static String printType(Factory factory, MetamodelConcept type) {
+	private static String printType(Factory factory, spoon.metamodel.MetamodelConcept type) {
 		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("typeName", type.getName());
-		valuesMap.put("ifaceName", type.getModelInterface().getQualifiedName());
-		valuesMap.put("implName", type.getModelClass().getQualifiedName());
+		valuesMap.put("ifaceName", type.getMetamodelInterface().getQualifiedName());
+		valuesMap.put("implName", type.getImplementationClass().getQualifiedName());
 		valuesMap.put("fields", printFields(factory, type));
 		
 		StrSubstitutor strSubst = new StrSubstitutor(valuesMap);
@@ -52,18 +49,18 @@ public class MetamodelGenerator {
 		
 	}
 
-	private static String printFields(Factory factory, MetamodelConcept type) {
-		Map<CtRole, MetamodelProperty> allFields = new LinkedHashMap<>(type.getRoleToProperty());
-		List<CtRole> rolesByScanner = getRoleScanningOrderOfType(factory, (Class) type.getModelInterface().getActualClass());
+	private static String printFields(Factory factory, spoon.metamodel.MetamodelConcept type) {
+		Map<CtRole, spoon.metamodel.MetamodelProperty> allFields = new LinkedHashMap<>(type.getRoleToProperty());
+		List<CtRole> rolesByScanner = getRoleScanningOrderOfType(factory, (Class) type.getMetamodelInterface().getActualClass());
 		List<String> elementFields = new ArrayList<>();
 		for (CtRole ctRole : rolesByScanner) {
-			MetamodelProperty field = allFields.remove(ctRole);
+			spoon.metamodel.MetamodelProperty field = allFields.remove(ctRole);
 			elementFields.add(printField(field));
 		}
 		//generate remaining primitive fields, sorted by Enum#ordinal of CtRole - just to have a stable order
 		List<String> primitiveFields = new ArrayList<>();
 		new ArrayList(allFields.keySet()).stream().sorted().forEach(role -> {
-			MetamodelProperty field = allFields.remove(role);
+			spoon.metamodel.MetamodelProperty field = allFields.remove(role);
 			primitiveFields.add(printField(field));
 		});
 		if (allFields.isEmpty() == false) {
@@ -75,7 +72,7 @@ public class MetamodelGenerator {
 		return sb.toString();
 	}
 	
-	private static String printField(MetamodelProperty field) {
+	private static String printField(spoon.metamodel.MetamodelProperty field) {
 		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("role", field.getRole().name());
 		valuesMap.put("derived", String.valueOf(field.isDerived()));

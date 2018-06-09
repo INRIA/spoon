@@ -1,39 +1,16 @@
 package spoon.support.visitor.java;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.createFactory;
-
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.lang.annotation.Retention;
-import java.net.CookieManager;
-import java.net.URLClassLoader;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import com.mysema.query.support.ProjectableQuery;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -67,8 +44,32 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.ComparableComparatorBug;
-import spoon.test.metamodel.MetamodelConcept;
-import spoon.test.metamodel.SpoonMetaModel;
+
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.lang.annotation.Retention;
+import java.net.CookieManager;
+import java.net.URLClassLoader;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
 	@Test
@@ -114,7 +115,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(suppressWarning);
 		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
 		assertTrue(suppressWarning.getAnnotations().size() > 0);
-		assertTrue(suppressWarning.getFields().size() > 0);
+		assertTrue(suppressWarning.getTypeMembers().size() > 0);
+		assertTrue(suppressWarning.getTypeMembers().get(0) instanceof CtAnnotationMethod);
+
 		assertTrue(suppressWarning.isShadow());
 
 		assertNotNull(suppressWarning.getAnnotation(Retention.class));
@@ -182,11 +185,11 @@ public class JavaReflectionTreeBuilderTest {
 		//contract: CtType made from sources is equal to CtType made by reflection
 		//with exception of CtExecutable#body, CtParameter#simpleName
 		//with exception of Annotations with retention policy SOURCE
-		SpoonMetaModel metaModel = new SpoonMetaModel(new File("src/main/java"));
+		Metamodel metaModel = new Metamodel(new File("src/main/java"));
 		List<String> allProblems = new ArrayList<>();
 		for (MetamodelConcept concept : metaModel.getConcepts()) {
-			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelClass()));
-			allProblems.addAll(checkShadowTypeIsEqual(concept.getModelInterface()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getImplementationClass()));
+			allProblems.addAll(checkShadowTypeIsEqual(concept.getMetamodelInterface()));
 		}
 		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
 	}
@@ -564,5 +567,17 @@ public class JavaReflectionTreeBuilderTest {
 
 		assertEquals("T", typeParameter.getSimpleName());
 		assertTrue(typeParameter.getSuperclass() == null);
+	}
+
+
+
+	@Test
+	public void testPartialShadow() {
+		// contract: the shadow class can be partially created
+		Factory factory = createFactory();
+		CtType<Object> type = factory.Type().get(ProjectableQuery.class);
+		assertEquals("ProjectableQuery", type.getSimpleName());
+		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
+		assertEquals(0, type.getMethods().size());
 	}
 }

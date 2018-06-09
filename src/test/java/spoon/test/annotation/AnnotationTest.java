@@ -149,6 +149,32 @@ public class AnnotationTest {
 		CtAnnotation<?> a = annotations.get(0);
 		Bound actualAnnotation = (Bound) a.getActualAnnotation();
 		assertEquals(8, actualAnnotation.max());
+
+		CtParameter<?> param2 = type.getMethodsByName("nn").get(0).getParameters().get(0);
+		assertEquals("param2", param2.getSimpleName());
+
+		List<CtAnnotation<? extends Annotation>> annotations2 = param2.getAnnotations();
+		assertEquals(1, annotations2.size());
+
+		CtAnnotation<?> annot = annotations2.get(0);
+		assertEquals("10", annot.getValue("max").toString());
+
+		Bound actualAnnotation2 = (Bound) annot.getActualAnnotation();
+		assertEquals(10, actualAnnotation2.max());
+
+		// contract: getAllvalues
+		// only direct value, no default ones in getValues()
+		assertEquals(1, a.getValues().size());
+		assertEquals(0, annot.getValues().size());
+
+		// direct values and default ones in getValues()
+		assertEquals(1, a.getAllValues().size());
+		assertEquals(1, annot.getAllValues().size());
+
+		// the good value is selected, not the default value
+		assertEquals("8", a.getAllValues().get("max").toString());
+
+
 	}
 
 	@Test
@@ -185,14 +211,20 @@ public class AnnotationTest {
 		assertEquals(1, annotations.size());
 
 		CtAnnotation<?> a = annotations.get(0);
+
+		assertEquals(15, a.getAllValues().size());
+
 		AnnotParamTypes annot = (AnnotParamTypes) a.getActualAnnotation();
+		assertEquals(42, a.getValueAsInt("integer"));
 		assertEquals(42, annot.integer());
 		assertEquals(1, annot.integers().length);
 		assertEquals(42, annot.integers()[0]);
+		assertEquals("Hello World!", a.getValueAsString("string"));
 		assertEquals("Hello World!", annot.string());
 		assertEquals(2, annot.strings().length);
 		assertEquals("Hello", annot.strings()[0]);
 		assertEquals("World", annot.strings()[1]);
+		assertEquals(Integer.class, a.getValueAsObject("clazz"));
 		assertEquals(Integer.class, annot.clazz());
 		assertEquals(2, annot.classes().length);
 		assertEquals(Integer.class, annot.classes()[0]);
@@ -1229,9 +1261,11 @@ public class AnnotationTest {
 	@Test
 	public void testSpoonManageRecursivelyDefinedAnnotation() {
 		// contract: Spoon manage to process recursively defined annotation in shadow classes
+		// annotation fields are encoded as CtAnnotationMethod
 		Launcher spoon = new Launcher();
 		CtType type = spoon.getFactory().Type().get(AliasFor.class);
-		assertEquals(3, type.getFields().size());
+		assertEquals(3, type.getTypeMembers().size());
+		assertTrue(type.getTypeMembers().get(0) instanceof CtAnnotationMethod);
 	}
 
 	@Test

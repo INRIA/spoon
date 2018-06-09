@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.metamodel.Metamodel;
 import spoon.pattern.PatternBuilder;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
@@ -24,7 +25,6 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +36,7 @@ import java.util.TreeSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.metamodel.MMTypeKind.ABSTRACT;
+import static spoon.metamodel.ConceptKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
@@ -309,9 +309,9 @@ public class SpoonArchitectureEnforcerTest {
 
 		List<String> missingMethods = new ArrayList<>();
 
-		new SpoonMetaModel(interfaces.getFactory()).getConcepts().forEach(mmConcept -> {
-			if (mmConcept.getKind() == ABSTRACT && mmConcept.getModelInterface() != null) {
-				CtInterface abstractIface = mmConcept.getModelInterface();
+		Metamodel.getInstance().getConcepts().forEach(mmConcept -> {
+			if (mmConcept.getKind() == ABSTRACT && mmConcept.getMetamodelInterface() != null) {
+				CtInterface abstractIface = mmConcept.getMetamodelInterface();
 				String methodName = "scan" + abstractIface.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);
@@ -335,6 +335,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.experimental.modelobs");
 		officialPackages.add("spoon.experimental");
 		officialPackages.add("spoon.legacy");
+		officialPackages.add("spoon.metamodel");
 		officialPackages.add("spoon.pattern");
 		officialPackages.add("spoon.pattern.internal");
 		officialPackages.add("spoon.pattern.internal.matcher");

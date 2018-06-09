@@ -68,7 +68,10 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	CtTypeReference<A> getAnnotationType();
 
 	/**
-	 * Gets a value for a given key without any conversion.
+	 * Gets a value, as a CtExpression, for a given key without any conversion.
+	 *
+	 * If you need the actual value (eg an integer and not a literal, see {@link #getValueAsObject(String)} and similar methods.
+	 *
 	 * Note that this value type does not necessarily corresponds to the annotation
 	 * type member. For example, in case the annotation type expect an array of Object,
 	 * and a single value is given, Spoon will return only the object without the CtNewArray.
@@ -80,6 +83,18 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 */
 	@PropertyGetter(role = VALUE)
 	<T extends CtExpression> T getValue(String key);
+
+	/** Returns the actual value of an annotation property */
+	@DerivedProperty
+	Object getValueAsObject(String key);
+
+	/** Returns the actual value of an annotation property, as an integer (utility method) */
+	@DerivedProperty
+	int getValueAsInt(String key);
+
+	/** Returns the actual value of an annotation property, as a String (utility method) */
+	@DerivedProperty
+	String getValueAsString(String key);
 
 	/**
 	 * Gets a value for a given key and try to fix its type based on the
@@ -107,6 +122,10 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 */
 	@PropertyGetter(role = VALUE)
 	Map<String, CtExpression> getValues();
+
+	/** Get all values of {@link #getValues()}, plus the default ones defined in the annotation type. */
+	@DerivedProperty
+	Map<String, CtExpression> getAllValues();
 
 	/**
 	 * Sets the annotation's type.
