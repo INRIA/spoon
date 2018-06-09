@@ -33,6 +33,10 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 
 	@Override
 	@UnsettableProperty
+	<C extends CtNamedElement> C setSimpleName(String simpleName);
+
+	@Override
+	@UnsettableProperty
 	<T extends CtExecutable<Void>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	@Override
