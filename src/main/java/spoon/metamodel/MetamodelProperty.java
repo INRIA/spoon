@@ -453,6 +453,10 @@ public class MetamodelProperty {
 	 */
 	public boolean isDerived() {
 		if (derived == null) {
+			if (getOwner().getKind() == ConceptKind.LEAF && isUnsettable()) {
+				derived = Boolean.TRUE;
+				return derived;
+			}
 			// by default it's derived
 			derived = Boolean.FALSE;
 
