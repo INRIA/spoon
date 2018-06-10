@@ -593,7 +593,7 @@ public class MetamodelProperty {
 
 	/**
 	 * @param element an instance whose attribute value is set
-	 * @param value to be set value of attribute defined by this {@link Field} on the provided `element`
+	 * @param value to be set value of attribute defined by this {@link MetamodelProperty} on the provided `element`
 	 */
 	public <T, U> void setValue(T element, U value) {
 		roleHandler.setValue(element, value);
