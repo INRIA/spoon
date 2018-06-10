@@ -5,7 +5,6 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
-import spoon.metamodel.ConceptKind;
 import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
@@ -79,42 +78,6 @@ public class MetamodelTest {
 		interfaces.buildModel();
 		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet())));
 	}
-
-	@Test
-	public void testRuntimeMetamodel() {
-		// contract: Spoon supports runtime introspection on the metamodel - all (non abstract) Spoon classes and their fields are accessible by Metamodel
-		Metamodel testMetaModel = Metamodel.getInstance();
-		Map<String, MetamodelConcept> expectedTypesByName = new HashMap<>();
-		testMetaModel.getConcepts().forEach(t -> {
-			if (t.getKind() == ConceptKind.LEAF) {
-				expectedTypesByName.put(t.getName(), t);	
-			}
-		});
-		List<String> problems = new ArrayList<>();
-		for (spoon.test.api.Metamodel.Type type : spoon.test.api.Metamodel.getAllMetamodelTypes()) {
-			MetamodelConcept expectedType = expectedTypesByName.remove(type.getName());
-			assertSame(expectedType.getImplementationClass().getActualClass(), type.getModelClass());
-			assertSame(expectedType.getMetamodelInterface().getActualClass(), type.getModelInterface());
-			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
-			for (spoon.test.api.Metamodel.Field field : type.getFields()) {
-				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
-				if (expectedField.isDerived() != field.isDerived()) {
-					problems.add("Field " + expectedField + ".derived hardcoded value = " + field.isDerived() + " but computed value is " + expectedField.isDerived());
-				}
-				if (expectedField.isUnsettable() != field.isUnsettable()) {
-					problems.add("Field " + expectedField + ".unsettable hardcoded value = " + field.isUnsettable() + " but computed value is " + expectedField.isUnsettable());
-				}
-			}
-			if (expectedRoleToField.isEmpty() == false) {
-				problems.add("These Metamodel.Field instances are missing on Type " + type.getName() +": " + expectedRoleToField.keySet());
-			}
-		}
-		if (expectedTypesByName.isEmpty() == false) {
-			problems.add("These Metamodel.Type instances are missing:" + expectedTypesByName.keySet());
-		}
-		assertTrue(String.join("\n", problems), problems.isEmpty());
-	}
-
 
 	@Test
 	public void testGetterSetterFroRole() {
