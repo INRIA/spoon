@@ -91,12 +91,12 @@ public class MetamodelTest {
 			}
 		});
 		List<String> problems = new ArrayList<>();
-		for (spoon.Metamodel.Type type : spoon.Metamodel.getAllMetamodelTypes()) {
+		for (spoon.test.api.Metamodel.Type type : spoon.test.api.Metamodel.getAllMetamodelTypes()) {
 			MetamodelConcept expectedType = expectedTypesByName.remove(type.getName());
 			assertSame(expectedType.getImplementationClass().getActualClass(), type.getModelClass());
 			assertSame(expectedType.getMetamodelInterface().getActualClass(), type.getModelInterface());
 			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
-			for (spoon.Metamodel.Field field : type.getFields()) {
+			for (spoon.test.api.Metamodel.Field field : type.getFields()) {
 				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
 				if (expectedField.isDerived() != field.isDerived()) {
 					problems.add("Field " + expectedField + ".derived hardcoded value = " + field.isDerived() + " but computed value is " + expectedField.isDerived());
