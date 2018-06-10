@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
-import spoon.Metamodel;
+import spoon.metamodel.Metamodel;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.MetamodelProperty;
 import spoon.pattern.internal.node.ConstantNode;
 import spoon.pattern.internal.node.ElementNode;
 import spoon.pattern.internal.node.InlineNode;
@@ -80,8 +82,8 @@ public class PatternPrinter extends DefaultGenerator {
 			if (node instanceof ElementNode) {
 				ElementNode elementNode = (ElementNode) node;
 				List<ParamOnElement> paramsOnElement = new ArrayList<>();
-				for (Map.Entry<Metamodel.Field, RootNode> e : elementNode.getRoleToNode().entrySet()) {
-					Metamodel.Field mmField = e.getKey();
+				for (Map.Entry<MetamodelProperty, RootNode> e : elementNode.getRoleToNode().entrySet()) {
+					MetamodelProperty mmField = e.getKey();
 					foreachNode(e.getValue(), attrNode -> {
 						if (attrNode instanceof ConstantNode || attrNode instanceof ElementNode) {
 							return;
@@ -111,8 +113,8 @@ public class PatternPrinter extends DefaultGenerator {
 
 	private boolean isCommentVisible(Object obj) {
 		if (obj instanceof CtElement) {
-			Metamodel.Type mmType = Metamodel.getMetamodelTypeByClass((Class) obj.getClass());
-			Metamodel.Field mmCommentField = mmType.getField(CtRole.COMMENT);
+			MetamodelConcept mmType = Metamodel.getInstance().getConcept((Class) obj.getClass());
+			MetamodelProperty mmCommentField = mmType.getProperty(CtRole.COMMENT);
 			if (mmCommentField != null && mmCommentField.isDerived() == false) {
 				return true;
 			}

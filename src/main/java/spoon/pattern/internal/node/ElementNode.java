@@ -16,8 +16,10 @@
  */
 package spoon.pattern.internal.node;
 
-import spoon.Metamodel;
 import spoon.SpoonException;
+import spoon.metamodel.Metamodel;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.MetamodelProperty;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
@@ -56,13 +58,13 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	 * @return a tree of {@link ElementNode}s, which reflects tree of `element`
 	 */
 	public static ElementNode create(CtElement element, Map<CtElement, RootNode> patternElementToSubstRequests) {
-		Metamodel.Type mmConcept = Metamodel.getMetamodelTypeByClass(element.getClass());
+		MetamodelConcept mmConcept = Metamodel.getInstance().getConcept(element.getClass());
 		ElementNode elementNode = new ElementNode(mmConcept, element);
 		if (patternElementToSubstRequests.put(element, elementNode) != null) {
 			throw new SpoonException("Each pattern element can have only one implicit Node.");
 		}
 		//iterate over all attributes of that element
-		for (Metamodel.Field  mmField : mmConcept.getFields()) {
+		for (MetamodelProperty  mmField : mmConcept.getProperties()) {
 			if (mmField.isDerived()) {
 				//skip derived fields, they are not relevant for matching or generating
 				continue;
@@ -176,15 +178,15 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	private CtElement templateElement;
-	private Metamodel.Type elementType;
-	private Map<Metamodel.Field, RootNode> roleToNode = new HashMap<>();
+	private MetamodelConcept elementType;
+	private Map<MetamodelProperty, RootNode> roleToNode = new HashMap<>();
 
 	/**
 	 * @param elementType The type of Spoon node which has to be generated/matched by this {@link ElementNode}
 	 * @param templateElement - optional ref to template element which was used to created this {@link ElementNode}.
 	 * 	It is used e.g. to generate generatedBy comment
 	 */
-	public ElementNode(Metamodel.Type elementType, CtElement templateElement) {
+	public ElementNode(MetamodelConcept elementType, CtElement templateElement) {
 		super();
 		this.elementType = elementType;
 		this.templateElement = templateElement;
@@ -192,7 +194,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@Override
 	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
-		for (Map.Entry<Metamodel.Field, RootNode> e : roleToNode.entrySet()) {
+		for (Map.Entry<MetamodelProperty, RootNode> e : roleToNode.entrySet()) {
 			RootNode node = e.getValue();
 			if (node == oldNode) {
 				e.setValue(newNode);
@@ -205,7 +207,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return false;
 	}
 
-	public Map<Metamodel.Field, RootNode> getRoleToNode() {
+	public Map<MetamodelProperty, RootNode> getRoleToNode() {
 		return roleToNode == null ? Collections.emptyMap() : Collections.unmodifiableMap(roleToNode);
 	}
 
@@ -224,7 +226,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	public RootNode getOrCreateNodeOfRole(CtRole role, Map<CtElement, RootNode> patternElementToSubstRequests) {
 		RootNode node = getNodeOfRole(role);
 		if (node == null) {
-			Metamodel.Field mmField = elementType.getField(role);
+			MetamodelProperty mmField = elementType.getProperty(role);
 			if (mmField == null || mmField.isDerived()) {
 				throw new SpoonException("The role " + role + " doesn't exist or is derived for " + elementType);
 			}
@@ -251,8 +253,8 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return null;
 	}
 
-	private Metamodel.Field getFieldOfRole(CtRole role) {
-		Metamodel.Field mmField = elementType.getField(role);
+	private MetamodelProperty getFieldOfRole(CtRole role) {
+		MetamodelProperty mmField = elementType.getProperty(role);
 		if (mmField == null) {
 			throw new SpoonException("CtRole." + role.name() + " isn't available for " + elementType);
 		}
@@ -274,25 +276,26 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U> void generateTargets(DefaultGenerator generator, ResultHolder<U> result, ImmutableMap parameters) {
-		//TODO implement create on Metamodel.Type
-		CtElement clone = generator.getFactory().Core().create(elementType.getModelInterface());
+		//TODO implement create on MetamodelConcept
+		@SuppressWarnings("rawtypes")
+		CtElement clone = generator.getFactory().Core().create((Class) elementType.getMetamodelInterface().getActualClass());
 		generateSingleNodeAttributes(generator, clone, parameters);
 		generator.applyGeneratedBy(clone, generator.getGeneratedByComment(templateElement));
 		result.addResult((U) clone);
 	}
 
 	protected void generateSingleNodeAttributes(DefaultGenerator generator, CtElement clone, ImmutableMap parameters) {
-		for (Map.Entry<Metamodel.Field, RootNode> e : getRoleToNode().entrySet()) {
-			Metamodel.Field mmField = e.getKey();
+		for (Map.Entry<MetamodelProperty, RootNode> e : getRoleToNode().entrySet()) {
+			MetamodelProperty mmField = e.getKey();
 			switch (mmField.getContainerKind()) {
 			case SINGLE:
-				mmField.setValue(clone, generator.generateSingleTarget(e.getValue(), parameters, mmField.getValueClass()));
+				mmField.setValue(clone, generator.generateSingleTarget(e.getValue(), parameters, mmField.getTypeofItems().getActualClass()));
 				break;
 			case LIST:
-				mmField.setValue(clone, generator.generateTargets(e.getValue(), parameters, mmField.getValueClass()));
+				mmField.setValue(clone, generator.generateTargets(e.getValue(), parameters, mmField.getTypeofItems().getActualClass()));
 				break;
 			case SET:
-				mmField.setValue(clone, new LinkedHashSet<>(generator.generateTargets(e.getValue(), parameters, mmField.getValueClass())));
+				mmField.setValue(clone, new LinkedHashSet<>(generator.generateTargets(e.getValue(), parameters, mmField.getTypeofItems().getActualClass())));
 				break;
 			case MAP:
 				mmField.setValue(clone, entriesToMap(generator.generateTargets(e.getValue(), parameters, Map.Entry.class)));
@@ -314,14 +317,14 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		if (target == null) {
 			return null;
 		}
-		if (target.getClass() != elementType.getModelClass()) {
+		if (target.getClass() != elementType.getImplementationClass().getActualClass()) {
 			return null;
 		}
 
 		//it is spoon element, it matches if to be matched attributes matches
 		//to be matched attributes must be same or substituted
 		//iterate over all attributes of to be matched class
-		for (Map.Entry<Metamodel.Field, RootNode> e : roleToNode.entrySet()) {
+		for (Map.Entry<MetamodelProperty, RootNode> e : roleToNode.entrySet()) {
 			parameters = matchesRole(parameters, (CtElement) target, e.getKey(), e.getValue());
 			if (parameters == null) {
 				return null;
@@ -330,8 +333,8 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		return parameters;
 	}
 
-	protected ImmutableMap matchesRole(ImmutableMap parameters, CtElement target, Metamodel.Field mmField, RootNode attrNode) {
-		if (isMatchingRole(mmField.getRole(), elementType.getModelInterface()) == false) {
+	protected ImmutableMap matchesRole(ImmutableMap parameters, CtElement target, MetamodelProperty mmField, RootNode attrNode) {
+		if (isMatchingRole(mmField.getRole(), elementType.getMetamodelInterface().getActualClass()) == false) {
 			return parameters;
 		}
 		TobeMatched tobeMatched;
@@ -403,11 +406,11 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 //		}
 //	}
 
-	public Metamodel.Type getElementType() {
+	public MetamodelConcept getElementType() {
 		return elementType;
 	}
 
-	public void setElementType(Metamodel.Type elementType) {
+	public void setElementType(MetamodelConcept elementType) {
 		this.elementType = elementType;
 	}
 
