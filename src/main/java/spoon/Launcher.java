@@ -742,8 +742,10 @@ public class Launcher implements SpoonAPI {
 	};
 
 	private static CacheInfo loadCacheInfo(File file) throws InvalidClassException {
-		try (FileInputStream fileStream = new FileInputStream(file);
-			 ObjectInputStream objectStream = new ObjectInputStream(new BufferedInputStream(fileStream))) {
+		try (
+				FileInputStream fileStream = new FileInputStream(file);
+				ObjectInputStream objectStream = new ObjectInputStream(new BufferedInputStream(fileStream));
+		) {
 			return (CacheInfo) objectStream.readObject();
 		} catch (InvalidClassException e) {
 			throw e;
@@ -753,8 +755,10 @@ public class Launcher implements SpoonAPI {
 	}
 
 	private static void saveCacheInfo(CacheInfo cacheInfo, File file) {
-		try (FileOutputStream fileStream = new FileOutputStream(file);
-			 ObjectOutputStream objectStream = new ObjectOutputStream(new BufferedOutputStream(fileStream))) {
+		try (
+				FileOutputStream fileStream = new FileOutputStream(file);
+				ObjectOutputStream objectStream = new ObjectOutputStream(new BufferedOutputStream(fileStream));
+		) {
 			objectStream.writeObject(cacheInfo);
 			objectStream.flush();
 		} catch (IOException e) {
@@ -779,7 +783,7 @@ public class Launcher implements SpoonAPI {
 	}
 
 	private Set<File> getAllJavaFiles() {
-        return ((JDTBasedSpoonCompiler) this.modelBuilder).getSource().getAllJavaFiles().stream().map(f -> f.toFile()).collect(Collectors.toSet());
+		return ((JDTBasedSpoonCompiler) this.modelBuilder).getSource().getAllJavaFiles().stream().map(f -> f.toFile()).collect(Collectors.toSet());
 	}
 
 	/** Caches current spoon model and binary files. Should be called only after model is built. */
@@ -823,12 +827,12 @@ public class Launcher implements SpoonAPI {
 
 	private void prepareIncrementalBuild() {
 		Set<File> mInputSources = getAllJavaFiles();
-        Set<String> mSourceClasspath;
+		Set<String> mSourceClasspath;
 		if (this.getEnvironment().getSourceClasspath() == null) {
-		    mSourceClasspath = new HashSet<>();
-        } else {
-		    mSourceClasspath = new HashSet<>(Arrays.asList(this.getEnvironment().getSourceClasspath()));
-        }
+			mSourceClasspath = new HashSet<>();
+		} else {
+			mSourceClasspath = new HashSet<>(Arrays.asList(this.getEnvironment().getSourceClasspath()));
+		}
 
 		File mIncrementalCacheDirectory = this.getEnvironment().getCacheDirectory();
 		mModelFile = new File(mIncrementalCacheDirectory, "model");
