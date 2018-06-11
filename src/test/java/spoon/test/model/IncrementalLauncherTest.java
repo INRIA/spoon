@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -72,29 +72,30 @@ public class IncrementalLauncherTest {
 			assertTrue(t.getPosition().getLine() != -1);
 		}
 	}
-	/*
+
 	@Test
 	public void testIncremental1() throws IOException, InterruptedException {
 		// Build model from A.java, B.java, C.java, D.java, then change D.java => load A, B, C from cache and build D.
 		FileUtils.deleteDirectory(WORKING_DIR);
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
 
-		Set<File> inputResources = Collections.singleton(WORKING_DIR);
-		Set<String> sourceClasspath = Collections.emptySet();
-
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
-		assertTrue(launcher1.changesPresent());
+		Launcher launcher1 = new Launcher();
+		launcher1.addInputResource(WORKING_DIR.getAbsolutePath());
+		launcher1.getEnvironment().setCacheDirectory(CACHE_DIR);
+		launcher1.getEnvironment().setIncremental(true);
 		CtModel originalModel = launcher1.buildModel();
-		launcher1.saveCache();
+		assertTrue(launcher1.changesPresent());
 
 		TimeUnit.MILLISECONDS.sleep(1000);
 		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "D.java"), new File(WORKING_DIR, "D.java"), true);
 		FileUtils.touch(new File(WORKING_DIR, "D.java"));
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
-		assertTrue(launcher2.changesPresent());
+		Launcher launcher2 = new Launcher();
+		launcher2.addInputResource(WORKING_DIR.getAbsolutePath());
+		launcher2.getEnvironment().setCacheDirectory(CACHE_DIR);
+		launcher2.getEnvironment().setIncremental(true);
 		CtModel newModel = launcher2.buildModel();
-		launcher2.saveCache();
+		assertTrue(launcher2.changesPresent());
 
 		Collection<CtType<?>> types1 = originalModel.getAllTypes();
 		Collection<CtType<?>> types2 = newModel.getAllTypes();
@@ -120,6 +121,7 @@ public class IncrementalLauncherTest {
 		assertTrue(d2.getMethods().size() == 1);
 	}
 
+
 	@Test
 	public void testIncremental2() throws IOException {
 		// Build model from A.java, B.java, C.java, then remove C.java and add D.java
@@ -130,21 +132,31 @@ public class IncrementalLauncherTest {
 		inputResources.add(new File(WORKING_DIR, "A.java"));
 		inputResources.add(new File(WORKING_DIR, "B.java"));
 		inputResources.add(new File(WORKING_DIR, "C.java"));
-		Set<String> sourceClasspath = Collections.emptySet();
 
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
-		assertTrue(launcher1.changesPresent());
+		Launcher launcher1 = new Launcher();
+		for (File inputResource : inputResources) {
+			launcher1.addInputResource(inputResource.getAbsolutePath());
+		}
+
+		launcher1.getEnvironment().setCacheDirectory(CACHE_DIR);
+		launcher1.getEnvironment().setIncremental(true);
 		CtModel originalModel = launcher1.buildModel();
-		launcher1.saveCache();
+		assertTrue(launcher1.changesPresent());
 		assertTrue(originalModel.getAllTypes().size() == 3);
 
 		inputResources.removeIf(f -> f.getName().equals("C.java"));
 		inputResources.add(new File(WORKING_DIR, "D.java"));
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
-		assertTrue(launcher2.changesPresent());
+		Launcher launcher2 = new Launcher();
+		for (File inputResource : inputResources) {
+			launcher2.addInputResource(inputResource.getAbsolutePath());
+		}
+		launcher2.getEnvironment().setCacheDirectory(CACHE_DIR);
+		launcher2.getEnvironment().setIncremental(true);
+
 		CtModel newModel = launcher2.buildModel();
-		launcher2.saveCache();
+		assertTrue(launcher2.changesPresent());
+
 		assertTrue(newModel.getAllTypes().size() == 3);
 
 		Collection<CtType<?>> types1 = originalModel.getAllTypes();
@@ -161,6 +173,7 @@ public class IncrementalLauncherTest {
 		assertFalse(c1.equals(d2));
 	}
 
+
 	@Test
 	public void testIncremental3() throws IOException, InterruptedException {
 		// Build model from A.java, B.java, C.java, then change type of field val in C.
@@ -172,12 +185,16 @@ public class IncrementalLauncherTest {
 		inputResources.add(new File(WORKING_DIR, "A.java"));
 		inputResources.add(new File(WORKING_DIR, "B.java"));
 		inputResources.add(new File(WORKING_DIR, "C.java"));
-		Set<String> sourceClasspath = Collections.emptySet();
 
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
-		assertTrue(launcher1.changesPresent());
+		Launcher launcher1 = new Launcher();
+		for (File inputResource : inputResources) {
+			launcher1.addInputResource(inputResource.getAbsolutePath());
+		}
+		launcher1.getEnvironment().setCacheDirectory(CACHE_DIR);
+		launcher1.getEnvironment().setIncremental(true);
+
 		CtModel originalModel = launcher1.buildModel();
-		launcher1.saveCache();
+		assertTrue(launcher1.changesPresent());
 
 		CtType<?> c1 = getTypeByName(originalModel.getAllTypes(), "C");
 		assertTrue(c1.getField("val").getType().getSimpleName().equals("int"));
@@ -194,10 +211,14 @@ public class IncrementalLauncherTest {
 		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "C.java"), new File(WORKING_DIR, "C.java"), true);
 		FileUtils.touch(new File(WORKING_DIR, "C.java"));
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
-		assertTrue(launcher2.changesPresent());
+		Launcher launcher2 = new Launcher();
+		for (File inputResource : inputResources) {
+			launcher2.addInputResource(inputResource.getAbsolutePath());
+		}
+		launcher2.getEnvironment().setCacheDirectory(CACHE_DIR);
+		launcher2.getEnvironment().setIncremental(true);
 		CtModel newModel = launcher2.buildModel();
-		launcher2.saveCache();
+		assertTrue(launcher2.changesPresent());
 
 		CtType<?> c2 = getTypeByName(newModel.getAllTypes(), "C");
 		assertTrue(c2.getField("val").getType().getSimpleName().equals("float"));
@@ -211,9 +232,9 @@ public class IncrementalLauncherTest {
 		assertTrue(lhs2.getType().getSimpleName().equals("float"));
 	}
 
-	@Test
+	@After
 	public void cleanup() throws IOException {
 		FileUtils.deleteDirectory(WORKING_DIR);
-	}*/
+	}
 }
 

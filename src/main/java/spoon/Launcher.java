@@ -25,7 +25,6 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -78,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
 
@@ -779,26 +779,7 @@ public class Launcher implements SpoonAPI {
 	}
 
 	private Set<File> getAllJavaFiles() {
-		Set<File> javaFiles = new HashSet<>();
-		for (File e : this.modelBuilder.getInputSources()) {
-			if (e.isDirectory()) {
-				Collection<File> files = FileUtils.listFiles(e, new SuffixFileFilter(".java"), TrueFileFilter.INSTANCE);
-				files.forEach(f -> {
-					try {
-						javaFiles.add(f.getCanonicalFile());
-					} catch (IOException e1) {
-						throw new SpoonException("unable to locate input source file: " + f);
-					}
-				});
-			} else if (e.isFile() && e.getName().endsWith(".java")) {
-				try {
-					javaFiles.add(e.getCanonicalFile());
-				} catch (IOException e1) {
-					throw new SpoonException("unable to locate input source file: " + e);
-				}
-			}
-		}
-		return javaFiles;
+        return ((JDTBasedSpoonCompiler) this.modelBuilder).getSource().getAllJavaFiles().stream().map(f -> f.toFile()).collect(Collectors.toSet());
 	}
 
 	/** Caches current spoon model and binary files. Should be called only after model is built. */
@@ -934,9 +915,11 @@ public class Launcher implements SpoonAPI {
 
 			incrementalSources.forEach(f -> addInputResource(f.getPath()));
 			mChangesPresent = !mRemovedSources.isEmpty() || !mAddedSources.isEmpty() || !incrementalSources.isEmpty();
-			setBinaryOutputDirectory(mClassFilesDir);
 
 			this.modelBuilder = this.createCompiler();
+			for (File incrementalSource : incrementalSources) {
+				this.modelBuilder.addInputSource(incrementalSource);
+			}
 		}
 	}
 
