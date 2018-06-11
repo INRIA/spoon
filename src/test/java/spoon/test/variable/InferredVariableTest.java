@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,6 +22,7 @@ public class InferredVariableTest {
 
     @Test
     public void testInferredVariableAreMarked() {
+        // contract: if a variable is declared with 'var' keyword, it must be marked as inferred in the model
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(10);
         launcher.addInputResource("./src/test/resources/spoon/test/var/Main.java");
@@ -61,6 +60,7 @@ public class InferredVariableTest {
 
     @Test
     public void testInferredVariableArePrintedWithVar() throws IOException {
+        // contract: if a variable is marked as inferred in the model, it must be pretty-printed with a 'var' keyword 
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setComplianceLevel(10);
         launcher.addInputResource("./src/test/resources/spoon/test/var/Main.java");
