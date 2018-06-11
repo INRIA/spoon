@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
@@ -189,6 +190,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public CtLocalVariable<T> setInferred(boolean inferred) {
+		if (this.getFactory().getEnvironment().getComplianceLevel() < 10) {
+			throw new SpoonException("The variable inferrence is only available since Java 10.");
+		}
 		this.inferred = inferred;
 		return this;
 	}
