@@ -7,11 +7,17 @@ import java.io.IOException;
 public class Main {
 
     public String toString() {
-        // first local var -> not inferred
+        // 0
         var mySubstring = "bla";
 
-        // second local var -> inferred
-        try (var myFile = new FileReader(new File("/tmp/myfile"));) {
+        // 1 -> not inferred
+        String anotherSub = "bidule";
+
+        // 2
+        try (var myFile = new FileReader(new File("/tmp/myfile"));
+
+             // 3 -> not inferred
+             FileReader anotherOne = new FileReader(new File("/other/path"))) {
             mySubstring += myFile.toString();
         } catch (IOException e) {
             mySubstring += "error";
@@ -20,14 +26,22 @@ public class Main {
         switch (mySubstring) {
             case "bla":
 
-                // third local var -> inferred
-                var myOtherString = "loop";
-                return myOtherString;
+                // 4
+                var myboolean = true;
+
+                // 5
+                boolean another = false;
+
+                return "";
         }
 
-        // fourth local var -> inferred
+        // 6
         for (var i = 0; i < mySubstring.length(); i++) {
-            return mySubstring;
+
+            // 7 -> not inferred
+            for (int j = i; j < 10; j++) {
+                return mySubstring;
+            }
         }
 
         return mySubstring;
