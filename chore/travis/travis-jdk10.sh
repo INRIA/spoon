@@ -5,4 +5,7 @@
 
 source /opt/jdk_switcher/jdk_switcher.sh
 
-jdk_switcher use oraclejdk10 && mvn -Djava.src.version=1.10 test
+export JAVA_HOME=$HOME/openjdk8
+$TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk10 --target $JAVA_HOME
+
+jdk_switcher use openjdk10 && mvn -Djava.src.version=1.10 test
