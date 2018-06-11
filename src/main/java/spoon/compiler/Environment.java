@@ -397,4 +397,24 @@ public interface Environment {
 	 * Get the output type
 	 */
 	OutputType getOutputType();
+
+	/**
+	 * If true, Spoon will use a cache to build the model incrementally.
+	 */
+	boolean isIncremental();
+
+	/**
+	 * Set true to use a cache to build a model incrementally. See {@link #setCacheDirectory(File)}.
+	 */
+	void setIncremental(boolean incremental);
+
+	/**
+	 * Specify which directory to use in case of incremental build. See {@link #isIncremental()}.
+	 */
+	void setCacheDirectory(File directory);
+
+	/**
+	 * Get the directory used as a cache for incremental build.
+	 */
+	File getCacheDirectory();
 }

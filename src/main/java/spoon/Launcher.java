@@ -23,17 +23,23 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.codehaus.plexus.util.CollectionUtils;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -43,6 +49,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.SerializationModelStreamer;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
@@ -50,15 +57,27 @@ import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.gui.SpoonModelTree;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
 
@@ -71,6 +90,18 @@ import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
  */
 public class Launcher implements SpoonAPI {
 
+	/**
+	 * This class store information for incremental build.
+	 */
+	private static class CacheInfo implements Serializable {
+		/** Cache version */
+		public static final long serialVersionUID = 1L; //TODO: Spoon version
+		/** Timestamp of the last model build */
+		public long lastBuildTime;
+		/** Map of input source files and corresponding binary files */
+		public Map<File, Set<File>> inputSourcesMap;
+	}
+
 	public static final String SPOONED_CLASSES = "spooned-classes";
 
 	public static final String OUTPUTDIR = "spooned";
@@ -82,6 +113,14 @@ public class Launcher implements SpoonAPI {
 	private String[] commandLineArgs = new String[0];
 
 	private Filter<CtType<?>> typeFilter;
+	private File mModelFile;
+	private File mCacheInfoFile;
+	private File mClassFilesDir;
+	private CacheInfo mCacheInfo = null;
+	private Set<File> mRemovedSources = new HashSet<>();
+	private Set<File> mAddedSources = new HashSet<>();
+	private Set<File> mCommonSources = new HashSet<>();
+	boolean mChangesPresent = false;
 
 	/**
 	 * Contains the arguments accepted by this launcher (available after
@@ -702,10 +741,215 @@ public class Launcher implements SpoonAPI {
 		}
 	};
 
+	private static CacheInfo loadCacheInfo(File file) throws InvalidClassException {
+		try (FileInputStream fileStream = new FileInputStream(file);
+			 ObjectInputStream objectStream = new ObjectInputStream(new BufferedInputStream(fileStream))) {
+			return (CacheInfo) objectStream.readObject();
+		} catch (InvalidClassException e) {
+			throw e;
+		} catch (ClassNotFoundException | IOException e) {
+			throw new SpoonException("unable to load cache info");
+		}
+	}
+
+	private static void saveCacheInfo(CacheInfo cacheInfo, File file) {
+		try (FileOutputStream fileStream = new FileOutputStream(file);
+			 ObjectOutputStream objectStream = new ObjectOutputStream(new BufferedOutputStream(fileStream))) {
+			objectStream.writeObject(cacheInfo);
+			objectStream.flush();
+		} catch (IOException e) {
+			throw new SpoonException("unable to save cache info");
+		}
+	}
+
+	private static Factory loadFactory(File file) {
+		try {
+			return new SerializationModelStreamer().load(new FileInputStream(file));
+		} catch (IOException e) {
+			throw new SpoonException("unable to load factory from cache");
+		}
+	}
+
+	private static void saveFactory(Factory factory, File file) {
+		try {
+			new SerializationModelStreamer().save(factory, new FileOutputStream(file));
+		} catch (IOException e) {
+			throw new SpoonException("unable to save factory");
+		}
+	}
+
+	private Set<File> getAllJavaFiles() {
+		Set<File> javaFiles = new HashSet<>();
+		for (File e : this.modelBuilder.getInputSources()) {
+			if (e.isDirectory()) {
+				Collection<File> files = FileUtils.listFiles(e, new SuffixFileFilter(".java"), TrueFileFilter.INSTANCE);
+				files.forEach(f -> {
+					try {
+						javaFiles.add(f.getCanonicalFile());
+					} catch (IOException e1) {
+						throw new SpoonException("unable to locate input source file: " + f);
+					}
+				});
+			} else if (e.isFile() && e.getName().endsWith(".java")) {
+				try {
+					javaFiles.add(e.getCanonicalFile());
+				} catch (IOException e1) {
+					throw new SpoonException("unable to locate input source file: " + e);
+				}
+			}
+		}
+		return javaFiles;
+	}
+
+	/** Caches current spoon model and binary files. Should be called only after model is built. */
+	private void saveCache() {
+		Factory factory = getFactory();
+		if (factory == null) {
+			throw new SpoonException("factory is null");
+		}
+
+		File binaryOutputDirectory = this.modelBuilder.getBinaryOutputDirectory();
+		this.modelBuilder.setBinaryOutputDirectory(this.mClassFilesDir);
+		this.modelBuilder.compile(SpoonModelBuilder.InputType.FILES);
+		this.modelBuilder.setBinaryOutputDirectory(binaryOutputDirectory);
+
+		saveFactory(factory, mModelFile);
+
+		CacheInfo newCacheInfo = new CacheInfo();
+		newCacheInfo.lastBuildTime = System.currentTimeMillis();
+		Map<File, Set<File>> newSourcesMap = new HashMap<>();
+		for (Map.Entry<String, CompilationUnit> e : factory.CompilationUnit().getMap().entrySet()) {
+			newSourcesMap.put(new File(e.getKey()), new HashSet<File>(e.getValue().getBinaryFiles()));
+		}
+
+		if (mCacheInfo != null) {
+			newSourcesMap.putAll(mCacheInfo.inputSourcesMap);
+			for (File r : mRemovedSources) {
+				newSourcesMap.get(r).forEach(File::delete); // Removes corresponding .class files
+				newSourcesMap.remove(r);
+			}
+		}
+
+		// Removes all empty directories
+		Collection<File> dirs = FileUtils.listFilesAndDirs(mClassFilesDir, DirectoryFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+		dirs.stream()
+				.filter(d -> d.exists() && FileUtils.listFiles(d, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).isEmpty())
+				.forEach(FileUtils::deleteQuietly);
+
+		newCacheInfo.inputSourcesMap = newSourcesMap;
+		saveCacheInfo(newCacheInfo, mCacheInfoFile);
+	}
+
+	private void prepareIncrementalBuild() {
+		Set<File> mInputSources = getAllJavaFiles();
+        Set<String> mSourceClasspath;
+		if (this.getEnvironment().getSourceClasspath() == null) {
+		    mSourceClasspath = new HashSet<>();
+        } else {
+		    mSourceClasspath = new HashSet<>(Arrays.asList(this.getEnvironment().getSourceClasspath()));
+        }
+
+		File mIncrementalCacheDirectory = this.getEnvironment().getCacheDirectory();
+		mModelFile = new File(mIncrementalCacheDirectory, "model");
+		mCacheInfoFile = new File(mIncrementalCacheDirectory, "cache-info");
+		mClassFilesDir = new File(mIncrementalCacheDirectory, "class-files");
+		boolean forceRebuild = false;
+
+		if (!mIncrementalCacheDirectory.exists() || !mModelFile.exists() || !mCacheInfoFile.exists() || !mClassFilesDir.exists()) {
+			forceRebuild = true;
+		} else {
+			try {
+				mCacheInfo = loadCacheInfo(mCacheInfoFile);
+			} catch (InvalidClassException | SpoonException e) {
+				// Incompatible cache version or unable to load cache. So force rebuild.
+				forceRebuild = true;
+			}
+		}
+
+		if (!mIncrementalCacheDirectory.exists() && !mIncrementalCacheDirectory.mkdirs()) {
+			throw new SpoonException("unable to create cache directory");
+		}
+
+		if (!mClassFilesDir.exists() && !mClassFilesDir.mkdirs()) {
+			throw new SpoonException("unable to create class files directory");
+		}
+
+		if (forceRebuild) {
+			mChangesPresent = true;
+		} else {
+			// Load model from cache.
+			Factory oldFactory = loadFactory(mModelFile);
+
+			// Build model incrementally.
+			mRemovedSources = new HashSet<File>(CollectionUtils.subtract(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
+			mAddedSources = new HashSet<File>(CollectionUtils.subtract(mInputSources, mCacheInfo.inputSourcesMap.keySet()));
+			mCommonSources = new HashSet<File>(CollectionUtils.intersection(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
+
+			Set<File> incrementalSources = new HashSet<>(mAddedSources);
+			for (File e : mCommonSources) {
+				if (e.lastModified() >= mCacheInfo.lastBuildTime) {
+					incrementalSources.add(e);
+				}
+			}
+
+			List<CtType<?>> oldTypes = oldFactory.Type().getAll();
+
+			Set<CtType<?>> changedTypes = new HashSet<>();
+			for (CtType<?> type : oldTypes) {
+				File typeFile = type.getPosition().getFile();
+				if (incrementalSources.contains(typeFile)) {
+					changedTypes.add(type);
+				}
+			}
+
+			for (CtType<?> type : oldTypes) {
+				File typeFile = type.getPosition().getFile();
+				if (mRemovedSources.contains(typeFile)) {
+					type.delete();
+					continue;
+				}
+				for (CtType<?> changedType : changedTypes) {
+					// We should also rebuild types, that refer to changed types.
+					if (type.getReferencedTypes().contains(changedType.getReference())) {
+						incrementalSources.add(typeFile);
+						type.delete();
+					}
+				}
+			}
+
+			try {
+				mSourceClasspath.add(mClassFilesDir.getCanonicalPath());
+			} catch (IOException e2) {
+				throw new SpoonException("unable to locate class files dir: " + mClassFilesDir);
+			}
+
+			Collection<CtPackage> oldPackages = oldFactory.Package().getAll();
+			for (CtPackage pkg : oldPackages) {
+				if (pkg.getTypes().isEmpty() && pkg.getPackages().isEmpty() && !pkg.isUnnamedPackage()) {
+					pkg.delete();
+				}
+			}
+
+			this.factory = oldFactory;
+
+			incrementalSources.forEach(f -> addInputResource(f.getPath()));
+			mChangesPresent = !mRemovedSources.isEmpty() || !mAddedSources.isEmpty() || !incrementalSources.isEmpty();
+			setBinaryOutputDirectory(mClassFilesDir);
+
+			this.modelBuilder = this.createCompiler();
+		}
+	}
+
 	@Override
 	public CtModel buildModel() {
 		long tstart = System.currentTimeMillis();
+		if (this.getEnvironment().isIncremental()) {
+			this.prepareIncrementalBuild();
+		}
 		modelBuilder.build();
+		if (this.getEnvironment().isIncremental()) {
+			this.saveCache();
+		}
 		getEnvironment().debugMessage("model built in " + (System.currentTimeMillis() - tstart));
 		return modelBuilder.getFactory().getModel();
 	}
@@ -813,5 +1057,9 @@ public class Launcher implements SpoonAPI {
 		} catch (ClassCastException e) {
 			throw new SpoonException("parseClass only considers classes (and not interfaces and enums). Please consider using a Launcher object for more advanced usage.");
 		}
+	}
+
+	public boolean changesPresent() {
+		return this.mChangesPresent;
 	}
 }
