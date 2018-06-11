@@ -309,8 +309,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20.1</version>
+        <version>2.21.0</version>
         <configuration>
+          <!-- Apparently there's an issue with fork mode on version 2.21.0 of Surefire --> 
+          <forkCount>0</forkCount>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
           <useSystemClassLoader>true</useSystemClassLoader>
