@@ -29,6 +29,10 @@ import spoon.support.UnsettableProperty;
  * <pre>
  *     // defines a local variable x
  *     int x = 0;
+ *
+ *     // this is now authorized with Java 10.
+ *     // in that case the variable is inferred.
+ *     var x = 0;
  * </pre>
  *
  * @param <T>
@@ -57,5 +61,15 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 	@Override
 	@UnsettableProperty
 	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
+
+	/**
+	 * Return true if this variable's type is not explicitely defined in the source code, but was using the `var` keyword of Java 10.
+	 */
+	boolean isInferred();
+
+	/**
+	 * Set true if the variable must be inferred.
+	 */
+	CtLocalVariable<T> setInferred(boolean inferred);
 
 }

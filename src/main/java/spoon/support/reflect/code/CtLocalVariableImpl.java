@@ -55,6 +55,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
+	@MetamodelPropertyField(role = CtRole.INFERRED_VARIABLE)
+	private boolean inferred;
+
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtLocalVariable(this);
@@ -177,6 +180,17 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
 		return (C) this;
+	}
+
+	@Override
+	public boolean isInferred() {
+		return this.inferred;
+	}
+
+	@Override
+	public CtLocalVariable<T> setInferred(boolean inferred) {
+		this.inferred = inferred;
+		return this;
 	}
 
 	@Override
