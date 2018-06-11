@@ -1,5 +1,7 @@
 package spoon.test.variable;
 
+import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -7,8 +9,12 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,5 +57,27 @@ public class InferredVariableTest {
 
         assertFalse(localVariables.get(7).isInferred());
         assertEquals(typeFactory.INTEGER_PRIMITIVE, localVariables.get(7).getType());
+    }
+
+    @Test
+    public void testInferredVariableArePrintedWithVar() throws IOException {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(10);
+        launcher.addInputResource("./src/test/resources/spoon/test/var/Main.java");
+
+        File outputDir = Files.createTempDir();
+        launcher.setSourceOutputDirectory(outputDir);
+
+        launcher.run();
+
+        File outputFile = new File(outputDir, "fr/inria/sandbox/Main.java");
+        assertTrue(outputFile.exists());
+
+        String fileContent = StringUtils.join(Files.readLines(outputFile, Charset.defaultCharset()));
+
+        assertTrue(fileContent.contains("var mySubstring = \"bla\";"));
+        assertTrue(fileContent.contains("var myFile = new java.io.FileReader(new java.io.File(\"/tmp/myfile\")"));
+        assertTrue(fileContent.contains("var myboolean = true;"));
+        assertTrue(fileContent.contains("for (var i = 0;"));
     }
 }
