@@ -5,15 +5,22 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
+import spoon.test.enums.testclasses.NestedEnums;
+import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EnumsTest {
 
@@ -70,4 +77,33 @@ public class EnumsTest {
 		assertTrue(burritos.getAllMethods().contains(name));
 	}
 
+	@Test
+	public void testNestedPrivateEnumValues() throws Exception {
+		// contract: enum values have correct modifiers
+		CtType<?> ctClass = ModelUtils.buildClass(NestedEnums.class);
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("PrivateENUM");
+			assertEquals(asSet(ModifierKind.PRIVATE), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.PRIVATE, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+		}
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("PublicENUM");
+			assertEquals(asSet(ModifierKind.PUBLIC), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.PUBLIC, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+		}
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("ProtectedENUM");
+			assertEquals(asSet(ModifierKind.PROTECTED), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.PROTECTED, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+		}
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("PackageProtectedENUM");
+			assertEquals(asSet(), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+		}
+	}
+	
+	private <T> Set<T> asSet(T... values) {
+		return new HashSet<>(Arrays.asList(values));
+	}
 }

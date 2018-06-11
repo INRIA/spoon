@@ -20,7 +20,6 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
@@ -30,7 +29,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
-import spoon.test.secondaryclasses.AnonymousClass.I;
+import spoon.test.secondaryclasses.testclasses.AnonymousClass.I;
 import spoon.test.secondaryclasses.testclasses.Pozole;
 
 public class ClassesTest {
@@ -59,7 +58,7 @@ public class ClassesTest {
 
 	@Test
 	public void testAnonymousClass() throws Exception {
-		CtClass<?> type = build("spoon.test.secondaryclasses", "AnonymousClass");
+		CtClass<?> type = build("spoon.test.secondaryclasses.testclasses", "AnonymousClass");
 		assertEquals("AnonymousClass", type.getSimpleName());
 
 		CtNewClass<?> x = type.getElements(
@@ -81,8 +80,8 @@ public class ClassesTest {
 		assertEquals("1",anonymousClass0.getSimpleName());
 		assertEquals("2",anonymousClass1.getSimpleName());
 
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1",anonymousClass0.getQualifiedName());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2",anonymousClass1.getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.testclasses.AnonymousClass$1",anonymousClass0.getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.testclasses.AnonymousClass$2",anonymousClass1.getQualifiedName());
 
 		// ActionListener is not in the Spoon path but we can build a shadow element.
 		assertNull(x.getType().getDeclaration());
@@ -93,7 +92,7 @@ public class ClassesTest {
 
 		assertNotNull(y.getType().getDeclaration());
 
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2()", y.getExecutable().toString());
+		assertEquals("spoon.test.secondaryclasses.testclasses.AnonymousClass$2()", y.getExecutable().toString());
 
 		assertEquals(type.getFactory().Type().createReference(I.class), y.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0])[0]);
 
@@ -101,7 +100,7 @@ public class ClassesTest {
 
 	@Test
 	public void testIsAnonymousMethodInCtClass() throws Exception {
-		CtClass<?> type = build("spoon.test.secondaryclasses", "AnonymousClass");
+		CtClass<?> type = build("spoon.test.secondaryclasses.testclasses", "AnonymousClass");
 
 		TreeSet<CtClass<?>> ts = new TreeSet<CtClass<?>>(new CtLineElementComparator());
 		ts.addAll(type.getElements(new AbstractFilter<CtClass<?>>(CtClass.class) {
@@ -118,8 +117,8 @@ public class ClassesTest {
 		assertEquals(2, anonymousClass.size());
 		assertEquals(2, ts.size());
 
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$1", anonymousClass.get(0).getQualifiedName());
-		assertEquals("spoon.test.secondaryclasses.AnonymousClass$2", anonymousClass.get(1).getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.testclasses.AnonymousClass$1", anonymousClass.get(0).getQualifiedName());
+		assertEquals("spoon.test.secondaryclasses.testclasses.AnonymousClass$2", anonymousClass.get(1).getQualifiedName());
 	}
 
 	@Test

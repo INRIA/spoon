@@ -65,7 +65,11 @@ public class LineFilter extends TypeFilter<CtStatement> {
 		}
 		if (parent instanceof CtLoop) {
 			CtLoop loop = (CtLoop) parent;
-			return loop.getBody().equals(element);
+			CtStatement body = loop.getBody();
+			if (body == null) {
+				return false;
+			}
+			return body.equals(element);
 		}
 		return false;
 	}

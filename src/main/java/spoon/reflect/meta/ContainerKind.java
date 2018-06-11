@@ -17,27 +17,28 @@
 package spoon.reflect.meta;
 
 /**
- * Defines kind of container, which is used in an attribute of Spoon model
+ * Represents a kind of data, which is used in an field or in a role in the Spoon metamodel.
+ * See also {@link spoon.metamodel.MetamodelProperty}.
  */
 public enum ContainerKind {
 	/**
-	 * it is a single value field
-	 * Example: CtClassImpl.simpleName
+	 * It is a single value field
+	 * Example: {@link spoon.support.reflect.declaration.CtClassImpl#simpleName}
 	 */
 	SINGLE,
 	/**
 	 * It is a list of values
-	 * Example: CtClassImpl.typeMembers
+	 * Example: {@link spoon.support.reflect.declaration.CtClassImpl#typeMembers}
 	 */
 	LIST,
 	/**
 	 * It is a set of values
-	 * Example: CtPackageImpl.types
+	 * Example: {@link spoon.support.reflect.declaration.CtPackageImpl#types}
 	 */
 	SET,
 	/**
 	 * It is a map&lt;String, T&gt; of values
-	 * Example: CtAnnotationImpl.elementValues
+	 * Example: {@link spoon.support.reflect.declaration.CtAnnotationImpl#elementValues}
 	 */
 	MAP;
 }

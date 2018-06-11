@@ -38,6 +38,7 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -47,9 +48,12 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -143,7 +147,7 @@ class JDTCommentBuilder {
 		String commentContent = getCommentContent(start, end);
 
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
-		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end, lineSeparatorPositions);
+		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end - 1, lineSeparatorPositions);
 
 		// create the Spoon comment element
 		comment = parseTags(comment, commentContent);
@@ -218,7 +222,7 @@ class JDTCommentBuilder {
 		int smallDistance = Integer.MAX_VALUE;
 
 		for (CtElement element : elements) {
-			if (element.getPosition() == null) {
+			if (element.getPosition().isValidPosition() == false) {
 				continue;
 			}
 			if (element.isImplicit()) {
@@ -236,7 +240,7 @@ class JDTCommentBuilder {
 			int elementEndLine = element.getPosition().getEndLine();
 			int commentLine = comment.getPosition().getLine();
 
-			if (distance < smallDistance && (!isAfter || elementEndLine == commentLine)) {
+			if (distance < smallDistance && (!isAfter || elementEndLine == commentLine || element instanceof CtType)) {
 				best = element;
 				smallDistance = distance;
 			}
@@ -287,6 +291,12 @@ class JDTCommentBuilder {
 			}
 
 			@Override
+			public void scanCtReference(CtReference reference) {
+				reference.addComment(comment);
+				super.scanCtReference(reference);
+			}
+
+			@Override
 			public <R> void visitCtStatementList(CtStatementList e) {
 				addCommentToNear(comment, new ArrayList<CtElement>(e.getStatements()));
 				try {
@@ -325,7 +335,8 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtClass(CtClass<T> e) {
-				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
+				//all the comments located before the body brackets belongs to class
+				if (comment.getPosition().getSourceEnd() < ((BodyHolderSourcePosition) e.getPosition()).getBodyStart()) {
 					e.addComment(comment);
 					return;
 				}
@@ -362,7 +373,7 @@ class JDTCommentBuilder {
 			}
 
 			@Override
-			public <T> void visitCtField(CtField<T> e) {
+			public <T> void scanCtVariable(CtVariable<T> e) {
 				e.addComment(comment);
 			}
 
@@ -417,8 +428,8 @@ class JDTCommentBuilder {
 					}
 				}
 				if (e.getElseStatement() != null) {
-					SourcePosition thenPosition = e.getThenStatement().getPosition() == null ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
-					SourcePosition elsePosition = e.getElseStatement().getPosition() == null ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
+					SourcePosition thenPosition = e.getThenStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
+					SourcePosition elsePosition = e.getElseStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
 					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
 						e.getElseStatement().addComment(comment);
 					}
@@ -432,7 +443,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public void scanCtStatement(CtStatement s) {
-				if (!(s instanceof CtStatementList || s instanceof CtSwitch)) {
+				if (!(s instanceof CtStatementList || s instanceof CtSwitch || s instanceof CtVariable)) {
 					s.addComment(comment);
 				}
 			}
@@ -461,7 +472,6 @@ class JDTCommentBuilder {
 			public void visitCtCatch(CtCatch e) {
 				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
 					e.addComment(comment);
-					return;
 				}
 			}
 
@@ -496,7 +506,7 @@ class JDTCommentBuilder {
 			}
 
 			private boolean isCommentBetweenElementPosition(CtElement element) {
-				return (element.getPosition() != null
+				return (element.getPosition().isValidPosition()
 						&& element.getPosition().getSourceStart() <= this.start
 						&& element.getPosition().getSourceEnd() >= this.end);
 			}
@@ -510,7 +520,7 @@ class JDTCommentBuilder {
 					return;
 				}
 				CtElement body = getBody(element);
-				if (body != null && body.getPosition() == null) {
+				if (body != null && body.getPosition().isValidPosition() == false) {
 					body = null;
 				}
 
@@ -580,7 +590,7 @@ class JDTCommentBuilder {
 			} else {
 				//it is potentially multiline comment, which starts with "/*" or "/**"
 				//check end first
-				if (line.endsWith("*/")) {
+				if (line.endsWith("*/") && line.length() > 3) {
 					//it is last line
 					line = endCommentRE.matcher(line).replaceFirst("");
 					isLastLine = true;

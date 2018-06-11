@@ -10,6 +10,10 @@ public class Main {
 	public void m(@Bound(max = 8) int a) {
 	}
 
+	// test default value
+	public void nn(@Bound int param2) {
+	}
+
 	@AnnotParamTypes(
 			integer = 42, integers = { 42 },
 			string = "Hello World!", strings = { "Hello", "World" },

@@ -19,10 +19,13 @@ package spoon.reflect.visitor;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.SpoonException;
+import spoon.metamodel.MMMethod;
+import spoon.metamodel.MMMethodKind;
+import spoon.metamodel.ConceptKind;
+import spoon.metamodel.MetamodelConcept;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -35,13 +38,8 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
-import spoon.test.metamodel.MMMethod;
-import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.MMType;
-import spoon.test.metamodel.MMTypeKind;
-import spoon.test.metamodel.SpoonMetaModel;
 
-import java.io.File;
+import java.rmi.ServerError;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +126,7 @@ public class CtScannerTest {
 		List<String> problems = new ArrayList<>();
 		Set<String> ignoredInvocations = new HashSet(Arrays.asList("scan", "enter", "exit"));
 		
-		SpoonMetaModel metaModel = new SpoonMetaModel(new File("./src/main/java"));
+		Metamodel metaModel = Metamodel.getInstance();
 		
 		//collect all scanner visit methods, to check if all were checked
 		Map<String, CtMethod<?>> scannerVisitMethodsByName = new HashMap<>();
@@ -140,28 +138,28 @@ public class CtScannerTest {
 
 		class Counter  { int nbChecks = 0; }
 		Counter c = new Counter();
-		for (MMType leafMmType : metaModel.getMMTypes()) {
+		for (MetamodelConcept leafConcept : metaModel.getConcepts()) {
 
 			// we only consider leaf, actual classes of the metamodel (eg CtInvocation) and not abstract ones (eg CtModifiable)
-			if (leafMmType.getKind() != MMTypeKind.LEAF) {
+			if (leafConcept.getKind() != ConceptKind.LEAF) {
 				continue;
 			}
 
-			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafMmType.getName());
-			assertNotNull("CtScanner#" + "visit"+leafMmType.getName() + "(...) not found", visitMethod);
+			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafConcept.getName());
+			assertNotNull("CtScanner#" + "visit"+leafConcept.getName() + "(...) not found", visitMethod);
 			Set<String> calledMethods = new HashSet<>();
 			Set<String> checkedMethods = new HashSet<>();
 
 			// go over the roles and the corresponding fields of this type
-			leafMmType.getRole2field().forEach((role, mmField) -> {
+			leafConcept.getRoleToProperty().forEach((role, mmField) -> {
 
-				if (mmField.isDerived()) {
-					//ignore derived fields
+				if (mmField.isDerived() || mmField.isUnsettable()) {
+					//ignore derived or unsettable fields
 					return; // return of the lambda
 				}
 
 				// ignore fields, which doesn't return CtElement
-				if (mmField.getItemValueType().isSubtypeOf(ctElementRef) == false) {
+				if (mmField.getTypeofItems().isSubtypeOf(ctElementRef) == false) {
 					return; // return of the lambda
 				}
 
@@ -181,7 +179,8 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && leafMmType.getModelInterface().isSubtypeOf(ctRefRef)) {
+				if(getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)
+						) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}
@@ -218,7 +217,7 @@ public class CtScannerTest {
 		if(problems.size()>0) {
 			fail(String.join("\n", problems));
 		}
-		assertTrue("not enough checks", c.nbChecks >= 200);
+		assertTrue("not enough checks " + c.nbChecks, c.nbChecks >= 200);
 	}
 
 	@Test

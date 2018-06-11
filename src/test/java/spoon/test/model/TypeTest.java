@@ -52,7 +52,7 @@ public class TypeTest {
 
 	@Test
 	public void superclassTest() throws Exception {
-		CtType<?> type = build("spoon.test.model", "InterfaceSuperclass");
+		CtType<?> type = build("spoon.test.model.testclasses", "InterfaceSuperclass");
 
 		Set<CtTypeReference<?>> interfaces = type.getSuperInterfaces();
 		assertEquals(1, interfaces.size());

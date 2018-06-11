@@ -105,7 +105,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
 		spoon.reflect.reference.CtArrayTypeReference<T> aCtArrayTypeReference = reference.getFactory().Core().createArrayTypeReference();
-		aCtArrayTypeReference.setComments(this.cloneHelper.clone(reference.getComments()));
 		aCtArrayTypeReference.setPackage(this.cloneHelper.clone(reference.getPackage()));
 		aCtArrayTypeReference.setDeclaringType(this.cloneHelper.clone(reference.getDeclaringType()));
 		aCtArrayTypeReference.setComponentType(this.cloneHelper.clone(reference.getComponentType()));
@@ -483,7 +482,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtCatchVariableReference(final spoon.reflect.reference.CtCatchVariableReference<T> reference) {
 		spoon.reflect.reference.CtCatchVariableReference<T> aCtCatchVariableReference = reference.getFactory().Core().createCatchVariableReference();
-		aCtCatchVariableReference.setComments(this.cloneHelper.clone(reference.getComments()));
 		aCtCatchVariableReference.setType(this.cloneHelper.clone(reference.getType()));
 		aCtCatchVariableReference.setAnnotations(this.cloneHelper.clone(reference.getAnnotations()));
 		this.builder.copy(reference, aCtCatchVariableReference);
@@ -571,7 +569,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtLambda.setType(this.cloneHelper.clone(lambda.getType()));
 		aCtLambda.setTypeCasts(this.cloneHelper.clone(lambda.getTypeCasts()));
 		aCtLambda.setParameters(this.cloneHelper.clone(lambda.getParameters()));
-		aCtLambda.setThrownTypes(this.cloneHelper.clone(lambda.getThrownTypes()));
 		aCtLambda.setBody(this.cloneHelper.clone(lambda.getBody()));
 		aCtLambda.setExpression(this.cloneHelper.clone(lambda.getExpression()));
 		aCtLambda.setComments(this.cloneHelper.clone(lambda.getComments()));

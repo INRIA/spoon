@@ -220,7 +220,7 @@ public class CompilationTest {
 							public CompilationUnit[] getCompilationUnits() {
 								List<CompilationUnit> units = new ArrayList<>();
 								for (CompilationUnit u : super.getCompilationUnits()) {
-									if (new String(u.getFileName()).contains("/reference/")) {
+									if (new String(u.getFileName()).replace('\\', '/').contains("/reference/")) {
 										units.add(u);
 									}
 								}

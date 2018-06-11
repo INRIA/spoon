@@ -1,15 +1,13 @@
 package spoon.test;
 
-import spoon.Launcher;
-import spoon.SpoonAPI;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
-import spoon.test.metamodel.SpoonMetaModel;
+import spoon.support.UnsettableProperty;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ public class SpoonTestHelpers {
 	}
 
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		return new SpoonMetaModel(new File("src/main/java")).getAllInstantiableMetamodelInterfaces();
+		return Metamodel.getInstance().getAllInstantiableMetamodelInterfaces();
 	}
 
 	/**
@@ -87,7 +85,10 @@ public class SpoonTestHelpers {
 				//parent is a special kind of setter, which does not influence model properties of element, but link to parent element.
 				continue;
 			}
-			if (!m.getSimpleName().startsWith("set") && !m.getSimpleName().startsWith("set")) {
+			if (! (m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add"))) {
+				continue;
+			}
+			if (m.hasAnnotation(UnsettableProperty.class)) {
 				continue;
 			}
 			if (m.getParameters().size()!=1) {

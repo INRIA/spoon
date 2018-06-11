@@ -3,7 +3,6 @@ package spoon;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,12 +15,13 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(7, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(10, launcher.getEnvironment().getSourceClasspath().length);
 		// 52 because of the sub folders of src/main/java
-		assertEquals(52, launcher.getModelBuilder().getInputSources().size());
+		assertEquals(53, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(17, launcher.getEnvironment().getSourceClasspath().length);
 		// 236 because of the sub folders of src/main/java and src/test/java
 		assertTrue("size: "+launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
 

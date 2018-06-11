@@ -30,25 +30,36 @@ import java.util.Collection;
  */
 public class EqualsVisitor extends CtBiScannerDefault {
 	public static boolean equals(CtElement element, CtElement other) {
-		EqualsVisitor equalsVisitor = new EqualsVisitor();
-		equalsVisitor.biScan(element, other);
-
-		// double negation is always hard to understand, but this is legacy :-)
-		return !equalsVisitor.isNotEqual;
+		return new EqualsVisitor().checkEquals(element, other);
 	}
 
-	private final EqualsChecker checker = new EqualsChecker();
+	protected final EqualsChecker checker;
+
+	private CtRole lastRole = null;
+
+	public EqualsVisitor() {
+		this(new EqualsChecker());
+	}
+
+	public EqualsVisitor(EqualsChecker checker) {
+		this.checker = checker;
+	}
 
 	@Override
 	protected void enter(CtElement e) {
 		super.enter(e);
-		checker.setOther(stack.peek());
-		checker.scan(e);
-		if (checker.isNotEqual()) {
-			fail();
+		CtElement other = stack.peek();
+		checker.setOther(other);
+		try {
+			checker.scan(e);
+		} catch (NotEqualException ex) {
+			fail(checker.getNotEqualRole() == null ? lastRole : checker.getNotEqualRole(), e, other);
 		}
 	}
 	protected boolean isNotEqual = false;
+	protected CtRole notEqualRole;
+	protected Object notEqualElement;
+	protected Object notEqualOther;
 
 	@Override
 	protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
@@ -58,15 +69,15 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 		if (elements == null) {
 			if (others != null) {
-				fail();
+				fail(role, elements, others);
 			}
 			return;
 		} else if (others == null) {
-			fail();
+			fail(role, elements, others);
 			return;
 		}
 		if ((elements.size()) != (others.size())) {
-			fail();
+			fail(role, elements, others);
 			return;
 		}
 		super.biScan(role, elements, others);
@@ -74,17 +85,22 @@ public class EqualsVisitor extends CtBiScannerDefault {
 
 	@Override
 	public void biScan(CtElement element, CtElement other) {
+		biScan(null, element, other);
+	}
+
+	@Override
+	public void biScan(CtRole role, CtElement element, CtElement other) {
 		if (isNotEqual) {
 			return;
 		}
 		if (element == null) {
 			if (other != null) {
-				fail();
+				fail(role, element, other);
 				return;
 			}
 			return;
 		} else if (other == null) {
-			fail();
+			fail(role, element, other);
 			return;
 		}
 		if (element == other) {
@@ -92,18 +108,62 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 
 		try {
+			lastRole = role;
 			super.biScan(element, other);
 		} catch (java.lang.ClassCastException e) {
-			fail();
+			fail(role, element, other);
+		} finally {
+			lastRole = null;
 		}
 
 		return;
 	}
 
-	private boolean fail() {
+	protected boolean fail(CtRole role, Object element, Object other) {
 		isNotEqual = true;
+		notEqualRole = role;
+		notEqualElement = element;
+		notEqualOther = other;
 		return true;
 	}
 
-}
+	/**
+	 * @param element first to be compared element
+	 * @param other second to be compared element
+	 * @return true if `element` and `other` are equal. If false then see
+	 * {@link #getNotEqualElement()}, {@link #getNotEqualOther()} and {@link #getNotEqualRole()} for details
+	 */
+	public boolean checkEquals(CtElement element, CtElement other) {
+		biScan(element, other);
+		return !isNotEqual;
+	}
 
+	/**
+	 * @return true if {@link #checkEquals(CtElement, CtElement)} are equal. If false then see
+	 * {@link #getNotEqualElement()}, {@link #getNotEqualOther()} and {@link #getNotEqualRole()} for details
+	 */
+	public boolean isEqual() {
+		return !isNotEqual;
+	}
+
+	/**
+	 * @return role on which the element and other element were not equal
+	 */
+	public CtRole getNotEqualRole() {
+		return notEqualRole;
+	}
+
+	/**
+	 * @return element or collection which was not equal
+	 */
+	public Object getNotEqualElement() {
+		return notEqualElement;
+	}
+
+	/**
+	 * @return other element or collection which was not equal
+	 */
+	public Object getNotEqualOther() {
+		return notEqualOther;
+	}
+}

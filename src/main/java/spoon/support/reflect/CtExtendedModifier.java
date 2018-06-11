@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect;
 
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.ModifierKind;
 
 import java.io.Serializable;
@@ -27,6 +28,7 @@ import java.io.Serializable;
 public class CtExtendedModifier implements Serializable {
 	private boolean implicit;
 	private ModifierKind kind;
+	private SourcePosition position;
 
 	public CtExtendedModifier(ModifierKind kind) {
 		this.kind = kind;
@@ -51,6 +53,17 @@ public class CtExtendedModifier implements Serializable {
 
 	public void setKind(ModifierKind kind) {
 		this.kind = kind;
+	}
+
+	public SourcePosition getPosition() {
+		if (position == null) {
+			return SourcePosition.NOPOSITION;
+		}
+		return position;
+	}
+
+	public void setPosition(SourcePosition position) {
+		this.position = position;
 	}
 
 	@Override

@@ -40,6 +40,7 @@ public class DeclarationSourcePositionImpl extends SourcePositionImpl
 		super(compilationUnit,
 				sourceStart, sourceEnd,
 				lineSeparatorPositions);
+		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
 		this.modifierSourceStart = modifierSourceStart;
 		this.declarationSourceStart = declarationSourceStart;
 		this.declarationSourceEnd = declarationSourceEnd;
@@ -86,4 +87,12 @@ public class DeclarationSourcePositionImpl extends SourcePositionImpl
 	public int getEndLine() {
 		return searchLineNumber(declarationSourceEnd);
 	}
+
+	@Override
+	public String getSourceDetails() {
+		return super.getSourceDetails()
+				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
+				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
+	}
+
 }
