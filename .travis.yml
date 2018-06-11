@@ -4,6 +4,8 @@ dist: trusty
 
 group: edge
 
+jdk: openjdk8
+
 env:
   - SCRIPT=travis-jdk9.sh
   - SCRIPT=travis-jdk8.sh
