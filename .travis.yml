@@ -22,5 +22,8 @@ cache:
   directories:
   - $HOME/.m2
 
+before_install:
+  - wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
+
 before_cache:
   - rm -rf $HOME/.m2/fr/inria/ # delete all to be sure we always get last snapshot of spoon
