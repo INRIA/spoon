@@ -5,7 +5,6 @@
 
 source /opt/jdk_switcher/jdk_switcher.sh
 
-export JAVA_HOME=$HOME/openjdk8
-$TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk10 --target $JAVA_HOME
+./install-jdk.sh -F 10 -L BCL
 
 jdk_switcher use openjdk10 && mvn -Djava.src.version=1.10 test
