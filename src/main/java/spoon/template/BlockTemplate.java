@@ -48,10 +48,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 
 	public CtBlock<?> apply(CtType<?> targetType) {
 		CtClass<? extends BlockTemplate> c = Substitution.getTemplateCtClass(targetType, this);
-		CtBlock<?> result = Substitution.substitute(targetType, this, getBlock(c));
-		// removing it from its parent
-		result.delete();
-		return result;
+		return TemplateBuilder.createPattern(getBlock(c), this).setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtBlock.class);
 	}
 
 	public Void S() {

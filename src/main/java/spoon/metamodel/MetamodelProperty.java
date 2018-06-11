@@ -32,6 +32,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.meta.ContainerKind;
+import spoon.reflect.meta.RoleHandler;
+import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -72,6 +74,8 @@ public class MetamodelProperty {
 	 */
 	private CtTypeReference<?> itemValueType;
 
+	private final RoleHandler roleHandler;
+
 	private Boolean derived;
 	private Boolean unsettable;
 
@@ -100,6 +104,7 @@ public class MetamodelProperty {
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;
+		roleHandler = RoleHandlerHelper.getRoleHandler((Class) ownerConcept.getMetamodelInterface().getActualClass(), role);
 	}
 
 	void addMethod(CtMethod<?> method) {
@@ -453,6 +458,10 @@ public class MetamodelProperty {
 	 */
 	public boolean isDerived() {
 		if (derived == null) {
+			if (getOwner().getKind() == ConceptKind.LEAF && isUnsettable()) {
+				derived = Boolean.TRUE;
+				return derived;
+			}
 			// by default it's derived
 			derived = Boolean.FALSE;
 
@@ -567,4 +576,26 @@ public class MetamodelProperty {
 		return ContainerKind.SINGLE;
 	}
 
+	/**
+	 * @return {@link RoleHandler} which can access runtime data of this Property
+	 */
+	public RoleHandler getRoleHandler() {
+		return this.roleHandler;
+	}
+
+	/**
+	 * @param element an instance whose attribute value is read
+	 * @return a value of attribute defined by this {@link MetamodelProperty} from the provided `element`
+	 */
+	public <T, U> U getValue(T element) {
+		return roleHandler.getValue(element);
+	}
+
+	/**
+	 * @param element an instance whose attribute value is set
+	 * @param value to be set value of attribute defined by this {@link MetamodelProperty} on the provided `element`
+	 */
+	public <T, U> void setValue(T element, U value) {
+		roleHandler.setValue(element, value);
+	}
 }

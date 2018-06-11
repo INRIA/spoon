@@ -14,27 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.template;
+package spoon.support;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.template.TemplateMatcher;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Default implementation for the {@link spoon.template.Parameter#match()}
- *
- * @author noguera
- *
+ * Tells that a type has recently been introduced and may be subject to non-backward compatible changes without deprecation.
+ * The annotation is expected to be removed at the latest one year after its introduction (you can do a "git blame" to see when it appeared).
  */
-public class DefaultParameterMatcher implements ParameterMatcher {
-
-	/**
-	 * Default implementation.
-	 *
-	 * @return always <code>true</code>.
-	 */
-	public boolean match(TemplateMatcher templateMatcher, CtElement template,
-			CtElement toMatch) {
-		return true;
-	}
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE })
+public @interface Experimental {
 }

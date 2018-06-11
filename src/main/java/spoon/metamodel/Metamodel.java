@@ -264,6 +264,18 @@ public class Metamodel {
 	}
 
 	/**
+	 * @param clazz a {@link Class} of Spoon model
+	 * @return {@link MetamodelConcept} which describes the `clazz`
+	 */
+	public MetamodelConcept getConcept(Class<? extends CtElement> clazz) {
+		MetamodelConcept mc = nameToConcept.get(getConceptName(clazz));
+		if (mc == null) {
+			throw new SpoonException("There is no Spoon metamodel concept for class " + clazz.getName());
+		}
+		return mc;
+	}
+
+	/**
 	 * @return all {@link MetamodelConcept}s of spoon meta model
 	 */
 	public Collection<MetamodelConcept> getConcepts() {
@@ -289,13 +301,23 @@ public class Metamodel {
 	 * @return name of {@link MetamodelConcept}, which represents Spoon model {@link CtType}
 	 */
 	public static String getConceptName(CtType<?> type) {
-		String name = type.getSimpleName();
-		if (name.endsWith(CLASS_SUFFIX)) {
-			name = name.substring(0, name.length() - CLASS_SUFFIX.length());
-		}
-		return name;
+		return getConceptName(type.getSimpleName());
 	}
 
+	public static String getConceptName(Class<? extends CtElement> conceptClass) {
+		return getConceptName(conceptClass.getSimpleName());
+	}
+
+	/**
+	 * @param simpleName a spoon model class or interface, whose concept name has to be returned
+	 * @return name of {@link MetamodelConcept}, which represents Spoon model {@link CtType}
+	 */
+	private static String getConceptName(String simpleName) {
+		if (simpleName.endsWith(CLASS_SUFFIX)) {
+			simpleName = simpleName.substring(0, simpleName.length() - CLASS_SUFFIX.length());
+		}
+		return simpleName;
+	}
 
 	/**
 	 * @param iface the interface of spoon model element

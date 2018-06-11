@@ -26,16 +26,22 @@ public enum ContainerKind {
 	 * Example: {@link spoon.support.reflect.declaration.CtClassImpl#simpleName}
 	 */
 	SINGLE,
+
+
 	/**
 	 * It is a list of values
 	 * Example: {@link spoon.support.reflect.declaration.CtClassImpl#typeMembers}
 	 */
 	LIST,
+
+
 	/**
 	 * It is a set of values
 	 * Example: {@link spoon.support.reflect.declaration.CtPackageImpl#types}
 	 */
 	SET,
+
+
 	/**
 	 * It is a map&lt;String, T&gt; of values
 	 * Example: {@link spoon.support.reflect.declaration.CtAnnotationImpl#elementValues}

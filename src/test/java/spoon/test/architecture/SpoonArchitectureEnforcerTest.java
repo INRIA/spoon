@@ -5,6 +5,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.metamodel.Metamodel;
+import spoon.pattern.PatternBuilder;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
@@ -18,8 +19,10 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -233,6 +236,28 @@ public class SpoonArchitectureEnforcerTest {
 				return "junit.framework.TestCase".equals(element.getQualifiedName());
 			}
 		}).size());
+
+		// contract: all public methods of those classes are properly tested in a JUnit test
+//		List<String> l = new ArrayList<>();
+//		l.add("spoon.pattern.PatternBuilder");
+//		l.add("spoon.pattern.Pattern");
+//		List<String> errorsMethods = new ArrayList<>();
+//		for (String klass : l) {
+//			CtType<?> ctType = spoon.getFactory().Type().get(Class.forName(klass));
+//			for (CtMethod m : ctType.getMethods()) {
+//				if (!m.hasModifier(ModifierKind.PUBLIC)) continue;
+//
+//				if (spoon.getModel().getElements(new Filter<CtExecutableReference>() {
+//					@Override
+//					public boolean matches(CtExecutableReference element) {
+//						return element.getExecutableDeclaration() == m;
+//					}
+//				}).size() == 0) {
+//					errorsMethods.add(klass+"#"+m.getSimpleName());
+//				}
+//			}
+//		}
+//		assertTrue("untested public methods: "+errorsMethods.toString(), errorsMethods.size()==0);
 	}
 
 	@Test
@@ -311,6 +336,11 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.experimental");
 		officialPackages.add("spoon.legacy");
 		officialPackages.add("spoon.metamodel");
+		officialPackages.add("spoon.pattern");
+		officialPackages.add("spoon.pattern.internal");
+		officialPackages.add("spoon.pattern.internal.matcher");
+		officialPackages.add("spoon.pattern.internal.node");
+		officialPackages.add("spoon.pattern.internal.parameter");
 		officialPackages.add("spoon.processing");
 		officialPackages.add("spoon.refactoring");
 		officialPackages.add("spoon.reflect.annotations");

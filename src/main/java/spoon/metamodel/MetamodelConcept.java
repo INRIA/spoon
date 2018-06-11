@@ -19,6 +19,7 @@ package spoon.metamodel;
 import static spoon.metamodel.Metamodel.addUniqueObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -123,6 +124,23 @@ public class MetamodelConcept {
 	 */
 	public Map<CtRole, MetamodelProperty> getRoleToProperty() {
 		return Collections.unmodifiableMap(role2Property);
+	}
+
+	/**
+	 * @return Collection of all {@link MetamodelProperty} of current {@link MetamodelConcept}
+	 * Note: actually is the order undefined
+	 * TODO: return List in the same order like it is scanned by CtScanner
+	 */
+	public Collection<MetamodelProperty> getProperties() {
+		return Collections.unmodifiableCollection(role2Property.values());
+	}
+
+	/**
+	 * @param role a {@link CtRole}
+	 * @return {@link MetamodelProperty} for `role` of this concept
+	 */
+	public MetamodelProperty getProperty(CtRole role) {
+		return role2Property.get(role);
 	}
 
 	/**

@@ -159,8 +159,15 @@ entries:
           product: all
           version: all
 
-        - title: Matchers
+        - title: Matcher
           url: /matcher.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Pattern
+          url: /pattern.html
           audience: writers, designers
           platform: all
           product: all
@@ -187,8 +194,23 @@ entries:
             product: all
             version: all
 
-          - title: Templates
+    - title: Generating source code
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+
+      items:
+          - title: Template
             url: /template_definition.html
+            audience: writers, designers
+            platform: all
+            product: all
+            version: all
+
+      items:
+          - title: Generator
+            url: '/pattern.html#generator'
             audience: writers, designers
             platform: all
             product: all

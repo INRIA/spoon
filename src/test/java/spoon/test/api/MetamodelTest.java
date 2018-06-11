@@ -66,6 +66,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+
 public class MetamodelTest {
 	@Test
 	public void testGetAllMetamodelInterfacess() {
@@ -77,8 +78,6 @@ public class MetamodelTest {
 		interfaces.buildModel();
 		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet())));
 	}
-
-
 
 	@Test
 	public void testGetterSetterFroRole() {
@@ -192,6 +191,7 @@ public class MetamodelTest {
 		}
 
 	}
+
 	@Test
 	public void testMetamodelWithoutSources() {
 		//contract: metamodel based on spoon sources delivers is same like metamodel based on shadow classes
