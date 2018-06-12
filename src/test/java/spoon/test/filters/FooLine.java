@@ -18,6 +18,10 @@ class FooLine {
 			System.out.println(i);
 	}
 
+	void loopNoBody() {
+		for(int i = 0; i < 10; i++);
+	}
+
 	void ifBlock() {
 		if (3 < 4) {
 			System.out.println("if");

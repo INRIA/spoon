@@ -19,6 +19,7 @@ package spoon.reflect.code;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * This code element defines a local variable definition (within an executable
@@ -52,4 +53,9 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 
 	@Override
 	CtLocalVariable<T> clone();
+
+	@Override
+	@UnsettableProperty
+	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
+
 }

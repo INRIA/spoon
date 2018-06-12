@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * This interface represents the position of a program element in a source file.
+ * This class represents the position of a program element in a source file.
  */
 public class NoSourcePosition implements SourcePosition, Serializable {
 
@@ -40,33 +40,38 @@ public class NoSourcePosition implements SourcePosition, Serializable {
 	}
 
 	@Override
+	public boolean isValidPosition() {
+		return false;
+	}
+
+	@Override
 	public int getLine() {
-		return -1;
+		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 
 	@Override
 	public int getEndLine() {
-		return -1;
+		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 
 	@Override
 	public int getColumn() {
-		return -1;
+		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 
 	@Override
 	public int getEndColumn() {
-		return -1;
+		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 
 	@Override
 	public int getSourceEnd() {
-		return -1;
+		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 
 	@Override
 	public int getSourceStart() {
-		return -1;
+		throw new UnsupportedOperationException("PartialSourcePosition only contains a CompilationUnit");
 	}
 
 	@Override

@@ -16,7 +16,12 @@
  */
 package spoon.template;
 
+import java.util.ArrayList;
+
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Inserts all the methods, fields, constructors, initialization blocks (if
@@ -28,7 +33,18 @@ import spoon.reflect.declaration.CtType;
 public class ExtensionTemplate extends AbstractTemplate<CtType<?>> {
 	@Override
 	public CtType<?> apply(CtType<?> target) {
-		Substitution.insertAll(target, this);
+		CtClass<? extends Template<?>> templateType = Substitution.getTemplateCtClass(target.getFactory(), this);
+		CtType<?> generated = TemplateBuilder.createPattern(templateType, templateType, this)
+		.setAddGeneratedBy(isAddGeneratedBy())
+		.substituteSingle(target, CtType.class);
+		for (CtTypeReference<?> iface : new ArrayList<>(generated.getSuperInterfaces())) {
+			iface.delete();
+			target.addSuperInterface(iface);
+		}
+		for (CtTypeMember tm : new ArrayList<CtTypeMember>(generated.getTypeMembers())) {
+			tm.delete();
+			target.addTypeMember(tm);
+		}
 		return target;
 	}
 }

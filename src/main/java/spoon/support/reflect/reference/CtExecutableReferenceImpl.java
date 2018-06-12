@@ -166,7 +166,11 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutable<T> getExecutableDeclaration() {
-		return getCtExecutable(getDeclaringType().getTypeDeclaration());
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
+		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 
 	private CtExecutable<T> getCtExecutable(CtType<?> typeDecl) {
@@ -267,7 +271,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			if (!isSame) {
 				return false;
 			}
-			if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
+			CtTypeReference<?> declaringType = getDeclaringType();
+			if (declaringType == null || !declaringType.isSubtypeOf(executable.getDeclaringType())) {
 				return false;
 			}
 			return true;
@@ -329,8 +334,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public Method getActualMethod() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
 		method_loop:
-		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
+		for (Method m : declaringType.getActualClass().getDeclaredMethods()) {
 			if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
 				continue;
 			}
@@ -356,8 +365,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public Constructor<?> getActualConstructor() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
 		constructor_loop:
-		for (Constructor<?> c : getDeclaringType().getActualClass().getDeclaredConstructors()) {
+		for (Constructor<?> c : declaringType.getActualClass().getDeclaredConstructors()) {
 			if (c.getParameterTypes().length != parameters.size()) {
 				continue;
 			}
@@ -420,8 +433,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutableReference<?> getOverridingExecutable() {
-		CtTypeReference<?> st = getDeclaringType().getSuperclass();
 		CtTypeReference<Object> objectType = getFactory().Type().OBJECT;
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return getOverloadedExecutable(objectType, objectType);
+		}
+		CtTypeReference<?> st = declaringType.getSuperclass();
 		if (st == null) {
 			return getOverloadedExecutable(objectType, objectType);
 		}

@@ -45,6 +45,7 @@ import spoon.support.visitor.MethodTypingContext;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -314,19 +315,31 @@ public class TypeFactory extends SubFactory {
 		return array;
 	}
 
+	public <T> CtTypeReference<T> createReference(Class<T> type) {
+		return createReference(type, false);
+	}
+
 	/**
 	 * Creates a reference to a simple type
 	 */
-	public <T> CtTypeReference<T> createReference(Class<T> type) {
+	public <T> CtTypeReference<T> createReference(Class<T> type, boolean includingFormalTypeParameter) {
 		if (type == null) {
 			return null;
 		}
 		if (type.isArray()) {
 			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
-			array.setComponentType(createReference(type.getComponentType()));
+			array.setComponentType(createReference(type.getComponentType(), includingFormalTypeParameter));
 			return array;
 		}
-		return createReference(type.getName());
+		CtTypeReference typeReference = createReference(type.getName());
+
+		if (includingFormalTypeParameter) {
+			for (TypeVariable<Class<T>> generic : type.getTypeParameters()) {
+				typeReference.addActualTypeArgument(createTypeParameterReference(generic.getName()));
+			}
+		}
+
+		return typeReference;
 	}
 
 	/**

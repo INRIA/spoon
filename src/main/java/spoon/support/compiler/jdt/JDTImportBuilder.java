@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
@@ -108,7 +109,7 @@ class JDTImportBuilder {
 	}
 
 	private CtType getOrLoadClass(String className) {
-		CtType klass = this.factory.Class().get(className);
+		CtType klass = this.factory.Type().get(className);
 
 		if (klass == null) {
 			klass = this.factory.Interface().get(className);
@@ -118,7 +119,13 @@ class JDTImportBuilder {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 					klass = this.factory.Type().get(zeClass);
 					return klass;
-				} catch (ClassNotFoundException e) {
+				} catch (NoClassDefFoundError | ClassNotFoundException e) {
+					// in some cases we want to import an inner class.
+					if (!className.contains(CtType.INNERTTYPE_SEPARATOR) && className.contains(CtPackage.PACKAGE_SEPARATOR)) {
+						int lastIndexOfDot = className.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
+						String classNameWithInnerSep = className.substring(0, lastIndexOfDot) + CtType.INNERTTYPE_SEPARATOR + className.substring(lastIndexOfDot + 1);
+						return getOrLoadClass(classNameWithInnerSep);
+					}
 					return null;
 				}
 			}

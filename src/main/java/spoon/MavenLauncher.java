@@ -19,8 +19,9 @@ package spoon;
 import org.apache.log4j.Level;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -32,9 +33,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Create a Spoon launcher from a maven pom file
@@ -101,7 +109,8 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// dependencies
-		List<File> dependencies = model.getDependencies(false);
+		TreeDependency depTree = model.getTreeDependency();
+		List<File> dependencies = depTree.toJarList();
 		String[] classpath = new String[dependencies.size()];
 		for (int i = 0; i < dependencies.size(); i++) {
 			File file = dependencies.get(i);
@@ -134,9 +143,133 @@ public class MavenLauncher extends Launcher {
 			Model model = pomReader.read(reader);
 			InheritanceModel inheritanceModel = new InheritanceModel(model, parent, pomFile.getParentFile());
 			for (String module : model.getModules()) {
-				inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel));
+				if (path.contains(m2RepositoryPath)) {
+					InheritanceModel modulePom = readPOM(path.replaceAll(model.getArtifactId(), module), inheritanceModel);
+					if (modulePom != null) {
+						inheritanceModel.addModule(modulePom);
+					}
+				} else {
+					inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel));
+				}
 			}
 			return inheritanceModel;
+		}
+	}
+
+	class TreeDependency {
+		private String groupId;
+		private String artifactId;
+		private String version;
+		private String type;
+		private List<TreeDependency> dependencies = new ArrayList<>();
+
+		TreeDependency(String groupId, String artifactId, String version, String type) {
+			this.groupId = groupId;
+			this.artifactId = artifactId;
+			this.version = version;
+			this.type = type;
+		}
+
+		void addDependence(TreeDependency dependence) {
+			if (dependence != null) {
+				dependencies.add(dependence);
+			}
+		}
+
+		List<TreeDependency> getDependencyList() {
+			List<TreeDependency> output = new ArrayList<>(dependencies);
+			for (TreeDependency treeDependency : dependencies) {
+				output.addAll(treeDependency.getDependencyList());
+			}
+			return output;
+		}
+
+
+		List<File> toJarList() {
+			List<TreeDependency> dependencyList = getDependencyList();
+			List<File> output = new ArrayList<>();
+			Set<TreeDependency> addedDep = new HashSet<>();
+			for (TreeDependency dep : dependencyList) {
+				File file = dep.getTopLevelJar();
+				if (null != file && !addedDep.contains(dep)) {
+					addedDep.add(dep);
+					output.add(file);
+				}
+			}
+			return output;
+		}
+
+		private File getTopLevelJar() {
+			if ("pom".equals(type)) {
+				return null;
+			}
+			if (groupId != null && version != null) {
+				String fileName = artifactId + "-" + version;
+				Path depPath = Paths.get(m2RepositoryPath, groupId.replaceAll("\\.", "/"), artifactId, version);
+				File depFile = depPath.toFile();
+				if (depFile.exists()) {
+					File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
+					if (jarFile.exists()) {
+						return jarFile;
+					} else {
+						LOGGER.log(Level.ERROR, "Jar not found at " + jarFile);
+					}
+				} else {
+					LOGGER.log(Level.ERROR, "Dependency not found at " + depPath);
+				}
+			}
+			return null;
+		}
+
+		void removeDependency(String groupId, String artifactId) {
+			for (TreeDependency dep : new ArrayList<>(dependencies)) {
+				if (dep.groupId != null && dep.groupId.equals(groupId) && dep.artifactId != null && dep.artifactId.equals(artifactId)) {
+					this.dependencies.remove(dep);
+				} else {
+					dep.removeDependency(groupId, artifactId);
+				}
+			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			TreeDependency that = (TreeDependency) o;
+			return Objects.equals(groupId, that.groupId)
+					&& Objects.equals(artifactId, that.artifactId);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(groupId, artifactId);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(groupId);
+			sb.append(":");
+			sb.append(artifactId);
+			sb.append(":");
+			sb.append(version);
+			if (!dependencies.isEmpty()) {
+				sb.append(" {\n");
+				for (TreeDependency dep : dependencies) {
+					String child = dep.toString();
+					for (String s : child.split("\n")) {
+						sb.append("\t");
+						sb.append(s);
+						sb.append("\n");
+					}
+				}
+				sb.append("}");
+			}
+			return sb.toString();
 		}
 	}
 
@@ -145,6 +278,7 @@ public class MavenLauncher extends Launcher {
 		private Model model;
 		private InheritanceModel parent;
 		private File directory;
+		private Map<String, String> dependencyManagements = new HashMap<>();
 
 		InheritanceModel(Model model, InheritanceModel parent, File directory) {
 			this.model = model;
@@ -155,13 +289,45 @@ public class MavenLauncher extends Launcher {
 				try {
 					File parentPath = new File(directory, model.getParent().getRelativePath());
 					this.parent = readPOM(parentPath.getPath(), null);
+					if (this.parent == null) {
+						String groupId = model.getParent().getGroupId();
+						String version = model.getParent().getVersion();
+						this.parent = readPom(groupId, model.getParent().getArtifactId(), version);
+						if (this.model.getGroupId() == null && this.parent != null) {
+							this.model.setGroupId(this.parent.model.getGroupId());
+						}
+						if (this.model.getVersion() == null && this.parent != null) {
+							this.model.setVersion(this.parent.model.getVersion());
+						}
+					}
 				} catch (Exception e) {
-					LOGGER.debug("Parent model cannot be resolved: " + e.getMessage());
+					LOGGER.error("Parent model cannot be resolved: " + e.getMessage(), e);
+				}
+			}
+			DependencyManagement dependencyManagement = model.getDependencyManagement();
+			if (dependencyManagement != null) {
+				List<Dependency> dependencies = dependencyManagement.getDependencies();
+				for (Dependency dependency : dependencies) {
+					if ("import".equals(dependency.getScope())) {
+						InheritanceModel pom = readPom(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
+						if (pom != null) {
+							for (String depKey : pom.dependencyManagements.keySet()) {
+								if (!dependencyManagements.containsKey(depKey)) {
+									dependencyManagements.put(depKey, pom.dependencyManagements.get(depKey));
+								}
+							}
+						}
+					} else {
+						String depKey = dependency.getGroupId() + ":" + dependency.getArtifactId();
+						if (!dependencyManagements.containsKey(depKey)) {
+							dependencyManagements.put(depKey, extractVersion(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion()));
+						}
+					}
 				}
 			}
 		}
 
-		public void addModule(InheritanceModel module) {
+		void addModule(InheritanceModel module) {
 			modules.add(module);
 		}
 
@@ -181,7 +347,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the list of source directories of the project
 		 * @return the list of source directories
 		 */
-		public List<File> getSourceDirectories() {
+		List<File> getSourceDirectories() {
 			List<File> output = new ArrayList<>();
 			String sourcePath = null;
 
@@ -210,7 +376,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the list of test directories of the project
 		 * @return the list of test directories
 		 */
-		public List<File> getTestDirectories() {
+		List<File> getTestDirectories() {
 			List<File> output = new ArrayList<>();
 			String sourcePath = null;
 
@@ -239,10 +405,229 @@ public class MavenLauncher extends Launcher {
 		 * Extract the variable from a string
 		 */
 		private String extractVariable(String value) {
-			if (value.startsWith("$")) {
+			if (value != null && value.startsWith("$")) {
 				value = getProperty(value.substring(2, value.length() - 1));
 			}
 			return value;
+		}
+
+		private List<Version> getVersionsFromM2(String groupId, String artifactId) {
+			String groupIdPath = groupId.replace(".", "/");
+			File[] fileVersion = Paths.get(m2RepositoryPath, groupIdPath, artifactId).toFile().listFiles(file -> {
+				if (!file.isDirectory()) {
+					return false;
+				}
+				String version = file.getName();
+				return Paths.get(m2RepositoryPath, groupIdPath, artifactId, version, artifactId + "-" + version + ".jar").toFile().exists();
+			});
+			if (fileVersion == null) {
+				return Collections.emptyList();
+			}
+			List<Version> versions = Arrays.stream(fileVersion).map(f -> new Version(f.getName())).collect(Collectors.toList());
+			versions.sort(Comparator.reverseOrder());
+			return versions;
+		}
+
+		class Version implements Comparable<Version> {
+			String version;
+			int major = -1;
+			int minor = -1;
+			int incremental = -1;
+			int build = -1;
+			String qualifier;
+
+			Version(String version) {
+				this.version = version;
+				int buildIndex = version.indexOf("-");
+				if (buildIndex != -1) {
+					String build = version.substring(buildIndex + 1);
+					try {
+						this.build = Integer.parseInt(build);
+					} catch (NumberFormatException e) {
+						this.qualifier = build;
+					}
+					version = version.substring(0, buildIndex);
+				}
+				String[] splitVersion = version.split("\\.");
+				try {
+					this.major = Integer.parseInt(splitVersion[0]);
+				} catch (NumberFormatException ignore) {
+				}
+				if (splitVersion.length > 1) {
+					try {
+						this.minor = Integer.parseInt(splitVersion[1]);
+					} catch (NumberFormatException ignore) {
+					}
+				}
+				if (splitVersion.length > 2) {
+					try {
+						this.incremental = Integer.parseInt(splitVersion[2]);
+					} catch (NumberFormatException ignore) {
+					}
+				}
+			}
+
+			@Override
+			public int compareTo(Version v) {
+				if (major < v.major) {
+					return -1;
+				}
+				if (major > v.major) {
+					return 1;
+				}
+				if (minor < v.minor) {
+					return -1;
+				}
+				if (minor > v.minor) {
+					return 1;
+				}
+				if (incremental < v.incremental) {
+					return -1;
+				}
+				if (incremental > v.incremental) {
+					return 1;
+				}
+				if (build < v.build) {
+					return -1;
+				}
+				if (build > v.build) {
+					return 1;
+				}
+				return 0;
+			}
+
+			@Override
+			public String toString() {
+				return version;
+			}
+		}
+
+		class RangeVersion {
+			String range;
+			boolean includeStart;
+			boolean includeEnd;
+			Version start;
+			Version end;
+
+			RangeVersion(String range) {
+				this.range = range;
+				includeStart = range.startsWith("[");
+				includeEnd = range.endsWith("]");
+				String[] splitRange = range.substring(1, range.length() - 1).split(",");
+				if (splitRange[0].length() == 0) {
+					start = new Version("0.0.0.0");
+				} else {
+					start = new Version(splitRange[0]);
+				}
+				if (splitRange.length == 1 || splitRange[1].length() == 0) {
+					end = new Version("99999999.9999999.999999.99999");
+				} else {
+					end = new Version(splitRange[1]);
+				}
+			}
+
+
+			boolean include(Version v) {
+				int compareToStart = v.compareTo(start);
+				int compareToEnd = v.compareTo(end);
+				if (compareToStart < 0 || compareToEnd > 0) {
+					return false;
+				}
+				if ((compareToStart == 0 && includeStart) || (compareToEnd == 0 && includeEnd)) {
+					return true;
+				}
+				return compareToStart > 0 && compareToEnd < 0;
+			}
+
+			@Override
+			public String toString() {
+				return range;
+			}
+		}
+		private String extractVersion(String groupId, String artifactId, String version) {
+			if (version == null) {
+				String depKey = groupId + ":" + artifactId;
+				if (dependencyManagements.containsKey(depKey)) {
+					return dependencyManagements.get(depKey);
+				} else if (this.parent != null) {
+					return this.parent.extractVersion(groupId, artifactId, version);
+				}
+			}
+			version = extractVariable(version);
+			if (version != null && version.startsWith("[")) {
+				List<Version> versionsFromM2 = getVersionsFromM2(groupId, artifactId);
+				RangeVersion rangeVersion = new RangeVersion(version);
+				for (int i = 0; i < versionsFromM2.size(); i++) {
+					Version v = versionsFromM2.get(i);
+					if (rangeVersion.include(v)) {
+						version = v.version;
+						break;
+					}
+				}
+			}
+			return version;
+		}
+
+		private InheritanceModel readPom(String groupId, String artifactId, String version) {
+			version = extractVersion(groupId, artifactId, version);
+			groupId = groupId.replace(".", "/");
+			String fileName = artifactId + "-" + version;
+			Path depPath = Paths.get(m2RepositoryPath, groupId, artifactId, version, fileName + ".pom");
+			try {
+				return readPOM(depPath.toString(), null);
+			} catch (Exception e) {
+				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath.toString(), e);
+				return null;
+			}
+		}
+
+		private TreeDependency getTreeDependency(Dependency dependency, boolean isLib, Set<TreeDependency> hierarchy) {
+			String groupId = extractVariable(dependency.getGroupId());
+			String artifactId = extractVariable(dependency.getArtifactId());
+			String version = extractVersion(groupId, artifactId, dependency.getVersion());
+			if (version == null) {
+				LOGGER.warn("A dependency version cannot be resolved: " + groupId + ":" + artifactId + ":" + version);
+				return null;
+			}
+			// pass only the optional dependency if it's in a library dependency
+			if (isLib && dependency.isOptional()) {
+				return null;
+			}
+
+			// ignore test dependencies for app source code
+			if ("test".equals(dependency.getScope()) && (SOURCE_TYPE.APP_SOURCE == sourceType || isLib)) {
+				return null;
+			}
+			// ignore not transitive dependencies
+			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
+				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
+				return null;
+			}
+			TreeDependency dependence = new TreeDependency(groupId, artifactId, version, dependency.getType());
+			try {
+				InheritanceModel dependencyModel = readPom(groupId, artifactId, version);
+				if (dependencyModel != null) {
+					dependence = dependencyModel.getTreeDependency(true, hierarchy);
+					dependence.groupId = groupId;
+					dependence.artifactId = artifactId;
+					dependence.version = version;
+
+					if (dependency.getExclusions() != null) {
+						for (int i = 0; i < dependency.getExclusions().size(); i++) {
+							Exclusion exclusion = dependency.getExclusions().get(i);
+							dependence.removeDependency(exclusion.getGroupId(), exclusion.getArtifactId());
+						}
+					}
+				}
+
+			} catch (Exception e) {
+				LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence.toString(), e);
+			}
+			return dependence;
+		}
+
+		private TreeDependency getTreeDependency() {
+			return getTreeDependency(false, new HashSet<>());
 		}
 
 		/**
@@ -251,81 +636,39 @@ public class MavenLauncher extends Launcher {
 		 * @param isLib: If false take dependency of the main project; if true, take dependencies of a library of the project
 		 * @return the list of  dependencies
 		 */
-		public List<File> getDependencies(boolean isLib) {
-			Set<File> output = new HashSet<>();
+		private TreeDependency getTreeDependency(boolean isLib, Set<TreeDependency> hierarchy) {
+			String groupId = extractVariable(model.getGroupId());
+			String artifactId = extractVariable(model.getArtifactId());
+			String version = extractVersion(groupId, artifactId, model.getVersion());
+			TreeDependency dependence = new TreeDependency(groupId, artifactId, version, model.getPackaging());
+			if (hierarchy.contains(dependence)) {
+				return dependence;
+			}
+			hierarchy.add(dependence);
+
 
 			// add the parent has a dependency
-			Parent parent = model.getParent();
-			if (parent != null) {
-				String groupId = parent.getGroupId().replace(".", "/");
-				String version = extractVariable(parent.getVersion());
-				if (version.startsWith("[")) {
-					version = version.substring(1, version.indexOf(','));
-				}
-				String fileName = parent.getArtifactId() + "-" + version + ".jar";
-				Path depPath = Paths.get(m2RepositoryPath, groupId, parent.getArtifactId(), version, fileName);
-				File jar = depPath.toFile();
-				if (jar.exists()) {
-					output.add(jar);
-				}
+			if (this.parent != null) {
+				dependence.addDependence(this.parent.getTreeDependency(isLib, hierarchy));
 			}
+
 			List<Dependency> dependencies = model.getDependencies();
 			for (Dependency dependency : dependencies) {
-				String groupId = dependency.getGroupId().replace(".", "/");
-				if (dependency.getVersion() == null) {
-					continue;
-				}
-				// TODO: Handle range version
-				String version = extractVariable(dependency.getVersion());
-				if (version == null) {
-					LOGGER.warn("A dependency version cannot be resolved: " + dependency.toString());
-					continue;
-				}
-				if (version.startsWith("[")) {
-					version = version.substring(1, version.indexOf(','));
-				}
-				// pass only the optional dependency if it's in a library dependency
-				if (isLib && dependency.isOptional()) {
-					continue;
-				}
-
-				// ignore test dependencies for app source code
-				if ("test".equals(dependency.getScope()) && SOURCE_TYPE.APP_SOURCE == sourceType) {
-					continue;
-				}
-				// ignore not transitive dependencies
-				if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
-					LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test): " + dependency.toString());
-					continue;
-				}
-				String fileName = dependency.getArtifactId() + "-" + version;
-				Path depPath = Paths.get(m2RepositoryPath, groupId, dependency.getArtifactId(), version);
-				File depFile = depPath.toFile();
-				if (depFile.exists()) {
-					File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
-					if (jarFile.exists()) {
-						output.add(jarFile);
-					} else {
-						// if the a dependency is not found, uses the no classpath mode
-						getEnvironment().setNoClasspath(true);
-					}
-
-					try {
-						InheritanceModel dependencyModel = readPOM(Paths.get(depPath.toString(), fileName + ".pom").toString(), null);
-						output.addAll(dependencyModel.getDependencies(true));
-					} catch (Exception ignore) {
-						// ignore the dependencies of the dependency
-					}
-				} else {
-					// if the a dependency is not found, uses the no classpath mode
-					getEnvironment().setNoClasspath(true);
-				}
+				dependence.addDependence(getTreeDependency(dependency, isLib, hierarchy));
 			}
 
-			for (InheritanceModel module : modules) {
-				output.addAll(module.getDependencies(isLib));
+			if (!isLib) {
+				for (InheritanceModel module : modules) {
+					if (module.model.getGroupId() == null) {
+						module.model.setGroupId(groupId);
+					}
+					if (module.model.getVersion() == null) {
+						module.model.setVersion(version);
+					}
+					dependence.addDependence(module.getTreeDependency(isLib, hierarchy));
+				}
 			}
-			return new ArrayList<>(output);
+			return dependence;
 		}
 
 		/**
@@ -338,8 +681,16 @@ public class MavenLauncher extends Launcher {
 				if (model.getVersion() != null) {
 					return model.getVersion();
 				}
+			} else if ("project.groupId".equals(key)) {
+				if (model.getGroupId() != null) {
+					return model.getGroupId();
+				}
+			} else if ("project.artifactId".equals(key)) {
+				if (model.getArtifactId() != null) {
+					return model.getArtifactId();
+				}
 			}
-			String value = model.getProperties().getProperty(key);
+			String value = extractVariable(model.getProperties().getProperty(key));
 			if (value == null) {
 				if (parent == null) {
 					return null;
@@ -353,7 +704,7 @@ public class MavenLauncher extends Launcher {
 		 * Get the source version of the project
 		 * @return the source version of the project
 		 */
-		public int getSourceVersion() {
+		int getSourceVersion() {
 			if (model.getBuild() != null) {
 				for (Plugin plugin : model.getBuild().getPlugins()) {
 					if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
@@ -390,13 +741,16 @@ public class MavenLauncher extends Launcher {
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			sb.append(model.getName());
+			sb.append(model.getGroupId());
+			sb.append(":");
+			sb.append(model.getArtifactId());
+			sb.append(":");
+			sb.append(model.getVersion());
 			if (modules.isEmpty()) {
 				return sb.toString();
 			}
 			sb.append(" {\n");
-			for (int i = 0; i < modules.size(); i++) {
-				InheritanceModel inheritanceModel =  modules.get(i);
+			for (InheritanceModel inheritanceModel : modules) {
 				String child = inheritanceModel.toString();
 				for (String s : child.split("\n")) {
 					sb.append("\t");

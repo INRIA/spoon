@@ -58,20 +58,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.io.IOUtils.write;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CommentTest {
 
@@ -250,9 +244,9 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		List<CtComment> comments = type.getComments();
-		assertEquals(5, comments.size());
+		assertEquals(6, comments.size());
 		type.removeComment(comments.get(0));
-		assertEquals(4, type.getComments().size());
+		assertEquals(5, type.getComments().size());
 	}
 
 	@Test
@@ -263,7 +257,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(66, comments.size());
+		assertEquals(69, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -275,17 +269,18 @@ public class CommentTest {
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(5, type.getComments().size());
+		assertEquals(6, type.getComments().size());
 		assertEquals(CtComment.CommentType.FILE, type.getComments().get(0).getCommentType());
 		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(1));
+		assertEquals("Bottom File", type.getComments().get(5).getContent());
 
 		CtField<?> field = type.getField("field");
-		assertEquals(3, field.getComments().size());
+		assertEquals(4, field.getComments().size());
 		assertEquals(createFakeComment(f, "Comment Field"), field.getComments().get(0));
 		assertEquals("// Comment Field" + newLine
 				+ "// comment field 2" + newLine
 				+ "// comment in field" + newLine
-				+ "private int field = 10;", field.toString());
+				+ "private int field = 10;// after field\n", field.toString());
 
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
@@ -461,7 +456,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(51, comments.size());
+		assertEquals(52, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -473,8 +468,9 @@ public class CommentTest {
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(4, type.getComments().size());
+		assertEquals(5, type.getComments().size());
 		assertEquals(createFakeBlockComment(f, "comment class"), type.getComments().get(1));
+		assertEquals("Bottom File", type.getComments().get(4).getContent());
 
 		CtField<?> field = type.getField("field");
 		assertEquals(2, field.getComments().size());
@@ -704,8 +700,9 @@ public class CommentTest {
 
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
 		assertNotNull(clazz1);
-		assertEquals(1, clazz1.getComments().size());
+		assertEquals(2, clazz1.getComments().size());
 		assertEquals("class comment", clazz1.getComments().get(0).getContent());
+		assertEquals("after class comment", clazz1.getComments().get(1).getContent());
 		
 		assertEquals(1, builder.getSnippetCompilationUnit().getDeclaredTypes().size());
 		assertTrue(clazz1==builder.getSnippetCompilationUnit().getDeclaredTypes().get(0));

@@ -88,7 +88,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean shouldCompile = false;
 
-	private boolean skipSelfChecks;
+	private boolean skipSelfChecks = false;
 
 	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
@@ -159,6 +159,11 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSelfChecks(boolean skip) {
 		skipSelfChecks = skip;
+	}
+
+	@Override
+	public void disableConsistencyChecks() {
+		skipSelfChecks = true;
 	}
 
 	private Level toLevel(String level) {
@@ -434,6 +439,7 @@ public class StandardEnvironment implements Serializable, Environment {
 				if (javaFiles.size() > 0) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
+				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
 			} else if (classOrJarFolder.getName().endsWith(".class")) {
 				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}

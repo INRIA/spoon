@@ -3,6 +3,8 @@ package spoon.test.intercession;
 import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import spoon.reflect.code.CtBlock;
@@ -28,7 +30,8 @@ public class RemoveTest {
 
 	    assertEquals(2,body.getStatements().size());
 
-	    for (CtStatement s : body) {
+	    //iterate on copy of list of statements, otherwise it fails with concurrent modification exception
+	    for (CtStatement s : new ArrayList<>(body.getStatements())) {
 	    	body.removeStatement(s);
 	    }
 

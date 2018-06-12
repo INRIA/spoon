@@ -1,47 +1,36 @@
 package spoon.test.position;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.position.testclasses.Foo;
-import spoon.test.position.testclasses.FooAbstractMethod;
-import spoon.test.position.testclasses.FooAnnotation;
-import spoon.test.position.testclasses.FooClazz;
-import spoon.test.position.testclasses.FooClazz2;
-import spoon.test.position.testclasses.FooClazzWithComments;
-import spoon.test.position.testclasses.FooField;
-import spoon.test.position.testclasses.FooGeneric;
-import spoon.test.position.testclasses.FooInterface;
-import spoon.test.position.testclasses.FooMethod;
-import spoon.test.position.testclasses.FooStatement;
-import spoon.test.position.testclasses.PositionParameterTypeWithReference;
+import spoon.test.comment.testclasses.Comment1;
+import spoon.test.position.testclasses.*;
+import spoon.test.query_function.testclasses.VariableReferencesModelTest;
+import spoon.testing.utils.ModelUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -74,7 +63,7 @@ public class PositionTest {
 		assertEquals(4, foo2.getPosition().getEndLine());
 
 		assertEquals("FooClazz", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		assertEquals("@Deprecated\npublic", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 	}
 	
 	
@@ -160,7 +149,7 @@ public class PositionTest {
 		assertEquals("{\n\n}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
 
 		assertEquals("FooInterface", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		assertEquals("@Deprecated\n@InnerAnnot(value=\"machin\")\npublic", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 		
 		{
 			SourcePosition annPosition = foo.getAnnotations().get(0).getPosition();
@@ -196,7 +185,8 @@ public class PositionTest {
 				+ "}", contentAtPosition(classContent, position.getBodyStart(), position.getBodyEnd()));
 
 		assertEquals("FooAnnotation", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
-		assertEquals("public abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
+		assertEquals("@Target(value={})\n"
+				+ "@Retention(RetentionPolicy.RUNTIME)  \npublic abstract", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
 		
 		CtMethod<?> method1 = foo.getMethodsByName("value").get(0);
 		BodyHolderSourcePosition position1 = (BodyHolderSourcePosition) method1.getPosition();
@@ -519,19 +509,11 @@ public class PositionTest {
 
 	private String getClassContent(CtType type) {
 		File file = type.getPosition().getFile();
-		String content = "";
-		Charset charset = Charset.forName("UTF-8");
-		try (BufferedReader reader = Files.newBufferedReader(
-				Paths.get(file.getPath()), charset)) {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				content+=line + "\n";
-			}
-		} catch (IOException x) {
-			System.err.format("IOException: %s%n", x);
+		try {
+			return FileUtils.readFileToString(file, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-
-		return content;
 	}
 
 	private String contentAtPosition(String content, int start, int end) {
@@ -545,12 +527,22 @@ public class PositionTest {
 	@Test
 	public void testSourcePosition() throws Exception {
 		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
-		assertEquals(-1, s.getSourceStart());
-		assertEquals(-1, s.getSourceEnd());
-		assertEquals(-1, s.getColumn());
-		assertEquals(-1, s.getLine());
+		assertFalse(s.isValidPosition());
+		assertFails(() -> s.getSourceStart());
+		assertFails(() -> s.getSourceEnd());
+		assertFails(() -> s.getColumn());
+		assertFails(() -> s.getLine());
 		assertEquals("(unknown file)", s.toString());
 		assertTrue(s.hashCode() > 0); // no NPE
+	}
+	
+	private static void assertFails(Runnable code) {
+		try {
+			code.run();
+			fail();
+		} catch (Exception e) {
+			//OK
+		}
 	}
 
 	@Test
@@ -594,5 +586,186 @@ public class PositionTest {
 		assertEquals(8, positionElse.getLine());
 
 		assertNotEquals(returnStatement, otherReturnStatement);
+	}
+	@Test
+	public void testPositionMethodTypeParameter() throws Exception {
+		//contract: the Method TypeParameter T extends List<?> has simple source position
+		//the previous used DeclarationSourcePosition had incorrect details
+		final CtType<?> foo = ModelUtils.buildClass(TypeParameter.class);
+		String classContent = getClassContent(foo);
+
+		CtTypeParameter typeParam = foo.getMethodsByName("m").get(0).getFormalCtTypeParameters().get(0);
+		assertEquals("T extends List<?>", contentAtPosition(classContent, typeParam.getPosition()));
+		assertFalse(typeParam.getPosition() instanceof DeclarationSourcePosition);
+	}
+	
+	@Test
+	public void testPositionOfAnnonymousType() throws Exception {
+		//contract: the annonymous type has consistent position
+		final CtEnum foo = (CtEnum) ModelUtils.buildClass(SomeEnum.class);
+		String classContent = getClassContent(foo);
+
+		CtNewClass<?> newClass = (CtNewClass<?>) foo.getEnumValue("X").getDefaultExpression();
+		CtClass<?> annonClass = newClass.getAnonymousClass();
+		assertEquals("{\n" + 
+				"		void m() {};\n" + 
+				"	}", contentAtPosition(classContent, annonClass.getPosition()));
+		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
+		int start = annonClass.getPosition().getSourceStart();
+		int end = annonClass.getPosition().getSourceEnd();
+		//body is equal to source start/end
+		assertEquals(start, bhsp.getBodyStart());
+		assertEquals(end, bhsp.getBodyEnd());
+
+		//there is no name and no modifiers
+		assertEquals(start - 1, bhsp.getNameEnd());
+		assertEquals(start, bhsp.getModifierSourceStart());
+		assertEquals(start - 1, bhsp.getModifierSourceEnd());
+		assertEquals(start, bhsp.getNameStart());
+		assertEquals(start - 1, bhsp.getNameEnd());
+	}
+	
+	@Test
+	public void testPositionOfAnnonymousTypeByNewInterface() throws Exception {
+		//contract: the annonymous type has consistent position
+		final CtType<?> foo = ModelUtils.buildClass(AnnonymousClassNewIface.class);
+		String classContent = getClassContent(foo);
+
+		CtLocalVariable<?> localVar = (CtLocalVariable<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtNewClass<?> newClass = (CtNewClass<?>) localVar.getDefaultExpression();
+		CtClass<?> annonClass = newClass.getAnonymousClass();
+		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
+		int start = annonClass.getPosition().getSourceStart();
+		int end = annonClass.getPosition().getSourceEnd();
+		assertEquals("Consumer<Set<?>>() {\r\n" + 
+				"			@Override\r\n" + 
+				"			public void accept(Set<?> t) {\r\n" + 
+				"			}\r\n" + 
+				"		}", contentAtPosition(classContent, start, end));
+		
+		assertEquals("{\r\n" + 
+				"			@Override\r\n" + 
+				"			public void accept(Set<?> t) {\r\n" + 
+				"			}\r\n" + 
+				"		}", contentAtPosition(classContent, bhsp.getBodyStart(), bhsp.getBodyEnd()));
+
+		//there is no name and no modifiers and they are located at source start
+		assertEquals(start - 1, bhsp.getNameEnd());
+		assertEquals(start, bhsp.getModifierSourceStart());
+		assertEquals(start - 1, bhsp.getModifierSourceEnd());
+		assertEquals(start, bhsp.getNameStart());
+		assertEquals(start - 1, bhsp.getNameEnd());
+	}
+
+	@Test
+	public void testEmptyModifiersOfMethod() throws Exception {
+		//contract: the modifiers of Method without modifiers are empty and have correct start
+		final CtType<?> foo = ModelUtils.buildClass(NoMethodModifiers.class);
+		String classContent = getClassContent(foo);
+
+		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) foo.getMethodsByName("m").get(0).getPosition();
+		assertEquals("void m();", contentAtPosition(classContent, bhsp));
+		int start = bhsp.getSourceStart();
+		int end = bhsp.getSourceEnd();
+		assertEquals(start, bhsp.getModifierSourceStart());
+		assertEquals(start - 1, bhsp.getModifierSourceEnd());
+		assertEquals("m", contentAtPosition(classContent, bhsp.getNameStart(), bhsp.getNameEnd()));
+		assertEquals(end, bhsp.getBodyStart());
+		assertEquals(end - 1, bhsp.getBodyEnd());
+	}
+
+	@Test
+	public void testPositionTryCatch() throws Exception {
+		//contract: check that the variable in the catch has a correct position
+		CtType<?> foo = ModelUtils.buildClass(PositionTry.class);
+		String classContent = getClassContent(foo);
+
+		List<CtCatchVariable> elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+
+		CtCatchVariable withoutModifier = elements.get(0);
+		assertEquals("java.lang.Exception e", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+		CtCatchVariable withModifier = elements.get(1);
+		assertEquals("final java.lang.Exception e", contentAtPosition(classContent, withModifier.getPosition().getSourceStart(), withModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withModifier.getPosition()).getNameEnd()));
+		assertEquals("final", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withModifier.getPosition()).getModifierSourceEnd()));
+
+		CtCatchVariable withMultipleCatch = elements.get(2);
+		assertEquals("NullPointerException | java.lang.ArithmeticException e", contentAtPosition(classContent, withMultipleCatch.getPosition().getSourceStart(), withMultipleCatch.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceEnd()));
+
+		foo = buildClass(Comment1.class);
+		classContent = getClassContent(foo);
+		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+		withoutModifier = elements.get(0);
+		assertEquals("Exception ex", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("ex", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+
+		foo = buildClass(VariableReferencesModelTest.class);
+		classContent = getClassContent(foo);
+		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
+		withoutModifier = elements.get(0);
+		assertEquals("IllegalArgumentException e", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("e", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+		withoutModifier = elements.get(1);
+		assertEquals("Exception /*7*/field", contentAtPosition(classContent, withoutModifier.getPosition().getSourceStart(), withoutModifier.getPosition().getSourceEnd()));
+		assertEquals("field", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getNameEnd()));
+		assertEquals("", contentAtPosition(classContent,
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceStart(),
+				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
+
+
+
+	}
+	@Test
+	public void testArrayArgParameter() throws Exception {
+		//contract: the parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
+		final CtType<?> foo = ModelUtils.buildClass(ArrayArgParameter.class);
+		String classContent = getClassContent(foo);
+
+		{
+			CtParameter<?> param = foo.getMethodsByName("m1").get(0).getParameters().get(0);
+			assertEquals("String[] arg", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String[]", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m2").get(0).getParameters().get(0);
+			assertEquals("String []arg", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String []", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m3").get(0).getParameters().get(0);
+			assertEquals("String arg[]", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String arg[]", contentAtPosition(classContent, param.getType().getPosition()));
+		}
 	}
 }

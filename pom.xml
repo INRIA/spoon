@@ -149,10 +149,9 @@
   </developers>
 
   <scm>
-    <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
-    <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
-    <developerConnection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</developerConnection>
-    <tag>HEAD</tag>
+    <url>https://github.com/INRIA/spoon</url>
+    <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
+    <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
   </scm>
 
   <properties>
@@ -241,6 +240,30 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.9.2</version>
+    </dependency>
+    <dependency>
+      <!-- to reproduce JTD error with nullable annotation -->
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- to reproduce and fix a bug -->
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+      <version>3.6.9</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.mysema.commons</groupId>
+          <artifactId>mysema-commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

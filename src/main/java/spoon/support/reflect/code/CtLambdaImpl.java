@@ -23,11 +23,11 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
@@ -124,6 +124,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			lambdaExecutableMethod = lambdaTypeMethods.iterator().next();
 		} else {
 			for (CtMethod<?> method : lambdaTypeMethods) {
+				if (getFactory().Method().OBJECT_METHODS.stream().anyMatch(method::isOverriding)) {
+					continue;
+				}
 				if (method.isDefaultMethod() || method.hasModifier(ModifierKind.PRIVATE) || method.hasModifier(ModifierKind.STATIC)) {
 					continue;
 				}

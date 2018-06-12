@@ -10,4 +10,8 @@ public class GenericMethodCallWithExtend {
 		GenericMethodCallWithExtend.<E> tmp();
 		return 2l;
 	}
+
+	public  <A extends Number & Comparable<? super A>> Class<A> m2() {
+		return null;
+	}
 }
