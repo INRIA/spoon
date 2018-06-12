@@ -15,12 +15,7 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		// The sourceClasspath seems to change depending on the machine:
-		// I suspect that the config bring in .m2/settings.xml play a role
-		// on my machine (Simon U.) and on spoon3r CI machine we got 2 libraries less
-
-		//assertEquals(15, launcher.getEnvironment().getSourceClasspath().length);
-		assertTrue(launcher.getEnvironment().getSourceClasspath().length > 10);
+		assertEquals(23, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 56 because of the sub folders of src/main/java
 		assertEquals(58, launcher.getModelBuilder().getInputSources().size());
@@ -28,8 +23,7 @@ public class MavenLauncherTest {
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		
-		//assertEquals(22, launcher.getEnvironment().getSourceClasspath().length);
-		assertTrue(launcher.getEnvironment().getSourceClasspath().length >= 20);
+		assertEquals(30, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 236 because of the sub folders of src/main/java and src/test/java
 		assertTrue("size: "+launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
