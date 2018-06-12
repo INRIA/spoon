@@ -715,8 +715,12 @@ public class Launcher implements SpoonAPI {
 		return ((JDTBasedSpoonCompiler) this.modelBuilder).getSource().getAllJavaFiles().stream().map(SpoonResource::toFile).collect(Collectors.toSet());
 	}
 
+	/**
+	 * This method should be called before building a model, in case the incremental build mechanism should be used.
+	 */
 	private void prepareIncrementalBuild() {
 		Set<File> mInputSources = getAllJavaFiles();
+
 		Set<String> mSourceClasspath;
 		if (this.getEnvironment().getSourceClasspath() == null) {
 			mSourceClasspath = new HashSet<>();
@@ -741,20 +745,21 @@ public class Launcher implements SpoonAPI {
 		}
 
 		if (!mIncrementalCacheDirectory.exists() && !mIncrementalCacheDirectory.mkdirs()) {
-			throw new SpoonException("unable to create cache directory");
+			throw new SpoonException("Incremental build: unable to create cache directory");
 		}
 
 		if (!mClassFilesDir.exists() && !mClassFilesDir.mkdirs()) {
-			throw new SpoonException("unable to create class files directory");
+			throw new SpoonException("Incremental build: unable to create class files directory");
 		}
 
+		// in case of rebuilt we do nothing here, but we know everything will be changed in the model
 		if (forceRebuild) {
 			incrementalBuildInformation.setChangesPresent(true);
 		} else {
 			// Load model from cache.
 			Factory oldFactory = incrementalBuildInformation.loadFactory();
 
-			// Build model incrementally.
+			// Check what sources has been removed or added
 			Set<File> mRemovedSources = new HashSet<>(CollectionUtils.subtract(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
 			incrementalBuildInformation.setRemovedSources(mRemovedSources);
 
@@ -762,6 +767,8 @@ public class Launcher implements SpoonAPI {
 			Set<File> mCommonSources = new HashSet<>(CollectionUtils.intersection(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
 
 			Set<File> incrementalSources = new HashSet<>(mAddedSources);
+
+			// If old existing sources have been changed, we need to rebuilt them
 			for (File e : mCommonSources) {
 				if (e.lastModified() >= mCacheInfo.lastBuildTime) {
 					incrementalSources.add(e);
@@ -780,6 +787,7 @@ public class Launcher implements SpoonAPI {
 
 			for (CtType<?> type : oldTypes) {
 				File typeFile = type.getPosition().getFile();
+				// we remove types that have been deleted
 				if (mRemovedSources.contains(typeFile)) {
 					type.delete();
 					continue;
@@ -794,12 +802,14 @@ public class Launcher implements SpoonAPI {
 			}
 
 			try {
+				// in order to build properly the only sources that have changed, we need to use the classes compiled before
 				mSourceClasspath.add(mClassFilesDir.getCanonicalPath());
 				this.getEnvironment().setSourceClasspath(mSourceClasspath.toArray(new String[0]));
 			} catch (IOException e2) {
 				throw new SpoonException("unable to locate class files dir: " + mClassFilesDir);
 			}
 
+			// cleanup packages
 			Collection<CtPackage> oldPackages = oldFactory.Package().getAll();
 			for (CtPackage pkg : oldPackages) {
 				if (pkg.getTypes().isEmpty() && pkg.getPackages().isEmpty() && !pkg.isUnnamedPackage()) {
@@ -808,14 +818,9 @@ public class Launcher implements SpoonAPI {
 			}
 
 			this.factory = oldFactory;
-
+			this.modelBuilder = this.createCompiler();
 			incrementalSources.forEach(f -> addInputResource(f.getPath()));
 			incrementalBuildInformation.setChangesPresent(!mRemovedSources.isEmpty() || !mAddedSources.isEmpty() || !incrementalSources.isEmpty());
-
-			this.modelBuilder = this.createCompiler();
-			for (File incrementalSource : incrementalSources) {
-				this.modelBuilder.addInputSource(incrementalSource);
-			}
 		}
 	}
 

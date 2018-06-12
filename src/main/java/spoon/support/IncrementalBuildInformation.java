@@ -41,14 +41,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class store information for incremental build.
+ */
 public class IncrementalBuildInformation {
 	private static final String FACTORY_FILENAME = "model";
 	private static final String CACHE_INFO_FILENAME = "cache-info";
 	private static final String CLASS_FILES_DIRNAME = "class-files";
 
-	/**
-	 * This class store information for incremental build.
-	 */
+    /**
+     * This is the part of the class that should be serialized
+     */
 	public static class CacheInfo implements Serializable {
 		/** Cache version */
 		public static final long serialVersionUID = 1L; //TODO: Spoon version
@@ -92,12 +95,17 @@ public class IncrementalBuildInformation {
 		return new File(this.getCacheDir(), CACHE_INFO_FILENAME);
 	}
 
+    /**
+     * Return the directory containing the compiled classes for the built model
+     */
 	public File getClassFilesDir() {
 		this.checkEnvironment();
 		return new File(this.getCacheDir(), CLASS_FILES_DIRNAME);
 	}
 
-
+    /**
+     * Load and return cache information from a serialized file
+     */
 	public CacheInfo loadCacheInfo() throws InvalidClassException {
 		try (
 				FileInputStream fileStream = new FileInputStream(this.getCacheInfoFile());
@@ -124,6 +132,9 @@ public class IncrementalBuildInformation {
 		}
 	}
 
+    /**
+     * Load and return a factory from a serialized file
+     */
 	public Factory loadFactory() {
 		try {
 			return new SerializationModelStreamer().load(new FileInputStream(this.getFactoryFile()));
@@ -140,6 +151,10 @@ public class IncrementalBuildInformation {
 		}
 	}
 
+    /**
+     * If true, the model cannot be incrementally built and should be entirely rebuilt.
+     * This is true if the cache directories and file don't exist.
+     */
 	public boolean shouldBeRebuilt() {
 		return !this.getCacheDir().exists() || !this.getFactoryFile().exists() || !this.getCacheInfoFile().exists() || !this.getClassFilesDir().exists();
 	}
@@ -151,7 +166,9 @@ public class IncrementalBuildInformation {
 		modelBuilder.setBinaryOutputDirectory(binaryOutputDirectory);
 	}
 
-	/** Caches current spoon model and binary files. Should be called only after model is built. */
+	/**
+     * Caches current spoon model and binary files. Should be called only after model is built.
+     */
 	public void saveCache(Factory factory, SpoonModelBuilder modelBuilder) {
 		if (factory == null) {
 			throw new SpoonException("factory is null");
@@ -187,14 +204,23 @@ public class IncrementalBuildInformation {
 		saveCacheInfo(newCacheInfo);
 	}
 
+    /**
+     * Set the sources that have been removed after an incremental build
+     */
 	public void setRemovedSources(Set<File> removedSources) {
 		this.mRemovedSources = removedSources;
 	}
 
+    /**
+     * Record the state of the changes: true if the model has changed.
+     */
 	public void setChangesPresent(boolean changesPresent) {
 		this.mChangesPresent = changesPresent;
 	}
 
+    /**
+     * Return true if the model has changed
+     */
 	public boolean isChangesPresent() {
 		return this.mChangesPresent;
 	}
