@@ -27,6 +27,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -181,7 +182,7 @@ public class SpoonArchitectureEnforcerTest {
 	@Test
 	public void metamodelPackageRule() throws Exception {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
-		List<String> exceptions = Collections.singletonList("CtWildcardStaticTypeMemberReferenceImpl");
+		List<String> exceptions = Arrays.asList("CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructor");
 
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
