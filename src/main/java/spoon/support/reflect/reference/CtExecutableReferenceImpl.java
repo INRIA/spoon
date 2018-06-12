@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -170,6 +171,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (declaringType == null) {
 			return null;
 		}
+
+		if (declaringType instanceof CtArrayTypeReference && this.isConstructor()) {
+			CtConstructor constructor = this.getFactory().createInvisibleArrayConstructor();
+			constructor.setType(declaringType);
+			return constructor;
+		}
+
 		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 

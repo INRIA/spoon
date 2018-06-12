@@ -819,6 +819,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public <T> CtConstructor<T> createInvisibleArrayConstructor() {
+		return Core().createInvisibleArrayConstructor();
+	}
+
+	@Override
 	public <T> CtEnumValue<T> createEnumValue() {
 		return Core().createEnumValue();
 	}

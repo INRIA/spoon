@@ -213,6 +213,11 @@ public interface CoreFactory {
 	<T> CtConstructor<T> createConstructor();
 
 	/**
+	 * Creates an invisible array constructor.
+	 */
+	<T> CtConstructor<T> createInvisibleArrayConstructor();
+
+	/**
 	 * Creates a <code>continue</code> statement.
 	 */
 	CtContinue createContinue();
