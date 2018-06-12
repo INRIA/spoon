@@ -527,7 +527,7 @@ public class MavenLauncher extends Launcher {
 			}
 
 
-			public boolean include(Version v) {
+			boolean include(Version v) {
 				int compareToStart = v.compareTo(start);
 				int compareToEnd = v.compareTo(end);
 				if (compareToStart < 0 || compareToEnd > 0) {
