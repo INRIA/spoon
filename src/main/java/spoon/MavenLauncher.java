@@ -33,12 +33,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Create a Spoon launcher from a maven pom file
@@ -297,7 +301,7 @@ public class MavenLauncher extends Launcher {
 						}
 					}
 				} catch (Exception e) {
-					LOGGER.debug("Parent model cannot be resolved: " + e.getMessage());
+					LOGGER.error("Parent model cannot be resolved: " + e.getMessage(), e);
 				}
 			}
 			DependencyManagement dependencyManagement = model.getDependencyManagement();
@@ -407,6 +411,139 @@ public class MavenLauncher extends Launcher {
 			return value;
 		}
 
+		private List<Version> getVersionsFromM2(String groupId, String artifactId) {
+			String groupIdPath = groupId.replace(".", "/");
+			File[] fileVersion = Paths.get(m2RepositoryPath, groupIdPath, artifactId).toFile().listFiles(file -> {
+				if (!file.isDirectory()) {
+					return false;
+				}
+				String version = file.getName();
+				return Paths.get(m2RepositoryPath, groupIdPath, artifactId, version, artifactId + "-" + version + ".jar").toFile().exists();
+			});
+			if (fileVersion == null) {
+				return Collections.emptyList();
+			}
+			List<Version> versions = Arrays.stream(fileVersion).map(f -> new Version(f.getName())).collect(Collectors.toList());
+			versions.sort(Comparator.reverseOrder());
+			return versions;
+		}
+
+		class Version implements Comparable<Version> {
+			String version;
+			int major = -1;
+			int minor = -1;
+			int incremental = -1;
+			int build = -1;
+			String qualifier;
+
+			Version(String version) {
+				this.version = version;
+				int buildIndex = version.indexOf("-");
+				if (buildIndex != -1) {
+					String build = version.substring(buildIndex + 1);
+					try {
+						this.build = Integer.parseInt(build);
+					} catch (NumberFormatException e) {
+						this.qualifier = build;
+					}
+					version = version.substring(0, buildIndex);
+				}
+				String[] splitVersion = version.split("\\.");
+				try {
+					this.major = Integer.parseInt(splitVersion[0]);
+				} catch (NumberFormatException ignore) {
+				}
+				if (splitVersion.length > 1) {
+					try {
+						this.minor = Integer.parseInt(splitVersion[1]);
+					} catch (NumberFormatException ignore) {
+					}
+				}
+				if (splitVersion.length > 2) {
+					try {
+						this.incremental = Integer.parseInt(splitVersion[2]);
+					} catch (NumberFormatException ignore) {
+					}
+				}
+			}
+
+			@Override
+			public int compareTo(Version v) {
+				if (major < v.major) {
+					return -1;
+				}
+				if (major > v.major) {
+					return 1;
+				}
+				if (minor < v.minor) {
+					return -1;
+				}
+				if (minor > v.minor) {
+					return 1;
+				}
+				if (incremental < v.incremental) {
+					return -1;
+				}
+				if (incremental > v.incremental) {
+					return 1;
+				}
+				if (build < v.build) {
+					return -1;
+				}
+				if (build > v.build) {
+					return 1;
+				}
+				return 0;
+			}
+
+			@Override
+			public String toString() {
+				return version;
+			}
+		}
+
+		class RangeVersion {
+			String range;
+			boolean includeStart;
+			boolean includeEnd;
+			Version start;
+			Version end;
+
+			RangeVersion(String range) {
+				this.range = range;
+				includeStart = range.startsWith("[");
+				includeEnd = range.endsWith("]");
+				String[] splitRange = range.substring(1, range.length() - 1).split(",");
+				if (splitRange[0].length() == 0) {
+					start = new Version("0.0.0.0");
+				} else {
+					start = new Version(splitRange[0]);
+				}
+				if (splitRange.length == 1 || splitRange[1].length() == 0) {
+					end = new Version("99999999.9999999.999999.99999");
+				} else {
+					end = new Version(splitRange[1]);
+				}
+			}
+
+
+			boolean include(Version v) {
+				int compareToStart = v.compareTo(start);
+				int compareToEnd = v.compareTo(end);
+				if (compareToStart < 0 || compareToEnd > 0) {
+					return false;
+				}
+				if ((compareToStart == 0 && includeStart) || (compareToEnd == 0 && includeEnd)) {
+					return true;
+				}
+				return compareToStart > 0 && compareToEnd < 0;
+			}
+
+			@Override
+			public String toString() {
+				return range;
+			}
+		}
 		private String extractVersion(String groupId, String artifactId, String version) {
 			if (version == null) {
 				String depKey = groupId + ":" + artifactId;
@@ -417,9 +554,16 @@ public class MavenLauncher extends Launcher {
 				}
 			}
 			version = extractVariable(version);
-			// TODO: Handle range version
 			if (version != null && version.startsWith("[")) {
-				version = version.substring(1, version.indexOf(','));
+				List<Version> versionsFromM2 = getVersionsFromM2(groupId, artifactId);
+				RangeVersion rangeVersion = new RangeVersion(version);
+				for (int i = 0; i < versionsFromM2.size(); i++) {
+					Version v = versionsFromM2.get(i);
+					if (rangeVersion.include(v)) {
+						version = v.version;
+						break;
+					}
+				}
 			}
 			return version;
 		}
@@ -476,8 +620,8 @@ public class MavenLauncher extends Launcher {
 					}
 				}
 
-			} catch (Exception ignore) {
-				// ignore the dependencies of the dependency
+			} catch (Exception e) {
+				LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence.toString(), e);
 			}
 			return dependence;
 		}
