@@ -687,7 +687,7 @@ public class Launcher implements SpoonAPI {
 		return "Spoon version " + ResourceBundle.getBundle("spoon").getString("application.version");
 	}
 
-	private static final IOFileFilter RESOURCES_FILE_FILTER = new IOFileFilter() {
+	public static final IOFileFilter RESOURCES_FILE_FILTER = new IOFileFilter() {
 		@Override
 		public boolean accept(File file) {
 			return !file.getName().endsWith(".java");
@@ -699,7 +699,7 @@ public class Launcher implements SpoonAPI {
 		}
 	};
 
-	private static final IOFileFilter ALL_DIR_FILTER = new IOFileFilter() {
+	public static final IOFileFilter ALL_DIR_FILTER = new IOFileFilter() {
 		@Override
 		public boolean accept(File file) {
 			return true;
