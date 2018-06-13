@@ -18,15 +18,23 @@ package spoon.support.compiler.jdt;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
+import org.eclipse.jdt.internal.compiler.util.HashtableOfObject;
+import org.eclipse.jdt.internal.compiler.util.Messages;
+import org.eclipse.jdt.internal.core.util.BindingKeyResolver;
 
 class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
@@ -34,6 +42,19 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
 			CompilationProgress progress) {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
+	}
+
+	// This code is directly inspired from Compiler class.
+	private void sortModuleDeclarationsFirst(ICompilationUnit[] sourceUnits) {
+		Arrays.sort(sourceUnits, (u1, u2) -> {
+			char[] fn1 = u1.getFileName();
+			char[] fn2 = u2.getFileName();
+			boolean isMod1 = CharOperation.endsWith(fn1, TypeConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn1, TypeConstants.MODULE_INFO_CLASS_NAME);
+			boolean isMod2 = CharOperation.endsWith(fn2, TypeConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn2, TypeConstants.MODULE_INFO_CLASS_NAME);
+			if (isMod1 == isMod2)
+				return 0;
+			return isMod1 ? -1 : 1;
+		});
 	}
 
 	// this method is not meant to be in the public API
@@ -45,6 +66,8 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 		CompilationUnitDeclaration unit = null;
 		int i = 0;
+
+		this.sortModuleDeclarationsFirst(sourceUnits);
 		// build and record parsed units
 		beginToCompile(sourceUnits);
 
