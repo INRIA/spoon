@@ -210,7 +210,7 @@ public class ExecutableReferenceTest {
 
 	@Test
 	public void testPbWithStream() {
-		// contract: WWW
+		// contract: array constructor references are well represented
 
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Stream.java");
