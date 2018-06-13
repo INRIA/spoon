@@ -102,6 +102,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Boolean noclasspath = null;
 
+	private boolean incremental = false;
+
+	private File cacheDirectory = new File(new File(Launcher.OUTPUTDIR), ".cache");
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -574,5 +578,31 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public OutputType getOutputType() {
 		return this.outputType;
+	}
+
+	@Override
+	public boolean isIncremental() {
+		return this.incremental;
+	}
+
+	@Override
+	public void setIncremental(boolean incremental) {
+		this.incremental = incremental;
+	}
+
+	@Override
+	public void setCacheDirectory(File directory) {
+		if (directory == null) {
+			throw new SpoonException("You must specify a directory.");
+		}
+		if (directory.isFile()) {
+			throw new SpoonException("Cache must be a directory");
+		}
+		this.cacheDirectory = directory;
+	}
+
+	@Override
+	public File getCacheDirectory() {
+		return this.cacheDirectory;
 	}
 }
