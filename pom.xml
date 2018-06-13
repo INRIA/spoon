@@ -572,6 +572,7 @@
           <artifactId>license-maven-plugin</artifactId>
           <configuration>
             <header>LICENSE-short.txt</header>
+            <basedir>src/main/java</basedir>
           </configuration>
           <executions>
             <execution>
