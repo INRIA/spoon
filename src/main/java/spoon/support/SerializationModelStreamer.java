@@ -22,6 +22,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -41,7 +43,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 	}
 
 	public void save(Factory f, OutputStream out) throws IOException {
-		ObjectOutputStream oos = new ObjectOutputStream(out);
+		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
 		oos.writeObject(f);
 		oos.flush();
 		oos.close();
@@ -49,7 +51,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	public Factory load(InputStream in) throws IOException {
 		try {
-			ObjectInputStream ois = new ObjectInputStream(in);
+			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory
