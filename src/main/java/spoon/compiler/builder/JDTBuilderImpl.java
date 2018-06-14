@@ -60,6 +60,13 @@ public class JDTBuilderImpl implements JDTBuilder {
 	}
 
 	@Override
+	public JDTBuilder modules(ModuleOptions<?> options) {
+		checkSources();
+		args.addAll(Arrays.asList(options.build()));
+		return this;
+	}
+
+	@Override
 	public String[] build() {
 		return args.toArray(new String[args.size()]);
 	}

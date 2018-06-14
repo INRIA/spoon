@@ -100,7 +100,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private OutputType outputType = OutputType.CLASSES;
 
+
+	private String moduleSourcePath;
+
 	private Boolean noclasspath = null;
+
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -564,6 +568,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public String getModuleSourcePath() {
+		return this.moduleSourcePath;
+	}
+
+	@Override
+	public void setModuleSourcePath(String moduleSourcePath) {
+		this.moduleSourcePath = moduleSourcePath;
 	}
 
 	@Override

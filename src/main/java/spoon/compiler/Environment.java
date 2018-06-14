@@ -388,6 +388,10 @@ public interface Environment {
 	 */
 	void setEncoding(Charset encoding);
 
+	String getModuleSourcePath();
+
+	void setModuleSourcePath(String moduleSourcePath);
+
 	/**
 	 * Set the output type used for processing files
 	 */

@@ -64,10 +64,10 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		}
 	}
 
-	@Override
+	/*@Override
 	public CompilationUnit[] getCompilationUnits() {
 		return compilationUnits;
-	}
+	}*/
 
 	public void setCompilationUnits(CompilationUnit[] compilationUnits) {
 		this.compilationUnits = compilationUnits;
