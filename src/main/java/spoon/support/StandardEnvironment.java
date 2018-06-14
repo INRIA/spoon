@@ -80,7 +80,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean copyResources = true;
 
-	private boolean enableComments = false;
+	private boolean enableComments = true;
 
 	private Logger logger = Launcher.LOGGER;
 
