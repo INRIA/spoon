@@ -293,8 +293,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.21.0</version>
         <configuration>
-          <!-- Apparently there's an issue with fork mode on version 2.21.0 of Surefire --> 
-          <forkCount>0</forkCount>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
           <useSystemClassLoader>true</useSystemClassLoader>
@@ -456,7 +454,7 @@
       <plugin>
 	<groupId>org.jacoco</groupId>
 	<artifactId>jacoco-maven-plugin</artifactId>
-	<version>0.7.9</version>
+	<version>0.8.1</version>
 	<executions>
 	  <execution>
 	    <goals>
