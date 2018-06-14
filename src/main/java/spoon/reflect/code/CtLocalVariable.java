@@ -24,7 +24,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.INFERRED_VARIABLE;
-import static spoon.reflect.path.CtRole.LABEL;
 
 /**
  * This code element defines a local variable definition (within an executable
