@@ -182,7 +182,7 @@ public class SpoonArchitectureEnforcerTest {
 	@Test
 	public void metamodelPackageRule() throws Exception {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
-		List<String> exceptions = Arrays.asList("CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructor");
+		List<String> exceptions = Arrays.asList("CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructorImpl");
 
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");

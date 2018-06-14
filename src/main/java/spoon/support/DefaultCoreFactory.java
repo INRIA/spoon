@@ -174,7 +174,7 @@ import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.declaration.CtUsedServiceImpl;
-import spoon.support.reflect.declaration.InvisibleArrayConstructor;
+import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
@@ -323,7 +323,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 	public <T> CtConstructor<T> createInvisibleArrayConstructor() {
-		CtConstructor<T> e = new InvisibleArrayConstructor<>();
+		CtConstructor<T> e = new InvisibleArrayConstructorImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}

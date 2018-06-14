@@ -12,6 +12,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
 import spoon.test.reference.testclasses.Bar;
 import spoon.test.reference.testclasses.Burritos;
 import spoon.test.reference.testclasses.EnumValue;
@@ -218,12 +219,13 @@ public class ExecutableReferenceTest {
 
 		CtClass klass = launcher.getFactory().Class().get(Stream.class);
 		List<CtExecutableReference> executableReferenceList = klass.getElements(new TypeFilter<>(CtExecutableReference.class));
+		CtExecutableReference lastExecutableReference = executableReferenceList.get(executableReferenceList.size() - 1);
+		CtExecutable declaration = lastExecutableReference.getExecutableDeclaration();
 
-		for (CtExecutableReference execRef : executableReferenceList) {
-			String refString = execRef.toString();
-			CtExecutable executable = execRef.getExecutableDeclaration();
-			assertNotNull(refString, executable);
-		}
+		assertNotNull(declaration);
+		assertTrue(declaration instanceof InvisibleArrayConstructorImpl);
+		String exepectedString = "spoon.test.reference.testclasses.Bar[]::new";
+		assertEquals(exepectedString, declaration.toString());
 	}
 
 }
