@@ -189,12 +189,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public CtLocalVariable<T> setInferred(boolean inferred) {
-		if (this.getFactory().getEnvironment().getComplianceLevel() < 10) {
-			throw new SpoonException("The variable inferrence is only available since Java 10.");
-		}
+	public <U extends CtLocalVariable<T>> U setInferred(boolean inferred) {
 		this.inferred = inferred;
-		return this;
+		return (U) this;
 	}
 
 	@Override

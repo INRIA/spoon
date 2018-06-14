@@ -37,7 +37,7 @@ import static spoon.reflect.path.CtRole.LABEL;
  *
  *     // this is now authorized with Java 10.
  *     // in that case the variable is inferred.
- *     var x = 0;
+ *     // var x = 0;
  * </pre>
  *
  * @param <T>
@@ -75,8 +75,9 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 
 	/**
 	 * Set true if the variable must be inferred.
+	 * Warning: this method should only be used if compliance level is set to 10 or more.
 	 */
 	@PropertySetter(role = INFERRED_VARIABLE)
-	CtLocalVariable<T> setInferred(boolean inferred);
+	<U extends CtLocalVariable<T>> U setInferred(boolean inferred);
 
 }

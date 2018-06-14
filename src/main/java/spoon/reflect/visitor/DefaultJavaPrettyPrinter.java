@@ -1294,7 +1294,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (!context.noTypeDecl()) {
 			elementPrinterHelper.writeModifiers(localVariable);
-			if (localVariable.isInferred()) {
+			if (localVariable.isInferred() && this.env.getComplianceLevel() >= 10) {
 				getPrinterTokenWriter().writeKeyword("var");
 			} else {
 				scan(localVariable.getType());
