@@ -11,6 +11,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -86,6 +87,7 @@ public class AstCheckerTest {
 
 	@Test
 	public void testPushToStackChanges() throws Exception {
+		// contract: setters should check the given parameters against NPE
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		// Implementations.
@@ -146,6 +148,7 @@ public class AstCheckerTest {
 						|| candidate.getSimpleName().startsWith("remove")) //
 					&& candidate.getDeclaringType().getSimpleName().startsWith("Ct") //
 					&& !isNotCandidate(candidate) //
+					&& !hasPrimitiveTypeForParameters(candidate.getParameters())
 					&& !isSurcharged(candidate) //
 					&& !isDelegateMethod(candidate) //
 					&& !isUnsupported(candidate.getBody()) //
@@ -156,6 +159,18 @@ public class AstCheckerTest {
 		private boolean isNotCandidate(CtMethod<?> candidate) {
 			return "setVisibility".equals(candidate.getSimpleName())
 					|| notCandidates.contains(candidate.getDeclaringType().getSimpleName() + "#" + candidate.getSimpleName());
+		}
+
+		private boolean hasPrimitiveTypeForParameters(List<CtParameter<?>> parameters) {
+			// primitive value are not nullable
+
+			for (CtParameter<?> parameter : parameters) {
+				if (!parameter.getType().isPrimitive()) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		private boolean isSurcharged(CtMethod<?> candidate) {
