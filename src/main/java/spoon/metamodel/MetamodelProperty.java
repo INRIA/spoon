@@ -74,7 +74,7 @@ public class MetamodelProperty {
 	 */
 	private CtTypeReference<?> itemValueType;
 
-	private final RoleHandler roleHandler;
+	private RoleHandler roleHandler;
 
 	private Boolean derived;
 	private Boolean unsettable;
@@ -104,7 +104,6 @@ public class MetamodelProperty {
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;
-		roleHandler = RoleHandlerHelper.getRoleHandler((Class) ownerConcept.getMetamodelInterface().getActualClass(), role);
 	}
 
 	void addMethod(CtMethod<?> method) {
@@ -580,7 +579,12 @@ public class MetamodelProperty {
 	 * @return {@link RoleHandler} which can access runtime data of this Property
 	 */
 	public RoleHandler getRoleHandler() {
-		return this.roleHandler;
+		if (roleHandler == null) {
+			//initialize it lazily, because CtGenerationTest#testGenerateRoleHandler needs metamodel to generate rolehandlers
+			//and here it may happen that rolehandler doesn't exist yet
+			roleHandler = RoleHandlerHelper.getRoleHandler((Class) ownerConcept.getMetamodelInterface().getActualClass(), role);
+		}
+		return roleHandler;
 	}
 
 	/**
@@ -588,7 +592,7 @@ public class MetamodelProperty {
 	 * @return a value of attribute defined by this {@link MetamodelProperty} from the provided `element`
 	 */
 	public <T, U> U getValue(T element) {
-		return roleHandler.getValue(element);
+		return getRoleHandler().getValue(element);
 	}
 
 	/**
@@ -596,6 +600,6 @@ public class MetamodelProperty {
 	 * @param value to be set value of attribute defined by this {@link MetamodelProperty} on the provided `element`
 	 */
 	public <T, U> void setValue(T element, U value) {
-		roleHandler.setValue(element, value);
+		getRoleHandler().setValue(element, value);
 	}
 }
