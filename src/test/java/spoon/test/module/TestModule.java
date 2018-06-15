@@ -261,15 +261,12 @@ public class TestModule {
 		assertSame(module, moduleNewName);
 	}
 
-	@Ignore
 	@Test
 	public void testSimpleModuleCanBeBuilt() {
-		// contract: Spoon is able to build and compile a model with a module
+		// contract: Spoon is able to build a simple model with a module in full classpath
 
 		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setComplianceLevel(9);
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.run();
 
@@ -284,8 +281,6 @@ public class TestModule {
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/foo");
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/bar");
 		launcher.addInputResource(MODULE_RESOURCES_PATH+"/code-multiple-modules");
 		launcher.run();
 
