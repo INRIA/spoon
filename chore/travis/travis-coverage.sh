@@ -6,4 +6,4 @@
 
 source /opt/jdk_switcher/jdk_switcher.sh
 
-jdk_switcher use oraclejdk8 && mvn -Djava.src.version=1.8 test jacoco:report && mvn -Djava.src.version=1.8 coveralls:report -Pcoveralls --fail-never
+jdk_switcher use oraclejdk9 && mvn -Djava.src.version=1.9 test jacoco:report && mvn -Djava.src.version=1.9 coveralls:report -Pcoveralls --fail-never
