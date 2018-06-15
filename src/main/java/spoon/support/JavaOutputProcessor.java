@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.PrettyPrinter;
+import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -173,6 +174,9 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			createPackageFile((CtPackage) nameElement);
 		} else if (nameElement instanceof CtModule) {
 			createModuleFile((CtModule) nameElement);
+		}
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PRINT, nameElement.getSimpleName());
 		}
 	}
 

@@ -204,6 +204,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter) {
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PRINT);
+		}
 		switch (outputType) {
 		case CLASSES:
 			generateProcessedSourceFilesUsingTypes(typeFilter);
@@ -212,6 +215,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			generateProcessedSourceFilesUsingCUs();
 			break;
 		case NO_OUTPUT:
+		}
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PRINT);
 		}
 	}
 

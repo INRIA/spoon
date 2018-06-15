@@ -30,6 +30,13 @@ public interface SpoonProgress {
 	void step(Process process, String task, int taskId, int nbTask);
 
 	/**
+	 * is called when a step in the precess is started
+	 * @param process the current process
+	 * @param task the task that has been processed
+	 */
+	void step(Process process, String task);
+
+	/**
 	 * is called when a new process is started
 	 * @param process the finished process
 	 */
