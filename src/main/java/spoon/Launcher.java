@@ -427,7 +427,8 @@ public class Launcher implements SpoonAPI {
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
 
 		if (jsapActualArgs.getBoolean("noclasspath")) {
-			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: we encourage to use this as default behaviour.");
+			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: noclasspath is now the default behaviour.");
+			environment.setNoClasspath(true); // avoid getting a warning for boolean not set
 		} else {
 			Launcher.LOGGER.warn("Spoon is now using the 'no classpath mode' by default. If you want to ensure using Spoon in full classpath mode, please use the new flag: --fullclasspath.");
 		}
