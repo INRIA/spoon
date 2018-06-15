@@ -1,35 +1,40 @@
 package spoon.support.compiler;
 
-import spoon.support.compiler.jdt.JDTTreeBuilder;
+import spoon.support.StandardEnvironment;
 
 import java.util.GregorianCalendar;
 
 public class ProgressLogger implements SpoonProgress {
 	private long stepTimer;
 	private long timer;
+	private StandardEnvironment environment;
+
+	public ProgressLogger(StandardEnvironment environment) {
+		this.environment = environment;
+	}
 
 	@Override
 	public void start(Process process) {
-		System.out.println("Start " + process);
+		environment.debugMessage("Start " + process);
 		timer = getCurrentTimeInMillis();
 		stepTimer = timer;
 	}
 
 	@Override
 	public void step(Process process, String task, int taskId, int nbTask) {
-		JDTTreeBuilder.getLogger().trace("Step " + process + " " + taskId + "/" + nbTask + " " + task + " in " + (getCurrentTimeInMillis() - timer) + " ms");
+		environment.debugMessage("Step " + process + " " + taskId + "/" + nbTask + " " + task + " in " + (getCurrentTimeInMillis() - timer) + " ms");
 		timer = getCurrentTimeInMillis();
 	}
 
 	@Override
 	public void step(Process process, String task) {
-		JDTTreeBuilder.getLogger().trace("Step " + process + " " + task + " in " + (getCurrentTimeInMillis() - timer) + " ms");
+		environment.debugMessage("Step " + process + " " + task + " in " + (getCurrentTimeInMillis() - timer) + " ms");
 		timer = getCurrentTimeInMillis();
 	}
 
 	@Override
 	public void end(Process process) {
-		JDTTreeBuilder.getLogger().trace("End " + process + " in " + (getCurrentTimeInMillis() - stepTimer) + " ms");
+		environment.debugMessage("End " + process + " in " + (getCurrentTimeInMillis() - stepTimer) + " ms");
 	}
 
 	private long getCurrentTimeInMillis() {

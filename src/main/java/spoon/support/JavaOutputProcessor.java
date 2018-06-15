@@ -120,7 +120,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 */
 	public void createJavaFile(CtType<?> element) {
 		Path typePath = getElementPath(element);
-		getEnvironment().debugMessage("printing " + element.getQualifiedName() + " to " + typePath);
 
 		// we only create a file for top-level classes
 		if (!element.isTopLevel()) {
@@ -133,29 +132,26 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 		printer.calculate(cu, toBePrinted);
 
-		PrintStream stream = null;
 
-		// print type
 		try {
 			File file = typePath.toFile();
 			file.createNewFile();
 			if (!printedFiles.contains(file)) {
 				printedFiles.add(file);
 			}
-			stream = new PrintStream(file);
-			stream.print(printer.getResult());
-			for (CtType<?> t : toBePrinted) {
-				lineNumberMappings.put(t.getQualifiedName(), printer.getLineNumberMapping());
+			// print type
+			try (PrintStream stream = new PrintStream(file)) {
+				stream.print(printer.getResult());
+				for (CtType<?> t : toBePrinted) {
+					lineNumberMappings.put(t.getQualifiedName(), printer.getLineNumberMapping());
+				}
 			}
-			stream.close();
 		} catch (IOException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
-		} finally {
-			if (stream != null) {
-				stream.close();
-			}
 		}
-
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PRINT, element.getQualifiedName());
+		}
 	}
 
 	@Override
@@ -175,9 +171,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		} else if (nameElement instanceof CtModule) {
 			createModuleFile((CtModule) nameElement);
 		}
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PRINT, nameElement.getSimpleName());
-		}
 	}
 
 	private void createPackageFile(CtPackage pack) {
@@ -186,17 +179,10 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		if (!printedFiles.contains(packageAnnot)) {
 			printedFiles.add(packageAnnot);
 		}
-		PrintStream stream = null;
-		try {
-			stream = new PrintStream(packageAnnot);
+		try (PrintStream stream = new PrintStream(packageAnnot)) {
 			stream.println(printer.printPackageInfo(pack));
-			stream.close();
 		} catch (FileNotFoundException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
-		} finally {
-			if (stream != null) {
-				stream.close();
-			}
 		}
 	}
 
@@ -206,17 +192,10 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			if (!printedFiles.contains(moduleFile)) {
 				printedFiles.add(moduleFile);
 			}
-			PrintStream stream = null;
-			try {
-				stream = new PrintStream(moduleFile);
+			try (PrintStream stream = new PrintStream(moduleFile)) {
 				stream.println(printer.printModuleInfo(module));
-				stream.close();
 			} catch (FileNotFoundException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
-			} finally {
-				if (stream != null) {
-					stream.close();
-				}
 			}
 		}
 	}
