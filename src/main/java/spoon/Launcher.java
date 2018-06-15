@@ -356,7 +356,12 @@ public class Launcher implements SpoonAPI {
 			sw1 = new Switch("noclasspath");
 			sw1.setShortFlag('x');
 			sw1.setLongFlag("noclasspath");
-			sw1.setHelp("Does not assume a full classpath");
+			sw1.setHelp("[DEPRECATED] Does not assume a full classpath");
+			jsap.registerParameter(sw1);
+
+			sw1 = new Switch("fullclasspath");
+			sw1.setLongFlag("fullclasspath");
+			sw1.setHelp("Assume a full classpath");
 			jsap.registerParameter(sw1);
 
 			// show GUI
@@ -420,7 +425,16 @@ public class Launcher implements SpoonAPI {
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
-		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
+
+		if (jsapActualArgs.getBoolean("noclasspath")) {
+			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: we encourage to use this as default behaviour.");
+		} else {
+			Launcher.LOGGER.warn("Spoon is now using the 'no classpath mode' by default. If you want to ensure using Spoon in full classpath mode, please use the new flag: --fullclasspath.");
+		}
+
+		if (jsapActualArgs.getBoolean("fullclasspath")) {
+			environment.setNoClasspath(false);
+		}
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
