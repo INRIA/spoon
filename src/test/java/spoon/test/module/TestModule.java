@@ -7,7 +7,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackage;
@@ -17,6 +19,7 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -281,8 +284,19 @@ public class TestModule {
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.run();
 
-		assertEquals(2, launcher.getModel().getAllModules().size());
-		assertEquals(1, launcher.getModel().getAllTypes().size());
+		CtModel model = launcher.getModel();
+
+		// unnamed module and module 'simple_module_with_code'
+		assertEquals(2, model.getAllModules().size());
+		assertEquals(1, model.getAllTypes().size());
+
+		CtClass simpleClass = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
+		assertEquals("SimpleClass", simpleClass.getSimpleName());
+
+		CtModule module = simpleClass.getParent(CtModule.class);
+		assertNotNull(module);
+
+		assertEquals("simple_module_with_code", module.getSimpleName());
 	}
 
 	@Ignore
