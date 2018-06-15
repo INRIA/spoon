@@ -223,8 +223,17 @@ public class PatternParameterConfigurator {
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
 	public PatternParameterConfigurator byLocalType(CtType<?> searchScope, String localTypeSimpleName) {
+		byLocalType(searchScope, localTypeSimpleName, false);
+		return this;
+	}
+	PatternParameterConfigurator byLocalType(CtType<?> searchScope, String localTypeSimpleName, boolean optional) {
 		CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(searchScope, localTypeSimpleName);
 		if (nestedType == null) {
+			//such type doesn't exist
+			if (optional) {
+				//no problem
+				return this;
+			}
 			throw new SpoonException("Template parameter " + localTypeSimpleName + " doesn't match to any local type");
 		}
 		//There is a local type with such name. Replace it
@@ -507,7 +516,7 @@ public class PatternParameterConfigurator {
 					if (paramValue instanceof CtTypeReference<?>) {
 						parameter(paramName)
 							.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
-							.byLocalType(templateType, paramName);
+							.byLocalType(templateType, paramName, true);
 					}
 					parameter(paramName)
 						.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
