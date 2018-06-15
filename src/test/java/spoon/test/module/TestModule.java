@@ -1,6 +1,8 @@
 package spoon.test.module;
 
 import org.junit.AfterClass;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,6 +33,15 @@ import static org.junit.Assert.fail;
 
 public class TestModule {
 	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
+
+	private void checkJavaVersion() {
+		String property = System.getProperty("java.version");
+		if (property != null && !property.isEmpty()) {
+
+			// java 8 and less are versionning "1.X" where 9 and more are directly versioned "X"
+			Assume.assumeFalse(property.startsWith("1."));
+		}
+	}
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -263,8 +274,8 @@ public class TestModule {
 
 	@Test
 	public void testSimpleModuleCanBeBuilt() {
+		checkJavaVersion();
 		// contract: Spoon is able to build a simple model with a module in full classpath
-
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
