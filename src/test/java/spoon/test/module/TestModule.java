@@ -19,6 +19,7 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
@@ -293,10 +294,13 @@ public class TestModule {
 		CtClass simpleClass = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
 		assertEquals("SimpleClass", simpleClass.getSimpleName());
 
+		CtModule simpleModule = model.getElements(new NamedElementFilter<>(CtModule.class, "simple_module_with_code")).get(0);
+		assertNotNull(simpleModule);
+		assertEquals("simple_module_with_code", simpleModule.getSimpleName());
+
 		CtModule module = simpleClass.getParent(CtModule.class);
 		assertNotNull(module);
-
-		assertEquals("simple_module_with_code", module.getSimpleName());
+		assertSame(simpleModule, module);
 	}
 
 	@Ignore
