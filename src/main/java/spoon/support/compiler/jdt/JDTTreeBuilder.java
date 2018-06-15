@@ -737,7 +737,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		ModuleBinding enclosingModule = scope.fPackage.enclosingModule;
 
 		CtModule module;
-		if (enclosingModule.shortReadableName() != null && enclosingModule.shortReadableName().length > 0) {
+		if (!enclosingModule.isUnnamed() && enclosingModule.shortReadableName() != null && enclosingModule.shortReadableName().length > 0) {
 			module = getFactory().Module().getOrCreate(String.valueOf(enclosingModule.shortReadableName()));
 		} else {
 			module = getFactory().Module().getUnnamedModule();
@@ -1573,7 +1573,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		} else {
 			CtModule module;
-			if (typeDeclaration.binding.module != null && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {
+			if (typeDeclaration.binding.module != null && !typeDeclaration.binding.module.isUnnamed() && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {
 				module = factory.Module().getOrCreate(String.valueOf(typeDeclaration.binding.module.shortReadableName()));
 			} else {
 				module = factory.Module().getUnnamedModule();
