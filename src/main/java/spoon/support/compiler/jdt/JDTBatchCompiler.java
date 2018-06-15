@@ -18,6 +18,7 @@ package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
@@ -28,15 +29,19 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 import spoon.SpoonException;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /*
@@ -64,8 +69,53 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		}
 	}
 
+	/**
+	 * This method returns the compilation units that will be processed and/or compiled by JDT.
+	 * Note that this method also process the CUs to associate the right module information.
+	 * Warning: this method cannot be replaced by a call to its supermethod as we manage the CUs differently
+	 * in Spoon. We might indeed have CUs coming from virtual files or ignored CU due to the configuration.
+	 * The the CUs are created from the {@link FileCompilerConfig}.
+	 */
 	@Override
 	public CompilationUnit[] getCompilationUnits() {
+
+		Map<String, CompilationUnit> pathToModCU = new HashMap<>();
+
+		for (int round = 0; round < 2; round++) {
+			for (CompilationUnit compilationUnit : this.compilationUnits) {
+				char[] charName = compilationUnit.getFileName();
+				boolean isModuleInfo = CharOperation.endsWith(charName, TypeConstants.MODULE_INFO_FILE_NAME);
+				if (isModuleInfo == (round == 0)) { // 1st round: modules, 2nd round others (to ensure populating pathToModCU well in time)
+
+					String fileName = new String(charName);
+					if (isModuleInfo) {
+						int lastSlash = CharOperation.lastIndexOf(File.separatorChar, charName);
+						if (lastSlash != -1) {
+							char[] modulePath = CharOperation.subarray(charName, 0, lastSlash);
+							pathToModCU.put(String.valueOf(modulePath), compilationUnit);
+
+							lastSlash = CharOperation.lastIndexOf(File.separatorChar, modulePath);
+							if (lastSlash == -1) {
+								lastSlash = 0;
+							} else {
+								lastSlash += 1;
+							}
+
+							char[] moduleName = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
+							compilationUnit.module = moduleName;
+						}
+					} else {
+						for (Map.Entry<String, CompilationUnit> entry : pathToModCU.entrySet()) {
+							if (fileName.startsWith(entry.getKey())) { // associate CUs to module by common prefix
+								compilationUnit.setModule(entry.getValue());
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return compilationUnits;
 	}
 

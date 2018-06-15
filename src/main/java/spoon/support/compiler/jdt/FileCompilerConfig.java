@@ -65,7 +65,7 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 				String fName = f.isActualFile() ? f.getPath() : f.getName();
 				inputStream = f.getContent();
 				char[] content = IOUtils.toCharArray(inputStream, jdtCompiler.getEnvironment().getEncoding());
-				cuList.add(new CompilationUnit(content, fName, null));
+				cuList.add(new CompilationUnit(content, fName, jdtCompiler.getEnvironment().getEncoding().displayName()));
 				IOUtils.closeQuietly(inputStream);
 			}
 		} catch (Exception e) {

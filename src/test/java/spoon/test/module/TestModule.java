@@ -263,7 +263,7 @@ public class TestModule {
 
 	@Ignore
 	@Test
-	public void testSimpleModuleCanBeBuiltAndCompiled() {
+	public void testSimpleModuleCanBeBuilt() {
 		// contract: Spoon is able to build and compile a model with a module
 
 		final Launcher launcher = new Launcher();
