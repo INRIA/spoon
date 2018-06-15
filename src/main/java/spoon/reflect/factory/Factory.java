@@ -553,6 +553,11 @@ public interface Factory {
 	<T> CtConstructor<T> createConstructor();
 
 	/**
+	 *  @see CoreFactory#createInvisibleArrayConstructor() ()
+	 */
+	<T> CtConstructor<T> createInvisibleArrayConstructor();
+
+	/**
 	 *  @see CoreFactory#createEnumValue()
 	 */
 	<T> CtEnumValue<T> createEnumValue();
