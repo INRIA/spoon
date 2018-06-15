@@ -33,10 +33,13 @@ import static spoon.reflect.path.CtRole.INFERRED_VARIABLE;
  * <pre>
  *     // defines a local variable x
  *     int x = 0;
+ * </pre>
  *
- *     // this is now authorized with Java 10.
- *     // in that case the variable is inferred.
- *     // var x = 0;
+ * With Java 10, the local variable inference is now authorized, then the following code is valid too in a block scope:
+ *
+ * <pre>
+ *     // local variable in Java 10
+ *     var x = 0;
  * </pre>
  *
  * @param <T>
