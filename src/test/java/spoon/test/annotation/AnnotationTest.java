@@ -544,6 +544,7 @@ public class AnnotationTest {
 	@Test
 	public void testUsageOfTypeAnnotationInReturnTypeInMethod() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
@@ -564,6 +565,7 @@ public class AnnotationTest {
 	@Test
 	public void testUsageOfTypeAnnotationOnParameterInMethod() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
@@ -582,6 +584,7 @@ public class AnnotationTest {
 	@Test
 	public void testUsageOfTypeAnnotationOnLocalVariableInMethod() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
@@ -766,6 +769,7 @@ public class AnnotationTest {
 	@Test
 	public void testOutputGeneratedByTypeAnnotation() throws Exception {
 		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
 		// we only write to disk here
@@ -930,6 +934,7 @@ public class AnnotationTest {
 	@Test
 	public void testAbstractAllAnnotationProcessor() throws Exception {
 		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setNoClasspath(false);
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/BasicAnnotation.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TypeAnnotation.java");

@@ -61,7 +61,9 @@ public final class ModelUtils {
 
 	/** Utility method for testing: creates the model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
-		SpoonModelBuilder comp = new Launcher().createCompiler();
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		SpoonModelBuilder comp = launcher.createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
 			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
 		}
@@ -97,9 +99,17 @@ public final class ModelUtils {
 		return comp.getFactory();
 	}
 
-	/** Builds and returns the Spoon model of `` classToBuild */
 	public static <T> CtType<T> buildClass(Class<T> classToBuild) throws Exception {
-		return build(classToBuild).Type().get(classToBuild);
+		return buildClass(classToBuild, true);
+	}
+
+	/** Builds and returns the Spoon model of `` classToBuild */
+	public static <T> CtType<T> buildClass(Class<T> classToBuild, boolean ensureFullclasspath) throws Exception {
+		if (ensureFullclasspath) {
+			return build(classToBuild).Type().get(classToBuild);
+		} else {
+			return buildNoClasspath(classToBuild).Type().get(classToBuild);
+		}
 	}
 
 	/** checks that the file `outputDirectoryFile` can be parsed with Spoon , given a compliance level. */
