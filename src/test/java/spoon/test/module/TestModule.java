@@ -282,6 +282,7 @@ public class TestModule {
 		// contract: Spoon is able to build a simple model with a module in full classpath
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.run();
 
