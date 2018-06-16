@@ -107,9 +107,15 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			params.put("ROLE", rim.getRole().name());
 			params.put("$TargetType$", rim.getOwner().getMetamodelInterface().getReference());
 //			params.put("AbstractHandler", getFactory().Type().createReference("spoon.reflect.meta.impl.AbstractRoleHandler"));
-			params.put("AbstractHandler", getRoleHandlerSuperTypeQName(rim));
-			params.put("Node", rim.getOwner().getMetamodelInterface().getReference());
-			params.put("ValueType", fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getTypeOfField() : rim.getTypeofItems()));
+//			params.put("AbstractHandler", getRoleHandlerSuperTypeQName(rim));
+			CtTypeReference<?> nodeRef = rim.getOwner().getMetamodelInterface().getReference();
+			CtTypeReference<?> valueTypeRef = fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getTypeOfField() : rim.getTypeofItems());
+			CtTypeReference<?> handlerSuperClassRef = getFactory().Type().createReference(getRoleHandlerSuperTypeQName(rim));
+			handlerSuperClassRef.addActualTypeArgument(nodeRef);
+			handlerSuperClassRef.addActualTypeArgument(valueTypeRef);
+			params.put("AbstractHandler", handlerSuperClassRef);
+			params.put("Node", nodeRef);
+			params.put("ValueType", valueTypeRef);
 			CtClass<?> modelRoleHandlerClass = Substitution.createTypeFromTemplate(
 					getHandlerName(rim),
 					getTemplate("spoon.generating.meta.RoleHandlerTemplate"),
