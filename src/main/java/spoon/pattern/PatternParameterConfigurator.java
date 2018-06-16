@@ -513,11 +513,10 @@ public class PatternParameterConfigurator {
 			parameterValues.forEach((paramName, paramValue) -> {
 				if (isSubstituted(paramName) == false) {
 					//and only these parameters whose name isn't already handled by explicit template parameters
-					if (paramValue instanceof CtTypeReference<?>) {
-						parameter(paramName)
-							.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
-							.byLocalType(templateType, paramName, true);
-					}
+					//replace types whose name fits to name of parameter
+					parameter(paramName)
+						.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
+						.byLocalType(templateType, paramName, true);
 					parameter(paramName)
 						.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
 						.bySubstring(paramName);
