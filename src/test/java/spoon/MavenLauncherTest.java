@@ -15,13 +15,16 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(10, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(23, launcher.getEnvironment().getSourceClasspath().length);
+
 		// 56 because of the sub folders of src/main/java
 		assertEquals(58, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
-		assertEquals(17, launcher.getEnvironment().getSourceClasspath().length);
+		
+		assertEquals(30, launcher.getEnvironment().getSourceClasspath().length);
+
 		// 236 because of the sub folders of src/main/java and src/test/java
 		assertTrue("size: "+launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
 

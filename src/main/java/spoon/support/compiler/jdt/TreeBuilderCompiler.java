@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -31,6 +31,8 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
+import org.eclipse.jdt.internal.compiler.util.Messages;
+
 
 class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
@@ -61,6 +63,8 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		// This code is largely inspired from JDT's
 		// CompilationUnitResolver.resolve
 
+		this.reportProgress(Messages.compilation_beginningToCompile);
+
 		CompilationUnitDeclaration unit = null;
 		int i = 0;
 
@@ -72,6 +76,7 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		// the lookup environment)
 		for (; i < this.totalUnits; i++) {
 			unit = unitsToProcess[i];
+			this.reportProgress(Messages.bind(Messages.compilation_processing, new String(unit.getFileName())));
 			// System.err.println(unit);
 			this.parser.getMethodBodies(unit);
 
@@ -92,6 +97,7 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 			unit.ignoreFurtherInvestigation = false;
 			requestor.acceptResult(unit.compilationResult);
+			this.reportWorked(1, i);
 		}
 
 		ArrayList<CompilationUnitDeclaration> unitsToReturn = new ArrayList<CompilationUnitDeclaration>();

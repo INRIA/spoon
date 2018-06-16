@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,6 +19,7 @@ package spoon.support.compiler.jdt;
 import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.CharOperation;
+import org.eclipse.jdt.core.compiler.CompilationProgress;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
@@ -34,6 +35,7 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.jdt.internal.core.util.CommentRecorderParser;
 import spoon.SpoonException;
+import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -210,7 +212,43 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		IProblemFactory problemFactory = getProblemFactory();
 		TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
 				environment, errorHandlingPolicy, compilerOptions,
-				this.jdtCompiler.requestor, problemFactory, this.out, null);
+				this.jdtCompiler.requestor, problemFactory, this.out, new CompilationProgress() {
+
+			private String currentElement = null;
+			private int totalTask = -1;
+
+			@Override
+			public void begin(int i) { }
+
+			@Override
+			public void done() { }
+
+			@Override
+			public boolean isCanceled() {
+				return false;
+			}
+
+			@Override
+			public void setTaskName(String s) {
+				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+					String strToFind = "Processing ";
+					int processingPosition = s.indexOf(strToFind);
+					if (processingPosition != -1) {
+						currentElement = s.substring(processingPosition + strToFind.length());
+					}
+				}
+			}
+
+			@Override
+			public void worked(int increment, int remaining) {
+				if (totalTask == -1) {
+					totalTask = remaining + 1;
+				}
+				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.COMPILE, currentElement, totalTask - remaining, totalTask);
+				}
+			}
+		});
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
 			treeBuilderCompiler.lookupEnvironment.problemReporter = new ProblemReporter(errorHandlingPolicy, compilerOptions, problemFactory) {
 				@Override
@@ -221,12 +259,19 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 			};
 			treeBuilderCompiler.lookupEnvironment.mayTolerateMissingType = true;
 		}
-
+		if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+			jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.COMPILE);
+		}
 		// they have to be done all at once
 		final CompilationUnitDeclaration[] result = treeBuilderCompiler.buildUnits(getCompilationUnits());
-
+		if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+			jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.COMPILE);
+		}
 		// now adding the doc
 		if (jdtCompiler.getEnvironment().isCommentsEnabled()) {
+			if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+				jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.COMMENT);
+			}
 			//compile comments only if they are needed
 			for (int i = 0; i < result.length; i++) {
 				CompilationUnitDeclaration unit = result[i];
@@ -244,6 +289,13 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 				final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
 				CompilationUnitDeclaration tmpDeclForComment = parser.dietParse(sourceUnit, compilationResult);
 				unit.comments = tmpDeclForComment.comments;
+
+				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.COMMENT, new String(unit.getFileName()), i + 1, result.length);
+				}
+			}
+			if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
+				jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.COMMENT);
 			}
 		}
 		return result;
