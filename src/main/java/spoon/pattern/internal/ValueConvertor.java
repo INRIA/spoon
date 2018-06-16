@@ -23,5 +23,5 @@ import spoon.reflect.factory.Factory;
  * Converts the matching model values to parameter values during matching process
  */
 public interface ValueConvertor {
-	<T> T getValueAs(Factory factory, Object value, Class<T> valueClass);
+	<T> T getValueAs(Factory factory, String parameterName, Object value, Class<T> valueClass);
 }
