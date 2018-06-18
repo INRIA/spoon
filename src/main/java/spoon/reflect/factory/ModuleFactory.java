@@ -103,19 +103,6 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		@Override
 		public void accept(CtVisitor visitor) {
 			visitor.visitCtModule(this);
-
-			// allModules can be null during the deserialization
-			// then java will use hashCode and go through this method
-			// which may cause a NPE (to see it: comment this condition
-			// and run SerializableTest.
-			if (allModules != null) {
-				allModules.forEach(module -> {
-					if (!module.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
-						module.accept(visitor);
-					}
-				});
-			}
-
 		}
 
 		@Override
