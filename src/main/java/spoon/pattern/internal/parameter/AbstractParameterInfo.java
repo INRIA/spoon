@@ -440,7 +440,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	protected <T> T convertSingleValue(Factory factory, Object value, Class<T> type) {
 		ValueConvertor valueConvertor = getValueConvertor();
-		return (T) valueConvertor.getValueAs(factory, value, type);
+		return (T) valueConvertor.getValueAs(factory, getName(), value, type);
 	}
 
 	/**

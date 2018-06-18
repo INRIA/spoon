@@ -18,15 +18,21 @@ package spoon.support.compiler.jdt;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
+import org.eclipse.jdt.internal.compiler.util.Messages;
+
 
 class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
@@ -36,6 +42,20 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
 	}
 
+	// This code is directly inspired from Compiler class.
+	private void sortModuleDeclarationsFirst(ICompilationUnit[] sourceUnits) {
+		Arrays.sort(sourceUnits, (u1, u2) -> {
+			char[] fn1 = u1.getFileName();
+			char[] fn2 = u2.getFileName();
+			boolean isMod1 = CharOperation.endsWith(fn1, TypeConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn1, TypeConstants.MODULE_INFO_CLASS_NAME);
+			boolean isMod2 = CharOperation.endsWith(fn2, TypeConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn2, TypeConstants.MODULE_INFO_CLASS_NAME);
+			if (isMod1 == isMod2) {
+				return 0;
+			}
+			return isMod1 ? -1 : 1;
+		});
+	}
+
 	// this method is not meant to be in the public API
 	protected CompilationUnitDeclaration[] buildUnits(CompilationUnit[] sourceUnits) {
 
@@ -43,8 +63,12 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		// This code is largely inspired from JDT's
 		// CompilationUnitResolver.resolve
 
+		this.reportProgress(Messages.compilation_beginningToCompile);
+
 		CompilationUnitDeclaration unit = null;
 		int i = 0;
+
+		this.sortModuleDeclarationsFirst(sourceUnits);
 		// build and record parsed units
 		beginToCompile(sourceUnits);
 
@@ -52,6 +76,7 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		// the lookup environment)
 		for (; i < this.totalUnits; i++) {
 			unit = unitsToProcess[i];
+			this.reportProgress(Messages.bind(Messages.compilation_processing, new String(unit.getFileName())));
 			// System.err.println(unit);
 			this.parser.getMethodBodies(unit);
 
@@ -72,6 +97,7 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 			unit.ignoreFurtherInvestigation = false;
 			requestor.acceptResult(unit.compilationResult);
+			this.reportWorked(1, i);
 		}
 
 		ArrayList<CompilationUnitDeclaration> unitsToReturn = new ArrayList<CompilationUnitDeclaration>();
