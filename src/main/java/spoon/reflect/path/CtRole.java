@@ -102,7 +102,7 @@ public enum CtRole {
 	SERVICE_TYPE(MODULE_DIRECTIVE),
 	IMPLEMENTATION_TYPE,
 	PROVIDED_SERVICE(MODULE_DIRECTIVE),
-	INFERRED_VARIABLE;
+	IS_INFERRED;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

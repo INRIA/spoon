@@ -55,7 +55,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
-	@MetamodelPropertyField(role = CtRole.INFERRED_VARIABLE)
+	@MetamodelPropertyField(role = CtRole.IS_INFERRED)
 	private boolean inferred;
 
 	@Override
