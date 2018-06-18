@@ -39,7 +39,9 @@ public final class ModelUtils {
 
 	/** Utility method for testing: creates the model of `packageName` from src/test/java and returns the CtType corresponding to `className` */
 	public static <T extends CtType<?>> T build(String packageName, String className) throws Exception {
-		SpoonModelBuilder comp = new Launcher().createCompiler();
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setCommentEnabled(false); // we don't want to parse the comments for equals
+		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + packageName.replace('.', '/') + "/" + className + ".java"));
 		comp.build();
 		return comp.getFactory().Package().get(packageName).getType(className);
@@ -61,7 +63,9 @@ public final class ModelUtils {
 
 	/** Utility method for testing: creates the model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
-		SpoonModelBuilder comp = new Launcher().createCompiler();
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setCommentEnabled(false);
+		SpoonModelBuilder comp = launcher.createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
 			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
 		}
