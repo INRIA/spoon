@@ -676,6 +676,10 @@ public class CodeFactory extends SubFactory {
 		if (type == CtComment.CommentType.JAVADOC) {
 			return factory.Core().createJavaDoc().setContent(content);
 		}
+
+		if (content.contains(System.lineSeparator())) {
+			type = CtComment.CommentType.BLOCK;
+		}
 		return factory.Core().createComment().setContent(content).setCommentType(type);
 	}
 
