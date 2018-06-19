@@ -279,19 +279,4 @@ public class ImportScannerTest {
 		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
 		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
 	}
-
-	@Test
-	public void testTargetTypeNull() throws Exception {
-		Launcher spoon = new Launcher();
-		Factory factory = spoon.createFactory();
-		CtFieldReference fieldRef = factory.createFieldReference();
-		fieldRef.setStatic(true);
-
-		ImportScanner importScanner = new MinimalImportScanner();
-		importScanner.computeImports(fieldRef);
-
-		Collection<CtImport> imports = importScanner.getAllImports();
-
-		assertEquals(0, imports.size());
-	}
 }
