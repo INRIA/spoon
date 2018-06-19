@@ -24,6 +24,7 @@ import spoon.reflect.annotations.PropertySetter;
 import java.util.List;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.IMPORT;
 import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
@@ -357,4 +358,10 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * A new unique method name is given for each copy, and this method can be called several times.
 	 */
 	CtType<?> copyType();
+
+	@PropertyGetter(role = IMPORT)
+	Set<CtImport> getImports();
+
+	@PropertySetter(role = IMPORT)
+	<C extends CtType<T>> C addImport(CtImport ctImport);
 }

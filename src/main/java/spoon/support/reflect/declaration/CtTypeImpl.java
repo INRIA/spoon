@@ -24,9 +24,11 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -98,6 +100,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
+
+	@MetamodelPropertyField(role = CtRole.IMPORT)
+	Set<CtImport> imports = emptySet();
 
 	public CtTypeImpl() {
 		super();
@@ -1058,5 +1063,24 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtType<?> copyType() {
 		return Refactoring.copyType(this);
+	}
+
+	@Override
+	public Set<CtImport> getImports() {
+		return this.imports;
+	}
+
+	@Override
+	public <C extends CtType<T>> C addImport(CtImport ctImport) {
+		if (ctImport == null) {
+			return (C) this;
+		}
+
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.imports.add(ctImport);
+		return (C) this;
 	}
 }
