@@ -47,6 +47,7 @@ import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
@@ -403,6 +404,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 		scanCtShadowable(e);
+        scanCtImportHolder(e);
 	}
 
 	public void visitCtAnonymousExecutable(CtAnonymousExecutable e) {
@@ -506,6 +508,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(e);
 		scanCtVisitable(e);
 		scanCtShadowable(e);
+		scanCtImportHolder(e);
 	}
 
 	@Override
@@ -519,6 +522,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(typeParameter);
 		scanCtVisitable(typeParameter);
 		scanCtShadowable(typeParameter);
+        scanCtImportHolder(typeParameter);
 	}
 
 	public <T> void visitCtConditional(CtConditional<T> e) {
@@ -639,6 +643,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtModifiable(e);
 		scanCtVisitable(e);
 		scanCtShadowable(e);
+        scanCtImportHolder(e);
 	}
 
 	public <T> void visitCtInvocation(CtInvocation<T> e) {
@@ -774,6 +779,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 		scanCtShadowable(e);
+		scanCtImportHolder(e);
 	}
 
 	public void visitCtPackageReference(CtPackageReference e) {
@@ -999,5 +1005,9 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(usedService);
 		scanCtVisitable(usedService);
 		scanCtModuleDirective(usedService);
+	}
+
+	public void scanCtImportHolder(CtImportHolder importHolder) {
+
 	}
 }

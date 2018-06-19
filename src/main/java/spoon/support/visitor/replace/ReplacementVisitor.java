@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
+ * Copyright (C) 2006-2017 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -104,6 +104,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		@java.lang.Override
 		public void set(java.util.List replace) {
 			this.element.setTypeMembers(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtImportHolderImportsReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.code.CtImportHolder element;
+
+		CtImportHolderImportsReplaceListener(spoon.reflect.code.CtImportHolder element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setImports(replace);
 		}
 	}
 
@@ -1304,10 +1318,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 				if (val != null) {
 					map.put(key, val);
 					val.setParent(shouldBeDeleted.getParent());
-				} else {
+				}else {
 					map.remove(key);
 				}
-			} else {
+			}else {
 				map.remove(key);
 			}
 			listener.set(map);
@@ -1394,6 +1408,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(annotationType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(annotationType));
 		replaceInListIfExist(annotationType.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(annotationType));
 		replaceInListIfExist(annotationType.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(annotationType));
+		replaceInSetIfExist(annotationType.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportHolderImportsReplaceListener(annotationType));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -1509,6 +1524,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(ctClass.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(ctClass));
 		replaceInListIfExist(ctClass.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(ctClass));
+		replaceInSetIfExist(ctClass.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportHolderImportsReplaceListener(ctClass));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -1517,6 +1533,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(typeParameter.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(typeParameter));
 		replaceElementIfExist(typeParameter.getSuperclass(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperclassReplaceListener(typeParameter));
 		replaceInListIfExist(typeParameter.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(typeParameter));
+		replaceInSetIfExist(typeParameter.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportHolderImportsReplaceListener(typeParameter));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -1566,6 +1583,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(ctEnum.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(ctEnum));
 		replaceInListIfExist(ctEnum.getEnumValues(), new spoon.support.visitor.replace.ReplacementVisitor.CtEnumEnumValuesReplaceListener(ctEnum));
 		replaceInListIfExist(ctEnum.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(ctEnum));
+		replaceInSetIfExist(ctEnum.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportHolderImportsReplaceListener(ctEnum));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -1664,6 +1682,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(intrface.getFormalCtTypeParameters(), new spoon.support.visitor.replace.ReplacementVisitor.CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(intrface));
 		replaceInListIfExist(intrface.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(intrface));
 		replaceInListIfExist(intrface.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(intrface));
+		replaceInSetIfExist(intrface.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportHolderImportsReplaceListener(intrface));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -1813,6 +1832,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInSetIfExist(ctPackage.getPackages(), new spoon.support.visitor.replace.ReplacementVisitor.CtPackagePackagesReplaceListener(ctPackage));
 		replaceInSetIfExist(ctPackage.getTypes(), new spoon.support.visitor.replace.ReplacementVisitor.CtPackageTypesReplaceListener(ctPackage));
 		replaceInListIfExist(ctPackage.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(ctPackage));
+		replaceInSetIfExist(ctPackage.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtImportHolderImportsReplaceListener(ctPackage));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator

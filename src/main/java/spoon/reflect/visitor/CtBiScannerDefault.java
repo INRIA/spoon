@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
+ * Copyright (C) 2006-2017 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -78,6 +78,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, annotationType.getAnnotations(), other.getAnnotations());
 		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, annotationType.getTypeMembers(), other.getTypeMembers());
 		biScan(spoon.reflect.path.CtRole.COMMENT, annotationType.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.IMPORT, annotationType.getImports(), other.getImports());
 		exit(annotationType);
 	}
 
@@ -219,6 +220,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, ctClass.getTypeMembers(), other.getTypeMembers());
 		biScan(spoon.reflect.path.CtRole.COMMENT, ctClass.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.IMPORT, ctClass.getImports(), other.getImports());
 		exit(ctClass);
 	}
 
@@ -230,6 +232,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, typeParameter.getAnnotations(), other.getAnnotations());
 		biScan(spoon.reflect.path.CtRole.SUPER_TYPE, typeParameter.getSuperclass(), other.getSuperclass());
 		biScan(spoon.reflect.path.CtRole.COMMENT, typeParameter.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.IMPORT, typeParameter.getImports(), other.getImports());
 		exit(typeParameter);
 	}
 
@@ -289,6 +292,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, ctEnum.getTypeMembers(), other.getTypeMembers());
 		biScan(spoon.reflect.path.CtRole.VALUE, ctEnum.getEnumValues(), other.getEnumValues());
 		biScan(spoon.reflect.path.CtRole.COMMENT, ctEnum.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.IMPORT, ctEnum.getImports(), other.getImports());
 		exit(ctEnum);
 	}
 
@@ -409,6 +413,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, intrface.getTypeMembers(), other.getTypeMembers());
 		biScan(spoon.reflect.path.CtRole.COMMENT, intrface.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.IMPORT, intrface.getImports(), other.getImports());
 		exit(intrface);
 	}
 
@@ -592,6 +597,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.SUB_PACKAGE, ctPackage.getPackages(), other.getPackages());
 		biScan(spoon.reflect.path.CtRole.CONTAINED_TYPE, ctPackage.getTypes(), other.getTypes());
 		biScan(spoon.reflect.path.CtRole.COMMENT, ctPackage.getComments(), other.getComments());
+		biScan(spoon.reflect.path.CtRole.IMPORT, ctPackage.getImports(), other.getImports());
 		exit(ctPackage);
 	}
 

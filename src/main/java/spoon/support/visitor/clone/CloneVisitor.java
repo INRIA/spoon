@@ -56,6 +56,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtAnnotationType.setAnnotations(this.cloneHelper.clone(annotationType.getAnnotations()));
 		aCtAnnotationType.setTypeMembers(this.cloneHelper.clone(annotationType.getTypeMembers()));
 		aCtAnnotationType.setComments(this.cloneHelper.clone(annotationType.getComments()));
+		aCtAnnotationType.setImports(this.cloneHelper.clone(annotationType.getImports()));
 		this.builder.copy(annotationType, aCtAnnotationType);
 		this.cloneHelper.tailor(annotationType, aCtAnnotationType);
 		this.other = aCtAnnotationType;
@@ -209,6 +210,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtClass.setFormalCtTypeParameters(this.cloneHelper.clone(ctClass.getFormalCtTypeParameters()));
 		aCtClass.setTypeMembers(this.cloneHelper.clone(ctClass.getTypeMembers()));
 		aCtClass.setComments(this.cloneHelper.clone(ctClass.getComments()));
+		aCtClass.setImports(this.cloneHelper.clone(ctClass.getImports()));
 		this.builder.copy(ctClass, aCtClass);
 		this.cloneHelper.tailor(ctClass, aCtClass);
 		this.other = aCtClass;
@@ -221,6 +223,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtTypeParameter.setAnnotations(this.cloneHelper.clone(typeParameter.getAnnotations()));
 		aCtTypeParameter.setSuperclass(this.cloneHelper.clone(typeParameter.getSuperclass()));
 		aCtTypeParameter.setComments(this.cloneHelper.clone(typeParameter.getComments()));
+		aCtTypeParameter.setImports(this.cloneHelper.clone(typeParameter.getImports()));
 		this.builder.copy(typeParameter, aCtTypeParameter);
 		this.cloneHelper.tailor(typeParameter, aCtTypeParameter);
 		this.other = aCtTypeParameter;
@@ -285,6 +288,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtEnum.setTypeMembers(this.cloneHelper.clone(ctEnum.getTypeMembers()));
 		aCtEnum.setEnumValues(this.cloneHelper.clone(ctEnum.getEnumValues()));
 		aCtEnum.setComments(this.cloneHelper.clone(ctEnum.getComments()));
+		aCtEnum.setImports(this.cloneHelper.clone(ctEnum.getImports()));
 		this.builder.copy(ctEnum, aCtEnum);
 		this.cloneHelper.tailor(ctEnum, aCtEnum);
 		this.other = aCtEnum;
@@ -415,6 +419,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtInterface.setFormalCtTypeParameters(this.cloneHelper.clone(intrface.getFormalCtTypeParameters()));
 		aCtInterface.setTypeMembers(this.cloneHelper.clone(intrface.getTypeMembers()));
 		aCtInterface.setComments(this.cloneHelper.clone(intrface.getComments()));
+		aCtInterface.setImports(this.cloneHelper.clone(intrface.getImports()));
 		this.builder.copy(intrface, aCtInterface);
 		this.cloneHelper.tailor(intrface, aCtInterface);
 		this.other = aCtInterface;
@@ -613,6 +618,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtPackage.setPackages(this.cloneHelper.clone(ctPackage.getPackages()));
 		aCtPackage.setTypes(this.cloneHelper.clone(ctPackage.getTypes()));
 		aCtPackage.setComments(this.cloneHelper.clone(ctPackage.getComments()));
+		aCtPackage.setImports(this.cloneHelper.clone(ctPackage.getImports()));
 		this.builder.copy(ctPackage, aCtPackage);
 		this.cloneHelper.tailor(ctPackage, aCtPackage);
 		this.other = aCtPackage;
