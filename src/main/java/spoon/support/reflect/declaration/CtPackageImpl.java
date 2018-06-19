@@ -269,7 +269,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			this.imports = new QualifiedNameBasedSortedSet<>();
 		}
 
+		ctImport.setParent(this);
 		this.imports.add(ctImport);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.IMPORT, this.imports, ctImport);
 		return (C) this;
 	}
 
@@ -279,11 +281,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			return (C) this;
 		}
 
-		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
-			this.imports = new QualifiedNameBasedSortedSet<>();
+		for (CtImport ctImport : ctImports) {
+			this.addImport(ctImport);
 		}
-
-		this.imports.addAll(ctImports);
 		return (C) this;
 	}
 }

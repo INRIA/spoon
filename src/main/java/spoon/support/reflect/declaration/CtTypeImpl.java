@@ -44,6 +44,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
@@ -1080,21 +1081,21 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			this.imports = new QualifiedNameBasedSortedSet<>();
 		}
 
+		ctImport.setParent(this);
 		this.imports.add(ctImport);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.IMPORT, this.imports, ctImport);
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtType<T>> C addImports(Collection<CtImport> ctImports) {
-		if (ctImports == null || ctImports.size() == 0) {
+		if (ctImports == null) {
 			return (C) this;
 		}
 
-		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
-			this.imports = new QualifiedNameBasedSortedSet<>();
+		for (CtImport ctImport : ctImports) {
+			this.addImport(ctImport);
 		}
-
-		this.imports.addAll(ctImports);
 		return (C) this;
 	}
 }
