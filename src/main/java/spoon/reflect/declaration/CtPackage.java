@@ -22,8 +22,10 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 
+import java.util.Collection;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.IMPORT;
 import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
 
@@ -160,4 +162,13 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * See JLS §7.4.2. Unnamed Packages.
 	 */
 	boolean isUnnamedPackage();
+
+	@PropertyGetter(role = IMPORT)
+	Set<CtImport> getImports();
+
+	@PropertySetter(role = IMPORT)
+	<C extends CtPackage> C addImport(CtImport ctImport);
+
+	@PropertySetter(role = IMPORT)
+	<C extends CtPackage> C addImports(Collection<CtImport> ctImport);
 }

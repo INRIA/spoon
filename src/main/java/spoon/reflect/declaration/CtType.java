@@ -21,6 +21,7 @@ import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -364,4 +365,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 
 	@PropertySetter(role = IMPORT)
 	<C extends CtType<T>> C addImport(CtImport ctImport);
+
+	@PropertySetter(role = IMPORT)
+	<C extends CtType<T>> C addImports(Collection<CtImport> ctImport);
 }

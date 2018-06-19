@@ -1083,4 +1083,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		this.imports.add(ctImport);
 		return (C) this;
 	}
+
+	@Override
+	public <C extends CtType<T>> C addImports(Collection<CtImport> ctImports) {
+		if (ctImports == null || ctImports.size() == 0) {
+			return (C) this;
+		}
+
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.imports.addAll(ctImports);
+		return (C) this;
+	}
 }

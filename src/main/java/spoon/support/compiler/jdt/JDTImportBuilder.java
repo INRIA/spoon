@@ -105,7 +105,7 @@ class JDTImportBuilder {
 			}
 		}
 
-		spoonUnit.setImports(this.imports);
+		spoonUnit.getMainType().addImports(this.imports);
 	}
 
 	private CtType getOrLoadClass(String className) {

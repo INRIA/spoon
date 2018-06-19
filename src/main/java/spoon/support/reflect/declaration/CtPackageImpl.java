@@ -18,6 +18,7 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
@@ -28,7 +29,9 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.comparator.QualifiedNameComparator;
 import spoon.support.util.ModelSet;
+import spoon.support.util.QualifiedNameBasedSortedSet;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -42,6 +45,9 @@ import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
  */
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
+
+	@MetamodelPropertyField(role = CtRole.IMPORT)
+	Set<CtImport> imports = emptySet();
 
 	@MetamodelPropertyField(role = SUB_PACKAGE)
 	protected ModelSet<CtPackage> packs = new ModelSet<CtPackage>(QualifiedNameComparator.INSTANCE) {
@@ -248,4 +254,36 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
 	}
 
+	@Override
+	public Set<CtImport> getImports() {
+		return this.imports;
+	}
+
+	@Override
+	public <C extends CtPackage> C addImport(CtImport ctImport) {
+		if (ctImport == null) {
+			return (C) this;
+		}
+
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.imports.add(ctImport);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtPackage> C addImports(Collection<CtImport> ctImports) {
+		if (ctImports == null || ctImports.size() == 0) {
+			return (C) this;
+		}
+
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.imports.addAll(ctImports);
+		return (C) this;
+	}
 }

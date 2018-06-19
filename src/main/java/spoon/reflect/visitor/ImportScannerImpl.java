@@ -201,18 +201,20 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public void computeImports(CtElement element) {
+	public void computeImports(CtType simpleType) {
 		//look for top declaring type of that simpleType
-		if (element instanceof CtType) {
-			CtType simpleType = (CtType) element;
-			targetType = simpleType.getReference().getTopLevelType();
-			addClassImport(simpleType.getReference());
-			scan(simpleType);
-		} else {
-			CtType<?> type = element.getParent(CtType.class);
-			targetType = type == null ? null : type.getReference().getTopLevelType();
-			scan(element);
-		}
+		this.targetType = simpleType.getReference().getTopLevelType();
+		addClassImport(simpleType.getReference());
+		scan(simpleType);
+		this.targetType.getDeclaration().addImports(this.getAllImports());
+	}
+
+	@Override
+	public void computeImports(CtPackage ctPackage) {
+		//look for top declaring type of that simpleType
+		this.targetType = null;
+		scan(ctPackage);
+		ctPackage.addImports(this.getAllImports());
 	}
 
 	@Override
@@ -257,7 +259,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (targetType != null && targetType.canAccess(ref) == false) {
+		if (targetType != null && !targetType.canAccess(ref)) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
@@ -290,25 +292,21 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 								CtExecutableReference localReference = exec.getReference();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
-							} else if (parent instanceof CtInvocation) {
+							} else {
 								CtInvocation invo = (CtInvocation) parent;
 								CtExecutableReference localReference = invo.getExecutable();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
-							} else {
-								declaringType = null;
-								reference = null;
 							}
 
-							if (reference != null && isImported(reference)) {
+							if (isImported(reference)) {
 								// if we are in the **same** package we do the import for test with method isImported
 								if (declaringType != null) {
 									if (declaringType.getPackage() != null && !declaringType.getPackage().isUnnamedPackage()) {
 										// ignore java.lang package
 										if (!declaringType.getPackage().getSimpleName().equals("java.lang")) {
 											// ignore type in same package
-											if (declaringType.getPackage().getSimpleName()
-													.equals(pack.getSimpleName())) {
+											if (declaringType.getPackage().getSimpleName().equals(pack.getSimpleName())) {
 												classImports.put(ref.getSimpleName(), ref);
 												return true;
 											}
@@ -362,9 +360,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
-			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-				return true;
-			}
+			return (exist.getQualifiedName().equals(ref.getQualifiedName()));
 		}
 		return false;
 	}

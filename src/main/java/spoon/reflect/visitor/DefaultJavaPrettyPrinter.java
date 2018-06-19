@@ -306,8 +306,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Make the imports for all elements.
 	 */
 	public void computeImports(CtElement element) {
-		if (env.isAutoImports()) {
-			importsContext.computeImports(element);
+		if (env.isAutoImports() && element instanceof CtType) {
+			importsContext.computeImports((CtType) element);
 		}
 	}
 
@@ -1878,11 +1878,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		reset();
 		elementPrinterHelper.writeComment(pack);
 
-		// we need to compute imports only for annotations
-		// we don't want to get all imports coming from content of package
-		for (CtAnnotation annotation : pack.getAnnotations()) {
-			this.importsContext.computeImports(annotation);
+		if (!pack.getAnnotations().isEmpty()) {
+			this.importsContext.computeImports(pack);
 		}
+
 		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
