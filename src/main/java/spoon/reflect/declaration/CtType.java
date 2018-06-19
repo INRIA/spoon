@@ -16,6 +16,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
@@ -40,7 +41,7 @@ import static spoon.reflect.path.CtRole.TYPE_MEMBER;
  *
  * The type parameter T refers to the actual class that this type represents.
  */
-public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
+public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtFormalTypeDeclarer, CtShadowable, CtImportHolder {
 	/**
 	 * The string separator in a Java innertype qualified name.
 	 */
@@ -359,13 +360,4 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * A new unique method name is given for each copy, and this method can be called several times.
 	 */
 	CtType<?> copyType();
-
-	@PropertyGetter(role = IMPORT)
-	Set<CtImport> getImports();
-
-	@PropertySetter(role = IMPORT)
-	<C extends CtType<T>> C addImport(CtImport ctImport);
-
-	@PropertySetter(role = IMPORT)
-	<C extends CtType<T>> C addImports(Collection<CtImport> ctImport);
 }

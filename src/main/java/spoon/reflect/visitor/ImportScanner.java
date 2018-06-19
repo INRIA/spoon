@@ -16,12 +16,10 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
 
-import java.util.Collection;
 
 /**
  * Used to compute the imports required to write readable code with no fully qualified names.
@@ -38,13 +36,6 @@ public interface ImportScanner {
 	 * This happens in case the package contains annotation, displayed in the package-info.java.
 	 */
 	void computeImports(CtPackage element);
-
-	/**
-	 * Use computeImports or computeAllImports before getting the different imports.
-	 *
-	 * @return the list of computed imports or an empty collection if not imports has been computed.
-	 */
-	Collection<CtImport> getAllImports();
 
 	/**
 	 * Checks if the type is already imported.

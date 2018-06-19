@@ -20,6 +20,7 @@ import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -1072,7 +1073,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtType<T>> C addImport(CtImport ctImport) {
+	public <C extends CtImportHolder> C addImport(CtImport ctImport) {
 		if (ctImport == null) {
 			return (C) this;
 		}
@@ -1088,13 +1089,21 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtType<T>> C addImports(Collection<CtImport> ctImports) {
-		if (ctImports == null) {
+	public <C extends CtImportHolder> C setImports(Set<CtImport> ctImport) {
+		if (ctImport == null) {
+			this.imports = CtElementImpl.emptySet();
 			return (C) this;
 		}
 
-		for (CtImport ctImport : ctImports) {
-			this.addImport(ctImport);
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.IMPORT, this.imports, new HashSet<>(this.imports));
+		this.imports.clear();
+
+		for (CtImport anImport : ctImport) {
+			this.addImport(anImport);
 		}
 		return (C) this;
 	}

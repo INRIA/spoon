@@ -34,6 +34,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -185,6 +186,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
 		result.add(factory.Type().get(CtModuleDirective.class));
+		result.add(factory.Type().get(CtImportHolder.class));
 		return result;
 	}
 

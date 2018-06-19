@@ -296,10 +296,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtImport> computeImports(CtType<?> type) {
+	public Set<CtImport> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		importsContext.computeImports(context.currentTopLevel);
-		return importsContext.getAllImports();
+		return type.getImports();
 	}
 
 	/**
@@ -1887,7 +1887,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!pack.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(pack.getQualifiedName());
 		}
-		elementPrinterHelper.writeImports(this.importsContext.getAllImports());
+		elementPrinterHelper.writeImports(pack.getImports());
 		return printer.getPrinterHelper().toString();
 	}
 

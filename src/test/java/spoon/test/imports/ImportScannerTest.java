@@ -217,7 +217,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new MinimalImportScanner();
 		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
+		Set<CtImport> imports = theClass.getImports();
 
 		assertTrue(imports.isEmpty());
 	}
@@ -233,7 +233,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
+		Set<CtImport> imports = theClass.getImports();
 
 		// java.lang are also computed
 		assertEquals(4, imports.size());
@@ -253,7 +253,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
+		Set<CtImport> imports = theClass.getImports();
 
 		assertEquals(0, imports.size());
 	}

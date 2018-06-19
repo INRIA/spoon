@@ -182,9 +182,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		super.visitCtCatchVariable(catchVariable);
 	}
 
-	@Override
-	public Collection<CtImport> getAllImports() {
-		Collection<CtImport> listallImports = new ArrayList<>();
+	protected Set<CtImport> getAllImports() {
+		Set<CtImport> listallImports = new HashSet<>();
 
 		for (CtReference reference : this.classImports.values()) {
 			listallImports.add(reference.getFactory().Type().createImport(reference));
@@ -206,7 +205,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		this.targetType = simpleType.getReference().getTopLevelType();
 		addClassImport(simpleType.getReference());
 		scan(simpleType);
-		this.targetType.getDeclaration().addImports(this.getAllImports());
+		this.targetType.getDeclaration().setImports(this.getAllImports());
 	}
 
 	@Override
@@ -214,7 +213,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		//look for top declaring type of that simpleType
 		this.targetType = null;
 		scan(ctPackage);
-		ctPackage.addImports(this.getAllImports());
+		ctPackage.setImports(this.getAllImports());
 	}
 
 	@Override

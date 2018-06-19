@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
@@ -32,6 +33,7 @@ import spoon.support.util.ModelSet;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -260,7 +262,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <C extends CtPackage> C addImport(CtImport ctImport) {
+	public <C extends CtImportHolder> C addImport(CtImport ctImport) {
 		if (ctImport == null) {
 			return (C) this;
 		}
@@ -276,13 +278,21 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <C extends CtPackage> C addImports(Collection<CtImport> ctImports) {
-		if (ctImports == null || ctImports.size() == 0) {
+	public <C extends CtImportHolder> C setImports(Set<CtImport> ctImport) {
+		if (ctImport == null) {
+			this.imports = CtElementImpl.emptySet();
 			return (C) this;
 		}
 
-		for (CtImport ctImport : ctImports) {
-			this.addImport(ctImport);
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.IMPORT, this.imports, new HashSet<>(this.imports));
+		this.imports.clear();
+
+		for (CtImport anImport : ctImport) {
+			this.addImport(anImport);
 		}
 		return (C) this;
 	}

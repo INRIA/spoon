@@ -16,6 +16,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
@@ -33,7 +34,7 @@ import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
  * This element defines a package declaration. The packages are represented by a
  * tree.
  */
-public interface CtPackage extends CtNamedElement, CtShadowable {
+public interface CtPackage extends CtNamedElement, CtShadowable, CtImportHolder {
 
 	/**
 	 * The separator for a string representation of a package.
@@ -162,13 +163,4 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * See JLS §7.4.2. Unnamed Packages.
 	 */
 	boolean isUnnamedPackage();
-
-	@PropertyGetter(role = IMPORT)
-	Set<CtImport> getImports();
-
-	@PropertySetter(role = IMPORT)
-	<C extends CtPackage> C addImport(CtImport ctImport);
-
-	@PropertySetter(role = IMPORT)
-	<C extends CtPackage> C addImports(Collection<CtImport> ctImport);
 }
