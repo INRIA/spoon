@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -686,6 +687,10 @@ public class CodeFactory extends SubFactory {
 	 * @return a new CtComment
 	 */
 	public CtComment createInlineComment(String content) {
+		if (content.contains(CtComment.LINE_SEPARATOR)) {
+			throw new SpoonException("The content of your comment contain at least one line separator. "
+					+ "Please consider using a block comment by calling createComment(\"your content\", CtComment.CommentType.BLOCK).");
+		}
 		return createComment(content, CtComment.CommentType.INLINE);
 	}
 

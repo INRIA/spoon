@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -37,6 +39,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
@@ -904,6 +907,27 @@ public class CommentTest {
 			CtComment comment = literal.getComments().get(0);
 			String expected = literal.getValue();
 			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
+		}
+	}
+
+	@Test
+	public void testInlineCommentIfBlock() {
+		// contract: when creating an inline comment from a string with line separators, it throws an exception to create block comment
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/WithIfBlock.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		List<CtIf> ctIfs = model.getElements(new TypeFilter<>(CtIf.class));
+
+		assertEquals(1, ctIfs.size());
+		CtIf ctIf = ctIfs.get(0);
+		try {
+			CtComment ctComment = launcher.getFactory().createInlineComment(ctIf.toString());
+			fail("Exception should have been thrown");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains("consider using a block comment"));
 		}
 	}
 }
