@@ -211,6 +211,16 @@ public class Metamodel {
 	 */
 	public static Metamodel getInstance() {
 		if (instance == null) {
+			try {
+				//this is needed just for CtGenerationTest#testGenerateRoleHandler
+				//which must not use RoleHandler at time when RoleHandler is generated and Spoon model doesn't fit to old RoleHandlers
+				//to avoid egg/chicken problem
+				if ("true".equals(System.getProperty(MetamodelProperty.class.getName() + "-noRoleHandler"))) {
+					MetamodelProperty.useRuntimeMethodInvocation = true;
+				}
+			} catch (SecurityException e) {
+				//ignore that
+			}
 			instance = new Metamodel();
 		}
 		return instance;
