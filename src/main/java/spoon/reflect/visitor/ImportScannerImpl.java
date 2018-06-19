@@ -212,7 +212,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public void computeImports(CtPackage ctPackage) {
 		//look for top declaring type of that simpleType
 		this.targetType = null;
-		scan(ctPackage);
+		scan(ctPackage.getAnnotations());
 		ctPackage.setImports(this.getAllImports());
 	}
 
