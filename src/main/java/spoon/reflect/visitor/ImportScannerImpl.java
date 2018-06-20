@@ -184,6 +184,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
+	public void visitCtInvocation(CtInvocation invocation) {
+		this.scan(invocation.getExecutable());
+	}
+
+	@Override
 	public Collection<CtImport> getAllImports() {
 		Collection<CtImport> listallImports = new ArrayList<>();
 
@@ -468,8 +473,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
 			return false;
 		}
-		if (this.methodImports.containsKey(ref.getSimpleName())) {
-			return isImportedInMethodImports(ref);
+		if (this.isImportedInMethodImports(ref)) {
+			return true;
 		}
 
 		// if the whole class is imported: no need to import the method.
@@ -498,7 +503,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		for (CtImport ctImport : this.usedImport.keySet()) {
 			switch (ctImport.getImportKind()) {
 				case METHOD:
-					if (ctImport.getReference().equals(ref)) {
+					CtExecutableReference execRef = (CtExecutableReference) ctImport.getReference();
+					CtTypeReference declaringType = execRef.getDeclaringType();
+					if (execRef.getSimpleName().equals(ref.getSimpleName()) && declaringType != null && declaringType.equals(ref.getDeclaringType())) {
 						return this.setImportUsed(ctImport);
 					}
 					break;

@@ -1202,7 +1202,7 @@ public class ImportTest {
 		int countImports = 0;
 
 		int nbStaticImports = 2;
-		int nbStandardImports = 4;
+		int nbStandardImports = 3;
 
 		boolean startStatic = false;
 
@@ -1224,7 +1224,8 @@ public class ImportTest {
 			}
 		}
 
-		assertEquals("Exactly "+nbStandardImports+nbStaticImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
+		int totalImports = nbStandardImports + nbStaticImports;
+		assertEquals("Exactly "+totalImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
 	}
 
 	@Test

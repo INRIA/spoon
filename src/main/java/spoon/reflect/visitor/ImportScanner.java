@@ -44,5 +44,8 @@ public interface ImportScanner {
 	 */
 	boolean isImported(CtReference ref);
 
+	/**
+	 * Specify the original imports to use before computing new imports.
+	 */
 	void initWithImports(Collection<CtImport> importCollection);
 }
