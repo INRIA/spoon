@@ -7,6 +7,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -576,6 +577,17 @@ public class APITest {
 		assertNotNull(compilationUnit);
 		CtType<?> mainType = compilationUnit.getMainType();
 		assertSame(l, mainType);
+	}
+
+	@Test
+	public void testLauncherDefaultValues() {
+		// contract: check default value for classpath and comments in Launcher
+
+		Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+
+		assertTrue(environment.getNoClasspath());
+		assertTrue(environment.isCommentsEnabled());
 	}
 
 }
