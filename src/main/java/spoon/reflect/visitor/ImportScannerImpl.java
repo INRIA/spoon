@@ -186,6 +186,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void visitCtInvocation(CtInvocation invocation) {
 		this.scan(invocation.getExecutable());
+		this.scan(invocation.getArguments());
 	}
 
 	@Override
