@@ -91,6 +91,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
+		scan(reference.getDeclaringType());
 		if (reference.isStatic()) {
 			addFieldImport(reference);
 		} else {
