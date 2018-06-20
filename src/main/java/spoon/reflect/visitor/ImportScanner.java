@@ -43,4 +43,6 @@ public interface ImportScanner {
 	 * Checks if the type is already imported.
 	 */
 	boolean isImported(CtReference ref);
+
+	void initWithImports(Collection<CtImport> importCollection);
 }

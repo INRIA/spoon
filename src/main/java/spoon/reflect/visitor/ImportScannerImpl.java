@@ -76,6 +76,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
+	private Map<CtImport, Boolean> usedImport = new HashMap<>(); // defined if imports had been used or not
 
 	@Override
 	public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
@@ -186,6 +187,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public Collection<CtImport> getAllImports() {
 		Collection<CtImport> listallImports = new ArrayList<>();
 
+		for (Map.Entry<CtImport, Boolean> entry : this.usedImport.entrySet()) {
+			if (entry.getValue()) {
+				listallImports.add(entry.getKey());
+			}
+		}
+
 		for (CtReference reference : this.classImports.values()) {
 			listallImports.add(reference.getFactory().Type().createImport(reference));
 		}
@@ -225,6 +232,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return isImportedInClassImports((CtTypeReference) ref);
 		} else {
 			return false;
+		}
+	}
+
+	@Override
+	public void initWithImports(Collection<CtImport> importCollection) {
+		for (CtImport ctImport : importCollection) {
+			this.usedImport.put(ctImport, Boolean.FALSE);
 		}
 	}
 
@@ -338,7 +352,32 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return true;
 	}
 
+	private boolean setImportUsed(CtImport ctImport) {
+		this.usedImport.put(ctImport, true);
+		return true;
+	}
+
 	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
+		for (CtImport ctImport : this.usedImport.keySet()) {
+			switch (ctImport.getImportKind()) {
+				case TYPE:
+					if (ctImport.getReference().equals(ref)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+
+				case ALL_TYPES:
+					String packQualifiedName = ref.getPackage().getQualifiedName();
+					String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
+					typeImportQualifiedName = typeImportQualifiedName.substring(0, typeImportQualifiedName.lastIndexOf("."));
+					if (packQualifiedName.equals(typeImportQualifiedName)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+			}
+		}
+
 		if (targetType != null) {
 			CtPackageReference pack = targetType.getPackage();
 
@@ -456,6 +495,28 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean isImportedInMethodImports(CtExecutableReference<?> ref) {
+		for (CtImport ctImport : this.usedImport.keySet()) {
+			switch (ctImport.getImportKind()) {
+				case METHOD:
+					if (ctImport.getReference().equals(ref)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+
+				case ALL_STATIC_MEMBERS:
+					if (ref.getDeclaringType() != null) {
+						String typeMethodQualifiedName = ref.getDeclaringType().getQualifiedName();
+						String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
+						typeImportQualifiedName = typeImportQualifiedName.substring(0, typeImportQualifiedName.lastIndexOf("."));
+						if (typeMethodQualifiedName.equals(typeImportQualifiedName)) {
+							return this.setImportUsed(ctImport);
+						}
+					}
+					break;
+			}
+		}
+
 		if (!(ref.isImplicit()) && methodImports.containsKey(ref.getSimpleName())) {
 			CtExecutableReference<?> exist = methodImports.get(ref.getSimpleName());
 			if (getSignature(exist).equals(
@@ -490,6 +551,27 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	protected boolean isImportedInFieldImports(CtFieldReference<?> ref) {
+		for (CtImport ctImport : this.usedImport.keySet()) {
+			switch (ctImport.getImportKind()) {
+				case FIELD:
+					if (ctImport.getReference().equals(ref)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+
+				case ALL_STATIC_MEMBERS:
+					String typeFieldQualifiedName = ref.getQualifiedName();
+					String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
+					typeFieldQualifiedName = typeFieldQualifiedName.substring(0, typeFieldQualifiedName.lastIndexOf("."));
+					typeImportQualifiedName = typeImportQualifiedName.substring(0, typeImportQualifiedName.lastIndexOf("."));
+					if (typeFieldQualifiedName.equals(typeImportQualifiedName)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+			}
+		}
+
 		if (!(ref.isImplicit()) && fieldImports.containsKey(ref.getSimpleName())) {
 			CtFieldReference<?> exist = fieldImports.get(ref.getSimpleName());
 			try {
