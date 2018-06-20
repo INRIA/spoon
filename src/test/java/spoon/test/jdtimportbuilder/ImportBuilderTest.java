@@ -146,8 +146,7 @@ public class ImportBuilderTest {
         spoon.run();
 
         CtClass classStatic = spoon.getFactory().Class().get(StaticImportWithInheritance.class);
-        CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
-        Collection<CtImport> imports = unitStatic.getImports();
+        Collection<CtImport> imports = classStatic.getImports();
 
         assertEquals(1, imports.size());
         CtImport ctImport = imports.iterator().next();
@@ -166,8 +165,7 @@ public class ImportBuilderTest {
         spoon.run();
 
         CtClass classStatic = spoon.getFactory().Class().get("jdtimportbuilder.ItfImport");
-        CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
-        Collection<CtImport> imports = unitStatic.getImports();
+        Collection<CtImport> imports = classStatic.getImports();
 
         assertEquals(1, imports.size());
         CtImport ctImport = imports.iterator().next();

@@ -43,6 +43,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -90,7 +91,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
-		scan(reference.getDeclaringType());
 		if (reference.isStatic()) {
 			addFieldImport(reference);
 		} else {
@@ -199,6 +199,33 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return listallImports;
 	}
 
+	private void initExistingImports(Set<CtImport> imports) {
+		for (CtImport anImport : imports) {
+			CtReference ref = anImport.getReference();
+
+			switch (anImport.getImportKind()) {
+				case METHOD:
+					this.methodImports.put(ref.getSimpleName(), (CtExecutableReference) ref);
+					break;
+
+				case FIELD:
+					this.fieldImports.put(ref.getSimpleName(), (CtFieldReference) ref);
+					break;
+
+				case TYPE:
+					this.classImports.put(ref.getSimpleName(), (CtTypeReference) ref);
+					break;
+
+				case ALL_STATIC_MEMBERS:
+					CtWildcardStaticTypeMemberReferenceImpl staticTypeMemberReference = (CtWildcardStaticTypeMemberReferenceImpl) ref;
+					String simpleName = staticTypeMemberReference.getSimpleName();
+					simpleName = simpleName.substring(0, simpleName.lastIndexOf("."));
+					this.classImports.put(simpleName, (CtTypeReference) ref);
+					break;
+			}
+		}
+	}
+
 	@Override
 	public void computeImports(CtType simpleType) {
 		//look for top declaring type of that simpleType
@@ -208,7 +235,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			this.targetType = simpleType.getTopLevelType();
 		}
 
-		addClassImport(simpleType.getReference());
+		this.initExistingImports(simpleType.getImports());
 		scan(simpleType);
 		this.targetType.setImports(this.getAllImports());
 	}
@@ -217,6 +244,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	public void computeImports(CtPackage ctPackage) {
 		//look for top declaring type of that simpleType
 		this.targetType = null;
+		this.initExistingImports(ctPackage.getImports());
 		scan(ctPackage.getAnnotations());
 		ctPackage.setImports(this.getAllImports());
 	}
@@ -326,7 +354,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			CtPackageReference pack = targetType.getReference().getPackage();
 			if (pack != null && ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
-				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+				if (ref.getPackage().getQualifiedName().equals("java.lang")) {
+					return false;
+				} else {
 					// ignore type in same package
 					if (ref.getPackage().getSimpleName()
 							.equals(pack.getSimpleName())) {
@@ -364,7 +394,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
-			return (exist.getQualifiedName().equals(ref.getQualifiedName()));
+
+			String fqnName = exist.getQualifiedName();
+			if (exist instanceof CtWildcardStaticTypeMemberReferenceImpl) {
+				fqnName = fqnName.substring(0, fqnName.lastIndexOf(".")); // remove the last .*
+			}
+			return (fqnName.equals(ref.getQualifiedName()));
 		}
 		return false;
 	}
