@@ -72,7 +72,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected Map<String, CtFieldReference<?>> fieldImports = new TreeMap<>();
 	protected Map<String, CtExecutableReference<?>> methodImports = new TreeMap<>();
 	//top declaring type of that import
-	protected CtTypeReference<?> targetType;
+	protected CtType targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
@@ -202,10 +202,15 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void computeImports(CtType simpleType) {
 		//look for top declaring type of that simpleType
-		this.targetType = simpleType.getReference().getTopLevelType();
+		if (simpleType.isTopLevel()) {
+			this.targetType = simpleType;
+		} else {
+			this.targetType = simpleType.getTopLevelType();
+		}
+
 		addClassImport(simpleType.getReference());
 		scan(simpleType);
-		this.targetType.getDeclaration().setImports(this.getAllImports());
+		this.targetType.setImports(this.getAllImports());
 	}
 
 	@Override
@@ -258,7 +263,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (targetType != null && !targetType.canAccess(ref)) {
+		if (targetType != null && !targetType.getReference().canAccess(ref)) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
@@ -280,7 +285,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 							CtTypeReference declaringType;
 							CtReference reference;
-							CtPackageReference pack = targetType.getPackage();
+							CtPackageReference pack = targetType.getReference().getPackage();
 							if (parent instanceof CtFieldAccess) {
 								CtFieldAccess field = (CtFieldAccess) parent;
 								CtFieldReference localReference = field.getVariable();
@@ -318,7 +323,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			} catch (ParentNotInitializedException e) {
 			}
-			CtPackageReference pack = targetType.getPackage();
+			CtPackageReference pack = targetType.getReference().getPackage();
 			if (pack != null && ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
 				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
@@ -337,7 +342,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
 		if (targetType != null) {
-			CtPackageReference pack = targetType.getPackage();
+			CtPackageReference pack = targetType.getReference().getPackage();
 
 			// we consider that if a class belongs to java.lang or the same package than the actual class
 			// then it is imported by default
