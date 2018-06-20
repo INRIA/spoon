@@ -160,18 +160,6 @@ public class AstCheckerTest {
 					|| notCandidates.contains(candidate.getDeclaringType().getSimpleName() + "#" + candidate.getSimpleName());
 		}
 
-		private boolean hasPrimitiveTypeForParameters(List<CtParameter<?>> parameters) {
-			// primitive value are not nullable
-
-			for (CtParameter<?> parameter : parameters) {
-				if (!parameter.getType().isPrimitive()) {
-					return false;
-				}
-			}
-
-			return true;
-		}
-
 		private boolean isSurcharged(CtMethod<?> candidate) {
 			CtBlock<?> block = candidate.getBody();
 			if (block.getStatements().size() == 0) {

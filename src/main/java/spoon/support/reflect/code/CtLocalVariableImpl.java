@@ -38,7 +38,6 @@ import java.util.Set;
 
 import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
 import static spoon.reflect.path.CtRole.IS_INFERRED;
-import static spoon.reflect.path.CtRole.IS_SHADOW;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.TYPE;
 
