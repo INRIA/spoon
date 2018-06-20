@@ -1938,8 +1938,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		this.imports = new HashSet<>();
-		this.importsContext.initWithImports(sourceCompilationUnit.getImports());
-
+		if (sourceCompilationUnit != null) {
+			this.importsContext.initWithImports(sourceCompilationUnit.getImports());
+		}
+		
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}
