@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -103,19 +103,6 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		@Override
 		public void accept(CtVisitor visitor) {
 			visitor.visitCtModule(this);
-
-			// allModules can be null during the deserialization
-			// then java will use hashCode and go through this method
-			// which may cause a NPE (to see it: comment this condition
-			// and run SerializableTest.
-			if (allModules != null) {
-				allModules.forEach(module -> {
-					if (!module.getSimpleName().equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
-						module.accept(visitor);
-					}
-				});
-			}
-
 		}
 
 		@Override

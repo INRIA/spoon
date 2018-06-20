@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,6 +19,8 @@ package spoon.metamodel;
 import static spoon.metamodel.Metamodel.addUniqueObject;
 import static spoon.metamodel.Metamodel.getOrCreate;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.util.RtHelper;
 
 /**
  * Represents a property of the Spoon metamodel.
@@ -74,7 +77,7 @@ public class MetamodelProperty {
 	 */
 	private CtTypeReference<?> itemValueType;
 
-	private final RoleHandler roleHandler;
+	private RoleHandler roleHandler;
 
 	private Boolean derived;
 	private Boolean unsettable;
@@ -104,7 +107,6 @@ public class MetamodelProperty {
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;
-		roleHandler = RoleHandlerHelper.getRoleHandler((Class) ownerConcept.getMetamodelInterface().getActualClass(), role);
 	}
 
 	void addMethod(CtMethod<?> method) {
@@ -580,15 +582,36 @@ public class MetamodelProperty {
 	 * @return {@link RoleHandler} which can access runtime data of this Property
 	 */
 	public RoleHandler getRoleHandler() {
-		return this.roleHandler;
+		if (roleHandler == null) {
+			//initialize it lazily, because CtGenerationTest#testGenerateRoleHandler needs metamodel to generate rolehandlers
+			//and here it may happen that rolehandler doesn't exist yet
+			roleHandler = RoleHandlerHelper.getRoleHandler((Class) ownerConcept.getMetamodelInterface().getActualClass(), role);
+		}
+		return roleHandler;
 	}
+
+	static boolean useRuntimeMethodInvocation = false;
 
 	/**
 	 * @param element an instance whose attribute value is read
 	 * @return a value of attribute defined by this {@link MetamodelProperty} from the provided `element`
 	 */
 	public <T, U> U getValue(T element) {
-		return roleHandler.getValue(element);
+		if (useRuntimeMethodInvocation) {
+			MMMethod method = getMethod(MMMethodKind.GET);
+			if (method != null) {
+				Method rtMethod = RtHelper.getMethod(getOwner().getImplementationClass().getActualClass(), method.getName(), 0);
+				if (rtMethod != null) {
+					try {
+						return (U) rtMethod.invoke(element);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						throw new SpoonException("Invokation of getter on " + toString() + " failed", e);
+					}
+				}
+				throw new SpoonException("Cannot invoke getter on " + toString());
+			}
+		}
+		return getRoleHandler().getValue(element);
 	}
 
 	/**
@@ -596,6 +619,21 @@ public class MetamodelProperty {
 	 * @param value to be set value of attribute defined by this {@link MetamodelProperty} on the provided `element`
 	 */
 	public <T, U> void setValue(T element, U value) {
-		roleHandler.setValue(element, value);
+		if (useRuntimeMethodInvocation) {
+			MMMethod method = getMethod(MMMethodKind.SET);
+			if (method != null) {
+				Method rtMethod = RtHelper.getMethod(getOwner().getImplementationClass().getActualClass(), method.getName(), 1);
+				if (rtMethod != null) {
+					try {
+						rtMethod.invoke(element, value);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						throw new SpoonException("Invokation of setter on " + toString() + " failed", e);
+					}
+					return;
+				}
+				throw new SpoonException("Cannot invoke setter on " + toString());
+			}
+		}
+		getRoleHandler().setValue(element, value);
 	}
 }

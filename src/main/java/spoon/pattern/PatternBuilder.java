@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -419,14 +419,14 @@ public class PatternBuilder {
 		return this;
 	}
 
-	static CtTypeReference<?> getLocalTypeRefBySimpleName(CtType<?> templateType, String typeSimpleName) {
+	static String getLocalTypeRefBySimpleName(CtType<?> templateType, String typeSimpleName) {
 		CtType<?> type = templateType.getNestedType(typeSimpleName);
 		if (type != null) {
-			return type.getReference();
+			return type.getQualifiedName();
 		}
 		type = templateType.getPackage().getType(typeSimpleName);
 		if (type != null) {
-			return type.getReference();
+			return type.getQualifiedName();
 		}
 		Set<String> typeQNames = new HashSet<>();
 		templateType
@@ -436,7 +436,7 @@ public class PatternBuilder {
 			throw new SpoonException("The type parameter " + typeSimpleName + " is ambiguous. It matches multiple types: " + typeQNames);
 		}
 		if (typeQNames.size() == 1) {
-			return templateType.getFactory().Type().createReference(typeQNames.iterator().next());
+			return typeQNames.iterator().next();
 		}
 		return null;
 	}

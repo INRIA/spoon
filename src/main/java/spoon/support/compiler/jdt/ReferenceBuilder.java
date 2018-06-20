@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -66,6 +66,7 @@ import org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtModule;
@@ -369,7 +370,13 @@ public class ReferenceBuilder {
 		final CtExecutableReference ref = this.jdtTreeBuilder.getFactory().Core().createExecutableReference();
 		if (exec.isConstructor()) {
 			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
-			ref.setType(getTypeReference(exec.declaringClass));
+
+			// in case of constructor of an array, it's the return type that we want
+			if (exec.returnType instanceof VoidTypeBinding) {
+				ref.setType(getTypeReference(exec.declaringClass));
+			} else {
+				ref.setType(getTypeReference(exec.returnType));
+			}
 		} else {
 			ref.setSimpleName(new String(exec.selector));
 			ref.setType(getTypeReference(exec.returnType));
@@ -389,7 +396,11 @@ public class ReferenceBuilder {
 			}
 			ref.setStatic(true);
 		} else {
-			ref.setDeclaringType(getTypeReference(exec.declaringClass));
+			if (exec.isConstructor() && !(exec.returnType instanceof VoidTypeBinding)) {
+				ref.setDeclaringType(getTypeReference(exec.returnType));
+			} else {
+				ref.setDeclaringType(getTypeReference(exec.declaringClass));
+			}
 			ref.setStatic(exec.isStatic());
 		}
 

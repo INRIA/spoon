@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -44,7 +44,7 @@ public class ValueConvertorImpl implements ValueConvertor {
 	}
 
 	@Override
-	public <T> T getValueAs(Factory factory, Object value, Class<T> valueClass) {
+	public <T> T getValueAs(Factory factory, String parameterName, Object value, Class<T> valueClass) {
 		if (valueClass.isInstance(value)) {
 			return cloneIfNeeded(valueClass.cast(value));
 		}
@@ -122,6 +122,8 @@ public class ValueConvertorImpl implements ValueConvertor {
 				return val == null ? null : (T) val.toString();
 			} else if (value instanceof Enum) {
 				return (T) ((Enum) value).name();
+			} else if (value == null) {
+				throw new SpoonException("Missing parameter value for parameter `" + parameterName + "`");
 			}
 			throw new SpoonException("Parameter value has unexpected class: " + value.getClass().getName() + ", whose conversion to String is not supported");
 		}

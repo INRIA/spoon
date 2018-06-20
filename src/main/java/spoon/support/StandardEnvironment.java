@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -38,6 +38,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean copyResources = true;
 
-	private boolean enableComments = false;
+	private boolean enableComments = true;
 
 	private Logger logger = Launcher.LOGGER;
 
@@ -101,6 +102,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private OutputType outputType = OutputType.CLASSES;
 
 	private Boolean noclasspath = null;
+
+	private SpoonProgress spoonProgress = null;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -574,5 +577,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public OutputType getOutputType() {
 		return this.outputType;
+	}
+
+	@Override
+	public SpoonProgress getSpoonProgress() {
+		return this.spoonProgress;
+	}
+
+	@Override
+	public void setSpoonProgress(SpoonProgress spoonProgress) {
+		this.spoonProgress = spoonProgress;
 	}
 }
