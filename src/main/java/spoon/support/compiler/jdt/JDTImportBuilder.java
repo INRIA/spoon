@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
@@ -39,27 +40,33 @@ import java.util.Set;
 class JDTImportBuilder {
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private String filePath;
-	private CompilationUnit spoonUnit;
-	private ICompilationUnit sourceUnit;
 	private Factory factory;
-	private Set<CtImport> imports;
+	private CtImportHolder importHolder;
 
 	JDTImportBuilder(CompilationUnitDeclaration declarationUnit,  Factory factory) {
 		this.declarationUnit = declarationUnit;
 		this.factory = factory;
-		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
-		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
+		ICompilationUnit sourceUnit = declarationUnit.compilationResult.compilationUnit;
+		String filePath = CharOperation.charToString(sourceUnit.getFileName());
 		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
-		this.spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
-		this.imports = new HashSet<>();
+		CompilationUnit spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
+
+		switch (spoonUnit.getUnitType()) {
+			case TYPE_DECLARATION:
+				importHolder = spoonUnit.getMainType();
+				break;
+
+			case PACKAGE_DECLARATION:
+				importHolder = spoonUnit.getDeclaredPackage();
+				break;
+		}
 	}
 
 	// package visible method in a package visible class, not in the public API
 	void build() {
 		// sets the imports of the Spoon compilation unit corresponding to `declarationUnit`
 
-		if (declarationUnit.imports == null || declarationUnit.imports.length == 0) {
+		if (declarationUnit.imports == null || declarationUnit.imports.length == 0 || importHolder == null) {
 			return;
 		}
 
@@ -75,13 +82,13 @@ class JDTImportBuilder {
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
 					if (ctPackage != null) {
-						this.imports.add(factory.Type().createImport(ctPackage.getReference()));
+						this.importHolder.addImport(factory.Type().createImport(ctPackage.getReference()));
 					}
 
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {
-						this.imports.add(factory.Type().createImport(klass.getReference()));
+						this.importHolder.addImport(factory.Type().createImport(klass.getReference()));
 					}
 				}
 			} else {
@@ -92,20 +99,18 @@ class JDTImportBuilder {
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
 					if (methodOrFieldName.equals("*")) {
-						this.imports.add(factory.Type().createImport(factory.Type().createWildcardStaticTypeMemberReference(klass.getReference())));
+						this.importHolder.addImport(factory.Type().createImport(factory.Type().createWildcardStaticTypeMemberReference(klass.getReference())));
 					} else {
 						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
 						if (methodOrFields.size() > 0) {
 							CtNamedElement methodOrField = methodOrFields.get(0);
-							this.imports.add(factory.Type().createImport(methodOrField.getReference()));
+							this.importHolder.addImport(factory.Type().createImport(methodOrField.getReference()));
 						}
 					}
 				}
 			}
 		}
-
-		spoonUnit.setImports(this.imports);
 	}
 
 	private CtType getOrLoadClass(String className) {

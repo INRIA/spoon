@@ -320,7 +320,7 @@ public class SpoonArchitectureEnforcerTest {
 			}
 		});
 
-		assertTrue("The following methods are missing in CtScanner: \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
+		assertTrue("The following methods are missing in CtInheritanceScanner: \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
 	}
 
 	@Test

@@ -20,13 +20,16 @@ import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -42,6 +45,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
@@ -98,6 +102,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
+
+	@MetamodelPropertyField(role = CtRole.IMPORT)
+	Set<CtImport> imports = emptySet();
 
 	public CtTypeImpl() {
 		super();
@@ -1058,5 +1065,46 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtType<?> copyType() {
 		return Refactoring.copyType(this);
+	}
+
+	@Override
+	public Set<CtImport> getImports() {
+		return this.imports;
+	}
+
+	@Override
+	public <C extends CtImportHolder> C addImport(CtImport ctImport) {
+		if (ctImport == null) {
+			return (C) this;
+		}
+
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		ctImport.setParent(this);
+		this.imports.add(ctImport);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.IMPORT, this.imports, ctImport);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtImportHolder> C setImports(Set<CtImport> ctImport) {
+		if (ctImport == null) {
+			this.imports = CtElementImpl.emptySet();
+			return (C) this;
+		}
+
+		if (this.imports == CtElementImpl.<CtImport>emptySet()) {
+			this.imports = new QualifiedNameBasedSortedSet<>();
+		}
+
+		this.getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.IMPORT, this.imports, new HashSet<>(this.imports));
+		this.imports.clear();
+
+		for (CtImport anImport : ctImport) {
+			this.addImport(anImport);
+		}
+		return (C) this;
 	}
 }

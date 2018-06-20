@@ -221,6 +221,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, annotationType.getAnnotations());
 		scan(CtRole.TYPE_MEMBER, annotationType.getTypeMembers());
 		scan(CtRole.COMMENT, annotationType.getComments());
+		scan(CtRole.IMPORT, annotationType.getImports());
 		exit(annotationType);
 	}
 
@@ -338,6 +339,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, ctClass.getTypeMembers());
 		scan(CtRole.COMMENT, ctClass.getComments());
+		scan(CtRole.IMPORT, ctClass.getImports());
 		exit(ctClass);
 	}
 
@@ -347,6 +349,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, typeParameter.getAnnotations());
 		scan(CtRole.SUPER_TYPE, typeParameter.getSuperclass());
 		scan(CtRole.COMMENT, typeParameter.getComments());
+		scan(CtRole.IMPORT, typeParameter.getImports());
 		exit(typeParameter);
 	}
 
@@ -396,6 +399,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE_MEMBER, ctEnum.getTypeMembers());
 		scan(CtRole.VALUE, ctEnum.getEnumValues());
 		scan(CtRole.COMMENT, ctEnum.getComments());
+		scan(CtRole.IMPORT, ctEnum.getImports());
 		exit(ctEnum);
 	}
 
@@ -496,6 +500,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, intrface.getTypeMembers());
 		scan(CtRole.COMMENT, intrface.getComments());
+		scan(CtRole.IMPORT, intrface.getImports());
 		exit(intrface);
 	}
 
@@ -649,6 +654,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.SUB_PACKAGE, ctPackage.getPackages());
 		scan(CtRole.CONTAINED_TYPE, ctPackage.getTypes());
 		scan(CtRole.COMMENT, ctPackage.getComments());
+		scan(CtRole.IMPORT, ctPackage.getImports());
 		exit(ctPackage);
 	}
 

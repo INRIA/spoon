@@ -349,7 +349,7 @@ public class Metamodel {
 				.field(CtRole.TYPE_PARAMETER, false, false)
 				.field(CtRole.TYPE_MEMBER, false, false)
 				.field(CtRole.COMMENT, false, false)
-
+				.field(CtRole.IMPORT, false, false)
 			));
 
 			types.add(new Type("CtAssignment", spoon.reflect.code.CtAssignment.class, spoon.support.reflect.code.CtAssignmentImpl.class, fm -> fm
@@ -643,6 +643,7 @@ public class Metamodel {
 				.field(CtRole.TYPE_PARAMETER, false, false)
 				.field(CtRole.TYPE_MEMBER, false, false)
 				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.IMPORT, false, false)
 
 			));
 
@@ -665,6 +666,7 @@ public class Metamodel {
 				.field(CtRole.SUB_PACKAGE, false, false)
 				.field(CtRole.CONTAINED_TYPE, false, false)
 				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.IMPORT, false, false)
 
 			));
 
@@ -857,6 +859,7 @@ public class Metamodel {
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.SUPER_TYPE, false, false)
 				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.IMPORT, false, false)
 
 			));
 
@@ -1201,6 +1204,7 @@ public class Metamodel {
 				.field(CtRole.TYPE_MEMBER, false, false)
 				.field(CtRole.VALUE, false, false)
 				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.IMPORT, false, false)
 
 			));
 
@@ -1245,6 +1249,7 @@ public class Metamodel {
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.TYPE_MEMBER, false, false)
 				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.IMPORT, false, false)
 
 			));
 

@@ -16,14 +16,17 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtImportHolder;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.IMPORT;
 import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
@@ -38,7 +41,7 @@ import static spoon.reflect.path.CtRole.TYPE_MEMBER;
  *
  * The type parameter T refers to the actual class that this type represents.
  */
-public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
+public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtFormalTypeDeclarer, CtShadowable, CtImportHolder {
 	/**
 	 * The string separator in a Java innertype qualified name.
 	 */

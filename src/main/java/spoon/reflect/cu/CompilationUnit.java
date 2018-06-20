@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -142,12 +143,5 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	 * Get the imports computed for this CU
 	 * @return All the imports from the original source code
 	 */
-	Collection<CtImport> getImports();
-
-	/**
-	 * Set the imports of this CU
-	 * @param imports All the imports of the original source code
-	 */
-	void setImports(Collection<CtImport> imports);
-
+	Set<CtImport> getImports();
 }

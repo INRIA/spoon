@@ -296,18 +296,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtImport> computeImports(CtType<?> type) {
+	public Set<CtImport> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		importsContext.computeImports(context.currentTopLevel);
-		return importsContext.getAllImports();
+		return type.getImports();
 	}
 
 	/**
 	 * Make the imports for all elements.
 	 */
 	public void computeImports(CtElement element) {
-		if (env.isAutoImports()) {
-			importsContext.computeImports(element);
+		if (env.isAutoImports() && element instanceof CtType) {
+			importsContext.computeImports((CtType) element);
 		}
 	}
 
@@ -1878,17 +1878,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		reset();
 		elementPrinterHelper.writeComment(pack);
 
-		// we need to compute imports only for annotations
-		// we don't want to get all imports coming from content of package
-		for (CtAnnotation annotation : pack.getAnnotations()) {
-			this.importsContext.computeImports(annotation);
+		if (!pack.getAnnotations().isEmpty()) {
+			this.importsContext.computeImports(pack);
 		}
+
 		elementPrinterHelper.writeAnnotations(pack);
 
 		if (!pack.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(pack.getQualifiedName());
 		}
-		elementPrinterHelper.writeImports(this.importsContext.getAllImports());
+		elementPrinterHelper.writeImports(pack.getImports());
 		return printer.getPrinterHelper().toString();
 	}
 
@@ -1938,9 +1937,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		this.imports = new HashSet<>();
-		if (sourceCompilationUnit != null) {
-			imports.addAll(sourceCompilationUnit.getImports());
-		}
 
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));

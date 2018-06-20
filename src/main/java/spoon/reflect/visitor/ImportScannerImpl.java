@@ -43,6 +43,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	protected Map<String, CtFieldReference<?>> fieldImports = new TreeMap<>();
 	protected Map<String, CtExecutableReference<?>> methodImports = new TreeMap<>();
 	//top declaring type of that import
-	protected CtTypeReference<?> targetType;
+	protected CtType targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
 	private Set<String> fieldAndMethodsNames = new HashSet<String>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
@@ -182,9 +183,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		super.visitCtCatchVariable(catchVariable);
 	}
 
-	@Override
-	public Collection<CtImport> getAllImports() {
-		Collection<CtImport> listallImports = new ArrayList<>();
+	protected Set<CtImport> getAllImports() {
+		Set<CtImport> listallImports = new HashSet<>();
 
 		for (CtReference reference : this.classImports.values()) {
 			listallImports.add(reference.getFactory().Type().createImport(reference));
@@ -200,19 +200,54 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		return listallImports;
 	}
 
-	@Override
-	public void computeImports(CtElement element) {
-		//look for top declaring type of that simpleType
-		if (element instanceof CtType) {
-			CtType simpleType = (CtType) element;
-			targetType = simpleType.getReference().getTopLevelType();
-			addClassImport(simpleType.getReference());
-			scan(simpleType);
-		} else {
-			CtType<?> type = element.getParent(CtType.class);
-			targetType = type == null ? null : type.getReference().getTopLevelType();
-			scan(element);
+	private void initExistingImports(Set<CtImport> imports) {
+		for (CtImport anImport : imports) {
+			CtReference ref = anImport.getReference();
+
+			switch (anImport.getImportKind()) {
+				case METHOD:
+					this.methodImports.put(ref.getSimpleName(), (CtExecutableReference) ref);
+					break;
+
+				case FIELD:
+					this.fieldImports.put(ref.getSimpleName(), (CtFieldReference) ref);
+					break;
+
+				case TYPE:
+					this.classImports.put(ref.getSimpleName(), (CtTypeReference) ref);
+					break;
+
+				case ALL_STATIC_MEMBERS:
+					CtWildcardStaticTypeMemberReferenceImpl staticTypeMemberReference = (CtWildcardStaticTypeMemberReferenceImpl) ref;
+					String simpleName = staticTypeMemberReference.getSimpleName();
+					simpleName = simpleName.substring(0, simpleName.lastIndexOf("."));
+					this.classImports.put(simpleName, (CtTypeReference) ref);
+					break;
+			}
 		}
+	}
+
+	@Override
+	public void computeImports(CtType simpleType) {
+		//look for top declaring type of that simpleType
+		if (simpleType.isTopLevel()) {
+			this.targetType = simpleType;
+		} else {
+			this.targetType = simpleType.getTopLevelType();
+		}
+
+		this.initExistingImports(simpleType.getImports());
+		scan(simpleType);
+		this.targetType.setImports(this.getAllImports());
+	}
+
+	@Override
+	public void computeImports(CtPackage ctPackage) {
+		//look for top declaring type of that simpleType
+		this.targetType = null;
+		this.initExistingImports(ctPackage.getImports());
+		scan(ctPackage.getAnnotations());
+		ctPackage.setImports(this.getAllImports());
 	}
 
 	@Override
@@ -257,7 +292,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (targetType != null && targetType.canAccess(ref) == false) {
+		if (targetType != null && !targetType.getReference().canAccess(ref)) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}
@@ -279,7 +314,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 							CtTypeReference declaringType;
 							CtReference reference;
-							CtPackageReference pack = targetType.getPackage();
+							CtPackageReference pack = targetType.getReference().getPackage();
 							if (parent instanceof CtFieldAccess) {
 								CtFieldAccess field = (CtFieldAccess) parent;
 								CtFieldReference localReference = field.getVariable();
@@ -290,25 +325,21 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 								CtExecutableReference localReference = exec.getReference();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
-							} else if (parent instanceof CtInvocation) {
+							} else {
 								CtInvocation invo = (CtInvocation) parent;
 								CtExecutableReference localReference = invo.getExecutable();
 								declaringType = localReference.getDeclaringType();
 								reference = localReference;
-							} else {
-								declaringType = null;
-								reference = null;
 							}
 
-							if (reference != null && isImported(reference)) {
+							if (isImported(reference)) {
 								// if we are in the **same** package we do the import for test with method isImported
 								if (declaringType != null) {
 									if (declaringType.getPackage() != null && !declaringType.getPackage().isUnnamedPackage()) {
 										// ignore java.lang package
 										if (!declaringType.getPackage().getSimpleName().equals("java.lang")) {
 											// ignore type in same package
-											if (declaringType.getPackage().getSimpleName()
-													.equals(pack.getSimpleName())) {
+											if (declaringType.getPackage().getSimpleName().equals(pack.getSimpleName())) {
 												classImports.put(ref.getSimpleName(), ref);
 												return true;
 											}
@@ -321,10 +352,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			} catch (ParentNotInitializedException e) {
 			}
-			CtPackageReference pack = targetType.getPackage();
+			CtPackageReference pack = targetType.getReference().getPackage();
 			if (pack != null && ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
-				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+				if (ref.getPackage().getQualifiedName().equals("java.lang")) {
+					return false;
+				} else {
 					// ignore type in same package
 					if (ref.getPackage().getSimpleName()
 							.equals(pack.getSimpleName())) {
@@ -340,7 +373,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
 		if (targetType != null) {
-			CtPackageReference pack = targetType.getPackage();
+			CtPackageReference pack = targetType.getReference().getPackage();
 
 			// we consider that if a class belongs to java.lang or the same package than the actual class
 			// then it is imported by default
@@ -362,9 +395,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
-			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-				return true;
+
+			String fqnName = exist.getQualifiedName();
+			if (exist instanceof CtWildcardStaticTypeMemberReferenceImpl) {
+				fqnName = fqnName.substring(0, fqnName.lastIndexOf(".")); // remove the last .*
 			}
+			return (fqnName.equals(ref.getQualifiedName()));
 		}
 		return false;
 	}

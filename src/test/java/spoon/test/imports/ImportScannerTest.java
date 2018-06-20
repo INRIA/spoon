@@ -217,7 +217,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new MinimalImportScanner();
 		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
+		Set<CtImport> imports = theClass.getImports();
 
 		assertTrue(imports.isEmpty());
 	}
@@ -233,7 +233,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
+		Set<CtImport> imports = theClass.getImports();
 
 		// java.lang are also computed
 		assertEquals(4, imports.size());
@@ -253,7 +253,7 @@ public class ImportScannerTest {
 
 		ImportScanner importContext = new ImportScannerImpl();
 		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
+		Set<CtImport> imports = theClass.getImports();
 
 		assertEquals(0, imports.size());
 	}
@@ -278,20 +278,5 @@ public class ImportScannerTest {
 		// as ArithmeticException come from java.lang it is not imported anymore
 		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
 		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
-	}
-
-	@Test
-	public void testTargetTypeNull() throws Exception {
-		Launcher spoon = new Launcher();
-		Factory factory = spoon.createFactory();
-		CtFieldReference fieldRef = factory.createFieldReference();
-		fieldRef.setStatic(true);
-
-		ImportScanner importScanner = new MinimalImportScanner();
-		importScanner.computeImports(fieldRef);
-
-		Collection<CtImport> imports = importScanner.getAllImports();
-
-		assertEquals(0, imports.size());
 	}
 }

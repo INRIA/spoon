@@ -26,6 +26,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DerivedProperty;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -47,8 +49,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
 
 	CtPackage ctPackage;
-
-	Collection<CtImport> imports = new HashSet<>();
 
 	CtModule ctModule;
 
@@ -245,13 +245,21 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Collection<CtImport> getImports() {
-		return this.imports;
-	}
+	@DerivedProperty
+	public Set<CtImport> getImports() {
+		Set<CtImport> imports = new HashSet<>();
 
-	@Override
-	public void setImports(Collection<CtImport> imports) {
-		this.imports = imports;
+		List<CtPackage> listPackages = this.getDeclaredPackage().filterChildren(new TypeFilter<>(CtPackage.class)).list();
+
+		for (CtPackage listPackage : listPackages) {
+			imports.addAll(listPackage.getImports());
+		}
+
+		for (CtType<?> ctType : this.getDeclaredTypes()) {
+			imports.addAll(ctType.getImports());
+		}
+
+		return imports;
 	}
 
 	public Factory getFactory() {

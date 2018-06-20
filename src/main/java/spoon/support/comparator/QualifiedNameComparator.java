@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -53,7 +54,11 @@ public class QualifiedNameComparator implements Comparator<CtElement>, Serializa
 			if (o1 instanceof CtNamedElement && o2 instanceof CtNamedElement) {
 				return ((CtNamedElement) o1).getSimpleName().compareTo(((CtNamedElement) o2).getSimpleName());
 			}
-			throw new IllegalArgumentException();
+			if (o1 instanceof CtImport && o2 instanceof CtImport) {
+				return ((CtImport) o1).getReference().getSimpleName().compareTo(((CtImport) o2).getReference().getSimpleName());
+			}
+
+			throw new IllegalArgumentException("comparison between o1 (" + o1.getShortRepresentation() + ") and o2 (" + o2.getShortRepresentation() + ")");
 		} catch (NullPointerException e) {
 			// when o1 or o2 is null, or no name are available
 			return -1;
