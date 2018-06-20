@@ -37,6 +37,8 @@ import spoon.support.reflect.CtModifierHandler;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
+import static spoon.reflect.path.CtRole.IS_INFERRED;
+import static spoon.reflect.path.CtRole.IS_SHADOW;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.TYPE;
 
@@ -189,6 +191,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public <U extends CtLocalVariable<T>> U setInferred(boolean inferred) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_INFERRED, inferred, this.inferred);
 		this.inferred = inferred;
 		return (U) this;
 	}
