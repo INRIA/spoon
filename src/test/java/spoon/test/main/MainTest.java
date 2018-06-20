@@ -530,6 +530,7 @@ public class MainTest {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
 				"--noclasspath",
+				"--disable-comments",
 				"--compliance", "8",
 				"--level", "OFF"
 		});

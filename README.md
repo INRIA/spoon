@@ -125,6 +125,11 @@ mvn eclipse:eclipse
 
 See <http://spoon.gforge.inria.fr/ecosystem.html>
 
+## On Youtube
+
+  - [Spoon: Getting Started - Simon Urli @ OW2Con'18 (Paris)](https://www.youtube.com/watch?v=ZZzdVTIu-OY)
+  - [Generate Test Assertion with Spoon - Benjamin Danglot @ OW2Con'17 (Paris)](https://www.youtube.com/watch?v=JcCIbjnkfD4)
+
 ## Contributors
 
 Alphabetical order of last names
