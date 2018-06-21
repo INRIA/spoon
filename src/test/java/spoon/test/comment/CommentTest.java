@@ -940,7 +940,7 @@ public class CommentTest {
 		comments = thirdEnumValue.getComments();
 		assertEquals(1, comments.size());
 		assertTrue(comments.get(0) instanceof CtJavaDoc);
-		assertEquals("Get rid of old {@link RootNode} and use new {@link RootNode} instead.", comments.get(0).getContent());
+		assertEquals("Keep old {@link RootNode} and ignore requests to add new {@link RootNode}", comments.get(0).getContent());
 	}
 
   @Test
