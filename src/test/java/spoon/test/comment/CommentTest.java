@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -27,6 +28,8 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -905,5 +908,27 @@ public class CommentTest {
 			String expected = literal.getValue();
 			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
 		}
+	}
+
+	@Test
+	public void testEnumValueComment() {
+		// contract: enum value comments are taken into account
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		CtEnum<?> ctEnum = model.getElements(new TypeFilter<>(CtEnum.class)).get(0);
+		List<CtEnumValue<?>> enumValues = ctEnum.getEnumValues();
+
+		assertEquals(4, enumValues.size());
+
+		CtEnumValue firstEnumValue = enumValues.get(0);
+		assertEquals("FAIL", firstEnumValue.getSimpleName());
+
+		List<CtComment> comments = firstEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
 	}
 }
