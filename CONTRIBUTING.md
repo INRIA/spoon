@@ -54,3 +54,4 @@ The public API is composed of all public classes and methods, except those for w
 * annotated with @Internal
 * located in a package called `internal`, including all subpackages, that is `**.internal.**`
 
+Classes annotated with `@Experimental` are planned to in the public API in the future, but are still considered unstable and can change in non-backward compatble manner.
