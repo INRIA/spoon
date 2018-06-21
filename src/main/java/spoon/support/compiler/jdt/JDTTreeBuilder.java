@@ -1173,6 +1173,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
+
+		boolean isVar = localDeclaration.type.isTypeNameVar(scope);
+
+		if (isVar) {
+			v.setInferred(true);
+		}
 		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
 		if (localDeclaration.binding != null) {
 			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, false));

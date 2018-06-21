@@ -37,6 +37,7 @@ import spoon.support.reflect.CtModifierHandler;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
+import static spoon.reflect.path.CtRole.IS_INFERRED;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.TYPE;
 
@@ -54,6 +55,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+
+	@MetamodelPropertyField(role = CtRole.IS_INFERRED)
+	private boolean inferred;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -177,6 +181,18 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
 		return (C) this;
+	}
+
+	@Override
+	public boolean isInferred() {
+		return this.inferred;
+	}
+
+	@Override
+	public <U extends CtLocalVariable<T>> U setInferred(boolean inferred) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_INFERRED, inferred, this.inferred);
+		this.inferred = inferred;
+		return (U) this;
 	}
 
 	@Override
