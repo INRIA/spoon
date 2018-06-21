@@ -34,7 +34,6 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
