@@ -1,5 +1,6 @@
 package spoon.test.enums;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -22,6 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -110,6 +114,29 @@ public class EnumsTest {
 	
 	private <T> Set<T> asSet(T... values) {
 		return new HashSet<>(Arrays.asList(values));
+	}
+
+	@Test
+	public void testPrintEnumValues() throws IOException {
+		// contract: enum values constructor calls are correctly interpreted as implicit or not
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
+		launcher.setSourceOutputDirectory("./target/test-enum");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.run();
+
+		File file = new File("target/test-enum/spoon/test/comment/testclasses/EnumClass.java");
+		assertTrue(file.exists());
+
+		String content = StringUtils.join(Files.readAllLines(file.toPath()));
+
+		assertTrue(content.contains("FAIL,"));
+		assertTrue(content.contains("KEEP_OLD_NODE(),"));
+
+		assertTrue(content.contains("/**\n" +
+				"     * Add new {@link RootNode} after existing nodes\n" +
+				"     */\n" +
+				"    APPEND"));
 	}
 
 	@Test

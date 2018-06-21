@@ -15,7 +15,7 @@ public enum EnumClass {
     /**
      * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}
      */
-    KEEP_OLD_NODE,
+    KEEP_OLD_NODE(),
     /**
      * Add new {@link RootNode} after existing nodes
      */
