@@ -58,7 +58,7 @@ public class EnumsTest {
 		assertEquals(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
 		assertEquals(
-				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR
+				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR
 						+ "    @java.lang.Deprecated"
 						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR + "    Bar;}",
 				foo.toString());

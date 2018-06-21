@@ -209,7 +209,7 @@ public class DefaultPrettyPrinterTest {
 		assertEquals( "where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed );
 
 		expected =
-			"public enum ENUM {" +nl+
+			"public enum ENUM {" +nl+nl+
 			"    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
 			"    final int NUM;" +nl+nl+
 			"    final Enum<?> e;" +nl+nl+
