@@ -21,6 +21,8 @@ import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -133,9 +135,31 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void scan(CtElement element) {
-		if (element != null && !element.isImplicit()) {
+		if (element != null) {
 			element.accept(this);
 		}
+	}
+
+	@Override
+	public void visitCtJavaDoc(CtJavaDoc ctJavaDoc) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(ctJavaDoc.getLongDescription());
+
+		for (CtJavaDocTag ctJavaDocTag : ctJavaDoc.getTags()) {
+			stringBuilder.append(ctJavaDocTag.getContent());
+		}
+
+		String javadoc = stringBuilder.toString();
+		for (CtImport ctImport : this.usedImport.keySet()) {
+			switch (ctImport.getImportKind()) {
+				case TYPE:
+					if (javadoc.contains(ctImport.getReference().getSimpleName())) {
+						this.setImportUsed(ctImport);
+					}
+					break;
+			}
+		}
+
 	}
 
 	@Override
