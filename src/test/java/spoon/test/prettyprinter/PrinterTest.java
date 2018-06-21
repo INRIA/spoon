@@ -236,6 +236,7 @@ public class PrinterTest {
 	public void testPrinterTokenListener() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
+		factory.getEnvironment().setCommentEnabled(false);
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
