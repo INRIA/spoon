@@ -728,7 +728,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSeparator(";").writeln();
 		} else {
 			elementPrinterHelper.printList(ctEnum.getEnumValues(),
-					null, false, null, false, false, ",", true, false, ";",
+					null, false, null, false, false, "," + DefaultJavaPrettyPrinter.LINE_SEPARATOR, false, false, ";",
 					enumValue -> scan(enumValue));
 		}
 
@@ -763,21 +763,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
 		elementPrinterHelper.visitCtNamedElement(enumValue, sourceCompilationUnit);
+		elementPrinterHelper.writeComment(enumValue, CommentOffset.BEFORE);
 		printer.writeIdentifier(enumValue.getSimpleName());
 		if (enumValue.getDefaultExpression() != null) {
 			CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) enumValue.getDefaultExpression();
-			if (constructorCall.getArguments().size() > 0) {
-				printer.writeSeparator("(");
-				boolean first = true;
-				for (CtExpression<?> ctexpr : constructorCall.getArguments()) {
-					if (first) {
-						first = false;
-					} else {
-						printer.writeSeparator(",");
-					}
-					scan(ctexpr);
-				}
-				printer.writeSeparator(")");
+			if (!constructorCall.isImplicit()) {
+				this.getPrinterTokenWriter().writeSeparator("(");
+				elementPrinterHelper.printList(constructorCall.getArguments(), null, false, null, false, false, ",", true, false, null, expr -> scan(expr));
+				this.getPrinterTokenWriter().writeSeparator(")");
 			}
 			if (constructorCall instanceof CtNewClass) {
 				scan(((CtNewClass<?>) constructorCall).getAnonymousClass());

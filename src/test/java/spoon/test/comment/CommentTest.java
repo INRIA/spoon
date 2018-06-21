@@ -932,7 +932,16 @@ public class CommentTest {
 		List<CtComment> comments = firstEnumValue.getComments();
 		assertEquals(1, comments.size());
 		assertTrue(comments.get(0) instanceof CtJavaDoc);
-  }
+		assertEquals("Throw {@link SpoonException} if a conflict happens, it is the default in most cases. But there are some standard Pattern builder algorithms (mainly these which deals with legacy Templates), which are using the other modes.", comments.get(0).getContent());
+
+		CtEnumValue<?> thirdEnumValue = enumValues.get(2);
+		assertEquals("KEEP_OLD_NODE", thirdEnumValue.getSimpleName());
+
+		comments = thirdEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Get rid of old {@link RootNode} and use new {@link RootNode} instead.", comments.get(0).getContent());
+	}
 
   @Test
 	public void testInlineCommentIfBlock() {

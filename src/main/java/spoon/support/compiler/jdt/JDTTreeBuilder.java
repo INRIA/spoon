@@ -785,7 +785,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		// in case of enum values the constructor call is often implicit
 		if (first.element instanceof CtEnumValue) {
-			if (allocationExpression.sourceEnd == first.element.getPosition().getSourceEnd()) {
+			if (allocationExpression.sourceEnd == first.node.sourceEnd) {
 				constructorCall.setImplicit(true);
 			}
 		}

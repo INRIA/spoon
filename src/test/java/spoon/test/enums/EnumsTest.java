@@ -20,6 +20,7 @@ import spoon.test.enums.testclasses.NestedEnums;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -128,7 +129,7 @@ public class EnumsTest {
 		File file = new File("target/test-enum/spoon/test/comment/testclasses/EnumClass.java");
 		assertTrue(file.exists());
 
-		String content = StringUtils.join(Files.readAllLines(file.toPath()));
+		String content = StringUtils.join(Files.readAllLines(file.toPath()), "\n");
 
 		assertTrue(content.contains("FAIL,"));
 		assertTrue(content.contains("KEEP_OLD_NODE(),"));
@@ -137,6 +138,11 @@ public class EnumsTest {
 				"     * Add new {@link RootNode} after existing nodes\n" +
 				"     */\n" +
 				"    APPEND"));
+
+		assertTrue(content.contains("/**\n" +
+				"     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n" +
+				"     */\n" +
+				"    KEEP_OLD_NODE(),"));
 	}
 
 	@Test
@@ -151,9 +157,15 @@ public class EnumsTest {
 
 		assertEquals(4, enumValues.size());
 
-		for (CtEnumValue enumValue : enumValues) {
-			CtExpression defaultExpression = enumValue.getDefaultExpression();
-			assertTrue(defaultExpression.isImplicit());
+		for (int i = 0; i < 3; i++) {
+			CtEnumValue ctEnumValue = enumValues.get(i);
+			CtExpression defaultExpression = ctEnumValue.getDefaultExpression();
+
+			if (i != 2) {
+				assertTrue(defaultExpression.isImplicit());
+			} else {
+				assertFalse(defaultExpression.isImplicit());
+			}
 		}
 	}
 }
