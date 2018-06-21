@@ -2,12 +2,16 @@ package spoon.test.enums;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
@@ -20,6 +24,7 @@ import static spoon.testing.utils.ModelUtils.build;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EnumsTest {
@@ -105,5 +110,23 @@ public class EnumsTest {
 	
 	private <T> Set<T> asSet(T... values) {
 		return new HashSet<>(Arrays.asList(values));
+	}
+
+	@Test
+	public void testEnumValue() {
+		// contract: constructorCall on enumvalues should be implicit if they're not declared
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtEnumValue> enumValues = model.getElements(new TypeFilter<>(CtEnumValue.class));
+
+		assertEquals(4, enumValues.size());
+
+		for (CtEnumValue enumValue : enumValues) {
+			CtExpression defaultExpression = enumValue.getDefaultExpression();
+			assertTrue(defaultExpression.isImplicit());
+		}
 	}
 }
