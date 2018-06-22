@@ -185,11 +185,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public PrintingContext context = new PrintingContext();
 
 	/**
-	 * Handle imports of classes.
-	 */
-	private ImportScanner importsContext;
-
-	/**
 	 * Environment which Spoon is executed.
 	 */
 	private Environment env;
@@ -210,22 +205,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private CompilationUnit sourceCompilationUnit;
 
 	/**
-	 * Imports computed
-	 */
-	Set<CtImport> imports;
-
-	/**
 	 * Creates a new code generator visitor.
 	 */
 	public DefaultJavaPrettyPrinter(Environment env) {
 		this.env = env;
-		this.imports = new HashSet<>();
 		setPrinterTokenWriter(new DefaultTokenWriter(new PrinterHelper(env)));
-		if (env.isAutoImports()) {
-			this.importsContext = new ImportScannerImpl();
-		} else {
-			this.importsContext = new MinimalImportScanner();
-		}
 	}
 
 	/**
@@ -290,24 +274,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (!(e instanceof CtStatement)) {
 			elementPrinterHelper.writeComment(e, CommentOffset.AFTER);
-		}
-	}
-
-	/**
-	 * Make the imports for a given type.
-	 */
-	public Collection<CtImport> computeImports(CtType<?> type) {
-		context.currentTopLevel = type;
-		importsContext.computeImports(context.currentTopLevel);
-		return importsContext.getAllImports();
-	}
-
-	/**
-	 * Make the imports for all elements.
-	 */
-	public void computeImports(CtElement element) {
-		if (env.isAutoImports()) {
-			importsContext.computeImports(element);
 		}
 	}
 
@@ -798,7 +764,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private boolean isImported(CtFieldReference fieldReference) {
 		CtImport fieldImport = fieldReference.getFactory().createImport(fieldReference);
 
-		if (this.imports.contains(fieldImport)) {
+		if (sourceCompilationUnit == null) {
+			return false;
+		}
+
+		if (this.sourceCompilationUnit.getImports().contains(fieldImport)) {
 			return true;
 		} else {
 			if (fieldReference.getDeclaringType() == null) {
@@ -806,14 +776,18 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			CtTypeReference staticTypeMemberReference = fieldReference.getFactory().Type().createWildcardStaticTypeMemberReference(fieldReference.getDeclaringType());
 			CtImport staticClassImport = fieldReference.getFactory().createImport(staticTypeMemberReference);
-			return this.imports.contains(staticClassImport);
+			return this.sourceCompilationUnit.getImports().contains(staticClassImport);
 		}
 	}
 
 	private boolean isImported(CtExecutableReference executableReference) {
 		CtImport executableImport = executableReference.getFactory().createImport(executableReference);
 
-		if (this.imports.contains(executableImport)) {
+		if (this.sourceCompilationUnit == null) {
+			return false;
+		}
+
+		if (this.sourceCompilationUnit.getImports().contains(executableImport)) {
 			return true;
 		} else {
 			if (executableReference.getDeclaringType() == null) {
@@ -821,7 +795,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			CtTypeReference staticTypeMemberReference = executableReference.getFactory().Type().createWildcardStaticTypeMemberReference(executableReference.getDeclaringType());
 			CtImport staticClassImport = executableReference.getFactory().createImport(staticTypeMemberReference);
-			return this.imports.contains(staticClassImport);
+			return this.sourceCompilationUnit.getImports().contains(staticClassImport);
 		}
 	}
 
@@ -1714,7 +1688,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
+		boolean isImported = (this.sourceCompilationUnit != null && this.sourceCompilationUnit.isImported(ref));
+
+		if (isImported || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
 			// If my.pkg.Something is imported, but
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",
@@ -1876,19 +1852,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public String printPackageInfo(CtPackage pack) {
 		reset();
+		this.sourceCompilationUnit = pack.getPosition().getCompilationUnit();
 		elementPrinterHelper.writeComment(pack);
 
-		// we need to compute imports only for annotations
-		// we don't want to get all imports coming from content of package
-		for (CtAnnotation annotation : pack.getAnnotations()) {
-			this.importsContext.computeImports(annotation);
+		if (this.sourceCompilationUnit != null) {
+			this.sourceCompilationUnit.computeImports();
 		}
 		elementPrinterHelper.writeAnnotations(pack);
-
 		if (!pack.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(pack.getQualifiedName());
 		}
-		elementPrinterHelper.writeImports(this.importsContext.getAllImports());
+
+		if (this.sourceCompilationUnit != null) {
+			elementPrinterHelper.writeImports(this.sourceCompilationUnit.getImports());
+		}
 		return printer.getPrinterHelper().toString();
 	}
 
@@ -1907,11 +1884,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private void reset() {
 		printer.reset();
 		context = new PrintingContext();
-		if (env.isAutoImports()) {
-			this.importsContext = new ImportScannerImpl();
-		} else {
-			this.importsContext = new MinimalImportScanner();
-		}
 	}
 
 
@@ -1937,15 +1909,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		reset();
 
 		this.sourceCompilationUnit = sourceCompilationUnit;
-		this.imports = new HashSet<>();
 		if (sourceCompilationUnit != null) {
-			this.importsContext.initWithImports(sourceCompilationUnit.getImports());
+			this.sourceCompilationUnit.computeImports();
+			this.writeHeader(types, sourceCompilationUnit.getImports());
 		}
 
-		for (CtType<?> t : types) {
-			imports.addAll(computeImports(t));
-		}
-		this.writeHeader(types, imports);
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {

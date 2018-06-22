@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Used to compute the imports required to write readable code with no fully qualified names.
@@ -37,7 +38,7 @@ public interface ImportScanner {
 	 *
 	 * @return the list of computed imports or an empty collection if not imports has been computed.
 	 */
-	Collection<CtImport> getAllImports();
+	Set<CtImport> getAllImports();
 
 	/**
 	 * Checks if the type is already imported.
@@ -47,5 +48,5 @@ public interface ImportScanner {
 	/**
 	 * Specify the original imports to use before computing new imports.
 	 */
-	void initWithImports(Collection<CtImport> importCollection);
+	void initWithImports(Set<CtImport> importCollection);
 }

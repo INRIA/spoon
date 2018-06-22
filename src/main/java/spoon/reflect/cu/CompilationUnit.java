@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.reference.CtReference;
 import spoon.support.Experimental;
 import spoon.support.Internal;
 
@@ -145,12 +146,22 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	 * Get the imports computed for this CU
 	 * @return All the imports from the original source code
 	 */
+	@Experimental
 	Set<CtImport> getImports();
 
 	/**
 	 * Compute back the imports for this CU
+	 * This method should be called after a transformation. 
 	 */
+	@Experimental
 	void computeImports();
+
+	/**
+	 * Return true if the given reference is considered as imported by the CU.
+	 * This can be used to pretty-print references using short names instead of fully-qualified names.
+	 */
+	@Experimental
+	boolean isImported(CtReference reference);
 
 	/**
 	 * Set the imports of this CU

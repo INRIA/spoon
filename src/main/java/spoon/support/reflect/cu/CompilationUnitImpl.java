@@ -19,17 +19,23 @@ package spoon.support.reflect.cu;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ImportScanner;
+import spoon.reflect.visitor.ImportScannerImpl;
+import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.annotation.Annotation;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +56,10 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	CtPackage ctPackage;
 
 	Set<CtImport> imports = new HashSet<>();
+
+	private ImportScanner importScanner;
+
+	private boolean areImportsComputed;
 
 	CtModule ctModule;
 
@@ -245,6 +255,18 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return tabCount;
 	}
 
+	private ImportScanner getImportScanner() {
+		if (this.importScanner == null) {
+			if (this.getFactory().getEnvironment().isAutoImports()) {
+				this.importScanner = new ImportScannerImpl();
+			} else {
+				this.importScanner = new MinimalImportScanner();
+			}
+		}
+
+		return this.importScanner;
+	}
+
 	@Override
 	public Set<CtImport> getImports() {
 		return this.imports;
@@ -252,7 +274,31 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	@Override
 	public void computeImports() {
+		this.getImportScanner().initWithImports(this.imports);
+		this.imports.clear();
+		switch (this.getUnitType()) {
+			case TYPE_DECLARATION:
+				for (CtType<?> ctType : this.getDeclaredTypes()) {
+					this.getImportScanner().computeImports(ctType);
+				}
+				break;
 
+			case PACKAGE_DECLARATION:
+				for (CtAnnotation<? extends Annotation> ctAnnotation : this.getDeclaredPackage().getAnnotations()) {
+					this.getImportScanner().computeImports(ctAnnotation);
+				}
+				break;
+		}
+		this.imports.addAll(this.getImportScanner().getAllImports());
+		this.areImportsComputed = true;
+	}
+
+	@Override
+	public boolean isImported(CtReference reference) {
+		if (this.areImportsComputed) {
+			this.computeImports();
+		}
+		return this.getImportScanner().isImported(reference);
 	}
 
 	@Override
@@ -266,16 +312,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-	}
-
-	boolean autoImport = true;
-
-	public boolean isAutoImport() {
-		return autoImport;
-	}
-
-	public void setAutoImport(boolean autoImport) {
-		this.autoImport = autoImport;
 	}
 
 	private PartialSourcePositionImpl myPartialSourcePosition;
