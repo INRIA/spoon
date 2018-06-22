@@ -29,6 +29,8 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -912,6 +914,37 @@ public class CommentTest {
 	}
 
 	@Test
+	public void testEnumValueComment() {
+		// contract: enum value comments are taken into account
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		CtEnum<?> ctEnum = model.getElements(new TypeFilter<>(CtEnum.class)).get(0);
+		List<CtEnumValue<?>> enumValues = ctEnum.getEnumValues();
+
+		assertEquals(4, enumValues.size());
+
+		CtEnumValue firstEnumValue = enumValues.get(0);
+		assertEquals("FAIL", firstEnumValue.getSimpleName());
+
+		List<CtComment> comments = firstEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Throw {@link SpoonException} if a conflict happens, it is the default in most cases. But there are some standard Pattern builder algorithms (mainly these which deals with legacy Templates), which are using the other modes.", comments.get(0).getContent());
+
+		CtEnumValue<?> thirdEnumValue = enumValues.get(2);
+		assertEquals("KEEP_OLD_NODE", thirdEnumValue.getSimpleName());
+
+		comments = thirdEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Keep old {@link RootNode} and ignore requests to add new {@link RootNode}", comments.get(0).getContent());
+	}
+
+  @Test
 	public void testInlineCommentIfBlock() {
 		// contract: when creating an inline comment from a string with line separators, it throws an exception to create block comment
 		Launcher launcher = new Launcher();

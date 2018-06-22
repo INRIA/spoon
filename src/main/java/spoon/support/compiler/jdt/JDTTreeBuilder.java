@@ -139,6 +139,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
@@ -780,6 +781,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(AllocationExpression allocationExpression, BlockScope scope) {
 		CtConstructorCall constructorCall = factory.Core().createConstructorCall();
 		constructorCall.setExecutable(references.getExecutableReference(allocationExpression));
+		ASTPair first = this.context.stack.getFirst();
+
+		// in case of enum values the constructor call is often implicit
+		if (first.element instanceof CtEnumValue) {
+			if (allocationExpression.sourceEnd == first.node.sourceEnd) {
+				constructorCall.setImplicit(true);
+			}
+		}
 		context.enter(constructorCall, allocationExpression);
 		return true;
 	}
