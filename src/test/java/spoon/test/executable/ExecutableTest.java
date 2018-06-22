@@ -110,6 +110,7 @@ public class ExecutableTest {
 		CtExecutableReference shadowValueOf = listShadowValueOf.get(0);
 
 		assertEquals(valueOf, shadowValueOf);
+		assertEquals(valueOf.getDeclaration(), shadowValueOf.getDeclaration());
 		MainTest.checkShadow(shadowValueOf.getParent(CtPackage.class));
 	}
 }
