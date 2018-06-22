@@ -269,14 +269,16 @@ public class ImportTest {
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
-		assertEquals(2, importScanner.getAllImports().size());
+		Collection<CtImport> allImports = importScanner.getAllImports();
+		assertEquals(2, allImports.size());
 
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
-		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
+		allImports = importScanner.getAllImports();
+		assertEquals("Spoon ignores the arguments of CtInvocations", 1, allImports.size());
 	}
 
 	@Test
@@ -372,10 +374,9 @@ public class ImportTest {
 
 		Collection<CtImport> imports = importContext.getAllImports();
 
-				// java.lang.Object is considered as imported but it will never be output
-		assertEquals(3, imports.size());
+		assertEquals(2, imports.size());
 		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
+				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
 		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
