@@ -123,6 +123,22 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				typeReference = reference;
 			} else {
 				typeReference = reference.getAccessType();
+
+				// in case of a reference to an inner class, the user might want to import it
+				// instead of importing the access type (which is the default behaviour)
+				// we cannot guess it: so we check against the existing imports
+				if (!typeReference.equals(reference)) {
+					for (CtImport ctImport : this.usedImport.keySet()) {
+						switch (ctImport.getImportKind()) {
+							case TYPE:
+								if (ctImport.getReference().getSimpleName().equals(reference.getSimpleName())) {
+									this.setImportUsed(ctImport);
+									super.visitCtTypeReference(reference);
+								}
+						}
+					}
+
+				}
 			}
 
 			if (!this.isTypeInCollision(typeReference, false)) {
@@ -143,7 +159,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void visitCtJavaDoc(CtJavaDoc ctJavaDoc) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(ctJavaDoc.getLongDescription());
+		stringBuilder.append(ctJavaDoc.getContent());
 
 		for (CtJavaDocTag ctJavaDocTag : ctJavaDoc.getTags()) {
 			stringBuilder.append(ctJavaDocTag.getContent());
@@ -209,6 +225,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	@Override
 	public void visitCtInvocation(CtInvocation invocation) {
+		this.scan(invocation.getTypeCasts());
 		this.scan(invocation.getExecutable());
 		if (!this.isImportedInMethodImports(invocation.getExecutable())) {
 			this.scan(invocation.getTarget());
