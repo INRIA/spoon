@@ -87,7 +87,7 @@ public class ExecutableTest {
 
 	@Test
 	public void testShadowValueOf() {
-		// contract: TODO
+		// contract: the valueOf method should be correctly retrieved in shadow mode
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/WithEnum.java");
 		CtModel ctModel = launcher.buildModel();
