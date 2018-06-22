@@ -56,21 +56,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	/**
-	 * Creates a new processor for generating Java source files.
-	 *
-	 * @param outputDirectory the root output directory
-	 * @param printer the PrettyPrinter to use for written the files
-	 *
-	 * @deprecated The outputDirectory should be get from the environment given to the pretty printer
-	 * (see {@link Environment#setSourceOutputDirectory(File)}. You should use the constructor with only one parameter.
-	 */
-	@Deprecated
-	public JavaOutputProcessor(File outputDirectory, PrettyPrinter printer) {
-		this(printer);
-		this.setOutputDirectory(outputDirectory);
-	}
-
-	/**
 	 * usedful for testing
 	 */
 	public JavaOutputProcessor() {
@@ -223,11 +208,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			}
 		}
 		return outputPath;
-	}
-
-	@Override
-	public void setOutputDirectory(File directory) {
-		this.getEnvironment().setSourceOutputDirectory(directory);
 	}
 
 	public Map<String, Map<Integer, Integer>> getLineNumberMappings() {
