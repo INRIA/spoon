@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
  * The annotation is expected to be removed at the latest one year after its introduction (you can do a "git blame" to see when it appeared).
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE })
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Experimental {
 }
