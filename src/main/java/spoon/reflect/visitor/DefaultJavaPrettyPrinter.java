@@ -1941,7 +1941,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (sourceCompilationUnit != null) {
 			this.importsContext.initWithImports(sourceCompilationUnit.getImports());
 		}
-		
+
 		for (CtType<?> t : types) {
 			imports.addAll(computeImports(t));
 		}
