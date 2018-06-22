@@ -10,7 +10,7 @@ public enum Bar {
 
 	private String symbol;
 
-	private Bar(final String symbol) {
+	Bar(final String symbol) {
 		this.symbol = symbol;
 	}
 

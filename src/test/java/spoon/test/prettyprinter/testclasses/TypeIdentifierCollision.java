@@ -10,7 +10,7 @@ public class TypeIdentifierCollision
 		final int NUM;
 		final Enum<?> e;
 
-		private ENUM( int num, Enum<?> e )
+		ENUM(int num, Enum<?> e)
 		{
 			NUM = num;
 			this.e = e;
