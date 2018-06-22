@@ -289,10 +289,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
 		String errorMessage = "";
 		try {
-			// we do not want to compute imports of a CtImport as it may change the print of a reference
-			if (!(this instanceof CtImport)) {
-				printer.computeImports(this);
-			}
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);

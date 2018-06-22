@@ -10,6 +10,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -57,7 +58,9 @@ public class QualifiedThisRefTest {
 	public void testQualifiedThisRef() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		CtType<?> ctClass = factory.Type().get(QualifiedThisRef.class);
-		Collection<CtImport> imports = printer.computeImports(ctClass);
+		CompilationUnit compilationUnit = ctClass.getPosition().getCompilationUnit();
+		compilationUnit.computeImports();
+		Collection<CtImport> imports = compilationUnit.getImports();
 		final List<CtType<?>> ctTypes = new ArrayList<>();
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);

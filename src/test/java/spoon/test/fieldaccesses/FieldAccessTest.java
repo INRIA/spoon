@@ -16,6 +16,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -352,7 +353,9 @@ public class FieldAccessTest {
 
 		final CtType<Kuu> aType = launcher.getFactory().Type().get(Kuu.class);
 		final DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(aType.getFactory().getEnvironment());
-		assertEquals(0, printer.computeImports(aType).size());
+		CompilationUnit compilationUnit = aType.getPosition().getCompilationUnit();
+		compilationUnit.computeImports();
+		assertEquals(0, compilationUnit.getImports().size());
 		assertEquals("spoon.test.fieldaccesses.testclasses.Mole.Delicious delicious", aType.getMethodsByName("m").get(0).getParameters().get(0).toString());
 	}
 
