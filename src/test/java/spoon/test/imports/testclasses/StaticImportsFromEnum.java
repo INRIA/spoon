@@ -17,12 +17,12 @@ package spoon.test.imports.testclasses;
  */
 public class StaticImportsFromEnum {
 
-    static enum DataElement {
+    enum DataElement {
         KEY("key"), VALUE("value");
 
         private final String description;
 
-        private DataElement(final String description) {
+        DataElement(final String description) {
             this.description = description;
         }
 
