@@ -35,6 +35,8 @@ public interface ModelStreamer {
 	 * 		the factory to be save
 	 * @param out
 	 * 		the used output stream
+	 * @param zipIt
+	 * 		true if output file has to be compressed
 	 * @throws IOException
 	 * 		if some IO error occurs
 	 */
@@ -45,6 +47,8 @@ public interface ModelStreamer {
 	 *
 	 * @param in
 	 * 		the used input stream
+	 * @param unZipIt
+	 * 		true if file to read is a GZIP
 	 * @return the loaded factory
 	 * @throws IOException
 	 * 		if some IO error occurs
