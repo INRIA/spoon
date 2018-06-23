@@ -57,7 +57,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public Factory load(InputStream in, boolean unZipIt) throws IOException {
 		try {
 			if (unZipIt) {
-				in = new GZIPInputStream(in); 
+				in = new GZIPInputStream(in);
 			}
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));
 			final Factory f = (Factory) ois.readObject();
