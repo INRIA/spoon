@@ -64,3 +64,4 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		return (Class<T>) CtNamedElement.class;
 	}
 }
+
