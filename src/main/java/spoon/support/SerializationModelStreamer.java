@@ -45,7 +45,9 @@ public class SerializationModelStreamer implements ModelStreamer {
 	}
 
 	public void save(Factory f, OutputStream out, boolean zipIt) throws IOException {
-		if (zipIt) out = new GZIPOutputStream(out);
+		if (zipIt) {
+			out = new GZIPOutputStream(out);
+		}
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
 		oos.writeObject(f);
 		oos.flush();
@@ -54,7 +56,9 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	public Factory load(InputStream in, boolean unZipIt) throws IOException {
 		try {
-			if (unZipIt) in = new GZIPInputStream(in);
+			if (unZipIt) {
+				in = new GZIPInputStream(in); 
+			}
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly
