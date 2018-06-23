@@ -16,12 +16,6 @@
  */
 package spoon.support;
 
-import spoon.Launcher;
-import spoon.reflect.ModelStreamer;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.Filter;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -29,6 +23,14 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import spoon.Launcher;
+import spoon.reflect.ModelStreamer;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Filter;
 
 /**
  * This class provides a regular Java serialization-based implementation of the
@@ -42,15 +44,17 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public SerializationModelStreamer() {
 	}
 
-	public void save(Factory f, OutputStream out) throws IOException {
+	public void save(Factory f, OutputStream out, boolean zipIt) throws IOException {
+		if (zipIt) out = new GZIPOutputStream(out);
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
 		oos.writeObject(f);
 		oos.flush();
 		oos.close();
 	}
 
-	public Factory load(InputStream in) throws IOException {
+	public Factory load(InputStream in, boolean unZipIt) throws IOException {
 		try {
+			if (unZipIt) in = new GZIPInputStream(in);
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly

@@ -95,7 +95,7 @@ public class IncrementalLauncher extends Launcher {
 
 	private static Factory loadFactory(File file) {
 		try {
-			return new SerializationModelStreamer().load(new FileInputStream(file));
+			return new SerializationModelStreamer().load(new FileInputStream(file), false);
 		} catch (IOException e) {
 			throw new SpoonException("unable to load factory from cache");
 		}
@@ -103,7 +103,7 @@ public class IncrementalLauncher extends Launcher {
 
 	private static void saveFactory(Factory factory, File file) {
 		try {
-			new SerializationModelStreamer().save(factory, new FileOutputStream(file));
+			new SerializationModelStreamer().save(factory, new FileOutputStream(file), false);
 		} catch (IOException e) {
 			throw new SpoonException("unable to save factory");
 		}

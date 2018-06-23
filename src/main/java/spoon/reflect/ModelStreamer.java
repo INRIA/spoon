@@ -38,7 +38,7 @@ public interface ModelStreamer {
 	 * @throws IOException
 	 * 		if some IO error occurs
 	 */
-	void save(Factory f, OutputStream out) throws IOException;
+	void save(Factory f, OutputStream out, boolean zipIt) throws IOException;
 
 	/**
 	 * Loads a factory (and all its associated Java program elements).
@@ -49,6 +49,6 @@ public interface ModelStreamer {
 	 * @throws IOException
 	 * 		if some IO error occurs
 	 */
-	Factory load(InputStream in) throws IOException;
+	Factory load(InputStream in, boolean unZipIt) throws IOException;
 
 }

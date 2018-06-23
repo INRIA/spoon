@@ -149,7 +149,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 						SerializationModelStreamer ser = new SerializationModelStreamer();
 						try {
 							ser.save(factory, new FileOutputStream(chooser
-									.getSelectedFile()));
+									.getSelectedFile()), false);
 						} catch (IOException e1) {
 							Launcher.LOGGER.error(e1.getMessage(), e1);
 						}
