@@ -153,11 +153,6 @@ public class PrinterHelper {
 		return this;
 	}
 
-	@Deprecated
-	public PrinterHelper writeTabs() {
-		return this;
-	}
-
 	private void writeTabsInternal() {
 		for (int i = 0; i < nbTabs; i++) {
 			if (env.isUsingTabulations()) {

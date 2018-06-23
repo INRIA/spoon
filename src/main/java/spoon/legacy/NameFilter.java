@@ -16,9 +16,12 @@
  */
 package spoon.legacy;
 
+
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
+
+
 
 
 /**
@@ -31,9 +34,9 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
  *
  * @deprecated Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
  */
-@Deprecated
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
+
 
 	/**
 	 *
@@ -46,6 +49,7 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		this.name = name;
 	}
 
+
 	public boolean matches(T element) {
 		try {
 			return name.equals(element.getSimpleName());
@@ -54,8 +58,10 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		}
 	}
 
+
 	@SuppressWarnings("unchecked")
 	public Class<T> getType() {
 		return (Class<T>) CtNamedElement.class;
 	}
 }
+
