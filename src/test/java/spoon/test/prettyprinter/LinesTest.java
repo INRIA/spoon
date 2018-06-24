@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
