@@ -313,8 +313,8 @@ public class MetamodelTest {
 					}
 				}
 				//contract: type of field value is never implicit
-				assertFalse("Value type of Field " + mmField.toString() + " is implicit", mmField.getTypeOfField().isImplicit());
-				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getTypeofItems().isImplicit());
+				assertFalse("Value type of Field " + mmField + " is implicit", mmField.getTypeOfField().isImplicit());
+				assertFalse("Item value type of Field " + mmField + " is implicit", mmField.getTypeofItems().isImplicit());
 
 				mmField.getMethods(MMMethodKind.OTHER).forEach(
 						mmethod -> mmethod.getDeclaredMethods().forEach(

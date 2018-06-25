@@ -315,7 +315,7 @@ public class JavaReflectionTreeBuilderTest {
 
 			CtElement parentOfOther = stack.peek();
 			try {
-				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName()
+				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther) +"#"+role.getCamelCaseName()
 				+"\nShadow: " + String.valueOf(other)
 				+"\nNormal: " + String.valueOf(element)+"\n");
 			} catch (CtPathException e) {
@@ -404,7 +404,7 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString()+"#"
+					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf) +"#"
 					+diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
 					+"\nShadow: " + String.valueOf(diff.other)
 					+"\nNormal: " + String.valueOf(diff.element)+"\n");

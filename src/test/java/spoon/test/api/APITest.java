@@ -555,7 +555,7 @@ public class APITest {
 	@Test
 	public void testOutputWithNoOutputProduceNoFolder() {
 		// contract: when using "NO_OUTPUT" output type, no output folder shoud be created
-		String destPath = "./target/nooutput_" + UUID.randomUUID().toString();
+		String destPath = "./target/nooutput_" + UUID.randomUUID();
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
 		launcher.setSourceOutputDirectory(destPath);

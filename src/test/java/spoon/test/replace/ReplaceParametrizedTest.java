@@ -151,7 +151,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			};
 			Scanner s = new Scanner();
 			receiver.accept(s);
-			assertTrue("Settable field " + mmField.toString() + " should set value.\n" + getReport(problems), s.found);
+			assertTrue("Settable field " + mmField + " should set value.\n" + getReport(problems), s.found);
 			
 			// contract: a property getter on the same role can be used to get the value back
 			assertSame(argument, invokeGetter(rh, receiver));

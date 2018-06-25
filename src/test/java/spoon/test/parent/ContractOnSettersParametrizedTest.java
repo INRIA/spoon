@@ -152,7 +152,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 
 			} catch (AssertionError e) {
-				System.err.println("one contract failed for " + setter.toString());
+				System.err.println("one contract failed for " + setter);
 				throw e;
 			} catch (InvocationTargetException e) {
 				if (e.getCause() instanceof UnsupportedOperationException) {

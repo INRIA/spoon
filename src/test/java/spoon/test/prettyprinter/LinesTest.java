@@ -102,8 +102,8 @@ public class LinesTest {
 			CtElement el2 = launcher2.getModel().getElements(new TypeFilter<>(CtElement.class)).get(i);
 			assertNotSame(e, el2);
 			if (e.getPosition().isValidPosition()) {
-				assertEquals(e.toString() + " not handled", e.getPosition().getLine(), el2.getPosition().getLine());
-				assertEquals(e.toString() + " not handled", e.getPosition().getEndLine(), el2.getPosition().getEndLine());
+				assertEquals(e + " not handled", e.getPosition().getLine(), el2.getPosition().getLine());
+				assertEquals(e + " not handled", e.getPosition().getEndLine(), el2.getPosition().getEndLine());
 			} else {
 				assertFalse(el2.getPosition().isValidPosition());
 			}

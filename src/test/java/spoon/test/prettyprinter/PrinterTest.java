@@ -326,7 +326,7 @@ public class PrinterTest {
 					ph.setTabCount(getPrinterHelper().getTabCount());
 					sptw.writeComment(comment);
 					handleTabs();
-					allTokens.append(sptw.getPrinterHelper().toString());
+					allTokens.append(sptw.getPrinterHelper());
 					return this;
 				}
 				
@@ -405,7 +405,7 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
+						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens, tokenType.equals(this.lastToken)==false);
 					}
 					this.lastToken = tokenType;
 				}

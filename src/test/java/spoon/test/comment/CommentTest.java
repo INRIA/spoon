@@ -270,7 +270,7 @@ public class CommentTest {
 				continue;
 			}
 			assertNotNull(comment.getParent());
-			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
+			assertTrue(comment + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
 		assertEquals(6, type.getComments().size());
@@ -469,7 +469,7 @@ public class CommentTest {
 				continue;
 			}
 			assertNotNull(comment.getParent());
-			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
+			assertTrue(comment + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
 		assertEquals(5, type.getComments().size());
