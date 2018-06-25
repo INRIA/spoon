@@ -621,7 +621,7 @@ public class MavenLauncher extends Launcher {
 				}
 
 			} catch (Exception e) {
-				LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence.toString(), e);
+				LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence, e);
 			}
 			return dependence;
 		}
