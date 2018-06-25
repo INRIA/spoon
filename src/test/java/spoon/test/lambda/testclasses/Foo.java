@@ -93,7 +93,7 @@ public class Foo {
 		}
 
 		public void printPerson() {
-			System.out.println(this);
+			System.out.println(this.toString());
 		}
 
 		public void doSomething() {

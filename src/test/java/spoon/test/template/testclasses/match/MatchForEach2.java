@@ -22,7 +22,7 @@ public class MatchForEach2 {
 		System.out.println((String) null);
 		cc++;
 		int dd = 0;
-		System.out.println(Long.class);
+		System.out.println(Long.class.toString());
 		dd++;
 	}
 

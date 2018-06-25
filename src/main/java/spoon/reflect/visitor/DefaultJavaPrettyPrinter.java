@@ -347,7 +347,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				String elementInfo = e.getClass().getName();
 				elementInfo += " on path " + getPath(e) + "\n";
 				if (e.getPosition().isValidPosition()) {
-					elementInfo += "at position " + e.getPosition() + " ";
+					elementInfo += "at position " + e.getPosition().toString() + " ";
 				}
 				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
 			}

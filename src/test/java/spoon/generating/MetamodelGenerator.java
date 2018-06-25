@@ -29,7 +29,7 @@ public class MetamodelGenerator {
 				sb.append(printType(factory, type));
 			}
 		}
-		System.out.println(sb);
+		System.out.println(sb.toString());
 	}
 	
 

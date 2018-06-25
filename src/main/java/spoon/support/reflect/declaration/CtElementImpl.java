@@ -138,7 +138,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
-			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this + "\nand\n" + o + "\n");
+			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
 		}
 		return ret;
 	}
@@ -192,7 +192,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 				StringBuffer result = new StringBuffer();
 				result.append(ctComment.getContent() + System.lineSeparator());
 				for (CtJavaDocTag tag: ((CtJavaDoc) ctComment).getTags()) {
-					result.append(tag); // the tag already contains a new line
+					result.append(tag.toString()); // the tag already contains a new line
 				}
 				return result.toString();
 			}

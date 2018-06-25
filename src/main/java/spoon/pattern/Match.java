@@ -109,7 +109,7 @@ public class Match {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
-		sb.append(parameters);
+		sb.append(parameters.toString());
 		sb.append("\n}\n----------");
 		for (int i = 0; i < matchingElements.size(); i++) {
 			sb.append("\n").append(i + 1).append(") ").append(matchingElements.get(i));

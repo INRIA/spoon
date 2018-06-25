@@ -181,12 +181,12 @@ public class CtTypeTest {
 	
 	private String getTypeName(CtTypeReference<?> ref) {
 		String name;
-		CtReference r = ref.getParent(CtReference.class);
+		CtReference r= ref.getParent(CtReference.class);
 		if(r!=null) {
 			name = r.getSimpleName();
 		} else {
 			name = ref.getParent(CtNamedElement.class).getSimpleName();
 		}
-		return ref + " " + name;
+		return ref.toString()+" "+name;
 	}
 }

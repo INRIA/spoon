@@ -13,7 +13,7 @@ public class MatchWithParameterCondition {
 		System.out.println("a");
 		out.println("Xxxx");
 		System.out.println((String) null);
-		System.out.println(Long.class);
+		System.out.println(Long.class.toString());
 	}
 
 }
