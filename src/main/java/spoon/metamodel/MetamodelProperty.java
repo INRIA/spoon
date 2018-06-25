@@ -605,7 +605,7 @@ public class MetamodelProperty {
 					try {
 						return (U) rtMethod.invoke(element);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new SpoonException("Invokation of getter on " + this + " failed", e);
+						throw new SpoonException("Invocation of getter on " + this + " failed", e);
 					}
 				}
 				throw new SpoonException("Cannot invoke getter on " + this);
@@ -627,7 +627,7 @@ public class MetamodelProperty {
 					try {
 						rtMethod.invoke(element, value);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new SpoonException("Invokation of setter on " + this + " failed", e);
+						throw new SpoonException("Invocation of setter on " + this + " failed", e);
 					}
 					return;
 				}
