@@ -39,7 +39,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 
-import java.rmi.ServerError;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;

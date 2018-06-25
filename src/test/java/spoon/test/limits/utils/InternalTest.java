@@ -2,7 +2,6 @@ package spoon.test.limits.utils;
 
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
