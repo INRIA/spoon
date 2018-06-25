@@ -218,7 +218,7 @@ public class Metamodel {
 
 		@Override
 		public String toString() {
-			return getOwner().toString() + "#" + getRole().getCamelCaseName();
+			return getOwner() + "#" + getRole().getCamelCaseName();
 		}
 	}
 

@@ -95,7 +95,7 @@ public class PackageFactory extends SubFactory implements Serializable {
 	 * @return the newly created package
 	 */
 	public CtPackage create(CtPackage parent, String simpleName) {
-		return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
+		return getOrCreate(parent + CtPackage.PACKAGE_SEPARATOR + simpleName);
 	}
 
 	/**

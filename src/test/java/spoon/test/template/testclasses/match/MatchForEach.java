@@ -17,7 +17,7 @@ public class MatchForEach {
 		System.out.println("a");
 		out.println("Xxxx");
 		System.out.println((String) null);
-		System.out.println(Long.class.toString());
+		System.out.println(Long.class);
 	}
 
 }

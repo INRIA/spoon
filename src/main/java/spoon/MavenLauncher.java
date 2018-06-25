@@ -576,7 +576,7 @@ public class MavenLauncher extends Launcher {
 			try {
 				return readPOM(depPath.toString(), null);
 			} catch (Exception e) {
-				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath.toString(), e);
+				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath, e);
 				return null;
 			}
 		}
@@ -621,7 +621,7 @@ public class MavenLauncher extends Launcher {
 				}
 
 			} catch (Exception e) {
-				LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence.toString(), e);
+				LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence, e);
 			}
 			return dependence;
 		}

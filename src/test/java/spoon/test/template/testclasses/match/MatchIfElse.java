@@ -22,7 +22,7 @@ public class MatchIfElse {
 		System.out.println((String) null);
 		System.out.println((Integer) null);
 		System.out.println(2018);
-		System.out.println(Long.class.toString());
+		System.out.println(Long.class);
 		System.out.println(3.14);
 	}
 

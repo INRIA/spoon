@@ -311,7 +311,7 @@ public class MetamodelProperty {
 
 	private int getIdxOfBestMatchByReturnType(List<MMMethod> methods, MMMethodKind key) {
 		if (methods.size() > 2) {
-			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods.toString());
+			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods);
 		}
 		// There is no input parameter. We are resolving getter field.
 		// choose the getter whose return value is a collection
@@ -393,7 +393,7 @@ public class MetamodelProperty {
 		CtTypeReference<?> itemValueType;
 		if (valueContainerType == ContainerKind.MAP) {
 			if (String.class.getName().equals(valueType.getActualTypeArguments().get(0).getQualifiedName()) == false) {
-				throw new SpoonException("Unexpected container of type: " + valueType.toString());
+				throw new SpoonException("Unexpected container of type: " + valueType);
 			}
 			itemValueType = valueType.getActualTypeArguments().get(1);
 		} else {

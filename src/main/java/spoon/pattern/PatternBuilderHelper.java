@@ -124,11 +124,11 @@ public class PatternBuilderHelper {
 		CtMethod<?> method = getOneByFilter(filter);
 		CtBlock<?> body = method.getBody();
 		if (body.getStatements().size() != 1) {
-			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body.toString());
+			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body);
 		}
 		CtStatement firstStatement = body.getStatements().get(0);
 		if (firstStatement instanceof CtReturn<?> == false) {
-			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body.toString());
+			throw new SpoonException("The body of " + method.getSignature() + " must contain return statement. But there is:\n" + body);
 		}
 		setElements(Collections.singletonList(((CtReturn<?>) firstStatement).getReturnedExpression()));
 	}

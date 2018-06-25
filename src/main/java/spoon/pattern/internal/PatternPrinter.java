@@ -63,7 +63,7 @@ public class PatternPrinter extends DefaultGenerator {
 		List<Object> generated = generateTargets(node, (ImmutableMap) null, null);
 		StringBuilder sb = new StringBuilder();
 		for (Object ele : generated) {
-			sb.append(ele.toString()).append('\n');
+			sb.append(ele).append('\n');
 		}
 		return sb.toString();
 	}
@@ -198,9 +198,9 @@ public class PatternPrinter extends DefaultGenerator {
 		@Override
 		public String toString() {
 			if (role == null) {
-				return sourceElement.getClass().getName() + ": ${" + node.toString() + "}";
+				return sourceElement.getClass().getName() + ": ${" + node + "}";
 			} else {
-				return sourceElement.getClass().getName() + "/" + role + ": " + node.toString();
+				return sourceElement.getClass().getName() + "/" + role + ": " + node;
 			}
 		}
 	}

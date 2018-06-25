@@ -11,7 +11,7 @@ public class Main {
 		System.out.println("a\nb\n");
 		System.out.println("c\n");
 		System.out.println("c\n"+"test");
-		System.out.println("c"+"test".toString());
+		System.out.println("c"+ "test");
 
 	}
 
