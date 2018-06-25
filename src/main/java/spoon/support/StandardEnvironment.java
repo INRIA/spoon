@@ -104,7 +104,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	private Boolean noclasspath = null;
 
 	private SpoonProgress spoonProgress = null;
-	
+
 	private SerializationType serializationType = SerializationType.STANDARD_GZIP;
 
 	/**
@@ -590,7 +590,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setSpoonProgress(SpoonProgress spoonProgress) {
 		this.spoonProgress = spoonProgress;
 	}
-	
+
 	@Override
 	public SerializationType getSerializationType() {
 		return serializationType;

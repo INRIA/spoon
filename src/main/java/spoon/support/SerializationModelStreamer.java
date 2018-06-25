@@ -18,13 +18,11 @@ package spoon.support;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipException;
@@ -61,8 +59,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 		try {
 			try {
 				in = new GZIPInputStream(in);
-			}
-			catch (ZipException e) {
+			} catch (ZipException e) {
 				Launcher.LOGGER.error("Given stream is not a GZIP or is corrupted. " + e.getMessage(), e);
 			}
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));

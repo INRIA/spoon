@@ -1,6 +1,3 @@
-/**
- * 
- */
 package spoon.support;
 
 /**
@@ -10,13 +7,13 @@ public enum SerializationType {
 
 	STANDARD("Java"),
 	STANDARD_GZIP("Java, GZIP compression");
-	
+
 	private String description;
-	
-	private SerializationType(String description) {
+
+	SerializationType(String description) {
 		this.description = description;
 	}
-	
+
 	public String getDescription() {
 		return this.description;
 	}
