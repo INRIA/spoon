@@ -75,7 +75,7 @@ public class VariableReferencesTest {
 			void checkKey(int key, CtElement ele) {
 				CtElement ambiquous = unique.put(key, ele);
 				if(ambiquous!=null) {
-					fail("Two variables ["+ ambiquous +" in "+getParentMethodName(ambiquous)+","+ ele +" in "+getParentMethodName(ele)+"] has same value");
+					fail("Two variables [" + ambiquous + " in " + getParentMethodName(ambiquous) + "," + ele + " in " + getParentMethodName(ele) + "] has same value");
 				}
 				maxKey = Math.max(maxKey, key);
 			}

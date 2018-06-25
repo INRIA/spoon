@@ -104,7 +104,7 @@ public class CtRenameLocalVariableRefactoringTest
 			try {
 				refactor.refactor();
 			} catch(SpoonException e) {
-				throw new AssertionError(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" should NOT fail when trying rename to \""+newName+"\"\n"+ targetVariable, e);
+				throw new AssertionError(getParentMethodName(targetVariable) + " Rename of \""+originName+"\" should NOT fail when trying rename to \""+newName+"\"\n" + targetVariable, e);
 			}
 			assertEquals(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\" passed, but the name of variable was not changed", newName, targetVariable.getSimpleName());
 			assertCorrectModel(launcher, getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\"");

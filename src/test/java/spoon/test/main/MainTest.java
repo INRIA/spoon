@@ -193,7 +193,7 @@ public class MainTest {
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
- 				assertNotNull("cannot find decl for " + reference,executableDeclaration);
+				assertNotNull("cannot find decl for " + reference, executableDeclaration);
 				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.

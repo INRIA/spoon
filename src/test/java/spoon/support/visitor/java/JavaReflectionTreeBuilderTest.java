@@ -315,7 +315,7 @@ public class JavaReflectionTreeBuilderTest {
 
 			CtElement parentOfOther = stack.peek();
 			try {
-				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther) +"#"+role.getCamelCaseName()
+				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther) + "#" + role.getCamelCaseName()
 				+"\nShadow: " + String.valueOf(other)
 				+"\nNormal: " + String.valueOf(element)+"\n");
 			} catch (CtPathException e) {
