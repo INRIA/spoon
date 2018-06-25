@@ -112,7 +112,7 @@ public class MetamodelTest {
 		if (expectedTypesByName.isEmpty() == false) {
 			problems.add("These Metamodel.Type instances are missing:" + expectedTypesByName.keySet());
 		}
-		assertTrue(String.join("\n", problems), problems.isEmpty());
+		assertTrue("You might need to update api/Metamodel.java: " + String.join("\n", problems), problems.isEmpty());
 	}
 	@Test
 	public void testGetterSetterFroRole() {

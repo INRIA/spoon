@@ -4,7 +4,6 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResource;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;

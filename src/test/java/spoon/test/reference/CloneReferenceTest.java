@@ -2,7 +2,6 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.refactoring.Refactoring;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;

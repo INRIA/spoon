@@ -1,10 +1,5 @@
 package spoon.test.template.testclasses.match;
 
-import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
-import spoon.pattern.PatternBuilderHelper;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
 import static java.lang.System.out;
 
 public class MatchWithParameterType {

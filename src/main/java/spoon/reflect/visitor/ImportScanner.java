@@ -20,7 +20,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -49,4 +48,5 @@ public interface ImportScanner {
 	 * Specify the original imports to use before computing new imports.
 	 */
 	void initWithImports(Set<CtImport> importCollection);
+
 }

@@ -22,7 +22,12 @@ public class ComplianceOptions<T extends ComplianceOptions<T>> extends Options<T
 	}
 
 	public T compliance(int version) {
-		args.add("-1." + version);
+		if (version < 10) {
+			args.add("-1." + version);
+		} else {
+			args.add("-" + version);
+		}
+
 		return myself;
 	}
 }

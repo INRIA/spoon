@@ -21,9 +21,11 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
+import com.martiansoftware.jsap.stringparsers.EnumeratedStringParser;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import spoon.SpoonModelBuilder.InputType;
@@ -70,6 +72,10 @@ import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
  * usage.
  */
 public class Launcher implements SpoonAPI {
+
+	enum CLASSPATH_MODE {
+		NOCLASSPATH, FULLCLASSPATH
+	}
 
 	public static final String SPOONED_CLASSES = "spooned-classes";
 
@@ -352,11 +358,22 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
+
+			opt2 = new FlaggedOption("cpmode");
+			opt2.setLongFlag(opt2.getID());
+			String acceptedValues = StringUtils.join(CLASSPATH_MODE.values(), "; ");
+			opt2.setStringParser(EnumeratedStringParser.getParser(acceptedValues));
+			msg = "Classpath mode to use in Spoon: " + acceptedValues;
+			opt2.setHelp(msg);
+			opt2.setRequired(true);
+			opt2.setDefault(CLASSPATH_MODE.NOCLASSPATH.name());
+			jsap.registerParameter(opt2);
+
 			// nobinding
 			sw1 = new Switch("noclasspath");
 			sw1.setShortFlag('x');
 			sw1.setLongFlag("noclasspath");
-			sw1.setHelp("Does not assume a full classpath");
+			sw1.setHelp("[DEPRECATED] Does not assume a full classpath (Please use --cpmode now, as the default behaviour has changed.)");
 			jsap.registerParameter(sw1);
 
 			// show GUI
@@ -378,7 +395,14 @@ public class Launcher implements SpoonAPI {
 			sw1 = new Switch("enable-comments");
 			sw1.setShortFlag('c');
 			sw1.setLongFlag("enable-comments");
-			sw1.setHelp("Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing.");
+			sw1.setHelp("[DEPRECATED] Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing. (deprecated: by default, the comments are enabled.)");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
+			// Disable generation of javadoc.
+			sw1 = new Switch("disable-comments");
+			sw1.setLongFlag("disable-comments");
+			sw1.setHelp("Disable the parsing of comments in Spoon.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -420,14 +444,46 @@ public class Launcher implements SpoonAPI {
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
-		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
+
+		if (jsapActualArgs.getBoolean("noclasspath")) {
+			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: noclasspath is now the default behaviour.");
+		} else {
+			Launcher.LOGGER.warn("Spoon is now using the 'no classpath mode' by default. If you want to ensure using Spoon in full classpath mode, please use the new flag: --cpmode fullclasspath.");
+		}
+
+		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
+		CLASSPATH_MODE classpath_mode = CLASSPATH_MODE.valueOf(cpmode);
+		switch (classpath_mode) {
+			case NOCLASSPATH:
+				environment.setNoClasspath(true);
+				break;
+
+			case FULLCLASSPATH:
+				environment.setNoClasspath(false);
+				break;
+		}
+
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
-		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
+
+		if (jsapActualArgs.getBoolean("enable-comments")) {
+			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
+		} else {
+			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+		}
+
+		if (jsapActualArgs.getBoolean("disable-comments")) {
+			environment.setCommentEnabled(false);
+		} else {
+			environment.setCommentEnabled(true);
+		}
+
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
-		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
+		if (jsapActualArgs.getBoolean("disable-model-self-checks")) {
+			environment.disableConsistencyChecks();
+		}
 
 		String outputString = jsapActualArgs.getString("output-type");
 		OutputType outputType = OutputType.fromString(outputString);
@@ -611,11 +667,6 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	@Deprecated
-	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return this.createOutputWriter();
 	}
 
 	public JavaOutputProcessor createOutputWriter() {

@@ -1,11 +1,6 @@
 package spoon.test.template.testclasses;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
-import spoon.reflect.factory.Factory;
 
 public class ToBeMatched {
 

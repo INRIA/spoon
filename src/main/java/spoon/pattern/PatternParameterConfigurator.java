@@ -376,6 +376,7 @@ public class PatternParameterConfigurator {
 	 * 		Note these values may influence the way how pattern parameters are created.
 	 * 		This unclear and ambiguous technique was used in legacy templates
 	 * @return this to support fluent API
+	 * @deprecated since Spoon 7.0.0
 	 */
 	@Deprecated
 	public PatternParameterConfigurator byTemplateParameter(Map<String, Object> parameterValues) {
@@ -520,6 +521,7 @@ public class PatternParameterConfigurator {
 	 *
 	 * @param parameterValues pattern parameter values or null if not known
 	 * @return this to support fluent API
+	 * @deprecated Since Spoon 7.0.0
 	 */
 	@Deprecated
 	public PatternParameterConfigurator byParameterValues(Map<String, Object> parameterValues) {

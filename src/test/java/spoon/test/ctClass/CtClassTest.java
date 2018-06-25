@@ -12,7 +12,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -22,24 +21,19 @@ import java.util.Set;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 

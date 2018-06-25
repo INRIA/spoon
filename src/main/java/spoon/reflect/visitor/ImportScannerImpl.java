@@ -47,7 +47,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
