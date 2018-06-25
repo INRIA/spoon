@@ -9,7 +9,6 @@ import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

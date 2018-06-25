@@ -728,8 +728,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSeparator(";").writeln();
 		} else {
 			elementPrinterHelper.printList(ctEnum.getEnumValues(),
-					null, false, null, false, false, ",", true, false, ";",
-					enumValue -> scan(enumValue));
+					null, false, null, false, false, ",", false, false, ";",
+					enumValue -> {
+						printer.writeln();
+						scan(enumValue);
+					});
 		}
 
 		elementPrinterHelper.writeElementList(ctEnum.getTypeMembers());
@@ -763,21 +766,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtEnumValue(CtEnumValue<T> enumValue) {
 		elementPrinterHelper.visitCtNamedElement(enumValue, sourceCompilationUnit);
+		elementPrinterHelper.writeComment(enumValue, CommentOffset.BEFORE);
 		printer.writeIdentifier(enumValue.getSimpleName());
 		if (enumValue.getDefaultExpression() != null) {
 			CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) enumValue.getDefaultExpression();
-			if (constructorCall.getArguments().size() > 0) {
-				printer.writeSeparator("(");
-				boolean first = true;
-				for (CtExpression<?> ctexpr : constructorCall.getArguments()) {
-					if (first) {
-						first = false;
-					} else {
-						printer.writeSeparator(",");
-					}
-					scan(ctexpr);
-				}
-				printer.writeSeparator(")");
+			if (!constructorCall.isImplicit()) {
+				elementPrinterHelper.printList(constructorCall.getArguments(), null, false, "(", false, false, ",", true, false, ")", expr -> scan(expr));
 			}
 			if (constructorCall instanceof CtNewClass) {
 				scan(((CtNewClass<?>) constructorCall).getAnonymousClass());
@@ -1294,7 +1288,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		if (!context.noTypeDecl()) {
 			elementPrinterHelper.writeModifiers(localVariable);
-			scan(localVariable.getType());
+			if (localVariable.isInferred() && this.env.getComplianceLevel() >= 10) {
+				getPrinterTokenWriter().writeKeyword("var");
+			} else {
+				scan(localVariable.getType());
+			}
 			printer.writeSpace();
 		}
 		printer.writeIdentifier(localVariable.getSimpleName());

@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -27,6 +29,8 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -749,6 +753,7 @@ public class CommentTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setComplianceLevel(10);
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/");
@@ -904,6 +909,58 @@ public class CommentTest {
 			CtComment comment = literal.getComments().get(0);
 			String expected = literal.getValue();
 			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
+		}
+	}
+
+	@Test
+	public void testEnumValueComment() {
+		// contract: enum value comments are taken into account
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		CtEnum<?> ctEnum = model.getElements(new TypeFilter<>(CtEnum.class)).get(0);
+		List<CtEnumValue<?>> enumValues = ctEnum.getEnumValues();
+
+		assertEquals(4, enumValues.size());
+
+		CtEnumValue firstEnumValue = enumValues.get(0);
+		assertEquals("FAIL", firstEnumValue.getSimpleName());
+
+		List<CtComment> comments = firstEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Throw {@link SpoonException} if a conflict happens, it is the default in most cases. But there are some standard Pattern builder algorithms (mainly these which deals with legacy Templates), which are using the other modes.", comments.get(0).getContent());
+
+		CtEnumValue<?> thirdEnumValue = enumValues.get(2);
+		assertEquals("KEEP_OLD_NODE", thirdEnumValue.getSimpleName());
+
+		comments = thirdEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Keep old {@link RootNode} and ignore requests to add new {@link RootNode}", comments.get(0).getContent());
+	}
+
+  @Test
+	public void testInlineCommentIfBlock() {
+		// contract: when creating an inline comment from a string with line separators, it throws an exception to create block comment
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/WithIfBlock.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		List<CtIf> ctIfs = model.getElements(new TypeFilter<>(CtIf.class));
+
+		assertEquals(1, ctIfs.size());
+		CtIf ctIf = ctIfs.get(0);
+		try {
+			CtComment ctComment = launcher.getFactory().createInlineComment(ctIf.toString());
+			fail("Exception should have been thrown");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains("consider using a block comment"));
 		}
 	}
 }

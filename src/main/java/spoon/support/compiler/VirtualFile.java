@@ -24,10 +24,11 @@ import java.io.File;
 import java.io.InputStream;
 
 public class VirtualFile implements SpoonFile {
+	public static final String VIRTUAL_FILE_NAME = "virtual_file";
 
 	String content;
 
-	String name = "virtual_file";
+	String name = VIRTUAL_FILE_NAME;
 
 	public VirtualFile(String content) {
 		this.content = content;

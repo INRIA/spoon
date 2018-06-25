@@ -16,10 +16,14 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.IS_INFERRED;
 
 /**
  * This code element defines a local variable definition (within an executable
@@ -29,6 +33,13 @@ import spoon.support.UnsettableProperty;
  * <pre>
  *     // defines a local variable x
  *     int x = 0;
+ * </pre>
+ *
+ * With Java 10, the local variable inference is now authorized, then the following code is valid too in a block scope:
+ *
+ * <pre>
+ *     // local variable in Java 10
+ *     var x = 0;
  * </pre>
  *
  * @param <T>
@@ -57,5 +68,18 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 	@Override
 	@UnsettableProperty
 	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
+
+	/**
+	 * Return true if this variable's type is not explicitely defined in the source code, but was using the `var` keyword of Java 10.
+	 */
+	@PropertyGetter(role = IS_INFERRED)
+	boolean isInferred();
+
+	/**
+	 * Set true if the variable must be inferred.
+	 * Warning: this method should only be used if compliance level is set to 10 or more.
+	 */
+	@PropertySetter(role = IS_INFERRED)
+	<U extends CtLocalVariable<T>> U setInferred(boolean inferred);
 
 }

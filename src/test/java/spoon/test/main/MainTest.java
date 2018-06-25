@@ -157,7 +157,7 @@ public class MainTest {
 		}.scan(pack);
 	}
 
-	private void checkShadow(CtPackage pack) {
+	public static void checkShadow(CtPackage pack) {
 		new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
@@ -530,6 +530,7 @@ public class MainTest {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
 				"--noclasspath",
+				"--disable-comments",
 				"--compliance", "8",
 				"--level", "OFF"
 		});

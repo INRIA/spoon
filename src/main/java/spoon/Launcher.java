@@ -378,7 +378,14 @@ public class Launcher implements SpoonAPI {
 			sw1 = new Switch("enable-comments");
 			sw1.setShortFlag('c');
 			sw1.setLongFlag("enable-comments");
-			sw1.setHelp("Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing.");
+			sw1.setHelp("[DEPRECATED] Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing. (deprecated: by default, the comments are enabled.)");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
+			// Disable generation of javadoc.
+			sw1 = new Switch("disable-comments");
+			sw1.setLongFlag("disable-comments");
+			sw1.setHelp("Disable the parsing of comments in Spoon.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -425,9 +432,23 @@ public class Launcher implements SpoonAPI {
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
-		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
+
+		if (jsapActualArgs.getBoolean("enable-comments")) {
+			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
+		} else {
+			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+		}
+
+		if (jsapActualArgs.getBoolean("disable-comments")) {
+			environment.setCommentEnabled(false);
+		} else {
+			environment.setCommentEnabled(true);
+		}
+
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
-		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
+		if (jsapActualArgs.getBoolean("disable-model-self-checks")) {
+			environment.disableConsistencyChecks();
+		}
 
 		String outputString = jsapActualArgs.getString("output-type");
 		OutputType outputType = OutputType.fromString(outputString);
@@ -611,11 +632,6 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	@Deprecated
-	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return this.createOutputWriter();
 	}
 
 	public JavaOutputProcessor createOutputWriter() {

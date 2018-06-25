@@ -298,11 +298,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	@Override
-	public void setSourceOutputDirectory(File outputDirectory) {
-		this.getEnvironment().setSourceOutputDirectory(outputDirectory);
-	}
-
-	@Override
 	public File getSourceOutputDirectory() {
 		return this.factory.getEnvironment().getSourceOutputDirectory();
 	}
@@ -375,7 +370,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
 	 * @return true if the model has been built without errors
 	 *
-	 * @deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
 	 */
 	@Deprecated
 	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
@@ -409,7 +404,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param debugMessagePrefix Useful to help debugging
 	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
 	 * @return All compilationUnitDeclaration from JDT found in source folder
-	 * @deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
 	 */
 	@Deprecated
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {

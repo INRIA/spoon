@@ -124,6 +124,7 @@ public class AnnotationValuesTest {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
 		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(false); // avoid getting the comment for the equals
 		launcher.buildModel();
 
 		assertEquals(strCtClassOracle,

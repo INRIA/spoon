@@ -5,11 +5,9 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.support.JavaOutputProcessor;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.test.api.testclasses.Bar;
 
@@ -22,7 +20,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

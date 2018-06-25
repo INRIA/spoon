@@ -222,17 +222,6 @@ public interface SpoonModelBuilder {
 	Set<File> getTemplateSources();
 
 	/**
-	 * Sets the output directory for source generated.
-	 *
-	 * @param outputDirectory
-	 * 		{@link File} for output directory.
-	 *
-	 * @deprecated Use {@link spoon.compiler.Environment#setSourceOutputDirectory(File)} instead.
-	 */
-	@Deprecated
-	void setSourceOutputDirectory(File outputDirectory);
-
-	/**
 	 * Gets the output directory of this compiler.
 	 */
 	File getSourceOutputDirectory();
