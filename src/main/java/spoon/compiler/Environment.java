@@ -27,6 +27,7 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.support.OutputDestinationHandler;
+import spoon.support.SerializationType;
 import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
@@ -402,4 +403,14 @@ public interface Environment {
 	SpoonProgress getSpoonProgress();
 
 	void setSpoonProgress(SpoonProgress spoonProgress);
+
+	/**
+	 * Get the type of serialization to be used by default
+	 */
+	SerializationType getSerializationType();
+
+	/**
+	 * Set the type of serialization to be used by default
+	 */
+	void setSerializationType(SerializationType serializationType);
 }

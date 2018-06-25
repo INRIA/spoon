@@ -74,10 +74,10 @@ public class SerializableTest {
 
 		ByteArrayOutputStream outstr = new ByteArrayOutputStream();
 
-		new SerializationModelStreamer().save(factory, outstr, false);
+		new SerializationModelStreamer().save(factory, outstr);
 
 
-		Factory loadedFactory = new SerializationModelStreamer().load(new ByteArrayInputStream(outstr.toByteArray()), false);
+		Factory loadedFactory = new SerializationModelStreamer().load(new ByteArrayInputStream(outstr.toByteArray()));
 
 		assertFalse(factory.Type().getAll().isEmpty());
 		assertFalse(loadedFactory.Type().getAll().isEmpty());

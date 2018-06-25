@@ -18,13 +18,16 @@ package spoon.support;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipException;
 
 import spoon.Launcher;
 import spoon.reflect.ModelStreamer;
@@ -44,8 +47,8 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public SerializationModelStreamer() {
 	}
 
-	public void save(Factory f, OutputStream out, boolean zipIt) throws IOException {
-		if (zipIt) {
+	public void save(Factory f, OutputStream out) throws IOException {
+		if (f.getEnvironment().getSerializationType() == SerializationType.STANDARD_GZIP) {
 			out = new GZIPOutputStream(out);
 		}
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
@@ -54,10 +57,13 @@ public class SerializationModelStreamer implements ModelStreamer {
 		oos.close();
 	}
 
-	public Factory load(InputStream in, boolean unZipIt) throws IOException {
+	public Factory load(InputStream in) throws IOException {
 		try {
-			if (unZipIt) {
+			try {
 				in = new GZIPInputStream(in);
+			}
+			catch (ZipException e) {
+				Launcher.LOGGER.error("Given stream is not a GZIP or is corrupted. " + e.getMessage(), e);
 			}
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));
 			final Factory f = (Factory) ois.readObject();
@@ -78,4 +84,48 @@ public class SerializationModelStreamer implements ModelStreamer {
 		}
 	}
 
+}
+
+class GZipUtil {
+	 
+	 /**
+	  * Checks if an input stream is gzipped.
+	  * 
+	  * @param in
+	  * @return
+	  */
+	 public static boolean isGZipped(InputStream in) {
+	  if (!in.markSupported()) {
+	   in = new BufferedInputStream(in);
+	  }
+	  in.mark(2);
+	  int magic = 0;
+	  try {
+	   magic = in.read() & 0xff | ((in.read() << 8) & 0xff00);
+	   in.reset();
+	  } catch (IOException e) {
+	   e.printStackTrace(System.err);
+	   return false;
+	  }
+	  return magic == GZIPInputStream.GZIP_MAGIC;
+	 }
+	 
+	 /**
+	  * Checks if a file is gzipped.
+	  * 
+	  * @param f
+	  * @return
+	  */
+	 public static boolean isGZipped(File f) {
+	  int magic = 0;
+	  try {
+	   RandomAccessFile raf = new RandomAccessFile(f, "r");
+	   magic = raf.read() & 0xff | ((raf.read() << 8) & 0xff00);
+	   raf.close();
+	  } catch (Throwable e) {
+	   e.printStackTrace(System.err);
+	  }
+	  return magic == GZIPInputStream.GZIP_MAGIC;
+	 }
+	 
 }

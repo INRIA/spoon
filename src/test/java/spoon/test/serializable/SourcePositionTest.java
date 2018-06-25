@@ -20,12 +20,12 @@ import spoon.support.SerializationModelStreamer;
 public class SourcePositionTest {
 
 	private static Factory loadFactory(File file) throws IOException {
-		return new SerializationModelStreamer().load(new FileInputStream(file), false);
+		return new SerializationModelStreamer().load(new FileInputStream(file));
 	}
 
 	private static void saveFactory(Factory factory, File file) throws IOException {
 		ByteArrayOutputStream outstr = new ByteArrayOutputStream();
-		new SerializationModelStreamer().save(factory, outstr, false);
+		new SerializationModelStreamer().save(factory, outstr);
 		OutputStream fileStream = new FileOutputStream(file);
 		outstr.writeTo(fileStream);
 	}

@@ -35,24 +35,20 @@ public interface ModelStreamer {
 	 * 		the factory to be save
 	 * @param out
 	 * 		the used output stream
-	 * @param zipIt
-	 * 		true if output file has to be compressed
 	 * @throws IOException
 	 * 		if some IO error occurs
 	 */
-	void save(Factory f, OutputStream out, boolean zipIt) throws IOException;
+	void save(Factory f, OutputStream out) throws IOException;
 
 	/**
 	 * Loads a factory (and all its associated Java program elements).
 	 *
 	 * @param in
 	 * 		the used input stream
-	 * @param unZipIt
-	 * 		true if file to read is a GZIP
 	 * @return the loaded factory
 	 * @throws IOException
 	 * 		if some IO error occurs
 	 */
-	Factory load(InputStream in, boolean unZipIt) throws IOException;
+	Factory load(InputStream in) throws IOException;
 
 }

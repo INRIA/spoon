@@ -104,6 +104,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private Boolean noclasspath = null;
 
 	private SpoonProgress spoonProgress = null;
+	
+	private SerializationType serializationType = SerializationType.STANDARD_GZIP;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -587,5 +589,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSpoonProgress(SpoonProgress spoonProgress) {
 		this.spoonProgress = spoonProgress;
+	}
+	
+	@Override
+	public SerializationType getSerializationType() {
+		return serializationType;
+	}
+
+	@Override
+	public void setSerializationType(SerializationType serializationType) {
+		this.serializationType = serializationType;
 	}
 }
