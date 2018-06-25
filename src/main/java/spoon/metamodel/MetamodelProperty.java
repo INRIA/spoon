@@ -605,10 +605,10 @@ public class MetamodelProperty {
 					try {
 						return (U) rtMethod.invoke(element);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new SpoonException("Invokation of getter on " + toString() + " failed", e);
+						throw new SpoonException("Invokation of getter on " + this + " failed", e);
 					}
 				}
-				throw new SpoonException("Cannot invoke getter on " + toString());
+				throw new SpoonException("Cannot invoke getter on " + this);
 			}
 		}
 		return getRoleHandler().getValue(element);
@@ -627,11 +627,11 @@ public class MetamodelProperty {
 					try {
 						rtMethod.invoke(element, value);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						throw new SpoonException("Invokation of setter on " + toString() + " failed", e);
+						throw new SpoonException("Invokation of setter on " + this + " failed", e);
 					}
 					return;
 				}
-				throw new SpoonException("Cannot invoke setter on " + toString());
+				throw new SpoonException("Cannot invoke setter on " + this);
 			}
 		}
 		getRoleHandler().setValue(element, value);
