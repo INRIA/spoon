@@ -72,7 +72,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * See {@link CtTypeReference#getActualClass()}.
 	 *
-	 * @deprecated this will be removed from the public API
+	 * @deprecated (since Spoon 7.0.0) this will be removed from the public API
 	 */
 	@DerivedProperty
 	Class<T> getActualClass();

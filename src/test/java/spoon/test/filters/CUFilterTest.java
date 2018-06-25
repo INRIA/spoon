@@ -1,6 +1,5 @@
 package spoon.test.filters;
 
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;

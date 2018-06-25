@@ -481,7 +481,9 @@ public class Launcher implements SpoonAPI {
 		}
 
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
-		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
+		if (jsapActualArgs.getBoolean("disable-model-self-checks")) {
+			environment.disableConsistencyChecks();
+		}
 
 		String outputString = jsapActualArgs.getString("output-type");
 		OutputType outputType = OutputType.fromString(outputString);
@@ -665,11 +667,6 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	@Deprecated
-	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return this.createOutputWriter();
 	}
 
 	public JavaOutputProcessor createOutputWriter() {
