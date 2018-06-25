@@ -55,7 +55,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 
 	@Override
 	public String toString() {
-		return STRING + getRole().toString() + getParamString();
+		return STRING + getRole() + getParamString();
 	}
 
 	private CtElement getFromSet(Set set, String name) throws CtPathException {

@@ -58,7 +58,7 @@ public class CtPathImpl implements CtPath {
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		for (CtPathElement element : elements) {
-			str.append(element.toString());
+			str.append(element);
 		}
 		return str.toString();
 	}

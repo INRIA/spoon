@@ -187,6 +187,6 @@ public class CtTypeTest {
 		} else {
 			name = ref.getParent(CtNamedElement.class).getSimpleName();
 		}
-		return ref.toString()+" "+name;
+		return ref + " " + name;
 	}
 }

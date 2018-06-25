@@ -576,7 +576,7 @@ public class MavenLauncher extends Launcher {
 			try {
 				return readPOM(depPath.toString(), null);
 			} catch (Exception e) {
-				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath.toString(), e);
+				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath, e);
 				return null;
 			}
 		}

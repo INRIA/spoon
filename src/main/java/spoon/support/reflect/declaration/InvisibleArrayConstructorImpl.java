@@ -54,7 +54,7 @@ public class InvisibleArrayConstructorImpl<T> extends CtConstructorImpl<T> {
 
 	@Override
 	public String toString() {
-		return this.getType().toString() + "::new";
+		return this.getType() + "::new";
 	}
 
 	@Override
