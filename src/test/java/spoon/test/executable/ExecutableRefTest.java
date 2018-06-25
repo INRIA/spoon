@@ -17,6 +17,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.InvocationFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.executable.testclasses.ExecutableRefTestSource;
+import spoon.test.executable.testclasses.MyIntf;
 import spoon.test.executable.testclasses.Pozole;
 import spoon.testing.utils.ModelUtils;
 

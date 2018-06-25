@@ -7,6 +7,7 @@ import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.generating.RoleHandlersGenerator;
+import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
@@ -14,8 +15,10 @@ import spoon.reflect.visitor.Filter;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
@@ -40,12 +43,14 @@ public class CtGenerationTest {
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 
-		Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())
-				.forEach(path -> {
-					if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
-						launcher.addInputResource(path.toString());
-					}
-		});
+		try (Stream<Path> files = Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())) {
+			files.forEach(path -> {
+				if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
+					launcher.addInputResource(path.toString());
+				}
+			});
+		}
+
 		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
 		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
@@ -169,7 +174,12 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/meta/impl/AbstractRoleHandler.java");
 		launcher.addProcessor(new RoleHandlersGenerator());
 		launcher.setOutputFilter(new RegexFilter("\\Q" + RoleHandlersGenerator.TARGET_PACKAGE + ".ModelRoleHandlers\\E.*"));
-		launcher.run();
+		try {
+			System.setProperty(MetamodelProperty.class.getName()+"-noRoleHandler", "true");
+			launcher.run();
+		} finally {
+			System.setProperty(MetamodelProperty.class.getName()+"-noRoleHandler", "false");
+		}
 
 		// cp ./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java ./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");

@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -27,6 +29,8 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -58,20 +62,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.io.IOUtils.write;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CommentTest {
 
@@ -250,9 +248,9 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		List<CtComment> comments = type.getComments();
-		assertEquals(3, comments.size());
+		assertEquals(6, comments.size());
 		type.removeComment(comments.get(0));
-		assertEquals(2, type.getComments().size());
+		assertEquals(5, type.getComments().size());
 	}
 
 	@Test
@@ -263,7 +261,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(64, comments.size());
+		assertEquals(69, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -275,17 +273,18 @@ public class CommentTest {
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(3, type.getComments().size());
+		assertEquals(6, type.getComments().size());
 		assertEquals(CtComment.CommentType.FILE, type.getComments().get(0).getCommentType());
 		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(1));
+		assertEquals("Bottom File", type.getComments().get(5).getContent());
 
 		CtField<?> field = type.getField("field");
-		assertEquals(3, field.getComments().size());
+		assertEquals(4, field.getComments().size());
 		assertEquals(createFakeComment(f, "Comment Field"), field.getComments().get(0));
 		assertEquals("// Comment Field" + newLine
 				+ "// comment field 2" + newLine
 				+ "// comment in field" + newLine
-				+ "private int field = 10;", field.toString());
+				+ "private int field = 10;// after field\n", field.toString());
 
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
@@ -430,7 +429,7 @@ public class CommentTest {
 		CtReturn ctReturn = m1.getBody().getStatement(14);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("// comment return" + newLine
-				+ "return ", ctReturn.toString());
+				+ "return", ctReturn.toString());
 
 
 		CtMethod m2 = type.getMethodsByName("m2").get(0);
@@ -461,7 +460,7 @@ public class CommentTest {
 
 		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(51, comments.size());
+		assertEquals(52, comments.size());
 
 		// verify that all comments present in the AST is printed
 		for (CtComment comment : comments) {
@@ -473,8 +472,9 @@ public class CommentTest {
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(4, type.getComments().size());
+		assertEquals(5, type.getComments().size());
 		assertEquals(createFakeBlockComment(f, "comment class"), type.getComments().get(1));
+		assertEquals("Bottom File", type.getComments().get(4).getContent());
 
 		CtField<?> field = type.getField("field");
 		assertEquals(2, field.getComments().size());
@@ -592,7 +592,7 @@ public class CommentTest {
 		CtReturn ctReturn = m1.getBody().getStatement(10);
 		assertEquals(createFakeBlockComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("/* comment return */" + newLine
-				+ "return ", ctReturn.toString());
+				+ "return", ctReturn.toString());
 
 
 		CtMethod m2 = type.getMethodsByName("m2").get(0);
@@ -704,8 +704,9 @@ public class CommentTest {
 
 		CtClass<?> clazz1 = (CtClass<?>) factory.Type().getAll().get(0);
 		assertNotNull(clazz1);
-		assertEquals(1, clazz1.getComments().size());
+		assertEquals(2, clazz1.getComments().size());
 		assertEquals("class comment", clazz1.getComments().get(0).getContent());
+		assertEquals("after class comment", clazz1.getComments().get(1).getContent());
 		
 		assertEquals(1, builder.getSnippetCompilationUnit().getDeclaredTypes().size());
 		assertTrue(clazz1==builder.getSnippetCompilationUnit().getDeclaredTypes().get(0));
@@ -752,6 +753,7 @@ public class CommentTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setComplianceLevel(10);
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/");
@@ -907,6 +909,58 @@ public class CommentTest {
 			CtComment comment = literal.getComments().get(0);
 			String expected = literal.getValue();
 			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
+		}
+	}
+
+	@Test
+	public void testEnumValueComment() {
+		// contract: enum value comments are taken into account
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		CtEnum<?> ctEnum = model.getElements(new TypeFilter<>(CtEnum.class)).get(0);
+		List<CtEnumValue<?>> enumValues = ctEnum.getEnumValues();
+
+		assertEquals(4, enumValues.size());
+
+		CtEnumValue firstEnumValue = enumValues.get(0);
+		assertEquals("FAIL", firstEnumValue.getSimpleName());
+
+		List<CtComment> comments = firstEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Throw {@link SpoonException} if a conflict happens, it is the default in most cases. But there are some standard Pattern builder algorithms (mainly these which deals with legacy Templates), which are using the other modes.", comments.get(0).getContent());
+
+		CtEnumValue<?> thirdEnumValue = enumValues.get(2);
+		assertEquals("KEEP_OLD_NODE", thirdEnumValue.getSimpleName());
+
+		comments = thirdEnumValue.getComments();
+		assertEquals(1, comments.size());
+		assertTrue(comments.get(0) instanceof CtJavaDoc);
+		assertEquals("Keep old {@link RootNode} and ignore requests to add new {@link RootNode}", comments.get(0).getContent());
+	}
+
+  @Test
+	public void testInlineCommentIfBlock() {
+		// contract: when creating an inline comment from a string with line separators, it throws an exception to create block comment
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/WithIfBlock.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		List<CtIf> ctIfs = model.getElements(new TypeFilter<>(CtIf.class));
+
+		assertEquals(1, ctIfs.size());
+		CtIf ctIf = ctIfs.get(0);
+		try {
+			CtComment ctComment = launcher.getFactory().createInlineComment(ctIf.toString());
+			fail("Exception should have been thrown");
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains("consider using a block comment"));
 		}
 	}
 }

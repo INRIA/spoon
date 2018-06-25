@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,13 +16,11 @@
  */
 package spoon.template;
 
-import java.util.List;
-
-import spoon.SpoonException;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-import spoon.support.template.SubstitutionVisitor;
+
+import java.util.List;
 
 /**
  * This class represents a template parameter that defines a statement list
@@ -45,12 +43,14 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 	public CtStatement apply(CtType<?> targetType) {
 		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement
-		CtStatement result = c.getMethod("statement").getBody().getStatements().get(0).clone();
-		List<CtStatement> statements = new SubstitutionVisitor(c.getFactory(), targetType, this).substitute(result);
-		if (statements.size() > 1) {
-			throw new SpoonException("StatementTemplate cannot return more then one statement");
+		CtStatement patternModel = c.getMethod("statement").getBody().getStatements().get(0);
+		List<CtStatement> statements = TemplateBuilder.createPattern(patternModel, this)
+				.setAddGeneratedBy(isAddGeneratedBy())
+				.substituteList(c.getFactory(), targetType, CtStatement.class);
+		if (statements.size() != 1) {
+			throw new IllegalStateException();
 		}
-		return statements.isEmpty() ? null : statements.get(0);
+		return statements.get(0);
 	}
 
 	public Void S() {

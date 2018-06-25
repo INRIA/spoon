@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -285,7 +285,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 	 */
 	protected void createParameterUsedIssue(CtParameter<?> usedParameter, CtParameterReference<?> parameterUsage) {
 		throw new RefactoringException("The parameter " + usedParameter.getSimpleName()
-		+ " of method: " + parameterUsage.getDeclaringExecutable() + " cannot be removed because it is used (" + parameterUsage.getPosition() + ")");
+		+ " cannot be removed because it is used (" + parameterUsage.getPosition() + ")");
 	}
 
 	/**

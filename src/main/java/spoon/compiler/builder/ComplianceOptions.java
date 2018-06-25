@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -22,7 +22,12 @@ public class ComplianceOptions<T extends ComplianceOptions<T>> extends Options<T
 	}
 
 	public T compliance(int version) {
-		args.add("-1." + version);
+		if (version < 10) {
+			args.add("-1." + version);
+		} else {
+			args.add("-" + version);
+		}
+
 		return myself;
 	}
 }

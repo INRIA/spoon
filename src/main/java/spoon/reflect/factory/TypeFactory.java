@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -45,6 +45,7 @@ import spoon.support.visitor.MethodTypingContext;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -314,19 +315,31 @@ public class TypeFactory extends SubFactory {
 		return array;
 	}
 
+	public <T> CtTypeReference<T> createReference(Class<T> type) {
+		return createReference(type, false);
+	}
+
 	/**
 	 * Creates a reference to a simple type
 	 */
-	public <T> CtTypeReference<T> createReference(Class<T> type) {
+	public <T> CtTypeReference<T> createReference(Class<T> type, boolean includingFormalTypeParameter) {
 		if (type == null) {
 			return null;
 		}
 		if (type.isArray()) {
 			CtArrayTypeReference<T> array = factory.Core().createArrayTypeReference();
-			array.setComponentType(createReference(type.getComponentType()));
+			array.setComponentType(createReference(type.getComponentType(), includingFormalTypeParameter));
 			return array;
 		}
-		return createReference(type.getName());
+		CtTypeReference typeReference = createReference(type.getName());
+
+		if (includingFormalTypeParameter) {
+			for (TypeVariable<Class<T>> generic : type.getTypeParameters()) {
+				typeReference.addActualTypeArgument(createTypeParameterReference(generic.getName()));
+			}
+		}
+
+		return typeReference;
 	}
 
 	/**
@@ -419,6 +432,21 @@ public class TypeFactory extends SubFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtType<T> get(final String qualifiedName) {
+		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
+		CtPackage pack;
+		if (packageIndex > 0) {
+			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
+		} else {
+			pack = factory.Package().getRootPackage();
+		}
+
+		if (pack != null) {
+			CtType<T> type = pack.getType(qualifiedName.substring(packageIndex + 1));
+			if (type != null) {
+				return type;
+			}
+		}
+
 		int inertTypeIndex = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 		if (inertTypeIndex > 0) {
 			String s = qualifiedName.substring(0, inertTypeIndex);
@@ -459,20 +487,7 @@ public class TypeFactory extends SubFactory {
 				return t.getNestedType(className);
 			}
 		}
-
-		int packageIndex = qualifiedName.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-		CtPackage pack;
-		if (packageIndex > 0) {
-			pack = factory.Package().get(qualifiedName.substring(0, packageIndex));
-		} else {
-			pack = factory.Package().getRootPackage();
-		}
-
-		if (pack == null) {
-			return null;
-		}
-
-		return (CtType<T>) pack.getType(qualifiedName.substring(packageIndex + 1));
+		return null;
 	}
 
 	/**

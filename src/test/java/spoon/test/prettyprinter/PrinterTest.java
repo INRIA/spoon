@@ -2,20 +2,17 @@ package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ElementPrinterHelper;
-import spoon.reflect.visitor.ListPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
@@ -236,6 +233,7 @@ public class PrinterTest {
 	public void testPrinterTokenListener() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
+		factory.getEnvironment().setCommentEnabled(false);
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
@@ -455,12 +453,7 @@ public class PrinterTest {
 
 		String[] listString = new String[] {"un", "deux", "trois"};
 
-		try (ListPrinter listPrinter = elementPrinterHelper.createListPrinter(true, "start", true, true, "next", true, true, "end")) {
-			for (String s : listString) {
-				listPrinter.printSeparatorIfAppropriate();
-				tw.writeIdentifier(s);
-			}
-		}
+		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
 
 		String expectedResult = " start un next deux next trois end";
 		assertEquals(expectedResult, pp.toString());

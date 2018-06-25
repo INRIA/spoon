@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -37,65 +37,65 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
+import spoon.reflect.code.CtArrayRead;
+import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtDo;
+import spoon.reflect.code.CtExecutableReferenceExpression;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtAnnotatedElementType;
+import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -469,11 +469,7 @@ public class ParentExiter extends CtInheritanceScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		if (child instanceof CtConstructor) {
-			CtConstructor<T> c = (CtConstructor<T>) child;
-			ctClass.addConstructor(c);
-			if (c.getPosition() != null && c.getPosition().getSourceStart() == -1) {
-				c.setImplicit(true);
-			}
+			ctClass.addConstructor((CtConstructor<T>) child);
 		}
 		if (child instanceof CtAnonymousExecutable) {
 			ctClass.addAnonymousExecutable((CtAnonymousExecutable) child);
@@ -790,7 +786,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				ctPackage.removeType((CtType<?>) child);
 			}
 			ctPackage.addType((CtType<?>) child);
-			if (child.getPosition() != null && child.getPosition().getCompilationUnit() != null) {
+			if (child.getPosition().getCompilationUnit() != null) {
 				CompilationUnit cu = child.getPosition().getCompilationUnit();
 				List<CtType<?>> declaredTypes = new ArrayList<>(cu.getDeclaredTypes());
 				declaredTypes.add((CtType<?>) child);

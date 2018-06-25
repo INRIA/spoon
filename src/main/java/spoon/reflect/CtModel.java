@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** represents a Java program, modeled by a set of compile-time (Ct) objects
- * where each objects is a program element (for instance, a CtClass represents a class).
+ * where each object is a program element (for instance, a CtClass represents a class).
  */
 public interface CtModel extends Serializable, CtQueryable {
 

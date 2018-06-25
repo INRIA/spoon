@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -41,6 +41,7 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	private boolean terminate = false;
 	private T result;
 	private CtScannerListener listener;
+	protected CtRole scannedRole;
 
 	protected void terminate() {
 		terminate = true;
@@ -94,6 +95,29 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	}
 
 	@Override
+	public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
+		if (isTerminated() || elements == null) {
+			return;
+		}
+		for (CtElement obj : elements.values()) {
+			scan(role, obj);
+			if (isTerminated()) {
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void scan(CtRole role, CtElement element) {
+		scannedRole = role;
+		super.scan(role, element);
+	}
+
+	/*
+	 * we cannot override scan(CtRole role, CtElement element) directly
+	 * because some implementations needs scan(CtElement element), which must be called too
+	 */
+	@Override
 	public void scan(CtElement element) {
 		if (element == null || isTerminated()) {
 			return;
@@ -101,13 +125,13 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 		if (listener == null) {
 			//the listener is not defined
 			//visit this element and may be children
-			doScan(element, ScanningMode.NORMAL);
+			doScan(scannedRole, element, ScanningMode.NORMAL);
 		} else {
 			//the listener is defined, call it's enter method first
 			ScanningMode mode = listener.enter(element);
 			if (mode != ScanningMode.SKIP_ALL) {
 				//the listener decided to visit this element and may be children
-				doScan(element, mode);
+				doScan(scannedRole, element, mode);
 				//then call exit, only if enter returned true
 				listener.exit(element);
 			} //else the listener decided to skip this element and all children. Do not call exit.
@@ -118,8 +142,23 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	 * This method is called ONLY when the listener decides that the current element and children should be visited.
 	 * Subclasses can override it to react accordingly.
 	 */
-	protected void doScan(CtElement element, ScanningMode mode) {
-		super.scan(element);
+	protected void doScan(CtRole role, CtElement element, ScanningMode mode) {
+		//send input to output
+		if (mode.visitElement) {
+			onElement(role, element);
+		}
+		if (mode.visitChildren) {
+			//do not call scan(CtElement) nor scan(CtRole, CtElement), because they would cause StackOverflowError
+			element.accept(this);
+		}
+	}
+
+	/**
+	 * Called for each scanned element. The call of this method is influenced by {@link ScanningMode} defined by {@link CtScannerListener}
+	 * @param role a role of `element` in parent
+	 * @param element a scanned element
+	 */
+	protected void onElement(CtRole role, CtElement element) {
 	}
 
 	@Override

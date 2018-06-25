@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -256,8 +256,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				if (res instanceof CtStatement) {
 					b.addStatement((CtStatement) res);
 				} else {
-					//the context expectes statement. We cannot simplify in this case
-					b.addStatement(s);
+					//the context expects statement. We cannot simplify in this case
+					b.addStatement(s.clone());
 				}
 			}
 			// do not copy unreachable statements

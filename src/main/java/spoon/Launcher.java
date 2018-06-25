@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -75,7 +75,7 @@ public class Launcher implements SpoonAPI {
 
 	public static final String OUTPUTDIR = "spooned";
 
-	private final Factory factory;
+	protected Factory factory;
 
 	private SpoonModelBuilder modelBuilder;
 
@@ -346,17 +346,6 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
-			// Enable building only outdated files
-			sw1 = new Switch("buildOnlyOutdatedFiles");
-			sw1.setLongFlag("buildOnlyOutdatedFiles");
-			sw1.setHelp(
-					"Set Spoon to build only the source files that " + "have been modified since the latest " + "source code generation, for performance " + "purpose. Note that this option requires "
-							+ "to have the --ouput-type option not set " + "to none. This option is not appropriate " + "to all kinds of processing. In particular "
-							+ "processings that implement or rely on a " + "global analysis should avoid this option " + "because the processor will only have access "
-							+ "to the outdated source code (the files " + "modified since the latest processing).");
-			sw1.setDefault("false");
-			jsap.registerParameter(sw1);
-
 			sw1 = new Switch("lines");
 			sw1.setLongFlag("lines");
 			sw1.setHelp("Set Spoon to try to preserve the original line " + "numbers when generating the source " + "code (may lead to human-unfriendly " + "formatting).");
@@ -389,7 +378,14 @@ public class Launcher implements SpoonAPI {
 			sw1 = new Switch("enable-comments");
 			sw1.setShortFlag('c');
 			sw1.setLongFlag("enable-comments");
-			sw1.setHelp("Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing.");
+			sw1.setHelp("[DEPRECATED] Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing. (deprecated: by default, the comments are enabled.)");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
+			// Disable generation of javadoc.
+			sw1 = new Switch("disable-comments");
+			sw1.setLongFlag("disable-comments");
+			sw1.setHelp("Disable the parsing of comments in Spoon.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -436,9 +432,23 @@ public class Launcher implements SpoonAPI {
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
-		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
+
+		if (jsapActualArgs.getBoolean("enable-comments")) {
+			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
+		} else {
+			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+		}
+
+		if (jsapActualArgs.getBoolean("disable-comments")) {
+			environment.setCommentEnabled(false);
+		} else {
+			environment.setCommentEnabled(true);
+		}
+
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
-		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
+		if (jsapActualArgs.getBoolean("disable-model-self-checks")) {
+			environment.disableConsistencyChecks();
+		}
 
 		String outputString = jsapActualArgs.getString("output-type");
 		OutputType outputType = OutputType.fromString(outputString);
@@ -562,7 +572,6 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
 
 		// backward compatibility
@@ -623,11 +632,6 @@ public class Launcher implements SpoonAPI {
 	@Override
 	public Environment createEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	@Deprecated
-	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return this.createOutputWriter();
 	}
 
 	public JavaOutputProcessor createOutputWriter() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,6 +16,7 @@
  */
 package spoon.template;
 
+import spoon.pattern.PatternBuilderHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
@@ -64,8 +65,9 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 	@SuppressWarnings("unchecked")
 	public CtExpression<T> apply(CtType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c = Substitution.getTemplateCtClass(targetType, this);
-		CtBlock<?> b = Substitution.substitute(targetType, this, getExpressionBlock(c));
-		return ((CtReturn<T>) b.getStatements().get(0)).getReturnedExpression();
+		return TemplateBuilder.createPattern(
+				new PatternBuilderHelper(c).setReturnExpressionOfMethod("expression").getPatternElements().get(0), this)
+				.setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtExpression.class);
 	}
 
 	public T S() {

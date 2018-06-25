@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -113,7 +113,7 @@ public class AnnotationFactory extends TypeFactory {
 		boolean isArray;
 		// try with CT reflection
 		CtAnnotationType<A> ctAnnotationType = ((CtAnnotationType<A>) annotation.getAnnotationType().getDeclaration());
-		boolean newValue = annotation.getValue(annotationElementName) == null;
+		boolean hasAlreadyValue = annotation.getValues().containsKey(annotationElementName);
 		if (ctAnnotationType != null) {
 			CtMethod<?> e = ctAnnotationType.getMethod(annotationElementName);
 			isArray = (e.getType() instanceof CtArrayTypeReference);
@@ -127,7 +127,7 @@ public class AnnotationFactory extends TypeFactory {
 			}
 			isArray = m.getReturnType().isArray();
 		}
-		if (isArray || newValue) {
+		if (isArray || !hasAlreadyValue) {
 			annotation.addValue(annotationElementName, value);
 		} else {
 			throw new SpoonException("cannot assign an array to a non-array annotation element");

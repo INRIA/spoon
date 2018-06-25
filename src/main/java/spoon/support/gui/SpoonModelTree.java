@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -282,6 +282,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		maybeShowPopup(e);
 	}
 
+	/** move to the next node matching the search criterion */
 	public DefaultMutableTreeNode next() {
 		DefaultMutableTreeNode current = null;
 		while ((enume != null) && enume.hasMoreElements()) {
@@ -295,6 +296,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		return null;
 	}
 
+	/** shows a dialog to enter the value to search for in the AST */
 	public DefaultMutableTreeNode search() {
 		searchValue = JOptionPane.showInputDialog(this,
 				"Enter value to search:", "Search");
@@ -312,6 +314,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		return null;
 	}
 
+	/** expand all AST nodes in the GUI */
 	public DefaultMutableTreeNode expandAll(final DefaultMutableTreeNode node) {
 		if (node == null || node.isLeaf()) {
 			return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,13 +28,16 @@ import spoon.reflect.declaration.CtElement;
 public class CtLineElementComparator implements Comparator<CtElement>, Serializable {
 
 	/**
-	 * Compares two program elements.
+	 * Reurns -1 if o1 is before o2 in the file
 	 */
 	public int compare(CtElement o1, CtElement o2) {
+		if (o1.getPosition().isValidPosition() == false) {
+			return -1;
+		}
 
-		if (o1.getPosition() == null || o2.getPosition() == null) {
+		if (o2.getPosition().isValidPosition() == false) {
 			// ensures that compare(x,y) = - compare(y,x)
-			return o1.hashCode() > o2.hashCode() ? 1 : -1;
+			return 1;
 		}
 
 		int pos1 = o1.getPosition().getSourceStart();

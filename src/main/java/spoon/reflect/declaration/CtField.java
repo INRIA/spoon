@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -20,6 +20,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 /**
  * This element defines a field declaration.
@@ -45,6 +46,10 @@ public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T
 	@Override
 	@DerivedProperty
 	CtExpression<T> getAssignment();
+
+	@Override
+	@UnsettableProperty
+	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
 
 	@Override
 	CtField<T> clone();

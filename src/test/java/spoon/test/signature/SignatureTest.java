@@ -19,7 +19,6 @@ import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -123,9 +122,7 @@ public class SignatureTest {
 		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("String hello =\"t1\"; System.out.println(hello)")
 				.compile();
 
-		CtStatement sta2bis = ((CtBlock<?>)sta2.getParent()).getStatement(1);
-
-		assertFalse(sta1.equals(sta2bis));// equals depends on deep equality
+		assertFalse(sta1.equals(sta2));// equals depends on deep equality
 
 		String parameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).toString();
 		assertEquals("\"hello\"",parameterWithQuotes);

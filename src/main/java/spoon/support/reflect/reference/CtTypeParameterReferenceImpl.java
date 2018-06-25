@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -30,6 +30,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
@@ -108,7 +109,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			}
 			return (Class<Object>) getBoundingType().getActualClass();
 		}
-		return null;
+		throw new SpoonClassNotFoundException("you should never call getActualClass  (" + this.getQualifiedName() + " not found in the classpath)", null);
 	}
 
 	@Override
@@ -203,12 +204,21 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 		CtElement e = this;
 		CtElement parent = getParent();
+
 		if (parent instanceof CtTypeReference) {
-			if (parent.isParentInitialized() == false) {
-				return null;
+			if (!parent.isParentInitialized()) {
+				// we might enter in that case because of a call
+				// of getSuperInterfaces() for example
+				CtTypeReference typeReference = (CtTypeReference) parent;
+				e = typeReference.getTypeDeclaration();
+				if (e == null) {
+					return null;
+				}
+			} else {
+				parent = parent.getParent();
 			}
-			parent = parent.getParent();
 		}
+
 		if (parent instanceof CtExecutableReference) {
 			CtExecutableReference parentExec = (CtExecutableReference) parent;
 			if (!parentExec.getDeclaringType().equals(e)) {
@@ -221,9 +231,10 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			} else {
 				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
-
 		} else {
-			e = e.getParent(CtFormalTypeDeclarer.class);
+			if (!(e instanceof CtFormalTypeDeclarer)) {
+				e = e.getParent(CtFormalTypeDeclarer.class);
+			}
 		}
 
 		// case #1: we're a type of a method parameter, a local variable, ...

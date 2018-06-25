@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,7 +23,6 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.Timer;
 import spoon.support.visitor.ProcessingVisitor;
 
 import java.util.Collection;
@@ -118,11 +117,9 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		try {
 			getFactory().getEnvironment().debugMessage("processing with '" + processor.getClass().getName() + "'...");
 			current = processor;
-			Timer.start(processor.getClass().getName());
 			for (CtElement e : elements) {
 				process(e, processor);
 			}
-			Timer.stop(processor.getClass().getName());
 		} catch (ProcessInterruption ignored) {
 		}
 	}

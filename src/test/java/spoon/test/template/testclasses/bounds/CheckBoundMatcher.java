@@ -43,6 +43,10 @@ public class CheckBoundMatcher {
 	public void matcher6() {
 		if (_x_.S() > _y_.S()) { _stmt_.S(); }
 	}
+	
+	public void matcher7() {
+		if (_x_.S() == _x_.S()) _block_.S();
+	}
 
 	/** defines a matcher f* for named templates */
 	@Parameter

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,10 +16,16 @@
  */
 package spoon.reflect.reference;
 
+import spoon.support.UnsettableProperty;
+
 /**
  * Represents a wildcard in generic type annotations, i.e. the "?" (e.g. the "?" in Collection&lt;?&gt; or Collection&lt;? extends List&gt;).
  */
 public interface CtWildcardReference extends CtTypeParameterReference {
 	@Override
 	CtWildcardReference clone();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtReference> C setSimpleName(String simpleName);
 }

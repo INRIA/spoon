@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -155,7 +155,6 @@ import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
-import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
@@ -175,6 +174,7 @@ import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.declaration.CtUsedServiceImpl;
+import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
@@ -318,6 +318,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	public <T> CtConstructor<T> createConstructor() {
 		CtConstructor<T> e = new CtConstructorImpl<>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	public <T> CtConstructor<T> createInvisibleArrayConstructor() {
+		CtConstructor<T> e = new InvisibleArrayConstructorImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -688,7 +694,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	@Override
 	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
-		return new PartialSourcePositionImpl(compilationUnit);
+		return ((CompilationUnitImpl) compilationUnit).getOrCreatePartialSourcePosition();
 	}
 
 	@Override

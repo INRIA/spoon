@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.declaration.CtImport;
@@ -54,7 +55,10 @@ class JDTImportBuilder {
 		this.imports = new HashSet<>();
 	}
 
-	public void build() {
+	// package visible method in a package visible class, not in the public API
+	void build() {
+		// sets the imports of the Spoon compilation unit corresponding to `declarationUnit`
+
 		if (declarationUnit.imports == null || declarationUnit.imports.length == 0) {
 			return;
 		}
@@ -105,7 +109,7 @@ class JDTImportBuilder {
 	}
 
 	private CtType getOrLoadClass(String className) {
-		CtType klass = this.factory.Class().get(className);
+		CtType klass = this.factory.Type().get(className);
 
 		if (klass == null) {
 			klass = this.factory.Interface().get(className);
@@ -115,7 +119,13 @@ class JDTImportBuilder {
 					Class zeClass = this.getClass().getClassLoader().loadClass(className);
 					klass = this.factory.Type().get(zeClass);
 					return klass;
-				} catch (ClassNotFoundException e) {
+				} catch (NoClassDefFoundError | ClassNotFoundException e) {
+					// in some cases we want to import an inner class.
+					if (!className.contains(CtType.INNERTTYPE_SEPARATOR) && className.contains(CtPackage.PACKAGE_SEPARATOR)) {
+						int lastIndexOfDot = className.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
+						String classNameWithInnerSep = className.substring(0, lastIndexOfDot) + CtType.INNERTTYPE_SEPARATOR + className.substring(lastIndexOfDot + 1);
+						return getOrLoadClass(classNameWithInnerSep);
+					}
 					return null;
 				}
 			}

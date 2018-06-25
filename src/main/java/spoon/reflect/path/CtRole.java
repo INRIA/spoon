@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -26,6 +26,7 @@ import java.util.List;
 public enum CtRole {
 	NAME,
 	TYPE,
+	MULTI_TYPE,
 	DECLARING_TYPE,
 	CONTAINED_TYPE,
 	BODY,
@@ -100,7 +101,8 @@ public enum CtRole {
 	OPENED_PACKAGE(MODULE_DIRECTIVE),
 	SERVICE_TYPE(MODULE_DIRECTIVE),
 	IMPLEMENTATION_TYPE,
-	PROVIDED_SERVICE(MODULE_DIRECTIVE);
+	PROVIDED_SERVICE(MODULE_DIRECTIVE),
+	IS_INFERRED;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

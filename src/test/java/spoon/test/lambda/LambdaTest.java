@@ -10,7 +10,6 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -358,7 +357,6 @@ public class LambdaTest {
 		CtParameter<?> param = (CtParameter<?>)lambda.getParameters().get(0);
 		CtParameterReference paramRef1 = param.getReference();
 		CtParameterReference paramRef2 = lambda.filterChildren(new TypeFilter<>(CtParameterReference.class)).first();
-		assertTrue(paramRef1.getDeclaringExecutable().getType().equals(paramRef2.getDeclaringExecutable().getType())); 
 		assertTrue(paramRef1.equals(paramRef2));
 	}
 
@@ -402,6 +400,19 @@ public class LambdaTest {
 		//check empty constructor and addImplementingInterface with CtTypeReference
 		methodNames = foo.filterChildren(new LambdaFilter().addImplementingInterface(factory.createCtTypeReference(Predicate.class))).map((CtLambda l)->l.getParent(CtMethod.class).getSimpleName()).list();
 		assertHasStrings(methodNames, "m2", "m4", "m7", "m8");
+	}
+
+	@Test
+	public void testInterfaceWithObjectMethods() throws Exception {
+		// contract Lambda expression works on interfaces with methods inherited from java.lang.Object
+		CtInterface<?> checkPersons = factory.Interface().get(Foo.CheckPersons.class);
+		List<CtLambda<?>> lambdas = foo.filterChildren(new LambdaFilter(checkPersons)).list();
+		assertEquals(2, lambdas.size());
+		CtLambda<?> lambda = lambdas.get(0);
+		assertEquals(2, lambda.getParameters().size());
+		CtMethod<?> method = lambda.getOverriddenMethod();
+		assertTrue(checkPersons.getMethods().contains(method));
+		assertEquals("test", method.getSimpleName());
 	}
 
 	private void assertHasStrings(List<String> methodNames, String... strs) {

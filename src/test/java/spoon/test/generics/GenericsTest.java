@@ -229,6 +229,9 @@ public class GenericsTest {
 
 		// an bound type is not an TypeParameterRefernce
 		assertEquals("E extends java.lang.Enum<E>", meth.getFormalCtTypeParameters().get(0).toString());
+
+		meth = type.getMethod("m2");
+		assertEquals("A extends java.lang.Number & java.lang.Comparable<? super A>", meth.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
@@ -639,8 +642,7 @@ public class GenericsTest {
 		//typeParamRef has got new parent 
 		assertSame(typeRef, typeParamRef.getParent());
 
-		// null because without context
-		assertEquals(null, typeParamRef.getDeclaration());
+		assertEquals(typeParam, typeParamRef.getDeclaration());
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
 		typeParamRef.setSimpleName("Y");
 		assertEquals(typeParam, typeParamRef.getTypeParameterDeclaration());
@@ -809,7 +811,9 @@ public class GenericsTest {
 
 		// spoon.test.generics.testclasses.Tacos<K, java.lang.String>.Burritos<K, V>
 		CtTypeReference<?> burritosRef = factory.getModel().filterChildren(new NamedElementFilter(CtVariable.class, "burritos")).first(CtVariable.class).getType();
-		assertEquals(true, burritosRef.isGenerics());
+		// now that the order of type members is correct
+		// this burritos is indeed "IBurritos<?, ?> burritos = new Burritos<>()" with no generics
+		assertEquals(false, burritosRef.isGenerics());
 
 		// int
 		CtTypeReference<?> nbTacosRef = factory.getModel().filterChildren(new NamedElementFilter(CtVariable.class, "nbTacos")).first(CtVariable.class).getType();

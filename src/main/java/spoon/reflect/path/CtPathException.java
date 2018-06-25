@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,10 +16,12 @@
  */
 package spoon.reflect.path;
 
+import spoon.SpoonException;
+
 /**
  *  This exception is throw when there are errors during a CtPath building or evaluation.
  */
-public class CtPathException extends Exception {
+public class CtPathException extends SpoonException {
 	public CtPathException() {
 	}
 

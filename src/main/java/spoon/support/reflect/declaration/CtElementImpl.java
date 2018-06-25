@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,6 +17,9 @@
 package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
+import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
@@ -25,12 +28,16 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
+import spoon.reflect.path.CtElementPathBuilder;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
@@ -45,6 +52,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
@@ -65,6 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
@@ -96,7 +105,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
 	}
 
-	transient Factory factory;
+	Factory factory;
 
 	protected CtElement parent;
 
@@ -168,6 +177,12 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
+		if (this instanceof CtShadowable) {
+			CtShadowable shadowable = (CtShadowable) this;
+			if (shadowable.isShadow()) {
+				Launcher.LOGGER.debug("Some annotations might be unreachable from the shadow element: " + this.getShortRepresentation());
+			}
+		}
 		return unmodifiableList(annotations);
 	}
 
@@ -189,7 +204,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		if (position != null) {
 			return position;
 		}
-		return null;
+		return SourcePosition.NOPOSITION;
 	}
 
 	@Override
@@ -251,6 +266,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public <E extends CtElement> E setPosition(SourcePosition position) {
+		if (position == null) {
+			position = SourcePosition.NOPOSITION;
+		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, POSITION, position, this.position);
 		this.position = position;
 		return (E) this;
@@ -535,5 +553,23 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
 		rh.setValue(this, value);
 		return (E) this;
+	}
+
+	public CtPath getPath() {
+		try {
+			return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
+		} catch (CtPathException e) {
+			throw new SpoonException(e);
+		}
+	}
+
+	@Override
+	public Iterator<CtElement> descendantIterator() {
+		return new CtIterator(this);
+	}
+
+	@Override
+	public Iterable<CtElement> asIterable() {
+		return this::descendantIterator;
 	}
 }

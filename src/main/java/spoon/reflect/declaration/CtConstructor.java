@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -39,4 +39,8 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	@Override
 	@UnsettableProperty
 	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+
+	@Override
+	@UnsettableProperty
+	<C extends CtNamedElement> C setSimpleName(String simpleName);
 }

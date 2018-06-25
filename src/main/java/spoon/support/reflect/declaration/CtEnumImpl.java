@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -132,7 +132,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		List<CtField<?>> result = new ArrayList<>();
 		result.addAll(getEnumValues());
 		result.addAll(super.getFields());
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			valueOfMethod.addThrownType(
 				getFactory().Type().createReference(IllegalArgumentException.class));
 			valueOfMethod.setType(getReference());
-			factory.Method().createParameter(valuesMethod, factory.Type().STRING, "name");
+			factory.Method().createParameter(valueOfMethod, factory.Type().STRING, "name");
 		}
 		return valueOfMethod;
 	}

@@ -46,4 +46,12 @@ Notes:
 1. G2 is specified in the checkstyle rules.
 1. If there is no activity on an issue or on a pull request for 3 months it's closed.
 
+Public API
+----------
 
+The public API is composed of all public classes and methods, except those for which at least one of the following condition holds:
+
+* annotated with @Internal
+* located in a package called `internal`, including all subpackages, that is `**.internal.**`
+
+Classes annotated with `@Experimental` are planned to in the public API in the future, but are still considered unstable and can change in non-backward compatble manner.

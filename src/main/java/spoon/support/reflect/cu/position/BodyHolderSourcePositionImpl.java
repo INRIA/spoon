@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -45,6 +45,7 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 				modifierSourceStart, modifierSourceEnd,
 				declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);
+		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, bodyStart, bodyEnd + 1, declarationSourceEnd + 1);
 		this.bodyStart = bodyStart;
 		this.bodyEnd = bodyEnd;
 	}
@@ -57,5 +58,11 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 	@Override
 	public int getBodyEnd() {
 		return bodyEnd;
+	}
+
+	@Override
+	public String getSourceDetails() {
+		return super.getSourceDetails()
+				+ "\nbody = " + getFragment(getBodyStart(), getBodyEnd());
 	}
 }

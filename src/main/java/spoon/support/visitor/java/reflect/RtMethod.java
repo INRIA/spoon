@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,23 +28,25 @@ import java.util.List;
 import spoon.SpoonException;
 
 public class RtMethod {
-	private Class<?> clazz;
-	private String name;
-	private Class<?> returnType;
-	private Type genericReturnType;
-	private TypeVariable<Method>[] typeParameters;
-	private Class<?>[] parameterTypes;
-	private Type[] genericParameterTypes;
-	private Class<?>[] exceptionTypes;
-	private int modifiers;
-	private Annotation[] annotations;
-	private Annotation[][] parameterAnnotations;
-	private boolean isVarArgs;
-	private boolean isDefault;
+	private final Class<?> clazz;
+	private final Method method;
+	private final String name;
+	private final Class<?> returnType;
+	private final Type genericReturnType;
+	private final TypeVariable<Method>[] typeParameters;
+	private final Class<?>[] parameterTypes;
+	private final Type[] genericParameterTypes;
+	private final Class<?>[] exceptionTypes;
+	private final int modifiers;
+	private final Annotation[] annotations;
+	private final Annotation[][] parameterAnnotations;
+	private final boolean isVarArgs;
+	private final boolean isDefault;
 
-	public RtMethod(Class<?> clazz, String name, Class<?> returnType, Type genericReturnType, TypeVariable<Method>[] typeParameters, Class<?>[] parameterTypes, Type[] genericParameterTypes, Class<?>[] exceptionTypes, int modifiers, Annotation[] annotations,
-			Annotation[][] parameterAnnotations, boolean isVarArgs, boolean isDefault) {
+	public RtMethod(Class<?> clazz, Method method, String name, Class<?> returnType, Type genericReturnType, TypeVariable<Method>[] typeParameters, Class<?>[] parameterTypes, Type[] genericParameterTypes, Class<?>[] exceptionTypes, int modifiers,
+			Annotation[] annotations, Annotation[][] parameterAnnotations, boolean isVarArgs, boolean isDefault) {
 		this.clazz = clazz;
+		this.method = method;
 		this.name = name;
 		this.returnType = returnType;
 		this.genericReturnType = genericReturnType;
@@ -61,6 +63,10 @@ public class RtMethod {
 
 	public Class<?> getDeclaringClass() {
 		return clazz;
+	}
+
+	public Method getMethod() {
+		return method;
 	}
 
 	public String getName() {
@@ -140,10 +146,10 @@ public class RtMethod {
 	}
 
 	public static RtMethod create(Method method) {
-		return new RtMethod(method.getDeclaringClass(), method.getName(), method.getReturnType(), method.getGenericReturnType(),
-				method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(), method.getModifiers(),
-				method.getDeclaredAnnotations(), method.getParameterAnnotations(), method.isVarArgs(),
-				//spoon is compatible with Java 7, so compilation fails here
+		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),
+				method.getGenericReturnType(), method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(),
+				method.getModifiers(), method.getDeclaredAnnotations(), method.getParameterAnnotations(),
+				method.isVarArgs(), //spoon is compatible with Java 7, so compilation fails here
 				//method.isDefault());
 				_java8_isDefault(method));
 	}
@@ -181,9 +187,12 @@ public class RtMethod {
 		return methods;
 	}
 
-	public static <T> RtMethod[] sameMethodsWithDifferentTypeOf(Class<T> superClass, List<RtMethod> comparedMethods) {
+	/** Returns the methods of `klass` that have the same signature (according to runtime reflection) but a different return type of at least one of the methods
+	 * in `comparedMethods` given as parameter.
+	 */
+	public static <T> RtMethod[] sameMethodsWithDifferentTypeOf(Class<T> klass, List<RtMethod> comparedMethods) {
 		final List<RtMethod> methods = new ArrayList<>();
-		for (Method method : superClass.getDeclaredMethods()) {
+		for (Method method : klass.getDeclaredMethods()) {
 			final RtMethod rtMethod = create(method);
 			for (RtMethod potential : comparedMethods) {
 				if (potential.isLightEquals(rtMethod) && !rtMethod.returnType.equals(potential.returnType)) {

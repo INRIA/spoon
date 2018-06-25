@@ -12,11 +12,14 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.visitor.equals.EqualsVisitor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 public class EqualTest {
@@ -95,5 +98,21 @@ public class EqualTest {
 		CtLocalVariable var = factory.Code().createCodeSnippetStatement("java.util.List<String> l ").compile();
 		CtLocalVariable var2 = factory.Code().createCodeSnippetStatement("java.util.List<Object> l ").compile();
 		assertNotEquals(var2, var);
+	}
+
+	@Test
+	public void testEqualsDetails() throws Exception {
+		Factory factory = new Launcher().createFactory();
+		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
+		CtTry var2 = var.clone();
+		assertEquals(2, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
+		// removing a multitype
+		var2.getCatchers().get(0).getParameter().getMultiTypes().remove(0);
+		assertEquals(1, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
+		EqualsVisitor ev = new EqualsVisitor();
+		assertFalse(ev.checkEquals(var2, var));
+		assertSame(var2.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualElement());
+		assertSame(var.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualOther());
+		assertSame(CtRole.MULTI_TYPE, ev.getNotEqualRole());
 	}
 }

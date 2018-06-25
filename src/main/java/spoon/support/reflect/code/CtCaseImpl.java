@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -140,7 +140,11 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtStatementList> T insertEnd(CtStatementList statements) {
-		for (CtStatement s : statements.getStatements()) {
+		List<CtStatement> tobeInserted = new ArrayList<>(statements.getStatements());
+		//remove statements from the `statementsToBeInserted` before they are added to spoon model
+		//note: one element MUST NOT be part of two models.
+		statements.setStatements(null);
+		for (CtStatement s : tobeInserted) {
 			insertEnd(s);
 		}
 		return (T) this;

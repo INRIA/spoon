@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -25,10 +25,11 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
 
 public interface RuntimeBuilderContext {
 	void addPackage(CtPackage ctPackage);
@@ -47,13 +48,10 @@ public interface RuntimeBuilderContext {
 
 	void addParameter(CtParameter ctParameter);
 
-	void addInterfaceReference(CtTypeReference<?> typeReference);
-
-	void addClassReference(CtTypeReference<?> typeReference);
-
-	void addArrayReference(CtArrayTypeReference<?> arrayTypeReference);
+	void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference);
 
 	void addFormalType(CtTypeParameter parameterRef);
 
-	void addTypeName(CtTypeReference<?> ctTypeReference);
+
+	CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string);
 }

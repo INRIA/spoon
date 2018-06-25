@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -21,6 +21,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
@@ -60,7 +61,7 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {
-		if (ctPackage.getPosition() != null && ctPackage.getPosition().getCompilationUnit() != null) {
+		if (ctPackage.getPosition().getCompilationUnit() != null) {
 			return ctPackage.getPosition().getCompilationUnit();
 		} else {
 
@@ -88,7 +89,7 @@ public class CompilationUnitFactory extends SubFactory {
 		if (type == null) {
 			return null;
 		}
-		if (type.getPosition() != null && type.getPosition().getCompilationUnit() != null) {
+		if (type.getPosition().getCompilationUnit() != null) {
 			return type.getPosition().getCompilationUnit();
 		}
 
@@ -117,7 +118,7 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {
-		if (module.getPosition() != null && module.getPosition().getCompilationUnit() != null) {
+		if (module.getPosition().getCompilationUnit() != null) {
 			return module.getPosition().getCompilationUnit();
 		} else {
 			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile();
@@ -147,7 +148,11 @@ public class CompilationUnitFactory extends SubFactory {
 				return cu;
 			}
 			cu = factory.Core().createCompilationUnit();
-			cu.setFile(new File(filePath));
+
+			if (!filePath.equals(VirtualFile.VIRTUAL_FILE_NAME)) {
+				cu.setFile(new File(filePath));
+			}
+
 			cachedCompilationUnits.put(filePath, cu);
 		}
 		return cu;

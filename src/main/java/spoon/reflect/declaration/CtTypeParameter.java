@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -54,6 +54,10 @@ public interface CtTypeParameter extends CtType<Object> {
 
 	@Override
 	@UnsettableProperty
+	<S, C extends CtType<Object>> C addSuperInterface(CtTypeReference<S> interfac);
+
+	@Override
+	@UnsettableProperty
 	<C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members);
 
 	@Override
@@ -66,5 +70,21 @@ public interface CtTypeParameter extends CtType<Object> {
 
 	@Override
 	@UnsettableProperty
+	<M, C extends CtType<Object>> C addMethod(CtMethod<M> method);
+
+	@Override
+	@UnsettableProperty
 	<C extends CtType<Object>> C setNestedTypes(Set<CtType<?>> nestedTypes);
+
+	@Override
+	@UnsettableProperty
+	<N, C extends CtType<Object>> C addNestedType(CtType<N> nestedType);
+
+	@Override
+	@UnsettableProperty
+	<F, C extends CtType<Object>> C addFieldAtTop(CtField<F> field);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers);
 }

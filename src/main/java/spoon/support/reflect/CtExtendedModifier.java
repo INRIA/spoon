@@ -1,21 +1,22 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
- * <p>
+ *
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify
  * and/or redistribute the software under the terms of the CeCILL-C license as
  * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- * <p>
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.reflect;
 
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.ModifierKind;
 
 import java.io.Serializable;
@@ -27,6 +28,7 @@ import java.io.Serializable;
 public class CtExtendedModifier implements Serializable {
 	private boolean implicit;
 	private ModifierKind kind;
+	private SourcePosition position;
 
 	public CtExtendedModifier(ModifierKind kind) {
 		this.kind = kind;
@@ -51,6 +53,17 @@ public class CtExtendedModifier implements Serializable {
 
 	public void setKind(ModifierKind kind) {
 		this.kind = kind;
+	}
+
+	public SourcePosition getPosition() {
+		if (position == null) {
+			return SourcePosition.NOPOSITION;
+		}
+		return position;
+	}
+
+	public void setPosition(SourcePosition position) {
+		this.position = position;
 	}
 
 	@Override

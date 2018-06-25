@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -55,6 +55,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 	private boolean failOnClassNotFound = false;
 	private CtScannerListener listener;
 	private boolean returnTypeReferences = false;
+	private boolean interfacesExtendObject = false;
 
 	/**
 	 * Super inheritance hierarchy scanning listener.
@@ -174,6 +175,18 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 	}
 
 	/**
+	 * configures whether it should visit {@link Object} at the end of interface extends interface hierarchy.
+	 * Note: interface cannot extend Object (only other interfaces),
+	 * but note that interface inherits all public type members of {@link Object},
+	 * so there are use cases where client wants to visit Object as last member of interface inheritance hierarchy
+	 * @param interfacesExtendObject if true then {@link Object} is visited at the end too
+	 * @return this to support fluent API
+	 */
+	public SuperInheritanceHierarchyFunction interfacesExtendObject(boolean interfacesExtendObject) {
+		this.interfacesExtendObject = interfacesExtendObject;
+		return this;
+	}
+	/**
 	 * The listener evens are called in this order:
 	 * <ol>
 	 * <li> enter(input element)
@@ -243,6 +256,10 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		if (mode == NORMAL) {
 			if (isClass == false) {
 				visitSuperInterfaces(typeRef, outputConsumer);
+				if (interfacesExtendObject) {
+					//last visit Object.class, because interface inherits all public type members of Object.class
+					sendResultWithListener(typeRef.getFactory().Type().OBJECT, isClass, outputConsumer, (ref) -> { });
+				}
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that
 				visitSuperClasses(typeRef, outputConsumer, includingInterfaces);
@@ -274,15 +291,8 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
 			superClassRef = superTypeRef.getFactory().Type().OBJECT;
 		}
-		ScanningMode mode = enter(superClassRef, true);
-		if (mode == SKIP_ALL) {
-			return;
-		}
-		sendResult(superClassRef, outputConsumer);
-		if (mode == NORMAL && query.isTerminated() == false) {
-			visitSuperClasses(superClassRef, outputConsumer, includingInterfaces);
-		}
-		exit(superClassRef, true);
+		sendResultWithListener(superClassRef, true,
+				outputConsumer, (classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));
 	}
 
 	/**
@@ -301,19 +311,24 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		for (CtTypeReference<?> ifaceRef : superInterfaces) {
-			ScanningMode mode = enter(ifaceRef, false);
-			if (mode == SKIP_ALL) {
-				continue;
-			}
-			sendResult(ifaceRef, outputConsumer);
-			if (mode == NORMAL && query.isTerminated() == false) {
-				visitSuperInterfaces(ifaceRef, outputConsumer);
-			}
-			exit(ifaceRef, false);
+			sendResultWithListener(ifaceRef, false,
+					outputConsumer, (ref) -> visitSuperInterfaces(ref, outputConsumer));
 			if (query.isTerminated()) {
 				return;
 			}
 		}
+	}
+
+	private void sendResultWithListener(CtTypeReference<?> classRef, boolean isClass, CtConsumer<Object> outputConsumer, CtConsumer<CtTypeReference<?>> runNext) {
+		ScanningMode mode = enter(classRef, isClass);
+		if (mode == SKIP_ALL) {
+			return;
+		}
+		sendResult(classRef, outputConsumer);
+		if (mode == NORMAL && query.isTerminated() == false) {
+			runNext.accept(classRef);
+		}
+		exit(classRef, isClass);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -33,6 +33,10 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 
 	@Override
 	@UnsettableProperty
+	<C extends CtNamedElement> C setSimpleName(String simpleName);
+
+	@Override
+	@UnsettableProperty
 	<T extends CtExecutable<Void>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	@Override
@@ -42,4 +46,13 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 	@Override
 	@UnsettableProperty
 	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtExecutable<Void>> T addParameter(CtParameter<?> parameter);
+
+	@Override
+	@UnsettableProperty
+	<T extends CtExecutable<Void>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
+
 }

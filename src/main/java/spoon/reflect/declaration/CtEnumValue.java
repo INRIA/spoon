@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -15,6 +15,10 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.reflect.declaration;
+
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtRHSReceiver;
+import spoon.support.UnsettableProperty;
 
 /**
  * Corresponds to one enum value specified in an enumeration.
@@ -33,4 +37,8 @@ package spoon.reflect.declaration;
 public interface CtEnumValue<T> extends CtField<T> {
 	@Override
 	CtEnumValue clone();
+
+	@Override
+	@UnsettableProperty
+	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
 }

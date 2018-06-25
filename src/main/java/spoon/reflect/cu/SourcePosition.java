@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,6 +28,12 @@ import java.io.Serializable;
 public interface SourcePosition extends Serializable {
 
 	SourcePosition NOPOSITION = new NoSourcePosition();
+
+	/**
+	 * @return true if this instance holds start/end indexes of related sources.
+	 * false if they are unknown
+	 */
+	boolean isValidPosition();
 
 	/**
 	 * Returns a string representation of this position in the form

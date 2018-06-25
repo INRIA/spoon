@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -27,6 +27,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -165,17 +167,31 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutable<T> getExecutableDeclaration() {
-		return getCtExecutable(getDeclaringType().getTypeDeclaration());
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
+
+		if (declaringType instanceof CtArrayTypeReference && this.isConstructor()) {
+			CtConstructor constructor = this.getFactory().createInvisibleArrayConstructor();
+			constructor.setType(declaringType);
+			return constructor;
+		}
+
+		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 
 	private CtExecutable<T> getCtExecutable(CtType<?> typeDecl) {
 		if (typeDecl == null) {
 			return null;
 		}
-		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
-		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME))) {
+		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]);
+		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), arrayParameters);
+		if ((method == null) && (typeDecl instanceof CtClass) && this.isConstructor()) {
 			try {
-				return (CtExecutable<T>) ((CtClass<?>) typeDecl).getConstructor(parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
+				CtClass<?> zeClass = (CtClass) typeDecl;
+				CtConstructor<?> constructor = zeClass.getConstructor(arrayParameters);
+				return (CtExecutable<T>) constructor;
 			} catch (ClassCastException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
@@ -263,7 +279,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			if (!isSame) {
 				return false;
 			}
-			if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
+			CtTypeReference<?> declaringType = getDeclaringType();
+			if (declaringType == null || !declaringType.isSubtypeOf(executable.getDeclaringType())) {
 				return false;
 			}
 			return true;
@@ -325,8 +342,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public Method getActualMethod() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
 		method_loop:
-		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
+		for (Method m : declaringType.getActualClass().getDeclaredMethods()) {
 			if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
 				continue;
 			}
@@ -352,8 +373,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public Constructor<?> getActualConstructor() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
 		constructor_loop:
-		for (Constructor<?> c : getDeclaringType().getActualClass().getDeclaredConstructors()) {
+		for (Constructor<?> c : declaringType.getActualClass().getDeclaredConstructors()) {
 			if (c.getParameterTypes().length != parameters.size()) {
 				continue;
 			}
@@ -416,8 +441,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutableReference<?> getOverridingExecutable() {
-		CtTypeReference<?> st = getDeclaringType().getSuperclass();
 		CtTypeReference<Object> objectType = getFactory().Type().OBJECT;
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return getOverloadedExecutable(objectType, objectType);
+		}
+		CtTypeReference<?> st = declaringType.getSuperclass();
 		if (st == null) {
 			return getOverloadedExecutable(objectType, objectType);
 		}

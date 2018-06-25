@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -18,6 +18,7 @@ package spoon.reflect.meta.impl;
 
 import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,7 +87,10 @@ abstract class MapHandler<T, V> extends AbstractRoleHandler<T, Map<String, V>, V
 	}
 
 	protected V put(T element, String key, V value) {
-		return this.<T, Map<String, V>>getValue(element).put(key, value);
+		Map<String, V> values = new LinkedHashMap<>(this.<T, Map<String, V>>getValue(element));
+		V ret = values.put(key, value);
+		setValue(element, values);
+		return ret;
 	}
 
 	protected Set<Map.Entry<String, V>> entrySet(T element) {

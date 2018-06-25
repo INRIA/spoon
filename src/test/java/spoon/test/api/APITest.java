@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
@@ -45,12 +46,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -548,5 +551,31 @@ public class APITest {
 		assertTrue("Class file not contained ("+classFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
 	}
 
+	@Test
+	public void testOutputWithNoOutputProduceNoFolder() {
+		// contract: when using "NO_OUTPUT" output type, no output folder shoud be created
+		String destPath = "./target/nooutput_" + UUID.randomUUID().toString();
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		launcher.setSourceOutputDirectory(destPath);
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.run();
+		File outputDir = new File(destPath);
+		System.out.println(destPath);
+		assertFalse("Output dir should not exist: "+outputDir.getAbsolutePath(), outputDir.exists());
+	}
+
+	@Test
+	public void testGetOneLinerMainClassFromCU() {
+		// contract: when using Spoon with a snippet, we can still use properly CompilationUnit methods
+		CtClass<?> l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
+		CompilationUnit compilationUnit = l.getPosition().getCompilationUnit();
+
+		assertNotNull(compilationUnit);
+		CtType<?> mainType = compilationUnit.getMainType();
+		assertSame(l, mainType);
+	}
 
 }

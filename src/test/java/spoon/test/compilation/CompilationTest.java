@@ -3,7 +3,6 @@ package spoon.test.compilation;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -220,7 +219,7 @@ public class CompilationTest {
 							public CompilationUnit[] getCompilationUnits() {
 								List<CompilationUnit> units = new ArrayList<>();
 								for (CompilationUnit u : super.getCompilationUnits()) {
-									if (new String(u.getFileName()).contains("/reference/")) {
+									if (new String(u.getFileName()).replace('\\', '/').contains("/reference/")) {
 										units.add(u);
 									}
 								}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -85,9 +85,6 @@ public class ExecutableFactory extends SubFactory {
 	 */
 	public <T> CtParameterReference<T> createParameterReference(CtParameter<T> parameter) {
 		CtParameterReference<T> ref = factory.Core().createParameterReference();
-		if (parameter.getParent() != null) {
-			ref.setDeclaringExecutable(factory.Executable().createReference((CtExecutable<?>) parameter.getParent()));
-		}
 		ref.setSimpleName(parameter.getSimpleName());
 		ref.setType(parameter.getType());
 		return ref;

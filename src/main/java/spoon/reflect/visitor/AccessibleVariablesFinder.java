@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -68,9 +68,7 @@ public class AccessibleVariablesFinder {
 			public void visitCtStatementList(CtStatementList e) {
 				for (int i = 0; i < e.getStatements().size(); i++) {
 					CtStatement ctStatement = e.getStatements().get(i);
-					if (ctStatement.getPosition() == null) {
-					}
-					if (ctStatement.getPosition() != null
+					if (ctStatement.getPosition().isValidPosition()
 							&& ctStatement.getPosition().getSourceStart() > expression.getPosition().getSourceEnd()) {
 						break;
 					}
