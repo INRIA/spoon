@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -51,18 +51,20 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
 
 
 /**
  * This class implements a simple Spoon environment that reports messages in the
  * standard output stream (Java-compliant).
  */
-public class StandardEnvironment implements Serializable , Environment {
+public class StandardEnvironment implements Serializable, Environment {
+
 	private static final long serialVersionUID = 1L;
 
 	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
 
-	private transient FileGenerator<? extends CtElement> defaultFileGenerator;
+	private transient  FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
 
@@ -82,7 +84,7 @@ public class StandardEnvironment implements Serializable , Environment {
 
 	private boolean enableComments = false;
 
-	private transient Logger logger = Launcher.LOGGER;
+	private transient  Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.OFF;
 
@@ -90,17 +92,19 @@ public class StandardEnvironment implements Serializable , Environment {
 
 	private boolean skipSelfChecks = false;
 
-	private transient FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+	private transient  FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
-	private transient Charset encoding = Charset.defaultCharset();
+	private transient  Charset encoding = Charset.defaultCharset();
 
-	private int complianceLevel = StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
+	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
-	private transient OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+	private transient  OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
 
 	private Boolean noclasspath = null;
+
+	private transient  SpoonProgress spoonProgress = null;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -167,7 +171,7 @@ public class StandardEnvironment implements Serializable , Environment {
 	}
 
 	private Level toLevel(String level) {
-		if ((level == null) || (level.isEmpty())) {
+		if (level == null || level.isEmpty()) {
 			throw new SpoonException("Wrong level given at Spoon.");
 		}
 		return Level.toLevel(level, Level.ALL);
@@ -199,40 +203,43 @@ public class StandardEnvironment implements Serializable , Environment {
 	}
 
 	private void prefix(StringBuffer buffer, Level level) {
-		if (level == (Level.ERROR)) {
+		if (level == Level.ERROR) {
 			buffer.append("error: ");
-			(errorCount)++;
-		}else
-			if (level == (Level.WARN)) {
-				buffer.append("warning: ");
-				(warningCount)++;
-			}
-
+			errorCount++;
+		} else if (level == Level.WARN) {
+			buffer.append("warning: ");
+			warningCount++;
+		}
 	}
 
 	@Override
 	public void report(Processor<?> processor, Level level, CtElement element, String message) {
 		StringBuffer buffer = new StringBuffer();
+
 		prefix(buffer, level);
+
 		// Adding message
 		buffer.append(message);
+
 		// Add sourceposition (javac format)
 		try {
-			CtType<?> type = (element instanceof CtType) ? ((CtType<?>) (element)) : element.getParent(CtType.class);
+			CtType<?> type = (element instanceof CtType) ? (CtType<?>) element : element.getParent(CtType.class);
 			SourcePosition sp = element.getPosition();
+
 			if (sp == null) {
 				buffer.append(" (Unknown Source)");
-			}else {
-				buffer.append(((" at " + (type.getQualifiedName())) + "."));
-				CtExecutable<?> exe = (element instanceof CtExecutable) ? ((CtExecutable<?>) (element)) : element.getParent(CtExecutable.class);
+			} else {
+				buffer.append(" at " + type.getQualifiedName() + ".");
+				CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
 				if (exe != null) {
 					buffer.append(exe.getSimpleName());
 				}
-				buffer.append((((("(" + (sp.getFile().getName())) + ":") + (sp.getLine())) + ")"));
+				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
 			}
 		} catch (ParentNotInitializedException e) {
 			buffer.append(" (invalid parent)");
 		}
+
 		print(buffer.toString(), level);
 	}
 
@@ -244,6 +251,7 @@ public class StandardEnvironment implements Serializable , Environment {
 	@Override
 	public void report(Processor<?> processor, Level level, String message) {
 		StringBuffer buffer = new StringBuffer();
+
 		prefix(buffer, level);
 		// Adding message
 		buffer.append(message);
@@ -253,19 +261,13 @@ public class StandardEnvironment implements Serializable , Environment {
 	private void print(String message, Level level) {
 		if (level.equals(Level.ERROR)) {
 			logger.error(message);
-		}else
-			if (level.equals(Level.WARN)) {
-				logger.warn(message);
-			}else
-				if (level.equals(Level.DEBUG)) {
-					logger.debug(message);
-				}else
-					if (level.equals(Level.INFO)) {
-						logger.info(message);
-					}
-
-
-
+		} else if (level.equals(Level.WARN)) {
+			logger.warn(message);
+		} else if (level.equals(Level.DEBUG)) {
+			logger.debug(message);
+		} else if (level.equals(Level.INFO)) {
+			logger.info(message);
+		}
 	}
 
 	/**
@@ -273,24 +275,24 @@ public class StandardEnvironment implements Serializable , Environment {
 	 */
 	public void reportEnd() {
 		logger.info("end of processing: ");
-		if ((warningCount) > 0) {
-			logger.info(((warningCount) + " warning"));
-			if ((warningCount) > 1) {
+		if (warningCount > 0) {
+			logger.info(warningCount + " warning");
+			if (warningCount > 1) {
 				logger.info("s");
 			}
-			if ((errorCount) > 0) {
+			if (errorCount > 0) {
 				logger.info(", ");
 			}
 		}
-		if ((errorCount) > 0) {
-			logger.info(((errorCount) + " error"));
-			if ((errorCount) > 1) {
+		if (errorCount > 0) {
+			logger.info(errorCount + " error");
+			if (errorCount > 1) {
 				logger.info("s");
 			}
 		}
-		if (((errorCount) + (warningCount)) > 0) {
+		if ((errorCount + warningCount) > 0) {
 			logger.info("\n");
-		}else {
+		} else {
 			logger.info("no errors, no warnings");
 		}
 	}
@@ -316,6 +318,8 @@ public class StandardEnvironment implements Serializable , Environment {
 
 	public void setVerbose(boolean verbose) {
 	}
+
+
 
 	public int getComplianceLevel() {
 		return complianceLevel;
@@ -349,23 +353,23 @@ public class StandardEnvironment implements Serializable , Environment {
 		this.tabulationSize = tabulationSize;
 	}
 
-	private transient ClassLoader classloader;
-
-	/* cache class loader which loads classes from source class path
-	we must cache it to make all the loaded classes compatible
-	The cache is reset when setSourceClasspath(...) is called
+	private transient  ClassLoader classloader;
+	/*
+	 * cache class loader which loads classes from source class path
+	 * we must cache it to make all the loaded classes compatible
+	 * The cache is reset when setSourceClasspath(...) is called
 	 */
-	private transient ClassLoader inputClassloader;
+private transient  ClassLoader inputClassloader;
 
 	@Override
 	public void setInputClassLoader(ClassLoader aClassLoader) {
 		if (aClassLoader instanceof URLClassLoader) {
-			final URL[] urls = ((URLClassLoader) (aClassLoader)).getURLs();
-			if ((urls != null) && ((urls.length) > 0)) {
+			final URL[] urls = ((URLClassLoader) aClassLoader).getURLs();
+			if (urls != null && urls.length > 0) {
 				// Check that the URLs are only file URLs
 				boolean onlyFileURLs = true;
 				for (URL url : urls) {
-					if (!(url.getProtocol().equals("file"))) {
+					if (!url.getProtocol().equals("file")) {
 						onlyFileURLs = false;
 					}
 				}
@@ -375,7 +379,7 @@ public class StandardEnvironment implements Serializable , Environment {
 						classpath.add(url.getPath());
 					}
 					setSourceClasspath(classpath.toArray(new String[0]));
-				}else {
+				} else {
 					throw new SpoonException("Spoon does not support a URLClassLoader containing other resources than local file.");
 				}
 			}
@@ -386,10 +390,10 @@ public class StandardEnvironment implements Serializable , Environment {
 
 	@Override
 	public ClassLoader getInputClassLoader() {
-		if ((classloader) != null) {
+		if (classloader != null) {
 			return classloader;
 		}
-		if ((inputClassloader) == null) {
+		if (inputClassloader == null) {
 			inputClassloader = new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
 		}
 		return inputClassloader;
@@ -406,7 +410,7 @@ public class StandardEnvironment implements Serializable , Environment {
 			try {
 				urls[i] = new File(classpath[i]).toURI().toURL();
 			} catch (MalformedURLException e) {
-				throw new IllegalStateException(("Invalid classpath: " + (Arrays.toString(classpath))), e);
+				throw new IllegalStateException("Invalid classpath: " + Arrays.toString(classpath), e);
 			}
 		}
 		return urls;
@@ -428,22 +432,21 @@ public class StandardEnvironment implements Serializable , Environment {
 		for (String classPathElem : sourceClasspath) {
 			// preconditions
 			File classOrJarFolder = new File(classPathElem);
-			if (!(classOrJarFolder.exists())) {
-				throw new InvalidClassPathException((classPathElem + " does not exist, it is not a valid folder"));
+			if (!classOrJarFolder.exists()) {
+				throw new InvalidClassPathException(classPathElem + " does not exist, it is not a valid folder");
 			}
+
 			if (classOrJarFolder.isDirectory()) {
 				// it should not contain a java file
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
-				if ((javaFiles.size()) > 0) {
-					logger.warn((("You're trying to give source code in the classpath, this should be given to " + "addInputSource ") + javaFiles));
+				if (javaFiles.size() > 0) {
+					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
-				logger.warn((("You specified the directory " + (classOrJarFolder.getPath())) + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored."));
-			}else
-				if (classOrJarFolder.getName().endsWith(".class")) {
-					throw new InvalidClassPathException(".class files are not accepted in source classpath.");
-				}
-
+				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
+			} else if (classOrJarFolder.getName().endsWith(".class")) {
+				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
+			}
 		}
 	}
 
@@ -474,7 +477,7 @@ public class StandardEnvironment implements Serializable , Environment {
 
 	@Override
 	public boolean getNoClasspath() {
-		if ((this.noclasspath) == null) {
+		if (this.noclasspath == null) {
 			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
 			this.noclasspath = true;
 		}
@@ -506,6 +509,7 @@ public class StandardEnvironment implements Serializable , Environment {
 	@Override
 	public void setBinaryOutputDirectory(String s) {
 		this.binaryOutputDirectory = s;
+
 	}
 
 	@Override
@@ -521,8 +525,10 @@ public class StandardEnvironment implements Serializable , Environment {
 		if (directory.isFile()) {
 			throw new SpoonException("Output must be a directory");
 		}
+
 		try {
-			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(), this);
+			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(),
+					this);
 		} catch (IOException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 			throw new SpoonException(e);
@@ -573,5 +579,14 @@ public class StandardEnvironment implements Serializable , Environment {
 	public OutputType getOutputType() {
 		return this.outputType;
 	}
-}
 
+	@Override
+	public SpoonProgress getSpoonProgress() {
+		return this.spoonProgress;
+	}
+
+	@Override
+	public void setSpoonProgress(SpoonProgress spoonProgress) {
+		this.spoonProgress = spoonProgress;
+	}
+}
