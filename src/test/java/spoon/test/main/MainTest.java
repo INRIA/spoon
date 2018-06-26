@@ -458,6 +458,16 @@ public class MainTest {
 				if (element != null) {
 					//contract: getMyRoleInParent returns the expected parent
 					assertSame(role, element.getRoleInParent());
+					//contract: getParent.getValueByRole(getMyRoleInParent()) contains the element
+					CtElement parent = element.getParent();
+					if(parent != null) {
+						if(parent.getValueByRole(role) instanceof CtElement) {
+							assertEquals(parent.getValueByRole(role),element);
+						} else if (parent.getValueByRole(role) instanceof Collection) {
+							Collection c = parent.getValueByRole(role);
+							assertTrue(c.contains(element));
+						}
+					}
 				}
 				super.scan(role, element);
 			}
