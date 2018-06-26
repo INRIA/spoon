@@ -76,6 +76,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -205,6 +206,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private CompilationUnit sourceCompilationUnit;
 
 	/**
+	 * When scanning an element out of its CU, the CU must be prepared to print element with right imports
+	 */
+	private boolean isCompilationUnitReady;
+
+	/**
 	 * Creates a new code generator visitor.
 	 */
 	public DefaultJavaPrettyPrinter(Environment env) {
@@ -297,6 +303,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * The generic scan method for an element.
 	 */
 	public DefaultJavaPrettyPrinter scan(CtElement e) {
+		if (!this.isCompilationUnitReady) {
+			if (this.sourceCompilationUnit != null) {
+				this.isCompilationUnitReady = true;
+			} else {
+				if (e.getPosition() != null && !(e.getPosition() instanceof NoSourcePosition)) {
+					this.sourceCompilationUnit = e.getPosition().getCompilationUnit();
+					this.sourceCompilationUnit.computeImports();
+				}
+				this.isCompilationUnitReady = true;
+			}
+		}
 		if (e != null) {
 			enter(e);
 			context.elementStack.push(e);
@@ -1881,6 +1898,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private void reset() {
 		printer.reset();
+		this.isCompilationUnitReady = false;
 		context = new PrintingContext();
 	}
 
@@ -1905,7 +1923,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		// reset the importsContext to avoid errors with multiple CU
 		reset();
-
+		this.isCompilationUnitReady = true;
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		if (sourceCompilationUnit != null) {
 			this.sourceCompilationUnit.computeImports();
