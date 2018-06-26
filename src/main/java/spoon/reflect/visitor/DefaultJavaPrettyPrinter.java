@@ -310,6 +310,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				if (e.getPosition() != null && !(e.getPosition() instanceof NoSourcePosition)) {
 					this.sourceCompilationUnit = e.getPosition().getCompilationUnit();
 					this.sourceCompilationUnit.computeImports();
+				} else {
+					CtType parent = e.getParent(CtType.class);
+					if (parent != null) {
+						this.sourceCompilationUnit = e.getFactory().CompilationUnit().getOrCreate(parent);
+						this.sourceCompilationUnit.computeImports();
+					}
 				}
 				this.isCompilationUnitReady = true;
 			}
@@ -1868,6 +1874,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public String printPackageInfo(CtPackage pack) {
 		reset();
 		this.sourceCompilationUnit = pack.getPosition().getCompilationUnit();
+
+		if (this.sourceCompilationUnit == null) {
+			this.sourceCompilationUnit = pack.getFactory().CompilationUnit().getOrCreate(pack);
+		}
+
 		elementPrinterHelper.writeComment(pack);
 
 		if (this.sourceCompilationUnit != null) {
@@ -1924,11 +1935,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		// reset the importsContext to avoid errors with multiple CU
 		reset();
 		this.isCompilationUnitReady = true;
-		this.sourceCompilationUnit = sourceCompilationUnit;
-		if (sourceCompilationUnit != null) {
-			this.sourceCompilationUnit.computeImports();
-			this.writeHeader(types, sourceCompilationUnit.getImports());
+		if (sourceCompilationUnit == null) {
+			CtType<?> mainType = types.get(0);
+			this.sourceCompilationUnit = mainType.getFactory().CompilationUnit().getOrCreate(mainType);
+		} else {
+			this.sourceCompilationUnit = sourceCompilationUnit;
 		}
+		this.sourceCompilationUnit.computeImports();
+		this.writeHeader(types, sourceCompilationUnit.getImports());
 
 		for (CtType<?> t : types) {
 			scan(t);
