@@ -134,6 +134,19 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 									this.setImportUsed(ctImport);
 									super.visitCtTypeReference(reference);
 								}
+								break;
+
+							case ALL_TYPES:
+								String packQualifiedName = reference.getQualifiedName();
+								String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
+								packQualifiedName = packQualifiedName.substring(0, packQualifiedName.lastIndexOf("."));
+
+								if (packQualifiedName.equals(typeImportQualifiedName)) {
+									this.setImportUsed(ctImport);
+									super.visitCtTypeReference(reference);
+								}
+								break;
 						}
 					}
 
@@ -313,6 +326,25 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (targetType != null && targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
 			return false;
 		}
+		for (CtImport ctImport : this.usedImport.keySet()) {
+			switch (ctImport.getImportKind()) {
+				case TYPE:
+					if (ctImport.getReference().equals(ref)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+
+				case ALL_TYPES:
+					String packQualifiedName = ref.getPackage().getQualifiedName();
+					String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
+					if (packQualifiedName.equals(typeImportQualifiedName)) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+			}
+		}
+
 		if (classImports.containsKey(ref.getSimpleName())) {
 			return isImportedInClassImports(ref);
 		}
@@ -422,14 +454,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					String packQualifiedName = ref.getPackage().getQualifiedName();
 					String typeImportQualifiedName = ctImport.getReference().getSimpleName();
 
-					typeImportQualifiedName = typeImportQualifiedName.substring(0, typeImportQualifiedName.lastIndexOf("."));
 					if (packQualifiedName.equals(typeImportQualifiedName)) {
 						return this.setImportUsed(ctImport);
 					}
 					break;
 			}
 		}
-
 		if (targetType != null) {
 			CtPackageReference pack = targetType.getPackage();
 

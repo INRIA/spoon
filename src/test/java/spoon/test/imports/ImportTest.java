@@ -99,7 +99,7 @@ public class ImportTest {
 
 		//test that acces path depends on the context
 		//this checks the access path in context of innerClass. The context is defined by CtTypeReference.getParent(CtType.class). 
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClass.getSuperclass().toString());
 		//this checks the access path in context of SuperClass. The context is defined by CtTypeReference.getParent(CtType.class) 
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClass.getSuperclass().getTypeDeclaration().getReference().toString());
 		assertEquals("InnerClassProtected", innerClass.getSuperclass().getSimpleName());
@@ -478,7 +478,7 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
 	
