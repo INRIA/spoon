@@ -16,19 +16,26 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 import spoon.SpoonException;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.MethodFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -38,10 +45,6 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.EXPRESSION;
@@ -49,17 +52,18 @@ import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.THROWN;
 
+
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
 	@MetamodelPropertyField(role = CtRole.NAME)
 	String simpleName = "";
 	@MetamodelPropertyField(role = CtRole.EXPRESSION)
-	CtExpression<T> expression;
+transient 	CtExpression<T> expression;
 	@MetamodelPropertyField(role = CtRole.BODY)
-	CtBlock<?> body;
+transient 	CtBlock<?> body;
 	@MetamodelPropertyField(role = CtRole.PARAMETER)
-	List<CtParameter<?>> parameters = emptyList();
+transient 	List<CtParameter<?>> parameters = emptyList();
 	@MetamodelPropertyField(role = THROWN)
-	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
+transient 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -257,3 +261,4 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		return (CtLambda<T>) super.clone();
 	}
 }
+
