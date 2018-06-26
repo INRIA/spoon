@@ -294,7 +294,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	@Override
 	public boolean isImported(CtReference reference) {
-		if (this.areImportsComputed) {
+		if (!this.areImportsComputed) {
 			this.computeImports();
 		}
 		return this.getImportScanner().isImported(reference);
