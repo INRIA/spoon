@@ -17,7 +17,7 @@
 package spoon.support.reflect.cu.position;
 
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.cu.position.CompoundSourcePosition;
 
 import java.io.Serializable;
 
@@ -25,45 +25,51 @@ import java.io.Serializable;
  * This class represents the position of a Java program element in a source
  * file.
  */
-public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
-		implements DeclarationSourcePosition, Serializable {
+public class CompoundSourcePositionImpl extends SourcePositionImpl
+		implements CompoundSourcePosition, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private int modifierSourceEnd;
-	private int modifierSourceStart;
+	private int declarationSourceStart;
+	private int declarationSourceEnd;
 
-	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
-			int modifierSourceStart, int modifierSourceEnd, int declarationSourceStart, int declarationSourceEnd,
+	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
+			int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
 		super(compilationUnit,
-				sourceStart, sourceEnd, declarationSourceStart, declarationSourceEnd,
+				sourceStart, sourceEnd,
 				lineSeparatorPositions);
-		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
-		this.modifierSourceStart = modifierSourceStart;
-		if (this.modifierSourceStart == 0) {
-			this.modifierSourceStart = declarationSourceStart;
-		}
-		this.modifierSourceEnd = modifierSourceEnd;
+		checkArgsAreAscending(declarationSourceStart, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
+		this.declarationSourceStart = declarationSourceStart;
+		this.declarationSourceEnd = declarationSourceEnd;
 	}
 
 	@Override
-	public int getModifierSourceStart() {
-		return modifierSourceStart;
-	}
-
-	public void setModifierSourceEnd(int modifierSourceEnd) {
-		this.modifierSourceEnd = modifierSourceEnd;
+	public int getSourceEnd() {
+		return declarationSourceEnd;
 	}
 
 	@Override
-	public int getModifierSourceEnd() {
-		return modifierSourceEnd;
+	public int getSourceStart() {
+		return declarationSourceStart;
+	}
+
+	@Override
+	public int getNameStart() {
+		return super.getSourceStart();
+	}
+
+	@Override
+	public int getNameEnd() {
+		return super.getSourceEnd();
+	}
+
+	public int getEndLine() {
+		return searchLineNumber(declarationSourceEnd);
 	}
 
 	@Override
 	public String getSourceDetails() {
-		return getFragment(getSourceStart(), getSourceEnd())
-				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
+		return super.getSourceDetails()
 				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
 	}
 

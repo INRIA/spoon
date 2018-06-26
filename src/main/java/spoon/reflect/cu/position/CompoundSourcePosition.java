@@ -16,13 +16,15 @@
  */
 package spoon.reflect.cu.position;
 
+import spoon.reflect.cu.SourcePosition;
+
 /**
  * This interface represents the position of a program element in a source file.
  */
-public interface DeclarationSourcePosition extends CompoundSourcePosition {
+public interface CompoundSourcePosition extends SourcePosition {
 
-	int getModifierSourceStart();
+	int getNameStart();
 
-	int getModifierSourceEnd();
+	int getNameEnd();
 
 }
