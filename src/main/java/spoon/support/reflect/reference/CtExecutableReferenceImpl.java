@@ -16,7 +16,17 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import spoon.Launcher;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtClass;
@@ -26,6 +36,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -38,21 +49,13 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.SignaturePrinter;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.ARGUMENT_TYPE;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_STATIC;
-import static spoon.reflect.path.CtRole.ARGUMENT_TYPE;
 import static spoon.reflect.path.CtRole.TYPE;
 import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
+
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -61,20 +64,20 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	boolean stat = false;
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
-	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
+transient 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = CtRole.TYPE)
-	CtTypeReference<?> declaringType;
+transient 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
 	/**
 	 * For methods, stores the return type of the method. (not pretty-printed).
 	 * For constructors, stores the type of the target constructor (pretty-printed).
 	 */
-	CtTypeReference<T> type;
+@MetamodelPropertyField(role = CtRole.TYPE)
+transient 	CtTypeReference<T> type;
 
 	@MetamodelPropertyField(role = ARGUMENT_TYPE)
-	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
+transient 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
 
 	public CtExecutableReferenceImpl() {
 		super();
@@ -507,3 +510,4 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return (CtExecutableReference<T>) super.clone();
 	}
 }
+
