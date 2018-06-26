@@ -32,10 +32,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -48,7 +48,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	CtPackage ctPackage;
 
-	Collection<CtImport> imports = new HashSet<>();
+	Set<CtImport> imports = new HashSet<>();
 
 	CtModule ctModule;
 
@@ -245,12 +245,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public Collection<CtImport> getImports() {
+	public Set<CtImport> getImports() {
 		return this.imports;
 	}
 
 	@Override
-	public void setImports(Collection<CtImport> imports) {
+	public void setImports(Set<CtImport> imports) {
 		this.imports = imports;
 	}
 
