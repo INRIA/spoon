@@ -68,9 +68,8 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 			int header = (buffer[1] << 8) | buffer[0];
 			if (header == GZIPInputStream.GZIP_MAGIC) {
-			        in = new GZIPInputStream(buffered);
-			}
-			else {
+				in = new GZIPInputStream(buffered);
+			} else {
 				in = buffered;
 			}
 
