@@ -47,7 +47,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -235,8 +234,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public Collection<CtImport> getAllImports() {
-		Collection<CtImport> listallImports = new ArrayList<>();
+	public Set<CtImport> getAllImports() {
+		Set<CtImport> listallImports = new HashSet<>();
 
 		for (Map.Entry<CtImport, Boolean> entry : this.usedImport.entrySet()) {
 			if (entry.getValue()) {
@@ -287,7 +286,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public void initWithImports(Collection<CtImport> importCollection) {
+	public void initWithImports(Set<CtImport> importCollection) {
 		for (CtImport ctImport : importCollection) {
 			this.usedImport.put(ctImport, Boolean.FALSE);
 		}
