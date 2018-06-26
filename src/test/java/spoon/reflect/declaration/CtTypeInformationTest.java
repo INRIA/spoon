@@ -191,7 +191,7 @@ public class CtTypeInformationTest {
 		Set<CtMethod<?>> listCtMethods = subClass.getAllMethods();
 
 		boolean detectedCompareTo = false;
-		for (CtMethod<?> ctMethod: listCtMethods) {
+		for (CtMethod<?> ctMethod : listCtMethods) {
 			if (ctMethod.getSimpleName().equals("compareTo")) {
 				assertFalse(ctMethod.hasModifier(ModifierKind.ABSTRACT));
 				assertFalse(ctMethod.getParameters().get(0).getType() instanceof CtTypeParameter);
