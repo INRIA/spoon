@@ -768,4 +768,28 @@ public class PositionTest {
 			assertEquals("String arg[]", contentAtPosition(classContent, param.getType().getPosition()));
 		}
 	}
+	
+	@Test
+	public void testExpressions() throws Exception {
+		//contract: the expression parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
+		final CtType<?> foo = ModelUtils.buildClass(Expressions.class);
+		String classContent = getClassContent(foo);
+		List<CtInvocation<?>> statements = (List) foo.getMethodsByName("method").get(0).getBody().getStatements();
+
+		int idx = 0;
+		assertEquals("\"x\"", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("(\"x\")", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("(String)null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("( String) ( (Serializable)(( (null ))))", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("(((String) null))", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("( /*c2*/\n" + 
+				"				(\n" + 
+				"						/*c3*/  String\n" + 
+				"						/*c4*/) //c5\n" + 
+				"				null /*c6*/\n" + 
+				"				//c7\n" + 
+				"				)", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("(List<?>) null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		assertEquals("(List<List<Map<String,Integer>>>) null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+	}
 }
