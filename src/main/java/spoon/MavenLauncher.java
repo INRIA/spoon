@@ -215,7 +215,27 @@ public class MavenLauncher extends Launcher {
 						LOGGER.log(Level.ERROR, "Jar not found at " + jarFile);
 					}
 				} else {
-					LOGGER.log(Level.ERROR, "Dependency not found at " + depPath);
+					String tmp = version;
+					int buildIndex = version.indexOf("-");
+					if (buildIndex != -1) {
+						String build = version.substring(buildIndex + 1);
+						tmp = version.replace(build, "SNAPSHOT");
+					} else {
+						buildIndex = version.indexOf("-");
+					}
+					depPath = Paths.get(m2RepositoryPath, groupId.replaceAll("\\.", "/"), artifactId, tmp);
+					depFile = depPath.toFile();
+					if (depFile.exists()) {
+						File jarFile = Paths.get(depPath.toString(), fileName + ".jar").toFile();
+						if (jarFile.exists()) {
+							return jarFile;
+						} else {
+							LOGGER.log(Level.ERROR, "Jar not found at " + jarFile);
+						}
+					} else {
+
+						LOGGER.log(Level.ERROR, "Dependency not found at " + depPath);
+					}
 				}
 			}
 			return null;
@@ -273,6 +293,123 @@ public class MavenLauncher extends Launcher {
 		}
 	}
 
+	class Version implements Comparable<Version> {
+		String version;
+		int major = -1;
+		int minor = -1;
+		int incremental = -1;
+		int build = -1;
+		String qualifier;
+
+		Version(String version) {
+			this.version = version;
+			int buildIndex = version.indexOf("-");
+			if (buildIndex != -1) {
+				String build = version.substring(buildIndex + 1);
+				try {
+					this.build = Integer.parseInt(build);
+				} catch (NumberFormatException e) {
+					this.qualifier = build;
+				}
+				version = version.substring(0, buildIndex);
+			}
+			String[] splitVersion = version.split("\\.");
+			try {
+				this.major = Integer.parseInt(splitVersion[0]);
+			} catch (NumberFormatException ignore) {
+			}
+			if (splitVersion.length > 1) {
+				try {
+					this.minor = Integer.parseInt(splitVersion[1]);
+				} catch (NumberFormatException ignore) {
+				}
+			}
+			if (splitVersion.length > 2) {
+				try {
+					this.incremental = Integer.parseInt(splitVersion[2]);
+				} catch (NumberFormatException ignore) {
+				}
+			}
+		}
+
+		@Override
+		public int compareTo(Version v) {
+			if (major < v.major) {
+				return -1;
+			}
+			if (major > v.major) {
+				return 1;
+			}
+			if (minor < v.minor) {
+				return -1;
+			}
+			if (minor > v.minor) {
+				return 1;
+			}
+			if (incremental < v.incremental) {
+				return -1;
+			}
+			if (incremental > v.incremental) {
+				return 1;
+			}
+			if (build < v.build) {
+				return -1;
+			}
+			if (build > v.build) {
+				return 1;
+			}
+			return 0;
+		}
+
+		@Override
+		public String toString() {
+			return version;
+		}
+	}
+
+	class RangeVersion {
+		String range;
+		boolean includeStart;
+		boolean includeEnd;
+		Version start;
+		Version end;
+
+		RangeVersion(String range) {
+			this.range = range;
+			includeStart = range.startsWith("[");
+			includeEnd = range.endsWith("]");
+			String[] splitRange = range.substring(1, range.length() - 1).split(",");
+			if (splitRange[0].length() == 0) {
+				start = new Version("0.0.0.0");
+			} else {
+				start = new Version(splitRange[0]);
+			}
+			if (splitRange.length == 1 || splitRange[1].length() == 0) {
+				end = new Version("99999999.9999999.999999.99999");
+			} else {
+				end = new Version(splitRange[1]);
+			}
+		}
+
+
+		boolean include(Version v) {
+			int compareToStart = v.compareTo(start);
+			int compareToEnd = v.compareTo(end);
+			if (compareToStart < 0 || compareToEnd > 0) {
+				return false;
+			}
+			if ((compareToStart == 0 && includeStart) || (compareToEnd == 0 && includeEnd)) {
+				return true;
+			}
+			return compareToStart > 0 && compareToEnd < 0;
+		}
+
+		@Override
+		public String toString() {
+			return range;
+		}
+	}
+
 	class InheritanceModel {
 		private List<InheritanceModel> modules = new ArrayList<>();
 		private Model model;
@@ -284,15 +421,18 @@ public class MavenLauncher extends Launcher {
 			this.model = model;
 			this.parent = parent;
 			this.directory = directory;
+			init(model, parent, directory);
+
+		}
+
+		private void init(Model model, InheritanceModel parent, File directory) {
 			// if possible, build the parent model from the relative path
 			if (parent == null && model.getParent() != null) {
 				try {
 					File parentPath = new File(directory, model.getParent().getRelativePath());
 					this.parent = readPOM(parentPath.getPath(), null);
 					if (this.parent == null) {
-						String groupId = model.getParent().getGroupId();
-						String version = model.getParent().getVersion();
-						this.parent = readPom(groupId, model.getParent().getArtifactId(), version);
+						this.parent = this.readPom(model.getParent().getGroupId(), model.getParent().getArtifactId(), model.getParent().getVersion());
 						if (this.model.getGroupId() == null && this.parent != null) {
 							this.model.setGroupId(this.parent.model.getGroupId());
 						}
@@ -428,122 +568,7 @@ public class MavenLauncher extends Launcher {
 			return versions;
 		}
 
-		class Version implements Comparable<Version> {
-			String version;
-			int major = -1;
-			int minor = -1;
-			int incremental = -1;
-			int build = -1;
-			String qualifier;
 
-			Version(String version) {
-				this.version = version;
-				int buildIndex = version.indexOf("-");
-				if (buildIndex != -1) {
-					String build = version.substring(buildIndex + 1);
-					try {
-						this.build = Integer.parseInt(build);
-					} catch (NumberFormatException e) {
-						this.qualifier = build;
-					}
-					version = version.substring(0, buildIndex);
-				}
-				String[] splitVersion = version.split("\\.");
-				try {
-					this.major = Integer.parseInt(splitVersion[0]);
-				} catch (NumberFormatException ignore) {
-				}
-				if (splitVersion.length > 1) {
-					try {
-						this.minor = Integer.parseInt(splitVersion[1]);
-					} catch (NumberFormatException ignore) {
-					}
-				}
-				if (splitVersion.length > 2) {
-					try {
-						this.incremental = Integer.parseInt(splitVersion[2]);
-					} catch (NumberFormatException ignore) {
-					}
-				}
-			}
-
-			@Override
-			public int compareTo(Version v) {
-				if (major < v.major) {
-					return -1;
-				}
-				if (major > v.major) {
-					return 1;
-				}
-				if (minor < v.minor) {
-					return -1;
-				}
-				if (minor > v.minor) {
-					return 1;
-				}
-				if (incremental < v.incremental) {
-					return -1;
-				}
-				if (incremental > v.incremental) {
-					return 1;
-				}
-				if (build < v.build) {
-					return -1;
-				}
-				if (build > v.build) {
-					return 1;
-				}
-				return 0;
-			}
-
-			@Override
-			public String toString() {
-				return version;
-			}
-		}
-
-		class RangeVersion {
-			String range;
-			boolean includeStart;
-			boolean includeEnd;
-			Version start;
-			Version end;
-
-			RangeVersion(String range) {
-				this.range = range;
-				includeStart = range.startsWith("[");
-				includeEnd = range.endsWith("]");
-				String[] splitRange = range.substring(1, range.length() - 1).split(",");
-				if (splitRange[0].length() == 0) {
-					start = new Version("0.0.0.0");
-				} else {
-					start = new Version(splitRange[0]);
-				}
-				if (splitRange.length == 1 || splitRange[1].length() == 0) {
-					end = new Version("99999999.9999999.999999.99999");
-				} else {
-					end = new Version(splitRange[1]);
-				}
-			}
-
-
-			boolean include(Version v) {
-				int compareToStart = v.compareTo(start);
-				int compareToEnd = v.compareTo(end);
-				if (compareToStart < 0 || compareToEnd > 0) {
-					return false;
-				}
-				if ((compareToStart == 0 && includeStart) || (compareToEnd == 0 && includeEnd)) {
-					return true;
-				}
-				return compareToStart > 0 && compareToEnd < 0;
-			}
-
-			@Override
-			public String toString() {
-				return range;
-			}
-		}
 		private String extractVersion(String groupId, String artifactId, String version) {
 			if (version == null) {
 				String depKey = groupId + ":" + artifactId;
@@ -569,12 +594,22 @@ public class MavenLauncher extends Launcher {
 		}
 
 		private InheritanceModel readPom(String groupId, String artifactId, String version) {
-			version = extractVersion(groupId, artifactId, version);
+			String folderVersion = extractVersion(groupId, artifactId, version);
 			groupId = groupId.replace(".", "/");
 			String fileName = artifactId + "-" + version;
-			Path depPath = Paths.get(m2RepositoryPath, groupId, artifactId, version, fileName + ".pom");
+			Path depPath = Paths.get(m2RepositoryPath, groupId, artifactId, folderVersion, fileName + ".pom");
 			try {
-				return readPOM(depPath.toString(), null);
+				InheritanceModel model = readPOM(depPath.toString(), null);
+				if (model == null) {
+					int buildIndex = version.indexOf("-");
+					if (buildIndex != -1) {
+						String build = version.substring(buildIndex + 1);
+						folderVersion = version.replace(build, "SNAPSHOT");
+					}
+					depPath = Paths.get(m2RepositoryPath, groupId, artifactId, folderVersion, fileName + ".pom");
+					model = readPOM(depPath.toString(), null);
+				}
+				return model;
 			} catch (Exception e) {
 				LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath.toString(), e);
 				return null;
@@ -599,7 +634,7 @@ public class MavenLauncher extends Launcher {
 				return null;
 			}
 			// ignore not transitive dependencies
-			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()) || "compile".equals(dependency.getScope()))) {
+			if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
 				LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
 				return null;
 			}
@@ -677,17 +712,23 @@ public class MavenLauncher extends Launcher {
 		 * @return the property value if key exists or null
 		 */
 		private String getProperty(String key) {
-			if ("project.version".equals(key)) {
+			if ("project.version".equals(key)  || "pom.version".equals(key)) {
 				if (model.getVersion() != null) {
 					return model.getVersion();
+				} else if (model.getParent() != null) {
+					return model.getParent().getVersion();
 				}
-			} else if ("project.groupId".equals(key)) {
+			} else if ("project.groupId".equals(key) || "pom.groupId".equals(key)) {
 				if (model.getGroupId() != null) {
 					return model.getGroupId();
+				} else if (model.getParent() != null) {
+					return model.getParent().getGroupId();
 				}
-			} else if ("project.artifactId".equals(key)) {
+			} else if ("project.artifactId".equals(key)  || "pom.artifactId".equals(key)) {
 				if (model.getArtifactId() != null) {
 					return model.getArtifactId();
+				} else if (model.getParent() != null) {
+					return model.getParent().getArtifactId();
 				}
 			}
 			String value = extractVariable(model.getProperties().getProperty(key));
