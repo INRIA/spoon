@@ -16,10 +16,22 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModelImpl;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
@@ -27,6 +39,7 @@ import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -39,9 +52,9 @@ import spoon.reflect.path.CtElementPathBuilder;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtIterator;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
@@ -52,7 +65,6 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
@@ -64,23 +76,14 @@ import spoon.support.visitor.equals.CloneHelper;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.support.visitor.replace.ReplacementVisitor;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.code.CtComment.CommentType.JAVADOC;
 import static spoon.reflect.path.CtRole.ANNOTATION;
 import static spoon.reflect.path.CtRole.COMMENT;
 import static spoon.reflect.path.CtRole.IS_IMPLICIT;
 import static spoon.reflect.path.CtRole.POSITION;
+
 
 /**
  * Contains the default implementation of most CtElement methods.
@@ -105,20 +108,20 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
 	}
 
-	Factory factory;
+	transient Factory factory;
 
-	protected CtElement parent;
+	protected transient  CtElement parent;
 
 	@MetamodelPropertyField(role = CtRole.ANNOTATION)
-	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
+transient 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.COMMENT)
-	private List<CtComment> comments = emptyList();
+private transient  List<CtComment> comments = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.POSITION)
 	SourcePosition position = SourcePosition.NOPOSITION;
 
-	Map<String, Object> metadata;
+	transient Map<String, Object> metadata;
 
 	public CtElementImpl() {
 		super();
@@ -573,3 +576,4 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return this::descendantIterator;
 	}
 }
+
