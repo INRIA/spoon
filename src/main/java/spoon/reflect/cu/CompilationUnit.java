@@ -27,7 +27,6 @@ import spoon.support.Internal;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -143,7 +142,8 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	int getTabCount(int index);
 
 	/**
-	 * Get the imports computed for this CU
+	 * Get the imports computed for this CU.
+	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
 	 * @return All the imports from the original source code
 	 */
 	@Experimental
@@ -165,9 +165,10 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 
 	/**
 	 * Set the imports of this CU
+	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
 	 * @param imports All the imports of the original source code
 	 */
-	@Internal
+	@Experimental
 	void setImports(Set<CtImport> imports);
 
 }
