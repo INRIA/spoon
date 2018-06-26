@@ -210,6 +210,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	private boolean isCompilationUnitReady;
 
+	private Set<CompilationUnit> importsComputed = new HashSet<>();
+
 	/**
 	 * Creates a new code generator visitor.
 	 */
@@ -299,6 +301,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected void exit(CtElement e) {
 	}
 
+	private void setSourceCompilationUnit(CompilationUnit compilationUnit) {
+		this.sourceCompilationUnit = compilationUnit;
+		if (!this.importsComputed.contains(compilationUnit)) {
+			this.sourceCompilationUnit.computeImports();
+			this.importsComputed.add(compilationUnit);
+		}
+	}
+
 	/**
 	 * The generic scan method for an element.
 	 */
@@ -308,13 +318,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				this.isCompilationUnitReady = true;
 			} else {
 				if (e.getPosition() != null && !(e.getPosition() instanceof NoSourcePosition)) {
-					this.sourceCompilationUnit = e.getPosition().getCompilationUnit();
-					this.sourceCompilationUnit.computeImports();
+					this.setSourceCompilationUnit(e.getPosition().getCompilationUnit());
 				} else {
 					CtType parent = e.getParent(CtType.class);
 					if (parent != null) {
-						this.sourceCompilationUnit = e.getFactory().CompilationUnit().getOrCreate(parent);
-						this.sourceCompilationUnit.computeImports();
+						this.setSourceCompilationUnit(e.getFactory().CompilationUnit().getOrCreate(parent));
 					}
 				}
 				this.isCompilationUnitReady = true;
@@ -1873,17 +1881,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public String printPackageInfo(CtPackage pack) {
 		reset();
-		this.sourceCompilationUnit = pack.getPosition().getCompilationUnit();
+		CompilationUnit compilationUnit = pack.getPosition().getCompilationUnit();
 
-		if (this.sourceCompilationUnit == null) {
-			this.sourceCompilationUnit = pack.getFactory().CompilationUnit().getOrCreate(pack);
+		if (compilationUnit != null) {
+			this.setSourceCompilationUnit(compilationUnit);
 		}
 
 		elementPrinterHelper.writeComment(pack);
 
-		if (this.sourceCompilationUnit != null) {
-			this.sourceCompilationUnit.computeImports();
-		}
 		elementPrinterHelper.writeAnnotations(pack);
 		if (!pack.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(pack.getQualifiedName());
@@ -1937,11 +1942,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.isCompilationUnitReady = true;
 		if (sourceCompilationUnit == null) {
 			CtType<?> mainType = types.get(0);
-			this.sourceCompilationUnit = mainType.getFactory().CompilationUnit().getOrCreate(mainType);
+			this.setSourceCompilationUnit(mainType.getFactory().CompilationUnit().getOrCreate(mainType));
 		} else {
-			this.sourceCompilationUnit = sourceCompilationUnit;
+			this.setSourceCompilationUnit(sourceCompilationUnit);
 		}
-		this.sourceCompilationUnit.computeImports();
 		this.writeHeader(types, sourceCompilationUnit.getImports());
 
 		for (CtType<?> t : types) {
