@@ -82,7 +82,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean copyResources = true;
 
-	private boolean enableComments = false;
+	private boolean enableComments = true;
 
 	private transient  Logger logger = Launcher.LOGGER;
 
@@ -104,7 +104,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Boolean noclasspath = null;
 
-	private transient  SpoonProgress spoonProgress = null;
+	private transient SpoonProgress spoonProgress = null;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file

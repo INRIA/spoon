@@ -1,11 +1,14 @@
 package spoon.test.module;
 
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackage;
@@ -15,6 +18,8 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +36,15 @@ import static org.junit.Assert.fail;
 
 public class TestModule {
 	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
+
+	private void checkJavaVersion() {
+		String property = System.getProperty("java.version");
+		if (property != null && !property.isEmpty()) {
+
+			// java 8 and less are versionning "1.X" where 9 and more are directly versioned "X"
+			Assume.assumeFalse(property.startsWith("1."));
+		}
+	}
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -261,20 +275,32 @@ public class TestModule {
 		assertSame(module, moduleNewName);
 	}
 
-	@Ignore
 	@Test
-	public void testSimpleModuleCanBeBuiltAndCompiled() {
-		// contract: Spoon is able to build and compile a model with a module
-
+	public void testSimpleModuleCanBeBuilt() {
+		checkJavaVersion();
+		// contract: Spoon is able to build a simple model with a module in full classpath
 		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setComplianceLevel(9);
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
 		launcher.run();
 
-		assertEquals(2, launcher.getModel().getAllModules().size());
-		assertEquals(1, launcher.getModel().getAllTypes().size());
+		CtModel model = launcher.getModel();
+
+		// unnamed module and module 'simple_module_with_code'
+		assertEquals(2, model.getAllModules().size());
+		assertEquals(1, model.getAllTypes().size());
+
+		CtClass simpleClass = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
+		assertEquals("SimpleClass", simpleClass.getSimpleName());
+
+		CtModule simpleModule = model.getElements(new NamedElementFilter<>(CtModule.class, "simple_module_with_code")).get(0);
+		assertNotNull(simpleModule);
+		assertEquals("simple_module_with_code", simpleModule.getSimpleName());
+
+		CtModule module = simpleClass.getParent(CtModule.class);
+		assertNotNull(module);
+		assertSame(simpleModule, module);
 	}
 
 	@Ignore
@@ -284,8 +310,6 @@ public class TestModule {
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/foo");
-		//launcher.addModulePath("./src/test/resources/spoon/test/module/code-multiple-modules/bar");
 		launcher.addInputResource(MODULE_RESOURCES_PATH+"/code-multiple-modules");
 		launcher.run();
 

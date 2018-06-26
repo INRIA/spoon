@@ -2,6 +2,7 @@ package spoon.test.javadoc;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
@@ -61,7 +62,7 @@ public class JavaDocTest {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setCommentEnabled(false);
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");
 		launcher.run();
 

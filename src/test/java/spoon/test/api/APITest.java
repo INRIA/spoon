@@ -7,6 +7,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -566,5 +568,26 @@ public class APITest {
 		assertFalse("Output dir should not exist: "+outputDir.getAbsolutePath(), outputDir.exists());
 	}
 
+	@Test
+	public void testGetOneLinerMainClassFromCU() {
+		// contract: when using Spoon with a snippet, we can still use properly CompilationUnit methods
+		CtClass<?> l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
+		CompilationUnit compilationUnit = l.getPosition().getCompilationUnit();
+
+		assertNotNull(compilationUnit);
+		CtType<?> mainType = compilationUnit.getMainType();
+		assertSame(l, mainType);
+	}
+
+	@Test
+	public void testLauncherDefaultValues() {
+		// contract: check default value for classpath and comments in Launcher
+
+		Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+
+		assertTrue(environment.getNoClasspath());
+		assertTrue(environment.isCommentsEnabled());
+	}
 
 }

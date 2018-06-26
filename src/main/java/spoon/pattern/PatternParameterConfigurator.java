@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -185,21 +185,37 @@ public class PatternParameterConfigurator {
 		return byType(type.getName());
 	}
 	/**
-	 * type identified by `typeQualifiedName` itself and all the references to that type are subject for substitution by current parameter
+	 * type identified by `typeQualifiedName` itself and all the references (with arbitrary actual type arguments)
+	 * to that type are subject for substitution by current parameter
 	 * @param typeQualifiedName a fully qualified name of to be substituted Class
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
 	public PatternParameterConfigurator byType(String typeQualifiedName) {
-		return byType(patternBuilder.getFactory().Type().createReference(typeQualifiedName));
+		ParameterInfo pi = getCurrentParameter();
+		//substitute all references with same qualified name (ignoring actual type arguments) to that type
+		queryModel().filterChildren((CtTypeReference<?> typeRef) -> typeRef.getQualifiedName().equals(typeQualifiedName))
+			.forEach((CtTypeReference<?> typeRef) -> {
+				addSubstitutionRequest(pi, typeRef);
+			});
+		/**
+		 * If Type itself is found part of model, then substitute it's simple name too
+		 */
+		CtType<?> type2 = queryModel().filterChildren((CtType<?> t) -> t.getQualifiedName().equals(typeQualifiedName)).first();
+		if (type2 != null) {
+			//Substitute name of template too
+			addSubstitutionRequest(pi, type2, CtRole.NAME);
+		}
+		return this;
 	}
 	/**
-	 * type referred by {@link CtTypeReference} `type` and all the references to that type are subject for substitution by current parameter
+	 * type referred by {@link CtTypeReference} `type` and all the references (with same actual type arguments)
+	 * to that type are subject for substitution by current parameter
 	 * @param type a fully qualified name of to be substituted Class
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
 	public PatternParameterConfigurator byType(CtTypeReference<?> type) {
 		ParameterInfo pi = getCurrentParameter();
-		//substitute all references to that type
+		//substitute all references (with same actual type arguments too) to that type
 		queryModel().filterChildren((CtTypeReference<?> typeRef) -> typeRef.equals(type))
 			.forEach((CtTypeReference<?> typeRef) -> {
 				addSubstitutionRequest(pi, typeRef);
@@ -223,8 +239,17 @@ public class PatternParameterConfigurator {
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
 	public PatternParameterConfigurator byLocalType(CtType<?> searchScope, String localTypeSimpleName) {
-		CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(searchScope, localTypeSimpleName);
+		byLocalType(searchScope, localTypeSimpleName, false);
+		return this;
+	}
+	PatternParameterConfigurator byLocalType(CtType<?> searchScope, String localTypeSimpleName, boolean optional) {
+		String nestedType = getLocalTypeRefBySimpleName(searchScope, localTypeSimpleName);
 		if (nestedType == null) {
+			//such type doesn't exist
+			if (optional) {
+				//no problem
+				return this;
+			}
 			throw new SpoonException("Template parameter " + localTypeSimpleName + " doesn't match to any local type");
 		}
 		//There is a local type with such name. Replace it
@@ -351,6 +376,7 @@ public class PatternParameterConfigurator {
 	 * 		Note these values may influence the way how pattern parameters are created.
 	 * 		This unclear and ambiguous technique was used in legacy templates
 	 * @return this to support fluent API
+	 * @deprecated since Spoon 7.0.0
 	 */
 	@Deprecated
 	public PatternParameterConfigurator byTemplateParameter(Map<String, Object> parameterValues) {
@@ -389,7 +415,7 @@ public class PatternParameterConfigurator {
 					/*
 					 * parameter with value type TypeReference or Class, identifies replacement of local type whose name is equal to parameter name
 					 */
-					CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
+					String nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
 					if (nestedType != null) {
 						//all references to nestedType has to be replaced
 						parameter(parameterName).byType(nestedType);
@@ -397,7 +423,7 @@ public class PatternParameterConfigurator {
 					//and replace the variable references by class access
 					parameter(parameterName).byVariable(paramField);
 				} else if (paramType.getQualifiedName().equals(String.class.getName())) {
-					CtTypeReference<?> nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
+					String nestedType = getLocalTypeRefBySimpleName(templateType, stringMarker);
 					if (nestedType != null) {
 						//There is a local type with such name. Replace it
 						parameter(parameterName).byType(nestedType);
@@ -495,6 +521,7 @@ public class PatternParameterConfigurator {
 	 *
 	 * @param parameterValues pattern parameter values or null if not known
 	 * @return this to support fluent API
+	 * @deprecated Since Spoon 7.0.0
 	 */
 	@Deprecated
 	public PatternParameterConfigurator byParameterValues(Map<String, Object> parameterValues) {
@@ -504,11 +531,10 @@ public class PatternParameterConfigurator {
 			parameterValues.forEach((paramName, paramValue) -> {
 				if (isSubstituted(paramName) == false) {
 					//and only these parameters whose name isn't already handled by explicit template parameters
-					if (paramValue instanceof CtTypeReference<?>) {
-						parameter(paramName)
-							.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
-							.byLocalType(templateType, paramName);
-					}
+					//replace types whose name fits to name of parameter
+					parameter(paramName)
+						.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
+						.byLocalType(templateType, paramName, true);
 					parameter(paramName)
 						.setConflictResolutionMode(ConflictResolutionMode.KEEP_OLD_NODE)
 						.bySubstring(paramName);

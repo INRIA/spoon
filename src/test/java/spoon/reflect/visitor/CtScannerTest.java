@@ -39,7 +39,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.processors.CheckScannerTestProcessor;
 
-import java.rmi.ServerError;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -262,9 +261,10 @@ public class CtScannerTest {
 		assertEquals(0, counter.nObject);
 		// this is a coarse-grain check to see if the scanner changes
 		// no more exec ref in paramref
-		assertEquals(3616, counter.nElement);
-		assertEquals(2396, counter.nEnter);
-		assertEquals(2396, counter.nExit);
+		// also takes into account the comments
+		assertEquals(3655, counter.nElement);
+		assertEquals(2435, counter.nEnter);
+		assertEquals(2435, counter.nExit);
 
 		// contract: all AST nodes which are part of Collection or Map are visited first by method "scan(Collection|Map)" and then by method "scan(CtElement)"
 		Counter counter2 = new Counter();

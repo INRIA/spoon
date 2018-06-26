@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -21,6 +21,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
@@ -147,7 +148,11 @@ public class CompilationUnitFactory extends SubFactory {
 				return cu;
 			}
 			cu = factory.Core().createCompilationUnit();
-			cu.setFile(new File(filePath));
+
+			if (!filePath.equals(VirtualFile.VIRTUAL_FILE_NAME)) {
+				cu.setFile(new File(filePath));
+			}
+
 			cachedCompilationUnits.put(filePath, cu);
 		}
 		return cu;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -30,15 +30,6 @@ import spoon.reflect.declaration.CtElement;
  * {@link spoon.compiler.Environment#getDefaultFileGenerator()}.
  */
 public interface FileGenerator<T extends CtElement> extends Processor<T> {
-
-	/**
-	 * Sets the root directory where files should be created.
-	 *
-	 * @deprecated Use {@link spoon.compiler.Environment#setSourceOutputDirectory(File)} instead
-	 */
-	@Deprecated
-	void setOutputDirectory(File directory);
-
 	/**
 	 * Gets the root directory where files are created.
 	 */

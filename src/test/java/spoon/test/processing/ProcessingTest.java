@@ -1,5 +1,7 @@
 package spoon.test.processing;
 
+import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.junit.Test;
 import spoon.Launcher;
@@ -18,11 +20,15 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.test.processing.processors.RenameProcessor;
 import spoon.test.processing.testclasses.CtClassProcessor;
 import spoon.test.processing.testclasses.CtInterfaceProcessor;
 import spoon.test.processing.testclasses.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -382,5 +388,30 @@ public class ProcessingTest {
 				assertFalse(interfaceProcessor.elements.contains(type));
 			}
 		}
+	}
+
+	@Test
+	public void testProcessDontMessWithImports() throws IOException {
+		// contract: after processing the imports are properly computed
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		File tempDir = new File("target/testprocess"); //Files.createTempDir();
+		launcher.setSourceOutputDirectory(tempDir);
+		launcher.addProcessor(new RenameProcessor("A", "D"));
+		launcher.run();
+
+		File Dfile = new File(tempDir, "spoon/test/processing/testclasses/test/sub/D.java");
+		assertTrue(Dfile.exists());
+
+		File Bfile = new File(tempDir, "spoon/test/processing/testclasses/test/B.java");
+		assertTrue(Bfile.exists());
+
+		String fileContent = StringUtils.join(Files.readLines(Bfile, Charset.defaultCharset()), "\n");
+
+		assertFalse(fileContent.contains("import spoon.test.processing.testclasses.test.sub.A;"));
+		assertTrue(fileContent.contains("import spoon.test.processing.testclasses.test.sub.D;"));
+		assertTrue(fileContent.contains("private D a = new D();"));
 	}
 }

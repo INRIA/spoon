@@ -6,12 +6,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
 
-import org.junit.rules.ExpectedException;
 import spoon.Launcher;
-import spoon.LauncherTest;
 import spoon.SpoonException;
 import spoon.compiler.SpoonFolder;
 import spoon.support.compiler.FileSystemFolder;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -220,17 +220,6 @@ public interface SpoonModelBuilder {
 	 * (see {@link #addTemplateSource(File)}).
 	 */
 	Set<File> getTemplateSources();
-
-	/**
-	 * Sets the output directory for source generated.
-	 *
-	 * @param outputDirectory
-	 * 		{@link File} for output directory.
-	 *
-	 * @deprecated Use {@link spoon.compiler.Environment#setSourceOutputDirectory(File)} instead.
-	 */
-	@Deprecated
-	void setSourceOutputDirectory(File outputDirectory);
 
 	/**
 	 * Gets the output directory of this compiler.

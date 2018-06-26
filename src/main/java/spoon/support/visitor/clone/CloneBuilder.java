@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -178,6 +178,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public <T> void visitCtLocalVariable(spoon.reflect.code.CtLocalVariable<T> e) {
 		((spoon.reflect.code.CtLocalVariable<T>) (other)).setSimpleName(e.getSimpleName());
 		((spoon.reflect.code.CtLocalVariable<T>) (other)).setModifiers(e.getModifiers());
+		((spoon.reflect.code.CtLocalVariable<T>) (other)).setInferred(e.isInferred());
 		super.visitCtLocalVariable(e);
 	}
 

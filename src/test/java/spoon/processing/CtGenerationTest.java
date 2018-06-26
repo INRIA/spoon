@@ -7,6 +7,7 @@ import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.generating.RoleHandlersGenerator;
+import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
@@ -173,7 +174,12 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/meta/impl/AbstractRoleHandler.java");
 		launcher.addProcessor(new RoleHandlersGenerator());
 		launcher.setOutputFilter(new RegexFilter("\\Q" + RoleHandlersGenerator.TARGET_PACKAGE + ".ModelRoleHandlers\\E.*"));
-		launcher.run();
+		try {
+			System.setProperty(MetamodelProperty.class.getName()+"-noRoleHandler", "true");
+			launcher.run();
+		} finally {
+			System.setProperty(MetamodelProperty.class.getName()+"-noRoleHandler", "false");
+		}
 
 		// cp ./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java ./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java
 		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");

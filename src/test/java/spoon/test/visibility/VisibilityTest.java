@@ -54,7 +54,6 @@ public class VisibilityTest {
 		final Factory factory = launcher.getFactory();
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/visibility/testclasses/"));
-		compiler.setSourceOutputDirectory(sourceOutputDir);
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 

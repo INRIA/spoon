@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -51,6 +51,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
+import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
 
 import java.io.ByteArrayInputStream;
@@ -203,6 +204,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter) {
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PRINT);
+		}
 		switch (outputType) {
 		case CLASSES:
 			generateProcessedSourceFilesUsingTypes(typeFilter);
@@ -211,6 +215,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			generateProcessedSourceFilesUsingCUs();
 			break;
 		case NO_OUTPUT:
+		}
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PRINT);
 		}
 	}
 
@@ -291,11 +298,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	@Override
-	public void setSourceOutputDirectory(File outputDirectory) {
-		this.getEnvironment().setSourceOutputDirectory(outputDirectory);
-	}
-
-	@Override
 	public File getSourceOutputDirectory() {
 		return this.factory.getEnvironment().getSourceOutputDirectory();
 	}
@@ -368,7 +370,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
 	 * @return true if the model has been built without errors
 	 *
-	 * @deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
 	 */
 	@Deprecated
 	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
@@ -402,7 +404,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param debugMessagePrefix Useful to help debugging
 	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
 	 * @return All compilationUnitDeclaration from JDT found in source folder
-	 * @deprecated The parameter buildOnlyOutdatedFiles is not used anymore.
+	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
 	 */
 	@Deprecated
 	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
@@ -457,9 +459,13 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().start(SpoonProgress.Process.MODEL);
+		}
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
+		int i = 0;
 		unitLoop:
 		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
@@ -471,17 +477,33 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 					}
 				}
 				unit.traverse(builder, unit.scope);
-
 				if (getFactory().getEnvironment().isCommentsEnabled()) {
 					new JDTCommentBuilder(unit, factory).build();
 				}
+				if (getEnvironment().getSpoonProgress() != null) {
+					getEnvironment().getSpoonProgress().step(SpoonProgress.Process.MODEL, new String(unit.getFileName()), ++i, unitList.size());
+				}
 			}
+		}
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().end(SpoonProgress.Process.MODEL);
 		}
 
 		// we need first to go through the whole model before getting the right reference for imports
 		if (getFactory().getEnvironment().isAutoImports()) {
+			if (getEnvironment().getSpoonProgress() != null) {
+				getEnvironment().getSpoonProgress().start(SpoonProgress.Process.IMPORT);
+			}
+
+			i = 0;
 			for (CompilationUnitDeclaration unit : units) {
 				new JDTImportBuilder(unit, factory).build();
+				if (getEnvironment().getSpoonProgress() != null) {
+					getEnvironment().getSpoonProgress().step(SpoonProgress.Process.IMPORT, new String(unit.getFileName()), ++i, units.length);
+				}
+			}
+			if (getEnvironment().getSpoonProgress() != null) {
+				getEnvironment().getSpoonProgress().end(SpoonProgress.Process.IMPORT);
 			}
 		}
 	}

@@ -250,6 +250,10 @@ switch(x) {
     // defines a local variable x
     int x = 0;
 
+
+    // local variable in Java 10
+    var x = 0;
+
 ```
 ### CtNewArray
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtNewArray.html)

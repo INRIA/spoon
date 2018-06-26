@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -21,11 +21,12 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
+import spoon.support.Experimental;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -139,15 +140,19 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	int getTabCount(int index);
 
 	/**
-	 * Get the imports computed for this CU
+	 * Get the imports computed for this CU.
+	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
 	 * @return All the imports from the original source code
 	 */
-	Collection<CtImport> getImports();
+	@Experimental
+	Set<CtImport> getImports();
 
 	/**
 	 * Set the imports of this CU
+	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
 	 * @param imports All the imports of the original source code
 	 */
-	void setImports(Collection<CtImport> imports);
+	@Experimental
+	void setImports(Set<CtImport> imports);
 
 }

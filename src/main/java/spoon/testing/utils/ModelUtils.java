@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -39,7 +39,9 @@ public final class ModelUtils {
 
 	/** Utility method for testing: creates the model of `packageName` from src/test/java and returns the CtType corresponding to `className` */
 	public static <T extends CtType<?>> T build(String packageName, String className) throws Exception {
-		SpoonModelBuilder comp = new Launcher().createCompiler();
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setCommentEnabled(false); // we don't want to parse the comments for equals
+		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + packageName.replace('.', '/') + "/" + className + ".java"));
 		comp.build();
 		return comp.getFactory().Package().get(packageName).getType(className);
@@ -61,7 +63,10 @@ public final class ModelUtils {
 
 	/** Utility method for testing: creates the model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
-		SpoonModelBuilder comp = new Launcher().createCompiler();
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setCommentEnabled(false);
+		SpoonModelBuilder comp = launcher.createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
 			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
 		}
@@ -97,9 +102,17 @@ public final class ModelUtils {
 		return comp.getFactory();
 	}
 
-	/** Builds and returns the Spoon model of `` classToBuild */
 	public static <T> CtType<T> buildClass(Class<T> classToBuild) throws Exception {
-		return build(classToBuild).Type().get(classToBuild);
+		return buildClass(classToBuild, true);
+	}
+
+	/** Builds and returns the Spoon model of `` classToBuild */
+	public static <T> CtType<T> buildClass(Class<T> classToBuild, boolean ensureFullclasspath) throws Exception {
+		if (ensureFullclasspath) {
+			return build(classToBuild).Type().get(classToBuild);
+		} else {
+			return buildNoClasspath(classToBuild).Type().get(classToBuild);
+		}
 	}
 
 	/** checks that the file `outputDirectoryFile` can be parsed with Spoon , given a compliance level. */

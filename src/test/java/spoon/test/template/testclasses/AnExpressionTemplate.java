@@ -1,6 +1,5 @@
 package spoon.test.template.testclasses;
 
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.template.ExpressionTemplate;
 import spoon.template.Local;

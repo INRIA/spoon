@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -170,6 +171,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (declaringType == null) {
 			return null;
 		}
+
+		if (declaringType instanceof CtArrayTypeReference && this.isConstructor()) {
+			CtConstructor constructor = this.getFactory().createInvisibleArrayConstructor();
+			constructor.setType(declaringType);
+			return constructor;
+		}
+
 		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 
@@ -177,10 +185,13 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (typeDecl == null) {
 			return null;
 		}
-		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
-		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME))) {
+		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]);
+		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), arrayParameters);
+		if ((method == null) && (typeDecl instanceof CtClass) && this.isConstructor()) {
 			try {
-				return (CtExecutable<T>) ((CtClass<?>) typeDecl).getConstructor(parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
+				CtClass<?> zeClass = (CtClass) typeDecl;
+				CtConstructor<?> constructor = zeClass.getConstructor(arrayParameters);
+				return (CtExecutable<T>) constructor;
 			} catch (ClassCastException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}

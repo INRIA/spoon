@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -24,10 +24,11 @@ import java.io.File;
 import java.io.InputStream;
 
 public class VirtualFile implements SpoonFile {
+	public static final String VIRTUAL_FILE_NAME = "virtual_file";
 
 	String content;
 
-	String name = "virtual_file";
+	String name = VIRTUAL_FILE_NAME;
 
 	public VirtualFile(String content) {
 		this.content = content;

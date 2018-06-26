@@ -37,6 +37,7 @@ public class NoClasspathTest {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.getEnvironment().setLevel("OFF");
+		spoon.getEnvironment().setCommentEnabled(false); // avoid getting the comments for the equals
 		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath/fields");
 		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
