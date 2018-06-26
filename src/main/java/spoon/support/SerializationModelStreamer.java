@@ -25,7 +25,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipException;
 
 import spoon.Launcher;
 import spoon.reflect.ModelStreamer;
@@ -46,7 +45,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 	}
 
 	public void save(Factory f, OutputStream out) throws IOException {
-		if (f.getEnvironment().getSerializationType() == SerializationType.STANDARD_GZIP) {
+		if (f.getEnvironment().getCompressionType() == CompressionType.GZIP) {
 			out = new GZIPOutputStream(out);
 		}
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
@@ -57,12 +56,25 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	public Factory load(InputStream in) throws IOException {
 		try {
-			try {
-				in = new GZIPInputStream(in);
-			} catch (ZipException e) {
-				Launcher.LOGGER.error("Given stream is not a GZIP or is corrupted. " + e.getMessage(), e);
+
+			BufferedInputStream buffered = new BufferedInputStream(in, 2);
+
+			// Check if its a GZIP
+			buffered.mark(2);
+			int[] buffer = new int[2];
+			buffer[0] = buffered.read();
+			buffer[1] = buffered.read();
+			buffered.reset();
+
+			int header = (buffer[1] << 8) | buffer[0];
+			if (header == GZIPInputStream.GZIP_MAGIC) {
+			        in = new GZIPInputStream(buffered);
 			}
-			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(in));
+			else {
+				in = buffered;
+			}
+
+			ObjectInputStream ois = new ObjectInputStream(in);
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory

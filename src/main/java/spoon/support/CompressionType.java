@@ -17,20 +17,12 @@
 package spoon.support;
 
 /**
- *	Different types of serialization.
+ *	Different types of compressions used, e.g. for serialization
+ *	@see SerializationModelStreamer
  */
-public enum SerializationType {
+public enum CompressionType {
 
-	STANDARD("Java"),
-	STANDARD_GZIP("Java, GZIP compression");
+	NONE,
+	GZIP;
 
-	private String description;
-
-	SerializationType(String description) {
-		this.description = description;
-	}
-
-	public String getDescription() {
-		return this.description;
-	}
 }

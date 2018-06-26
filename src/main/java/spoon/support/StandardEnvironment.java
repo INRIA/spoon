@@ -105,7 +105,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private SpoonProgress spoonProgress = null;
 
-	private SerializationType serializationType = SerializationType.STANDARD_GZIP;
+	private CompressionType compressionType = CompressionType.GZIP;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -592,12 +592,12 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public SerializationType getSerializationType() {
-		return serializationType;
+	public CompressionType getCompressionType() {
+		return compressionType;
 	}
 
 	@Override
-	public void setSerializationType(SerializationType serializationType) {
-		this.serializationType = serializationType;
+	public void setCompressionType(CompressionType serializationType) {
+		this.compressionType = serializationType;
 	}
 }
