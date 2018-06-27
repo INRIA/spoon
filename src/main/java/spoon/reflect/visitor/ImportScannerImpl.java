@@ -86,7 +86,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		scan(fieldRead.getAnnotations());
 		scan(fieldRead.getTypeCasts());
 		scan(fieldRead.getVariable());
-		//scan(fieldRead.getTarget());
+		scan(fieldRead.getTarget());
 		exit(fieldRead);
 	}
 

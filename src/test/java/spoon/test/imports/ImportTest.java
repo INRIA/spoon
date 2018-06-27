@@ -425,7 +425,7 @@ public class ImportTest {
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
-		assertEquals("Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+		assertEquals("CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
 
 	@Test
