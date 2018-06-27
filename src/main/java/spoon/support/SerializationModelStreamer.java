@@ -56,10 +56,9 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	public Factory load(InputStream in) throws IOException {
 		try {
-
 			BufferedInputStream buffered = new BufferedInputStream(in, 2);
 
-			// Check if its a GZIP
+			// Check if it is a GZIP
 			buffered.mark(2);
 			int[] buffer = new int[2];
 			buffer[0] = buffered.read();

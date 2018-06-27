@@ -39,15 +39,22 @@ public class ModelStreamerTest {
     }
 
 	@Test
-	public void testGZipCompression() throws IOException {
-
+	public void testDefaultCompressionType() throws IOException {
+		new SerializationModelStreamer().save(factory, new FileOutputStream(file));
+		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
+		compareFactoryModels(factory, factoryFromFile);
+	}
+	
+	@Test
+	public void testGZipCompressionType() throws IOException {
+		factory.getEnvironment().setCompressionType(CompressionType.GZIP);
 		new SerializationModelStreamer().save(factory, new FileOutputStream(file));
 		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
 		compareFactoryModels(factory, factoryFromFile);
 	}
 
 	@Test
-	public void testNoCompression() throws IOException {
+	public void testNoneCompressionType() throws IOException {
 		factory.getEnvironment().setCompressionType(CompressionType.NONE);
 		new SerializationModelStreamer().save(factory, new FileOutputStream(file));
 		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
