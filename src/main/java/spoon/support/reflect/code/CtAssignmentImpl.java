@@ -16,6 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
@@ -26,29 +30,27 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.ASSIGNED;
 import static spoon.reflect.path.CtRole.ASSIGNMENT;
 import static spoon.reflect.path.CtRole.CAST;
 import static spoon.reflect.path.CtRole.TYPE;
 
+
 public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements CtAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.ASSIGNED)
-	CtExpression<T> assigned;
+transient 	CtExpression<T> assigned;
 
 	@MetamodelPropertyField(role = CtRole.ASSIGNMENT)
-	CtExpression<A> assignment;
+transient 	CtExpression<A> assignment;
 
 	@MetamodelPropertyField(role = CtRole.TYPE)
-	CtTypeReference<T> type;
+transient 	CtTypeReference<T> type;
 
 	@MetamodelPropertyField(role = CtRole.CAST)
-	List<CtTypeReference<?>> typeCasts = emptyList();
+transient 	List<CtTypeReference<?>> typeCasts = emptyList();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -146,3 +148,4 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		return (CtAssignment<T, A>) super.clone();
 	}
 }
+
