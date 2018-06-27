@@ -45,6 +45,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
+import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -85,14 +86,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		scan(fieldRead.getAnnotations());
 		scan(fieldRead.getTypeCasts());
 		scan(fieldRead.getVariable());
-		scan(fieldRead.getTarget());
+		//scan(fieldRead.getTarget());
 		exit(fieldRead);
 	}
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
-		scan(reference.getDeclaringType());
 		if (reference.isStatic()) {
 			addFieldImport(reference);
 		} else {
@@ -102,8 +102,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public <T> void visitCtExecutableReference(
-			CtExecutableReference<T> reference) {
+	public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 		enter(reference);
 		if (reference.isStatic()) {
 			addMethodImport(reference);
@@ -122,34 +121,28 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				typeReference = reference;
 			} else {
 				typeReference = reference.getAccessType();
+			}
 
-				// in case of a reference to an inner class, the user might want to import it
-				// instead of importing the access type (which is the default behaviour)
-				// we cannot guess it: so we check against the existing imports
-				if (!typeReference.equals(reference)) {
-					for (CtImport ctImport : this.usedImport.keySet()) {
-						switch (ctImport.getImportKind()) {
-							case TYPE:
-								if (ctImport.getReference().getSimpleName().equals(reference.getSimpleName())) {
-									this.setImportUsed(ctImport);
-									super.visitCtTypeReference(reference);
-								}
-								break;
-
-							case ALL_TYPES:
-								String packQualifiedName = reference.getQualifiedName();
-								String typeImportQualifiedName = ctImport.getReference().getSimpleName();
-
-								packQualifiedName = packQualifiedName.substring(0, packQualifiedName.lastIndexOf("."));
-
-								if (packQualifiedName.equals(typeImportQualifiedName)) {
-									this.setImportUsed(ctImport);
-									super.visitCtTypeReference(reference);
-								}
-								break;
+			for (CtImport ctImport : this.usedImport.keySet()) {
+				switch (ctImport.getImportKind()) {
+					case TYPE:
+						if (ctImport.getReference().getSimpleName().equals(reference.getSimpleName())) {
+							this.setImportUsed(ctImport);
+							super.visitCtTypeReference(reference);
 						}
-					}
+						break;
 
+					case ALL_TYPES:
+						String packQualifiedName = reference.getQualifiedName();
+						String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
+						packQualifiedName = packQualifiedName.substring(0, packQualifiedName.lastIndexOf("."));
+
+						if (packQualifiedName.equals(typeImportQualifiedName)) {
+							this.setImportUsed(ctImport);
+							super.visitCtTypeReference(reference);
+						}
+						break;
 				}
 			}
 
@@ -590,10 +583,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				case ALL_STATIC_MEMBERS:
 					if (ref.getDeclaringType() != null) {
 						String typeMethodQualifiedName = ref.getDeclaringType().getQualifiedName();
-						String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+						CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
+						String importRefStr = importRef.getQualifiedName();
 
-						typeImportQualifiedName = typeImportQualifiedName.substring(0, typeImportQualifiedName.lastIndexOf("."));
-						if (typeMethodQualifiedName.equals(typeImportQualifiedName)) {
+						importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf("."));
+						if (typeMethodQualifiedName.equals(importRefStr)) {
 							return this.setImportUsed(ctImport);
 						}
 					}
@@ -622,6 +616,28 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
 			return false;
 		}
+		for (CtImport ctImport : this.usedImport.keySet()) {
+			switch (ctImport.getImportKind()) {
+				case FIELD:
+					CtFieldReference importFieldRef = (CtFieldReference) ctImport.getReference();
+					if (importFieldRef.getQualifiedName().equals(ref.getQualifiedName())) {
+						return this.setImportUsed(ctImport);
+					}
+					break;
+
+				case ALL_STATIC_MEMBERS:
+					String declType = ref.getDeclaringType().getQualifiedName();
+					CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
+					String importRefStr = importRef.getQualifiedName();
+
+					importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf("."));
+					if (declType.equals(importRefStr)) {
+						return this.setImportUsed(ctImport);
+					}
+			}
+		}
+
+
 		if (this.fieldImports.containsKey(ref.getSimpleName())) {
 			return isImportedInFieldImports(ref);
 		}
