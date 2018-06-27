@@ -828,6 +828,55 @@ public class PositionTest {
 		}
 	}
 	@Test
+	public void testCatchPosition() throws Exception {
+		//contract: check the catch position
+		final CtType<?> foo = ModelUtils.buildClass(CatchPosition.class);
+		String classContent = getClassContent(foo);
+		CtTry tryStatement = (CtTry) foo.getMethodsByName("method").get(0).getBody().getStatement(0);
+		{
+			CtCatch catcher = tryStatement.getCatchers().get(0);
+			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) catcher.getPosition();
+			assertEquals(" catch (final IOException e) {\n" + 
+					"			throw new RuntimeException(e);\n" + 
+					"		}", contentAtPosition(classContent, pos.getSourceStart(), pos.getSourceEnd()));
+			assertEquals("final", contentAtPosition(classContent, pos.getModifierSourceStart(), pos.getModifierSourceEnd()));
+			assertEquals(" IOException ", contentAtPosition(classContent, pos.getModifierSourceEnd() + 1, pos.getNameStart() - 1));
+			assertEquals("e", contentAtPosition(classContent, pos.getNameStart(), pos.getNameEnd()));
+			assertEquals("{\n" + 
+				"			throw new RuntimeException(e);\n" + 
+				"		}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
+		}
+		{
+			CtCatch catcher = tryStatement.getCatchers().get(1);
+			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) catcher.getPosition();
+			assertEquals(" /*1*/ catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {\n" + 
+					"			throw new RuntimeException(e);\n" + 
+					"		}", contentAtPosition(classContent, pos.getSourceStart(), pos.getSourceEnd()));
+			assertEquals("final @Deprecated", contentAtPosition(classContent, pos.getModifierSourceStart(), pos.getModifierSourceEnd()));
+			assertEquals("e", contentAtPosition(classContent, pos.getNameStart(), pos.getNameEnd()));
+			assertEquals("{\n" + 
+					"			throw new RuntimeException(e);\n" + 
+					"		}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
+		}
+		{
+			CtCatch catcher = tryStatement.getCatchers().get(2);
+			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) catcher.getPosition();
+			assertEquals(" catch /* ignore this catch */\n" + 
+					"		//and this catch too!\n" + 
+					"		( /**catch it ( */\n" + 
+					"				//catch (\n" + 
+					"				OutOfMemoryError|RuntimeException e) {\n" + 
+					"			throw new RuntimeException(e);\n" + 
+					"		}", contentAtPosition(classContent, pos.getSourceStart(), pos.getSourceEnd()));
+			assertEquals("", contentAtPosition(classContent, pos.getModifierSourceStart(), pos.getModifierSourceEnd()));
+			assertEquals("OutOfMemoryError|RuntimeException ", contentAtPosition(classContent, pos.getModifierSourceEnd() + 1, pos.getNameStart()-1));
+			assertEquals("e", contentAtPosition(classContent, pos.getNameStart(), pos.getNameEnd()));
+			assertEquals("{\n" + 
+					"			throw new RuntimeException(e);\n" + 
+					"		}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
+		}
+	}
+	@Test
 	public void testEnumConstructorCallComment() throws Exception {
 		//contract: check position the enum constructor call 
 		final CtType<?> foo = ModelUtils.buildClass(FooEnum.class);
