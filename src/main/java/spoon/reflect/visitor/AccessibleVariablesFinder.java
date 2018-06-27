@@ -23,6 +23,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -68,10 +69,12 @@ public class AccessibleVariablesFinder {
 			public void visitCtStatementList(CtStatementList e) {
 				for (int i = 0; i < e.getStatements().size(); i++) {
 					CtStatement ctStatement = e.getStatements().get(i);
-					if (ctStatement.getPosition().isValidPosition()
+
+					if (expression.getPosition().isValidPosition() && ctStatement.getPosition().isValidPosition()
 							&& ctStatement.getPosition().getSourceStart() > expression.getPosition().getSourceEnd()) {
 						break;
 					}
+
 					if (ctStatement instanceof CtVariable) {
 						variables.add((CtVariable) ctStatement);
 					}

@@ -84,7 +84,7 @@ public class EvalTest {
 
 		AccessibleVariablesFinder avf = new AccessibleVariablesFinder(b);
 		List<CtVariable> ctVariables = avf.find();
-		assertTrue(ctVariables.isEmpty());
+		assertEquals(1, ctVariables.size());
 	}
 
 	@Test
