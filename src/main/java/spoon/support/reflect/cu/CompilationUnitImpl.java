@@ -132,6 +132,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	public void addDeclaredType(CtType type) {
 		if (!this.declaredTypes.contains(type)) {
 			this.declaredTypes.add(type);
+			this.setIsChanged(true);
 		}
 	}
 
@@ -143,6 +144,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	@Override
 	public void setDeclaredModule(CtModule module) {
 		this.ctModule = module;
+		this.setIsChanged(true);
 	}
 
 	@Override
@@ -153,6 +155,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	@Override
 	public void setDeclaredPackage(CtPackage ctPackage) {
 		this.ctPackage = ctPackage;
+		this.setIsChanged(true);
 	}
 
 	public void setFile(File file) {

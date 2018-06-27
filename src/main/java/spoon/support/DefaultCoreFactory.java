@@ -715,6 +715,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	public CompilationUnit createCompilationUnit() {
 		CompilationUnit cu = new CompilationUnitImpl();
 		cu.setFactory(getMainFactory());
+		cu.setIsChanged(true);
 		return cu;
 	}
 

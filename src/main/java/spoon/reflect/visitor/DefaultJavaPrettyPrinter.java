@@ -1880,6 +1880,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		if (compilationUnit != null) {
 			this.setSourceCompilationUnit(compilationUnit);
+		} else {
+			this.setSourceCompilationUnit(pack.getFactory().CompilationUnit().getOrCreate(pack));
 		}
 
 		elementPrinterHelper.writeComment(pack);
