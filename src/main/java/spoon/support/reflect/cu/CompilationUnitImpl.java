@@ -58,11 +58,11 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	private ImportScanner importScanner;
 
-	private boolean areImportsComputed;
-
 	CtModule ctModule;
 
 	File file;
+
+	private boolean isChanged;
 
 	@Override
 	public UNIT_TYPE getUnitType() {
@@ -123,12 +123,16 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	@Override
 	public void setDeclaredTypes(List<CtType<?>> types) {
 		this.declaredTypes.clear();
-		this.declaredTypes.addAll(types);
+		for (CtType<?> type : types) {
+			this.addDeclaredType(type);
+		}
 	}
 
 	@Override
 	public void addDeclaredType(CtType type) {
-		this.declaredTypes.add(type);
+		if (!this.declaredTypes.contains(type)) {
+			this.declaredTypes.add(type);
+		}
 	}
 
 	@Override
@@ -273,36 +277,46 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	@Override
 	public void computeImports() {
-		this.getImportScanner().initWithImports(this.imports);
-		this.imports.clear();
-		switch (this.getUnitType()) {
-			case TYPE_DECLARATION:
-				for (CtType<?> ctType : this.getDeclaredTypes()) {
-					this.getImportScanner().computeImports(ctType);
-				}
-				break;
+		if (this.isChanged()) {
+			this.getImportScanner().initWithImports(this.imports);
+			this.imports.clear();
+			switch (this.getUnitType()) {
+				case TYPE_DECLARATION:
+					for (CtType<?> ctType : this.getDeclaredTypes()) {
+						this.getImportScanner().computeImports(ctType);
+					}
+					break;
 
-			case PACKAGE_DECLARATION:
-				for (CtAnnotation<? extends Annotation> ctAnnotation : this.getDeclaredPackage().getAnnotations()) {
-					this.getImportScanner().computeImports(ctAnnotation);
-				}
-				break;
+				case PACKAGE_DECLARATION:
+					for (CtAnnotation<? extends Annotation> ctAnnotation : this.getDeclaredPackage().getAnnotations()) {
+						this.getImportScanner().computeImports(ctAnnotation);
+					}
+					break;
+			}
+			this.imports.addAll(this.getImportScanner().getAllImports());
+			this.isChanged = false;
 		}
-		this.imports.addAll(this.getImportScanner().getAllImports());
-		this.areImportsComputed = true;
 	}
 
 	@Override
 	public boolean isImported(CtReference reference) {
-		if (!this.areImportsComputed) {
-			this.computeImports();
-		}
+		this.computeImports();
 		return this.getImportScanner().isImported(reference);
 	}
 
 	@Override
 	public void setImports(Set<CtImport> imports) {
 		this.imports = imports;
+	}
+
+	@Override
+	public boolean isChanged() {
+		return this.isChanged;
+	}
+
+	@Override
+	public void setIsChanged(boolean isChanged) {
+		this.isChanged = isChanged;
 	}
 
 	public Factory getFactory() {

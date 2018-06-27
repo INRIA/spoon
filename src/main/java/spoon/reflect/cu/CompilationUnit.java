@@ -171,4 +171,7 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	@Experimental
 	void setImports(Set<CtImport> imports);
 
+	boolean isChanged();
+
+	void setIsChanged(boolean isChanged);
 }

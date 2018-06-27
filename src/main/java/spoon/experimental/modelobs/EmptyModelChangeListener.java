@@ -16,7 +16,10 @@
  */
 package spoon.experimental.modelobs;
 
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 
@@ -33,6 +36,7 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 	@Override
 	public void onObjectUpdate(CtElement currentElement, CtRole role,
 			CtElement newValue, CtElement oldValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
@@ -43,16 +47,19 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 	@Override
 	public void onObjectDelete(CtElement currentElement, CtRole role,
 			CtElement oldValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public void onListAdd(CtElement currentElement, CtRole role, List field,
 			CtElement newValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public void onListAdd(CtElement currentElement, CtRole role, List field,
 			int index, CtElement newValue) {
+		this.changeCu(currentElement);
 	}
 
 
@@ -62,43 +69,51 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 		for (CtElement ctElement : oldValue) {
 			onListDelete(currentElement, role, field, field.indexOf(ctElement), ctElement);
 		}
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public void onListDelete(CtElement currentElement, CtRole role, List field,
 			int index, CtElement oldValue) {
+		this.changeCu(currentElement);
 	}
 
 
 	@Override
 	public void onListDeleteAll(CtElement currentElement, CtRole role,
 			List field, List oldValue) {
+		this.changeCu(currentElement);
 	}
 
 
 	@Override
 	public <K, V> void onMapAdd(CtElement currentElement, CtRole role,
 			Map<K, V> field, K key, CtElement newValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role,
 			Map<K, V> field, Map<K, V> oldValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public void onSetAdd(CtElement currentElement, CtRole role, Set field,
 			CtElement newValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public <T extends Enum> void onSetAdd(CtElement currentElement, CtRole role, Set field,
 			T newValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public void onSetDelete(CtElement currentElement, CtRole role, Set field,
 			CtElement oldValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
@@ -111,10 +126,24 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 	@Override
 	public void onSetDelete(CtElement currentElement, CtRole role, Set field,
 			ModifierKind oldValue) {
+		this.changeCu(currentElement);
 	}
 
 	@Override
 	public void onSetDeleteAll(CtElement currentElement, CtRole role, Set field,
 			Set oldValue) {
+		this.changeCu(currentElement);
+	}
+
+	private void changeCu(CtElement element) {
+		SourcePosition position = element.getPosition();
+		if (position != null && !(position instanceof NoSourcePosition)) {
+			position.getCompilationUnit().setIsChanged(true);
+		} else {
+			CtType parent = element.getParent(CtType.class);
+			if (parent != null) {
+				changeCu(parent);
+			}
+		}
 	}
 }

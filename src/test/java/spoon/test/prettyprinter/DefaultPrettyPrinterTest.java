@@ -267,10 +267,10 @@ public class DefaultPrettyPrinterTest {
 	@Test
 	public void importsFromMultipleTypesSupported() {
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/A.java");
-		launcher.run();
 		Environment env = launcher.getEnvironment();
 		env.setAutoImports(true);
+		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/A.java");
+		launcher.run();
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
 		printer.calculate(null, Arrays.asList(
 			launcher.getFactory().Class().get("spoon.test.prettyprinter.testclasses.A"),

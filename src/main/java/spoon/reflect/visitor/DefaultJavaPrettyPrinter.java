@@ -210,8 +210,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	private boolean isCompilationUnitReady;
 
-	private Set<CompilationUnit> importsComputed = new HashSet<>();
-
 	/**
 	 * Creates a new code generator visitor.
 	 */
@@ -303,10 +301,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private void setSourceCompilationUnit(CompilationUnit compilationUnit) {
 		this.sourceCompilationUnit = compilationUnit;
-		if (!this.importsComputed.contains(compilationUnit)) {
-			this.sourceCompilationUnit.computeImports();
-			this.importsComputed.add(compilationUnit);
-		}
+		this.sourceCompilationUnit.computeImports();
 	}
 
 	/**
@@ -1943,10 +1938,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (sourceCompilationUnit == null) {
 			CtType<?> mainType = types.get(0);
 			this.setSourceCompilationUnit(mainType.getFactory().CompilationUnit().getOrCreate(mainType));
+
+			for (int i = 1; i < types.size(); i++) {
+				this.sourceCompilationUnit.addDeclaredType(types.get(i));
+			}
+			Set<CtImport> imports = new HashSet<>();
+			for (CtType<?> type : types) {
+				SourcePosition position = type.getPosition();
+				if (position != null && !(position instanceof NoSourcePosition)) {
+					if (position.getCompilationUnit() != null) {
+						imports.addAll(position.getCompilationUnit().getImports());
+					}
+				}
+			}
+			this.sourceCompilationUnit.setImports(imports);
+			this.sourceCompilationUnit.setIsChanged(true);
+
 		} else {
 			this.setSourceCompilationUnit(sourceCompilationUnit);
 		}
-		this.writeHeader(types, sourceCompilationUnit.getImports());
+
+		this.sourceCompilationUnit.computeImports();
+		this.writeHeader(types, this.sourceCompilationUnit.getImports());
 
 		for (CtType<?> t : types) {
 			scan(t);
