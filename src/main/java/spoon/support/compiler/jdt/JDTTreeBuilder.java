@@ -937,6 +937,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(CastExpression castExpression, BlockScope scope) {
 		CastInfo ci = new CastInfo();
+		//the 8 bits from 21 to 28 represents number of enclosing brackets
 		ci.nrOfBrackets = ((castExpression.bits >>> 21) & 0xF);
 		ci.typeRef = this.references.buildTypeReference(castExpression.type, scope, true);
 		context.casts.add(ci);
