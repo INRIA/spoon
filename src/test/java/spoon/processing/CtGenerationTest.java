@@ -1,5 +1,7 @@
 package spoon.processing;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import spoon.Launcher;
@@ -24,10 +26,23 @@ import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class CtGenerationTest {
+	private String oldLineSeparator;
+
+	@Before
+	public void setup() {
+		this.oldLineSeparator = System.getProperty("line.separator", "\n");
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that.
+		System.setProperty("line.separator", "\n");
+	}
+
+	@After
+	public void teardown() {
+		System.setProperty("line.separator", this.oldLineSeparator);
+	}
+
+
 	@Test
 	public void testGenerateReplacementVisitor() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(false);
 		launcher.getEnvironment().setNoClasspath(true);
@@ -70,8 +85,6 @@ public class CtGenerationTest {
 	@Test
 	public void testGenerateCtBiScanner() throws Exception {
 		// contract: generates the biscanner that is used for equality checking
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -100,8 +113,6 @@ public class CtGenerationTest {
 
 	@Test
 	public void testGenerateCloneVisitor() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
 		// contract: generates CloneBuilder.java and CloneBuilder.java
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -150,8 +161,6 @@ public class CtGenerationTest {
 	
 	@Test
 	public void testGenerateRoleHandler() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);

@@ -347,8 +347,6 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfPrivateClass() throws Exception {
-		System.setProperty("line.separator", "\n");
-		
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
@@ -383,8 +381,6 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfStaticMethod() throws Exception {
-		System.setProperty("line.separator", "\n");
-
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
