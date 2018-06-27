@@ -6,6 +6,7 @@ import spoon.Launcher;
 import spoon.reflect.code.*;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -771,7 +772,7 @@ public class PositionTest {
 	
 	@Test
 	public void testExpressions() throws Exception {
-		//contract: the expression parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
+		//contract: the expression including type casts has correct position which includes all brackets too
 		final CtType<?> foo = ModelUtils.buildClass(Expressions.class);
 		String classContent = getClassContent(foo);
 		List<CtInvocation<?>> statements = (List) foo.getMethodsByName("method").get(0).getBody().getStatements();
@@ -791,5 +792,28 @@ public class PositionTest {
 				"				)", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
 		assertEquals("(List<?>) null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
 		assertEquals("(List<List<Map<String,Integer>>>) null", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
+		
+		//contract: check the position of expression without type casts
+		{
+			CtExpression<?> expr = statements.get(1).getArguments().get(0);
+			assertEquals("(\"x\")", contentAtPosition(classContent, expr.getPosition()));
+			//if there is no expression, then it uses primitive SourcePosition
+			assertFalse(expr.getPosition() instanceof CompoundSourcePosition);
+		}
+
+		//contract: check the position of children of the most complex expression
+		{
+			CtExpression<?> expr = statements.get(3).getArguments().get(0);
+			assertEquals("( String) ( (Serializable)(( (null ))))", contentAtPosition(classContent, expr.getPosition()));
+			//if there is type cast in expression, then it uses CompoundSourcePosition
+			assertTrue(expr.getPosition() instanceof CompoundSourcePosition);
+			
+			//contract: check the position of type casts
+			assertEquals("( String)", contentAtPosition(classContent, expr.getTypeCasts().get(0).getPosition()));
+			assertEquals("(Serializable)", contentAtPosition(classContent, expr.getTypeCasts().get(1).getPosition()));
+			//contract: check the position of expression "name"
+			CompoundSourcePosition compoundSourcePosition = (CompoundSourcePosition) expr.getPosition();
+			assertEquals("(( (null )))", contentAtPosition(classContent, compoundSourcePosition.getNameStart(), compoundSourcePosition.getNameEnd()));
+		}
 	}
 }
