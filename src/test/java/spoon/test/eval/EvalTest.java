@@ -9,11 +9,18 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.visitor.AccessibleVariablesFinder;
+import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -63,6 +70,21 @@ public class EvalTest {
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testScanAPartiallyEvaluatedElement() throws Exception {
+		// contract: once partially evaluated a code element should be still visitable to find variables
+		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+
+		AccessibleVariablesFinder avf = new AccessibleVariablesFinder(b);
+		List<CtVariable> ctVariables = avf.find();
+		assertTrue(ctVariables.isEmpty());
 	}
 
 	@Test
