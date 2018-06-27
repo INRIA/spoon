@@ -438,7 +438,8 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		for (CtImport ctImport : this.usedImport.keySet()) {
 			switch (ctImport.getImportKind()) {
 				case TYPE:
-					if (ctImport.getReference().equals(ref)) {
+					CtTypeReference typeReference = (CtTypeReference) ctImport.getReference();
+					if (typeReference.getQualifiedName().equals(ref.getQualifiedName())) {
 						return this.setImportUsed(ctImport);
 					}
 					break;
