@@ -150,6 +150,7 @@ public class MetamodelTest {
 		implementations.addInputResource("src/main/java/spoon/support/reflect");
 		implementations.buildModel();
 
+		String nl = System.getProperty("line.separator");
 		Factory factory = implementations.getFactory();
 
 		CtTypeReference metamodelPropertyField = factory.Type().get(MetamodelPropertyField.class).getReference();
@@ -179,8 +180,8 @@ public class MetamodelTest {
 			}
 		}).stream().map(x -> {result.add(x.toString()); return x;}).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
 
-		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)\nboolean isShadow;"));
-		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)\nspoon.reflect.reference.CtTypeReference<T> type;"));
+		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)"+nl+"boolean isShadow;"));
+		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)"+nl+"spoon.reflect.reference.CtTypeReference<T> type;"));
 		assertTrue(result.size()>100);
 		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
 

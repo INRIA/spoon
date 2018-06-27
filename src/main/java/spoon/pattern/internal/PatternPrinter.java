@@ -63,7 +63,7 @@ public class PatternPrinter extends DefaultGenerator {
 		List<Object> generated = generateTargets(node, (ImmutableMap) null, null);
 		StringBuilder sb = new StringBuilder();
 		for (Object ele : generated) {
-			sb.append(ele.toString()).append('\n');
+			sb.append(ele.toString()).append(System.getProperty("line.separator"));
 		}
 		return sb.toString();
 	}
