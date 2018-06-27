@@ -1228,7 +1228,7 @@ public class PatternTest {
 				"         */"+nl+"" +
 				"        statements();"+nl+"" +
 				"    }"+nl+"" +
-				"}"+nl+"", p.toString());
+				"}"+nl, p.toString());
 	}
 
 	@Test
