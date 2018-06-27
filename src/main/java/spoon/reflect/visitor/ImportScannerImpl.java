@@ -86,7 +86,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		scan(fieldRead.getAnnotations());
 		scan(fieldRead.getTypeCasts());
 		scan(fieldRead.getVariable());
-		scan(fieldRead.getTarget());
+
+		if (!this.isImported(fieldRead.getVariable())) {
+			scan(fieldRead.getTarget());
+		}
+
 		exit(fieldRead);
 	}
 
@@ -661,12 +665,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					break;
 
 				case ALL_STATIC_MEMBERS:
-					String typeFieldQualifiedName = ref.getQualifiedName();
-					String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+					String typeFieldQualifiedName = ref.getDeclaringType().getQualifiedName();
+					CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
+					String importRefStr = importRef.getQualifiedName();
 
-					typeFieldQualifiedName = typeFieldQualifiedName.substring(0, typeFieldQualifiedName.lastIndexOf("."));
-					typeImportQualifiedName = typeImportQualifiedName.substring(0, typeImportQualifiedName.lastIndexOf("."));
-					if (typeFieldQualifiedName.equals(typeImportQualifiedName)) {
+					importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf("."));
+					if (typeFieldQualifiedName.equals(importRefStr)) {
 						return this.setImportUsed(ctImport);
 					}
 					break;

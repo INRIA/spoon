@@ -296,7 +296,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 					}
 					break;
 			}
-			this.imports.addAll(this.getImportScanner().getAllImports());
+			this.setImports(this.getImportScanner().getAllImports());
 			this.isChanged = false;
 		}
 	}
@@ -309,7 +309,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	@Override
 	public void setImports(Set<CtImport> imports) {
-		this.imports = imports;
+		this.imports.clear();
+		this.imports.addAll(imports);
 	}
 
 	@Override
