@@ -19,7 +19,9 @@ package spoon.reflect.cu.position;
 import spoon.reflect.cu.SourcePosition;
 
 /**
- * This interface represents the position of a program element in a source file.
+ * This interface represents the position of a program element like an expression in a source file.
+ * The start/end represents range of whole program element including children element and comments
+ * The nameStart/End represents range of core part of program element.
  */
 public interface CompoundSourcePosition extends SourcePosition {
 
