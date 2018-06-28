@@ -136,10 +136,10 @@ public class CloneTest {
 				assertNull(previousTarget);
 			}
 		}
-		
+
 		CloneListener cl = new CloneListener();
 		CtType<?> cloneTarget = cl.clone(cloneSource);
-		
+
 		cloneSource.filterChildren(null).forEach(sourceElement -> {
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
@@ -161,7 +161,7 @@ public class CloneTest {
 		CtMethod<?> method = klass.getMethodsByName("c").get(0);
 		List<CtExecutableReference> elements = method.getElements(new TypeFilter<>(CtExecutableReference.class));
 		CtExecutableReference methodRef = elements.get(0);
-		
+
 		// the lookup is OK in the original node
 		assertSame(method, methodRef.getDeclaration());
 
