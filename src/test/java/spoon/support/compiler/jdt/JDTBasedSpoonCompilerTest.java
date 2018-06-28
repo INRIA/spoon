@@ -10,26 +10,26 @@ import static org.junit.Assert.assertTrue;
 
 public class JDTBasedSpoonCompilerTest {
 
-    @Test
-    public void testOrderCompilationUnits() {
-        final Launcher launcher = new Launcher();
-        launcher.addInputResource("./src/main/java");
-        JDTBasedSpoonCompiler spoonCompiler = (JDTBasedSpoonCompiler) launcher.getModelBuilder();
+	@Test
+	public void testOrderCompilationUnits() {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/main/java");
+		JDTBasedSpoonCompiler spoonCompiler = (JDTBasedSpoonCompiler) launcher.getModelBuilder();
 
-        CompilationUnitDeclaration[] compilationUnitDeclarations = spoonCompiler.buildUnits(null, spoonCompiler.sources, spoonCompiler.getSourceClasspath(), "");
+		CompilationUnitDeclaration[] compilationUnitDeclarations = spoonCompiler.buildUnits(null, spoonCompiler.sources, spoonCompiler.getSourceClasspath(), "");
 
-        List<CompilationUnitDeclaration> compilationUnitDeclarations1 = spoonCompiler.sortCompilationUnits(compilationUnitDeclarations);
+		List<CompilationUnitDeclaration> compilationUnitDeclarations1 = spoonCompiler.sortCompilationUnits(compilationUnitDeclarations);
 
-        if (System.getenv("SPOON_SEED_CU_COMPARATOR") == null || System.getenv("SPOON_SEED_CU_COMPARATOR").equals("0")) {
-            for (int i = 1; i < compilationUnitDeclarations1.size(); i++) {
-                CompilationUnitDeclaration cu0 = compilationUnitDeclarations1.get(i-1);
-                CompilationUnitDeclaration cu1 = compilationUnitDeclarations1.get(i);
+		if (System.getenv("SPOON_SEED_CU_COMPARATOR") == null || System.getenv("SPOON_SEED_CU_COMPARATOR").equals("0")) {
+			for (int i = 1; i < compilationUnitDeclarations1.size(); i++) {
+				CompilationUnitDeclaration cu0 = compilationUnitDeclarations1.get(i - 1);
+				CompilationUnitDeclaration cu1 = compilationUnitDeclarations1.get(i);
 
-                String filenameCu0 = new String(cu0.getFileName());
-                String filenameCu1 = new String(cu1.getFileName());
+				String filenameCu0 = new String(cu0.getFileName());
+				String filenameCu1 = new String(cu1.getFileName());
 
-                assertTrue("There is a sort error: " + filenameCu0 + " should be before " + filenameCu1, filenameCu0.compareTo(filenameCu1) < 0);
-            }
-        }
-    }
+				assertTrue("There is a sort error: " + filenameCu0 + " should be before " + filenameCu1, filenameCu0.compareTo(filenameCu1) < 0);
+			}
+		}
+	}
 }

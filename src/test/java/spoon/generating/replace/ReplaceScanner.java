@@ -84,7 +84,7 @@ public class ReplaceScanner extends CtScanner {
 			CtInvocation inv = element.getBody().getStatement(i);
 			List<CtExpression<?>> invArgs = new ArrayList<>(inv.getArguments());
 			if (invArgs.size() <= 1) {
-				throw new RuntimeException("You forget the role argument in line "+i+" of method "+element.getSimpleName()+" from "+element.getDeclaringType().getQualifiedName());
+				throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
 			}
 			//remove role argument
 			invArgs.remove(0);
