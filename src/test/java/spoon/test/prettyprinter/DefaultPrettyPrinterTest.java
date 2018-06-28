@@ -303,4 +303,19 @@ public class DefaultPrettyPrinterTest {
 		assertFalse(launcher.getModel().getAllTypes().isEmpty());
 	}
 
+	@Test
+	public void testIssue2130() {
+		// contract: ...
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		//launcher.addInputResource("./src/test/resources/noclasspath/LogService.java");
+		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/LogService.java");
+		launcher.setSourceOutputDirectory("./target/issue2130");
+		launcher.getEnvironment().setComplianceLevel(8);
+		launcher.run();
+
+		assertFalse(launcher.getModel().getAllTypes().isEmpty());
+	}
+
 }
