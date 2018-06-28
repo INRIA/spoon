@@ -7,16 +7,21 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
@@ -28,6 +33,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -305,17 +311,26 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void testIssue2130() {
-		// contract: ...
+		// contract: varargs parameters should always be CtArrayTypeReference
 
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		//launcher.addInputResource("./src/test/resources/noclasspath/LogService.java");
-		launcher.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/LogService.java");
+		launcher.addInputResource("./src/test/resources/noclasspath/LogService.java");
 		launcher.setSourceOutputDirectory("./target/issue2130");
 		launcher.getEnvironment().setComplianceLevel(8);
-		launcher.run();
+		CtModel model = launcher.buildModel();
 
-		assertFalse(launcher.getModel().getAllTypes().isEmpty());
+		CtMethod<?> machin = model.getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "machin")).get(0);
+		assertEquals("machin", machin.getSimpleName());
+
+		List<CtParameter<?>> parameters = machin.getParameters();
+		assertEquals(1, parameters.size());
+
+		CtParameter<?> ctParameter = parameters.get(0);
+		assertTrue(ctParameter.isVarArgs());
+		assertTrue(ctParameter.getType() instanceof CtArrayTypeReference);
+
+		//launcher.prettyprint();
 	}
 
 }
