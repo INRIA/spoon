@@ -1330,7 +1330,7 @@ public class AnnotationTest {
 		spoon.buildModel();
 
 		CtType type = spoon.getFactory().Type().get(RepeatedArrays.class);
-		CtMethod firstMethod = (CtMethod)type.getMethodsByName("method").get(0);
+		CtMethod firstMethod = (CtMethod) type.getMethodsByName("method").get(0);
 		List<CtAnnotation<?>> annotations = firstMethod.getAnnotations();
 
 		assertEquals(2, annotations.size());
