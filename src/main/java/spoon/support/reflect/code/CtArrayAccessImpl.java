@@ -19,14 +19,13 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.path.CtRole;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
 
 public abstract class CtArrayAccessImpl<T, V extends CtExpression<?>> extends CtTargetedExpressionImpl<T, V> implements CtArrayAccess<T, V> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = EXPRESSION)
 	private CtExpression<Integer> expression;
 
 	@Override

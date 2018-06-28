@@ -23,7 +23,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -42,11 +41,11 @@ import static spoon.reflect.path.CtRole.LABEL;
 public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtConstructorCall<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.ARGUMENT)
+	@MetamodelPropertyField(role = ARGUMENT)
 	List<CtExpression<?>> arguments = emptyList();
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
+	@MetamodelPropertyField(role = EXECUTABLE_REF)
 	CtExecutableReference<T> executable;
-	@MetamodelPropertyField(role = CtRole.LABEL)
+	@MetamodelPropertyField(role = LABEL)
 	String label;
 
 	@Override

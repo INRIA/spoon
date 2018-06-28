@@ -27,7 +27,6 @@ import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -45,7 +44,7 @@ import java.util.Set;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypeParameter {
-	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
+	@MetamodelPropertyField(role = SUPER_TYPE)
 	CtTypeReference<?> superClass;
 
 	@Override

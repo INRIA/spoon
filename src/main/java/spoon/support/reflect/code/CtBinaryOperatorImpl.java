@@ -20,7 +20,6 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.LEFT_OPERAND;
@@ -30,13 +29,13 @@ import static spoon.reflect.path.CtRole.RIGHT_OPERAND;
 public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBinaryOperator<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.OPERATOR_KIND)
+	@MetamodelPropertyField(role = OPERATOR_KIND)
 	BinaryOperatorKind kind;
 
-	@MetamodelPropertyField(role = CtRole.LEFT_OPERAND)
+	@MetamodelPropertyField(role = LEFT_OPERAND)
 	CtExpression<?> leftHandOperand;
 
-	@MetamodelPropertyField(role = CtRole.RIGHT_OPERAND)
+	@MetamodelPropertyField(role = RIGHT_OPERAND)
 	CtExpression<?> rightHandOperand;
 
 	@Override
