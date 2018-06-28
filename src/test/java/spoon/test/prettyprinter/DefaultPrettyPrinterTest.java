@@ -330,7 +330,7 @@ public class DefaultPrettyPrinterTest {
 		assertTrue(ctParameter.isVarArgs());
 		assertTrue(ctParameter.getType() instanceof CtArrayTypeReference);
 
-		//launcher.prettyprint();
+		launcher.prettyprint();
 	}
 
 }

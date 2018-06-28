@@ -858,7 +858,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.buildTypeReference(arrayTypeReference, scope));
+		CtTypeReference<Object> objectCtTypeReference = references.buildTypeReference(arrayTypeReference, scope);
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(objectCtTypeReference);
 		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
 			((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
 		}
