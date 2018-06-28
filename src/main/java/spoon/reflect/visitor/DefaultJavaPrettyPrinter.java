@@ -310,7 +310,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
      *
      * @deprecated We intend to remove those method from the DJPP and to compute imports directly in CompilationUnit in the future.
 	 */
-    @Deprecated
+	@Deprecated
 	public void computeImports(CtElement element) {
 		if (env.isAutoImports()) {
 			importsContext.computeImports(element);
