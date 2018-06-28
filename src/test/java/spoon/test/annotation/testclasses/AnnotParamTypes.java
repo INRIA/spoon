@@ -10,7 +10,7 @@ public @interface AnnotParamTypes {
 
 	Class<?> clazz();
 	Class<?>[] classes();
-	
+
 	boolean b();
 	byte byt();
 	char c();
@@ -18,7 +18,7 @@ public @interface AnnotParamTypes {
 	long l();
 	float f();
 	double d();
-	
+
 	AnnotParamTypeEnum e();
 	InnerAnnot ia();
 }
