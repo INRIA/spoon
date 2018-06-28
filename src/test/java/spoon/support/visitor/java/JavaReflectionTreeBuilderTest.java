@@ -245,7 +245,7 @@ public class JavaReflectionTreeBuilderTest {
 						if (type.isInterface()) {
 							if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT)
 									.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT))) {
-								//it is OK, that type memebers of interface differs in public abstract modifiers
+								//it is OK, that type members of interface differs in public abstract modifiers
 								return;
 							}
 						} else if (type.isEnum()) {
@@ -254,7 +254,7 @@ public class JavaReflectionTreeBuilderTest {
 								if (type2.isInterface()) {
 									if (removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/)
 											.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/))) {
-										//it is OK, that type memebers of interface differs in public abstract modifiers
+										//it is OK, that type members of interface differs in public abstract modifiers
 										return;
 									}
 								}
