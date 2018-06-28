@@ -124,7 +124,13 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				typeReference = reference.getAccessType();
 			}
 
-			this.isAlreadyInUsedImport(typeReference);
+			if (!typeReference.equals(reference)) {
+				if (this.isAlreadyInUsedImport(reference)) {
+					super.visitCtTypeReference(reference);
+					return;
+				}
+			}
+
 
 			if (!this.isTypeInCollision(typeReference, false)) {
 				this.addClassImport(typeReference);
