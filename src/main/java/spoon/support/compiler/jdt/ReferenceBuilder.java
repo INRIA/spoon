@@ -627,7 +627,7 @@ public class ReferenceBuilder {
 		} else if (Character.isUpperCase(name.charAt(0))) {
 			if (name.endsWith("[]")) {
 				main = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
-				name = name.substring(0, name.length()-2);
+				name = name.substring(0, name.length() - 2);
 				((CtArrayTypeReference<T>) main).setComponentType(this.getTypeReference(name));
 			} else {
 				main = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
