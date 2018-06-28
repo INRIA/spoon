@@ -161,6 +161,7 @@ public class FieldTest {
 
 	@Test
 	public void getFQNofFieldReference() {
+		// contract: when a reference field origin cannot be determined a call to its qualified name returns an explicit value
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/fields/Toto.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -170,6 +171,6 @@ public class FieldTest {
 
 		CtFieldReference fieldReference = elements.get(0);
 		assertEquals("field", fieldReference.getSimpleName());
-		assertEquals("Machin#field", fieldReference.getQualifiedName());
+		assertEquals("<unknown>#field", fieldReference.getQualifiedName());
 	}
 }
