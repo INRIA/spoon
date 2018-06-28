@@ -6,14 +6,14 @@ public class Foo {
 	}
 
 	public @interface OuterAnnotation {
-		public MiddleAnnotation[] value();
+		MiddleAnnotation[] value();
 	}
 
 	public @interface MiddleAnnotation {
-		public InnerAnnotation value();
+		InnerAnnotation value();
 	}
 
 	public @interface InnerAnnotation {
-		public String value();
+		String value();
 	}
 }
