@@ -34,6 +34,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -42,9 +43,12 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -73,7 +77,6 @@ public class PositionBuilder {
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
 		char[] contents = cr.compilationUnit.getContents();
 
-
 		int sourceStart = node.sourceStart;
 		int sourceEnd = node.sourceEnd;
 		if ((node instanceof Annotation)) {
@@ -89,6 +92,55 @@ public class PositionBuilder {
 
 			if (statementEnd > 0) {
 				sourceEnd = statementEnd;
+			}
+
+			if (this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast && e instanceof CtTypeReference) {
+				//the type cast reference must be enclosed with brackets
+				int declarationSourceStart = sourceStart;
+				int declarationSourceEnd = sourceEnd;
+				declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
+				if (contents[declarationSourceStart] != '(') {
+					throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of cast expression on offset: " + declarationSourceStart);
+				}
+				declarationSourceEnd = findNextNonWhitespace(contents, contents.length, declarationSourceEnd + 1);
+				if (contents[declarationSourceEnd] != ')') {
+					throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of cast expression on offset: " + declarationSourceEnd);
+				}
+				return cf.createCompoundSourcePosition(cu,
+						sourceStart, sourceEnd,
+						declarationSourceStart, declarationSourceEnd,
+						lineSeparatorPositions);
+			}
+
+			List<CastInfo> casts = this.jdtTreeBuilder.getContextBuilder().casts;
+
+			if (casts.size() > 0 && e instanceof CtExpression) {
+				int declarationSourceStart = sourceStart;
+				int declarationSourceEnd = sourceEnd;
+				SourcePosition pos = casts.get(0).typeRef.getPosition();
+				if (pos.isValidPosition()) {
+					declarationSourceStart = pos.getSourceStart();
+					int nrOfBrackets = getNrOfFirstCastExpressionBrackets();
+					while (nrOfBrackets > 0) {
+						declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
+						if (contents[declarationSourceStart] != '(') {
+							throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
+						}
+						nrOfBrackets--;
+					}
+					nrOfBrackets = getNrOfCastExpressionBrackets();
+					while (nrOfBrackets > 0) {
+						declarationSourceEnd = findNextNonWhitespace(contents, contents.length, declarationSourceEnd + 1);
+						if (contents[declarationSourceEnd] != ')') {
+							throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of expression on offset: " + declarationSourceEnd);
+						}
+						nrOfBrackets--;
+					}
+				}
+				return cf.createCompoundSourcePosition(cu,
+						sourceStart, sourceEnd,
+						declarationSourceStart, declarationSourceEnd,
+						lineSeparatorPositions);
 			}
 		}
 
@@ -285,6 +337,17 @@ public class PositionBuilder {
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
+	private int getNrOfFirstCastExpressionBrackets() {
+		return this.jdtTreeBuilder.getContextBuilder().casts.get(0).nrOfBrackets;
+	}
+
+	private int getNrOfCastExpressionBrackets() {
+		int nr = 0;
+		for (CastInfo castInfo : this.jdtTreeBuilder.getContextBuilder().casts) {
+			nr += castInfo.nrOfBrackets;
+		}
+		return nr;
+	}
 
 	private void setModifiersPosition(CtModifiable e, int start, int end) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();

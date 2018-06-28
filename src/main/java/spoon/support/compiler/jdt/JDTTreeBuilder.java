@@ -152,6 +152,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.HashSet;
@@ -935,7 +936,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CastExpression castExpression, BlockScope scope) {
-		context.casts.add(this.references.buildTypeReference(castExpression.type, scope));
+		CastInfo ci = new CastInfo();
+		//the 8 bits from 21 to 28 represents number of enclosing brackets
+		ci.nrOfBrackets = ((castExpression.bits >>> 21) & 0xF);
+		ci.typeRef = this.references.buildTypeReference(castExpression.type, scope, true);
+		context.casts.add(ci);
 		castExpression.expression.traverse(this, scope);
 		return false;
 	}
