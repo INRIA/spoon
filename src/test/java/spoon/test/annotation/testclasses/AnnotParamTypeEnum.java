@@ -1,8 +1,7 @@
 package spoon.test.annotation.testclasses;
 
 @TestAnnotation
-public enum AnnotParamTypeEnum
-{
+public enum AnnotParamTypeEnum {
 	@TestAnnotation
 	R,
 
