@@ -5,9 +5,9 @@ package spoon.test.annotation.testclasses;
  */
 public class AnnotationIntrospection {
 
-    @TestAnnotation
-    public void m() throws NoSuchMethodException {
-        TestAnnotation annotation = getClass().getMethod("m").getAnnotation(TestAnnotation.class);
-        annotation.equals(null);
-    }
+	@TestAnnotation
+	public void m() throws NoSuchMethodException {
+		TestAnnotation annotation = getClass().getMethod("m").getAnnotation(TestAnnotation.class);
+		annotation.equals(null);
+	}
 }
