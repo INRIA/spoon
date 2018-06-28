@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,8 +66,7 @@ public class MavenLauncherTest {
 		// in order to work on CI, make sure the version is the same in Spoon pom.xml
 		// else, we cannot guarantee that the dependency is present in .m2 cache and the test might fail
 
-		String fileSep = File.separator;
-		String lookingFor = "junit" + fileSep + "junit" + fileSep + "4.12" + fileSep + "junit-4.12.jar";
+		String lookingFor = Paths.get("junit","junit", "4.12", "junit-4.12.jar").toString();
 
 		boolean findIt = false;
 		for (String s : classpath) {
