@@ -16,17 +16,17 @@
  */
 package spoon.reflect.cu.position;
 
+import spoon.reflect.cu.SourcePosition;
+
 /**
- * This interface represents the position of a Method or Type declaration in a source file.
+ * This interface represents the position of a program element like an expression in a source file.
  * The start/end represents range of whole program element including children element and comments
- * The nameStart/End represents range of name of program element.
- * The modifierSourceStart/End represents range of modifiers and annotations of the element
- * The bodyStart/End represents range of body of the element
+ * The nameStart/End represents range of core part of program element.
  */
-public interface BodyHolderSourcePosition extends DeclarationSourcePosition {
+public interface CompoundSourcePosition extends SourcePosition {
 
-	int getBodyStart();
+	int getNameStart();
 
-	int getBodyEnd();
+	int getNameEnd();
 
 }
