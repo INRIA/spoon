@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ComputeClasspathTest {
 
-	private final static String TEST_CLASSPATH =
+	private static final String TEST_CLASSPATH =
 			"./src/test/java/spoon/test/annotation/" +
 					File.pathSeparator +
 					"./src/test/java/spoon/test/api/" +
