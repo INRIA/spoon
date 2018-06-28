@@ -85,14 +85,13 @@ public class LauncherTest {
 		System.setProperty("user.dir", path.toFile().getAbsolutePath());
 
 		// path should exist, otherwise it would crash on a filenotfoundexception before showing the bug
-		launcher.addInputResource(oldUserDir+"/src/test/java/spoon/LauncherTest.java");
+		launcher.addInputResource(oldUserDir + "/src/test/java/spoon/LauncherTest.java");
 		try {
 			launcher.buildModel();
 		} finally {
 			System.setProperty("user.dir", oldUserDir);
 		}
 	}
-
 
 	@Test
 	public void testLLauncherBuildModelReturnAModel() throws Exception {
@@ -105,5 +104,4 @@ public class LauncherTest {
 
 		assertEquals(2, model.getAllTypes().size());
 	}
-
 }

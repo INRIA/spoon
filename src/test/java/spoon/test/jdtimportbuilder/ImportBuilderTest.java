@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class ImportBuilderTest {
 
+    private final static String nl = System.getProperty("line.separator");
+
     @Test
     public void testWithNoImport() {
         // contract: when the source code has no import, none is created when building model
@@ -54,7 +56,7 @@ public class ImportBuilderTest {
         assertEquals(1, imports.size());
 
         CtImport ref = imports.iterator().next();
-        assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;\n", ref.toString());
+        assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;"+nl, ref.toString());
         assertTrue(ref.getReference() instanceof CtTypeReference);
 
         CtTypeReference refType = (CtTypeReference)ref.getReference();
@@ -152,7 +154,7 @@ public class ImportBuilderTest {
         assertEquals(1, imports.size());
         CtImport ctImport = imports.iterator().next();
         assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-        assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;\n", ctImport.toString());
+        assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;"+nl, ctImport.toString());
     }
 
     @Test
@@ -173,7 +175,7 @@ public class ImportBuilderTest {
         CtImport ctImport = imports.iterator().next();
 
         assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-        assertEquals("import static jdtimportbuilder.itf.DumbItf.*;\n", ctImport.toString());
+        assertEquals("import static jdtimportbuilder.itf.DumbItf.*;"+nl, ctImport.toString());
     }
 
 }

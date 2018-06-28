@@ -14,19 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.cu.position;
+package spoon.support;
 
 /**
- * This interface represents the position of a Method or Type declaration in a source file.
- * The start/end represents range of whole program element including children element and comments
- * The nameStart/End represents range of name of program element.
- * The modifierSourceStart/End represents range of modifiers and annotations of the element
- * The bodyStart/End represents range of body of the element
+ *	Different types of compressions used, e.g. for serialization
+ *	@see SerializationModelStreamer
  */
-public interface BodyHolderSourcePosition extends DeclarationSourcePosition {
+public enum CompressionType {
 
-	int getBodyStart();
-
-	int getBodyEnd();
+	NONE,
+	GZIP;
 
 }
