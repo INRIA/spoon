@@ -20,7 +20,6 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-import spoon.reflect.path.CtRole;
 
 import java.util.Set;
 
@@ -95,13 +94,13 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 *
 	 * @return the found type or null
 	 */
-	@PropertyGetter(role = CtRole.CONTAINED_TYPE)
+	@PropertyGetter(role = CONTAINED_TYPE)
 	<T extends CtType<?>> T getType(String simpleName);
 
 	/**
 	 * Returns the set of the top-level types in this package.
 	 */
-	@PropertyGetter(role = CtRole.CONTAINED_TYPE)
+	@PropertyGetter(role = CONTAINED_TYPE)
 	Set<CtType<?>> getTypes();
 
 	/**
