@@ -23,7 +23,6 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -33,9 +32,11 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import spoon.SpoonException;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -47,7 +48,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -157,17 +157,42 @@ public class PositionBuilder {
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
 
+			if (e instanceof CtCatch) {
+				/* compiler delivers wrong declarationSourceStart in case like: */
+				//... catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {
+				/*
+				 * the declarationSourceStart should be after the '(', but sometime it is before
+				 * So we have to compute correct offset here
+				 */
+				CtTry tryStatement = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtTry.class);
+				int endOfTry = tryStatement.getPosition().getSourceEnd();
+				//offset of the bracket before catch
+				int lastBracket = getEndOfLastTryBlock(tryStatement, 0);
+				int catchStart = findNextNonWhitespace(contents, endOfTry, lastBracket + 1);
+				if (CATCH.equals(new String(contents, catchStart, CATCH.length())) == false) {
+					throw new SpoonException("Unexpected beginning of catch statement on offset: " + catchStart);
+				}
+				int bracketStart = findNextNonWhitespace(contents, endOfTry, catchStart + CATCH.length());
+				if (bracketStart < 0) {
+					throw new SpoonException("Unexpected end of file instead of \'(\' after catch statement on offset: " + catchStart);
+				}
+				if (contents[bracketStart] != '(') {
+					throw new SpoonException("Unexpected character " + contents[bracketStart] + " instead of \'(\' after catch statement on offset: " + bracketStart);
+				}
+				declarationSourceStart = bracketStart + 1;
+			}
+
 			int length = variableDeclaration.toString().length();
-			if (length > (declarationSourceEnd - declarationSourceStart)) {
+			if (length > (declarationSourceEnd + 1 - declarationSourceStart)) {
 				declarationSourceEnd = declarationSourceStart + length - 1;
 			}
 
 			if (modifiersSourceStart <= 0) {
-				modifiersSourceStart = declarationSourceStart;
+				modifiersSourceStart = findNextNonWhitespace(contents, contents.length, declarationSourceStart);
 			}
 			int modifiersSourceEnd;
 			if (variableDeclaration.type != null) {
-				modifiersSourceEnd = variableDeclaration.type.sourceStart() - 2;
+				modifiersSourceEnd = findPrevNonWhitespace(contents, declarationSourceStart, variableDeclaration.type.sourceStart() - 1);
 			} else if (variableDeclaration instanceof Initializer) {
 				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart - 1;
 			} else {
@@ -296,30 +321,9 @@ public class PositionBuilder {
 						lineSeparatorPositions);
 			}
 		} else if (e instanceof CtCatchVariable) {
-			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
-			ASTPair catchNode = iterator.next();
-			while (!(catchNode.node instanceof Argument)) {
-				catchNode = iterator.next();
-			}
-			DeclarationSourcePosition argumentPosition = (DeclarationSourcePosition) buildPositionCtElement(e, catchNode.node);
-
-			int variableNameStart = findNextNonWhitespace(contents, argumentPosition.getSourceEnd(), sourceEnd + 1);
-			int variableNameEnd = argumentPosition.getSourceEnd();
-
-			int modifierStart = sourceStart;
-			int modifierEnd = sourceStart - 1;
-			if (!getModifiers(((Argument) catchNode.node).modifiers, false, false).isEmpty()) {
-				modifierStart = argumentPosition.getModifierSourceStart();
-				modifierEnd = argumentPosition.getModifierSourceEnd();
-
-				sourceStart = modifierStart;
-			}
-			sourceEnd = argumentPosition.getSourceEnd();
-			return cf.createDeclarationSourcePosition(cu,
-					variableNameStart, variableNameEnd,
-					modifierStart, modifierEnd,
-					sourceStart, sourceEnd,
-					lineSeparatorPositions);
+			CtCatch catcher = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtCatch.class);
+			//the CtCatch has the position of CTCatchVariable now, so take it
+			return (DeclarationSourcePosition) catcher.getPosition();
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
@@ -337,6 +341,43 @@ public class PositionBuilder {
 			setModifiersPosition((CtModifiable) e, sourceStart, sourceEnd);
 		}
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+	}
+
+	private static final String CATCH = "catch";
+
+	void buildPosition(CtCatch catcher) {
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		char[] contents = cr.compilationUnit.getContents();
+
+		CtTry tryElement = catcher.getParent(CtTry.class);
+		//offset after last bracket before catch
+		int declarationStart = getEndOfLastTryBlock(tryElement, 1) + 1;
+		DeclarationSourcePosition oldCatcherPos = (DeclarationSourcePosition) catcher.getPosition();
+		int bodyStart = catcher.getBody().getPosition().getSourceStart();
+		int bodyEnd = catcher.getBody().getPosition().getSourceEnd();
+		catcher.setPosition(catcher.getFactory().Core().createBodyHolderSourcePosition(
+				tryElement.getPosition().getCompilationUnit(),
+				oldCatcherPos.getNameStart(), oldCatcherPos.getNameEnd(),
+				oldCatcherPos.getModifierSourceStart(), oldCatcherPos.getModifierSourceEnd(),
+				declarationStart, bodyEnd,
+				bodyStart, bodyEnd,
+				lineSeparatorPositions));
+	}
+
+	/**
+	 * @param tryElement
+	 * @param negIdx 0 - last block, 1 - one before last block, ...
+	 * @return
+	 */
+	private int getEndOfLastTryBlock(CtTry tryElement, int negIdx) {
+		//offset where we can start to search for catch
+		int endOfLastBlock = tryElement.getBody().getPosition().getSourceEnd();
+		if (tryElement.getCatchers().size() > negIdx) {
+			CtCatch prevCatcher = tryElement.getCatchers().get(tryElement.getCatchers().size() - 1 - negIdx);
+			endOfLastBlock = prevCatcher.getPosition().getSourceEnd();
+		}
+		return endOfLastBlock;
 	}
 
 	private int getNrOfFirstCastExpressionBrackets() {
