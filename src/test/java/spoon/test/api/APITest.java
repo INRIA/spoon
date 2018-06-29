@@ -590,4 +590,19 @@ public class APITest {
 		assertTrue(environment.isCommentsEnabled());
 	}
 
+	@Test
+	public void testBuildModelReturnThatTheModelIsBuilt() {
+		// contract: when a model is built, a flag is available in the environment to say it's built
+		// and this flag won't change if something is modified in the model afterwards
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+
+		assertFalse(launcher.getEnvironment().isBuildModelFinished());
+		launcher.buildModel();
+		assertTrue(launcher.getEnvironment().isBuildModelFinished());
+
+		launcher.getFactory().createClass("my.fake.Klass");
+		assertTrue(launcher.getEnvironment().isBuildModelFinished());
+	}
+
 }

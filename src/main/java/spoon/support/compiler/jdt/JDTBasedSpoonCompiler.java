@@ -138,6 +138,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		templateSuccess = buildTemplates(builder);
 		factory.getEnvironment().debugMessage("built in " + (System.currentTimeMillis() - t) + " ms");
 		checkModel();
+		factory.getEnvironment().setBuildModelIsFinished(true);
 		return srcSuccess && templateSuccess;
 	}
 

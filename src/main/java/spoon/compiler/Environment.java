@@ -18,6 +18,7 @@ package spoon.compiler;
 
 import org.apache.log4j.Level;
 import spoon.OutputType;
+import spoon.SpoonModelBuilder;
 import spoon.experimental.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
@@ -413,4 +414,16 @@ public interface Environment {
 	 * Set the type of serialization to be used by default
 	 */
 	void setCompressionType(CompressionType serializationType);
+
+	/**
+	 * If true, the first build model has been finished.
+	 * This value should be false at the beginning of {@link SpoonModelBuilder#build()} and true at this end.
+	 */
+	boolean isBuildModelFinished();
+
+	/**
+	 * Set to true to flag that a build model has been finished.
+	 * By default, this method is called with a true value at the end of {@link SpoonModelBuilder#build()}
+	 */
+	void setBuildModelIsFinished(boolean buildModelFinished);
 }
