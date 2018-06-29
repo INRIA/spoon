@@ -14,18 +14,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.context;
+package spoon.support.modelobs.action;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+import spoon.support.modelobs.context.Context;
 
 import java.util.Collection;
+import java.util.Map;
 
-public abstract class CollectionContext<T extends Collection<?>> extends Context {
-	protected final T copyOfTheCollection;
+/**
+ * defines the delete all action.
+ * @param <T>
+ */
+public class DeleteAllAction<T> extends DeleteAction<T> {
 
-	public CollectionContext(CtElement element, CtRole role, T copyOfTheCollection) {
-		super(element, role);
-		this.copyOfTheCollection = copyOfTheCollection;
+	public DeleteAllAction(Context context, Collection oldValue) {
+		super(context, (T) oldValue);
+	}
+
+	public DeleteAllAction(Context context, Map oldValue) {
+		super(context, (T) oldValue);
 	}
 }

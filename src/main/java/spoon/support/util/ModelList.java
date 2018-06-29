@@ -25,7 +25,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import spoon.SpoonException;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.reflect.declaration.CtElementImpl;

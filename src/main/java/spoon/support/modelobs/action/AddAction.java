@@ -14,14 +14,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.context;
+package spoon.support.modelobs.action;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+import spoon.support.modelobs.context.Context;
 
-public class ObjectContext extends Context {
+public class AddAction<T>  extends Action {
+	private T newValue;
 
-	public ObjectContext(CtElement ctElement, CtRole role) {
-		super(ctElement, role);
+	public AddAction(Context context, T newValue) {
+		super(context);
+		this.newValue = newValue;
+	}
+
+	@Override
+	public T getChangedValue() {
+		return getNewValue();
+	}
+
+	/**
+	 * Returns the added element
+	 * @return the new element
+	 */
+	public T getNewValue() {
+		return newValue;
 	}
 }

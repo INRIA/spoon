@@ -14,32 +14,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.action;
+package spoon.support.modelobs.context;
 
-import spoon.experimental.modelobs.context.Context;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
-/**
- * defines an action change on the model
- */
-public abstract class Action {
-	private final Context context;
+import java.util.Set;
 
-	Action(Context context) {
-		this.context = context;
-	}
+public class SetContext extends CollectionContext<Set<?>> {
 
-	/**
-	 * get the changed value of the model
-	 * @param <T> the type of the element
-	 * @return the changed value
-	 */
-	public abstract <T> T getChangedValue();
-
-	/**
-	 * get the context of the change
-	 * @return the context
-	 */
-	public Context getContext() {
-		return context;
+	public SetContext(CtElement element, CtRole role, Set<?> original) {
+		super(element, role, original);
 	}
 }

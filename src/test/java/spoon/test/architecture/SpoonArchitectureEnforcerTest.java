@@ -337,9 +337,9 @@ public class SpoonArchitectureEnforcerTest {
 		Set<String> officialPackages = new TreeSet<>();
 		officialPackages.add("spoon.compiler.builder");
 		officialPackages.add("spoon.compiler");
-		officialPackages.add("spoon.experimental.modelobs.action");
-		officialPackages.add("spoon.experimental.modelobs.context");
-		officialPackages.add("spoon.experimental.modelobs");
+		officialPackages.add("spoon.support.modelobs.action");
+		officialPackages.add("spoon.support.modelobs.context");
+		officialPackages.add("spoon.support.modelobs");
 		officialPackages.add("spoon.experimental");
 		officialPackages.add("spoon.legacy");
 		officialPackages.add("spoon.metamodel");
