@@ -9,6 +9,7 @@ import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -54,6 +55,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -588,6 +590,24 @@ public class APITest {
 
 		assertTrue(environment.getNoClasspath());
 		assertTrue(environment.isCommentsEnabled());
+	}
+
+	@Test
+	public void testProcessModelsTwice() {
+		// contract: when processing twice the launcher with different arguments, a new model should be created
+		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[]{"-i", "./src/test/java/spoon/test/api/testclasses/Bar.java"});
+		CtModel model = launcher.buildModel();
+
+		Collection<CtType<?>> allTypes = model.getAllTypes();
+		assertEquals(1, allTypes.size());
+
+		launcher.setArgs(new String[] {"-i", "./src/test/java/spoon/test/arrays/testclasses/Foo.java"});
+		CtModel model2 = launcher.buildModel();
+
+		assertNotSame(model, model2);
+		allTypes = model2.getAllTypes();
+		assertEquals(1, allTypes.size());
 	}
 
 }
