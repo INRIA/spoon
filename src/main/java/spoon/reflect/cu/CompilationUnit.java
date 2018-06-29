@@ -23,7 +23,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.support.Experimental;
-import spoon.support.Internal;
 
 import java.io.File;
 import java.io.Serializable;

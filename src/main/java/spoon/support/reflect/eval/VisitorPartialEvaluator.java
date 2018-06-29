@@ -22,7 +22,6 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
@@ -58,6 +57,8 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.support.util.RtHelper;
 
 import java.util.List;
+
+import static spoon.reflect.code.CtComment.CommentType.INLINE;
 
 /**
  *
@@ -360,7 +361,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				if (ifElement.getElseStatement() != null) {
 					setResult(evaluate(ifElement.getElseStatement()));
 				} else {
-					setResult(ifElement.getFactory().Code().createComment("if removed", CtComment.CommentType.INLINE));
+					setResult(ifElement.getFactory().Code().createComment("if removed", INLINE));
 				}
 			}
 		} else {

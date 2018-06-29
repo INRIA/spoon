@@ -39,7 +39,6 @@ import spoon.reflect.path.CtElementPathBuilder;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
