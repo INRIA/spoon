@@ -147,8 +147,9 @@ public class CtModelImpl implements CtModel {
 	}
 
 	@Override
-	public void setBuildModelIsFinished(boolean buildModelFinished) {
+	public <T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished) {
 		this.buildModelFinished = buildModelFinished;
+		return (T) this;
 	}
 
 }

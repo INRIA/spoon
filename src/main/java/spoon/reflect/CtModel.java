@@ -69,6 +69,6 @@ public interface CtModel extends Serializable, CtQueryable {
 	 * Set to true to flag that a build model has been finished.
 	 * By default, this method is called with a true value at the end of {@link SpoonModelBuilder#build()}
 	 */
-	void setBuildModelIsFinished(boolean buildModelFinished);
+	<T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished);
 
 }

@@ -439,10 +439,6 @@ public class Launcher implements SpoonAPI {
 	protected void processArguments() {
 		jsapActualArgs = getArguments();
 
-		if (factory.getModel() != null) {
-			factory.getModel().setBuildModelIsFinished(false);
-		}
-
 		Environment environment = factory.getEnvironment();
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
