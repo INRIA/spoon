@@ -441,6 +441,7 @@ public class Launcher implements SpoonAPI {
 
 		Environment environment = factory.getEnvironment();
 		// environment initialization
+		environment.setBuildModelIsFinished(false); // in case the launcher has already been used once
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
