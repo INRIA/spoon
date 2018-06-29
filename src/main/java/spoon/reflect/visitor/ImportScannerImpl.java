@@ -490,6 +490,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				case ALL_TYPES:
 					if (isTypeRef) {
 						String typeImportQualifiedName = ctImport.getReference().getSimpleName();
+
 						if (refQualifiedName.equals(typeImportQualifiedName)) {
 							return this.setImportUsed(ctImport);
 						}
