@@ -173,7 +173,13 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public String getQualifiedName() {
-		return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
+		CtTypeReference<?> declaringType = getDeclaringType();
+
+		if (declaringType != null) {
+			return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
+		} else {
+			return  "<unknown>#" + getSimpleName();
+		}
 	}
 
 	@Override
