@@ -5,5 +5,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface AnnotArray {
-	public Class<?>[] value() default { };
+	Class<?>[] value() default { };
 }

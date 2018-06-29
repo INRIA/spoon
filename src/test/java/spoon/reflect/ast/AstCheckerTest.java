@@ -40,7 +40,7 @@ public class AstCheckerTest {
 		launcher.buildModel();
 
 		final Factory factory = launcher.getFactory();
-		final List<CtTypeReference<?>> collectionsRef = Arrays.asList( //
+		final List<CtTypeReference<?>> collectionsRef = Arrays.asList(
 				factory.Type().createReference(Collection.class), //
 				factory.Type().createReference(List.class), //
 				factory.Type().createReference(Set.class), //
@@ -113,7 +113,7 @@ public class AstCheckerTest {
 		private int count;
 
 		PushStackInIntercessionChecker() {
-			notCandidates = Arrays.asList( //
+			notCandidates = Arrays.asList(
 					"CtTypeImpl#setTypeMembers", //
 					"CtStatementListImpl#setPosition", //
 					"CtElementImpl#setFactory", //
@@ -219,25 +219,29 @@ public class AstCheckerTest {
 					&& body.getStatements().get(0) instanceof CtThrow //
 					&& "UnsupportedOperationException".equals(((CtThrow) body.getStatements().get(0)).getThrownExpression().getType().getSimpleName());
 		}
-		
+
 		private boolean isCallModelCollection(CtBlock<?> body) {
-			
+
 			return body.filterChildren((CtInvocation inv) -> {
 				if (inv.getTarget() instanceof CtFieldRead) {
 					CtFieldRead fielRead = (CtFieldRead) inv.getTarget();
-					if (isModelCollection(fielRead.getType()) ) {
+					if (isModelCollection(fielRead.getType())) {
 						//it is invocation on ModelList, ModelSet or ModelMap
 						return true;
 					}
-				} 
+				}
 				return false;
 			}).first() != null;
 		}
-		
+
 		private boolean isModelCollection(CtTypeReference<?> typeRef) {
 			Factory f = typeRef.getFactory();
-			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) return true;
-			if (typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class))) return true;
+			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) {
+				return true;
+			}
+			if (typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class))) {
+				return true;
+			}
 //			if (typeRef.isSubtypeOf(f.Type().createReference(ModelMap.class))) return true;
 			return false;
 		}

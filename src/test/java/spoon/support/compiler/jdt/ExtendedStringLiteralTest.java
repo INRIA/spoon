@@ -55,7 +55,7 @@ public class ExtendedStringLiteralTest {
 		};
 		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources(
-				"./src/test/java/"+ExtendedStringLiteralTestClass.class.getCanonicalName().replace('.', '/')+".java"));
+				"./src/test/java/" + ExtendedStringLiteralTestClass.class.getCanonicalName().replace('.', '/') + ".java"));
 		comp.build();
 
 		CtClass<?> cl =

@@ -84,13 +84,13 @@ public class CtScannerTest {
 		String signature = "";
 		@Override
 		public <T> void visitCtParameter(CtParameter<T> parameter) {
-			signature += parameter.getType().getQualifiedName()+", ";
+			signature += parameter.getType().getQualifiedName() + ", ";
 			super.visitCtParameter(parameter);
 		}
 
 		@Override
 		public <T> void visitCtMethod(CtMethod<T> m) {
-			signature += m.getSimpleName()+"(";
+			signature += m.getSimpleName() + "(";
 			super.visitCtMethod(m);
 			signature += ")";
 		}
@@ -116,21 +116,21 @@ public class CtScannerTest {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.run();
-		
+
 		CtTypeReference<?> ctElementRef = launcher.getFactory().createCtTypeReference(CtElement.class);
 		CtTypeReference<?> ctRefRef = launcher.getFactory().createCtTypeReference(CtReference.class);
 
-		CtClass<?> scannerCtClass = (CtClass<?>)launcher.getFactory().Type().get(CtScanner.class);
-		
+		CtClass<?> scannerCtClass = (CtClass<?>) launcher.getFactory().Type().get(CtScanner.class);
+
 		List<String> problems = new ArrayList<>();
 		Set<String> ignoredInvocations = new HashSet(Arrays.asList("scan", "enter", "exit"));
-		
+
 		Metamodel metaModel = Metamodel.getInstance();
-		
+
 		//collect all scanner visit methods, to check if all were checked
 		Map<String, CtMethod<?>> scannerVisitMethodsByName = new HashMap<>();
 		scannerCtClass.getAllMethods().forEach(m -> {
-			if(m.getSimpleName().startsWith("visit")) {
+			if (m.getSimpleName().startsWith("visit")) {
 				scannerVisitMethodsByName.put(m.getSimpleName(), m);
 			}
 		});
@@ -144,8 +144,8 @@ public class CtScannerTest {
 				continue;
 			}
 
-			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit"+leafConcept.getName());
-			assertNotNull("CtScanner#" + "visit"+leafConcept.getName() + "(...) not found", visitMethod);
+			CtMethod<?> visitMethod = scannerVisitMethodsByName.remove("visit" + leafConcept.getName());
+			assertNotNull("CtScanner#" + "visit" + leafConcept.getName() + "(...) not found", visitMethod);
 			Set<String> calledMethods = new HashSet<>();
 			Set<String> checkedMethods = new HashSet<>();
 
@@ -170,7 +170,7 @@ public class CtScannerTest {
 				CtInvocation invocation = visitMethod.filterChildren(new TypeFilter<CtInvocation>(CtInvocation.class) {
 					@Override
 					public boolean matches(CtInvocation element) {
-						if(ignoredInvocations.contains(element.getExecutable().getSimpleName())) {
+						if (ignoredInvocations.contains(element.getExecutable().getSimpleName())) {
 							return false;
 						}
 						calledMethods.add(element.getExecutable().getSignature());
@@ -178,7 +178,7 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if(getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)
+				if (getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)
 						) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
@@ -186,16 +186,16 @@ public class CtScannerTest {
 
 				// contract: there ia at least one invocation to all non-derived, role-based getters in the visit method of the Scanner
 				if (invocation == null) {
-					problems.add("no "+getter.getSignature() +" in "+visitMethod);
+					problems.add("no " + getter.getSignature() + " in " + visitMethod);
 				} else {
 					c.nbChecks++;
 					//System.out.println(invocation.toString());
 
 					// contract: the scan method is called with the same role as the one set on field / property
-					CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>)invocation.getExecutable().getDeclaration());
+					CtRole expectedRole = metaModel.getRoleOfMethod((CtMethod<?>) invocation.getExecutable().getDeclaration());
 					CtInvocation<?> scanInvocation = invocation.getParent(CtInvocation.class);
 					String realRoleName = ((CtFieldRead<?>) scanInvocation.getArguments().get(0)).getVariable().getSimpleName();
-					if(expectedRole.name().equals(realRoleName) == false) {
+					if (expectedRole.name().equals(realRoleName) == false) {
 						problems.add("Wrong role " + realRoleName + " used in " + scanInvocation.getPosition());
 					}
 				}
@@ -205,15 +205,15 @@ public class CtScannerTest {
 
 			// contract: CtScanner only calls methods that have a role and the associated getter
 			if (calledMethods.size() > 0) {
-				problems.add("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: "+calledMethods);
+				problems.add("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: " + calledMethods);
 			}
 		}
 
 		// contract: all visit* methods in CtScanner have been checked
-		if(scannerVisitMethodsByName.isEmpty() == false) {
+		if (scannerVisitMethodsByName.isEmpty() == false) {
 			problems.add("These CtScanner visit methods were not checked: " + scannerVisitMethodsByName.keySet());
 		}
-		if(problems.size()>0) {
+		if (problems.size() > 0) {
 			fail(String.join("\n", problems));
 		}
 		assertTrue("not enough checks " + c.nbChecks, c.nbChecks >= 200);
@@ -221,19 +221,19 @@ public class CtScannerTest {
 
 	@Test
 	public void testScan() throws Exception {
-		// contract: all AST nodes are visisted through method "scan"
+		// contract: all AST nodes are visited through method "scan"
 		Launcher launcher;
 		launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/test/resources/noclasspath/draw2d");
 		launcher.buildModel();
 		class Counter {
-			int nEnter=0;
-			int nExit=0;
-			int nObject=0;
-			int nElement=0;
+			int nEnter = 0;
+			int nExit = 0;
+			int nObject = 0;
+			int nElement = 0;
 			Deque<CollectionContext> contexts = new ArrayDeque<>();
-		};
+		}
 		Counter counter = new Counter();
 		launcher.getModel().getRootPackage().accept(new CtScanner() {
 			@Override
@@ -279,10 +279,10 @@ public class CtScannerTest {
 				if (o == null) {
 					//there is no collection involved in scanning of this single value NULL attribute
 					assertNull(counter2.contexts.peek().col);
-					
+
 				} else {
 					RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getParent().getClass(), role);
-					if (rh.getContainerKind()==ContainerKind.SINGLE) {
+					if (rh.getContainerKind() == ContainerKind.SINGLE) {
 						//there is no collection involved in scanning of this single value attribute
 						assertNull(counter2.contexts.peek().col);
 					} else {
