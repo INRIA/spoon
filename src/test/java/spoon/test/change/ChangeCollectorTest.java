@@ -9,7 +9,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import spoon.experimental.modelobs.ChangeCollector;
+import spoon.support.modelobs.ChangeCollector;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;

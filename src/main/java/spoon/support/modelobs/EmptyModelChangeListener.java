@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs;
+package spoon.support.modelobs;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;

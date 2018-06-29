@@ -14,24 +14,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.action;
+package spoon.support.modelobs.context;
 
-import spoon.experimental.modelobs.context.Context;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 /**
- * defines the delete all action.
- * @param <T>
+ * defines a list context
  */
-public class DeleteAllAction<T> extends DeleteAction<T> {
+public class ListContext extends CollectionContext<List<?>> {
+	private final int position;
 
-	public DeleteAllAction(Context context, Collection oldValue) {
-		super(context, (T) oldValue);
+	public ListContext(CtElement element, CtRole role, List<?> original) {
+		this(element, role, original, -1);
 	}
 
-	public DeleteAllAction(Context context, Map oldValue) {
-		super(context, (T) oldValue);
+	public ListContext(CtElement element, CtRole role, List<?> original, int position) {
+		super(element, role, original);
+		this.position = position;
+	}
+
+	/**
+	 * the position where the change has been made (returns -1 if no position is defined).
+	 *
+	 * @return the position of the change
+	 */
+	public int getPosition() {
+		return position;
 	}
 }

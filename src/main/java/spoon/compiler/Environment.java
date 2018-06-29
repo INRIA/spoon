@@ -18,7 +18,7 @@ package spoon.compiler;
 
 import org.apache.log4j.Level;
 import spoon.OutputType;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
