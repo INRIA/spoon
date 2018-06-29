@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 public class RefactoringTest {
 	@Test
 	public void testRefactoringClassChangeAllCtTypeReferenceAssociatedWithClassConcerned() throws Exception {
-		final Launcher launcher = new Launcher();
+		Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring"
@@ -30,6 +30,7 @@ public class RefactoringTest {
 		final CtClass<?> aClass = launcher.getFactory().Class().get(AClass.class);
 		assertNotNull(aClass);
 
+		launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring",
