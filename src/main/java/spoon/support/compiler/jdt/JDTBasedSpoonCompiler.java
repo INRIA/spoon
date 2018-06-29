@@ -77,7 +77,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	protected final TreeBuilderRequestor requestor = new TreeBuilderRequestor(this);
 	protected Factory factory;
 	protected int javaCompliance = 7;
-	protected boolean build = false;
 	//list of java files or folders with java files which represents source of the CtModel
 	protected SpoonFolder sources = new VirtualFolder();
 	//list of java files or folders with java files which represents templates. Templates are added to CtModel too.
@@ -119,10 +118,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		if (factory == null) {
 			throw new SpoonException("Factory not initialized");
 		}
-		if (build) {
+		if (factory.getEnvironment().isBuildModelFinished()) {
 			throw new SpoonException("Model already built");
 		}
-		build = true;
 
 		boolean srcSuccess, templateSuccess;
 		factory.getEnvironment().debugMessage("building sources: " + sources.getAllJavaFiles());
