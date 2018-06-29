@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -597,12 +598,13 @@ public class APITest {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
 
-		assertFalse(launcher.getEnvironment().isBuildModelFinished());
+		assertNotNull(launcher.getFactory().getModel());
+		assertFalse(launcher.getFactory().getModel().isBuildModelFinished());
 		launcher.buildModel();
-		assertTrue(launcher.getEnvironment().isBuildModelFinished());
+		assertTrue(launcher.getModel().isBuildModelFinished());
 
 		launcher.getFactory().createClass("my.fake.Klass");
-		assertTrue(launcher.getEnvironment().isBuildModelFinished());
+		assertTrue(launcher.getModel().isBuildModelFinished());
 	}
 
 }

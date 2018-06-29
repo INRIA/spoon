@@ -118,7 +118,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		if (factory == null) {
 			throw new SpoonException("Factory not initialized");
 		}
-		if (factory.getEnvironment().isBuildModelFinished()) {
+		if (factory.getModel() != null && factory.getModel().isBuildModelFinished()) {
 			throw new SpoonException("Model already built");
 		}
 
@@ -136,7 +136,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		templateSuccess = buildTemplates(builder);
 		factory.getEnvironment().debugMessage("built in " + (System.currentTimeMillis() - t) + " ms");
 		checkModel();
-		factory.getEnvironment().setBuildModelIsFinished(true);
+		factory.getModel().setBuildModelIsFinished(true);
 		return srcSuccess && templateSuccess;
 	}
 

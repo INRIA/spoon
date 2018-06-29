@@ -108,8 +108,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private CompressionType compressionType = CompressionType.GZIP;
 
-	private boolean buildModelFinished = false;
-
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -602,15 +600,5 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setCompressionType(CompressionType serializationType) {
 		this.compressionType = serializationType;
-	}
-
-	@Override
-	public boolean isBuildModelFinished() {
-		return this.buildModelFinished;
-	}
-
-	@Override
-	public void setBuildModelIsFinished(boolean buildModelFinished) {
-		this.buildModelFinished = buildModelFinished;
 	}
 }
