@@ -99,6 +99,8 @@ public class Launcher implements SpoonAPI {
 	private List<String> processorTypes = new ArrayList<>();
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
+	private boolean processed;
+
 	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
@@ -123,6 +125,11 @@ public class Launcher implements SpoonAPI {
 
 	public void setArgs(String[] args2) {
 		this.commandLineArgs = args2;
+		if (processed) {
+			throw new SpoonException("You cannot process twice the same launcher instance.");
+		}
+		processed = true;
+
 		processArguments();
 	}
 

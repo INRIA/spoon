@@ -7,6 +7,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.CtModel;
@@ -594,20 +595,16 @@ public class APITest {
 
 	@Test
 	public void testProcessModelsTwice() {
-		// contract: when processing twice the launcher with different arguments, a new model should be created
+		// contract: the launcher cannot be processed twice
 		Launcher launcher = new Launcher();
 		launcher.setArgs(new String[]{"-i", "./src/test/java/spoon/test/api/testclasses/Bar.java"});
-		CtModel model = launcher.buildModel();
 
-		Collection<CtType<?>> allTypes = model.getAllTypes();
-		assertEquals(1, allTypes.size());
-
-		launcher.setArgs(new String[] {"-i", "./src/test/java/spoon/test/arrays/testclasses/Foo.java"});
-		CtModel model2 = launcher.buildModel();
-
-		assertNotSame(model, model2);
-		allTypes = model2.getAllTypes();
-		assertEquals(1, allTypes.size());
+		try {
+			launcher.setArgs(new String[] {"-i", "./src/test/java/spoon/test/arrays/testclasses/Foo.java"});
+			fail();
+		} catch (SpoonException e) {
+			assertEquals("You cannot process twice the same launcher instance.", e.getMessage());
+		}
 	}
 
 }
