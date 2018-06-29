@@ -97,6 +97,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 		enter(reference);
+		scan(reference.getDeclaringType());
 		if (reference.isStatic()) {
 			addFieldImport(reference);
 		} else {
@@ -308,25 +309,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (targetType != null && targetType.getSimpleName().equals(ref.getSimpleName()) && !targetType.equals(ref)) {
 			return false;
 		}
-		for (CtImport ctImport : this.usedImport.keySet()) {
-			switch (ctImport.getImportKind()) {
-				case TYPE:
-					if (ctImport.getReference().equals(ref)) {
-						return this.setImportUsed(ctImport);
-					}
-					break;
-
-				case ALL_TYPES:
-					String packQualifiedName = ref.getPackage().getQualifiedName();
-					String typeImportQualifiedName = ctImport.getReference().getSimpleName();
-
-					if (packQualifiedName.equals(typeImportQualifiedName)) {
-						return this.setImportUsed(ctImport);
-					}
-					break;
-			}
+		if (this.isAlreadyInUsedImport(ref)) {
+			return true;
 		}
-
 		if (classImports.containsKey(ref.getSimpleName())) {
 			return isImportedInClassImports(ref);
 		}
@@ -647,27 +632,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		if (ref.getFactory().getEnvironment().getComplianceLevel() < 5) {
 			return false;
 		}
-		for (CtImport ctImport : this.usedImport.keySet()) {
-			switch (ctImport.getImportKind()) {
-				case FIELD:
-					CtFieldReference importFieldRef = (CtFieldReference) ctImport.getReference();
-					if (importFieldRef.getQualifiedName().equals(ref.getQualifiedName())) {
-						return this.setImportUsed(ctImport);
-					}
-					break;
-
-				case ALL_STATIC_MEMBERS:
-					String declType = ref.getDeclaringType().getQualifiedName();
-					CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
-					String importRefStr = importRef.getQualifiedName();
-
-					importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf("."));
-					if (declType.equals(importRefStr)) {
-						return this.setImportUsed(ctImport);
-					}
-			}
+		if (this.isAlreadyInUsedImport(ref)) {
+			return true;
 		}
-
 
 		if (this.fieldImports.containsKey(ref.getSimpleName())) {
 			return isImportedInFieldImports(ref);
