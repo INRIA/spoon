@@ -99,7 +99,10 @@ public class Launcher implements SpoonAPI {
 	private List<String> processorTypes = new ArrayList<>();
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
-	private boolean processed;
+	/**
+	 * This field is used to ensure that {@link #setArgs(String[])} is only called once.
+ 	 */
+	private boolean processed = false;
 
 	/**
 	 * A default program entry point (instantiates a launcher with the given
