@@ -156,7 +156,9 @@ public class PositionBuilder {
 			int modifiersSourceStart = variableDeclaration.modifiersSourceStart;
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
-
+			if (declarationSourceStart == 0 && declarationSourceEnd == 0) {
+				return SourcePosition.NOPOSITION;
+			}
 			if (e instanceof CtCatch) {
 				/* compiler delivers wrong declarationSourceStart in case like: */
 				//... catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {
