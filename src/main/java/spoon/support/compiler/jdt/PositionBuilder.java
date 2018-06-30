@@ -106,11 +106,11 @@ public class PositionBuilder {
 				int declarationSourceEnd = sourceEnd;
 				declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
 				if (contents[declarationSourceStart] != '(') {
-					throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of cast expression on offset: " + declarationSourceStart);
+					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of cast expression on offset: " + declarationSourceStart);
 				}
 				declarationSourceEnd = findNextNonWhitespace(contents, contents.length, declarationSourceEnd + 1);
 				if (contents[declarationSourceEnd] != ')') {
-					throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of cast expression on offset: " + declarationSourceEnd);
+					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of cast expression on offset: " + declarationSourceEnd);
 				}
 				return cf.createCompoundSourcePosition(cu,
 						sourceStart, sourceEnd,
@@ -130,7 +130,7 @@ public class PositionBuilder {
 					while (nrOfBrackets > 0) {
 						declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
 						if (contents[declarationSourceStart] != '(') {
-							throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
+							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
 						}
 						nrOfBrackets--;
 					}
@@ -138,7 +138,7 @@ public class PositionBuilder {
 					while (nrOfBrackets > 0) {
 						declarationSourceEnd = findNextNonWhitespace(contents, contents.length, declarationSourceEnd + 1);
 						if (contents[declarationSourceEnd] != ')') {
-							throw new SpoonException("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of expression on offset: " + declarationSourceEnd);
+							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of expression on offset: " + declarationSourceEnd);
 						}
 						nrOfBrackets--;
 					}
@@ -178,14 +178,14 @@ public class PositionBuilder {
 				int lastBracket = getEndOfLastTryBlock(tryStatement, 0);
 				int catchStart = findNextNonWhitespace(contents, endOfTry, lastBracket + 1);
 				if (CATCH.equals(new String(contents, catchStart, CATCH.length())) == false) {
-					throw new SpoonException("Unexpected beginning of catch statement on offset: " + catchStart);
+					return handlePositionProblem("Unexpected beginning of catch statement on offset: " + catchStart);
 				}
 				int bracketStart = findNextNonWhitespace(contents, endOfTry, catchStart + CATCH.length());
 				if (bracketStart < 0) {
-					throw new SpoonException("Unexpected end of file instead of \'(\' after catch statement on offset: " + catchStart);
+					return handlePositionProblem("Unexpected end of file instead of \'(\' after catch statement on offset: " + catchStart);
 				}
 				if (contents[bracketStart] != '(') {
-					throw new SpoonException("Unexpected character " + contents[bracketStart] + " instead of \'(\' after catch statement on offset: " + bracketStart);
+					return handlePositionProblem("Unexpected character " + contents[bracketStart] + " instead of \'(\' after catch statement on offset: " + bracketStart);
 				}
 				declarationSourceStart = bracketStart + 1;
 			}
@@ -317,7 +317,7 @@ public class PositionBuilder {
 						bodyEnd++;
 					} else {
 						if (bodyStart < bodyEnd) {
-							throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
+							return handlePositionProblem("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
 						}
 					}
 				}
@@ -331,7 +331,7 @@ public class PositionBuilder {
 		} else if (e instanceof CtCatchVariable) {
 			ASTPair pair = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtCatch.class);
 			if (pair == null) {
-				throw new SpoonException("There is no CtCatch parent for CtCatchVariable");
+				return handlePositionProblem("There is no CtCatch parent for CtCatchVariable");
 			}
 			//build position with appropriate context
 			return buildPositionCtElement(e, (Argument) pair.node);
@@ -612,5 +612,13 @@ public class PositionBuilder {
 			}
 		}
 		return -1;
+	}
+
+	private SourcePosition handlePositionProblem(String errorMessage) {
+		if (jdtTreeBuilder.getFactory().getEnvironment().checksAreSkipped()) {
+			jdtTreeBuilder.getFactory().getEnvironment().debugMessage("Source position detection failed: " + errorMessage);
+			return SourcePosition.NOPOSITION;
+		}
+		throw new SpoonException("Source position detection failed: " + errorMessage);
 	}
 }
