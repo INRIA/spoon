@@ -11,6 +11,7 @@ import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -816,6 +817,23 @@ public class PositionTest {
 			//contract: check the position of expression "name"
 			CompoundSourcePosition compoundSourcePosition = (CompoundSourcePosition) expr.getPosition();
 			assertEquals("(( (null )))", contentAtPosition(classContent, compoundSourcePosition.getNameStart(), compoundSourcePosition.getNameEnd()));
+		}
+	}
+	@Test
+	public void testEnumConstructorCallComment() throws Exception {
+		//contract: check position the enum constructor call 
+		final CtType<?> foo = ModelUtils.buildClass(FooEnum.class);
+		
+		String classContent = getClassContent(foo);
+		CtField<?> field = foo.getField("GET");
+		{
+			assertEquals("/**\n" + 
+					"	 * Getter.\n" + 
+					"	 * T get()\n" + 
+					"	 */\n" + 
+					"	GET(-1)", contentAtPosition(classContent, field.getPosition()));
+			
+			assertEquals("(-1)", contentAtPosition(classContent, field.getDefaultExpression().getPosition()));
 		}
 	}
 }
