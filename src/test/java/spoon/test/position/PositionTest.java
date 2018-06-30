@@ -127,7 +127,6 @@ public class PositionTest {
 		assertEquals("List<T // */ >\n\t/*// */>", contentAtPosition(classContent, field3Type.getPosition()));
 
 		CtTypeReference<?> field4Type =  foo.getField("field4").getType();
-		//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
 		assertEquals("List<List<?>>", contentAtPosition(classContent, field4Type.getPosition()));
 	}
 	
