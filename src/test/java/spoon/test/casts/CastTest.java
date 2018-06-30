@@ -12,6 +12,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.casts.testclasses.Castings;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -97,6 +98,6 @@ public class CastTest {
 		final CtLocalVariable local = aCastings.getMethod("bar").getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 
 		assertEquals(1, ((CtTypeReference) local.getDefaultExpression().getTypeCasts().get(0)).getAnnotations().size());
-		assertEquals("((java.lang.@spoon.test.casts.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String) (\"\"))", local.getDefaultExpression().toString());
+		assertEquals("((java.lang.@spoon.test.casts.testclasses.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String) (\"\"))", local.getDefaultExpression().toString());
 	}
 }
