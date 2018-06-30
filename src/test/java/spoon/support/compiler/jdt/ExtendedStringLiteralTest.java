@@ -13,6 +13,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.support.compiler.jdt.testclasses.ExtendedStringLiteralTestClass;
 
 public class ExtendedStringLiteralTest {
 
