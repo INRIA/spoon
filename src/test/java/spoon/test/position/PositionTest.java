@@ -111,8 +111,7 @@ public class PositionTest {
 	@Test
 	public void testPositionParameterTypeReference() throws Exception {
 		//contract: the parameterized type reference has a source position which includes parameter types, etc.
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
-		final CtType<?> foo = build.Type().get(PositionParameterTypeWithReference.class);
+		final CtType<?> foo = buildClass(PositionParameterTypeWithReference.class);
 		String classContent = getClassContent(foo);
 
 		CtTypeReference<?> field2Type =  foo.getField("field2").getType();
@@ -126,6 +125,10 @@ public class PositionTest {
 		CtTypeReference<?> field3Type =  foo.getField("field3").getType();
 		//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
 		assertEquals("List<T // */ >\n\t/*// */>", contentAtPosition(classContent, field3Type.getPosition()));
+
+		CtTypeReference<?> field4Type =  foo.getField("field4").getType();
+		//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
+		assertEquals("List<List<?>>", contentAtPosition(classContent, field4Type.getPosition()));
 	}
 	
 	@Test

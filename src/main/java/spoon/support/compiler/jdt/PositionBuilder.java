@@ -384,7 +384,7 @@ public class PositionBuilder {
 					//the sourceEnd of reference is smaller then source of type argument of this reference
 					//move sourceEnd so that type argument is included in sources
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
-					sourceEnd = findNextNonWhitespace(contents, contents.length, tr.sourceEnd + 1);
+					sourceEnd = findNextNonWhitespace(contents, contents.length, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
 			}
 		}
