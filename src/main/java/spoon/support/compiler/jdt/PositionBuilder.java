@@ -326,7 +326,9 @@ public class PositionBuilder {
 			AllocationExpression allocationExpression = (AllocationExpression) node;
 			if (allocationExpression.enumConstant != null) {
 				FieldDeclaration fieldDeclaration = allocationExpression.enumConstant;
-
+				//1) skip comments
+				sourceStart = findNextNonWhitespace(contents, sourceEnd, sourceStart);
+				//2) move to beginning of enum construction
 				sourceStart += fieldDeclaration.name.length;
 			}
 		}
