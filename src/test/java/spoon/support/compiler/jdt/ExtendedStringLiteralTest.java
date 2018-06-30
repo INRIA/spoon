@@ -60,7 +60,7 @@ public class ExtendedStringLiteralTest {
 		comp.build();
 
 		CtClass<?> cl =
-			comp.getFactory().Package().get("spoon.support.compiler.jdt").
+			comp.getFactory().Package().get("spoon.support.compiler.jdt.testclasses").
 			getType("ExtendedStringLiteralTestClass");
 		CtField<?> f = cl.getField("extendedStringLiteral");
 		CtExpression<?> de = f.getDefaultExpression();
