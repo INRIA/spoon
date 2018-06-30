@@ -13,4 +13,7 @@ public class PositionParameterTypeWithReference<T> {
 	boolean m1(Object o) {
 		return o instanceof List<?>;
 	}
+	boolean m2(Object o) {
+		return false || o instanceof List<?>;
+	}
 }

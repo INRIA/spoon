@@ -134,6 +134,11 @@ public class PositionTest {
 			CtReturn<?> retStmt = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
 			assertEquals("o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
 		}
+
+		{
+			CtReturn<?> retStmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(0);
+			assertEquals("false || o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
+		}
 	}
 	
 	@Test

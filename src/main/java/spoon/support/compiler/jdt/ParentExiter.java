@@ -405,6 +405,17 @@ public class ParentExiter extends CtInheritanceScanner {
 				operator.setLeftHandOperand((CtExpression<?>) child);
 				return;
 			} else if (operator.getRightHandOperand() == null) {
+				if (child.getPosition().isValidPosition()) {
+					int childEnd = child.getPosition().getSourceEnd();
+					SourcePosition oldPos = operator.getPosition();
+					if (oldPos.isValidPosition() && oldPos.getSourceEnd() < childEnd) {
+						//fix parent position if right hand expression is `x instanceof List<?>` which has bad sourceEnd ending before `<?>
+						operator.setPosition(operator.getFactory().Core().createSourcePosition(
+								oldPos.getCompilationUnit(),
+								oldPos.getSourceStart(), childEnd,
+								oldPos.getCompilationUnit().getLineSeparatorPositions()));
+					}
+				}
 				operator.setRightHandOperand((CtExpression<?>) child);
 				return;
 			} else if (jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof StringLiteralConcatenation) {
