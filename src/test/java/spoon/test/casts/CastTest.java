@@ -76,7 +76,7 @@ public class CastTest {
 	public void testCase4() throws Exception {
 		// contract: If the invocation is to a method where the returned type is a generic type,
 		// getType returns the actual type bound to this particular invocation.
-		CtType<?> type = build("spoon.test.casts", "Castings");
+		CtType<?> type = build("spoon.test.casts.testclasses", "Castings");
 
 		final CtMethod<?> getValueMethod = type.getMethodsByName("getValue").get(0);
 		final CtInvocation<?> getValueInvocation = Query.getElements(type, new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
