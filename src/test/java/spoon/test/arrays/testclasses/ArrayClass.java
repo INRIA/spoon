@@ -1,4 +1,4 @@
-package spoon.test.arrays;
+package spoon.test.arrays.testclasses;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
