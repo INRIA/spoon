@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -71,6 +72,11 @@ public class PositionBuilder {
 	}
 
 	SourcePosition buildPositionCtElement(CtElement e, ASTNode node) {
+		if (e instanceof CtCatch) {
+			//we cannot compute position of CtCatch, because we do not know position of it's body yet
+			//it is computed later by #buildPosition(CtCatch)
+			return SourcePosition.NOPOSITION;
+		}
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
@@ -159,14 +165,14 @@ public class PositionBuilder {
 			if (declarationSourceStart == 0 && declarationSourceEnd == 0) {
 				return SourcePosition.NOPOSITION;
 			}
-			if (e instanceof CtCatch) {
+			if (e instanceof CtCatchVariable) {
 				/* compiler delivers wrong declarationSourceStart in case like: */
 				//... catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {
 				/*
 				 * the declarationSourceStart should be after the '(', but sometime it is before
 				 * So we have to compute correct offset here
 				 */
-				CtTry tryStatement = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtTry.class);
+				CtTry tryStatement = this.jdtTreeBuilder.getContextBuilder().getParentElementOfType(CtTry.class);
 				int endOfTry = tryStatement.getPosition().getSourceEnd();
 				//offset of the bracket before catch
 				int lastBracket = getEndOfLastTryBlock(tryStatement, 0);
@@ -323,9 +329,12 @@ public class PositionBuilder {
 						lineSeparatorPositions);
 			}
 		} else if (e instanceof CtCatchVariable) {
-			CtCatch catcher = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtCatch.class);
-			//the CtCatch has the position of CTCatchVariable now, so take it
-			return (DeclarationSourcePosition) catcher.getPosition();
+			ASTPair pair = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtCatch.class);
+			if (pair == null) {
+				throw new SpoonException("There is no CtCatch parent for CtCatchVariable");
+			}
+			//build position with appropriate context
+			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
@@ -355,7 +364,7 @@ public class PositionBuilder {
 		CtTry tryElement = catcher.getParent(CtTry.class);
 		//offset after last bracket before catch
 		int declarationStart = getEndOfLastTryBlock(tryElement, 1) + 1;
-		DeclarationSourcePosition oldCatcherPos = (DeclarationSourcePosition) catcher.getPosition();
+		DeclarationSourcePosition oldCatcherPos = (DeclarationSourcePosition) catcher.getParameter().getPosition();
 		int bodyStart = catcher.getBody().getPosition().getSourceStart();
 		int bodyEnd = catcher.getBody().getPosition().getSourceEnd();
 		catcher.setPosition(catcher.getFactory().Core().createBodyHolderSourcePosition(
