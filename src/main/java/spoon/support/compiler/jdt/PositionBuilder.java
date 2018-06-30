@@ -34,6 +34,8 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Wildcard;
+
 import spoon.SpoonException;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
@@ -510,7 +512,7 @@ public class PositionBuilder {
 
 	private int getSourceEndOfTypeReference(char[] contents, TypeReference node, int sourceEnd) {
 		//e.g. SomeType<String,T>
-		TypeReference[][] typeArgs = ((TypeReference) node).getTypeArguments();
+		TypeReference[][] typeArgs = node.getTypeArguments();
 		if (typeArgs != null && typeArgs.length > 0) {
 			TypeReference[] trs = typeArgs[typeArgs.length - 1];
 			if (trs != null && trs.length > 0) {
@@ -521,6 +523,12 @@ public class PositionBuilder {
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
 					sourceEnd = findNextNonWhitespace(contents, contents.length - 1, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
+			}
+		}
+		if (node instanceof Wildcard) {
+			Wildcard wildcard = (Wildcard) node;
+			if (wildcard.bound != null) {
+				sourceEnd = getSourceEndOfTypeReference(contents, wildcard.bound, sourceEnd);
 			}
 		}
 		return sourceEnd;
