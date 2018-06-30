@@ -9,4 +9,5 @@ public class PositionParameterTypeWithReference<T> {
 	/*// */> 
 	//>
 	field3;
+	List<List<?>> field4;
 }
