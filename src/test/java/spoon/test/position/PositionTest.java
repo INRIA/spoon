@@ -129,6 +129,11 @@ public class PositionTest {
 
 		CtTypeReference<?> field4Type =  foo.getField("field4").getType();
 		assertEquals("List<List<?>>", contentAtPosition(classContent, field4Type.getPosition()));
+
+		{
+			CtReturn<?> retStmt = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
+			assertEquals("o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
+		}
 	}
 	
 	@Test

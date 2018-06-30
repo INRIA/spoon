@@ -29,6 +29,7 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
+import org.eclipse.jdt.internal.compiler.ast.InstanceOfExpression;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -155,6 +156,11 @@ public class PositionBuilder {
 						sourceStart, sourceEnd,
 						declarationSourceStart, declarationSourceEnd,
 						lineSeparatorPositions);
+			}
+
+			if (node instanceof InstanceOfExpression) {
+				InstanceOfExpression ioe = (InstanceOfExpression) node;
+				sourceEnd = getSourceEndOfTypeReference(contents, ioe.type, sourceEnd);
 			}
 		}
 

@@ -10,4 +10,7 @@ public class PositionParameterTypeWithReference<T> {
 	//>
 	field3;
 	List<List<?>> field4;
+	boolean m1(Object o) {
+		return o instanceof List<?>;
+	}
 }
