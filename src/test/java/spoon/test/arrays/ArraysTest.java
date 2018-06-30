@@ -25,7 +25,7 @@ public class ArraysTest {
 
 	@Test
 	public void testArrayReferences() throws Exception {
-		CtType<?> type = build("spoon.test.arrays", "ArrayClass");
+		CtType<?> type = build("spoon.test.arrays.testclasses", "ArrayClass");
 		assertEquals("ArrayClass", type.getSimpleName());
 		assertEquals("int[][][]", type.getField("i").getType().getSimpleName());
 		assertEquals(3, ((CtArrayTypeReference<?>) type.getField("i").getType()).getDimensionCount());
