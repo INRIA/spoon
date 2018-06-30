@@ -277,13 +277,13 @@ public class PositionBuilder {
 			if (e instanceof CtStatementList) {
 				return cf.createSourcePosition(cu, bodyStart - 1, bodyEnd + 1, lineSeparatorPositions);
 			} else {
-				if (bodyStart < bodyEnd) {
-					//include brackets if they are there
-					if (contents[bodyStart - 1] == '{') {
-						bodyStart--;
-						if (contents[bodyEnd + 1] == '}') {
-							bodyEnd++;
-						} else {
+				//include brackets if they are there
+				if (contents[bodyStart - 1] == '{') {
+					bodyStart--;
+					if (contents[bodyEnd + 1] == '}') {
+						bodyEnd++;
+					} else {
+						if (bodyStart < bodyEnd) {
 							throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
 						}
 					}

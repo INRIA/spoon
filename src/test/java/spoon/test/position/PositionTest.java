@@ -374,6 +374,14 @@ public class PositionTest {
 		CtMethod mWithLine = foo.getMethod("mWithLine", build.Type().integerPrimitiveType());
 		SourcePosition position4 = mWithLine.getPosition();
 		contentAtPosition(classContent, position4);
+		
+		{
+			CtMethod<?> methodWithEmptyBody = foo.getMethodsByName("emptyMethod").get(0);
+			BodyHolderSourcePosition pos = (BodyHolderSourcePosition) methodWithEmptyBody.getPosition();
+			assertEquals("public void emptyMethod() {}", contentAtPosition(classContent, pos));
+			
+			assertEquals("{}", contentAtPosition(classContent, pos.getBodyStart(), pos.getBodyEnd()));
+		}
 	}
 
 	@Test
