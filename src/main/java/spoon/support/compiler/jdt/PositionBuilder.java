@@ -50,6 +50,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -130,6 +131,9 @@ public class PositionBuilder {
 					int nrOfBrackets = getNrOfFirstCastExpressionBrackets();
 					while (nrOfBrackets > 0) {
 						declarationSourceStart = findPrevNonWhitespace(contents, getParentsSourceStart(), declarationSourceStart - 1);
+						if (declarationSourceStart < 0) {
+							return handlePositionProblem("Cannot found beginning of cast expression until offset: " + getParentsSourceStart());
+						}
 						if (contents[declarationSourceStart] != '(') {
 							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
 						}
@@ -191,19 +195,21 @@ public class PositionBuilder {
 				declarationSourceStart = bracketStart + 1;
 			}
 
-			if (variableDeclaration.type instanceof ArrayTypeReference) {
+			if (variableDeclaration instanceof Argument && variableDeclaration.type instanceof ArrayTypeReference) {
 				//handle type declarations like `String[] arg` `String arg[]` and `String []arg[]`
 				ArrayTypeReference arrTypeRef = (ArrayTypeReference) variableDeclaration.type;
 				int dimensions = arrTypeRef.dimensions();
-				//count number of brackets between type and variable name
-				int foundDimensions = getNrOfDimensions(contents, declarationSourceStart, declarationSourceEnd);
-				while (dimensions > foundDimensions) {
-					//some brackets are after the variable name
-					declarationSourceEnd = findNextChar(contents, contents.length, declarationSourceEnd + 1, ']');
-					if (declarationSourceEnd < 0) {
-						throw new SpoonException("Unexpected array type declaration on offset: " + declarationSourceStart);
+				if (dimensions > 0) {
+					//count number of brackets between type and variable name
+					int foundDimensions = getNrOfDimensions(contents, declarationSourceStart, declarationSourceEnd);
+					while (dimensions > foundDimensions) {
+						//some brackets are after the variable name
+						declarationSourceEnd = findNextChar(contents, contents.length, declarationSourceEnd + 1, ']');
+						if (declarationSourceEnd < 0) {
+							return handlePositionProblem("Unexpected array type declaration on offset: " + declarationSourceStart);
+						}
+						foundDimensions++;
 					}
-					foundDimensions++;
 				}
 			}
 
@@ -367,11 +373,15 @@ public class PositionBuilder {
 	}
 
 	private int getParentsSourceStart() {
-		ASTPair pair = this.jdtTreeBuilder.getContextBuilder().stack.peek();
-		if (pair != null) {
-			SourcePosition pos = pair.element.getPosition();
-			if (pos.isValidPosition()) {
-				return pos.getSourceStart();
+		Iterator<ASTPair> iter = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
+		if (iter.hasNext()) {
+			iter.next();
+			if (iter.hasNext()) {
+				ASTPair pair = iter.next();
+				SourcePosition pos = pair.element.getPosition();
+				if (pos.isValidPosition()) {
+					return pos.getSourceStart();
+				}
 			}
 		}
 		return 0;
@@ -379,8 +389,15 @@ public class PositionBuilder {
 
 	private int getNrOfDimensions(char[] contents, int start, int end) {
 		int nrDims = 0;
-		while ((start = findNextChar(contents, end, start, ']')) >= 0) {
-			nrDims++;
+		while ((start = findNextNonWhitespace(contents, end, start)) >= 0) {
+			if (contents[start] == ']') {
+				nrDims++;
+			}
+			if (contents[start] == '.' && start + 2 <= end && contents[start + 1] == '.' && contents[start + 2] == '.') {
+				//String...arg is same like String[] arg, so it is counted as dimension too
+				start = start + 2;
+				nrDims++;
+			}
 			start++;
 		}
 		return nrDims;
