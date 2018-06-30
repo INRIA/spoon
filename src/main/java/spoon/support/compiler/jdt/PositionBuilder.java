@@ -24,6 +24,7 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -104,11 +105,11 @@ public class PositionBuilder {
 				//the type cast reference must be enclosed with brackets
 				int declarationSourceStart = sourceStart;
 				int declarationSourceEnd = sourceEnd;
-				declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
+				declarationSourceStart = findPrevNonWhitespace(contents, getParentsSourceStart(), declarationSourceStart - 1);
 				if (contents[declarationSourceStart] != '(') {
 					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of cast expression on offset: " + declarationSourceStart);
 				}
-				declarationSourceEnd = findNextNonWhitespace(contents, contents.length, declarationSourceEnd + 1);
+				declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
 				if (contents[declarationSourceEnd] != ')') {
 					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of cast expression on offset: " + declarationSourceEnd);
 				}
@@ -128,7 +129,7 @@ public class PositionBuilder {
 					declarationSourceStart = pos.getSourceStart();
 					int nrOfBrackets = getNrOfFirstCastExpressionBrackets();
 					while (nrOfBrackets > 0) {
-						declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
+						declarationSourceStart = findPrevNonWhitespace(contents, getParentsSourceStart(), declarationSourceStart - 1);
 						if (contents[declarationSourceStart] != '(') {
 							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
 						}
@@ -136,7 +137,7 @@ public class PositionBuilder {
 					}
 					nrOfBrackets = getNrOfCastExpressionBrackets();
 					while (nrOfBrackets > 0) {
-						declarationSourceEnd = findNextNonWhitespace(contents, contents.length, declarationSourceEnd + 1);
+						declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
 						if (contents[declarationSourceEnd] != ')') {
 							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of expression on offset: " + declarationSourceEnd);
 						}
@@ -190,13 +191,24 @@ public class PositionBuilder {
 				declarationSourceStart = bracketStart + 1;
 			}
 
-			int length = variableDeclaration.toString().length();
-			if (length > (declarationSourceEnd + 1 - declarationSourceStart)) {
-				declarationSourceEnd = declarationSourceStart + length - 1;
+			if (variableDeclaration.type instanceof ArrayTypeReference) {
+				//handle type declarations like `String[] arg` `String arg[]` and `String []arg[]`
+				ArrayTypeReference arrTypeRef = (ArrayTypeReference) variableDeclaration.type;
+				int dimensions = arrTypeRef.dimensions();
+				//count number of brackets between type and variable name
+				int foundDimensions = getNrOfDimensions(contents, declarationSourceStart, declarationSourceEnd);
+				while (dimensions > foundDimensions) {
+					//some brackets are after the variable name
+					declarationSourceEnd = findNextChar(contents, contents.length, declarationSourceEnd + 1, ']');
+					if (declarationSourceEnd < 0) {
+						throw new SpoonException("Unexpected array type declaration on offset: " + declarationSourceStart);
+					}
+					foundDimensions++;
+				}
 			}
 
 			if (modifiersSourceStart <= 0) {
-				modifiersSourceStart = findNextNonWhitespace(contents, contents.length, declarationSourceStart);
+				modifiersSourceStart = findNextNonWhitespace(contents, contents.length - 1, declarationSourceStart);
 			}
 			int modifiersSourceEnd;
 			if (variableDeclaration.type != null) {
@@ -354,6 +366,26 @@ public class PositionBuilder {
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
+	private int getParentsSourceStart() {
+		ASTPair pair = this.jdtTreeBuilder.getContextBuilder().stack.peek();
+		if (pair != null) {
+			SourcePosition pos = pair.element.getPosition();
+			if (pos.isValidPosition()) {
+				return pos.getSourceStart();
+			}
+		}
+		return 0;
+	}
+
+	private int getNrOfDimensions(char[] contents, int start, int end) {
+		int nrDims = 0;
+		while ((start = findNextChar(contents, end, start, ']')) >= 0) {
+			nrDims++;
+			start++;
+		}
+		return nrDims;
+	}
+
 	private static final String CATCH = "catch";
 
 	void buildPosition(CtCatch catcher) {
@@ -438,11 +470,27 @@ public class PositionBuilder {
 					//the sourceEnd of reference is smaller then source of type argument of this reference
 					//move sourceEnd so that type argument is included in sources
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
-					sourceEnd = findNextNonWhitespace(contents, contents.length, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
+					sourceEnd = findNextNonWhitespace(contents, contents.length - 1, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
 			}
 		}
 		return sourceEnd;
+	}
+
+	/**
+	 * @return index of first character `expectedChar`, searching forward..
+	 * Can return 'off' if it `expectedChar`.
+	 * Note: all kinds of java comments are understood as whitespace.
+	 * The search must start out of comment or on the first character of the comment
+	 */
+	private int findNextChar(char[] contents, int maxOff, int off, char expectedChar) {
+		while ((off = findNextNonWhitespace(contents, maxOff, off)) >= 0) {
+			if (contents[off] == expectedChar) {
+				return off;
+			}
+			off++;
+		}
+		return -1;
 	}
 
 	/**
