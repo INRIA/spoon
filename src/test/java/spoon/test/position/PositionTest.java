@@ -115,20 +115,45 @@ public class PositionTest {
 		final CtType<?> foo = buildClass(PositionParameterTypeWithReference.class);
 		String classContent = getClassContent(foo);
 
-		CtTypeReference<?> field2Type =  foo.getField("field2").getType();
-		//this already worked well
-		assertEquals("List<T>[][]", contentAtPosition(classContent, field2Type.getPosition()));
-
-		CtTypeReference<?> field1Type =  foo.getField("field1").getType();
-		//this probably points to an bug in JDT. But we have no workaround in Spoon
-		assertEquals("List<T>", contentAtPosition(classContent, field1Type.getPosition()));
-
-		CtTypeReference<?> field3Type =  foo.getField("field3").getType();
-		//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
-		assertEquals("List<T // */ >\n\t/*// */>", contentAtPosition(classContent, field3Type.getPosition()));
-
-		CtTypeReference<?> field4Type =  foo.getField("field4").getType();
-		assertEquals("List<List<?>>", contentAtPosition(classContent, field4Type.getPosition()));
+		{
+			assertEquals("T extends List<?>", contentAtPosition(classContent, foo.getFormalCtTypeParameters().get(0).getPosition()));
+			assertEquals("X", contentAtPosition(classContent, foo.getFormalCtTypeParameters().get(1).getPosition()));
+		}
+		{	
+			CtTypeReference<?> field1Type =  foo.getField("field1").getType();
+			//this probably points to an bug in JDT. But we have no workaround in Spoon
+			assertEquals("List<T>", contentAtPosition(classContent, field1Type.getPosition()));
+		}
+		{
+			CtTypeReference<?> field2Type =  foo.getField("field2").getType();
+			//this already worked well
+			assertEquals("List<T>[][]", contentAtPosition(classContent, field2Type.getPosition()));
+		}
+		{
+			CtTypeReference<?> field3Type =  foo.getField("field3").getType();
+			//this probably points to an bug in JDT. But we have no workaround in Spoon, which handles spaces and comments too
+			assertEquals("List<T // */ >\n\t/*// */>", contentAtPosition(classContent, field3Type.getPosition()));
+		}
+		{
+			CtTypeReference<?> field4Type =  foo.getField("field4").getType();
+			assertEquals("List<List<?>>", contentAtPosition(classContent, field4Type.getPosition()));
+		}
+		{
+			CtTypeReference<?> fieldType =  foo.getField("field5").getType();
+			assertEquals("List<? extends List<?>>", contentAtPosition(classContent, fieldType.getPosition()));
+		}
+		{
+			CtReturn<?> retStmt = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
+			assertEquals("o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
+		}
+		{
+			CtReturn<?> retStmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(0);
+			assertEquals("false || o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
+		}
+		{
+			CtTypeParameter methodGType = foo.getMethodsByName("m3").get(0).getFormalCtTypeParameters().get(0);
+			assertEquals("U extends List<?>", contentAtPosition(classContent, methodGType.getPosition()));
+		}
 	}
 	
 	@Test
