@@ -383,6 +383,9 @@ public class PositionBuilder {
 		if (e instanceof CtModifiable) {
 			setModifiersPosition((CtModifiable) e, sourceStart, sourceEnd);
 		}
+		if (sourceStart == 0 && sourceEnd == 0) {
+			return SourcePosition.NOPOSITION;
+		}
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
