@@ -920,4 +920,41 @@ public class PositionTest {
 			assertEquals("(-1)", contentAtPosition(classContent, field.getDefaultExpression().getPosition()));
 		}
 	}
+	@Test
+	public void testSwitchCase() throws Exception {
+		//contract: check position of the statements of the case of switch
+		final CtType<?> foo = ModelUtils.buildClass(FooSwitch.class);
+		
+		String classContent = getClassContent(foo);
+		CtSwitch<?> switchStatement = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
+		int caseIdx = 0;
+		{
+			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
+			assertEquals("case C0:", contentAtPosition(classContent, caseStmt.getPosition()));
+		}
+		{
+			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
+			assertEquals("case C1: \n" + 
+					"			System.out.println();\n" + 
+					"			break;", contentAtPosition(classContent, caseStmt.getPosition()));
+		}
+		{
+			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
+			assertEquals("case C2: {\n" + 
+					"			return 2;\n" + 
+					"		}", contentAtPosition(classContent, caseStmt.getPosition()));
+		}
+		{
+			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
+			assertEquals("case C3: {\n" + 
+					"			return 2;\n" + 
+					"		}", contentAtPosition(classContent, caseStmt.getPosition()));
+		}
+		{
+			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
+			assertEquals("default:\n" + 
+					"			System.out.println();\n" + 
+					"			break;", contentAtPosition(classContent, caseStmt.getPosition()));
+		}
+	}
 }

@@ -814,6 +814,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		if (child instanceof CtCase) {
 			switchStatement.addCase((CtCase<E>) child);
+			//we have all statements of the case. Update source position now
+			child.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition((CtCase<E>) child));
 			return;
 		}
 		super.visitCtSwitch(switchStatement);
@@ -849,7 +851,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			if (lastCatcher != null && lastCatcher.getBody() == null) {
 				lastCatcher.setBody(childBlock);
 				//we have finally all the information needed to build full position of CtCatch element
-				jdtTreeBuilder.getPositionBuilder().buildPosition(lastCatcher);
+				lastCatcher.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(lastCatcher));
 			} else if (tryBlock.getBody() != null && tryBlock.getFinalizer() == null) {
 				tryBlock.setFinalizer(childBlock);
 			} else {

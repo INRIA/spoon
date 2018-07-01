@@ -25,6 +25,7 @@ import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -34,9 +35,11 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import spoon.SpoonException;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
@@ -364,6 +367,15 @@ public class PositionBuilder {
 				//2) move to beginning of enum construction
 				sourceStart += fieldDeclaration.name.length;
 			}
+		} else if (node instanceof CaseStatement) {
+			CaseStatement caseStmt = (CaseStatement) node;
+			sourceEnd = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
+			if (sourceEnd < 0) {
+				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
+			}
+			if (contents[sourceEnd] != ':') {
+				return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' in CtCase on: " + sourceEnd);
+			}
 		}
 
 		if (e instanceof CtModifiable) {
@@ -405,10 +417,9 @@ public class PositionBuilder {
 
 	private static final String CATCH = "catch";
 
-	void buildPosition(CtCatch catcher) {
+	SourcePosition buildPosition(CtCatch catcher) {
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
-		char[] contents = cr.compilationUnit.getContents();
 
 		CtTry tryElement = catcher.getParent(CtTry.class);
 		//offset after last bracket before catch
@@ -416,13 +427,34 @@ public class PositionBuilder {
 		DeclarationSourcePosition oldCatcherPos = (DeclarationSourcePosition) catcher.getParameter().getPosition();
 		int bodyStart = catcher.getBody().getPosition().getSourceStart();
 		int bodyEnd = catcher.getBody().getPosition().getSourceEnd();
-		catcher.setPosition(catcher.getFactory().Core().createBodyHolderSourcePosition(
+		return catcher.getFactory().Core().createBodyHolderSourcePosition(
 				tryElement.getPosition().getCompilationUnit(),
 				oldCatcherPos.getNameStart(), oldCatcherPos.getNameEnd(),
 				oldCatcherPos.getModifierSourceStart(), oldCatcherPos.getModifierSourceEnd(),
 				declarationStart, bodyEnd,
 				bodyStart, bodyEnd,
-				lineSeparatorPositions));
+				lineSeparatorPositions);
+	}
+
+	SourcePosition buildPosition(CtCase<?> child) {
+		List<CtStatement> statements = child.getStatements();
+		SourcePosition oldPosition = child.getPosition();
+		if (statements.isEmpty()) {
+			//There are no statements. Keep origin position
+			return oldPosition;
+		}
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+
+		int bodyStart = child.getPosition().getSourceEnd() + 1;
+		int bodyEnd = statements.get(statements.size() - 1).getPosition().getSourceEnd();
+		return child.getFactory().Core().createBodyHolderSourcePosition(
+				oldPosition.getCompilationUnit(),
+				oldPosition.getSourceStart(), oldPosition.getSourceEnd(),
+				oldPosition.getSourceStart(), oldPosition.getSourceStart() - 1,
+				oldPosition.getSourceStart(), bodyEnd,
+				bodyStart, bodyEnd,
+				lineSeparatorPositions);
 	}
 
 	/**
@@ -686,4 +718,5 @@ public class PositionBuilder {
 		}
 		throw new SpoonException("Source position detection failed: " + errorMessage);
 	}
+
 }
