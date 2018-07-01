@@ -845,8 +845,11 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtTry(CtTry tryBlock) {
 		if (child instanceof CtBlock) {
 			final CtBlock<?> childBlock = (CtBlock<?>) this.child;
-			if (tryBlock.getCatchers().size() > 0 && tryBlock.getCatchers().get(tryBlock.getCatchers().size() - 1).getBody() == null) {
-				tryBlock.getCatchers().get(tryBlock.getCatchers().size() - 1).setBody(childBlock);
+			CtCatch lastCatcher = getLastCatcher(tryBlock);
+			if (lastCatcher != null && lastCatcher.getBody() == null) {
+				lastCatcher.setBody(childBlock);
+				//we have finally all the information needed to build full position of CtCatch element
+				jdtTreeBuilder.getPositionBuilder().buildPosition(lastCatcher);
 			} else if (tryBlock.getBody() != null && tryBlock.getFinalizer() == null) {
 				tryBlock.setFinalizer(childBlock);
 			} else {
@@ -858,6 +861,19 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtTry(tryBlock);
+	}
+
+	/**
+	 * @param tryBlock
+	 * @return last CtCatch of `tryBlock` or null
+	 */
+	private CtCatch getLastCatcher(CtTry tryBlock) {
+		List<CtCatch> catchers = tryBlock.getCatchers();
+		int nrCatchers = catchers.size();
+		if (nrCatchers > 0) {
+			return catchers.get(nrCatchers - 1);
+		}
+		return null;
 	}
 
 	@Override

@@ -138,6 +138,24 @@ public class ContextBuilder {
 		}
 	}
 
+	<T extends CtElement> T getParentElementOfType(Class<T> clazz) {
+		for (ASTPair pair : stack) {
+			if (clazz.isInstance(pair.element)) {
+				return (T) pair.element;
+			}
+		}
+		return null;
+	}
+
+	ASTPair getParentContextOfType(Class<? extends CtElement> clazz) {
+		for (ASTPair pair : stack) {
+			if (clazz.isInstance(pair.element)) {
+				return pair;
+			}
+		}
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
 	<T> CtLocalVariable<T> getLocalVariableDeclaration(final String name) {
 		final Class<CtLocalVariable<T>> clazz = (Class<CtLocalVariable<T>>)
