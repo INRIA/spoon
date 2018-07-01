@@ -13,6 +13,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.support.compiler.jdt.testclasses.ExtendedStringLiteralTestClass;
 
 public class ExtendedStringLiteralTest {
 
@@ -59,7 +60,7 @@ public class ExtendedStringLiteralTest {
 		comp.build();
 
 		CtClass<?> cl =
-			comp.getFactory().Package().get("spoon.support.compiler.jdt").
+			comp.getFactory().Package().get("spoon.support.compiler.jdt.testclasses").
 			getType("ExtendedStringLiteralTestClass");
 		CtField<?> f = cl.getField("extendedStringLiteral");
 		CtExpression<?> de = f.getDefaultExpression();

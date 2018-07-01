@@ -17,6 +17,7 @@ import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
 import spoon.test.enums.testclasses.NestedEnums;
+import spoon.test.enums.testclasses.Regular;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -36,7 +37,7 @@ public class EnumsTest {
 
 	@Test
 	public void testModelBuildingEnum() throws Exception {
-		CtEnum<Regular> enumeration = build("spoon.test.enums", "Regular");
+		CtEnum<Regular> enumeration = build("spoon.test.enums.testclasses", "Regular");
 		assertEquals("Regular", enumeration.getSimpleName());
 		assertEquals(3, Regular.values().length);
 		assertEquals(3, enumeration.getEnumValues().size());
@@ -147,7 +148,7 @@ public class EnumsTest {
 
 	@Test
 	public void testEnumValue() {
-		// contract: constructorCall on enumvalues should be implicit if they're not declared
+		// contract: constructorCall on enum values should be implicit if they're not declared
 
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");

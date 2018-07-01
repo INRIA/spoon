@@ -1,4 +1,4 @@
-package spoon.support.compiler.jdt;
+package spoon.support.compiler.jdt.testclasses;
 
 public class ExtendedStringLiteralTestClass {
 
