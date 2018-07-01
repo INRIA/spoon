@@ -138,6 +138,16 @@ public class ContextBuilder {
 		}
 	}
 
+	CtElement getContextElementOnLevel(int level) {
+		for (ASTPair pair : stack) {
+			if (level == 0) {
+				return pair.element;
+			}
+			level--;
+		}
+		return null;
+	}
+
 	<T extends CtElement> T getParentElementOfType(Class<T> clazz) {
 		for (ASTPair pair : stack) {
 			if (clazz.isInstance(pair.element)) {
