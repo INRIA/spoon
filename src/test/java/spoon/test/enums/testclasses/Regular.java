@@ -1,4 +1,4 @@
-package spoon.test.enums;
+package spoon.test.enums.testclasses;
 
 public enum Regular {
 	A, B, C;

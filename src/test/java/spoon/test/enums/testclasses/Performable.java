@@ -1,4 +1,4 @@
-package spoon.test.enums;
+package spoon.test.enums.testclasses;
 
 import java.util.Stack;
 
