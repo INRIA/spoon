@@ -410,10 +410,11 @@ public class ParentExiter extends CtInheritanceScanner {
 					SourcePosition oldPos = operator.getPosition();
 					if (oldPos.isValidPosition() && oldPos.getSourceEnd() < childEnd) {
 						//fix parent position if right hand expression is `x instanceof List<?>` which has bad sourceEnd ending before `<?>
+						int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
 						operator.setPosition(operator.getFactory().Core().createSourcePosition(
 								oldPos.getCompilationUnit(),
 								oldPos.getSourceStart(), childEnd,
-								oldPos.getCompilationUnit().getLineSeparatorPositions()));
+								lineSeparatorPositions));
 					}
 				}
 				operator.setRightHandOperand((CtExpression<?>) child);
