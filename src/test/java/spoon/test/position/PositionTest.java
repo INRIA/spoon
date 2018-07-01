@@ -779,6 +779,33 @@ public class PositionTest {
 			assertEquals("String arg[]", contentAtPosition(classContent, param.getPosition()));
 			assertEquals("String arg[]", contentAtPosition(classContent, param.getType().getPosition()));
 		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m4").get(0).getParameters().get(0);
+			assertEquals("/*1*/ String /*2*/ arg /*3*/ [ /*4*/ ]", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String /*2*/ arg /*3*/ [ /*4*/ ]", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m5").get(0).getParameters().get(0);
+			assertEquals("/*1*/ String /*2*/ arg /*3*/ [ /*4 []*/ ] /* 5 */[][]/**/ []", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String /*2*/ arg /*3*/ [ /*4 []*/ ] /* 5 */[][]/**/ []", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m6").get(0).getParameters().get(0);
+			assertEquals("String[]//[]\n" + 
+					"			p[]", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String[]//[]\n" + 
+					"			p[]", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m7").get(0).getParameters().get(0);
+			assertEquals("String...arg", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String...", contentAtPosition(classContent, param.getType().getPosition()));
+		}
+		{
+			CtParameter<?> param = foo.getMethodsByName("m8").get(0).getParameters().get(0);
+			assertEquals("String[]...arg", contentAtPosition(classContent, param.getPosition()));
+			assertEquals("String[]...", contentAtPosition(classContent, param.getType().getPosition()));
+		}
 	}
 	
 	@Test
