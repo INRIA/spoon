@@ -982,4 +982,34 @@ public class PositionTest {
 					"			break;", contentAtPosition(classContent, caseStmt.getPosition()));
 		}
 	}
+	@Test
+	public void testFooForEach() throws Exception {
+		//contract: check position of the for each position
+		final CtType<?> foo = ModelUtils.buildClass(FooForEach.class);
+		
+		String classContent = getClassContent(foo);
+		List<CtForEach> stmts = (List) foo.getMethodsByName("m").get(0).getBody().getStatements();
+		int caseIdx = 0;
+		{
+			CtForEach forEach = stmts.get(caseIdx++);
+			assertEquals("for (String item : items) {}", contentAtPosition(classContent, forEach.getPosition()));
+			assertEquals("String item", contentAtPosition(classContent, forEach.getVariable().getPosition()));
+			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
+		}
+		{
+			CtForEach forEach = stmts.get(caseIdx++);
+			assertEquals("for (final String item : items) {\n" + 
+					"		}", contentAtPosition(classContent, forEach.getPosition()));
+			assertEquals("final String item", contentAtPosition(classContent, forEach.getVariable().getPosition()));
+			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
+		}
+		{
+			CtForEach forEach = stmts.get(caseIdx++);
+			assertEquals("for (/*1*/ final @Deprecated /*2*/ String /*3*/ i /*4*/ : items) \n" + 
+					"			this.getClass();", contentAtPosition(classContent, forEach.getPosition()));
+			assertEquals("/*1*/ final @Deprecated /*2*/ String /*3*/ i", contentAtPosition(classContent, forEach.getVariable().getPosition()));
+			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
+		}
+	}
+	
 }

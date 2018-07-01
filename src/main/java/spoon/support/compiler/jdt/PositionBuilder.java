@@ -41,6 +41,7 @@ import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTry;
@@ -198,6 +199,21 @@ public class PositionBuilder {
 					return handlePositionProblem("Unexpected character " + contents[bracketStart] + " instead of \'(\' after catch statement on offset: " + bracketStart);
 				}
 				declarationSourceStart = bracketStart + 1;
+			}
+			CtElement parent = this.jdtTreeBuilder.getContextBuilder().getContextElementOnLevel(1);
+			if (parent instanceof CtForEach) {
+				CtForEach forEach = (CtForEach) parent;
+				//compiler deliver wrong local variable position when for(...:...) starts with line comment
+				int parentStart = parent.getPosition().getSourceStart();
+				if (contents[parentStart] != 'f' || contents[parentStart + 1] != 'o' || contents[parentStart + 2] != 'r') {
+					return handlePositionProblem("Expected keyword for at offset: " + parentStart);
+				}
+				int bracketOff = findNextNonWhitespace(contents, forEach.getPosition().getSourceEnd(), parentStart + 3);
+				if (bracketOff < 0 || contents[bracketOff] != '(') {
+					return handlePositionProblem("Expected character after \'for\' instead of \'(\' at offset: " + (parentStart + 3));
+				}
+				declarationSourceStart = bracketOff + 1;
+				declarationSourceEnd = sourceEnd;
 			}
 
 			if (variableDeclaration instanceof Argument && variableDeclaration.type instanceof ArrayTypeReference) {
@@ -382,6 +398,9 @@ public class PositionBuilder {
 
 		if (e instanceof CtModifiable) {
 			setModifiersPosition((CtModifiable) e, sourceStart, sourceEnd);
+		}
+		if (sourceStart == 0 && sourceEnd == 0) {
+			return SourcePosition.NOPOSITION;
 		}
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
