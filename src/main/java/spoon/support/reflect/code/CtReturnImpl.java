@@ -21,7 +21,6 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
@@ -29,7 +28,7 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
 public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = EXPRESSION)
 	CtExpression<R> returnedExpression;
 
 	@Override

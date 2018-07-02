@@ -19,7 +19,6 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.CONDITION;
@@ -28,10 +27,10 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
 public class CtAssertImpl<T> extends CtStatementImpl implements CtAssert<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.CONDITION)
+	@MetamodelPropertyField(role = CONDITION)
 	CtExpression<Boolean> asserted;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = EXPRESSION)
 	CtExpression<T> value;
 
 	@Override

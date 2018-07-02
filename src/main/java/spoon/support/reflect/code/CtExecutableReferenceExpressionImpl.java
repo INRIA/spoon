@@ -19,14 +19,13 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 
 public class CtExecutableReferenceExpressionImpl<T, E extends CtExpression<?>> extends CtTargetedExpressionImpl<T, E> implements CtExecutableReferenceExpression<T, E> {
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
+	@MetamodelPropertyField(role = EXECUTABLE_REF)
 	CtExecutableReference<T> executable;
 
 	@Override

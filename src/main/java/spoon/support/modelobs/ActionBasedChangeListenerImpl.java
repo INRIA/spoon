@@ -14,17 +14,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs;
+package spoon.support.modelobs;
 
-import spoon.experimental.modelobs.action.Action;
-import spoon.experimental.modelobs.action.AddAction;
-import spoon.experimental.modelobs.action.DeleteAction;
-import spoon.experimental.modelobs.action.DeleteAllAction;
-import spoon.experimental.modelobs.action.UpdateAction;
-import spoon.experimental.modelobs.context.ListContext;
-import spoon.experimental.modelobs.context.MapContext;
-import spoon.experimental.modelobs.context.ObjectContext;
-import spoon.experimental.modelobs.context.SetContext;
+import spoon.support.modelobs.action.Action;
+import spoon.support.modelobs.action.AddAction;
+import spoon.support.modelobs.action.DeleteAction;
+import spoon.support.modelobs.action.DeleteAllAction;
+import spoon.support.modelobs.action.UpdateAction;
+import spoon.support.modelobs.context.ListContext;
+import spoon.support.modelobs.context.MapContext;
+import spoon.support.modelobs.context.ObjectContext;
+import spoon.support.modelobs.context.SetContext;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;

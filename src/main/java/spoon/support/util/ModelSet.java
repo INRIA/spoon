@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.SpoonException;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 

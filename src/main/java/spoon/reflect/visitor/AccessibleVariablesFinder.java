@@ -68,10 +68,12 @@ public class AccessibleVariablesFinder {
 			public void visitCtStatementList(CtStatementList e) {
 				for (int i = 0; i < e.getStatements().size(); i++) {
 					CtStatement ctStatement = e.getStatements().get(i);
-					if (ctStatement.getPosition().isValidPosition()
+
+					if (expression.getPosition().isValidPosition() && ctStatement.getPosition().isValidPosition()
 							&& ctStatement.getPosition().getSourceStart() > expression.getPosition().getSourceEnd()) {
 						break;
 					}
+
 					if (ctStatement instanceof CtVariable) {
 						variables.add((CtVariable) ctStatement);
 					}

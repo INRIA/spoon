@@ -14,45 +14,36 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.context;
+package spoon.support.modelobs.context;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-import java.util.Map;
-
 /**
- * defines the map context
- * @param <K>
- * @param <V>
+ * defines the context of an action
  */
-public class MapContext<K, V> extends Context {
-	private final Map<K, V> map;
-	private  K key;
+public abstract class Context {
+	private CtElement elementWhereChangeHappens;
+	private CtRole changedProperty;
 
-	public MapContext(CtElement element, CtRole role, Map<K, V> map) {
-		super(element, role);
-		this.map = map;
-	}
-
-	public MapContext(CtElement element, CtRole role, Map<K, V> map, K key) {
-		this(element, role, map);
-		this.key = key;
+	public Context(CtElement element, CtRole changedProperty) {
+		this.elementWhereChangeHappens = element;
+		this.changedProperty = changedProperty;
 	}
 
 	/**
-	 * get the changed key
-	 * @return the changed key
+	 * the changed parent
+	 * @return the changed parent
 	 */
-	public K getKey() {
-		return key;
+	public CtElement getElementWhereChangeHappens() {
+		return elementWhereChangeHappens;
 	}
 
 	/**
-	 * the changed map
-	 * @return the changed map
+	 * the role that has been modified
+	 * @return the role that has been modified
 	 */
-	public Map<K, V> getMap() {
-		return map;
+	public CtRole getChangedProperty() {
+		return changedProperty;
 	}
 }

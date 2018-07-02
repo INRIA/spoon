@@ -100,6 +100,11 @@ public class Launcher implements SpoonAPI {
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
 	/**
+	 * This field is used to ensure that {@link #setArgs(String[])} is only called once.
+ 	 */
+	private boolean processed = false;
+
+	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
 	 */
@@ -123,6 +128,11 @@ public class Launcher implements SpoonAPI {
 
 	public void setArgs(String[] args2) {
 		this.commandLineArgs = args2;
+		if (processed) {
+			throw new SpoonException("You cannot process twice the same launcher instance.");
+		}
+		processed = true;
+
 		processArguments();
 	}
 

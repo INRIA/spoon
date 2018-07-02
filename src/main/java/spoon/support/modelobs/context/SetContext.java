@@ -14,32 +14,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.action;
+package spoon.support.modelobs.context;
 
-import spoon.experimental.modelobs.context.Context;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 
-/**
- * defines the delete action
- * @param <T>
- */
-public class DeleteAction<T> extends Action {
-	private T oldValue;
+import java.util.Set;
 
-	public DeleteAction(Context context, T oldValue) {
-		super(context);
-		this.oldValue = oldValue;
-	}
+public class SetContext extends CollectionContext<Set<?>> {
 
-	@Override
-	public T getChangedValue() {
-		return getRemovedValue();
-	}
-
-	/**
-	 * Returns the removed element
-	 * @return the removed element
-	 */
-	public T getRemovedValue() {
-		return oldValue;
+	public SetContext(CtElement element, CtRole role, Set<?> original) {
+		super(element, role, original);
 	}
 }

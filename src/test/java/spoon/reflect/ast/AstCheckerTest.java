@@ -2,7 +2,7 @@ package spoon.reflect.ast;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtIf;

@@ -14,36 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.context;
-
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+package spoon.support;
 
 /**
- * defines the context of an action
+ *	Different types of compressions used, e.g. for serialization
+ *	@see SerializationModelStreamer
  */
-public abstract class Context {
-	private CtElement elementWhereChangeHappens;
-	private CtRole changedProperty;
+public enum CompressionType {
 
-	public Context(CtElement element, CtRole changedProperty) {
-		this.elementWhereChangeHappens = element;
-		this.changedProperty = changedProperty;
-	}
+	NONE,
+	GZIP;
 
-	/**
-	 * the changed parent
-	 * @return the changed parent
-	 */
-	public CtElement getElementWhereChangeHappens() {
-		return elementWhereChangeHappens;
-	}
-
-	/**
-	 * the role that has been modified
-	 * @return the role that has been modified
-	 */
-	public CtRole getChangedProperty() {
-		return changedProperty;
-	}
 }

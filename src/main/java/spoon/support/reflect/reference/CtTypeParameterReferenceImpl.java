@@ -23,7 +23,6 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -44,10 +43,10 @@ import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.BOUNDING_TYPE)
+	@MetamodelPropertyField(role = BOUNDING_TYPE)
 	CtTypeReference<?> superType;
 
-	@MetamodelPropertyField(role = CtRole.IS_UPPER)
+	@MetamodelPropertyField(role = IS_UPPER)
 	boolean upper = true;
 
 	public CtTypeParameterReferenceImpl() {

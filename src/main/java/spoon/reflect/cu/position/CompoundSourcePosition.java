@@ -14,28 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.action;
+package spoon.reflect.cu.position;
 
-import spoon.experimental.modelobs.context.Context;
+import spoon.reflect.cu.SourcePosition;
 
-public class AddAction<T>  extends Action {
-	private T newValue;
+/**
+ * This interface represents the position of a program element like an expression in a source file.
+ * The start/end represents range of whole program element including children element and comments
+ * The nameStart/End represents range of core part of program element.
+ */
+public interface CompoundSourcePosition extends SourcePosition {
 
-	public AddAction(Context context, T newValue) {
-		super(context);
-		this.newValue = newValue;
-	}
+	int getNameStart();
 
-	@Override
-	public T getChangedValue() {
-		return getNewValue();
-	}
+	int getNameEnd();
 
-	/**
-	 * Returns the added element
-	 * @return the new element
-	 */
-	public T getNewValue() {
-		return newValue;
-	}
 }
