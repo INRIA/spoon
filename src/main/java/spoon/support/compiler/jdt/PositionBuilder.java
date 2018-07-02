@@ -445,13 +445,15 @@ public class PositionBuilder {
 		CtTry tryElement = catcher.getParent(CtTry.class);
 		//offset after last bracket before catch
 		int declarationStart = getEndOfLastTryBlock(tryElement, 1) + 1;
-		DeclarationSourcePosition oldCatcherPos = (DeclarationSourcePosition) catcher.getParameter().getPosition();
+		DeclarationSourcePosition paramPos = (DeclarationSourcePosition) catcher.getParameter().getPosition();
 		int bodyStart = catcher.getBody().getPosition().getSourceStart();
 		int bodyEnd = catcher.getBody().getPosition().getSourceEnd();
 		return catcher.getFactory().Core().createBodyHolderSourcePosition(
 				tryElement.getPosition().getCompilationUnit(),
-				oldCatcherPos.getNameStart(), oldCatcherPos.getNameEnd(),
-				oldCatcherPos.getModifierSourceStart(), oldCatcherPos.getModifierSourceEnd(),
+				//on the place of name there is catch variable
+				paramPos.getSourceStart(), paramPos.getSourceEnd(),
+				//catch has no modifiers, They are in catch variable
+				declarationStart, declarationStart - 1,
 				declarationStart, bodyEnd,
 				bodyStart, bodyEnd,
 				lineSeparatorPositions);
