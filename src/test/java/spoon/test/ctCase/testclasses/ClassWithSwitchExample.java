@@ -1,4 +1,4 @@
-package spoon.test.ctCase;
+package spoon.test.ctCase.testclasses;
 
 public class ClassWithSwitchExample {
 
