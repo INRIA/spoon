@@ -63,8 +63,14 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 		return super.getSourceEnd();
 	}
 
+	@Override
 	public int getEndLine() {
 		return searchLineNumber(declarationSourceEnd);
+	}
+
+	@Override
+	public int getEndColumn() {
+		return searchColumnNumber(declarationSourceEnd);
 	}
 
 	@Override
