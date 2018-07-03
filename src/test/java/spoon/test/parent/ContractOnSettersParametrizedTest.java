@@ -1,42 +1,31 @@
 package spoon.test.parent;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
-import spoon.experimental.modelobs.ActionBasedChangeListenerImpl;
-import spoon.experimental.modelobs.action.Action;
-import spoon.reflect.declaration.CtClass;
+import spoon.support.modelobs.ActionBasedChangeListenerImpl;
+import spoon.support.modelobs.action.Action;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
-import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.test.SpoonTestHelpers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**

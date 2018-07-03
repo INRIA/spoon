@@ -131,11 +131,14 @@ public class ReferenceBuilder {
 	 * @return a type reference.
 	 */
 	<T> CtTypeReference<T> buildTypeReference(TypeReference type, Scope scope) {
+		return buildTypeReference(type, scope, false);
+	}
+	<T> CtTypeReference<T> buildTypeReference(TypeReference type, Scope scope, boolean isTypeCast) {
 		if (type == null) {
 			return null;
 		}
 		CtTypeReference<T> typeReference = this.<T>getTypeReference(type.resolvedType, type);
-		return buildTypeReferenceInternal(typeReference, type, scope);
+		return buildTypeReferenceInternal(typeReference, type, scope, isTypeCast);
 	}
 
 	/**
@@ -173,11 +176,11 @@ public class ReferenceBuilder {
 		if (type == null) {
 			return null;
 		}
-		return (CtTypeParameterReference) this.buildTypeReferenceInternal(this.getTypeParameterReference(type.resolvedType, type), type, scope);
+		return (CtTypeParameterReference) this.buildTypeReferenceInternal(this.getTypeParameterReference(type.resolvedType, type), type, scope, false);
 	}
 
 
-	private <T> CtTypeReference<T> buildTypeReferenceInternal(CtTypeReference<T> typeReference, TypeReference type, Scope scope) {
+	private <T> CtTypeReference<T> buildTypeReferenceInternal(CtTypeReference<T> typeReference, TypeReference type, Scope scope, boolean isTypeCast) {
 		if (type == null) {
 			return null;
 		}
@@ -187,7 +190,9 @@ public class ReferenceBuilder {
 			if (currentReference == null) {
 				break;
 			}
+			this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast = isTypeCast;
 			this.jdtTreeBuilder.getContextBuilder().enter(currentReference, type);
+			this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast = false;
 			if (type.annotations != null && type.annotations.length - 1 <= position && type.annotations[position] != null && type.annotations[position].length > 0) {
 				for (Annotation annotation : type.annotations[position]) {
 					if (scope instanceof ClassScope) {
@@ -625,7 +630,13 @@ public class ReferenceBuilder {
 				}
 			}
 		} else if (Character.isUpperCase(name.charAt(0))) {
-			main = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			if (name.endsWith("[]")) {
+				main = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
+				name = name.substring(0, name.length() - 2);
+				((CtArrayTypeReference<T>) main).setComponentType(this.getTypeReference(name));
+			} else {
+				main = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			}
 			main.setSimpleName(name);
 			final CtReference declaring = this.getDeclaringReferenceFromImports(name.toCharArray());
 			setPackageOrDeclaringType(main, declaring);

@@ -10,7 +10,6 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtType;

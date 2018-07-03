@@ -182,6 +182,7 @@ public class IncrementalLauncher extends Launcher {
 		} else {
 			// Load model from cache.
 			Factory oldFactory = loadFactory(mModelFile);
+			oldFactory.getModel().setBuildModelIsFinished(false);
 
 			// Build model incrementally.
 			mRemovedSources = new HashSet<File>(CollectionUtils.subtract(mCacheInfo.inputSourcesMap.keySet(), mInputSources));

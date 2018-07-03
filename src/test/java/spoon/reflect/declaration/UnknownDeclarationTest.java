@@ -6,7 +6,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtScanner;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -14,32 +13,32 @@ import static org.junit.Assert.assertNull;
  */
 public class UnknownDeclarationTest {
 
-    private static class ExecutableReferenceVisitor extends CtScanner {
+	private static class ExecutableReferenceVisitor extends CtScanner {
 
-        int referenceCounter = 0;
+		int referenceCounter = 0;
 
-        @Override
-        public <T> void visitCtExecutableReference(final CtExecutableReference<T> reference) {
-            final CtExecutable executable = reference.getDeclaration();
-            assertNull(executable);
+		@Override
+		public <T> void visitCtExecutableReference(final CtExecutableReference<T> reference) {
+			final CtExecutable executable = reference.getDeclaration();
+			assertNull(executable);
 
-            referenceCounter++;
-        }
-    }
+			referenceCounter++;
+		}
+	}
 
-    @Test
-    public void testUnknownCalls() {
-        final Launcher runLaunch = new Launcher();
-        runLaunch.getEnvironment().setNoClasspath(true);
-        runLaunch.addInputResource("./src/test/resources/noclasspath/UnknownCalls.java");
-        runLaunch.buildModel();
+	@Test
+	public void testUnknownCalls() {
+		final Launcher runLaunch = new Launcher();
+		runLaunch.getEnvironment().setNoClasspath(true);
+		runLaunch.addInputResource("./src/test/resources/noclasspath/UnknownCalls.java");
+		runLaunch.buildModel();
 
-        final CtPackage rootPackage = runLaunch.getFactory().Package().getRootPackage();
-        final ExecutableReferenceVisitor visitor = new ExecutableReferenceVisitor();
-        visitor.scan(rootPackage);
-        // super constructor to Object +
-        // UnknownClass constructor +
-        // UnknownClass method
-        assertEquals(3, visitor.referenceCounter);
-    }
+		final CtPackage rootPackage = runLaunch.getFactory().Package().getRootPackage();
+		final ExecutableReferenceVisitor visitor = new ExecutableReferenceVisitor();
+		visitor.scan(rootPackage);
+		// super constructor to Object +
+		// UnknownClass constructor +
+		// UnknownClass method
+		assertEquals(3, visitor.referenceCounter);
+	}
 }

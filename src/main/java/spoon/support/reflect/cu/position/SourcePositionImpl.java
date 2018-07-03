@@ -65,7 +65,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	/**
 	 * Search the column number
 	 */
-	private int searchColumnNumber(int position) {
+	protected int searchColumnNumber(int position) {
 		if (lineSeparatorPositions == null) {
 			return -1;
 		}

@@ -24,6 +24,8 @@ import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
@@ -32,9 +34,17 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.Wildcard;
+
 import spoon.SpoonException;
+import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -42,9 +52,12 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.CoreFactory;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -67,12 +80,16 @@ public class PositionBuilder {
 	}
 
 	SourcePosition buildPositionCtElement(CtElement e, ASTNode node) {
+		if (e instanceof CtCatch) {
+			//we cannot compute position of CtCatch, because we do not know position of it's body yet
+			//it is computed later by #buildPosition(CtCatch)
+			return SourcePosition.NOPOSITION;
+		}
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
 		char[] contents = cr.compilationUnit.getContents();
-
 
 		int sourceStart = node.sourceStart;
 		int sourceEnd = node.sourceEnd;
@@ -90,6 +107,58 @@ public class PositionBuilder {
 			if (statementEnd > 0) {
 				sourceEnd = statementEnd;
 			}
+
+			if (this.jdtTreeBuilder.getContextBuilder().isBuildTypeCast && e instanceof CtTypeReference) {
+				//the type cast reference must be enclosed with brackets
+				int declarationSourceStart = sourceStart;
+				int declarationSourceEnd = sourceEnd;
+				declarationSourceStart = findPrevNonWhitespace(contents, getParentsSourceStart(), declarationSourceStart - 1);
+				if (contents[declarationSourceStart] != '(') {
+					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of cast expression on offset: " + declarationSourceStart);
+				}
+				declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
+				if (contents[declarationSourceEnd] != ')') {
+					return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of cast expression on offset: " + declarationSourceEnd);
+				}
+				return cf.createCompoundSourcePosition(cu,
+						sourceStart, sourceEnd,
+						declarationSourceStart, declarationSourceEnd,
+						lineSeparatorPositions);
+			}
+
+			List<CastInfo> casts = this.jdtTreeBuilder.getContextBuilder().casts;
+
+			if (casts.size() > 0 && e instanceof CtExpression) {
+				int declarationSourceStart = sourceStart;
+				int declarationSourceEnd = sourceEnd;
+				SourcePosition pos = casts.get(0).typeRef.getPosition();
+				if (pos.isValidPosition()) {
+					declarationSourceStart = pos.getSourceStart();
+					int nrOfBrackets = getNrOfFirstCastExpressionBrackets();
+					while (nrOfBrackets > 0) {
+						declarationSourceStart = findPrevNonWhitespace(contents, getParentsSourceStart(), declarationSourceStart - 1);
+						if (declarationSourceStart < 0) {
+							return handlePositionProblem("Cannot found beginning of cast expression until offset: " + getParentsSourceStart());
+						}
+						if (contents[declarationSourceStart] != '(') {
+							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at start of expression on offset: " + declarationSourceStart);
+						}
+						nrOfBrackets--;
+					}
+					nrOfBrackets = getNrOfCastExpressionBrackets();
+					while (nrOfBrackets > 0) {
+						declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
+						if (contents[declarationSourceEnd] != ')') {
+							return handlePositionProblem("Unexpected character \'" + contents[declarationSourceStart] + "\' at end of expression on offset: " + declarationSourceEnd);
+						}
+						nrOfBrackets--;
+					}
+				}
+				return cf.createCompoundSourcePosition(cu,
+						sourceStart, sourceEnd,
+						declarationSourceStart, declarationSourceEnd,
+						lineSeparatorPositions);
+			}
 		}
 
 		if (node instanceof TypeParameter) {
@@ -104,18 +173,73 @@ public class PositionBuilder {
 			int modifiersSourceStart = variableDeclaration.modifiersSourceStart;
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
+			if (declarationSourceStart == 0 && declarationSourceEnd == 0) {
+				return SourcePosition.NOPOSITION;
+			}
+			if (e instanceof CtCatchVariable) {
+				/* compiler delivers wrong declarationSourceStart in case like: */
+				//... catch/*2*/ ( /*3*/ final @Deprecated /*4*/ ClassCastException /*5*/ e /*6*/) /*7*/ {
+				/*
+				 * the declarationSourceStart should be after the '(', but sometime it is before
+				 * So we have to compute correct offset here
+				 */
+				CtTry tryStatement = this.jdtTreeBuilder.getContextBuilder().getParentElementOfType(CtTry.class);
+				int endOfTry = tryStatement.getPosition().getSourceEnd();
+				//offset of the bracket before catch
+				int lastBracket = getEndOfLastTryBlock(tryStatement, 0);
+				int catchStart = findNextNonWhitespace(contents, endOfTry, lastBracket + 1);
+				if (CATCH.equals(new String(contents, catchStart, CATCH.length())) == false) {
+					return handlePositionProblem("Unexpected beginning of catch statement on offset: " + catchStart);
+				}
+				int bracketStart = findNextNonWhitespace(contents, endOfTry, catchStart + CATCH.length());
+				if (bracketStart < 0) {
+					return handlePositionProblem("Unexpected end of file instead of \'(\' after catch statement on offset: " + catchStart);
+				}
+				if (contents[bracketStart] != '(') {
+					return handlePositionProblem("Unexpected character " + contents[bracketStart] + " instead of \'(\' after catch statement on offset: " + bracketStart);
+				}
+				declarationSourceStart = bracketStart + 1;
+			}
+			CtElement parent = this.jdtTreeBuilder.getContextBuilder().getContextElementOnLevel(1);
+			if (parent instanceof CtForEach) {
+				CtForEach forEach = (CtForEach) parent;
+				//compiler deliver wrong local variable position when for(...:...) starts with line comment
+				int parentStart = parent.getPosition().getSourceStart();
+				if (contents[parentStart] != 'f' || contents[parentStart + 1] != 'o' || contents[parentStart + 2] != 'r') {
+					return handlePositionProblem("Expected keyword for at offset: " + parentStart);
+				}
+				int bracketOff = findNextNonWhitespace(contents, forEach.getPosition().getSourceEnd(), parentStart + 3);
+				if (bracketOff < 0 || contents[bracketOff] != '(') {
+					return handlePositionProblem("Expected character after \'for\' instead of \'(\' at offset: " + (parentStart + 3));
+				}
+				declarationSourceStart = bracketOff + 1;
+				declarationSourceEnd = sourceEnd;
+			}
 
-			int length = variableDeclaration.toString().length();
-			if (length > (declarationSourceEnd - declarationSourceStart)) {
-				declarationSourceEnd = declarationSourceStart + length - 1;
+			if (variableDeclaration instanceof Argument && variableDeclaration.type instanceof ArrayTypeReference) {
+				//handle type declarations like `String[] arg` `String arg[]` and `String []arg[]`
+				ArrayTypeReference arrTypeRef = (ArrayTypeReference) variableDeclaration.type;
+				int dimensions = arrTypeRef.dimensions();
+				if (dimensions > 0) {
+					//count number of brackets between type and variable name
+					int foundDimensions = getNrOfDimensions(contents, declarationSourceStart, declarationSourceEnd);
+					while (dimensions > foundDimensions) {
+						//some brackets are after the variable name
+						declarationSourceEnd = findNextChar(contents, contents.length, declarationSourceEnd + 1, ']');
+						if (declarationSourceEnd < 0) {
+							return handlePositionProblem("Unexpected array type declaration on offset: " + declarationSourceStart);
+						}
+						foundDimensions++;
+					}
+				}
 			}
 
 			if (modifiersSourceStart <= 0) {
-				modifiersSourceStart = declarationSourceStart;
+				modifiersSourceStart = findNextNonWhitespace(contents, contents.length - 1, declarationSourceStart);
 			}
 			int modifiersSourceEnd;
 			if (variableDeclaration.type != null) {
-				modifiersSourceEnd = variableDeclaration.type.sourceStart() - 2;
+				modifiersSourceEnd = findPrevNonWhitespace(contents, declarationSourceStart, variableDeclaration.type.sourceStart() - 1);
 			} else if (variableDeclaration instanceof Initializer) {
 				modifiersSourceEnd = ((Initializer) variableDeclaration).block.sourceStart - 1;
 			} else {
@@ -225,14 +349,14 @@ public class PositionBuilder {
 			if (e instanceof CtStatementList) {
 				return cf.createSourcePosition(cu, bodyStart - 1, bodyEnd + 1, lineSeparatorPositions);
 			} else {
-				if (bodyStart < bodyEnd) {
-					//include brackets if they are there
-					if (contents[bodyStart - 1] == '{') {
-						bodyStart--;
-						if (contents[bodyEnd + 1] == '}') {
-							bodyEnd++;
-						} else {
-							throw new SpoonException("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
+				//include brackets if they are there
+				if (contents[bodyStart - 1] == '{') {
+					bodyStart--;
+					if (contents[bodyEnd + 1] == '}') {
+						bodyEnd++;
+					} else {
+						if (bodyStart < bodyEnd) {
+							return handlePositionProblem("Missing body end in\n" + new String(contents, sourceStart, sourceEnd - sourceStart));
 						}
 					}
 				}
@@ -244,47 +368,144 @@ public class PositionBuilder {
 						lineSeparatorPositions);
 			}
 		} else if (e instanceof CtCatchVariable) {
-			Iterator<ASTPair> iterator = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
-			ASTPair catchNode = iterator.next();
-			while (!(catchNode.node instanceof Argument)) {
-				catchNode = iterator.next();
+			ASTPair pair = this.jdtTreeBuilder.getContextBuilder().getParentContextOfType(CtCatch.class);
+			if (pair == null) {
+				return handlePositionProblem("There is no CtCatch parent for CtCatchVariable");
 			}
-			DeclarationSourcePosition argumentPosition = (DeclarationSourcePosition) buildPositionCtElement(e, catchNode.node);
-
-			int variableNameStart = findNextNonWhitespace(contents, argumentPosition.getSourceEnd(), sourceEnd + 1);
-			int variableNameEnd = argumentPosition.getSourceEnd();
-
-			int modifierStart = sourceStart;
-			int modifierEnd = sourceStart - 1;
-			if (!getModifiers(((Argument) catchNode.node).modifiers, false, false).isEmpty()) {
-				modifierStart = argumentPosition.getModifierSourceStart();
-				modifierEnd = argumentPosition.getModifierSourceEnd();
-
-				sourceStart = modifierStart;
-			}
-			sourceEnd = argumentPosition.getSourceEnd();
-			return cf.createDeclarationSourcePosition(cu,
-					variableNameStart, variableNameEnd,
-					modifierStart, modifierEnd,
-					sourceStart, sourceEnd,
-					lineSeparatorPositions);
+			//build position with appropriate context
+			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
 			AllocationExpression allocationExpression = (AllocationExpression) node;
 			if (allocationExpression.enumConstant != null) {
 				FieldDeclaration fieldDeclaration = allocationExpression.enumConstant;
-
+				//1) skip comments
+				sourceStart = findNextNonWhitespace(contents, sourceEnd, sourceStart);
+				//2) move to beginning of enum construction
 				sourceStart += fieldDeclaration.name.length;
+			}
+		} else if (node instanceof CaseStatement) {
+			CaseStatement caseStmt = (CaseStatement) node;
+			sourceEnd = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
+			if (sourceEnd < 0) {
+				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
+			}
+			if (contents[sourceEnd] != ':') {
+				return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' in CtCase on: " + sourceEnd);
 			}
 		}
 
 		if (e instanceof CtModifiable) {
 			setModifiersPosition((CtModifiable) e, sourceStart, sourceEnd);
 		}
+		if (sourceStart == 0 && sourceEnd == 0) {
+			return SourcePosition.NOPOSITION;
+		}
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
+	private int getParentsSourceStart() {
+		Iterator<ASTPair> iter = this.jdtTreeBuilder.getContextBuilder().stack.iterator();
+		if (iter.hasNext()) {
+			iter.next();
+			if (iter.hasNext()) {
+				ASTPair pair = iter.next();
+				SourcePosition pos = pair.element.getPosition();
+				if (pos.isValidPosition()) {
+					return pos.getSourceStart();
+				}
+			}
+		}
+		return 0;
+	}
+
+	private int getNrOfDimensions(char[] contents, int start, int end) {
+		int nrDims = 0;
+		while ((start = findNextNonWhitespace(contents, end, start)) >= 0) {
+			if (contents[start] == ']') {
+				nrDims++;
+			}
+			if (contents[start] == '.' && start + 2 <= end && contents[start + 1] == '.' && contents[start + 2] == '.') {
+				//String...arg is same like String[] arg, so it is counted as dimension too
+				start = start + 2;
+				nrDims++;
+			}
+			start++;
+		}
+		return nrDims;
+	}
+
+	private static final String CATCH = "catch";
+
+	SourcePosition buildPosition(CtCatch catcher) {
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+
+		CtTry tryElement = catcher.getParent(CtTry.class);
+		//offset after last bracket before catch
+		int declarationStart = getEndOfLastTryBlock(tryElement, 1) + 1;
+		DeclarationSourcePosition paramPos = (DeclarationSourcePosition) catcher.getParameter().getPosition();
+		int bodyStart = catcher.getBody().getPosition().getSourceStart();
+		int bodyEnd = catcher.getBody().getPosition().getSourceEnd();
+		return catcher.getFactory().Core().createBodyHolderSourcePosition(
+				tryElement.getPosition().getCompilationUnit(),
+				//on the place of name there is catch variable
+				paramPos.getSourceStart(), paramPos.getSourceEnd(),
+				//catch has no modifiers, They are in catch variable
+				declarationStart, declarationStart - 1,
+				declarationStart, bodyEnd,
+				bodyStart, bodyEnd,
+				lineSeparatorPositions);
+	}
+
+	SourcePosition buildPosition(CtCase<?> child) {
+		List<CtStatement> statements = child.getStatements();
+		SourcePosition oldPosition = child.getPosition();
+		if (statements.isEmpty()) {
+			//There are no statements. Keep origin position
+			return oldPosition;
+		}
+		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
+		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+
+		int bodyStart = child.getPosition().getSourceEnd() + 1;
+		int bodyEnd = statements.get(statements.size() - 1).getPosition().getSourceEnd();
+		return child.getFactory().Core().createBodyHolderSourcePosition(
+				oldPosition.getCompilationUnit(),
+				oldPosition.getSourceStart(), oldPosition.getSourceEnd(),
+				oldPosition.getSourceStart(), oldPosition.getSourceStart() - 1,
+				oldPosition.getSourceStart(), bodyEnd,
+				bodyStart, bodyEnd,
+				lineSeparatorPositions);
+	}
+
+	/**
+	 * @param tryElement
+	 * @param negIdx 0 - last block, 1 - one before last block, ...
+	 * @return
+	 */
+	private int getEndOfLastTryBlock(CtTry tryElement, int negIdx) {
+		//offset where we can start to search for catch
+		int endOfLastBlock = tryElement.getBody().getPosition().getSourceEnd();
+		if (tryElement.getCatchers().size() > negIdx) {
+			CtCatch prevCatcher = tryElement.getCatchers().get(tryElement.getCatchers().size() - 1 - negIdx);
+			endOfLastBlock = prevCatcher.getPosition().getSourceEnd();
+		}
+		return endOfLastBlock;
+	}
+
+	private int getNrOfFirstCastExpressionBrackets() {
+		return this.jdtTreeBuilder.getContextBuilder().casts.get(0).nrOfBrackets;
+	}
+
+	private int getNrOfCastExpressionBrackets() {
+		int nr = 0;
+		for (CastInfo castInfo : this.jdtTreeBuilder.getContextBuilder().casts) {
+			nr += castInfo.nrOfBrackets;
+		}
+		return nr;
+	}
 
 	private void setModifiersPosition(CtModifiable e, int start, int end) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
@@ -312,7 +533,7 @@ public class PositionBuilder {
 
 	private int getSourceEndOfTypeReference(char[] contents, TypeReference node, int sourceEnd) {
 		//e.g. SomeType<String,T>
-		TypeReference[][] typeArgs = ((TypeReference) node).getTypeArguments();
+		TypeReference[][] typeArgs = node.getTypeArguments();
 		if (typeArgs != null && typeArgs.length > 0) {
 			TypeReference[] trs = typeArgs[typeArgs.length - 1];
 			if (trs != null && trs.length > 0) {
@@ -321,11 +542,33 @@ public class PositionBuilder {
 					//the sourceEnd of reference is smaller then source of type argument of this reference
 					//move sourceEnd so that type argument is included in sources
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
-					sourceEnd = findNextNonWhitespace(contents, contents.length, tr.sourceEnd + 1);
+					sourceEnd = findNextNonWhitespace(contents, contents.length - 1, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
 			}
 		}
+		if (node instanceof Wildcard) {
+			Wildcard wildcard = (Wildcard) node;
+			if (wildcard.bound != null) {
+				sourceEnd = getSourceEndOfTypeReference(contents, wildcard.bound, sourceEnd);
+			}
+		}
 		return sourceEnd;
+	}
+
+	/**
+	 * @return index of first character `expectedChar`, searching forward..
+	 * Can return 'off' if it `expectedChar`.
+	 * Note: all kinds of java comments are understood as whitespace.
+	 * The search must start out of comment or on the first character of the comment
+	 */
+	private int findNextChar(char[] contents, int maxOff, int off, char expectedChar) {
+		while ((off = findNextNonWhitespace(contents, maxOff, off)) >= 0) {
+			if (contents[off] == expectedChar) {
+				return off;
+			}
+			off++;
+		}
+		return -1;
 	}
 
 	/**
@@ -496,4 +739,13 @@ public class PositionBuilder {
 		}
 		return -1;
 	}
+
+	private SourcePosition handlePositionProblem(String errorMessage) {
+		if (jdtTreeBuilder.getFactory().getEnvironment().checksAreSkipped()) {
+			jdtTreeBuilder.getFactory().getEnvironment().debugMessage("Source position detection failed: " + errorMessage);
+			return SourcePosition.NOPOSITION;
+		}
+		throw new SpoonException("Source position detection failed: " + errorMessage);
+	}
+
 }

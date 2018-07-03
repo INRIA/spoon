@@ -16,29 +16,6 @@
  */
 package spoon.support;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import spoon.Launcher;
-import spoon.OutputType;
-import spoon.SpoonException;
-import spoon.compiler.Environment;
-import spoon.compiler.InvalidClassPathException;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-import spoon.experimental.modelobs.EmptyModelChangeListener;
-import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.processing.FileGenerator;
-import spoon.processing.ProblemFixer;
-import spoon.processing.ProcessingManager;
-import spoon.processing.Processor;
-import spoon.processing.ProcessorProperties;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +29,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import spoon.Launcher;
+import spoon.OutputType;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+import spoon.support.modelobs.EmptyModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
+import spoon.processing.FileGenerator;
+import spoon.processing.ProblemFixer;
+import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
+import spoon.processing.ProcessorProperties;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
+
 
 /**
  * This class implements a simple Spoon environment that reports messages in the
@@ -63,11 +64,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
 
-	private FileGenerator<? extends CtElement> defaultFileGenerator;
+	private transient  FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
 
-	ProcessingManager manager;
+	transient ProcessingManager manager;
 
 	private boolean processingStopped = false;
 
@@ -83,7 +84,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean enableComments = true;
 
-	private Logger logger = Launcher.LOGGER;
+	private transient  Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.OFF;
 
@@ -91,19 +92,21 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks = false;
 
-	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+	private transient  FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
-	private Charset encoding = Charset.defaultCharset();
+	private transient  Charset encoding = Charset.defaultCharset();
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
-	private OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+	private transient  OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
 
 	private Boolean noclasspath = null;
 
-	private SpoonProgress spoonProgress = null;
+	private transient SpoonProgress spoonProgress = null;
+
+	private CompressionType compressionType = CompressionType.GZIP;
 
 	private CompressionType compressionType = CompressionType.GZIP;
 
@@ -183,7 +186,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		return manager;
 	}
 
-	Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
+	transient Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
 
 	@Override
 	public ProcessorProperties getProcessorProperties(String processorName) throws Exception {
@@ -354,13 +357,13 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.tabulationSize = tabulationSize;
 	}
 
-	private ClassLoader classloader;
+	private transient  ClassLoader classloader;
 	/*
 	 * cache class loader which loads classes from source class path
 	 * we must cache it to make all the loaded classes compatible
 	 * The cache is reset when setSourceClasspath(...) is called
 	 */
-	private ClassLoader inputClassloader;
+private transient  ClassLoader inputClassloader;
 
 	@Override
 	public void setInputClassLoader(ClassLoader aClassLoader) {

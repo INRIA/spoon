@@ -295,7 +295,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/**
 	 * Make the imports for a given type.
+     *
+     * @deprecated We intend to remove those method from the DJPP and to compute imports directly in CompilationUnit in the future.
 	 */
+	@Deprecated
 	public Collection<CtImport> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		importsContext.computeImports(context.currentTopLevel);
@@ -304,7 +307,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/**
 	 * Make the imports for all elements.
+     *
+     * @deprecated We intend to remove those method from the DJPP and to compute imports directly in CompilationUnit in the future.
 	 */
+	@Deprecated
 	public void computeImports(CtElement element) {
 		if (env.isAutoImports()) {
 			importsContext.computeImports(element);
@@ -1937,7 +1943,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		this.imports = new HashSet<>();
 		if (sourceCompilationUnit != null) {
-			imports.addAll(sourceCompilationUnit.getImports());
+			this.importsContext.initWithImports(sourceCompilationUnit.getImports());
 		}
 
 		for (CtType<?> t : types) {

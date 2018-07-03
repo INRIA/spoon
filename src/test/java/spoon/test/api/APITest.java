@@ -7,7 +7,10 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -53,6 +56,8 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -576,6 +581,47 @@ public class APITest {
 		assertNotNull(compilationUnit);
 		CtType<?> mainType = compilationUnit.getMainType();
 		assertSame(l, mainType);
+	}
+
+	@Test
+	public void testLauncherDefaultValues() {
+		// contract: check default value for classpath and comments in Launcher
+
+		Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+
+		assertTrue(environment.getNoClasspath());
+		assertTrue(environment.isCommentsEnabled());
+	}
+
+	@Test
+	public void testBuildModelReturnThatTheModelIsBuilt() {
+		// contract: when a model is built, a flag is available in the environment to say it's built
+		// and this flag won't change if something is modified in the model afterwards
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+
+		assertNotNull(launcher.getFactory().getModel());
+		assertFalse(launcher.getFactory().getModel().isBuildModelFinished());
+		launcher.buildModel();
+		assertTrue(launcher.getModel().isBuildModelFinished());
+
+		launcher.getFactory().createClass("my.fake.Klass");
+		assertTrue(launcher.getModel().isBuildModelFinished());
+  }
+  
+  @Test
+	public void testProcessModelsTwice() {
+		// contract: the launcher cannot be processed twice
+		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[]{"-i", "./src/test/java/spoon/test/api/testclasses/Bar.java"});
+
+		try {
+			launcher.setArgs(new String[] {"-i", "./src/test/java/spoon/test/arrays/testclasses/Foo.java"});
+			fail();
+		} catch (SpoonException e) {
+			assertEquals("You cannot process twice the same launcher instance.", e.getMessage());
+		}
 	}
 
 }

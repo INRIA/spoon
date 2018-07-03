@@ -3,7 +3,6 @@ package spoon.test.compilation;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -44,6 +43,7 @@ import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
 import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
+import spoon.test.compilation.testclasses.Ifoo;
 import spoon.testing.utils.ModelUtils;
 
 public class CompilationTest {
@@ -151,7 +151,7 @@ public class CompilationTest {
 		// contract: a ctclass can be instantiated, and each modification results in a new valid object
 		Factory factory = new Launcher().getFactory();
 		CtClass<Ifoo> c = factory.Code().createCodeSnippetStatement(
-				"class X implements spoon.test.compilation.Ifoo { public int foo() {int i=0; return i;} }").compile();
+				"class X implements spoon.test.compilation.testclasses.Ifoo { public int foo() {int i=0; return i;} }").compile();
 		c.addModifier(ModifierKind.PUBLIC); // required otherwise java.lang.IllegalAccessException at runtime when instantiating
 
 		CtBlock body = c.getElements(new TypeFilter<>(CtBlock.class)).get(1);

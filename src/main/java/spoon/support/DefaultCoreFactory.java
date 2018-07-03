@@ -67,6 +67,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -154,6 +155,7 @@ import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
+import spoon.support.reflect.cu.position.CompoundSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
@@ -695,6 +697,11 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	@Override
 	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
 		return ((CompilationUnitImpl) compilationUnit).getOrCreatePartialSourcePosition();
+	}
+
+	@Override
+	public CompoundSourcePosition createCompoundSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+		return new CompoundSourcePositionImpl(compilationUnit, startSource, end, declarationStart, declarationEnd, lineSeparatorPositions);
 	}
 
 	@Override

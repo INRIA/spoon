@@ -41,7 +41,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
@@ -285,7 +284,7 @@ public class CommentTest {
 		assertEquals("// Comment Field" + newLine
 				+ "// comment field 2" + newLine
 				+ "// comment in field" + newLine
-				+ "private int field = 10;// after field\n", field.toString());
+				+ "private int field = 10;// after field" + newLine, field.toString());
 
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());

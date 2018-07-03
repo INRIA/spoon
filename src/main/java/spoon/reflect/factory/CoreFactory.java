@@ -67,6 +67,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -402,6 +403,15 @@ public interface CoreFactory {
 
 	/** Creates a source position that points to the given compilation unit */
 	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+
+	/**
+	 * Creates a compound source position.
+	 */
+	CompoundSourcePosition createCompoundSourcePosition(
+			CompilationUnit compilationUnit,
+			int startSource, int end,
+			int declarationStart, int declarationEnd,
+			int[] lineSeparatorPositions);
 
 	/**
 	 * Creates a declaration source position.

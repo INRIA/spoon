@@ -269,14 +269,16 @@ public class ImportTest {
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
-		assertEquals(2, importScanner.getAllImports().size());
+		Collection<CtImport> allImports = importScanner.getAllImports();
+		assertEquals(2, allImports.size());
 
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
-		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
+		allImports = importScanner.getAllImports();
+		assertEquals("Spoon ignores the arguments of CtInvocations", 1, allImports.size());
 	}
 
 	@Test
@@ -345,8 +347,6 @@ public class ImportTest {
 
 	@Test
 	public void testImportOfInvocationOfPrivateClass() throws Exception {
-		System.setProperty("line.separator", "\n");
-		
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
@@ -372,18 +372,15 @@ public class ImportTest {
 
 		Collection<CtImport> imports = importContext.getAllImports();
 
-				// java.lang.Object is considered as imported but it will never be output
-		assertEquals(3, imports.size());
+		assertEquals(2, imports.size());
 		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
+				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
 		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
 
 	@Test
 	public void testImportOfInvocationOfStaticMethod() throws Exception {
-		System.setProperty("line.separator", "\n");
-
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
@@ -1202,7 +1199,7 @@ public class ImportTest {
 		int countImports = 0;
 
 		int nbStaticImports = 2;
-		int nbStandardImports = 4;
+		int nbStandardImports = 3;
 
 		boolean startStatic = false;
 
@@ -1224,7 +1221,8 @@ public class ImportTest {
 			}
 		}
 
-		assertEquals("Exactly "+nbStandardImports+nbStaticImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
+		int totalImports = nbStandardImports + nbStaticImports;
+		assertEquals("Exactly "+totalImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
 	}
 
 	@Test

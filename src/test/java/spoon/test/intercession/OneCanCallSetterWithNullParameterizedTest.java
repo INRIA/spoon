@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 
 // contract: one can call all setters with null as parameter (no problem with parent)

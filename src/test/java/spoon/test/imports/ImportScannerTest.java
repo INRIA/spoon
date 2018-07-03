@@ -142,11 +142,10 @@ public class ImportScannerTest {
 			Launcher.LOGGER.warn("ImportScannerTest: Import scanner imports " + countUnusedImports + " unused imports and misses " + countMissingImports + " imports");
 
 			// Uncomment for the complete list
-			/*
-			Set<CtType> keys = new HashSet<>(unusedImports.keySet());
-			keys.addAll(missingImports.keySet());
 
-			for (CtType type : keys) {
+			Set<CtType> missingKeys = new HashSet<>(missingImports.keySet());
+
+			for (CtType type : missingKeys) {
 				System.err.println(type.getQualifiedName());
 				if (missingImports.containsKey(type)) {
 					List<String> imports = missingImports.get(type);
@@ -154,6 +153,15 @@ public class ImportScannerTest {
 						System.err.println("\t" + anImport + " missing");
 					}
 				}
+			}
+
+			assertEquals("Import scanner missed " + countMissingImports + " imports",0, countMissingImports);
+
+			/*
+			Set<CtType> unusedKeys = new HashSet<>(unusedImports.keySet());
+
+			for (CtType type : unusedKeys) {
+				System.err.println(type.getQualifiedName());
 				if (unusedImports.containsKey(type)) {
 					List<String> imports = unusedImports.get(type);
 					for (String anImport : imports) {
@@ -162,9 +170,6 @@ public class ImportScannerTest {
 				}
 			}
 			*/
-
-			assertEquals("Import scanner missed " + countMissingImports + " imports",0, countMissingImports);
-
 			// FIXME: the unused imports should be resolved
 			//assertEquals("Import scanner imports " + countUnusedImports + " unused imports",
 			//	0, countUnusedImports);
@@ -235,8 +240,7 @@ public class ImportScannerTest {
 		importContext.computeImports(theClass);
 		Collection<CtImport> imports = importContext.getAllImports();
 
-		// java.lang are also computed
-		assertEquals(4, imports.size());
+		assertEquals(2, imports.size());
 	}
 
 	@Test
