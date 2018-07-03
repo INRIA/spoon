@@ -1011,5 +1011,17 @@ public class PositionTest {
 			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
 		}
 	}
-	
+
+	@Test
+	public void testEndColumn() throws Exception {
+		//contract: check end column
+		final Factory build = build(FooStatement.class);
+		final CtType<FooStatement> foo = build.Type().get(FooStatement.class);
+		CtMethod<?> m = foo.getMethodsByName("m").get(0);
+		SourcePosition pos = m.getPosition();
+		assertEquals(7, pos.getLine());
+		assertEquals(14, pos.getColumn());
+		assertEquals(23, pos.getEndLine());
+		assertEquals(2, pos.getEndColumn());
+	}
 }
