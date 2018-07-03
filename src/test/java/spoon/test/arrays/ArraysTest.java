@@ -25,13 +25,13 @@ public class ArraysTest {
 
 	@Test
 	public void testArrayReferences() throws Exception {
-		CtType<?> type = build("spoon.test.arrays", "ArrayClass");
+		CtType<?> type = build("spoon.test.arrays.testclasses", "ArrayClass");
 		assertEquals("ArrayClass", type.getSimpleName());
 		assertEquals("int[][][]", type.getField("i").getType().getSimpleName());
 		assertEquals(3, ((CtArrayTypeReference<?>) type.getField("i").getType()).getDimensionCount());
 		final CtArrayTypeReference<?> arrayTypeReference = (CtArrayTypeReference<?>) type.getField("i").getDefaultExpression().getType();
 		assertEquals(1, arrayTypeReference.getArrayType().getAnnotations().size());
-		assertEquals("@spoon.test.arrays.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
+		assertEquals("@spoon.test.arrays.testclasses.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
 
 		CtField<?> x = type.getField("x");
 		assertTrue(x.getType() instanceof CtArrayTypeReference);
