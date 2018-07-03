@@ -26,11 +26,18 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
+import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream;
+
 import spoon.Launcher;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.Filter; 
 
 /**
  * This class provides a regular Java serialization-based implementation of the
@@ -47,6 +54,10 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public void save(Factory f, OutputStream out) throws IOException {
 		if (f.getEnvironment().getCompressionType() == CompressionType.GZIP) {
 			out = new GZIPOutputStream(out);
+		} else if (f.getEnvironment().getCompressionType() == CompressionType.LZMA) {
+			out = new LZMACompressorOutputStream(out);
+		} else if (f.getEnvironment().getCompressionType() == CompressionType.BZIP2) {
+			out = new BZip2CompressorOutputStream(out);
 		}
 		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
 		oos.writeObject(f);
@@ -56,22 +67,21 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	public Factory load(InputStream in) throws IOException {
 		try {
-			BufferedInputStream buffered = new BufferedInputStream(in, 2);
-
-			// Check if it is a GZIP
-			buffered.mark(2);
-			int[] buffer = new int[2];
-			buffer[0] = buffered.read();
-			buffer[1] = buffered.read();
-			buffered.reset();
-
-			int header = (buffer[1] << 8) | buffer[0];
-			if (header == GZIPInputStream.GZIP_MAGIC) {
-				in = new GZIPInputStream(buffered);
-			} else {
+			BufferedInputStream buffered = new BufferedInputStream(in);
+			try {
+				String s = CompressorStreamFactory.detect(buffered);
+				if (s.equals(CompressorStreamFactory.GZIP)) {
+					in = new GZIPInputStream(buffered);
+				}
+				else if (s.equals(CompressorStreamFactory.LZMA)) {
+					in = new LZMACompressorInputStream(buffered);
+				}
+				else if (s.equals(CompressorStreamFactory.BZIP2)) {
+					in = new BZip2CompressorInputStream(buffered);
+				}
+			} catch (CompressorException e) {
 				in = buffered;
 			}
-
 			ObjectInputStream ois = new ObjectInputStream(in);
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly

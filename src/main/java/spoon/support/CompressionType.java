@@ -21,8 +21,8 @@ package spoon.support;
  *	@see SerializationModelStreamer
  */
 public enum CompressionType {
-
 	NONE,
-	GZIP;
-
+	GZIP,
+	LZMA,
+	BZIP2;
 }
