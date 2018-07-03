@@ -7,8 +7,10 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
@@ -55,6 +57,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -605,6 +608,20 @@ public class APITest {
 
 		launcher.getFactory().createClass("my.fake.Klass");
 		assertTrue(launcher.getModel().isBuildModelFinished());
+  }
+  
+  @Test
+	public void testProcessModelsTwice() {
+		// contract: the launcher cannot be processed twice
+		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[]{"-i", "./src/test/java/spoon/test/api/testclasses/Bar.java"});
+
+		try {
+			launcher.setArgs(new String[] {"-i", "./src/test/java/spoon/test/arrays/testclasses/Foo.java"});
+			fail();
+		} catch (SpoonException e) {
+			assertEquals("You cannot process twice the same launcher instance.", e.getMessage());
+		}
 	}
 
 }

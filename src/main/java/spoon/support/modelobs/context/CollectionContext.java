@@ -14,16 +14,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.context;
+package spoon.support.modelobs.context;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-import java.util.Set;
+import java.util.Collection;
 
-public class SetContext extends CollectionContext<Set<?>> {
+public abstract class CollectionContext<T extends Collection<?>> extends Context {
+	protected final T copyOfTheCollection;
 
-	public SetContext(CtElement element, CtRole role, Set<?> original) {
-		super(element, role, original);
+	public CollectionContext(CtElement element, CtRole role, T copyOfTheCollection) {
+		super(element, role);
+		this.copyOfTheCollection = copyOfTheCollection;
 	}
 }

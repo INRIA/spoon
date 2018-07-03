@@ -14,15 +14,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.action;
+package spoon.support.modelobs.action;
 
-import spoon.experimental.modelobs.context.Context;
+import spoon.support.modelobs.context.Context;
 
-public class AddAction<T>  extends Action {
-	private T newValue;
+/**
+ * defines the update action
+ * @param <T>
+ */
+public class UpdateAction<T> extends Action {
+	private final T oldValue;
+	private final T newValue;
 
-	public AddAction(Context context, T newValue) {
+	public UpdateAction(Context context, T newValue, T oldValue) {
 		super(context);
+		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
 
@@ -32,10 +38,18 @@ public class AddAction<T>  extends Action {
 	}
 
 	/**
-	 * Returns the added element
-	 * @return the new element
+	 * the new value in the model
+	 * @return the new value
 	 */
 	public T getNewValue() {
 		return newValue;
+	}
+
+	/**
+	 * the old value in the model
+	 * @return the old value
+	 */
+	public T getOldValue() {
+		return oldValue;
 	}
 }

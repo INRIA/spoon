@@ -14,36 +14,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs.context;
+package spoon.support.modelobs.action;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
+import spoon.support.modelobs.context.Context;
 
 /**
- * defines the context of an action
+ * defines the delete action
+ * @param <T>
  */
-public abstract class Context {
-	private CtElement elementWhereChangeHappens;
-	private CtRole changedProperty;
+public class DeleteAction<T> extends Action {
+	private T oldValue;
 
-	public Context(CtElement element, CtRole changedProperty) {
-		this.elementWhereChangeHappens = element;
-		this.changedProperty = changedProperty;
+	public DeleteAction(Context context, T oldValue) {
+		super(context);
+		this.oldValue = oldValue;
+	}
+
+	@Override
+	public T getChangedValue() {
+		return getRemovedValue();
 	}
 
 	/**
-	 * the changed parent
-	 * @return the changed parent
+	 * Returns the removed element
+	 * @return the removed element
 	 */
-	public CtElement getElementWhereChangeHappens() {
-		return elementWhereChangeHappens;
-	}
-
-	/**
-	 * the role that has been modified
-	 * @return the role that has been modified
-	 */
-	public CtRole getChangedProperty() {
-		return changedProperty;
+	public T getRemovedValue() {
+		return oldValue;
 	}
 }
