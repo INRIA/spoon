@@ -17,6 +17,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
+import spoon.compiler.Environment;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
@@ -624,9 +625,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					removeTypeMember(m);
 				} else {
 					// checking contract signature implies equal
-//					if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
-//						throw new AssertionError("violation of core contract! different signature but same equal");
-//					}
+					if (!Environment.SKIP_CHECK_CONTRACT_SIGNATURE) {
+						if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
+							throw new AssertionError("violation of core contract! different signature but same equal");
+						}
+					}
 				}
 			}
 		}
