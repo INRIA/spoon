@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -594,6 +595,22 @@ public class APITest {
 	}
 
 	@Test
+	public void testBuildModelReturnThatTheModelIsBuilt() {
+		// contract: when a model is built, a flag is available in the environment to say it's built
+		// and this flag won't change if something is modified in the model afterwards
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+
+		assertNotNull(launcher.getFactory().getModel());
+		assertFalse(launcher.getFactory().getModel().isBuildModelFinished());
+		launcher.buildModel();
+		assertTrue(launcher.getModel().isBuildModelFinished());
+
+		launcher.getFactory().createClass("my.fake.Klass");
+		assertTrue(launcher.getModel().isBuildModelFinished());
+  }
+  
+  @Test
 	public void testProcessModelsTwice() {
 		// contract: the launcher cannot be processed twice
 		Launcher launcher = new Launcher();
