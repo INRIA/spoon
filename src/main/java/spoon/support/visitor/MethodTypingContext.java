@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -266,6 +267,25 @@ public class MethodTypingContext extends AbstractTypingContext {
 				// T extends Comparable<? super T>
 				if (scopeBoundWildcard.getBoundingType().equals(scopeMethod.getFactory().Type().getDefaultBoundingType())) {
 					return true;
+				}
+			} else if (scopeBoundATArg instanceof CtTypeParameterReference && superBoundATArg instanceof CtTypeParameterReference) {
+				CtTypeParameterReference scopeBoundTypeParameterRef = (CtTypeParameterReference) scopeBoundATArg;
+				CtTypeParameterReference superBoundTypeParameterRef = (CtTypeParameterReference) superBoundATArg;
+
+				// we are in a case of an auto-referenced type parameter like <S extends Enum<S>>
+				// we cannot check that with standard equals as we are deeper in the hierarchy here
+				if (scopeBoundTypeParameterRef.getBoundingType().toString().equals(scopeBound.toString()) && superBoundTypeParameterRef.getBoundingType().toString().equals(superBound.toString())) {
+					if (scopeBoundTypeParameterRef.getBoundingType().getActualTypeArguments().size() == superBoundTypeParameterRef.getBoundingType().getActualTypeArguments().size() && scopeBoundTypeParameterRef.getBoundingType().getActualTypeArguments().size() == 1) {
+						CtTypeReference<?> ctTypeReference = scopeBoundTypeParameterRef.getBoundingType().getActualTypeArguments().get(0);
+						CtTypeReference<?> ctTypeReference1 = superBoundTypeParameterRef.getBoundingType().getActualTypeArguments().get(0);
+
+						CtTypeReference objectRef = ctTypeReference.getFactory().Type().OBJECT;
+						if (ctTypeReference instanceof CtTypeParameterReference && ctTypeReference1 instanceof CtTypeParameterReference) {
+							if (((CtTypeParameterReference) ctTypeReference).getBoundingType().equals(objectRef) && ((CtTypeParameterReference) ctTypeReference1).getBoundingType().equals(objectRef)) {
+								return true;
+							}
+						}
+					}
 				}
 			}
 		}
