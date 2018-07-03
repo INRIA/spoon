@@ -12,6 +12,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.casts.testclasses.Castings;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -75,7 +76,7 @@ public class CastTest {
 	public void testCase4() throws Exception {
 		// contract: If the invocation is to a method where the returned type is a generic type,
 		// getType returns the actual type bound to this particular invocation.
-		CtType<?> type = build("spoon.test.casts", "Castings");
+		CtType<?> type = build("spoon.test.casts.testclasses", "Castings");
 
 		final CtMethod<?> getValueMethod = type.getMethodsByName("getValue").get(0);
 		final CtInvocation<?> getValueInvocation = Query.getElements(type, new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
@@ -97,6 +98,6 @@ public class CastTest {
 		final CtLocalVariable local = aCastings.getMethod("bar").getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 
 		assertEquals(1, ((CtTypeReference) local.getDefaultExpression().getTypeCasts().get(0)).getAnnotations().size());
-		assertEquals("((java.lang.@spoon.test.casts.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String) (\"\"))", local.getDefaultExpression().toString());
+		assertEquals("((java.lang.@spoon.test.casts.testclasses.Castings.TypeAnnotation(integer = 1)" + System.lineSeparator() + "String) (\"\"))", local.getDefaultExpression().toString());
 	}
 }
