@@ -34,7 +34,7 @@ import spoon.test.fieldaccesses.testclasses.Mouse;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
-import spoon.test.fieldaccesses.testclasses.internal.MyClass;
+import spoon.test.fieldaccesses.testclasses.MyClass;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
@@ -187,7 +187,7 @@ public class FieldAccessTest {
 		assertEquals("LOG", logFieldAccess.getVariable().getSimpleName());
 		assertEquals(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
 
-		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.testclasses.internal.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
+		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.testclasses.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
 		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());
 	}
 
