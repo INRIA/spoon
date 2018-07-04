@@ -28,7 +28,12 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.fieldaccesses.testclasses.*;
+import spoon.test.fieldaccesses.testclasses.B;
+import spoon.test.fieldaccesses.testclasses.Kuu;
+import spoon.test.fieldaccesses.testclasses.Mouse;
+import spoon.test.fieldaccesses.testclasses.Panini;
+import spoon.test.fieldaccesses.testclasses.Pozole;
+import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.test.fieldaccesses.testclasses.internal.MyClass;
 import spoon.testing.utils.ModelUtils;
 
