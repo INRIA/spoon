@@ -23,7 +23,10 @@ package spoon.reflect.factory;
  */
 public abstract class SubFactory {
 
-	protected Factory factory;
+	public SubFactory() {
+}
+
+protected Factory factory;
 
 	/**
 	 * The sub-factory constructor takes an instance of the parent factory.
@@ -32,9 +35,6 @@ public abstract class SubFactory {
 		super();
 		this.factory = factory;
 	}
-
-public SubFactory() {
-}
 
 }
 
