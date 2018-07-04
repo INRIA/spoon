@@ -229,73 +229,53 @@ public class MethodTypingContext extends AbstractTypingContext {
 		//the methods has same count of formal parameters
 		//check that bounds of formal type parameters are same after adapting
 		for (int i = 0; i < thisTypeParameters.size(); i++) {
-			if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
+			if (isSameFormalTypeParameter(getBound(thisTypeParameters.get(i)), getBound(thatTypeParameters.get(i))) == false) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private boolean isSameMethodFormalTypeParameter(CtTypeParameter scopeParam, CtTypeParameter superParam) {
-		CtTypeReference<?> scopeBound = getBound(scopeParam);
-		CtTypeReference<?> superBound = getBound(superParam);
-		int idxOfScopeBoundTypeParam = getIndexOfTypeParam(scopeParam.getTypeParameterDeclarer(), scopeBound);
-		if (idxOfScopeBoundTypeParam >= 0) {
-			int idxOfSuperBoundTypeParam = getIndexOfTypeParam(superParam.getTypeParameterDeclarer(), superBound);
-			if (idxOfSuperBoundTypeParam >= 0) {
-				/*
-				 * Both type parameters have bound defined as sibling type parameter.
-				 * Do not try to adaptType, because it would end with StackOverflowError
-				 * They are same formal type parameters if index is same
-				 */
-				return idxOfScopeBoundTypeParam == idxOfSuperBoundTypeParam;
-			}
-		}
-		if (scopeBound.getActualTypeArguments().size() != superBound.getActualTypeArguments().size()) {
-			return false;
-		}
-
-		for (int i = 0; i < scopeBound.getActualTypeArguments().size(); i++) {
-			CtTypeReference scopeBoundATArg = scopeBound.getActualTypeArguments().get(i);
-			CtTypeReference superBoundATArg = superBound.getActualTypeArguments().get(i);
-
-			if (scopeBoundATArg instanceof CtWildcardReference && superBoundATArg instanceof CtWildcardReference) {
-				CtWildcardReference scopeBoundWildcard = (CtWildcardReference) scopeBoundATArg;
-
-				// we are in a case where we compare Thing<?> with Thing<? super X>
-				// here we choose to not care about X to avoid recursive calls, for example in the case of:
-				// T extends Comparable<? super T>
-				if (scopeBoundWildcard.getBoundingType().equals(scopeMethod.getFactory().Type().getDefaultBoundingType())) {
-					return true;
-				}
-			} else if (scopeBoundATArg instanceof CtTypeParameterReference && superBoundATArg instanceof CtTypeParameterReference) {
-				CtTypeParameterReference scopeBoundTypeParameterRef = (CtTypeParameterReference) scopeBoundATArg;
-				CtTypeParameterReference superBoundTypeParameterRef = (CtTypeParameterReference) superBoundATArg;
-
-				// we are in a case of an auto-referenced type parameter like <S extends Enum<S>>
-				// we cannot check that with standard equals as we are deeper in the hierarchy here
-				if (scopeBoundTypeParameterRef.getBoundingType().toString().equals(scopeBound.toString()) && superBoundTypeParameterRef.getBoundingType().toString().equals(superBound.toString())) {
-					if (scopeBoundTypeParameterRef.getBoundingType().getActualTypeArguments().size() == superBoundTypeParameterRef.getBoundingType().getActualTypeArguments().size() && scopeBoundTypeParameterRef.getBoundingType().getActualTypeArguments().size() == 1) {
-						CtTypeReference<?> ctTypeReference = scopeBoundTypeParameterRef.getBoundingType().getActualTypeArguments().get(0);
-						CtTypeReference<?> ctTypeReference1 = superBoundTypeParameterRef.getBoundingType().getActualTypeArguments().get(0);
-
-						CtTypeReference objectRef = ctTypeReference.getFactory().Type().OBJECT;
-						if (ctTypeReference instanceof CtTypeParameterReference && ctTypeReference1 instanceof CtTypeParameterReference) {
-							if (((CtTypeParameterReference) ctTypeReference).getBoundingType().equals(objectRef) && ((CtTypeParameterReference) ctTypeReference1).getBoundingType().equals(objectRef)) {
-								return true;
-							}
-						}
+	private boolean isSameFormalTypeParameter(CtTypeReference<?> scopeParamBound, CtTypeReference<?> superParamBound) {
+		if (scopeParamBound instanceof CtTypeParameterReference) {
+			CtTypeParameterReference scopeTypeParamRef = (CtTypeParameterReference) scopeParamBound;
+			if (superParamBound instanceof CtTypeParameterReference) {
+				CtTypeParameterReference superTypeParamRef = (CtTypeParameterReference) superParamBound;
+				CtTypeParameter scopeTypeParam = scopeTypeParamRef.getDeclaration();
+				CtTypeParameter superTypeParam = superTypeParamRef.getDeclaration();
+				CtFormalTypeDeclarer scopeParamDeclarer = scopeTypeParam.getTypeParameterDeclarer();
+				CtFormalTypeDeclarer superParamDeclarer = superTypeParam.getTypeParameterDeclarer();
+				if (scopeParamDeclarer.getClass().equals(superParamDeclarer.getClass())) {
+					if (superParamDeclarer instanceof CtExecutable) {
+						//in case of method declared the params are considered same if they have same position in the declarer
+						CtExecutable new_name = (CtExecutable) superParamDeclarer;
+						int scopeParamIdx = scopeParamDeclarer.getFormalCtTypeParameters().indexOf(scopeTypeParam);
+						int superParamIdx = superParamDeclarer.getFormalCtTypeParameters().indexOf(superTypeParam);
+						return scopeParamIdx == superParamIdx;
 					}
+					//in case of CtType params must be same after adaptation
+					CtTypeReference<?> superTypeParamAdapted = adaptType(superTypeParam);
+					if (superTypeParamAdapted == null) {
+						return false;
+					}
+					return scopeTypeParam.getQualifiedName().equals(superTypeParamAdapted.getQualifiedName());
 				}
+			}
+			return false;
+		}
+		if (scopeParamBound.getActualTypeArguments().size() != superParamBound.getActualTypeArguments().size()) {
+			return false;
+		}
+
+		for (int i = 0; i < scopeParamBound.getActualTypeArguments().size(); i++) {
+			CtTypeReference scopeBoundATArg = scopeParamBound.getActualTypeArguments().get(i);
+			CtTypeReference superBoundATArg = superParamBound.getActualTypeArguments().get(i);
+			if (isSameFormalTypeParameter(scopeBoundATArg, superBoundATArg) == false) {
+				return false;
 			}
 		}
 
-
-		CtTypeReference<?> superBoundAdapted = adaptType(superBound);
-		if (superBoundAdapted == null) {
-			return false;
-		}
-		return scopeBound.getQualifiedName().equals(superBoundAdapted.getQualifiedName());
+		return scopeParamBound.getQualifiedName().equals(superParamBound.getQualifiedName());
 	}
 
 	/*

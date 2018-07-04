@@ -719,8 +719,8 @@ public class ClassTypingContext extends AbstractTypingContext {
 						}
 					}
 				}
-
 				if (thisType.equals(thatType) == false) {
+					//TODO check why it fails here
 					return false;
 				}
 			}
