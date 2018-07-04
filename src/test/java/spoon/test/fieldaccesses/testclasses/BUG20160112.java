@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses;
+package spoon.test.fieldaccesses.testclasses;
 
 public class BUG20160112 {
     BUG20160112 a;

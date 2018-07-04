@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses;
+package spoon.test.fieldaccesses.testclasses.internal;
 
 import java.util.logging.Logger;
 

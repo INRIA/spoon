@@ -28,11 +28,8 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.fieldaccesses.testclasses.B;
-import spoon.test.fieldaccesses.testclasses.Kuu;
-import spoon.test.fieldaccesses.testclasses.Panini;
-import spoon.test.fieldaccesses.testclasses.Pozole;
-import spoon.test.fieldaccesses.testclasses.Tacos;
+import spoon.test.fieldaccesses.testclasses.*;
+import spoon.test.fieldaccesses.testclasses.internal.MyClass;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
@@ -50,7 +47,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testModelBuildingFieldAccesses() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses", "Mouse");
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "Mouse");
 		assertEquals("Mouse", type.getSimpleName());
 
 		CtMethod<?> meth1 = type.getElements(
@@ -98,7 +95,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testBCUBug20140402() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses",
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses",
 				"BCUBug20140402");
 		assertEquals("BCUBug20140402", type.getSimpleName());
 
@@ -140,7 +137,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testBUG20160112() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses", "BUG20160112");
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "BUG20160112");
 		assertEquals("BUG20160112", type.getSimpleName());
 		CtOperatorAssignment<?, ?> ass = type.getElements(
 				new TypeFilter<CtOperatorAssignment<?, ?>>(CtOperatorAssignment.class)).get(0);
@@ -151,7 +148,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testTargetedAccessPosition() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "TargetedAccessPosition");
 		List<CtFieldAccess<?>> vars = type.getElements(
 				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
 		//vars is [t.ta.ta, t.ta]
@@ -185,7 +182,7 @@ public class FieldAccessTest {
 		assertEquals("LOG", logFieldAccess.getVariable().getSimpleName());
 		assertEquals(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
 
-		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
+		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.testclasses.internal.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
 		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());
 	}
 
