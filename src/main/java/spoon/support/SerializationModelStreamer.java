@@ -37,7 +37,7 @@ import spoon.Launcher;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.Filter; 
+import spoon.reflect.visitor.Filter;
 
 /**
  * This class provides a regular Java serialization-based implementation of the
@@ -72,11 +72,9 @@ public class SerializationModelStreamer implements ModelStreamer {
 				String s = CompressorStreamFactory.detect(buffered);
 				if (s.equals(CompressorStreamFactory.GZIP)) {
 					in = new GZIPInputStream(buffered);
-				}
-				else if (s.equals(CompressorStreamFactory.LZMA)) {
+				} else if (s.equals(CompressorStreamFactory.LZMA)) {
 					in = new LZMACompressorInputStream(buffered);
-				}
-				else if (s.equals(CompressorStreamFactory.BZIP2)) {
+				} else if (s.equals(CompressorStreamFactory.BZIP2)) {
 					in = new BZip2CompressorInputStream(buffered);
 				}
 			} catch (CompressorException e) {
