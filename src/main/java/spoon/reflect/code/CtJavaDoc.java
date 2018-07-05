@@ -93,6 +93,11 @@ public interface CtJavaDoc extends CtComment {
 	@DerivedProperty
 	String getLongDescription();
 
+	CtJavadocDescription getContentDescription();
+
+	@DerivedProperty
+	String getContent();
+
 	@Override
 	CtJavaDoc clone();
 }

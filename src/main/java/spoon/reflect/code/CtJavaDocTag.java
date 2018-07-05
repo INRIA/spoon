@@ -39,6 +39,7 @@ public interface CtJavaDocTag extends CtElement {
 	 */
 	String JAVADOC_TAG_PREFIX = "@";
 
+
 	/**
 	 * Define the possible type for a tag
 	 */
@@ -111,7 +112,7 @@ public interface CtJavaDocTag extends CtElement {
 	 * @return the content of the tag
 	 */
 	@PropertyGetter(role = COMMENT_CONTENT)
-	String getContent();
+	CtJavadocDescription getContent();
 
 	/**
 	 * Define the content of the tag
