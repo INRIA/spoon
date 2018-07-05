@@ -16,29 +16,29 @@
  */
 package spoon.reflect.factory;
 
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
-public class ModuleFactory extends SubFactory implements Serializable {
+public class ModuleFactory extends SubFactory {
 
 	public static class CtUnnamedModule extends CtModuleImpl {
 		final Set<CtModule> allModules = new HashSet<>();
@@ -162,3 +162,4 @@ public class ModuleFactory extends SubFactory implements Serializable {
 		return factory.Core().createUsedService().setServiceType(typeReference);
 	}
 }
+
