@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TestInterfaceWithoutSetup {
+public class InterfaceWithoutSetupTest {
     @Test
     public void testModifierFromInterfaceFieldAndMethod() {
         // contract: methods defined in interface are all public and fields are all public and static
