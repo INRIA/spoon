@@ -197,7 +197,6 @@ import spoon.support.reflect.reference.CtWildcardReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
-import static spoon.reflect.code.CtComment.CommentType.BLOCK;
 
 
 /**
