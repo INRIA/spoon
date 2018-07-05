@@ -41,6 +41,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
@@ -962,5 +963,22 @@ public class CommentTest {
 		} catch (SpoonException e) {
 			assertTrue(e.getMessage().contains("consider using a block comment"));
 		}
+	}
+
+	@Test
+	public void testLinkAreInlineTags() {
+		// contract: comment links must be considered as inline tags
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/LinkTag.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+		CtClass linkTag = model.getElements(new NamedElementFilter<>(CtClass.class, "LinkTag")).get(0);
+
+		CtComment ctComment = linkTag.getComments().get(0);
+
+		assertEquals(CtComment.CommentType.JAVADOC, ctComment.getCommentType());
+
+		CtJavaDoc javaDoc = (CtJavaDoc) ctComment;
+		assertEquals(1, javaDoc.getTags().size());
 	}
 }
