@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses;
+package spoon.test.fieldaccesses.testclasses;
 
 public class BCUBug20140402 {
 	Object[] data = null;

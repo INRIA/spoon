@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses;
+package spoon.test.fieldaccesses.testclasses;
 
 public class TargetedAccessPosition {
 	public TargetedAccessPosition ta;
