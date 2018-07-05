@@ -1,4 +1,4 @@
-package spoon.test.eval;
+package spoon.test.eval.testclasses;
 
 public class Foo {
 	final boolean b0 = true && false;
