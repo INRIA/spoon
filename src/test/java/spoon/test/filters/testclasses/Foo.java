@@ -1,7 +1,7 @@
-package spoon.test.filters;
+package spoon.test.filters.testclasses;
 
 @SuppressWarnings("bar")
-class Foo {
+public class Foo {
 	int i;
 	void foo() {
 		int x = 3;
