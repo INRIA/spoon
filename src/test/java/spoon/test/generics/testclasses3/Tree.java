@@ -1,4 +1,4 @@
-package spoon.test.generics;
+package spoon.test.generics.testclasses3;
 
 import java.io.Serializable;
 import java.util.ArrayList;

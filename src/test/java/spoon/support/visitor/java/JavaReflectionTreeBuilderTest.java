@@ -43,7 +43,7 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
-import spoon.test.generics.ComparableComparatorBug;
+import spoon.test.generics.testclasses3.ComparableComparatorBug;
 
 import java.io.File;
 import java.io.ObjectInputStream;
