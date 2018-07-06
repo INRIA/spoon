@@ -1,4 +1,4 @@
-package spoon.test.initializers;
+package spoon.test.initializers.testclasses;
 
 public class InternalClassStaticFieldInit {
 	static class InternalClass{
