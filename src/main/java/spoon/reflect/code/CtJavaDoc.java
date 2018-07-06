@@ -23,6 +23,7 @@ import spoon.reflect.annotations.PropertySetter;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.COMMENT_TAG;
+import static spoon.reflect.path.CtRole.JAVADOC_CONTENT;
 
 /**
  * This code element defines a javadoc comment
@@ -93,7 +94,11 @@ public interface CtJavaDoc extends CtComment {
 	@DerivedProperty
 	String getLongDescription();
 
+	@PropertyGetter(role = JAVADOC_CONTENT)
 	CtJavadocDescription getContentDescription();
+
+	@PropertySetter(role = JAVADOC_CONTENT)
+	<E extends CtJavaDoc> E setContentDescription(CtJavadocDescription description);
 
 	@DerivedProperty
 	String getContent();

@@ -19,14 +19,19 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavadocDescription;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.util.ModelList;
 
 import java.util.List;
 
 public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
+
+	@MetamodelPropertyField(role = CtRole.JAVADOC_CONTENT)
+	private CtJavadocDescription javadocDescription;
 
 	@MetamodelPropertyField(role = CtRole.COMMENT_TAG)
 	private final ModelList<CtJavaDocTag> tags = new ModelList<CtJavaDocTag>() {
@@ -116,5 +121,26 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	@Override
 	public CtJavaDoc clone() {
 		return (CtJavaDoc) super.clone();
+	}
+
+	@Override
+	public CtJavadocDescription getContentDescription() {
+		return this.javadocDescription;
+	}
+
+	@Override
+	public <E extends CtJavaDoc> E setContentDescription(CtJavadocDescription description) {
+		this.getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.JAVADOC_CONTENT, description, this.javadocDescription);
+		this.javadocDescription = description;
+		return (E) this;
+	}
+
+
+	public String getContent() {
+		if (this.javadocDescription != null) {
+			return this.javadocDescription.toString();
+		} else {
+			return super.getContent();
+		}
 	}
 }

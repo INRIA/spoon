@@ -44,6 +44,9 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavadocDescription;
+import spoon.reflect.code.CtJavadocInlineTag;
+import spoon.reflect.code.CtJavadocSnippetDescription;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -508,4 +511,19 @@ public interface CtVisitor {
 	 * Visits a "uses" directive in a module declaration.
 	 */
 	void visitCtUsedService(CtUsedService usedService);
+
+	/**
+	 * Visits a Javadoc snippet description element
+	 */
+	void visitCtJavaDocSnippetDescription(CtJavadocSnippetDescription javadocSnippetDescription);
+
+	/**
+	 * Visits a Javadoc inline tag element
+	 */
+	void visitCtJavaDocInlineTag(CtJavadocInlineTag javadocInlineTag);
+
+	/**
+	 * Visits a Javadoc description
+	 */
+	void visitCtJavadocDescription(CtJavadocDescription javadocDescription);
 }

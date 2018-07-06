@@ -17,7 +17,22 @@ public interface CtJavadocInlineTag extends CtJavadocDescriptionElement {
      * Define the possible type for a tag
      */
     enum TagType {
-        LINK
+        LINK,
+        UNKNOWN;
+
+        /**
+         * Get the tag type associated to a name
+         * @param tagName the tag name
+         * @return the tag type
+         */
+        public static TagType tagFromName(String tagName) {
+            for (TagType t : TagType.values()) {
+                if (t.name().toLowerCase().equals(tagName.toLowerCase())) {
+                    return t;
+                }
+            }
+            return UNKNOWN;
+        }
     }
 
     /**
@@ -32,14 +47,14 @@ public interface CtJavadocInlineTag extends CtJavadocDescriptionElement {
      * @param type the type name
      */
     @PropertySetter(role = DOCUMENTATION_TYPE)
-    <E extends CtJavaDocTag> E setType(String type);
+    <E extends CtJavadocInlineTag> E setType(String type);
 
     /**
      * Define the type of the tag
      * @param type the new type
      */
     @PropertySetter(role = DOCUMENTATION_TYPE)
-    <E extends CtJavaDocTag> E setType(TagType type);
+    <E extends CtJavadocInlineTag> E setType(TagType type);
 
     /**
      * Get the content of the tag
@@ -53,9 +68,5 @@ public interface CtJavadocInlineTag extends CtJavadocDescriptionElement {
      * @param content the new content of the tag
      */
     @PropertySetter(role = COMMENT_CONTENT)
-    <E extends CtJavaDocTag> E setContent(String content);
-
-
-    @Override
-    CtJavaDocTag clone();
+    <E extends CtJavadocInlineTag> E setContent(String content);
 }
