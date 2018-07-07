@@ -1,4 +1,4 @@
-package spoon.test.control;
+package spoon.test.control.testclasses;
 
 public class Ifs {
 
