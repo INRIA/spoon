@@ -1,4 +1,4 @@
-package spoon.test.processing;
+package spoon.test.processing.processors;
 
 import java.util.Date;
 
