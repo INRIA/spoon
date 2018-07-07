@@ -31,7 +31,7 @@ public class LinesTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/prettyprinter/Validation.java"))
+						.resources("./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		factory.getEnvironment().setPreserveLineNumbers(true);
 		factory.getEnvironment().setAutoImports(false);
