@@ -1,4 +1,4 @@
-package spoon.test.reference;
+package spoon.test.reference.testclasses;
 
 public class MyClass3<T, K> {
 
