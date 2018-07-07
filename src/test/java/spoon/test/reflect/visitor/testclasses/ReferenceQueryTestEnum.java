@@ -1,4 +1,4 @@
-package spoon.test.reflect.visitor;
+package spoon.test.reflect.visitor.testclasses;
 
 
 public enum ReferenceQueryTestEnum {
