@@ -1,4 +1,4 @@
-package spoon.test.trycatch;
+package spoon.test.trycatch.testclasses;
 
 public class RethrowingClass {
 

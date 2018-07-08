@@ -6,7 +6,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.test.trycatch.Main;
+import spoon.test.trycatch.testclasses.Main;
 
 import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.build;
