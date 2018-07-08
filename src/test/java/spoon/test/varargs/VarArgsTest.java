@@ -15,7 +15,7 @@ public class VarArgsTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<Main> type = build("spoon.test.varargs", "VarArgsSample");
+		CtClass<Main> type = build("spoon.test.varargs.testclasses", "VarArgsSample");
 		assertEquals("VarArgsSample", type.getSimpleName());
 		CtMethod<?> m = type.getMethodsByName("foo").get(0);
 
