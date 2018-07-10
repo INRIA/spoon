@@ -1,4 +1,4 @@
-package spoon.test.visitor;
+package spoon.test.visitor.testclasses;
 
 import spoon.reflect.visitor.CtAbstractVisitor;
 
