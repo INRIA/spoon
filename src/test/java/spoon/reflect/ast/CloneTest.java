@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 
 public class CloneTest {
+
 	@Test
 	public void testCloneMethodsDeclaredInAST() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -194,8 +195,6 @@ public class CloneTest {
 		assertEquals("cCopyX", methodClone.getSimpleName());
 	}
 
-
-
 	@Test
 	public void testCopyType() throws Exception {
 		// contract: the copied type is well formed, it never points to the initial type
@@ -216,5 +215,4 @@ public class CloneTest {
 			}
 		}
 	}
-
 }
