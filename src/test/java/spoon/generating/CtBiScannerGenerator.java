@@ -92,13 +92,10 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(2).clone(), factory.Executable().createReference("List Map#values()"));
 					replace.getArguments().get(2).replace(invocation);
 				}
-
 				clone.getBody().getStatement(i).replace(replace);
 			}
-
 			target.addMethod(clone);
 		}
-
 	}
 
 	private CtClass<Object> createBiScanner() {
