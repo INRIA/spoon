@@ -182,7 +182,6 @@ public class CtTypeInformationTest {
 
 		assertEquals(subClass.getMethodsByName("foo").get(0).getSignature(),
 				type2.getMethodsByName("foo").get(0).getSignature());
-
 	}
 
 	@Test
