@@ -1,4 +1,4 @@
-package spoon.test.varargs;
+package spoon.test.varargs.testclasses;
 
 public class VarArgsSample {
 
