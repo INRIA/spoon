@@ -41,11 +41,6 @@ import java.nio.charset.Charset;
 public interface Environment {
 
 	/**
-	 * When set to true, the contract signature implies equal is not checked in {@link spoon.reflect.declaration.CtType#addMethod(CtMethod)}
-	 */
-	boolean SKIP_CHECK_CONTRACT_SIGNATURE = true;
-
-	/**
 	 * Gets the Java version compliance level.
 	 */
 	int getComplianceLevel();
