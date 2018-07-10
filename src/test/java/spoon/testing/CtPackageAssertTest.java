@@ -22,6 +22,7 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CtPackageAssertTest {
+
 	@Test
 	public void testEqualityBetweenTwoCtPackage() throws Exception {
 		//contract: two packages, one made by test code, second made by compilation from sources are equal
@@ -36,7 +37,6 @@ public class CtPackageAssertTest {
 		final CtPackage aRootPackage2 = build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage();
 		assertNotSame(aRootPackage, aRootPackage2);
 		assertThat(aRootPackage2).isEqualTo(aRootPackage);
-
 	}
 
 	@Test(expected = AssertionError.class)
@@ -51,8 +51,7 @@ public class CtPackageAssertTest {
 		factory.Class().create("spoon.testing.testclasses.Foo").addModifier(ModifierKind.PUBLIC);
 		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(aRootPackage);
 	}
-	
-	
+
 	@Test
 	public void testAddTypeToPackage() throws Exception {
 		final Factory factory = createFactory();
