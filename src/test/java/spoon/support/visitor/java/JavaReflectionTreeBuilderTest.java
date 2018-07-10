@@ -72,6 +72,7 @@ import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
+
 	@Test
 	public void testScannerClass() throws Exception {
 		final CtClass<Class> aClass = new JavaReflectionTreeBuilder(createFactory()).scan(Class.class);
@@ -179,7 +180,7 @@ public class JavaReflectionTreeBuilderTest {
 		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
 		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
-	
+
 	@Test
 	public void testShadowModelEqualsNormalModel() {
 		//contract: CtType made from sources is equal to CtType made by reflection
@@ -568,8 +569,6 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("T", typeParameter.getSimpleName());
 		assertTrue(typeParameter.getSuperclass() == null);
 	}
-
-
 
 	@Test
 	public void testPartialShadow() {
