@@ -137,5 +137,4 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			}
 		}
 	}
-
 }
