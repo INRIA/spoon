@@ -89,6 +89,7 @@ public class PositionBuilder {
 		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		cu.setLineSeparatorPositions(lineSeparatorPositions);
 		char[] contents = cr.compilationUnit.getContents();
 
 		int sourceStart = node.sourceStart;
