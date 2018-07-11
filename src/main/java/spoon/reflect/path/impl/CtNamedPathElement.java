@@ -93,5 +93,4 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 			return results;
 		}
 	}
-
 }
