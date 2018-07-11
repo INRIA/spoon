@@ -237,7 +237,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	}
 
 	/**
-	 * @param repeatable if this matcher can be applied more then once in the same container of targets
+	 * @param repeatable if this matcher can be applied more than once in the same container of targets
 	 * Note: even if false, it may be applied again to another container and to match EQUAL value.
 	 * @return this to support fluent API
 	 */
@@ -301,7 +301,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	}
 
 	/**
-	 * @return true if this matcher can be applied more then once in the same container of targets
+	 * @return true if this matcher can be applied more than once in the same container of targets
 	 * Note: even if false, it may be applied again to another container and to match EQUAL value
 	 */
 	public boolean isRepeatable() {
@@ -318,7 +318,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 */
 	public boolean isMandatory(ImmutableMap parameters) {
 		int nrOfValues = getNumberOfValues(parameters);
-		//current number of values is smaller then minimum number of values. Value is mandatory
+		//current number of values is smaller than minimum number of values. Value is mandatory
 		return nrOfValues < getMinOccurrences();
 	}
 
@@ -335,7 +335,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 			 */
 			return true;
 		}
-		//current number of values is smaller then maximum number of values. Can try next match
+		//current number of values is smaller than maximum number of values. Can try next match
 		return nrOfValues < getMaxOccurrences();
 	}
 
