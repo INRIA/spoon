@@ -49,8 +49,8 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	private ContainerKind containerKind = null;
 	private Boolean repeatable = null;
-	private int minOccurences = 0;
-	private int maxOccurences = UNLIMITED_OCCURENCES;
+	private int minOccurrences = 0;
+	private int maxOccurrences = UNLIMITED_OCCURRENCES;
 	private Quantifier matchingStrategy = Quantifier.GREEDY;
 	private ValueConvertor valueConvertor;
 
@@ -134,7 +134,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	}
 
 	protected Object mergeSingle(Object existingValue, Object newValue) {
-		if (newValue == null && getMinOccurences() > 0) {
+		if (newValue == null && getMinOccurrences() > 0) {
 			//the newValue is not optional. Null doesn't matches
 			return NO_MERGE;
 		}
@@ -247,12 +247,12 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	}
 
 
-	public int getMinOccurences() {
-		return minOccurences;
+	public int getMinOccurrences() {
+		return minOccurrences;
 	}
 
-	public AbstractParameterInfo setMinOccurences(int minOccurences) {
-		this.minOccurences = minOccurences;
+	public AbstractParameterInfo setMinOccurrences(int minOccurrences) {
+		this.minOccurrences = minOccurrences;
 		return this;
 	}
 
@@ -260,12 +260,12 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @return maximum number of values in this parameter.
 	 * Note: if {@link #isMultiple()}==false, then it never returns value &gt; 1
 	 */
-	public int getMaxOccurences() {
-		return isMultiple() ? maxOccurences : Math.min(maxOccurences, 1);
+	public int getMaxOccurrences() {
+		return isMultiple() ? maxOccurrences : Math.min(maxOccurrences, 1);
 	}
 
-	public void setMaxOccurences(int maxOccurences) {
-		this.maxOccurences = maxOccurences;
+	public void setMaxOccurrences(int maxOccurrences) {
+		this.maxOccurrences = maxOccurrences;
 	}
 
 	public Quantifier getMatchingStrategy() {
@@ -319,7 +319,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	public boolean isMandatory(ImmutableMap parameters) {
 		int nrOfValues = getNumberOfValues(parameters);
 		//current number of values is smaller then minimum number of values. Value is mandatory
-		return nrOfValues < getMinOccurences();
+		return nrOfValues < getMinOccurrences();
 	}
 
 	/**
@@ -336,7 +336,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 			return true;
 		}
 		//current number of values is smaller then maximum number of values. Can try next match
-		return nrOfValues < getMaxOccurences();
+		return nrOfValues < getMaxOccurrences();
 	}
 
 	/**
