@@ -3,6 +3,7 @@ package spoon;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.nio.file.Paths;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
