@@ -8,8 +8,7 @@ import spoon.OutputType;
 public class OutputTypeTest {
 
 	@Test
-	public void testOutputTypeLoading()
-	{
+	public void testOutputTypeLoading() {
 		OutputType outputType = OutputType.fromString("nulltest");
 		Assert.assertNull(outputType);
 

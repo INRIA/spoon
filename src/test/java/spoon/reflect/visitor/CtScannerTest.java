@@ -60,6 +60,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CtScannerTest {
+
 	@Test
 	public void testScannerContract() throws Exception {
 		// contract: CtScanner must call enter and exit methods in each visit methods.

@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CloneTest {
+
 	@Test
 	public void testCloneMethodsDeclaredInAST() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -219,5 +220,4 @@ public class CloneTest {
 			}
 		}
 	}
-
 }

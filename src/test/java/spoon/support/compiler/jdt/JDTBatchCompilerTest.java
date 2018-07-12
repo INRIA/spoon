@@ -8,6 +8,7 @@ import java.io.File;
 import static org.junit.Assert.assertTrue;
 
 public class JDTBatchCompilerTest {
+
 	@Test
 	public void testCompileGeneratedJavaFile() throws Exception {
 		final Launcher launcher = new Launcher();

@@ -40,7 +40,6 @@ public class CtGenerationTest {
 		System.setProperty("line.separator", this.oldLineSeparator);
 	}
 
-
 	@Test
 	public void testGenerateReplacementVisitor() throws Exception {
 		final Launcher launcher = new Launcher();
