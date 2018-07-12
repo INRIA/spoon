@@ -178,7 +178,9 @@ public class MetamodelTest {
 						|| parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtElement.class))
 						);
 			}
-		}).stream().map(x -> { result.add(x.toString()); return x; }).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
+		}).stream().map(x -> {
+			result.add(x.toString()); return x;
+		}).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
 
 		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)" + nl + "boolean isShadow;"));
 		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)" + nl + "spoon.reflect.reference.CtTypeReference<T> type;"));
