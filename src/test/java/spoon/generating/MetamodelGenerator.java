@@ -19,6 +19,9 @@ import spoon.reflect.visitor.CtScanner;
 
 public class MetamodelGenerator {
 
+	private MetamodelGenerator() {
+	}
+
 	public static void main(String[] args) {
 		Metamodel mm = Metamodel.getInstance();
 		Factory factory = mm.getConcepts().iterator().next().getMetamodelInterface().getFactory();
