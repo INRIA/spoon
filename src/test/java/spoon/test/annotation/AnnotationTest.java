@@ -1193,7 +1193,7 @@ public class AnnotationTest {
 		assertTrue(type.isAnnotationType());
 		assertSame(type, type.getReference().getDeclaration());
 	}
-	
+
 	@Test
 	public void testReplaceAnnotationValue() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -1258,7 +1258,7 @@ public class AnnotationTest {
 		assertEquals(101, annot.integers()[0]);
 		assertEquals(102, annot.integers()[1]);
 	}
-	
+
 	@Test
 	public void testSpoonManageRecursivelyDefinedAnnotation() {
 		// contract: Spoon manage to process recursively defined annotation in shadow classes
@@ -1395,7 +1395,6 @@ public class AnnotationTest {
 		} catch (SpoonException e) {
 			assertEquals("cannot assign an array to a non-array annotation element", e.getMessage());
 		}
-
 	}
 
 	@Test
