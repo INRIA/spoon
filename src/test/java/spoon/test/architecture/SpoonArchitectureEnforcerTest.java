@@ -331,6 +331,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.experimental.modelobs.context");
 		officialPackages.add("spoon.experimental.modelobs");
 		officialPackages.add("spoon.experimental");
+		officialPackages.add("spoon.internal");
+		officialPackages.add("spoon.internal.mavenlauncher");
 		officialPackages.add("spoon.legacy");
 		officialPackages.add("spoon.metamodel");
 		officialPackages.add("spoon.pattern");

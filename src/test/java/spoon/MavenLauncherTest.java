@@ -1,13 +1,19 @@
 package spoon;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.shared.invoker.*;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MavenLauncherTest {
 	@Test
@@ -15,15 +21,15 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(23, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(32, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 56 because of the sub folders of src/main/java
-		assertEquals(58, launcher.getModelBuilder().getInputSources().size());
+		assertEquals(59, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		
-		assertEquals(30, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(32, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 236 because of the sub folders of src/main/java and src/test/java
 		assertTrue("size: "+launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
@@ -71,5 +77,16 @@ public class MavenLauncherTest {
 		}
 
 		assertTrue("Content of classpath: "+ StringUtils.join(classpath,":"), findIt);
+	}
+
+	public static File getATmpM2Dir() {
+		int i = (int) Math.floor(Math.random() * (double) Integer.MAX_VALUE);
+		i = 0;
+		File tmp = new File(System.getProperty("java.io.tmpdir"));
+		File dir = new File(tmp,"tmp" + i);
+		dir.mkdir();
+		File m2 = new File(dir,".m2");
+		m2.mkdir();
+		return m2;
 	}
 }
