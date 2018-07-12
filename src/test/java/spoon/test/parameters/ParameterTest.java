@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ParameterTest {
+
 	@Test
 	public void testParameterInNoClasspath() throws Exception {
 		final Launcher launcher = new Launcher();
