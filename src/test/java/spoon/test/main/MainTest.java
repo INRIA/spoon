@@ -64,10 +64,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class MainTest {
-	
+
 	static Launcher launcher;
 	static CtPackage rootPackage;
-	
+
 	/**
 	 * load model once into static variable and use it for more read-only tests
 	 */
@@ -101,7 +101,7 @@ public class MainTest {
 
 		rootPackage = launcher.getFactory().Package().getRootPackage();
 	}
-	
+
 	@Test
 	public void testMain_ModelPrintAndCompile() {
 		//contract: check that spoon sources can be printed
@@ -109,12 +109,12 @@ public class MainTest {
 		//contract: check that spoon sources can be compiled
 		launcher.getModelBuilder().compile(InputType.CTTYPES);
 	}
-	
+
 	@Test
 	public void testMain_checkGenericContracts() {
 		checkGenericContracts(rootPackage);
 	}
-	
+
 	@Test
 	public void testMain_checkShadow() {
 		checkShadow(rootPackage);
@@ -379,7 +379,6 @@ public class MainTest {
 				throw new AssertionError("AssignmentContract error:" + assign.getPosition()+"\n"+assign.toString()+"\nAssigned is "+assigned.getClass());
 			}
 		}
-
 	}
 
 	public static void checkParentConsistency(CtElement ele) {
@@ -418,7 +417,7 @@ public class MainTest {
 		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
-	
+
 	/*
 	 * contract: each element is used only once
 	 * For example this is always true: field.getType() != field.getDeclaringType()
@@ -632,5 +631,4 @@ public class MainTest {
 
 		new Launcher().run(new String[] { });
 	}
-
 }
