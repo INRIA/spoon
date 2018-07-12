@@ -77,15 +77,4 @@ public class MavenLauncherTest {
 
 		assertTrue("Content of classpath: " + StringUtils.join(classpath, ":"), findIt);
 	}
-
-	public static File getATmpM2Dir() {
-		int i = (int) Math.floor(Math.random() * (double) Integer.MAX_VALUE);
-		i = 0;
-		File tmp = new File(System.getProperty("java.io.tmpdir"));
-		File dir = new File(tmp,"tmp" + i);
-		dir.mkdir();
-		File m2 = new File(dir,".m2");
-		m2.mkdir();
-		return m2;
-	}
 }
