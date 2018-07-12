@@ -58,6 +58,16 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	void setFile(File file);
 
 	/**
+	 * @return array of offsets in the origin source file, where occurs line separator
+	 */
+	int[] getLineSeparatorPositions();
+
+	/**
+	 * @param lineSeparatorPositions array of offsets in the origin source file, where occurs line separator
+	 */
+	void setLineSeparatorPositions(int[] lineSeparatorPositions);
+
+	/**
 	 * Gets all binary (.class) files that corresponds to this compilation unit
 	 * and have been created by calling
 	 * {@link spoon.SpoonModelBuilder#compile(spoon.SpoonModelBuilder.InputType...)}.

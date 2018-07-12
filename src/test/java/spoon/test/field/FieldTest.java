@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
@@ -36,6 +37,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -155,5 +157,20 @@ public class FieldTest {
 		Object retour = visitorPartial.evaluate(methods.get(0));
 
 		assertTrue(retour != null);
+	}
+
+	@Test
+	public void getFQNofFieldReference() {
+		// contract: when a reference field origin cannot be determined a call to its qualified name returns an explicit value
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/fields/Toto.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(1, elements.size());
+
+		CtFieldReference fieldReference = elements.get(0);
+		assertEquals("field", fieldReference.getSimpleName());
+		assertEquals("<unknown>#field", fieldReference.getQualifiedName());
 	}
 }

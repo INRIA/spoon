@@ -22,7 +22,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
@@ -32,13 +31,13 @@ import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.OPERATOR_KIND)
+	@MetamodelPropertyField(role = OPERATOR_KIND)
 	UnaryOperatorKind kind;
 
-	@MetamodelPropertyField(role = CtRole.LABEL)
+	@MetamodelPropertyField(role = LABEL)
 	String label;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = EXPRESSION)
 	CtExpression<T> operand;
 
 	@Override

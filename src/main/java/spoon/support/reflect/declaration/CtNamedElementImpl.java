@@ -20,7 +20,6 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 
 import static spoon.reflect.path.CtRole.NAME;
@@ -29,7 +28,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.NAME)
+	@MetamodelPropertyField(role = NAME)
 	String simpleName = "";
 
 	@Override

@@ -25,13 +25,12 @@ public class MetamodelGenerator {
 		factory.getEnvironment().useTabulations(true);
 		StringBuilder sb = new StringBuilder();
 		for (spoon.metamodel.MetamodelConcept type : mm.getConcepts()) {
-			if (type.getKind()==ConceptKind.LEAF) {
+			if (type.getKind() == ConceptKind.LEAF) {
 				sb.append(printType(factory, type));
 			}
 		}
 		System.out.println(sb.toString());
 	}
-	
 
 	private static String printType(Factory factory, spoon.metamodel.MetamodelConcept type) {
 		Map<String, String> valuesMap = new HashMap<>();
@@ -39,13 +38,12 @@ public class MetamodelGenerator {
 		valuesMap.put("ifaceName", type.getMetamodelInterface().getQualifiedName());
 		valuesMap.put("implName", type.getImplementationClass().getQualifiedName());
 		valuesMap.put("fields", printFields(factory, type));
-		
+
 		StrSubstitutor strSubst = new StrSubstitutor(valuesMap);
 		return strSubst.replace(
-				"types.add(new Type(\"${typeName}\", ${ifaceName}.class, ${implName}.class, fm -> fm\n" + 
-				"${fields}\n" + 
-				"));\n\n");
-		
+				"types.add(new Type(\"${typeName}\", ${ifaceName}.class, ${implName}.class, fm -> fm\n"
+				+ "${fields}\n"
+				+ "));\n\n");
 	}
 
 	private static String printFields(Factory factory, spoon.metamodel.MetamodelConcept type) {
@@ -67,16 +65,16 @@ public class MetamodelGenerator {
 		}
 		StringBuilder sb = new StringBuilder();
 		primitiveFields.addAll(elementFields);
-		primitiveFields.forEach(s->sb.append(s).append('\n'));
+		primitiveFields.forEach(s -> sb.append(s).append('\n'));
 		return sb.toString();
 	}
-	
+
 	private static String printField(spoon.metamodel.MetamodelProperty field) {
 		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("role", field.getRole().name());
 		valuesMap.put("derived", String.valueOf(field.isDerived()));
 		valuesMap.put("unsetable", String.valueOf(field.isUnsettable()));
-		
+
 		StrSubstitutor strSubst = new StrSubstitutor(valuesMap);
 		return strSubst.replace("\t.field(CtRole.${role}, ${derived}, ${unsetable})");
 	}

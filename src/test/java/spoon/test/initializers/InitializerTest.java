@@ -17,7 +17,7 @@ import static spoon.testing.utils.ModelUtils.build;
 public class InitializerTest {
 	@Test
 	public void testModelBuildingStaticInitializer() throws Exception {
-		CtClass<?> type = build("spoon.test.initializers",
+		CtClass<?> type = build("spoon.test.initializers.testclasses",
 				"InternalClassStaticFieldInit");
 		assertEquals("InternalClassStaticFieldInit", type.getSimpleName());
 
@@ -37,7 +37,7 @@ public class InitializerTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<?> type = build("spoon.test.initializers",
+		CtClass<?> type = build("spoon.test.initializers.testclasses",
 				"InstanceInitializers");
 		assertEquals("InstanceInitializers", type.getSimpleName());
 

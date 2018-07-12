@@ -31,7 +31,7 @@ public class LinesTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/prettyprinter/Validation.java"))
+						.resources("./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		factory.getEnvironment().setPreserveLineNumbers(true);
 		factory.getEnvironment().setAutoImports(false);
@@ -54,7 +54,7 @@ public class LinesTest {
 		assertEquals(0, factory.getEnvironment().getErrorCount());
 
 		// contract: in line preserve mode, toString is not prefixed or suffixed by newlines
-		String meth = factory.Type().get("spoon.test.prettyprinter.Validation").getMethodsByName("isIdentifier").get(0).toString();
+		String meth = factory.Type().get("spoon.test.prettyprinter.testclasses.Validation").getMethodsByName("isIdentifier").get(0).toString();
 		// the added linebreaks due to line preservation are removed
 		assertFalse(Pattern.compile("^\\s", Pattern.DOTALL).asPredicate().test(meth.toString()));
 

@@ -7,6 +7,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
@@ -73,7 +74,7 @@ public class APITest {
 			spoon.getEnvironment().debugMessage("package: " + p.getQualifiedName());
 		}
 		for (CtType<?> s : factory.Class().getAll()) {
-			spoon.getEnvironment().debugMessage("class: "+s.getQualifiedName());
+			spoon.getEnvironment().debugMessage("class: " + s.getQualifiedName());
 		}
 	}
 
@@ -114,15 +115,14 @@ public class APITest {
 
 			// check on the JDK API
 			// this is later use by FileSystemFile
-			assertTrue(new File(duplicateEntry).getCanonicalFile().equals(new File("./"+duplicateEntry).getCanonicalFile()));
+			assertTrue(new File(duplicateEntry).getCanonicalFile().equals(new File("./" + duplicateEntry).getCanonicalFile()));
 
 			Launcher.main(new String[] {
 					"-i",
 					// note the nasty ./
 					duplicateEntry + File.pathSeparator + "./" + duplicateEntry,
 					"-o", "target/spooned/apitest" });
-		} catch (IllegalArgumentException e) // from JDT
-		{
+		} catch (IllegalArgumentException e) { // from JDT
 			fail();
 		}
 	}
@@ -137,8 +137,7 @@ public class APITest {
 					"-i",
 					duplicateEntry + File.pathSeparator + "./" + duplicateEntry,
 					"-o", "target/spooned/apitest" });
-		} catch (IllegalArgumentException e) // from JDT
-		{
+		} catch (IllegalArgumentException e) { // from JDT
 			fail();
 		}
 	}
@@ -152,13 +151,12 @@ public class APITest {
 					"src/test/resources/spoon/test/api/" + File.pathSeparator
 							+ "src/test/resources/spoon/test/api/Foo.java",
 					"-o", "target/spooned/apitest" });
-		} catch (IllegalArgumentException e) // from JDT
-		{
+		} catch (IllegalArgumentException e) { // from JDT
 			fail();
 		}
 	}
 
-	@Test(expected=Exception.class)
+	@Test(expected = Exception.class)
 	public void testNotValidInput() throws Exception {
 		String invalidEntry = "does/not/exists//Foo.java";
 		Launcher.main(new String[] { "-i",
@@ -302,7 +300,7 @@ public class APITest {
 		class SetterMethodWithoutCollectionsFilter extends TypeFilter<CtMethod<?>> {
 			private final List<CtTypeReference<?>> collections = new ArrayList<>(4);
 
-			public SetterMethodWithoutCollectionsFilter(Factory factory) {
+			SetterMethodWithoutCollectionsFilter(Factory factory) {
 				super(CtMethod.class);
 				for (Class<?> aCollectionClass : Arrays.asList(Collection.class, List.class, Map.class, Set.class)) {
 					collections.add(factory.Type().createReference(aCollectionClass));
@@ -322,13 +320,13 @@ public class APITest {
 
 			private boolean isNotSetterForADerivedProperty(CtMethod<?> method) {
 				String methodName = method.getSimpleName();
-				String getterName = methodName.replace("set","get");
+				String getterName = methodName.replace("set", "get");
 
 				if (getterName.equals(methodName)) {
 					return false;
 				}
 
-				CtType<?> zeClass = (CtType)method.getParent();
+				CtType<?> zeClass = (CtType) method.getParent();
 				List<CtMethod<?>> getterMethods = zeClass.getMethodsByName(getterName);
 
 				if (getterMethods.size() != 1) {
@@ -414,7 +412,7 @@ public class APITest {
 			CtIf ifCondition = (CtIf) statement;
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
-			assertEquals("Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(),1, matcher.find(ifCondition).size());
+			assertEquals("Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), 1, matcher.find(ifCondition).size());
 		}
 	}
 
@@ -458,13 +456,13 @@ public class APITest {
 			public Path getOutputPath(CtModule module, CtPackage pack, CtType type) {
 				String path = "";
 				if (module != null) {
-					path += module.getSimpleName()+"_";
+					path += module.getSimpleName() + "_";
 				}
 				if (pack != null) {
-					path += pack.getQualifiedName()+"_";
+					path += pack.getQualifiedName() + "_";
 				}
 				if (type != null) {
-					path += type.getSimpleName()+".java";
+					path += type.getSimpleName() + ".java";
 				}
 				return new File(outputDest, path).toPath();
 			}
@@ -495,21 +493,21 @@ public class APITest {
 			public Path getOutputPath(CtModule module, CtPackage pack, CtType type) {
 				String path = "";
 				if (module != null) {
-					path += module.getSimpleName()+"_";
+					path += module.getSimpleName() + "_";
 
 					if (pack == null && type == null) {
 						path += "module-info.java";
 					}
 				}
 				if (pack != null) {
-					path += pack.getQualifiedName()+"_";
+					path += pack.getQualifiedName() + "_";
 
 					if (type == null) {
 						path += "package-info.java";
 					}
 				}
 				if (type != null) {
-					path += type.getSimpleName()+".java";
+					path += type.getSimpleName() + ".java";
 				}
 				return new File(outputDest, path).toPath();
 			}
@@ -547,9 +545,9 @@ public class APITest {
 		Set<String> units = launcher.getFactory().CompilationUnit().getMap().keySet();
 		assertEquals(3, units.size());
 
-		assertTrue("Module file not contained ("+moduleFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(moduleFile.getCanonicalPath()));
-		assertTrue("Package file not contained ("+packageFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(packageFile.getCanonicalPath()));
-		assertTrue("Class file not contained ("+classFile.getCanonicalPath()+"). \nContent: "+ StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
+		assertTrue("Module file not contained (" + moduleFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"), units.contains(moduleFile.getCanonicalPath()));
+		assertTrue("Package file not contained (" + packageFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"), units.contains(packageFile.getCanonicalPath()));
+		assertTrue("Class file not contained (" + classFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
 	}
 
 	@Test
@@ -565,7 +563,7 @@ public class APITest {
 		launcher.run();
 		File outputDir = new File(destPath);
 		System.out.println(destPath);
-		assertFalse("Output dir should not exist: "+outputDir.getAbsolutePath(), outputDir.exists());
+		assertFalse("Output dir should not exist: " + outputDir.getAbsolutePath(), outputDir.exists());
 	}
 
 	@Test
@@ -588,6 +586,36 @@ public class APITest {
 
 		assertTrue(environment.getNoClasspath());
 		assertTrue(environment.isCommentsEnabled());
+	}
+
+	@Test
+	public void testBuildModelReturnThatTheModelIsBuilt() {
+		// contract: when a model is built, a flag is available in the environment to say it's built
+		// and this flag won't change if something is modified in the model afterwards
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+
+		assertNotNull(launcher.getFactory().getModel());
+		assertFalse(launcher.getFactory().getModel().isBuildModelFinished());
+		launcher.buildModel();
+		assertTrue(launcher.getModel().isBuildModelFinished());
+
+		launcher.getFactory().createClass("my.fake.Klass");
+		assertTrue(launcher.getModel().isBuildModelFinished());
+	}
+
+	@Test
+	public void testProcessModelsTwice() {
+		// contract: the launcher cannot be processed twice
+		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[]{"-i", "./src/test/java/spoon/test/api/testclasses/Bar.java"});
+
+		try {
+			launcher.setArgs(new String[] {"-i", "./src/test/java/spoon/test/arrays/testclasses/Foo.java"});
+			fail();
+		} catch (SpoonException e) {
+			assertEquals("You cannot process twice the same launcher instance.", e.getMessage());
+		}
 	}
 
 }

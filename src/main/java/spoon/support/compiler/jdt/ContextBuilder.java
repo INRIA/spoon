@@ -62,7 +62,12 @@ public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
 
-	List<CtTypeReference<?>> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+	public static class CastInfo {
+		int nrOfBrackets;
+		CtTypeReference<?> typeRef;
+	}
+
+	List<CastInfo> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 	CompilationUnitDeclaration compilationunitdeclaration;
 
@@ -71,6 +76,8 @@ public class ContextBuilder {
 	Deque<String> label = new ArrayDeque<>();
 
 	boolean isBuildLambda = false;
+
+	boolean isBuildTypeCast = false;
 
 	boolean ignoreComputeImports = false;
 
@@ -99,7 +106,7 @@ public class ContextBuilder {
 
 		if (current instanceof CtExpression) {
 			while (!casts.isEmpty()) {
-				((CtExpression<?>) current).addTypeCast(casts.remove(0));
+				((CtExpression<?>) current).addTypeCast(casts.remove(0).typeRef);
 			}
 		}
 		if (current instanceof CtStatement && !this.label.isEmpty()) {
@@ -129,6 +136,34 @@ public class ContextBuilder {
 			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
+	}
+
+	CtElement getContextElementOnLevel(int level) {
+		for (ASTPair pair : stack) {
+			if (level == 0) {
+				return pair.element;
+			}
+			level--;
+		}
+		return null;
+	}
+
+	<T extends CtElement> T getParentElementOfType(Class<T> clazz) {
+		for (ASTPair pair : stack) {
+			if (clazz.isInstance(pair.element)) {
+				return (T) pair.element;
+			}
+		}
+		return null;
+	}
+
+	ASTPair getParentContextOfType(Class<? extends CtElement> clazz) {
+		for (ASTPair pair : stack) {
+			if (clazz.isInstance(pair.element)) {
+				return pair;
+			}
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")

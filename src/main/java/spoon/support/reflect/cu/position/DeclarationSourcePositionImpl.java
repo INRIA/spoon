@@ -25,25 +25,21 @@ import java.io.Serializable;
  * This class represents the position of a Java program element in a source
  * file.
  */
-public class DeclarationSourcePositionImpl extends SourcePositionImpl
+public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 		implements DeclarationSourcePosition, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int modifierSourceEnd;
 	private int modifierSourceStart;
-	private int declarationSourceStart;
-	private int declarationSourceEnd;
 
 	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
 			int modifierSourceStart, int modifierSourceEnd, int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
 		super(compilationUnit,
-				sourceStart, sourceEnd,
+				sourceStart, sourceEnd, declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);
 		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
 		this.modifierSourceStart = modifierSourceStart;
-		this.declarationSourceStart = declarationSourceStart;
-		this.declarationSourceEnd = declarationSourceEnd;
 		if (this.modifierSourceStart == 0) {
 			this.modifierSourceStart = declarationSourceStart;
 		}
@@ -51,28 +47,8 @@ public class DeclarationSourcePositionImpl extends SourcePositionImpl
 	}
 
 	@Override
-	public int getSourceEnd() {
-		return declarationSourceEnd;
-	}
-
-	@Override
-	public int getSourceStart() {
-		return declarationSourceStart;
-	}
-
-	@Override
 	public int getModifierSourceStart() {
 		return modifierSourceStart;
-	}
-
-	@Override
-	public int getNameStart() {
-		return super.getSourceStart();
-	}
-
-	@Override
-	public int getNameEnd() {
-		return super.getSourceEnd();
 	}
 
 	public void setModifierSourceEnd(int modifierSourceEnd) {
@@ -84,13 +60,9 @@ public class DeclarationSourcePositionImpl extends SourcePositionImpl
 		return modifierSourceEnd;
 	}
 
-	public int getEndLine() {
-		return searchLineNumber(declarationSourceEnd);
-	}
-
 	@Override
 	public String getSourceDetails() {
-		return super.getSourceDetails()
+		return getFragment(getSourceStart(), getSourceEnd())
 				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
 				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
 	}

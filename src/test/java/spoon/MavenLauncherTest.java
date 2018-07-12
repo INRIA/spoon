@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class MavenLauncherTest {
+
 	@Test
 	public void spoonMavenLauncherTest() {
 		// without the tests
@@ -27,7 +28,7 @@ public class MavenLauncherTest {
 		assertEquals(32, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 236 because of the sub folders of src/main/java and src/test/java
-		assertTrue("size: "+launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
+		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
 
 		// specify the pom.xml
 		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
@@ -64,14 +65,15 @@ public class MavenLauncherTest {
 		List<String> classpath = Arrays.asList(launcher.getEnvironment().getSourceClasspath());
 		// in order to work on CI, make sure the version is the same in Spoon pom.xml
 		// else, we cannot guarantee that the dependency is present in .m2 cache and the test might fail
-		String lookingFor = "junit/junit/4.12/junit-4.12.jar";
+
+		String lookingFor = Paths.get("junit","junit", "4.12", "junit-4.12.jar").toString();
 
 		boolean findIt = false;
 		for (String s : classpath) {
 			findIt = findIt || s.contains(lookingFor);
 		}
 
-		assertTrue("Content of classpath: "+ StringUtils.join(classpath,":"), findIt);
+		assertTrue("Content of classpath: " + StringUtils.join(classpath, ":"), findIt);
 	}
 
 	public static File getATmpM2Dir() {

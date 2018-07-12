@@ -71,7 +71,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 			for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
 				List<CtExpression> invArgs = ((CtInvocation) clone.getBody().getStatement(i)).getArguments();
 				if (invArgs.size() <= 1) {
-					throw new RuntimeException("You forget the role argument in line "+i+" of method "+element.getSimpleName()+" from "+element.getDeclaringType().getQualifiedName());
+					throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
 				}
 				final CtInvocation targetInvocation = (CtInvocation) invArgs.get(1);
 				if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
@@ -92,13 +92,10 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(2).clone(), factory.Executable().createReference("List Map#values()"));
 					replace.getArguments().get(2).replace(invocation);
 				}
-
 				clone.getBody().getStatement(i).replace(replace);
 			}
-
 			target.addMethod(clone);
 		}
-
 	}
 
 	private CtClass<Object> createBiScanner() {

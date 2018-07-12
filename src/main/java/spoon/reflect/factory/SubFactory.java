@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+
 /**
  * This class is the superclass for all the sub-factories of
  * {@link spoon.reflect.factory.Factory}.
@@ -53,3 +54,4 @@ public abstract class SubFactory {
 	//	}
 
 }
+

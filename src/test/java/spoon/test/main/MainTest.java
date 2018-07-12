@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
@@ -86,7 +87,7 @@ public class MainTest {
 
 		launcher = new Launcher();
 
-		launcher.run(new String[] {
+		launcher.setArgs(new String[] {
 				"-i", "src/main/java",
 				"-o", "target/spooned",
 				"--destination","target/spooned-build",
@@ -96,7 +97,17 @@ public class MainTest {
 				"--level", "OFF"
 		});
 		
+		launcher.buildModel();
+
 		rootPackage = launcher.getFactory().Package().getRootPackage();
+	}
+	
+	@Test
+	public void testMain_ModelPrintAndCompile() {
+		//contract: check that spoon sources can be printed
+		launcher.prettyprint();
+		//contract: check that spoon sources can be compiled
+		launcher.getModelBuilder().compile(InputType.CTTYPES);
 	}
 	
 	@Test

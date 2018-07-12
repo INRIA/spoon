@@ -108,7 +108,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
 					List<CtExpression> invArgs = ((CtInvocation) clone.getBody().getStatement(i)).getArguments();
 					if (invArgs.size() <= 1) {
-						throw new RuntimeException("You forget the role argument in line "+i+" of method "+element.getSimpleName()+" from "+element.getDeclaringType().getQualifiedName());
+						throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
 					}
 					final CtInvocation targetInvocation = (CtInvocation) invArgs.get(1);
 					if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
@@ -125,7 +125,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 
 				clone.getBody().insertBegin(localCloningElement); // declaration of local variable
 				clone.getBody().insertEnd(createCloneBuilderCopyInvocation(elementVarRead, localVarRead)); // call to copy
-				clone.getBody().insertEnd(createTailorerScanInvocation(elementVarRead,localVarRead)); // call to tailor
+				clone.getBody().insertEnd(createTailorerScanInvocation(elementVarRead, localVarRead)); // call to tailor
 				clone.getBody().insertEnd(factory.Code().createVariableAssignment(other, false, localVarRead)); // final assignment
 
 
@@ -494,11 +494,11 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					}
 				});
 				if (matchers.isEmpty()) {
-					throw new SpoonException("No getter found for field "+ctField);
+					throw new SpoonException("No getter found for field " + ctField);
 				}
 
 				if (matchers.size() > 1) {
-					throw new SpoonException("Get more than one getter ("+ StringUtils.join(matchers, ";")+"). Please make an more ingenious method to get getter method.");
+					throw new SpoonException("Get more than one getter (" + StringUtils.join(matchers, ";") + "). Please make an more ingenious method to get getter method.");
 				}
 				return matchers.get(0);
 			}

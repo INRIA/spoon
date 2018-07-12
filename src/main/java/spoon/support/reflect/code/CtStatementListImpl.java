@@ -22,7 +22,6 @@ import spoon.reflect.code.CtStatementList;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
@@ -38,7 +37,7 @@ import static spoon.reflect.path.CtRole.STATEMENT;
 public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtStatementList {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.STATEMENT)
+	@MetamodelPropertyField(role = STATEMENT)
 	List<CtStatement> statements = emptyList();
 
 	@Override
