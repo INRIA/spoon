@@ -51,11 +51,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -99,7 +99,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Map> MAP = createReference(Map.class);
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
 
-	private final Map<Class<?>, CtType<?>> shadowCache = new HashMap<>();
+	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Returns a reference on the null type (type of null).

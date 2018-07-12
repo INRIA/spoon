@@ -20,7 +20,7 @@ public class SwitchCaseTest {
 
 	@Test
 	public void insertAfterStatementInSwitchCaseWithoutException() throws Exception {
-		String packageName = "spoon.test.ctCase";
+		String packageName = "spoon.test.ctCase.testclasses";
 		String className = "ClassWithSwitchExample";
 		Factory factory = factoryFor(packageName, className);
 		List<CtCase> elements = elementsOfType(CtCase.class, factory);
@@ -37,7 +37,7 @@ public class SwitchCaseTest {
 
 	@Test
 	public void insertBeforeStatementInSwitchCaseWithoutException() throws Exception {
-		String packageName = "spoon.test.ctCase";
+		String packageName = "spoon.test.ctCase.testclasses";
 		String className = "ClassWithSwitchExample";
 		Factory factory = factoryFor(packageName, className);
 		List<CtCase> elements = elementsOfType(CtCase.class, factory);

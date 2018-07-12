@@ -26,4 +26,5 @@ public class FooMethod {
 	public FooMethod(int arg1) {
 
 	}
+	public void emptyMethod() {}
 }

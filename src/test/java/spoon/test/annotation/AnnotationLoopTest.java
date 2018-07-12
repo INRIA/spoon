@@ -11,6 +11,7 @@ import spoon.testing.utils.ModelUtils;
 import static org.junit.Assert.assertEquals;
 
 public class AnnotationLoopTest {
+
 	@Test
 	public void testAnnotationDeclaredInForInit() throws Exception {
 		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);

@@ -75,7 +75,6 @@ public class SpoonTestHelpers {
 		return result;
 	}
 
-
 	/** returns all possible setters related to CtElement */
 	public static List<CtMethod<?>> getAllSetters(CtType<?> baseType) {
 		List<CtMethod<?>> result = new ArrayList<>();
@@ -101,7 +100,6 @@ public class SpoonTestHelpers {
 		return result;
 	}
 
-
 	/** returns the corresponding setter, if several are possible returns the lowest one in the hierarchy */
 	public static CtMethod<?> getSetterOf(CtType<?> baseType, CtMethod<?> getter) {
 		String setterName = getter.getSimpleName().replaceFirst("^get", "set");
@@ -117,7 +115,6 @@ public class SpoonTestHelpers {
 			}
 		}
 
-		//System.out.println(setterName+" "+tentativeSetters.length);
 		return (CtMethod<?>) tentativeSetters[0];
 	}
 
@@ -131,5 +128,4 @@ public class SpoonTestHelpers {
 						// return type
 						isMetamodelRelatedType(m.getType());
 	}
-
 }

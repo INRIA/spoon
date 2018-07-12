@@ -16,6 +16,7 @@
  */
 package spoon.reflect;
 
+import spoon.SpoonModelBuilder;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
@@ -57,5 +58,17 @@ public interface CtModel extends Serializable, CtQueryable {
 
 	/** Returns all the model elements matching the filter. */
 	<E extends CtElement> List<E> getElements(Filter<E> filter);
+
+	/**
+	 * If true, the first build model has been finished.
+	 * This value should be false at the beginning of {@link SpoonModelBuilder#build()} and true at this end.
+	 */
+	boolean isBuildModelFinished();
+
+	/**
+	 * Set to true to flag that a build model has been finished.
+	 * By default, this method is called with a true value at the end of {@link SpoonModelBuilder#build()}
+	 */
+	<T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished);
 
 }

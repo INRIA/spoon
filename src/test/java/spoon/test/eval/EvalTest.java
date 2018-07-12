@@ -9,18 +9,24 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
+import spoon.test.eval.testclasses.Foo;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
 
 	@Test
 	public void testStringConcatenation() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testStrings").get(0).getBody();
@@ -34,7 +40,7 @@ public class EvalTest {
 
 	@Test
 	public void testArrayLength() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testArray").get(0).getBody();
@@ -45,7 +51,7 @@ public class EvalTest {
 
 	@Test
 	public void testDoNotSimplify() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
@@ -56,18 +62,33 @@ public class EvalTest {
 
 	@Test
 	public void testDoNotSimplifyCasts() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testScanAPartiallyEvaluatedElement() throws Exception {
+		// contract: once partially evaluated a code element should be still visitable to find variables
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
+		assertEquals(1, b.getStatements().size());
+		b = b.partiallyEvaluate();
+
+		AccessibleVariablesFinder avf = new AccessibleVariablesFinder(b);
+		List<CtVariable> ctVariables = avf.find();
+		assertEquals(1, ctVariables.size());
 	}
 
 	@Test
 	public void testTryCatchAndStatement() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("tryCatchAndStatement").get(0).getBody();
@@ -78,15 +99,15 @@ public class EvalTest {
 
 	@Test
 	public void testDoNotSimplifyToExpressionWhenStatementIsExpected() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("simplifyOnlyWhenPossible").get(0).getBody();
 		assertEquals(3, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("spoon.test.eval.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
-		assertEquals("java.lang.System.out.println(spoon.test.eval.ToEvaluate.getClassLoader())", b.getStatements().get(1).toString());
-		assertEquals("return \"spoon.test.eval.ToEvaluate\"", b.getStatements().get(2).toString());
+		assertEquals("spoon.test.eval.testclasses.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
+		assertEquals("java.lang.System.out.println(spoon.test.eval.testclasses.ToEvaluate.getClassLoader())", b.getStatements().get(1).toString());
+		assertEquals("return \"spoon.test.eval.testclasses.ToEvaluate\"", b.getStatements().get(2).toString());
 	}
 
 	@Test
@@ -140,7 +161,7 @@ public class EvalTest {
 	@Test
 	public void testVisitorPartialEvaluatorScanner() throws Exception {
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/eval/Foo.java");
+		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
 		launcher.buildModel();
 		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 		CtType<?> foo = launcher.getFactory().Type().get((Class<?>) Foo.class);

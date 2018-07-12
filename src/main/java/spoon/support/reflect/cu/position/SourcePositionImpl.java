@@ -37,6 +37,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 * Search the line number corresponding to a specific position
 	 */
 	protected int searchLineNumber(int position) {
+		int[] lineSeparatorPositions = getLineSeparatorPositions();
 		if (lineSeparatorPositions == null) {
 			return 1;
 		}
@@ -65,7 +66,8 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	/**
 	 * Search the column number
 	 */
-	private int searchColumnNumber(int position) {
+	protected int searchColumnNumber(int position) {
+		int[] lineSeparatorPositions = getLineSeparatorPositions();
 		if (lineSeparatorPositions == null) {
 			return -1;
 		}
@@ -104,19 +106,19 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	 */
 	private int sourceStartline = -1;
 
-	/**
-	 * The index of line breaks, as computed by JDT.
-	 * Used to compute line numbers afterwards.
-	 */
-	private final int[] lineSeparatorPositions;
-
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
 		super();
 		checkArgsAreAscending(sourceStart, sourceEnd + 1);
+		if (compilationUnit == null) {
+			throw new SpoonException("Mandatory parameter compilationUnit is null");
+		}
 		this.compilationUnit = compilationUnit;
+		//TODD: this check will be removed after we remove lineSeparatorPositions from the Constructor
+		if (compilationUnit.getLineSeparatorPositions() != lineSeparatorPositions) {
+			throw new SpoonException("Unexpected lineSeparatorPositions");
+		}
 		this.sourceEnd = sourceEnd;
 		this.sourceStart = sourceStart;
-		this.lineSeparatorPositions = lineSeparatorPositions;
 	}
 
 	@Override
@@ -222,5 +224,9 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 			}
 			last = value;
 		}
+	}
+
+	private int[] getLineSeparatorPositions() {
+		return compilationUnit == null ? null : compilationUnit.getLineSeparatorPositions();
 	}
 }

@@ -44,7 +44,7 @@ public class PrinterHelper {
 	/**
 	 * The string buffer in which the code is generated.
 	 */
-	private final StringBuffer sbf = new StringBuffer();
+	protected final StringBuffer sbf = new StringBuffer();
 
 	/**
 	 * Number of tabs when we print the source code.
@@ -72,7 +72,7 @@ public class PrinterHelper {
 	 * each writeln() sets this to true.
 	 * if true then first call of write first writes tabs and then resets this to false
 	 */
-	private boolean shouldWriteTabs = true;
+	protected boolean shouldWriteTabs = true;
 	/*
 	 * true if last written character was \r
 	 * It helps to detect windows EOL, which is \r\n
@@ -167,7 +167,7 @@ public class PrinterHelper {
 		}
 	}
 
-	private void autoWriteTabs() {
+	protected void autoWriteTabs() {
 		if (shouldWriteTabs) {
 			writeTabsInternal();
 			shouldWriteTabs = false;

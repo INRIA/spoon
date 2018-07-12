@@ -50,6 +50,10 @@ import spoon.test.generics.testclasses2.LikeCtClass;
 import spoon.test.generics.testclasses2.LikeCtClassImpl;
 import spoon.test.generics.testclasses2.SameSignature2;
 import spoon.test.generics.testclasses2.SameSignature3;
+import spoon.test.generics.testclasses3.Bar;
+import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
+import spoon.test.generics.testclasses3.Foo;
+import spoon.test.generics.testclasses3.GenericConstructor;
 import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
@@ -86,7 +90,7 @@ public class GenericsTest {
 
 	@Test
 	public void testBugComparableComparator() throws Exception {
-		CtClass<?> type = build("spoon.test.generics",
+		CtClass<?> type = build("spoon.test.generics.testclasses3",
 				"ComparableComparatorBug");
 
 		assertEquals("ComparableComparatorBug", type.getSimpleName());
@@ -102,7 +106,7 @@ public class GenericsTest {
 
 	@Test
 	public void testModelBuildingTree() throws Exception {
-		CtClass<?> type = build("spoon.test.generics", "Tree");
+		CtClass<?> type = build("spoon.test.generics.testclasses3", "Tree");
 		assertEquals("Tree", type.getSimpleName());
 
 		// New type parameter declaration.
@@ -119,7 +123,7 @@ public class GenericsTest {
 
 	@Test
 	public void testModelBuildingGenericConstructor() throws Exception {
-		CtClass<?> type = build("spoon.test.generics", "GenericConstructor");
+		CtClass<?> type = build("spoon.test.generics.testclasses3", "GenericConstructor");
 		assertEquals("GenericConstructor", type.getSimpleName());
 		CtTypeParameter typeParameter = type.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0).getFormalCtTypeParameters().get(0);
 		assertEquals("E", typeParameter.getSimpleName());
@@ -127,7 +131,7 @@ public class GenericsTest {
 
 	@Test
 	public void testDiamond2() throws Exception {
-		CtClass<GenericConstructor> type = build("spoon.test.generics", "GenericConstructor");
+		CtClass<GenericConstructor> type = build("spoon.test.generics.testclasses3", "GenericConstructor");
 		assertEquals("GenericConstructor", type.getSimpleName());
 		CtConstructor<GenericConstructor> c = type.getConstructor();
 		CtLocalVariable<?> var = c.getBody().getStatement(1);
@@ -158,7 +162,7 @@ public class GenericsTest {
 
 	@Test
 	public void testModelBuildingSimilarSignatureMethods() throws Exception {
-		CtClass<?> type = build("spoon.test.generics", "SimilarSignatureMethodes");
+		CtClass<?> type = build("spoon.test.generics.testclasses3", "SimilarSignatureMethodes");
 		List<CtNamedElement> methods = type.getElements(new NamedElementFilter<>(CtNamedElement.class,"methode"));
 		assertEquals(2, methods.size());
 		CtTypeParameter typeParameter = ((CtMethod<?>) methods.get(0)).getFormalCtTypeParameters().get(0);
@@ -193,7 +197,7 @@ public class GenericsTest {
 	@Test
 	public void testTypeParameterDeclarer() throws Exception {
 		// contract: one can lookup the declarer of a type parameter if it is in appropriate context (the declararer is in the parent hierarchy)
-		CtClass<?> classThatDefinesANewTypeArgument = build("spoon.test.generics", "ClassThatDefinesANewTypeArgument");
+		CtClass<?> classThatDefinesANewTypeArgument = build("spoon.test.generics.testclasses3", "ClassThatDefinesANewTypeArgument");
 		CtTypeParameter typeParam = classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0);
 		assertEquals("T", classThatDefinesANewTypeArgument.getFormalCtTypeParameters().get(0).getSimpleName());
 		assertSame(classThatDefinesANewTypeArgument, typeParam.getTypeParameterDeclarer());
@@ -224,7 +228,7 @@ public class GenericsTest {
 
 	@Test
 	public void testGenericMethodCallWithExtend() throws Exception {
-		CtClass<?> type = build("spoon.test.generics", "GenericMethodCallWithExtend");
+		CtClass<?> type = build("spoon.test.generics.testclasses3", "GenericMethodCallWithExtend");
 		CtMethod<?> meth = type.getMethodsByName("methode").get(0);
 
 		// an bound type is not an TypeParameterRefernce
@@ -237,21 +241,21 @@ public class GenericsTest {
 	@Test
 	public void testBugCommonCollection() throws Exception {
 		try {
-			CtClass<?> type = build("spoon.test.generics", "BugCollection");
+			CtClass<?> type = build("spoon.test.generics.testclasses3", "BugCollection");
 
 			CtField<?> INSTANCE = type.getElements(
 					new NamedElementFilter<>(CtField.class,"INSTANCE")).get(0);
 			// assertTrue(INSTANCE.getDefaultExpression().getType().getActualTypeArguments().get(0)
 			// instanceof CtAnnonTypeParameterReference);
 			assertEquals(
-					"public static final spoon.test.generics.ACLass<?> INSTANCE = new spoon.test.generics.ACLass();",
+					"public static final spoon.test.generics.testclasses3.ACLass<?> INSTANCE = new spoon.test.generics.testclasses3.ACLass();",
 					INSTANCE.toString());
 
 			CtField<?> INSTANCE2 = type.getElements(
 					new NamedElementFilter<>(CtField.class,"INSTANCE2")).get(0);
 			INSTANCE2.setAnnotations(new ArrayList<CtAnnotation<?>>());
 			assertEquals(
-					"public static final spoon.test.generics.ACLass<?> INSTANCE2 = new spoon.test.generics.ACLass();",
+					"public static final spoon.test.generics.testclasses3.ACLass<?> INSTANCE2 = new spoon.test.generics.testclasses3.ACLass();",
 					INSTANCE2.toString());
 
 			CtClass<?> ComparableComparator = type
@@ -321,7 +325,7 @@ public class GenericsTest {
 
 	@Test
 	public void testInstanceOfMapEntryGeneric() throws Exception {
-		CtClass<?> type = build("spoon.test.generics", "InstanceOfMapEntryGeneric");
+		CtClass<?> type = build("spoon.test.generics.testclasses3", "InstanceOfMapEntryGeneric");
 		CtMethod<?> meth = type.getMethodsByName("methode").get(0);
 
 		CtBinaryOperator<?> instOf = (CtBinaryOperator<?>) ((CtLocalVariable<?>) meth.getBody().getStatement(0)).getDefaultExpression();
@@ -337,8 +341,8 @@ public class GenericsTest {
 		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/generics/Foo.java",
-						"./src/test/java/spoon/test/generics/Bar.java"));
+						"./src/test/java/spoon/test/generics/testclasses3/Foo.java",
+						"./src/test/java/spoon/test/generics/testclasses3/Bar.java"));
 
 		compiler.build();
 
@@ -627,13 +631,13 @@ public class GenericsTest {
 		CtTypeParameterReference typeParamRef = typeParam.getReference();
 		assertSame(typeParam, typeParamRef.getDeclaration());
 
-		assertEquals("spoon.test.generics.ClassThatDefinesANewTypeArgument", typeRef.toString());
+		assertEquals("spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument", typeRef.toString());
 
 		// creating a reference to "ClassThatDefinesANewTypeArgument<T>"
 		//this assignment changes parent of typeParamRef to TYPEREF
 		typeRef.addActualTypeArgument(typeParamRef);
 
-		assertEquals("spoon.test.generics.ClassThatDefinesANewTypeArgument<T>", typeRef.toString());
+		assertEquals("spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument<T>", typeRef.toString());
 
 		// this does not change the declaration
 		assertSame(aTacos, typeRef.getDeclaration());

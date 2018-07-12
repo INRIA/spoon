@@ -16,27 +16,28 @@
  */
 package spoon.support.gui;
 
-import spoon.Launcher;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
 import java.awt.BorderLayout;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import spoon.Launcher;
+
 
 public class SpoonObjectFieldsTable extends JFrame {
 	public class SpoonObjectTableModel extends AbstractTableModel {
 
 		private static final long serialVersionUID = 1L;
 
-		List<Field> field;
+		transient List<Field> field;
 
-		Object o;
+		transient Object o;
 
 		public SpoonObjectTableModel(Object o) {
 			super();
@@ -112,7 +113,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 
 	private JTable jTable = null;
 
-	private Object o;
+	private transient  Object o;
 
 	/**
 	 * This is the default constructor
@@ -178,3 +179,4 @@ public class SpoonObjectFieldsTable extends JFrame {
 	}
 
 }
+

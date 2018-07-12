@@ -27,9 +27,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CloneTest {
+
 	@Test
 	public void testCloneMethodsDeclaredInAST() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -98,15 +104,15 @@ public class CloneTest {
 			@Override
 			public void process(CtConditional<?> conditional) {
 				CtConditional clone = conditional.clone();
-				Assert.assertEquals(0, conditional.getTypeCasts().size());
-				Assert.assertEquals(0, clone.getTypeCasts().size());
-				Assert.assertEquals(conditional, clone);
+				assertEquals(0, conditional.getTypeCasts().size());
+				assertEquals(0, clone.getTypeCasts().size());
+				assertEquals(conditional, clone);
 				conditional.addTypeCast(getFactory().Type().bytePrimitiveType());
-				Assert.assertEquals(1, conditional.getTypeCasts().size());
+				assertEquals(1, conditional.getTypeCasts().size());
 				Assert.assertNotEquals(conditional, clone);
 				clone = conditional.clone();
-				Assert.assertEquals(conditional, clone);
-				Assert.assertEquals(1, clone.getTypeCasts().size());
+				assertEquals(conditional, clone);
+				assertEquals(1, clone.getTypeCasts().size());
 			}
 		});
 		launcher.run();
@@ -136,10 +142,10 @@ public class CloneTest {
 				assertNull(previousTarget);
 			}
 		}
-		
+
 		CloneListener cl = new CloneListener();
 		CtType<?> cloneTarget = cl.clone(cloneSource);
-		
+
 		cloneSource.filterChildren(null).forEach(sourceElement -> {
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
@@ -161,7 +167,7 @@ public class CloneTest {
 		CtMethod<?> method = klass.getMethodsByName("c").get(0);
 		List<CtExecutableReference> elements = method.getElements(new TypeFilter<>(CtExecutableReference.class));
 		CtExecutableReference methodRef = elements.get(0);
-		
+
 		// the lookup is OK in the original node
 		assertSame(method, methodRef.getDeclaration());
 
@@ -194,8 +200,6 @@ public class CloneTest {
 		assertEquals("cCopyX", methodClone.getSimpleName());
 	}
 
-
-
 	@Test
 	public void testCopyType() throws Exception {
 		// contract: the copied type is well formed, it never points to the initial type
@@ -216,5 +220,4 @@ public class CloneTest {
 			}
 		}
 	}
-
 }

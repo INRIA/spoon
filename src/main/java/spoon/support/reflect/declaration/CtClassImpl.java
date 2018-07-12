@@ -28,7 +28,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -60,7 +59,7 @@ import static spoon.reflect.path.CtRole.SUPER_TYPE;
 public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtClass<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.SUPER_TYPE)
+	@MetamodelPropertyField(role = SUPER_TYPE)
 	CtTypeReference<?> superClass;
 
 	@Override

@@ -18,9 +18,9 @@ include: [_includes]
 # variables
 
 sidebar_tagline: Spoon
-sidebar_version: version 6.1.0
-spoon_release: "6.2.0"
-spoon_snapshot: "6.3.0-SNAPSHOT"
+sidebar_version: version 7.0.0
+spoon_release: "7.0.0"
+spoon_snapshot: "7.1.0-SNAPSHOT"
 
 exclude:
   - _site

@@ -16,12 +16,8 @@
  */
 package spoon;
 
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.apache.maven.cli.MavenCli;
+import org.codehaus.plexus.classworlds.ClassWorld;
 import spoon.internal.mavenlauncher.InheritanceModel;
 
 import java.io.BufferedReader;
@@ -29,9 +25,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Create a Spoon launcher from a maven pom file
@@ -39,7 +33,6 @@ import java.util.Properties;
 public class MavenLauncher extends Launcher {
 	private String m2RepositoryPath;
 	private SOURCE_TYPE sourceType;
-	private File mvnHome;
 
 	/**
 	 * The type of source to consider in the model
@@ -54,7 +47,7 @@ public class MavenLauncher extends Launcher {
 	}
 
 	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType) {
-		this(mavenProject, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType, null);
+		this(mavenProject, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
 	}
 
 	/**
@@ -62,31 +55,11 @@ public class MavenLauncher extends Launcher {
 	 * @param mavenProject the path to the root of the project
 	 * @param m2RepositoryPath the path to the m2repository
 	 * @param sourceType the source type (App, test, or all)
-	 *
-	 * Default maven home path will be tried. (See #getDefaultMavenHome())
 	 */
 	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType) {
-		this(mavenProject, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType, null);
-	}
-
-	/**
-	 *
-	 * @param mavenProject the path to the root of the project
-	 * @param m2RepositoryPath the path to the m2repository
-	 * @param sourceType the source type (App, test, or all)
-	 * @param mvnHome the path to the maven installation, if null then default paths will be tried. (See #getDefaultMavenHome())
-	 */
-	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, File mvnHome) {
 		super();
 		this.m2RepositoryPath = m2RepositoryPath;
 		this.sourceType = sourceType;
-		if (mvnHome != null && mvnHome.exists()) {
-			this.mvnHome = mvnHome;
-		} else if (mvnHome != null) {
-			throw new SpoonException("Invalid Maven home location.");
-		} else {
-			this.mvnHome = getDefaultMavenHome();
-		}
 
 		File mavenProjectFile = new File(mavenProject);
 		if (!mavenProjectFile.exists()) {
@@ -133,27 +106,18 @@ public class MavenLauncher extends Launcher {
 		}
 		File pom = new File(path);
 		File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
+		System.setProperty("maven.multiModuleProjectDirectory", pom.getParentFile().getAbsolutePath());
 
-		//Run mvn dependency:build-classpath -Dmdep.outputFile="spoon.classpath.tmp"
-		//This should write the classpath used by maven in spoon.classpath.tmp
-		InvocationRequest request = new DefaultInvocationRequest();
-		request.setPomFile(pom);
-		request.setGoals(Arrays.asList("dependency:build-classpath"));
-		Properties properties = new Properties();
-		properties.setProperty("mdep.outputFile", classPathPrint.getAbsolutePath());
-		request.setProperties(properties);
+		ClassWorld classWorld = new ClassWorld("MavenBuildCLassPathRealm", ClassLoader.getSystemClassLoader());
+		MavenCli cli = new MavenCli(classWorld);
+		int result = cli.doMain(
+				new String[]{"dependency:build-classpath", "-Dmdep.outputFile="+classPathPrint.getAbsolutePath()},
+				pom.getParentFile().getAbsolutePath(),
+				System.err,
+				System.out
+		);
 
-		//FIXME Should the standard output made silent and error verbose?
-		//request.getOutputHandler(s -> System.err.println(s));
-		//request.getErrorHandler(s -> System.err.println(s));
-
-		Invoker invoker = new DefaultInvoker();
-		invoker.setMavenHome(mvnHome);
-		invoker.setWorkingDirectory(pom.getParentFile());
-		try {
-			InvocationResult ir = invoker.execute(request);
-		} catch (MavenInvocationException e) {
-			e.printStackTrace();
+		if (result != 0) {
 			throw new SpoonException("Maven invocation failed to build a classpath.");
 		}
 
@@ -189,30 +153,5 @@ public class MavenLauncher extends Launcher {
 		}
 
 		return classpath;
-	}
-
-	private File getDefaultMavenHome() throws SpoonException {
-		//freebsd
-		File mvnHome = new File("/usr/local/share/java/maven3");
-		if (!mvnHome.exists()) {
-			//ubuntu 2
-			mvnHome = new File("/usr/share/maven");
-		}
-		if (!mvnHome.exists()) {
-			//ubuntu
-			mvnHome = new File("/usr/share/maven-3.3.3");
-		}
-		if (!mvnHome.exists()) {
-			//debian
-			mvnHome = new File("/opt/maven");
-		}
-		if (!mvnHome.exists()) {
-			//osx
-			mvnHome = new File("/usr/local/Cellar/maven/3.3.9/libexec/");
-		}
-		if (!mvnHome.exists()) {
-			throw new SpoonException("Maven Home not found in default locations. Please specify it in the MavenLauncher constructor.");
-		}
-		return mvnHome;
 	}
 }
