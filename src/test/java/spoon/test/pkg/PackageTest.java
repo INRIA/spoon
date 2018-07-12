@@ -40,6 +40,7 @@ import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class PackageTest {
+
 	@Test
 	public void testPackage() throws Exception {
 		final String classFilePath = "./src/test/java/spoon/test/pkg/name/PackageTestClass.java";
@@ -130,7 +131,6 @@ public class PackageTest {
 		environment.setCommentEnabled(true);
 		launcher.addInputResource("./src/test/java/spoon/test/pkg/package-info.java");
 		launcher.setSourceOutputDirectory("./target/spooned/packageAndTemplate");
-//		SpoonResourceHelper.resources("./src/test/java/spoon/test/pkg/test_templates").forEach(r->launcher.addTemplateResource(r));
 		launcher.addTemplateResource(SpoonResourceHelper.createResource(new File("./src/test/java/spoon/test/pkg/test_templates/FakeTemplate.java")));
 		launcher.buildModel();
 		launcher.prettyprint();
