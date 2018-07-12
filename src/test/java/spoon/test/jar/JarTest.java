@@ -27,7 +27,7 @@ public class JarTest {
 				SpoonResourceHelper.resources("./src/test/resources/sourceJar/test.jar"));
 		Assert.assertTrue(compiler.build());
 		assertEquals(1, factory.getModel().getAllTypes().size());
-		assertEquals("spoon.test.strings.testclasses.Main", factory.getModel().getAllTypes().iterator().next().getQualifiedName());
+		assertEquals("spoon.test.strings.Main", factory.getModel().getAllTypes().iterator().next().getQualifiedName());
 	}
 
 	@Test

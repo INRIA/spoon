@@ -1,4 +1,4 @@
-package spoon.test.strings.testclasses;
+package spoon.test.strings;
 
 public class Main {
 
