@@ -46,6 +46,7 @@ import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
 
 public class FieldTest {
+
 	@Test
 	public void testAddAFieldInAClassAtAPositionGiven() throws Exception {
 		final Factory factory = createFactory();
