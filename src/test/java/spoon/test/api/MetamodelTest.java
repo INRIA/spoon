@@ -161,12 +161,13 @@ public class MetamodelTest {
 				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC) || candidate.hasModifier(ModifierKind.TRANSIENT)) {
 					return false;
 				}
-				if ( 	// not a role
-						"parent".equals(candidate.getSimpleName())
-						|| "metadata".equals(candidate.getSimpleName())
-						|| "factory".equals(candidate.getSimpleName())
-						// cache field
-						|| "valueOfMethod".equals(candidate.getSimpleName())) {
+				if (
+					// not a role
+					"parent".equals(candidate.getSimpleName())
+					|| "metadata".equals(candidate.getSimpleName())
+					|| "factory".equals(candidate.getSimpleName())
+					// cache field
+					|| "valueOfMethod".equals(candidate.getSimpleName())) {
 					return false;
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
