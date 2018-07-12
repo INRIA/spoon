@@ -123,7 +123,7 @@ public class JavaReflectionTreeBuilderTest {
 
 		assertNotNull(suppressWarning.getAnnotation(Retention.class));
 
-		assertEquals("SOURCE",suppressWarning.getAnnotation(Retention.class).value().toString());
+		assertEquals("SOURCE", suppressWarning.getAnnotation(Retention.class).value().toString());
 
 	}
 
@@ -194,7 +194,7 @@ public class JavaReflectionTreeBuilderTest {
 		}
 		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
 	}
-	
+
 	private List<String> checkShadowTypeIsEqual(CtType<?> type) {
 		if (type == null) {
 			return Collections.emptyList();
@@ -202,10 +202,10 @@ public class JavaReflectionTreeBuilderTest {
 		Factory shadowFactory = createFactory();
 		CtTypeReference<?> shadowTypeRef = shadowFactory.Type().createReference(type.getActualClass());
 		CtType<?> shadowType = shadowTypeRef.getTypeDeclaration();
-		
+
 		assertFalse(type.isShadow());
 		assertTrue(shadowType.isShadow());
-		
+
 		ShadowEqualsVisitor sev = new ShadowEqualsVisitor(new HashSet<>(Arrays.asList(
 				//shadow classes has no body
 				CtRole.STATEMENT,
@@ -215,10 +215,10 @@ public class JavaReflectionTreeBuilderTest {
 
 				// shadow classes have no comments
 				CtRole.COMMENT)));
-		
+
 		return sev.checkDiffs(type, shadowType);
 	}
-	
+
 	private static class Diff {
 		CtElement element;
 		CtElement other;
@@ -229,11 +229,11 @@ public class JavaReflectionTreeBuilderTest {
 			this.other = other;
 		}
 	}
-	
+
 	private static class ShadowEqualsChecker extends EqualsChecker {
 		Diff currentDiff;
 		List<Diff> differences = new ArrayList<>();
-		
+
 		@Override
 		protected void setNotEqual(CtRole role) {
 			if (role == CtRole.MODIFIER) {
@@ -266,7 +266,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			currentDiff.roles.add(role);
 		}
-		
+
 		private Set<ModifierKind> removeModifiers(Set<ModifierKind> elementModifiers, ModifierKind... modifiers) {
 			Set<ModifierKind> copy = new HashSet<>(elementModifiers);
 			for (ModifierKind modifierKind : modifiers) {
@@ -284,13 +284,13 @@ public class JavaReflectionTreeBuilderTest {
 			}
 		}
 	}
-	
+
 	private static class ShadowEqualsVisitor extends EqualsVisitor {
 		CtElement rootOfOther;
 		CtElementPathBuilder pathBuilder = new CtElementPathBuilder();
 		List<String> differences;
 		Set<CtRole> ignoredRoles;
-		
+
 		ShadowEqualsVisitor(Set<CtRole> ignoredRoles) {
 			super(new ShadowEqualsChecker());
 			this.ignoredRoles = ignoredRoles;
@@ -316,9 +316,9 @@ public class JavaReflectionTreeBuilderTest {
 
 			CtElement parentOfOther = stack.peek();
 			try {
-				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName()
-				+"\nShadow: " + String.valueOf(other)
-				+"\nNormal: " + String.valueOf(element)+"\n");
+				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString() + "#" + role.getCamelCaseName()
+				+ "\nShadow: " + String.valueOf(other)
+				+ "\nNormal: " + String.valueOf(element) + "\n");
 			} catch (CtPathException e) {
 				throw new SpoonException(e);
 			}
@@ -377,7 +377,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			if (role == CtRole.ANNOTATION) {
 				//remove all RetentionPolicy#SOURCE level annotations from elements
-				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>)elements).stream().filter(a->{
+				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
 					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
 					Class ac = at.getActualClass();
 					if (ac == Override.class || ac == SuppressWarnings.class || ac == Root.class) {
@@ -405,19 +405,19 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString()+"#"
-					+diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
-					+"\nShadow: " + String.valueOf(diff.other)
-					+"\nNormal: " + String.valueOf(diff.element)+"\n");
+					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString() + "#"
+					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
+					+ "\nShadow: " + String.valueOf(diff.other)
+					+ "\nNormal: " + String.valueOf(diff.element) + "\n");
 				} catch (CtPathException e) {
 					throw new SpoonException(e);
 				}
-				
+
 			}
 			return differences;
 		}
 	}
-	
+
 	private static Map<String, CtTypeMember> groupTypeMembersBySignature(Collection<CtTypeMember> typeMembers) {
 		Map<String, CtTypeMember> typeMembersByName = new HashMap<>();
 		for (CtTypeMember tm : typeMembers) {
@@ -446,7 +446,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("T", typeArg.getSimpleName());
 		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
-	
+
 	@Test
 	public void testSuperInterfaceActualTypeArgumentsByCtTypeReferenceImpl() {
 		TypeFactory typeFactory = createFactory().Type();
@@ -458,7 +458,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("T", typeArg.getSimpleName());
 		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
-	
+
 	@Test
 	public void testSuperInterfaceCorrectActualTypeArgumentsByCtTypeReferenceImpl() {
 		TypeFactory typeFactory = createFactory().Type();
@@ -476,7 +476,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testSuperInterfaceQName() {
 		//contract: the qualified names of super interfaces are correct
@@ -492,7 +492,7 @@ public class JavaReflectionTreeBuilderTest {
 			assertSame(aType, ifaceRef.getParent());
 		}
 	}
-	
+
 	@Test
 	public void testSuperClass() {
 		//contract: the super class have actual type arguments
@@ -506,10 +506,10 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeParameterReference paramRef = (CtTypeParameterReference) superClass.getActualTypeArguments().get(0);
 		assertSame(aType.getFormalCtTypeParameters().get(0), paramRef.getDeclaration());
 	}
-	
+
 	@Test
 	public void testSuperOfActualTypeArgumentsOfReturnTypeOfMethod() throws Exception {
-				
+
 		Consumer<CtType<?>> checker = type -> {
 			{
 				CtMethod method = type.getMethodsByName("setAssignment").get(0);
@@ -548,7 +548,7 @@ public class JavaReflectionTreeBuilderTest {
 		CtClass<?> classFromSources = launcher.getFactory().Class().get(CtAssignmentImpl.class.getName());
 		assertFalse(classFromSources.isShadow());
 		checker.accept(classFromSources);
-		
+
 		//try the same check using CtType build using reflection
 		CtType<?> classFromReflection = createFactory().Class().get(CtAssignmentImpl.class);
 		assertTrue(classFromReflection.isShadow());
