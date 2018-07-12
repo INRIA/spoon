@@ -184,7 +184,6 @@ public class MetamodelTest {
 		assertTrue(result.size() > 100);
 		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
 
-
 		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
 		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
 
@@ -223,7 +222,6 @@ public class MetamodelTest {
 			assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
 			assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
 		}
-
 	}
 
 	@Test
@@ -677,5 +675,4 @@ public class MetamodelTest {
 		field.setSimpleName(name);
 		return field;
 	}
-
 }
