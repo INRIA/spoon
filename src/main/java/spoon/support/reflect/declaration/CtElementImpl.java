@@ -77,12 +77,8 @@ import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.support.visitor.replace.ReplacementVisitor;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.code.CtComment.CommentType.JAVADOC;
 import static spoon.reflect.path.CtRole.ANNOTATION;
-import static spoon.reflect.path.CtRole.COMMENT;
-import static spoon.reflect.path.CtRole.IS_IMPLICIT;
-import static spoon.reflect.path.CtRole.POSITION;
 
 
 /**
@@ -110,18 +106,18 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	transient Factory factory;
 
-	protected transient  CtElement parent;
+	protected CtElement parent;
 
 	@MetamodelPropertyField(role = CtRole.ANNOTATION)
-transient 	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
+	List<CtAnnotation<? extends Annotation>> annotations = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.COMMENT)
-private transient  List<CtComment> comments = emptyList();
+	private List<CtComment> comments = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.POSITION)
 	SourcePosition position = SourcePosition.NOPOSITION;
 
-	transient Map<String, Object> metadata;
+	Map<String, Object> metadata;
 
 	public CtElementImpl() {
 		super();
