@@ -41,6 +41,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class MethodTest {
+
 	@Test
 	public void testClone() throws Exception {
 		final Factory factory = build(Adobada.class);
@@ -109,5 +110,4 @@ public class MethodTest {
 
 		assertTrue(compareFound);
 	}
-
 }
