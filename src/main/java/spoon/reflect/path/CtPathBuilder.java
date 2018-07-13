@@ -72,7 +72,7 @@ public class CtPathBuilder {
 	 * Add a recursive wildcard. It match on any child and sub-childs.
 	 */
 	public CtPathBuilder recursiveWildcard() {
-		return name(CtNamedPathElement.RECURSIVE_WILCARD);
+		return name(CtNamedPathElement.RECURSIVE_WILDCARD);
 	}
 
 	/**
