@@ -76,8 +76,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 		public void scanCtElement(CtElement e) {
 			if (WILDCARD.equals(pattern) || RECURSIVE_WILDCARD.equals(pattern)) {
 				results.add(e);
-			} else if (e instanceof CtNamedElement
-					&& ((CtNamedElement) e).getSimpleName().matches(pattern)) {
+			} else if (e instanceof CtNamedElement && ((CtNamedElement) e).getSimpleName().matches(pattern)) {
 				results.add(e);
 			}
 		}
