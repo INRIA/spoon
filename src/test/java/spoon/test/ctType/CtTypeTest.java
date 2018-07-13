@@ -31,6 +31,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CtTypeTest {
+
 	@Test
 	public void testHasMethodInDirectMethod() {
 		CtClass<?> clazz = createFactory().Code().createCodeSnippetStatement(
@@ -95,7 +96,7 @@ public class CtTypeTest {
 		//using CtType implementation
 		assertTrue(xCtType.isSubtypeOf(xCtType.getReference()));
 	}
-	
+
 	@Test
 	public void testIsSubTypeOfonTypeParameters() throws Exception {
 		CtType<X> xCtType = buildClass(X.class);
@@ -133,7 +134,7 @@ public class CtTypeTest {
 		assertTrue(P_E_CtType.isSubtypeOf(objectCtTypeRef));
 		assertTrue(P_F_CtType.isSubtypeOf(objectCtTypeRef));
 	}
-	
+
 	@Test
 	public void testIsSubTypeOfonTypeReferences() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -178,7 +179,7 @@ public class CtTypeTest {
 		String msg = getTypeName(subType)+" is NOT SubTypeOf "+getTypeName(superType);
 		assertFalse(msg, subType.isSubtypeOf(superType));
 	}
-	
+
 	private String getTypeName(CtTypeReference<?> ref) {
 		String name;
 		CtReference r= ref.getParent(CtReference.class);

@@ -14,24 +14,24 @@ import static org.junit.Assert.assertSame;
  */
 public class ElementTest {
 
-    @Test
-    public void testGetFactory() {
-        // contract: getFactory should always return an object
-        // even if an element is created via its constructor
-        // and not through the factory
+	@Test
+	public void testGetFactory() {
+		// contract: getFactory should always return an object
+		// even if an element is created via its constructor
+		// and not through the factory
 
-        Launcher spoon = new Launcher();
+		Launcher spoon = new Launcher();
 
-        CtElement element = spoon.getFactory().createAnnotation();
-        assertNotNull(element.getFactory());
+		CtElement element = spoon.getFactory().createAnnotation();
+		assertNotNull(element.getFactory());
 
-        CtElement otherElement = new CtAnnotationImpl<>();
-        assertNotNull(otherElement.getFactory());
+		CtElement otherElement = new CtAnnotationImpl<>();
+		assertNotNull(otherElement.getFactory());
 
-        CtElement yetAnotherOne = new CtMethodImpl<>();
-        assertNotNull(yetAnotherOne.getFactory());
+		CtElement yetAnotherOne = new CtMethodImpl<>();
+		assertNotNull(yetAnotherOne.getFactory());
 
-        // contract: a singleton is used for the default factory
-        assertSame(otherElement.getFactory(), yetAnotherOne.getFactory());
-    }
+		// contract: a singleton is used for the default factory
+		assertSame(otherElement.getFactory(), yetAnotherOne.getFactory());
+	}
 }
