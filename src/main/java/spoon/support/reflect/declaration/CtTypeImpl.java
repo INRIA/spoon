@@ -71,7 +71,7 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
+import static spoon.reflect.path.CtRole.ANONYMOUS_EXECUTABLE;
 import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
@@ -96,7 +96,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
-	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
+	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
@@ -159,7 +159,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			} else if (member instanceof CtField) {
 				role = FIELD;
 			} else if (member instanceof CtAnonymousExecutable) {
-				role = ANNONYMOUS_EXECUTABLE;
+				role = ANONYMOUS_EXECUTABLE;
 			} else {
 				role = NESTED_TYPE;
 			}
@@ -183,7 +183,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		} else if (member instanceof CtField) {
 			role = FIELD;
 		} else if (member instanceof CtAnonymousExecutable) {
-			role = ANNONYMOUS_EXECUTABLE;
+			role = ANONYMOUS_EXECUTABLE;
 		} else {
 			role = NESTED_TYPE;
 		}

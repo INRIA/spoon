@@ -133,7 +133,7 @@ class ModelRoleHandlers {
 
 	static class CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler extends ListHandler<CtClass, CtAnonymousExecutable> {
 		private CtClass_ANNONYMOUS_EXECUTABLE_RoleHandler() {
-			super(CtRole.ANNONYMOUS_EXECUTABLE, CtClass.class, CtAnonymousExecutable.class);
+			super(CtRole.ANONYMOUS_EXECUTABLE, CtClass.class, CtAnonymousExecutable.class);
 		}
 
 		@SuppressWarnings("unchecked")
