@@ -42,7 +42,7 @@ public abstract class TypedBlockTemplateParameter<R> implements TemplateParamete
 	/**
 	 * This method must be implemented to define the template block.
 	 */
-	public abstract R block() throws Throwable;
+	public abstract R block();
 
 	@SuppressWarnings("unchecked")
 	public CtBlock<R> getSubstitution(CtType<?> targetType) {
