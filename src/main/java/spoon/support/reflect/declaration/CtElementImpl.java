@@ -476,6 +476,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 				this.metadata = new HashMap<>();
 			}
 			this.metadata.putAll(metadata);
+		} else {
+			this.metadata = null;
 		}
 		return (E) this;
 	}
@@ -499,7 +501,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public Map<String, Object> getMetadata() {
-		return this.metadata;
+		if (this.metadata == null) {
+			return null;
+		}
+		return Collections.unmodifiableMap(this.metadata);
 	}
 
 	@Override
