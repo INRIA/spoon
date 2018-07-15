@@ -30,7 +30,7 @@ import java.util.LinkedList;
 public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement> {
 	public static final String STRING = ".";
 	public static final String WILDCARD = "*";
-	public static final String RECURSIVE_WILCARD = "**";
+	public static final String RECURSIVE_WILDCARD = "**";
 
 	private final String pattern;
 
@@ -58,7 +58,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 
 	public Collection<CtElement> scanElements(Collection<? extends CtElement> roots) {
 		NameScanner nameScanner = new NameScanner();
-		if (RECURSIVE_WILCARD.equals(pattern)) {
+		if (RECURSIVE_WILDCARD.equals(pattern)) {
 			nameScanner.recurse(roots);
 		} else {
 			nameScanner.scan(roots);
@@ -74,10 +74,9 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 
 		@Override
 		public void scanCtElement(CtElement e) {
-			if (WILDCARD.equals(pattern) || RECURSIVE_WILCARD.equals(pattern)) {
+			if (WILDCARD.equals(pattern) || RECURSIVE_WILDCARD.equals(pattern)) {
 				results.add(e);
-			} else if (e instanceof CtNamedElement
-					&& ((CtNamedElement) e).getSimpleName().matches(pattern)) {
+			} else if (e instanceof CtNamedElement && ((CtNamedElement) e).getSimpleName().matches(pattern)) {
 				results.add(e);
 			}
 		}
@@ -93,5 +92,4 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 			return results;
 		}
 	}
-
 }

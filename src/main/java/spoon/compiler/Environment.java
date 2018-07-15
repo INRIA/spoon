@@ -70,8 +70,7 @@ public interface Environment {
 	/**
 	 * Returns the properties for a given processor.
 	 */
-	ProcessorProperties getProcessorProperties(String processorName)
-			throws Exception;
+	ProcessorProperties getProcessorProperties(String processorName);
 
 	/**
 	 * Sets the properties for a given processor.
