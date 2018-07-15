@@ -243,7 +243,7 @@ public class PatternPrinter extends DefaultGenerator {
 			return true;
 		}
 		return false;
-	};
+	}
 
 	static String getElementTypeName(CtElement element) {
 		String name = element.getClass().getSimpleName();
