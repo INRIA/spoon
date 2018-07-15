@@ -138,5 +138,5 @@ abstract class ListHandler<T, V> extends AbstractRoleHandler<T, List<V>, V> {
 
 	protected Iterator<V> iterator(T element) {
 		return this.<T, List<V>>getValue(element).iterator();
-	};
+	}
 }
