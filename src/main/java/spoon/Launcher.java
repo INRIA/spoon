@@ -108,7 +108,7 @@ public class Launcher implements SpoonAPI {
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new Launcher().run(args);
 	}
 

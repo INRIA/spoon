@@ -187,7 +187,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	transient Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
 
 	@Override
-	public ProcessorProperties getProcessorProperties(String processorName) throws Exception {
+	public ProcessorProperties getProcessorProperties(String processorName) {
 		if (processorProperties.containsKey(processorName)) {
 			return processorProperties.get(processorName);
 		}
