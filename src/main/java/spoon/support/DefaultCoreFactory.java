@@ -473,7 +473,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 
 	@Override
 	public <T> CtAnnotationMethod<T> createAnnotationMethod() {
-		CtAnnotationMethod<T> e = new CtAnnotationMethodImpl<T>();
+		CtAnnotationMethod<T> e = new CtAnnotationMethodImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
