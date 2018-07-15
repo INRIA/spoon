@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +57,9 @@ public abstract class RtHelper {
 
 	private static void addAllFields(Class<?> c, List<Field> fields) {
 		if (c != null && c != Object.class) {
-			Collections.addAll(fields, c.getDeclaredFields());
+			for (Field f : c.getDeclaredFields()) {
+				fields.add(f);
+			}
 			addAllFields(c.getSuperclass(), fields);
 			for (Class<?> iface : c.getInterfaces()) {
 				addAllFields(iface, fields);
@@ -88,7 +89,9 @@ public abstract class RtHelper {
 			getAllIMethods(c, methods);
 		} else {
 			while (c != null && c != Object.class) {
-				Collections.addAll(methods, c.getDeclaredMethods());
+				for (Method m : c.getDeclaredMethods()) {
+					methods.add(m);
+				}
 				// methods.addAll(Arrays.asList(c.getDeclaredMethods()));
 				c = c.getSuperclass();
 			}
@@ -98,7 +101,9 @@ public abstract class RtHelper {
 	}
 
 	private static void getAllIMethods(Class<?> c, List<Method> methods) {
-		Collections.addAll(methods, c.getDeclaredMethods());
+		for (Method m : c.getDeclaredMethods()) {
+			methods.add(m);
+		}
 		for (Class<?> i : c.getInterfaces()) {
 			getAllIMethods(i, methods);
 		}

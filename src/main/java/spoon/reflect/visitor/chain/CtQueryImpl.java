@@ -80,7 +80,9 @@ public class CtQueryImpl implements CtQuery {
 			this.inputs = new ArrayList<>();
 		}
 		if (input != null) {
-			Collections.addAll(this.inputs, input);
+			for (Object in : input) {
+				this.inputs.add(in);
+			}
 		}
 		return this;
 	}
