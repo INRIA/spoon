@@ -77,7 +77,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 				}
 			}
 			return super.add(pack);
-		};
+		}
 	};
 
 	@MetamodelPropertyField(role = CONTAINED_TYPE)
