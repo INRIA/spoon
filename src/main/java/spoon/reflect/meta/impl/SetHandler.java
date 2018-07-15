@@ -53,7 +53,7 @@ abstract class SetHandler<T, V> extends AbstractRoleHandler<T, Set<V>, V> {
 	@Override
 	public <W, X> Collection<X> asCollection(W element) {
 		return asSet(element);
-	};
+	}
 
 	@Override
 	public <W, X> Set<X> asSet(W e) {
