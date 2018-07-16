@@ -52,7 +52,7 @@ abstract class ListHandler<T, V> extends AbstractRoleHandler<T, List<V>, V> {
 	@Override
 	public <W, X> java.util.Collection<X> asCollection(W element) {
 		return asList(element);
-	};
+	}
 
 	@Override
 	public <W, X> java.util.List<X> asList(W e) {
@@ -138,5 +138,5 @@ abstract class ListHandler<T, V> extends AbstractRoleHandler<T, List<V>, V> {
 
 	protected Iterator<V> iterator(T element) {
 		return this.<T, List<V>>getValue(element).iterator();
-	};
+	}
 }

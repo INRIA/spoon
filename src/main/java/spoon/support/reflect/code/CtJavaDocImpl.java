@@ -42,7 +42,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		protected int getDefaultCapacity() {
 			return 2;
 		}
-	};;
+	};
 
 	public CtJavaDocImpl() {
 		super(CommentType.JAVADOC);

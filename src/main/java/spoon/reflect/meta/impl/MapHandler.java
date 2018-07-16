@@ -54,7 +54,7 @@ abstract class MapHandler<T, V> extends AbstractRoleHandler<T, Map<String, V>, V
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <W, X> java.util.Collection<X> asCollection(W element) {
 		return (Collection) asMap(element).values();
-	};
+	}
 
 	@Override
 	public <W, X> Map<String, X> asMap(W e) {

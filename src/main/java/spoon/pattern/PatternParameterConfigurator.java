@@ -622,7 +622,7 @@ public class PatternParameterConfigurator {
 					});
 
 				}
-			};
+			}
 		}.scan(patternBuilder.getPatternModel());
 		return this;
 	}
@@ -656,7 +656,7 @@ public class PatternParameterConfigurator {
 						return oldAttrNode;
 					});
 			}
-			};
+			}
 		}.scan(patternBuilder.getPatternModel());
 		return this;
 	}

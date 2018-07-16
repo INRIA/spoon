@@ -30,7 +30,7 @@ public class FactoryCompilerConfig implements SpoonModelBuilder.InputType {
 
 	//avoid direct instantiation. But somebody can inherit
 	protected FactoryCompilerConfig() {
-	};
+	}
 
 	/**
 	 * returns the compilation units corresponding to the types in the factory.
