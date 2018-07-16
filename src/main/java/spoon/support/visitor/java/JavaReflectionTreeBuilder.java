@@ -63,7 +63,6 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.Iterator;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
