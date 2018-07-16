@@ -58,7 +58,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void scanCtElement(spoon.reflect.declaration.CtElement e) {
 		((spoon.reflect.declaration.CtElement) (other)).setPosition(e.getPosition());
-		((spoon.reflect.declaration.CtElement) (other)).setMetadata(e.getMetadata());
+		((spoon.reflect.declaration.CtElement) (other)).setAllMetadata(e.getAllMetadata());
 		((spoon.reflect.declaration.CtElement) (other)).setImplicit(e.isImplicit());
 		super.scanCtElement(e);
 	}

@@ -470,10 +470,12 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setMetadata(Map<String, Object> metadata) {
+	public <E extends CtElement> E setAllMetadata(Map<String, Object> metadata) {
 		if (metadata != null) {
 			if (this.metadata == null) {
 				this.metadata = new HashMap<>();
+			} else {
+				this.metadata.clear();
 			}
 			this.metadata.putAll(metadata);
 		} else {
@@ -500,7 +502,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public Map<String, Object> getMetadata() {
+	public Map<String, Object> getAllMetadata() {
 		if (this.metadata == null) {
 			return null;
 		}

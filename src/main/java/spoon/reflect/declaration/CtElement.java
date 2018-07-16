@@ -299,7 +299,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Saves a bunch of metadata inside an Element
 	 */
-	<E extends CtElement> E setMetadata(Map<String, Object> metadata);
+	<E extends CtElement> E setAllMetadata(Map<String, Object> metadata);
 
 	/**
 	 * Saves metadata inside an Element.
@@ -314,7 +314,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Retrieves all metadata stored in an element. Returns null if it does not exist.
 	 */
-	Map<String, Object> getMetadata();
+	Map<String, Object> getAllMetadata();
 
 	/**
 	 * Returns the metadata keys stored in an element.
