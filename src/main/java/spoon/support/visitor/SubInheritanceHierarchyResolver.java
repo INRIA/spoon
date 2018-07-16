@@ -228,5 +228,5 @@ public class SubInheritanceHierarchyResolver {
 	/**
 	 * Accept all {@link CtClass}, {@link CtEnum}
 	 */
-	private static final Filter<CtClass<?>> classFilter = new TypeFilter<CtClass<?>>(CtClass.class);
+	private static final Filter<CtClass<?>> classFilter = new TypeFilter<>(CtClass.class);
 }
