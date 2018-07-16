@@ -51,7 +51,7 @@ public class MapParameterInfo extends AbstractParameterInfo {
 		if (name == null) {
 			return containerName;
 		}
-		if (containerName.length() > 0) {
+		if (!containerName.isEmpty()) {
 			containerName += ".";
 		}
 		return containerName + name;

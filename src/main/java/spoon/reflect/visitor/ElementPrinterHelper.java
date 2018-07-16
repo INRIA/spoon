@@ -152,7 +152,7 @@ public class ElementPrinterHelper {
 
 	/** writes the implemented interfaces with a ListPrinter */
 	public void writeImplementsClause(CtType<?> type) {
-		if (type.getSuperInterfaces().size() > 0) {
+		if (!type.getSuperInterfaces().isEmpty()) {
 			printList(type.getSuperInterfaces(), "implements",
 				false, null, false, true, ",", true, false, null,
 				ref -> prettyPrinter.scan(ref));
@@ -167,7 +167,7 @@ public class ElementPrinterHelper {
 
 	/** writes the thrown exception with a ListPrinter */
 	public void writeThrowsClause(CtExecutable<?> executable) {
-		if (executable.getThrownTypes().size() > 0) {
+		if (!executable.getThrownTypes().isEmpty()) {
 			printList(executable.getThrownTypes(), "throws",
 				false, null, false, false, ",", true, false, null,
 				ref -> prettyPrinter.scan(ref));
@@ -244,7 +244,7 @@ public class ElementPrinterHelper {
 		if (parameters == null) {
 			return;
 		}
-		if (parameters.size() > 0) {
+		if (!parameters.isEmpty()) {
 			printList(parameters,
 				null,	false, "<", false, false, ",", true, false, ">",
 				parameter -> prettyPrinter.scan(parameter));
@@ -259,7 +259,7 @@ public class ElementPrinterHelper {
 	 */
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
-		if (arguments != null && arguments.size() > 0) {
+		if (arguments != null && !arguments.isEmpty()) {
 			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
 				null, false, "<", false, false, ",", true, false, ">",
 				argument -> {
@@ -333,7 +333,7 @@ public class ElementPrinterHelper {
 			printer.writeKeyword("import").writeSpace();
 			writeQualifiedName(importLine).writeSeparator(";").writeln();
 		}
-		if (setStaticImports.size() > 0) {
+		if (!setStaticImports.isEmpty()) {
 			if (isFirst) {
 				printer.writeln();
 			}

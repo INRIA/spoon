@@ -155,7 +155,7 @@ public class TobeMatched {
 	 * @return true if there is anything to match.
 	 */
 	public boolean hasTargets() {
-		return targets.size() > 0;
+		return !targets.isEmpty();
 	}
 
 	/**

@@ -86,7 +86,7 @@ public final class Refactoring {
 		CtMethod<?> clone = method.clone();
 		String tentativeTypeName = method.getSimpleName() + "Copy";
 		CtType parent = method.getParent(CtType.class);
-		while (parent.getMethodsByName(tentativeTypeName).size() > 0) {
+		while (!parent.getMethodsByName(tentativeTypeName).isEmpty()) {
 			tentativeTypeName += "X";
 		}
 		final String cloneMethodName = tentativeTypeName;

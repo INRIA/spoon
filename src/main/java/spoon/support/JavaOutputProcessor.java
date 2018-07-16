@@ -141,7 +141,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 
 	@Override
 	public boolean isToBeProcessed(CtNamedElement candidate) {
-		return candidate instanceof CtType<?> || candidate instanceof CtModule || candidate instanceof CtPackage && (candidate.getComments().size() > 0 || candidate.getAnnotations().size() > 0);
+		return candidate instanceof CtType<?> || candidate instanceof CtModule || candidate instanceof CtPackage && (!candidate.getComments().isEmpty() || !candidate.getAnnotations().isEmpty());
 	}
 
 	/**
