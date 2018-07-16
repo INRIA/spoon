@@ -197,7 +197,6 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameter) {
 			e.addFormalCtTypeParameter((CtTypeParameter) child);
 		}
-		return;
 	}
 
 	@Override
