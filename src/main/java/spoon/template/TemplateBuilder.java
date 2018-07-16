@@ -104,7 +104,7 @@ class TemplateBuilder {
 				});
 				//remove `... extends Template`, which doesn't have to be part of pattern model
 				tv.removeSuperClass();
-			};
+			}
 			pb = new PatternBuilder(tv.getPatternElements());
 		} else {
 			pb = new PatternBuilder(Collections.singletonList(templateRoot));
