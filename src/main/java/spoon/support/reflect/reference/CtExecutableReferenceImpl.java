@@ -196,7 +196,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			}
 		} else if (method == null && getSimpleName().startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
 			final List<CtLambda> elements = (List<CtLambda>) typeDecl.getElements(new NamedElementFilter<>(CtLambda.class, getSimpleName()));
-			if (elements.size() == 0) {
+			if (elements.isEmpty()) {
 				return null;
 			}
 			return elements.get(0);

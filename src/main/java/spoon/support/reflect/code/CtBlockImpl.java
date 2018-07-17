@@ -86,7 +86,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	private boolean shouldInsertAfterSuper() {
 		try {
-			if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
+			if (getParent() != null && getParent() instanceof CtConstructor && !getStatements().isEmpty()) {
 				CtStatement first = getStatements().get(0);
 				if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
 					return true;

@@ -144,7 +144,7 @@ public class PatternPrinter extends DefaultGenerator {
 				params.add(paramOnElement);
 			}
 		}
-		if (isCommentVisible(ele) && params.size() > 0) {
+		if (isCommentVisible(ele) && !params.isEmpty()) {
 			ele.addComment(ele.getFactory().Code().createComment(getSubstitutionRequestsDescription(ele, params), CommentType.BLOCK));
 			params.clear();
 		}

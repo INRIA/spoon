@@ -225,7 +225,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 							throw new SpoonClassNotFoundException(type.getQualifiedName() + " cannot be found in the sourcepath or classpath");
 						}
 					}
-					if (typeParams.size() > 0) {
+					if (!typeParams.isEmpty()) {
 						//yes, there are generic type parameters. Reference should use actualTypeArguments computed from their bounds
 						actualTypeArguments = new ArrayList<>(typeParams.size());
 						for (CtTypeParameter typeParam : typeParams) {

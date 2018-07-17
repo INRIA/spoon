@@ -114,7 +114,7 @@ public class PrintingContext {
 		return null;
 	}
 	private TypeContext getCurrentTypeContext() {
-		if (currentThis != null && currentThis.size() > 0) {
+		if (currentThis != null && !currentThis.isEmpty()) {
 			TypeContext tc = currentThis.peek();
 			return tc;
 		}

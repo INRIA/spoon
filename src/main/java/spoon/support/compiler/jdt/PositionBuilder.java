@@ -129,7 +129,7 @@ public class PositionBuilder {
 
 			List<CastInfo> casts = this.jdtTreeBuilder.getContextBuilder().casts;
 
-			if (casts.size() > 0 && e instanceof CtExpression) {
+			if (!casts.isEmpty() && e instanceof CtExpression) {
 				int declarationSourceStart = sourceStart;
 				int declarationSourceEnd = sourceEnd;
 				SourcePosition pos = casts.get(0).typeRef.getPosition();

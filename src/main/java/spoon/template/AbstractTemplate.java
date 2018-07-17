@@ -33,7 +33,7 @@ public abstract class AbstractTemplate<T extends CtElement> implements Template<
 	 * verifies whether there is at least one template parameter.
 	 */
 	public boolean isWellFormed() {
-		return Parameters.getAllTemplateParameterFields(this.getClass()).size() > 0;
+		return !Parameters.getAllTemplateParameterFields(this.getClass()).isEmpty();
 	}
 
 	/**

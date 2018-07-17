@@ -462,7 +462,7 @@ public class TypeFactory extends SubFactory {
 						return super.matches(element) && element.getQualifiedName().equals(qualifiedName);
 					}
 				});
-				if (enclosingClasses.size() == 0) {
+				if (enclosingClasses.isEmpty()) {
 					return null;
 				}
 				return enclosingClasses.get(0);
@@ -478,7 +478,7 @@ public class TypeFactory extends SubFactory {
 						return super.matches(element) && element.getAnonymousClass().getQualifiedName().equals(qualifiedName);
 					}
 				});
-				if (anonymousClasses.size() == 0) {
+				if (anonymousClasses.isEmpty()) {
 					return null;
 				}
 				return anonymousClasses.get(0).getAnonymousClass();
