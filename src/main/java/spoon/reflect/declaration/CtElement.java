@@ -34,6 +34,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.ANNOTATION;
@@ -296,6 +297,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	void delete();
 
 	/**
+	 * Saves a bunch of metadata inside an Element
+	 */
+	<E extends CtElement> E setAllMetadata(Map<String, Object> metadata);
+
+	/**
 	 * Saves metadata inside an Element.
 	 */
 	<E extends CtElement> E putMetadata(String key, Object val);
@@ -304,6 +310,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Retrieves metadata stored in an element. Returns null if it does not exist.
 	 */
 	Object getMetadata(String key);
+
+	/**
+	 * Retrieves all metadata stored in an element.
+	 */
+	Map<String, Object> getAllMetadata();
 
 	/**
 	 * Returns the metadata keys stored in an element.
