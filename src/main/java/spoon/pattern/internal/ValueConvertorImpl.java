@@ -90,7 +90,7 @@ public class ValueConvertorImpl implements ValueConvertor {
 			}
 			if (value instanceof List) {
 				List list = (List) value;
-				if (list.size() == 0) {
+				if (list.isEmpty()) {
 					return null;
 				}
 				if (list.size() == 1) {

@@ -1,4 +1,4 @@
-package spoon.test.secondaryclasses;
+package spoon.test.secondaryclasses.testclasses;
 
 public class ClassWithInternalPublicClassOrInterf {
 

@@ -206,7 +206,6 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
 			setResult(res);
-			return;
 		} else if ((left instanceof CtLiteral) || (right instanceof CtLiteral)) {
 			CtLiteral<?> literal;
 			CtExpression<?> expr;

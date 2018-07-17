@@ -22,6 +22,7 @@ import spoon.Launcher;
 import spoon.reflect.visitor.processors.CheckVisitorTestProcessor;
 
 public class CtVisitorTest {
+
 	@Test
 	public void testMethodsInVisitor() throws Exception {
 		// contract: CtVisitor must declare all visit methods.

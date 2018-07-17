@@ -86,7 +86,7 @@ public final class Refactoring {
 		CtMethod<?> clone = method.clone();
 		String tentativeTypeName = method.getSimpleName() + "Copy";
 		CtType parent = method.getParent(CtType.class);
-		while (parent.getMethodsByName(tentativeTypeName).size() > 0) {
+		while (!parent.getMethodsByName(tentativeTypeName).isEmpty()) {
 			tentativeTypeName += "X";
 		}
 		final String cloneMethodName = tentativeTypeName;
@@ -116,11 +116,11 @@ public final class Refactoring {
 	/** See doc in {@link CtType#copyType()} */
 	public static CtType<?> copyType(final CtType<?> type) {
 		CtType<?> clone = type.clone();
-		String tentativeTypeName = type.getSimpleName() + "Copy";
+		StringBuilder tentativeTypeName = new StringBuilder(type.getSimpleName() + "Copy");
 		while (type.getFactory().Type().get(type.getPackage().getQualifiedName() + "." + tentativeTypeName) != null) {
-			tentativeTypeName += "X";
+			tentativeTypeName.append("X");
 		}
-		final String cloneTypeName = tentativeTypeName;
+		final String cloneTypeName = tentativeTypeName.toString();
 		clone.setSimpleName(cloneTypeName);
 		type.getPackage().addType(clone);
 		new CtScanner() {

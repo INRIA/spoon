@@ -80,7 +80,7 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 
 	public <W, X> void setValue(W element, X value) {
 		throw new SpoonException("Setting of CtRole." + role.name() + " is not supported for " + element.getClass().getSimpleName());
-	};
+	}
 
 	@Override
 	public Class<?> getValueClass() {
@@ -90,17 +90,17 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 	@Override
 	public <W, X> List<X> asList(W element) {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to List for " + element.getClass().getSimpleName());
-	};
+	}
 
 	@Override
 	public <W, X> Set<X> asSet(W element) {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to Set for " + element.getClass().getSimpleName());
-	};
+	}
 
 	@Override
 	public <W, X> Map<String, X> asMap(W element) {
 		throw new SpoonException("The value of CtRole." + getRole().name() + " cannot be adapted to Map for " + element.getClass().getSimpleName());
-	};
+	}
 
 	@Override
 	public String toString() {

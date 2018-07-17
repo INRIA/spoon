@@ -62,6 +62,7 @@ import spoon.support.visitor.SubInheritanceHierarchyResolver;
 import spoon.test.filters.testclasses.AbstractTostada;
 import spoon.test.filters.testclasses.Antojito;
 import spoon.test.filters.testclasses.FieldAccessFilterTacos;
+import spoon.test.filters.testclasses.Foo;
 import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
@@ -91,7 +92,7 @@ public class FilterTest {
 
 	@Test
 	public void testFilters() throws Exception {
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
 		assertEquals(2, expressions.size());
@@ -99,7 +100,7 @@ public class FilterTest {
 
 	@Test
 	public void testReturnOrThrowFilter() throws Exception {
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtCFlowBreak> expressions = foo.getElements(new ReturnOrThrowFilter());
 		assertEquals(2, expressions.size());
@@ -155,7 +156,7 @@ public class FilterTest {
 	@Test
 	public void testFieldAccessFilter() throws Exception {
 		// also specifies VariableAccessFilter since FieldAccessFilter is only a VariableAccessFilter with additional static typing
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 
 		List<CtNamedElement> elements = foo.getElements(new NamedElementFilter<>(CtNamedElement.class,"i"));
@@ -181,7 +182,7 @@ public class FilterTest {
 
 	@Test
 	public void testAnnotationFilter() throws Exception {
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtElement> expressions = foo.getElements(new AnnotationFilter<>(SuppressWarnings.class));
 		assertEquals(2, expressions.size());
@@ -883,7 +884,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(6, context.count);
+		assertEquals(7, context.count);
 		context.count=0; //reset
 
 		// again second query, but now with CtConsumableFunction
@@ -895,7 +896,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(6, context.count);
+		assertEquals(7, context.count);
 		context.count=0; //reset
 
 		// again second query, but with low-level circuitry thanks to cast
@@ -907,7 +908,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(6, context.count);
+		assertEquals(7, context.count);
 	}
 	
 	@Test

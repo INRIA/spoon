@@ -14,15 +14,15 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ComputeClasspathTest {
 
-	private final static String TEST_CLASSPATH =
-			"./src/test/java/spoon/test/annotation/" +
-					File.pathSeparator +
-					"./src/test/java/spoon/test/api/" +
-					File.pathSeparator +
-					"./src/test/java/spoon/test/arrays/" +
-					File.pathSeparator +
-					"./src/test/java/spoon/test/casts/" +
-					File.pathSeparator;
+	private static final String TEST_CLASSPATH =
+			"./src/test/java/spoon/test/annotation/"
+					+ File.pathSeparator
+					+ "./src/test/java/spoon/test/api/"
+					+ File.pathSeparator
+					+ "./src/test/java/spoon/test/arrays/"
+					+ File.pathSeparator
+					+ "./src/test/java/spoon/test/casts/"
+					+ File.pathSeparator;
 
 	private JDTBasedSpoonCompiler compiler;
 	private Class<? extends JDTBasedSpoonCompiler> compilerClass;

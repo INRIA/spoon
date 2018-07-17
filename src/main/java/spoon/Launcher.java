@@ -108,7 +108,7 @@ public class Launcher implements SpoonAPI {
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new Launcher().run(args);
 	}
 
@@ -334,17 +334,17 @@ public class Launcher implements SpoonAPI {
 			// Sets output type generation
 			opt2 = new FlaggedOption("output-type");
 			opt2.setLongFlag(opt2.getID());
-			String msg = "States how to print the processed source code: ";
+			StringBuilder msg = new StringBuilder("States how to print the processed source code: ");
 			int i = 0;
 			for (OutputType v : OutputType.values()) {
 				i++;
-				msg += v.toString();
+				msg.append(v.toString());
 				if (i != OutputType.values().length) {
-					msg += "|";
+					msg.append("|");
 				}
 			}
 			opt2.setStringParser(JSAP.STRING_PARSER);
-			opt2.setHelp(msg);
+			opt2.setHelp(msg.toString());
 			opt2.setDefault("classes");
 			jsap.registerParameter(opt2);
 
@@ -373,8 +373,8 @@ public class Launcher implements SpoonAPI {
 			opt2.setLongFlag(opt2.getID());
 			String acceptedValues = StringUtils.join(CLASSPATH_MODE.values(), "; ");
 			opt2.setStringParser(EnumeratedStringParser.getParser(acceptedValues));
-			msg = "Classpath mode to use in Spoon: " + acceptedValues;
-			opt2.setHelp(msg);
+			msg = new StringBuilder("Classpath mode to use in Spoon: " + acceptedValues);
+			opt2.setHelp(msg.toString());
 			opt2.setRequired(true);
 			opt2.setDefault(CLASSPATH_MODE.NOCLASSPATH.name());
 			jsap.registerParameter(opt2);

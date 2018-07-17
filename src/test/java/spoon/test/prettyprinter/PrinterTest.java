@@ -39,7 +39,7 @@ public class PrinterTest {
 				SpoonResourceHelper
 						.resources(
 								"./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java",
-								"./src/test/java/spoon/test/prettyprinter/Validation.java"))
+								"./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		for (CtType<?> t : factory.Type().getAll()) {
 			t.toString();

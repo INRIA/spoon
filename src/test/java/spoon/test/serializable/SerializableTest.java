@@ -63,14 +63,14 @@ public class SerializableTest {
 
 	@Test
 	public void testSerialFile() throws Exception {
-		CtType<?> type = build("spoon.test.serializable", "Dummy");
+		CtType<?> type = build("spoon.test.serializable.testclasses", "Dummy");
 		byte[] ser = ByteSerialization.serialize(type);
 		CtType<?> des = (CtType<?>) ByteSerialization.deserialize(ser);
 	}
 
 	@Test
 	public void testSerializationModelStreamer() throws Exception {
-		Factory factory = build("spoon.test.serializable", "Dummy").getFactory();
+		Factory factory = build("spoon.test.serializable.testclasses", "Dummy").getFactory();
 
 		ByteArrayOutputStream outstr = new ByteArrayOutputStream();
 

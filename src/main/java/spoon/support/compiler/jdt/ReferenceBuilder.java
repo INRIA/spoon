@@ -485,7 +485,7 @@ public class ReferenceBuilder {
 	}
 
 	public CtPackageReference getPackageReference(String name) {
-		if (name.length() == 0) {
+		if (name.isEmpty()) {
 			return this.jdtTreeBuilder.getFactory().Package().topLevel();
 		}
 		CtPackageReference ref = this.jdtTreeBuilder.getFactory().Core().createPackageReference();

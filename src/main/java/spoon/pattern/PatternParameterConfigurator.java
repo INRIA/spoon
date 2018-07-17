@@ -132,14 +132,14 @@ public class PatternParameterConfigurator {
 	}
 
 	public PatternParameterConfigurator setMinOccurence(int minOccurence) {
-		currentParameter.setMinOccurences(minOccurence);
+		currentParameter.setMinOccurrences(minOccurence);
 		return this;
 	}
 	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {
-		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
-			throw new SpoonException("Cannot set maxOccurences > 1 for single value parameter. Call setMultiple(true) first.");
+		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
+			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
-		currentParameter.setMaxOccurences(maxOccurence);
+		currentParameter.setMaxOccurrences(maxOccurence);
 		return this;
 	}
 	public PatternParameterConfigurator setMatchingStrategy(Quantifier quantifier) {
@@ -401,7 +401,7 @@ public class PatternParameterConfigurator {
 				 * Use it as Pattern parameter
 				 */
 				String fieldName = typeMember.getSimpleName();
-				String stringMarker = (param.value() != null && param.value().length() > 0) ? param.value() : fieldName;
+				String stringMarker = (param.value() != null && !param.value().isEmpty()) ? param.value() : fieldName;
 				//for the compatibility reasons with Parameters.getNamesToValues(), use the proxy name as parameter name
 				String parameterName = stringMarker;
 
@@ -622,7 +622,7 @@ public class PatternParameterConfigurator {
 					});
 
 				}
-			};
+			}
 		}.scan(patternBuilder.getPatternModel());
 		return this;
 	}
@@ -656,7 +656,7 @@ public class PatternParameterConfigurator {
 						return oldAttrNode;
 					});
 			}
-			};
+			}
 		}.scan(patternBuilder.getPatternModel());
 		return this;
 	}
