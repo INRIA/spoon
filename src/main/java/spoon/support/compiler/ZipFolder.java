@@ -80,7 +80,7 @@ public class ZipFolder implements SpoonFolder {
 					ByteArrayOutputStream output = new ByteArrayOutputStream(
 							buffer);
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
@@ -184,7 +184,7 @@ public class ZipFolder implements SpoonFolder {
 				// in the zip entry iteration
 				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f))) {
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
