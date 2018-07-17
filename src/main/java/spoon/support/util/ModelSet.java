@@ -91,13 +91,13 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 
 	@Override
 	public boolean remove(Object o) {
-		if (set.contains(o) == false) {
+		if (!set.contains(o)) {
 			return false;
 		}
 		@SuppressWarnings("unchecked")
 		T e = (T) o;
 		getModelChangeListener().onSetDelete(getOwner(), getRole(), set, e);
-		if (set.remove(o) == false) {
+		if (!set.remove(o)) {
 			throw new SpoonException("Element was contained in the Set, but Set#remove returned false. Not removed??");
 		}
 		return true;
@@ -160,7 +160,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	public void set(Collection<T> elements) {
 		//TODO the best would be to detect added/removed statements and to fire modifications only for them
 		this.clear();
-		if (elements != null && elements.isEmpty() == false) {
+		if (elements != null && !elements.isEmpty()) {
 			this.addAll(elements);
 		}
 	}

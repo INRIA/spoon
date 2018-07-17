@@ -38,7 +38,7 @@ public class DirectReferenceFilter<T extends CtReference> extends AbstractFilter
 	}
 
 	public boolean matches(T reference) {
-		if (super.matches(reference) == false) {
+		if (!super.matches(reference)) {
 			return false;
 		}
 		return this.reference.equals(reference);

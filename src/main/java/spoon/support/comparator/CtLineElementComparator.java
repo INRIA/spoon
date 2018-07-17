@@ -31,11 +31,11 @@ public class CtLineElementComparator implements Comparator<CtElement>, Serializa
 	 * Reurns -1 if o1 is before o2 in the file
 	 */
 	public int compare(CtElement o1, CtElement o2) {
-		if (o1.getPosition().isValidPosition() == false) {
+		if (!o1.getPosition().isValidPosition()) {
 			return -1;
 		}
 
-		if (o2.getPosition().isValidPosition() == false) {
+		if (!o2.getPosition().isValidPosition()) {
 			// ensures that compare(x,y) = - compare(y,x)
 			return 1;
 		}

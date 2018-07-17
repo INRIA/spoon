@@ -136,7 +136,7 @@ public class PatternParameterConfigurator {
 		return this;
 	}
 	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {
-		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
+		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurence > 1 && !currentParameter.isMultiple()) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
 		currentParameter.setMaxOccurrences(maxOccurence);
@@ -529,7 +529,7 @@ public class PatternParameterConfigurator {
 			CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
 			//configure template parameters based on parameter values only - these without any declaration in Template
 			parameterValues.forEach((paramName, paramValue) -> {
-				if (isSubstituted(paramName) == false) {
+				if (!isSubstituted(paramName)) {
 					//and only these parameters whose name isn't already handled by explicit template parameters
 					//replace types whose name fits to name of parameter
 					parameter(paramName)
@@ -975,7 +975,7 @@ public class PatternParameterConfigurator {
 		CtElement element = pep.element;
 		while (element.isParentInitialized()) {
 			CtElement parent = element.getParent();
-			if ((parent instanceof CtBlock) == false || parent.isImplicit() == false) {
+			if (!(parent instanceof CtBlock) || !parent.isImplicit()) {
 				break;
 			}
 			element = parent;

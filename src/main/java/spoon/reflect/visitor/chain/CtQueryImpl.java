@@ -311,7 +311,7 @@ public class CtQueryImpl implements CtQuery {
 			if (input == null || isTerminated()) {
 				return;
 			}
-			if (isAcceptableType(input) == false) {
+			if (!isAcceptableType(input)) {
 				return;
 			}
 			Object result;
@@ -368,7 +368,7 @@ public class CtQueryImpl implements CtQuery {
 				//do not check type if it has to fail on cce
 				return true;
 			}
-			if (expectedClass != null && expectedClass.isAssignableFrom(input.getClass()) == false) {
+			if (expectedClass != null && !expectedClass.isAssignableFrom(input.getClass())) {
 				log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
 				return false;
 			}
@@ -585,7 +585,7 @@ public class CtQueryImpl implements CtQuery {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
 					Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
-					if (detectectedClass == null || CtType.class.equals(detectectedClass) == false) {
+					if (detectectedClass == null || !CtType.class.equals(detectectedClass)) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;
