@@ -134,34 +134,56 @@ public interface Factory {
 	String[] keywords = {
 			"abstract", "continue", "for", "new", "switch",
 			"assert", "default", "if", "package", "synchronized",
-			"boolean", "do", "goto", "private", "this",
-			"break", "double", "implements", "protected", "throw",
-			"byte", "else", "import", "public", "throws",
+			"do", "goto", "private", "this",
+			"break", "implements", "protected", "throw",
+			"else", "import", "public", "throws",
 			"case", "enum", "instanceof", "return", "transient",
-			"catch", "extends", "int", "short", "try",
-			"char", "final", "interface", "static", "void",
-			"class", "finally", "long", "strictfp", "volatile",
-			"const", "float", "native", "super", "while", "_",
+			"catch", "extends", "try",
+			"final", "interface", "static",
+			"class", "finally", "strictfp", "volatile",
+			"const", "native", "super", "while", "_",
 			"true", "false", "null"
+			// primitive types are removed as they can be used in type reference
+			//
+			// void, boolean, int, long, float,
+			// double, byte, char, short
+	};
+
+	String[] identifierExceptions = {
+			CtPackage.TOP_LEVEL_PACKAGE_NAME,
+			CtModule.TOP_LEVEL_MODULE_NAME,
+			CtExecutableReference.CONSTRUCTOR_NAME,
+			CtExecutableReference.UNKNOWN_TYPE,
+			CtTypeReference.NULL_TYPE_NAME
 	};
 
 	/**
 	 * This method checks that the given identifier respects the definition
 	 * given in the JLS (see: https://docs.oracle.com/javase/specs/jls/se9/html/jls-3.html#jls-3.8
+	 *
+	 * @param withDot : can be used in case of checking a fully qualified identifier. Then dots are also authorized.
 	 */
-	static void checkIdentifier(String identifier) {
-		boolean isRight = true;
-
-		for (String keyword : keywords) {
-			isRight &= !identifier.equals(keyword);
+	static void checkIdentifier(String identifier, boolean withDot) {
+		for (String identifierException : identifierExceptions) {
+			if (identifier.equals(identifierException)) {
+				return;
+			}
 		}
 
-		if (isRight) {
-			for (int i = 0; i < identifier.length() && isRight; i++) {
-				if (i == 0) {
-					isRight &= Character.isJavaIdentifierStart(identifier.charAt(i));
+		boolean isRight = true;
+
+		for (int i = 0; isRight && i < keywords.length; i++) {
+			isRight = !identifier.equals(keywords[i]);
+		}
+
+		for (int i = 0; isRight && i < identifier.length(); i++) {
+			if (i == 0) {
+				isRight = Character.isJavaIdentifierStart(identifier.charAt(i));
+			} else {
+				if (withDot) {
+					isRight = Character.isJavaIdentifierPart(identifier.charAt(i)) || identifier.charAt(i) == '.';
 				} else {
-					isRight &= Character.isJavaIdentifierPart(identifier.charAt(i));
+					isRight = Character.isJavaIdentifierPart(identifier.charAt(i));
 				}
 			}
 		}

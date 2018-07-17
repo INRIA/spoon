@@ -42,7 +42,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	/**
 	 * The name for the top level package.
 	 */
-	String TOP_LEVEL_PACKAGE_NAME = "unnamed_package";
+	String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
 
 	/**
 	 * Gets the declaring module.

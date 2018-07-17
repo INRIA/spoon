@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -661,6 +662,11 @@ public class APITest {
 		}
 
 		String validIdentifier = "id124343trueValueé$o";
+		localVariableReference.setSimpleName(validIdentifier);
+		assertEquals(validIdentifier, localVariableReference.getSimpleName());
+
+		// exception to keep backward compatibility with Spoon model name conventions
+		validIdentifier = CtExecutableReference.CONSTRUCTOR_NAME;
 		localVariableReference.setSimpleName(validIdentifier);
 		assertEquals(validIdentifier, localVariableReference.getSimpleName());
 	}

@@ -17,10 +17,15 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.reflect.AnnotatedElement;
+
+import static spoon.reflect.path.CtRole.NAME;
 
 public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackageReference {
 	private static final long serialVersionUID = 1L;
@@ -62,5 +67,24 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 	@Override
 	public boolean isUnnamedPackage() {
 		return getSimpleName().isEmpty();
+	}
+
+	@Override
+	public <T extends CtReference> T setSimpleName(String simplename) {
+		if (simplename == null) {
+			simplename = "";
+		}
+		Factory.checkIdentifier(simplename, true);
+		Factory factory = getFactory();
+		if (factory == null) {
+			this.simplename = simplename;
+			return (T) this;
+		}
+		if (factory instanceof FactoryImpl) {
+			simplename = ((FactoryImpl) factory).dedup(simplename);
+		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, this.simplename);
+		this.simplename = simplename;
+		return (T) this;
 	}
 }

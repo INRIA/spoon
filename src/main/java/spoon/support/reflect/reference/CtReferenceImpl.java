@@ -56,7 +56,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		if (simplename == null) {
 			simplename = "";
 		}
-		Factory.checkIdentifier(simplename);
+		Factory.checkIdentifier(simplename, false);
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simplename = simplename;
