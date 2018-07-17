@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
 /**
@@ -33,9 +34,11 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl
 	@Override
 	public <T extends CtReference> T setSimpleName(String newName) {
 		if (!newName.endsWith(".*")) {
+			Factory.checkIdentifier(newName, false);
 			newName += ".*";
 		}
-		return super.setSimpleName(newName);
+
+		return super.setSimpleNameNoCheck(newName);
 	}
 
 	@Override

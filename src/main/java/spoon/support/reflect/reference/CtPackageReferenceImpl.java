@@ -75,16 +75,6 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 			simplename = "";
 		}
 		Factory.checkIdentifier(simplename, true);
-		Factory factory = getFactory();
-		if (factory == null) {
-			this.simplename = simplename;
-			return (T) this;
-		}
-		if (factory instanceof FactoryImpl) {
-			simplename = ((FactoryImpl) factory).dedup(simplename);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, this.simplename);
-		this.simplename = simplename;
-		return (T) this;
+		return super.setSimpleNameNoCheck(simplename);
 	}
 }

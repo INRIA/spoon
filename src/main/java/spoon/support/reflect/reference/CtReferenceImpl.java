@@ -57,6 +57,10 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			simplename = "";
 		}
 		Factory.checkIdentifier(simplename, false);
+		return this.setSimpleNameNoCheck(simplename);
+	}
+
+	protected <T extends CtReference> T setSimpleNameNoCheck(String simplename) {
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simplename = simplename;
