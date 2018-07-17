@@ -312,7 +312,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	Object getMetadata(String key);
 
 	/**
-	 * Retrieves all metadata stored in an element. Returns null if it does not exist.
+	 * Retrieves all metadata stored in an element.
 	 */
 	Map<String, Object> getAllMetadata();
 
