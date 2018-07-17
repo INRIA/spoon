@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -130,6 +131,45 @@ import java.util.Set;
  * Otherwise FactoryImpl is a default implementation.
  */
 public interface Factory {
+	String[] keywords = {
+			"abstract", "continue", "for", "new", "switch",
+			"assert", "default", "if", "package", "synchronized",
+			"boolean", "do", "goto", "private", "this",
+			"break", "double", "implements", "protected", "throw",
+			"byte", "else", "import", "public", "throws",
+			"case", "enum", "instanceof", "return", "transient",
+			"catch", "extends", "int", "short", "try",
+			"char", "final", "interface", "static", "void",
+			"class", "finally", "long", "strictfp", "volatile",
+			"const", "float", "native", "super", "while", "_",
+			"true", "false", "null"
+	};
+
+	/**
+	 * This method checks that the given identifier respects the definition
+	 * given in the JLS (see: https://docs.oracle.com/javase/specs/jls/se9/html/jls-3.html#jls-3.8
+	 */
+	static void checkIdentifier(String identifier) {
+		boolean isRight = true;
+
+		for (String keyword : keywords) {
+			isRight &= !identifier.equals(keyword);
+		}
+
+		if (isRight) {
+			for (int i = 0; i < identifier.length() && isRight; i++) {
+				if (i == 0) {
+					isRight &= Character.isJavaIdentifierStart(identifier.charAt(i));
+				} else {
+					isRight &= Character.isJavaIdentifierPart(identifier.charAt(i));
+				}
+			}
+		}
+
+		if (!isRight) {
+			throw new SpoonException("The given identifier does not respect Java definition of an identifier: "+identifier);
+		}
+	}
 
 	/** returns the Spoon model that has been built with this factory or one of its subfactories */
 	CtModel getModel();

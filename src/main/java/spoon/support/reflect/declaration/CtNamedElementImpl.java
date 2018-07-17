@@ -43,6 +43,10 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		if (simpleName == null) {
+			simpleName = "";
+		}
+		Factory.checkIdentifier(simpleName);
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simpleName = simpleName;

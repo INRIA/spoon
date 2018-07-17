@@ -57,7 +57,7 @@ public interface CtModule extends CtNamedElement {
 	/**
 	 * The name for the top level module.
 	 */
-	String TOP_LEVEL_MODULE_NAME = "unnamed module";
+	String TOP_LEVEL_MODULE_NAME = "unnamed_module";
 
 	/**
 	 * Returns true if the module is the unnamed module

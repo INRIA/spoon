@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Query;
@@ -622,6 +623,46 @@ public class APITest {
 		} catch (SpoonException e) {
 			assertEquals("You cannot process twice the same launcher instance.", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testCheckWrongNameThrowsAnException() {
+		// contract: when trying to create an element with a wrong name, an exception is thrown
+		Launcher launcher = new Launcher();
+		CtLocalVariableReference<Object> localVariableReference = launcher.getFactory().createLocalVariableReference();
+
+		String exception = "The given identifier does not respect Java definition of an identifier";
+		try {
+			localVariableReference.setSimpleName("tacos.EatIt()");
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains(exception));
+		}
+
+		try {
+			localVariableReference.setSimpleName("switch");
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains(exception));
+		}
+
+		try {
+			localVariableReference.setSimpleName("true");
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains(exception));
+		}
+
+		try {
+			localVariableReference.setSimpleName("my module");
+			fail();
+		} catch (SpoonException e) {
+			assertTrue(e.getMessage().contains(exception));
+		}
+
+		String validIdentifier = "id124343trueValueé$o";
+		localVariableReference.setSimpleName(validIdentifier);
+		assertEquals(validIdentifier, localVariableReference.getSimpleName());
 	}
 
 }
