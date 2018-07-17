@@ -472,7 +472,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <E extends CtElement> E setAllMetadata(Map<String, Object> metadata) {
 		if (metadata == null || metadata.isEmpty()) {
-			this.metadata = new HashMap<>();
+			this.metadata = null;
 			return (E) this;
 		}
 		if (this.metadata == null) {
