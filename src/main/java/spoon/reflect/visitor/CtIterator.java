@@ -40,7 +40,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 			for (Object aC : c) {
 				this.addFirst((CtElement) aC);
 			}
-			return c.size() > 0;
+			return !c.isEmpty();
 		}
 	};
 
@@ -74,7 +74,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 
 	@Override
 	public boolean hasNext() {
-		return deque.size() > 0;
+		return !deque.isEmpty();
 	}
 
 	/**

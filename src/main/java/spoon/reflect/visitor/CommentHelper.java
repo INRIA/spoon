@@ -81,7 +81,7 @@ class CommentHelper {
 							printer.writeln();
 						}
 					} else {
-						if (com.length() > 0) {
+						if (!com.isEmpty()) {
 							printer.write(COMMENT_STAR + com).writeln();
 						} else {
 							printer.write(" *" /* no trailing space */ + com).writeln();

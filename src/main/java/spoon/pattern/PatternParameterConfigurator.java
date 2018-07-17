@@ -401,7 +401,7 @@ public class PatternParameterConfigurator {
 				 * Use it as Pattern parameter
 				 */
 				String fieldName = typeMember.getSimpleName();
-				String stringMarker = (param.value() != null && param.value().length() > 0) ? param.value() : fieldName;
+				String stringMarker = (param.value() != null && !param.value().isEmpty()) ? param.value() : fieldName;
 				//for the compatibility reasons with Parameters.getNamesToValues(), use the proxy name as parameter name
 				String parameterName = stringMarker;
 

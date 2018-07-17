@@ -442,7 +442,7 @@ private transient  ClassLoader inputClassloader;
 				// it should not contain a java file
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
-				if (javaFiles.size() > 0) {
+				if (!javaFiles.isEmpty()) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
 				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");

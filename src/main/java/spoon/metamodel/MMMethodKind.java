@@ -31,7 +31,7 @@ public enum MMMethodKind {
 	 * Getter.
 	 * T get()
 	 */
-	GET(-1, false, 1, m -> m.getParameters().size() == 0  && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
+	GET(-1, false, 1, m -> m.getParameters().isEmpty() && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
 	/**
 	 * Setter
 	 * void set(T)
