@@ -19,6 +19,7 @@ package spoon.reflect.visitor.chain;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -80,7 +81,7 @@ public class CtQueryImpl implements CtQuery {
 			this.inputs = new ArrayList<>();
 		}
 		if (input != null) {
-			Collections.addAll(this.inputs, input);
+			this.inputs.addAll(Arrays.asList(input));
 		}
 		return this;
 	}
@@ -594,6 +595,7 @@ public class CtQueryImpl implements CtQuery {
 			throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
 		}
 	}
+
 	private static Class<?> detectTargetClassFromCCE(ClassCastException e, Object input) {
 		//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
 		String message = e.getMessage();
