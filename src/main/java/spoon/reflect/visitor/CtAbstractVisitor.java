@@ -44,6 +44,9 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavadocDescription;
+import spoon.reflect.code.CtJavadocInlineTag;
+import spoon.reflect.code.CtJavadocSnippetDescription;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -505,6 +508,21 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtUsedService(CtUsedService usedService) {
+
+	}
+
+	@Override
+	public void visitCtJavadocDescription(CtJavadocDescription javadocDescription) {
+
+	}
+
+	@Override
+	public void visitCtJavaDocInlineTag(CtJavadocInlineTag javadocInlineTag) {
+
+	}
+
+	@Override
+	public void visitCtJavaDocSnippetDescription(CtJavadocSnippetDescription javadocSnippetDescription) {
 
 	}
 }

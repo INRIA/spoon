@@ -50,6 +50,9 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavadocDescription;
+import spoon.reflect.code.CtJavadocInlineTag;
+import spoon.reflect.code.CtJavadocSnippetDescription;
 import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
@@ -999,5 +1002,23 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(usedService);
 		scanCtVisitable(usedService);
 		scanCtModuleDirective(usedService);
+	}
+
+	@Override
+	public void visitCtJavadocDescription(CtJavadocDescription javadocDescription) {
+		scanCtElement(javadocDescription);
+		scanCtVisitable(javadocDescription);
+	}
+
+	@Override
+	public void visitCtJavaDocInlineTag(CtJavadocInlineTag javadocInlineTag) {
+		scanCtElement(javadocInlineTag);
+		scanCtVisitable(javadocInlineTag);
+	}
+
+	@Override
+	public void visitCtJavaDocSnippetDescription(CtJavadocSnippetDescription javadocSnippetDescription) {
+		scanCtElement(javadocSnippetDescription);
+		scanCtVisitable(javadocSnippetDescription);
 	}
 }

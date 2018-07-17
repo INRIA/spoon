@@ -119,6 +119,13 @@ public interface CtJavaDocTag extends CtElement {
 	 * @param content the new content of the tag
 	 */
 	@PropertySetter(role = COMMENT_CONTENT)
+	<E extends CtJavaDocTag> E setContent(CtJavadocDescription content);
+
+	/**
+	 * Define the content of the tag
+	 * @param content the new content of the tag
+	 */
+	@PropertySetter(role = COMMENT_CONTENT)
 	<E extends CtJavaDocTag> E setContent(String content);
 
 	/**

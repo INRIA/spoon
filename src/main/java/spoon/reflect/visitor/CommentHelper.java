@@ -118,7 +118,7 @@ class CommentHelper {
 			printer.write(docTag.getParam()).writeln();
 		}
 
-		String[] tagLines = LINE_SEPARATORS_RE.split(docTag.getContent());
+		String[] tagLines = LINE_SEPARATORS_RE.split(docTag.getContent().toString());
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
 			if (i > 0 || docTag.getType().hasParam()) {

@@ -49,6 +49,9 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavadocDescription;
+import spoon.reflect.code.CtJavadocInlineTag;
+import spoon.reflect.code.CtJavadocSnippetDescription;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -905,6 +908,28 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, docTag.getComments());
 		scan(CtRole.ANNOTATION, docTag.getAnnotations());
 		exit(docTag);
+	}
+
+	@Override
+	public void visitCtJavadocDescription(CtJavadocDescription javadocDescription) {
+		enter(javadocDescription);
+		scan(CtRole.JAVADOC_CONTENT, javadocDescription.getDescriptionElements());
+		exit(javadocDescription);
+	}
+
+	@Override
+	public void visitCtJavaDocInlineTag(CtJavadocInlineTag javadocInlineTag) {
+		enter(javadocInlineTag);
+		scan(CtRole.DOCUMENTATION_TYPE, javadocInlineTag.getType());
+		scan(CtRole.COMMENT_CONTENT, javadocInlineTag.getContent());
+		exit(javadocInlineTag);
+	}
+
+	@Override
+	public void visitCtJavaDocSnippetDescription(CtJavadocSnippetDescription javadocSnippetDescription) {
+		enter(javadocSnippetDescription);
+		scan(CtRole.JAVADOC_CONTENT, javadocSnippetDescription.getContent());
+		exit(javadocSnippetDescription);
 	}
 
 	@Override
