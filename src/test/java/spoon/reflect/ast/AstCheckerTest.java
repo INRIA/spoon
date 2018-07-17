@@ -128,7 +128,8 @@ public class AstCheckerTest {
 					"CtModuleImpl#addExportedPackage", //
 					"CtModuleImpl#addOpenedPackage", //
 					"CtModuleImpl#addRequiredModule", //
-					"CtModuleImpl#addProvidedService"
+					"CtModuleImpl#addProvidedService",
+					"CtArrayTypeReferenceImpl#setSimpleName"
 			);
 		}
 
