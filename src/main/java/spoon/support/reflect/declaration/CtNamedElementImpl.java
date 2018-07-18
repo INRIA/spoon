@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
+import spoon.support.util.IdentifierHelper;
 
 import static spoon.reflect.path.CtRole.NAME;
 
@@ -46,7 +47,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		if (simpleName == null) {
 			simpleName = "";
 		}
-		Factory.checkIdentifier(simpleName, false);
+		IdentifierHelper.checkIdentifier(simpleName, false);
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simpleName = simpleName;

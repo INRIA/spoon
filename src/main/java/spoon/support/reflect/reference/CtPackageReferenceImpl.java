@@ -17,15 +17,12 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.util.IdentifierHelper;
 
 import java.lang.reflect.AnnotatedElement;
-
-import static spoon.reflect.path.CtRole.NAME;
 
 public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackageReference {
 	private static final long serialVersionUID = 1L;
@@ -74,7 +71,7 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 		if (simplename == null) {
 			simplename = "";
 		}
-		Factory.checkIdentifier(simplename, true);
+		IdentifierHelper.checkIdentifier(simplename, true);
 		return super.setSimpleNameNoCheck(simplename);
 	}
 }

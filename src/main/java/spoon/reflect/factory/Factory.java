@@ -16,7 +16,6 @@
  */
 package spoon.reflect.factory;
 
-import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -131,68 +130,6 @@ import java.util.Set;
  * Otherwise FactoryImpl is a default implementation.
  */
 public interface Factory {
-	String[] keywords = {
-			"abstract", "continue", "for", "new", "switch",
-			"assert", "default", "if", "package", "synchronized",
-			"do", "goto", "private", "this",
-			"break", "implements", "protected", "throw",
-			"else", "import", "public", "throws",
-			"case", "enum", "instanceof", "return", "transient",
-			"catch", "extends", "try",
-			"final", "interface", "static",
-			"class", "finally", "strictfp", "volatile",
-			"const", "native", "super", "while", "_",
-			"true", "false", "null"
-			// primitive types are removed as they can be used in type reference
-			//
-			// void, boolean, int, long, float,
-			// double, byte, char, short
-	};
-
-	String[] identifierExceptions = {
-			CtPackage.TOP_LEVEL_PACKAGE_NAME,
-			CtModule.TOP_LEVEL_MODULE_NAME,
-			CtExecutableReference.CONSTRUCTOR_NAME,
-			CtExecutableReference.UNKNOWN_TYPE,
-			CtTypeReference.NULL_TYPE_NAME
-	};
-
-	/**
-	 * This method checks that the given identifier respects the definition
-	 * given in the JLS (see: https://docs.oracle.com/javase/specs/jls/se9/html/jls-3.html#jls-3.8
-	 *
-	 * @param withDot : can be used in case of checking a fully qualified identifier. Then dots are also authorized.
-	 */
-	static void checkIdentifier(String identifier, boolean withDot) {
-		for (String identifierException : identifierExceptions) {
-			if (identifier.equals(identifierException)) {
-				return;
-			}
-		}
-
-		boolean isRight = true;
-
-		for (int i = 0; isRight && i < keywords.length; i++) {
-			isRight = !identifier.equals(keywords[i]);
-		}
-
-		for (int i = 0; isRight && i < identifier.length(); i++) {
-			if (i == 0) {
-				isRight = Character.isJavaIdentifierStart(identifier.charAt(i));
-			} else {
-				if (withDot) {
-					isRight = Character.isJavaIdentifierPart(identifier.charAt(i)) || identifier.charAt(i) == '.';
-				} else {
-					isRight = Character.isJavaIdentifierPart(identifier.charAt(i));
-				}
-			}
-		}
-
-		if (!isRight) {
-			throw new SpoonException("The given identifier does not respect Java definition of an identifier: "+identifier);
-		}
-	}
-
 	/** returns the Spoon model that has been built with this factory or one of its subfactories */
 	CtModel getModel();
 

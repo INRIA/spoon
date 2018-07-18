@@ -669,6 +669,11 @@ public class APITest {
 		validIdentifier = CtExecutableReference.CONSTRUCTOR_NAME;
 		localVariableReference.setSimpleName(validIdentifier);
 		assertEquals(validIdentifier, localVariableReference.getSimpleName());
+
+		// generic type keywords are also authorized for type reference
+		validIdentifier = "void";
+		localVariableReference.setSimpleName(validIdentifier);
+		assertEquals(validIdentifier, localVariableReference.getSimpleName());
 	}
 
 }

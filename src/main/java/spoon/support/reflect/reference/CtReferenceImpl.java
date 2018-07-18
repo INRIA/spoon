@@ -26,6 +26,7 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.IdentifierHelper;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
@@ -56,7 +57,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		if (simplename == null) {
 			simplename = "";
 		}
-		Factory.checkIdentifier(simplename, false);
+		IdentifierHelper.checkIdentifier(simplename, false);
 		return this.setSimpleNameNoCheck(simplename);
 	}
 
