@@ -78,7 +78,9 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				// an empty package is merged with the existing one
 				// we have to give it a name
 				if (argument instanceof CtPackage) {
-					((CtPackage) argument).setSimpleName(argument.getShortRepresentation());
+					String name = argument.getShortRepresentation().substring(0, argument.getShortRepresentation().indexOf("@"));
+					name = name.replace('.', '_');
+					((CtPackage) argument).setSimpleName(name);
 				}
 				return argument;
 

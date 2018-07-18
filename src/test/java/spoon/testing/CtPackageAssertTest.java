@@ -41,7 +41,7 @@ public class CtPackageAssertTest {
 
 	@Test(expected = AssertionError.class)
 	public void testEqualityBetweenTwoDifferentCtPackage() throws Exception {
-		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.package"));
+		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.pakage"));
 	}
 
 	@Test(expected = AssertionError.class)
@@ -60,14 +60,14 @@ public class CtPackageAssertTest {
 		//contract: type is created in the root package
 		assertSame(factory.getModel().getRootPackage(), type.getPackage());
 		assertEquals("X", type.getQualifiedName());
-		final CtPackage aPackage1= factory.Package().getOrCreate("some.package");
+		final CtPackage aPackage1= factory.Package().getOrCreate("some.pakage");
 		//contract: type can be moved from root package to any other package
 		aPackage1.addType(type);
-		assertEquals("some.package.X", type.getQualifiedName());
+		assertEquals("some.pakage.X", type.getQualifiedName());
 		//contract: second add of type into same package does nothing
 		aPackage1.addType(type);
-		assertEquals("some.package.X", type.getQualifiedName());
-		final CtPackage aPackage2= factory.Package().getOrCreate("another.package");
+		assertEquals("some.pakage.X", type.getQualifiedName());
+		final CtPackage aPackage2= factory.Package().getOrCreate("another.pakage");
 		try {
 			//contract: type cannot be moved to another package as long as it belongs to some not root package
 			aPackage2.addType(type);
@@ -75,10 +75,10 @@ public class CtPackageAssertTest {
 		} catch (SpoonException e) {
 			//OK
 		}
-		assertEquals("some.package.X", type.getQualifiedName());
+		assertEquals("some.pakage.X", type.getQualifiedName());
 		//contract: type can be moved to another package after it is removed from current package
 		type.getPackage().removeType(type);
 		aPackage2.addType(type);
-		assertEquals("another.package.X", type.getQualifiedName());
+		assertEquals("another.pakage.X", type.getQualifiedName());
 	}
 }

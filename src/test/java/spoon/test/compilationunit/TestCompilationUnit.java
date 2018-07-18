@@ -71,7 +71,7 @@ public class TestCompilationUnit {
     @Test
     public void testGetUnitTypeWorksWithCreatedObjects() {
         final Launcher launcher = new Launcher();
-        CtPackage myPackage = launcher.getFactory().Package().getOrCreate("my.package");
+        CtPackage myPackage = launcher.getFactory().Package().getOrCreate("my.pakage");
         CompilationUnit cu = launcher.getFactory().createCompilationUnit();
         assertEquals(CompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
 
@@ -138,7 +138,7 @@ public class TestCompilationUnit {
         final Launcher launcher = new Launcher();
         assertTrue(launcher.getFactory().CompilationUnit().getMap().isEmpty());
 
-        CtClass myNewClass = launcher.getFactory().createClass("my.new.MyClass");
+        CtClass myNewClass = launcher.getFactory().createClass("my.newpak.MyClass");
         assertEquals(SourcePosition.NOPOSITION, myNewClass.getPosition());
 
         CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(myNewClass);
@@ -149,7 +149,7 @@ public class TestCompilationUnit {
         assertTrue(sourcePosition instanceof PartialSourcePositionImpl);
         assertSame(cu, sourcePosition.getCompilationUnit());
 
-        File f = new File(Launcher.OUTPUTDIR, "my/new/MyClass.java");
+        File f = new File(Launcher.OUTPUTDIR, "my/newpak/MyClass.java");
         assertEquals(f.getCanonicalFile(), cu.getFile());
     }
 }

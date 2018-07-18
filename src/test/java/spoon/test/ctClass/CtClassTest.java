@@ -135,10 +135,10 @@ public class CtClassTest {
 		// number isn't rewrite only in the class declaration but in all type references and in
 		// the constructor.
 		final CtType<Pozole> aPozole = buildClass(Pozole.class);
-		final CtClass<?> cook = aPozole.getNestedType("1Cook");
+		final CtClass<?> cook = aPozole.getNestedType("Cook");
 
-		assertEquals("1Cook", cook.getSimpleName());
-		assertEquals("spoon.test.ctClass.testclasses.Pozole$1Cook", cook.getQualifiedName());
+		assertEquals("Cook", cook.getSimpleName());
+		assertEquals("spoon.test.ctClass.testclasses.Pozole$Cook", cook.getQualifiedName());
 		final Set<? extends CtConstructor<?>> constructors = cook.getConstructors();
 		final String expectedConstructor = "public Cook() {" + System.lineSeparator() + "}";
 		assertEquals(expectedConstructor, constructors.toArray(new CtConstructor[constructors.size()])[0].toString());

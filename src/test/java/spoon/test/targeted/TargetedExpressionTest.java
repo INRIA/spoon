@@ -73,8 +73,8 @@ public class TargetedExpressionTest {
 				"this.method()",
 				meth1.getBody().getStatements().get(0).toString());
 
-		CtClass<?> c = type.getElements(new NamedElementFilter<>(CtClass.class,"1InnerClass")).get(0);
-		assertEquals("1InnerClass", c.getSimpleName());
+		CtClass<?> c = type.getElements(new NamedElementFilter<>(CtClass.class,"InnerClass")).get(0);
+		assertEquals("InnerClass", c.getSimpleName());
 		CtConstructor<?> ctr = c.getConstructor(type.getFactory().Type().createReference(boolean.class));
 		assertEquals("this.b = b", ctr.getBody().getLastStatement().toString());
 	}
@@ -186,7 +186,7 @@ public class TargetedExpressionTest {
 		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
 		final CtType<?> innerClass = type.getNestedType("InnerClass");
 		final CtTypeReference<?> expectedInnerClass = innerClass.getReference();
-		final CtType<?> nestedTypeScanner = type.getNestedType("1NestedTypeScanner");
+		final CtType<?> nestedTypeScanner = type.getNestedType("NestedTypeScanner");
 		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
 
 		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
@@ -332,7 +332,7 @@ public class TargetedExpressionTest {
 		final CtTypeReference<SuperClass> expectedSuperClassType = factory.Class().<SuperClass>get(SuperClass.class).getReference();
 		final CtType<?> innerClass = type.getNestedType("InnerClass");
 		final CtTypeReference<?> expectedInnerClass = innerClass.getReference();
-		final CtType<?> nestedTypeScanner = type.getNestedType("1NestedTypeScanner");
+		final CtType<?> nestedTypeScanner = type.getNestedType("NestedTypeScanner");
 		final CtTypeReference<?> expectedNested = nestedTypeScanner.getReference();
 
 		final CtTypeAccess<Foo> fooTypeAccess = factory.Code().createTypeAccess(expectedType);
@@ -441,11 +441,11 @@ public class TargetedExpressionTest {
 		CtThisAccess<Object> expectedThisAccess = type.getFactory().Code().createThisAccess(firstExpected);
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(firstExpected).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index"), elements.get(0));
 
-		final CtTypeReference<Object> secondExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$3InnerSubscriber");
+		final CtTypeReference<Object> secondExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$InnerSubscriber");
 		expectedThisAccess = type.getFactory().Code().createThisAccess(secondExpectedInner);
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(secondExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(1));
 
-		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$4InnerSubscriber");
+		final CtTypeReference<Object> thirdExpectedInner = type.getFactory().Type().createReference("spoon.test.targeted.testclasses.Tapas$InnerSubscriber");
 		expectedThisAccess = type.getFactory().Code().createThisAccess(thirdExpectedInner);
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(thirdExpectedInner).target(expectedThisAccess).type(CtFieldWrite.class).result("this.index").isLocal(), elements.get(2));
 	}
