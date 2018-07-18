@@ -132,8 +132,8 @@ public class PatternParameterConfigurator {
 		return this;
 	}
 
-	public PatternParameterConfigurator setMinOccurence(int minOccurence) {
-		currentParameter.setMinOccurrences(minOccurence);
+	public PatternParameterConfigurator setMinOccurrence(int minOccurrence) {
+		currentParameter.setMinOccurrences(minOccurrence);
 		return this;
 	}
 	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {

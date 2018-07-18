@@ -26,7 +26,7 @@ public class MatchMultiple {
 					pb.setMatchingStrategy(matchingStrategy);
 				}
 				if (minCount != null) {
-					pb.setMinOccurence(minCount);
+					pb.setMinOccurrence(minCount);
 				}
 				if (maxCount != null) {
 					pb.setMaxOccurence(maxCount);
