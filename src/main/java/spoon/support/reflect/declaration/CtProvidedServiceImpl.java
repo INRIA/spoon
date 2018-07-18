@@ -60,7 +60,7 @@ public class CtProvidedServiceImpl extends CtElementImpl implements CtProvidedSe
 	@Override
 	public <T extends CtProvidedService> T setImplementationTypes(List<CtTypeReference> usedTypes) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.IMPLEMENTATION_TYPE, this.implementationTypes, new ArrayList<>(this.implementationTypes));
-		if (usedTypes == null || usedTypes.size() == 0) {
+		if (usedTypes == null || usedTypes.isEmpty()) {
 			this.implementationTypes = CtElementImpl.emptyList();
 			return (T) this;
 		}

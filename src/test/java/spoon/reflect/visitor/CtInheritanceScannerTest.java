@@ -73,7 +73,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			if (!intf.getSimpleName().startsWith("Ct")) {
 				continue;
 			}
-			Method mth=null;
+			Method mth = null;
 
 			// if a method visitX exists, it must be invoked
 			try {
@@ -85,7 +85,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			} catch (NoSuchMethodException ex) {
 				// no such method, nothing
 			}
-			if (mth!=null && !toInvoke.contains(mth)) {
+			if (mth != null && !toInvoke.contains(mth)) {
 				toInvoke.add(mth);
 			}
 
@@ -99,7 +99,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			} catch (NoSuchMethodException ex) {
 				// no such method, nothing
 			}
-			if (mth!=null && !toInvoke.contains(mth)) {
+			if (mth != null && !toInvoke.contains(mth)) {
 				toInvoke.add(mth);
 			}
 
@@ -130,12 +130,11 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 				toInvoke.get(i).invoke(verify(mocked), instance);
 			} catch (InvocationTargetException e) {
 				if (e.getTargetException() instanceof AssertionError) {
-					fail("visit"+instance.getClass().getSimpleName().replaceAll("Impl$", "")+" does not call "+toInvoke.get(i).getName());
+					fail("visit" + instance.getClass().getSimpleName().replaceAll("Impl$", "") + " does not call " + toInvoke.get(i).getName());
 				} else {
 					throw e.getTargetException();
 				}
 			}
 		}
 	}
-
 }

@@ -208,7 +208,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	/**
 	 * Replaces all occurrences of `tobeReplacedSubstring` in `str` by `substrValue`
 	 * @param str to be modified string
-	 * @param tobeReplacedSubstring all occurences of this String will be replaced by `substrValue`
+	 * @param tobeReplacedSubstring all occurrences of this String will be replaced by `substrValue`
 	 * @param substrValue a replacement
 	 * @return replaced string
 	 */

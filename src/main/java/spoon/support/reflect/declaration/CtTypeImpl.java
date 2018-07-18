@@ -622,11 +622,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					// replace old method by new one (based on signature and not equality)
 					// we have to do it by hand
 					removeTypeMember(m);
-				} else {
-					// checking contract signature implies equal
-					if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
-						throw new AssertionError("violation of core contract! different signature but same equal");
-					}
 				}
 			}
 		}

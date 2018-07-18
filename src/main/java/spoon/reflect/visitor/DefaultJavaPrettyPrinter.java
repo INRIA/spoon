@@ -284,7 +284,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * Exits an expression.
 	 */
 	protected void exitCtExpression(CtExpression<?> e) {
-		while ((context.parenthesedExpression.size() > 0) && e == context.parenthesedExpression.peek()) {
+		while ((!context.parenthesedExpression.isEmpty()) && e == context.parenthesedExpression.peek()) {
 			context.parenthesedExpression.pop();
 			printer.writeSeparator(")");
 		}
@@ -387,7 +387,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean shouldSetBracket(CtExpression<?> e) {
-		if (e.getTypeCasts().size() != 0) {
+		if (!e.getTypeCasts().isEmpty()) {
 			return true;
 		}
 		try {
@@ -416,7 +416,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeAnnotations(annotation);
 		printer.writeSeparator("@");
 		scan(annotation.getAnnotationType());
-		if (annotation.getValues().size() > 0) {
+		if (!annotation.getValues().isEmpty()) {
 			elementPrinterHelper.printList(annotation.getValues().entrySet(),
 				null, false, "(", false, false, ",", true, false, ")",
 				e -> {
@@ -687,7 +687,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.visitCtNamedElement(constructor, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(constructor);
 		elementPrinterHelper.writeFormalTypeParameters(constructor);
-		if (constructor.getFormalCtTypeParameters().size() > 0) {
+		if (!constructor.getFormalCtTypeParameters().isEmpty()) {
 			printer.writeSpace();
 		}
 		if (constructor.getDeclaringType() != null) {
@@ -730,7 +730,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.pushCurrentThis(ctEnum);
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
 
-		if (ctEnum.getEnumValues().size() == 0) {
+		if (ctEnum.getEnumValues().isEmpty()) {
 			printer.writeSeparator(";").writeln();
 		} else {
 			elementPrinterHelper.printList(ctEnum.getEnumValues(),
@@ -1151,7 +1151,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(forLoop);
 		printer.writeKeyword("for").writeSpace().writeSeparator("(");
 		List<CtStatement> st = forLoop.getForInit();
-		if (st.size() > 0) {
+		if (!st.isEmpty()) {
 			scan(st.get(0));
 		}
 		if (st.size() > 1) {
@@ -1215,7 +1215,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeFormalTypeParameters(intrface);
 		}
 
-		if (intrface.getSuperInterfaces().size() > 0) {
+		if (!intrface.getSuperInterfaces().isEmpty()) {
 			elementPrinterHelper.printList(intrface.getSuperInterfaces(),
 				"extends", false, null, false, true, ",", true, false, null,
 				ref -> scan(ref));
@@ -1335,7 +1335,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.visitCtNamedElement(m, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(m);
 		elementPrinterHelper.writeFormalTypeParameters(m);
-		if (m.getFormalCtTypeParameters().size() > 0) {
+		if (!m.getFormalCtTypeParameters().isEmpty()) {
 			printer.writeSpace();
 		}
 		try (Writable _context = context.modify().ignoreGenerics(false)) {
@@ -1413,7 +1413,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				ref = ((CtArrayTypeReference) ref).getComponentType();
 			}
 		}
-		if (newArray.getDimensionExpressions().size() == 0) {
+		if (newArray.getDimensionExpressions().isEmpty()) {
 			elementPrinterHelper.printList(newArray.getElements(),
 				null, false, "{", true, false, ",", true, true, "}",
 				e -> scan(e));
@@ -1459,7 +1459,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			printer.writeKeyword("new").writeSpace();
 
-			if (ctConstructorCall.getActualTypeArguments().size() > 0) {
+			if (!ctConstructorCall.getActualTypeArguments().isEmpty()) {
 				elementPrinterHelper.writeActualTypeArguments(ctConstructorCall);
 			}
 
@@ -1493,7 +1493,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return false;
 		}
 		// If declaring type have generics, we return true.
-		if (reference.getDeclaringType().getActualTypeArguments().size() != 0) {
+		if (!reference.getDeclaringType().getActualTypeArguments().isEmpty()) {
 			return true;
 		}
 		// Checks if the declaring type has generic types.

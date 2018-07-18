@@ -35,7 +35,7 @@ public class CtDequeScanner extends CtScanner {
 	/**
 	 * The stack of elements.
 	 */
-	protected Deque<CtElement> elementsDeque = new ArrayDeque<CtElement>();
+	protected Deque<CtElement> elementsDeque = new ArrayDeque<>();
 
 	/**
 	 * Pops the element.

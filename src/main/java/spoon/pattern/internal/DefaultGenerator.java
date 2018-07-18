@@ -211,7 +211,7 @@ public class DefaultGenerator implements Generator {
 		String EOL = System.getProperty("line.separator");
 		CtComment comment = getJavaDoc(ele);
 		String content = comment.getContent();
-		if (content.trim().length() > 0) {
+		if (!content.trim().isEmpty()) {
 			content += EOL + EOL;
 		}
 		content += generatedBy;

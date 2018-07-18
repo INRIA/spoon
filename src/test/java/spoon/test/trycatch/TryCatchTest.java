@@ -19,6 +19,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
+import spoon.test.trycatch.testclasses.Main;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<Main> type = build("spoon.test.trycatch", "Main");
+		CtClass<Main> type = build("spoon.test.trycatch.testclasses", "Main");
 		assertEquals("Main", type.getSimpleName());
 
 		CtMethod<Void> m = type.getMethod("test");
@@ -126,7 +127,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testRethrowingExceptionsJava7() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "RethrowingClass");
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "RethrowingClass");
 
 		CtMethod<?> method = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		Set<CtTypeReference<? extends Throwable>> thrownTypes = method
@@ -149,7 +150,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithOneResource() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "TryCatchResourceClass");
 
 		CtMethod<?> method = clazz.getMethodsByName("readFirstLineFromFile").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
@@ -161,7 +162,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithResources() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "TryCatchResourceClass");
 
 		CtMethod<?> method = clazz.getMethodsByName("writeToFileZipFileContents").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(

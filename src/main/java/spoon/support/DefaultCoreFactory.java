@@ -16,6 +16,8 @@
  */
 package spoon.support;
 
+
+import java.lang.annotation.Annotation;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -79,13 +81,15 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.CoreFactory;
@@ -95,11 +99,9 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -167,13 +169,15 @@ import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtEnumImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
+import spoon.support.reflect.declaration.CtImportImpl;
 import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
-import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
-import spoon.support.reflect.declaration.CtProvidedServiceImpl;
+import spoon.support.reflect.declaration.CtModuleRequirementImpl;
+import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
+import spoon.support.reflect.declaration.CtProvidedServiceImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.declaration.CtUsedServiceImpl;
 import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
@@ -181,11 +185,9 @@ import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
 import spoon.support.reflect.reference.CtFieldReferenceImpl;
-import spoon.support.reflect.declaration.CtImportImpl;
 import spoon.support.reflect.reference.CtIntersectionTypeReferenceImpl;
 import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
 import spoon.support.reflect.reference.CtModuleReferenceImpl;
-import spoon.support.reflect.declaration.CtModuleRequirementImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
@@ -195,14 +197,13 @@ import spoon.support.reflect.reference.CtWildcardReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
+
 
 /**
  * This class implements a default core factory for Spoon's meta-model. This
  * implementation is done with regular Java classes (POJOs).
  */
-public class DefaultCoreFactory extends SubFactory implements CoreFactory, Serializable {
+public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 
 	private static final long serialVersionUID = 1L;
 
@@ -472,7 +473,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 
 	@Override
 	public <T> CtAnnotationMethod<T> createAnnotationMethod() {
-		CtAnnotationMethod<T> e = new CtAnnotationMethodImpl<T>();
+		CtAnnotationMethod<T> e = new CtAnnotationMethodImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
 	}
@@ -1030,3 +1031,4 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory, Seria
 	}
 
 }
+

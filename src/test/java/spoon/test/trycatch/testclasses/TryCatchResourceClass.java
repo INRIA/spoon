@@ -1,4 +1,4 @@
-package spoon.test.trycatch;
+package spoon.test.trycatch.testclasses;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

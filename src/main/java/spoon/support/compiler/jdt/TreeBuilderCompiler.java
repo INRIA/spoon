@@ -100,7 +100,7 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			this.reportWorked(1, i);
 		}
 
-		ArrayList<CompilationUnitDeclaration> unitsToReturn = new ArrayList<CompilationUnitDeclaration>();
+		ArrayList<CompilationUnitDeclaration> unitsToReturn = new ArrayList<>();
 		for (CompilationUnitDeclaration cud : this.unitsToProcess) {
 			if (cud != null) {
 				unitsToReturn.add(cud);

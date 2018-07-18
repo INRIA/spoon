@@ -152,7 +152,7 @@ public class ElementPrinterHelper {
 
 	/** writes the implemented interfaces with a ListPrinter */
 	public void writeImplementsClause(CtType<?> type) {
-		if (type.getSuperInterfaces().size() > 0) {
+		if (!type.getSuperInterfaces().isEmpty()) {
 			printList(type.getSuperInterfaces(), "implements",
 				false, null, false, true, ",", true, false, null,
 				ref -> prettyPrinter.scan(ref));
@@ -167,7 +167,7 @@ public class ElementPrinterHelper {
 
 	/** writes the thrown exception with a ListPrinter */
 	public void writeThrowsClause(CtExecutable<?> executable) {
-		if (executable.getThrownTypes().size() > 0) {
+		if (!executable.getThrownTypes().isEmpty()) {
 			printList(executable.getThrownTypes(), "throws",
 				false, null, false, false, ",", true, false, null,
 				ref -> prettyPrinter.scan(ref));
@@ -244,7 +244,7 @@ public class ElementPrinterHelper {
 		if (parameters == null) {
 			return;
 		}
-		if (parameters.size() > 0) {
+		if (!parameters.isEmpty()) {
 			printList(parameters,
 				null,	false, "<", false, false, ",", true, false, ">",
 				parameter -> prettyPrinter.scan(parameter));
@@ -259,7 +259,7 @@ public class ElementPrinterHelper {
 	 */
 	public void writeActualTypeArguments(CtActualTypeContainer ctGenericElementReference) {
 		final Collection<CtTypeReference<?>> arguments = ctGenericElementReference.getActualTypeArguments();
-		if (arguments != null && arguments.size() > 0) {
+		if (arguments != null && !arguments.isEmpty()) {
 			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
 				null, false, "<", false, false, ",", true, false, ">",
 				argument -> {
@@ -333,7 +333,7 @@ public class ElementPrinterHelper {
 			printer.writeKeyword("import").writeSpace();
 			writeQualifiedName(importLine).writeSeparator(";").writeln();
 		}
-		if (setStaticImports.size() > 0) {
+		if (!setStaticImports.isEmpty()) {
 			if (isFirst) {
 				printer.writeln();
 			}
@@ -494,17 +494,17 @@ public class ElementPrinterHelper {
 		return new ListPrinter(printer, startPrefixSpace, start, startSufficSpace, nextPrefixSpace, next, nextSuffixSpace, endPrefixSpace, end);
 	}
 
-	private static final String QALIFIED_NAME_SEPARATORS = ".$";
+	private static final String QUALIFIED_NAME_SEPARATORS = ".$";
 
 	/**
 	 * splits qualified name to primitive tokens and sends them to TokenWriter individually
 	 * @param qualifiedName to be sent qualified name
 	 */
 	public TokenWriter writeQualifiedName(String qualifiedName) {
-		StringTokenizer st = new StringTokenizer(qualifiedName, QALIFIED_NAME_SEPARATORS, true);
+		StringTokenizer st = new StringTokenizer(qualifiedName, QUALIFIED_NAME_SEPARATORS, true);
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
-			if (token.length() == 1 && QALIFIED_NAME_SEPARATORS.indexOf(token.charAt(0)) >= 0) {
+			if (token.length() == 1 && QUALIFIED_NAME_SEPARATORS.indexOf(token.charAt(0)) >= 0) {
 				printer.writeSeparator(token);
 			} else {
 				printer.writeIdentifier(token);

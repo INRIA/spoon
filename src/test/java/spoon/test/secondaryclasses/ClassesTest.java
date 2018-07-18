@@ -30,13 +30,15 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.test.secondaryclasses.testclasses.AnonymousClass.I;
+import spoon.test.secondaryclasses.testclasses.ClassWithInternalPublicClassOrInterf;
 import spoon.test.secondaryclasses.testclasses.Pozole;
+import spoon.test.secondaryclasses.testclasses.PrivateInnerClasses;
 
 public class ClassesTest {
 
 	@Test
 	public void testClassWithInternalPublicClassOrInterf() throws Exception {
-		CtClass<?> type = build("spoon.test.secondaryclasses",
+		CtClass<?> type = build("spoon.test.secondaryclasses.testclasses",
 				"ClassWithInternalPublicClassOrInterf");
 		assertEquals("ClassWithInternalPublicClassOrInterf",
 				type.getSimpleName());
@@ -123,7 +125,7 @@ public class ClassesTest {
 
 	@Test
 	public void testTopLevel() throws Exception {
-		CtClass<?> type = build("spoon.test.secondaryclasses", "TopLevel");
+		CtClass<?> type = build("spoon.test.secondaryclasses.testclasses", "TopLevel");
 		assertEquals("TopLevel", type.getSimpleName());
 
 		CtClass<?> x = type.getElements(

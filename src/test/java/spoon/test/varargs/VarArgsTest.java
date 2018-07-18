@@ -6,7 +6,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.test.trycatch.Main;
+import spoon.test.trycatch.testclasses.Main;
 
 import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.build;
@@ -15,7 +15,7 @@ public class VarArgsTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<Main> type = build("spoon.test.varargs", "VarArgsSample");
+		CtClass<Main> type = build("spoon.test.varargs.testclasses", "VarArgsSample");
 		assertEquals("VarArgsSample", type.getSimpleName());
 		CtMethod<?> m = type.getMethodsByName("foo").get(0);
 

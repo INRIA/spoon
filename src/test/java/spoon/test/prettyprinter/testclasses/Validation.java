@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package spoon.test.prettyprinter;
+package spoon.test.prettyprinter.testclasses;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;

@@ -114,8 +114,6 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		} finally {
 			lastRole = null;
 		}
-
-		return;
 	}
 
 	protected boolean fail(CtRole role, Object element, Object other) {

@@ -106,8 +106,6 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			params.put("$Role$", getFactory().Type().createReference(CtRole.class));
 			params.put("ROLE", rim.getRole().name());
 			params.put("$TargetType$", rim.getOwner().getMetamodelInterface().getReference());
-//			params.put("AbstractHandler", getFactory().Type().createReference("spoon.reflect.meta.impl.AbstractRoleHandler"));
-//			params.put("AbstractHandler", getRoleHandlerSuperTypeQName(rim));
 			CtTypeReference<?> nodeRef = rim.getOwner().getMetamodelInterface().getReference();
 			CtTypeReference<?> valueTypeRef = fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getTypeOfField() : rim.getTypeofItems());
 			CtTypeReference<?> handlerSuperClassRef = getFactory().Type().createReference(getRoleHandlerSuperTypeQName(rim));

@@ -61,7 +61,7 @@ public class SignaturePrinter extends CtScanner {
 			write(reference.getSimpleName());
 		}
 		write("(");
-		if (reference.getParameters().size() > 0) {
+		if (!reference.getParameters().isEmpty()) {
 			for (CtTypeReference<?> param : reference.getParameters()) {
 				if (param != null && !"null".equals(param.getSimpleName())) {
 					scan(param);
@@ -70,7 +70,7 @@ public class SignaturePrinter extends CtScanner {
 				}
 				write(",");
 			}
-			if (reference.getParameters().size() > 0) {
+			if (!reference.getParameters().isEmpty()) {
 				clearLast(); // ","
 			}
 		}
@@ -114,7 +114,7 @@ public class SignaturePrinter extends CtScanner {
 			scan(p.getType());
 			write(",");
 		}
-		if (c.getParameters().size() > 0) {
+		if (!c.getParameters().isEmpty()) {
 			clearLast();
 		}
 		write(")");

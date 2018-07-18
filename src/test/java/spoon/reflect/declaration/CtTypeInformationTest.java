@@ -72,7 +72,7 @@ public class CtTypeInformationTest {
 			Assert.assertEquals(extendObject.getQualifiedName(), getLastResolvedSuperclass(ctc).getQualifiedName());
 
 			Assert.assertTrue(ctc.isSubtypeOf(arrayList));
-			//contract: ClassTypingContext#isSubtypeOf returns always the same results 
+			//contract: ClassTypingContext#isSubtypeOf returns always the same results
 			Assert.assertTrue(ctc.isSubtypeOf(extendObject));
 			Assert.assertTrue(ctc.isSubtypeOf(subClass.getReference()));
 
@@ -99,7 +99,7 @@ public class CtTypeInformationTest {
 			Assert.assertFalse(ctc.isSubtypeOf(factory.Type().createReference("java.io.InputStream")));
 			//contract: ClassTypingContext must scans whole type hierarchy if detecting subtypeof on type which is not a supertype
 			Assert.assertNull(getLastResolvedSuperclass(ctc));
-			//contract: ClassTypingContext#isSubtypeOf returns always the same results 
+			//contract: ClassTypingContext#isSubtypeOf returns always the same results
 			Assert.assertTrue(ctc.isSubtypeOf(arrayList));
 			Assert.assertTrue(ctc.isSubtypeOf(extendObject));
 			Assert.assertTrue(ctc.isSubtypeOf(subClass.getReference()));
@@ -115,7 +115,7 @@ public class CtTypeInformationTest {
 			//contract: ClassTypingContext must scans whole type hierarchy if detecting subtypeof on type which is not a supertype
 			Assert.assertNull(getLastResolvedSuperclass(ctc2));
 
-			//contract: ClassTypingContext#isSubtypeOf returns always the same results 
+			//contract: ClassTypingContext#isSubtypeOf returns always the same results
 			Assert.assertTrue(ctc2.isSubtypeOf(arrayList));
 			Assert.assertTrue(ctc2.isSubtypeOf(extendObject));
 			Assert.assertTrue(ctc2.isSubtypeOf(subClass.getReference()));
@@ -182,7 +182,6 @@ public class CtTypeInformationTest {
 
 		assertEquals(subClass.getMethodsByName("foo").get(0).getSignature(),
 				type2.getMethodsByName("foo").get(0).getSignature());
-
 	}
 
 	@Test

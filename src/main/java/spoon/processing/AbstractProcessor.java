@@ -23,8 +23,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.testing.utils.ProcessorUtils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -94,13 +92,6 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		ProcessorProperties props = null;
 		try {
 			props = p.getFactory().getEnvironment().getProcessorProperties(p.getClass().getName());
-		} catch (FileNotFoundException e) {
-			p.getFactory().getEnvironment()
-					.debugMessage("property file not found for processor '" + p.getClass().getName() + "'");
-		} catch (IOException e) {
-			p.getFactory().getEnvironment().report(p, Level.ERROR,
-					"wrong properties file format for processor '" + p.getClass().getName() + "'");
-			Launcher.LOGGER.error(e.getMessage(), e);
 		} catch (Exception e) {
 			p.getFactory().getEnvironment().report(p, Level.ERROR,
 					"unable to get properties for processor '" + p.getClass().getName() + "': " + e.getMessage());
