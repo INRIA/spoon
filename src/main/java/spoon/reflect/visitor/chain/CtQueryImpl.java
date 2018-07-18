@@ -16,15 +16,6 @@
  */
 package spoon.reflect.visitor.chain;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -32,6 +23,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
