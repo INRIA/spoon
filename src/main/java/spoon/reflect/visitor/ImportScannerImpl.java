@@ -76,7 +76,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	//top declaring type of that import
 	protected CtTypeReference<?> targetType;
 	private Map<String, Boolean> namesPresentInJavaLang = new HashMap<>();
-	private Set<String> fieldAndMethodsNames = new HashSet<String>();
+	private Set<String> fieldAndMethodsNames = new HashSet<>();
 	private Set<CtTypeReference> exploredReferences = new HashSet<>(); // list of explored references
 	private Map<CtImport, Boolean> usedImport = new HashMap<>(); // defined if imports had been used or not
 

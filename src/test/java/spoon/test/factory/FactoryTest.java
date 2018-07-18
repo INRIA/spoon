@@ -38,10 +38,13 @@ public class FactoryTest {
 		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 		int i = m.getBody().getStatements().size();
+		m.putMetadata("metadata", 1);
+		int metadata = m.getAllMetadata().size();
 
 		m = m.clone();
 
 		assertEquals(i, m.getBody().getStatements().size());
+		assertEquals(metadata, m.getAllMetadata().size());
 		// cloned elements must not have an initialized parent
 		assertFalse(m.isParentInitialized());
 	}

@@ -50,7 +50,7 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 
 	/** adds the given {@link spoon.compiler.SpoonFile} as sources */
 	public T sources(List<SpoonFile> sources) {
-		if (sources == null || sources.size() == 0) {
+		if (sources == null || sources.isEmpty()) {
 			args.add(".");
 			return myself;
 		}

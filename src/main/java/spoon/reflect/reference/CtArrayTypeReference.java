@@ -20,6 +20,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 
 /**
@@ -61,7 +62,15 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * Returns the simple name of the array type core component type (with no
 	 * []s). Use toString() to get the full array type including []s.
 	 */
+	@DerivedProperty
 	String getSimpleName();
+
+	/**
+	 * The simple name of an ArrayTypeReference is unsettable as it's retrieved from its component type.
+	 */
+	@UnsettableProperty
+	@Override
+	<T extends CtReference> T setSimpleName(String simpleName);
 
 	@Override
 	CtArrayTypeReference<T> clone();

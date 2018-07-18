@@ -449,7 +449,7 @@ public class PatternBuilder {
 		if (templateTypeRef != null) {
 			return templateTypeRef.getFactory();
 		}
-		if (patternModel.size() > 0) {
+		if (!patternModel.isEmpty()) {
 			return patternModel.get(0).getFactory();
 		}
 		throw new SpoonException("PatternBuilder has no CtElement to provide a Factory");

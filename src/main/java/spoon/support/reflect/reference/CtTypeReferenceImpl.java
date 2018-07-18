@@ -352,7 +352,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getFactory().getEnvironment().getNoClasspath()) {
 			// should not be thrown in 'noClasspath' environment (#775)
 			Launcher.LOGGER.warn(msg);
-			return;
 		} else {
 			throw cnfe;
 		}

@@ -169,7 +169,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		reportProblems(factory.getEnvironment());
 		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
-		return probs.size() == 0;
+		return probs.isEmpty();
 	}
 
 	@Override
@@ -390,7 +390,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		// here we build the model in the template factory
 		buildModel(units);
 
-		return probs.size() == 0;
+		return probs.isEmpty();
 	}
 
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
@@ -550,7 +550,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		List<File> printedFiles = new ArrayList<>();
 		for (spoon.reflect.cu.CompilationUnit cu : factory.CompilationUnit().getMap().values()) {
 
-			if (cu.getDeclaredTypes().size() == 0) { // case of package-info
+			if (cu.getDeclaredTypes().isEmpty()) { // case of package-info
 				continue;
 			}
 
@@ -579,7 +579,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 				// the path must be given relatively to to the working directory
 				try (InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
-					FileOutputStream outFile = new FileOutputStream(file);) {
+					FileOutputStream outFile = new FileOutputStream(file)) {
 
 					IOUtils.copy(is, outFile);
 				}
@@ -616,7 +616,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	public void reportProblems(Environment environment) {
-		if (getProblems().size() > 0) {
+		if (!getProblems().isEmpty()) {
 			for (CategorizedProblem problem : getProblems()) {
 				if (problem != null) {
 					report(environment, problem);

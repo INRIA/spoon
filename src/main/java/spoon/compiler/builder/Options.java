@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Options<T extends Options<T>> {
-	final String COMMA_DELIMITER = ",";
+	static final String COMMA_DELIMITER = ",";
 	final List<String> args = new ArrayList<>();
 	final T myself;
 

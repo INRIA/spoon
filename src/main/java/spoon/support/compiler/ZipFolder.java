@@ -72,7 +72,7 @@ public class ZipFolder implements SpoonFolder {
 		// Indexing content
 		if (files == null) {
 			files = new ArrayList<>();
-			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));) {
+			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
 					// deflate in buffer
@@ -80,7 +80,7 @@ public class ZipFolder implements SpoonFolder {
 					ByteArrayOutputStream output = new ByteArrayOutputStream(
 							buffer);
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
@@ -169,7 +169,7 @@ public class ZipFolder implements SpoonFolder {
 
 	/** physically extracts on disk all files of this zip file in the destinationDir `destDir` */
 	public void extract(File destDir) {
-		try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));) {
+		try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 			ZipEntry entry;
 			while ((entry = zipInput.getNextEntry()) != null) {
 				File f = new File(destDir + File.separator + entry.getName());
@@ -182,9 +182,9 @@ public class ZipFolder implements SpoonFolder {
 				// Force parent directory creation, sometimes directory was not yet handled
 				f.getParentFile().mkdirs();
 				// in the zip entry iteration
-				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f));) {
+				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f))) {
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}

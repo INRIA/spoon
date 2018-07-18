@@ -120,6 +120,7 @@ public class AstCheckerTest {
 					"CtElementImpl#setPositions",
 					"CtElementImpl#setDocComment",
 					"CtElementImpl#setParent",
+					"CtElementImpl#setAllMetadata",
 					"CtElementImpl#setValueByRole",
 					"CtTypeParameterReferenceImpl#addBound",
 					"CtTypeParameterReferenceImpl#removeBound",
@@ -128,7 +129,8 @@ public class AstCheckerTest {
 					"CtModuleImpl#addExportedPackage",
 					"CtModuleImpl#addOpenedPackage",
 					"CtModuleImpl#addRequiredModule",
-					"CtModuleImpl#addProvidedService"
+					"CtModuleImpl#addProvidedService",
+					"CtArrayTypeReferenceImpl#setSimpleName"
 			);
 		}
 

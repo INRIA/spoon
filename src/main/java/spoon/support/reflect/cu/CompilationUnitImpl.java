@@ -204,7 +204,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	public String getOriginalSourceCode() {
 
 		if (originalSourceCode == null) {
-			try (FileInputStream s = new FileInputStream(getFile());) {
+			try (FileInputStream s = new FileInputStream(getFile())) {
 				byte[] elementBytes = new byte[s.available()];
 				s.read(elementBytes);
 				originalSourceCode = new String(elementBytes, this.getFactory().getEnvironment().getEncoding());

@@ -14,45 +14,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor;
-
-import spoon.reflect.declaration.CtElement;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
+package spoon.reflect.cu;
 
 /**
- * This class defines a scanner that maintains a scanning stack for contextual
- * awareness.
+ * This interface represents an element which knows it's position in a source file.
  */
-public class CtDequeScanner extends CtScanner {
-	/**
-	 * Default constructor.
-	 */
-	public CtDequeScanner() {
-	}
-
-	/**
-	 * The stack of elements.
-	 */
-	protected Deque<CtElement> elementsDeque = new ArrayDeque<>();
-
-	/**
-	 * Pops the element.
-	 */
-	protected void exit(CtElement e) {
-		CtElement ret = elementsDeque.pop();
-		if (ret != e) {
-			throw new RuntimeException("Unconsitant Stack");
-		}
-		super.exit(e);
-	}
-
-	/**
-	 * Pushes the element.
-	 */
-	protected void enter(CtElement e) {
-		elementsDeque.push(e);
-		super.enter(e);
-	}
+public interface SourcePositionHolder {
+	SourcePosition getPosition();
 }

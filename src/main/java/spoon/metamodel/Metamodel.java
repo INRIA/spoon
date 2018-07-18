@@ -477,6 +477,7 @@ public class Metamodel {
 			"java.lang.Cloneable",
 			"java.lang.Object",
 			"spoon.processing.FactoryAccessor",
+			"spoon.reflect.cu.SourcePositionHolder",
 			"spoon.reflect.visitor.CtVisitable",
 			"spoon.reflect.visitor.chain.CtQueryable",
 			"spoon.template.TemplateParameter",

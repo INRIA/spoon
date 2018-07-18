@@ -110,12 +110,12 @@ public class JDTTreeBuilderHelper {
 	 * @return Qualified name.
 	 */
 	static String createQualifiedTypeName(char[][] typeName) {
-		String s = "";
+		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < typeName.length - 1; i++) {
-			s += CharOperation.charToString(typeName[i]) + ".";
+			s.append(CharOperation.charToString(typeName[i])).append(".");
 		}
-		s += CharOperation.charToString(typeName[typeName.length - 1]);
-		return s;
+		s.append(CharOperation.charToString(typeName[typeName.length - 1]));
+		return s.toString();
 	}
 
 	/**

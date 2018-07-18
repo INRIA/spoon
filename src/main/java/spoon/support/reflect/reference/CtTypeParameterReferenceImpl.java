@@ -79,8 +79,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().setBounds(bounds);
 		} else if (bounds.size() > 1) {
-			final List<CtTypeReference<?>> refs = new ArrayList<>();
-			refs.addAll(bounds);
+			final List<CtTypeReference<?>> refs = new ArrayList<>(bounds);
 			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
 		} else {
 			setBoundingType(bounds.get(0));

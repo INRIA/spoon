@@ -189,7 +189,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public String getDocComment() {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
-				StringBuffer result = new StringBuffer();
+				StringBuilder result = new StringBuilder();
 				result.append(ctComment.getContent() + System.lineSeparator());
 				for (CtJavaDocTag tag: ((CtJavaDoc) ctComment).getTags()) {
 					result.append(tag.toString()); // the tag already contains a new line
@@ -470,6 +470,21 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
+	public <E extends CtElement> E setAllMetadata(Map<String, Object> metadata) {
+		if (metadata == null || metadata.isEmpty()) {
+			this.metadata = null;
+			return (E) this;
+		}
+		if (this.metadata == null) {
+			this.metadata = new HashMap<>();
+		} else {
+			this.metadata.clear();
+		}
+		this.metadata.putAll(metadata);
+		return (E) this;
+	}
+
+	@Override
 	public <E extends CtElement> E putMetadata(String key, Object val) {
 		if (metadata == null) {
 			metadata = new HashMap<>();
@@ -484,6 +499,14 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			return null;
 		}
 		return metadata.get(key);
+	}
+
+	@Override
+	public Map<String, Object> getAllMetadata() {
+		if (this.metadata == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(this.metadata);
 	}
 
 	@Override

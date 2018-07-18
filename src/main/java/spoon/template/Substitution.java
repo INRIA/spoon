@@ -612,7 +612,7 @@ public abstract class Substitution {
 	 */
 	public static void redirectTypeReferences(CtElement element, CtTypeReference<?> source, CtTypeReference<?> target) {
 
-		List<CtTypeReference<?>> refs = Query.getReferences(element, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class));
+		List<CtTypeReference<?>> refs = Query.getReferences(element, new ReferenceTypeFilter<>(CtTypeReference.class));
 
 		String srcName = source.getQualifiedName();
 		String targetName = target.getSimpleName();

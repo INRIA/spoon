@@ -82,8 +82,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	private Map<String, CtExpression> elementValues = new TreeMap() {
 		@Override
 		public Set<Entry<String, CtExpression>> entrySet() {
-			Set<Entry<String, CtExpression>> result = new TreeSet<Entry<String, CtExpression>>(new Comparator<Entry<String, CtExpression>>() {
+			Set<Entry<String, CtExpression>> result = new TreeSet<>(new Comparator<Entry<String, CtExpression>>() {
 				final CtLineElementComparator comp = new CtLineElementComparator();
+
 				@Override
 				public int compare(Entry<String, CtExpression> o1, Entry<String, CtExpression> o2) {
 					return comp.compare(o1.getValue(), o2.getValue());
@@ -509,7 +510,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				this.annotation = annotation;
 			}
 
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+			public Object invoke(Object proxy, Method method, Object[] args) {
 				String fieldname = method.getName();
 				if ("toString".equals(fieldname)) {
 					return CtAnnotationImpl.this.toString();
