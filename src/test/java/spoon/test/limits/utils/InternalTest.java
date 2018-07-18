@@ -19,8 +19,7 @@ public class InternalTest {
 		CtClass<?> type = build("spoon.test.limits.utils.testclasses",
 				"ContainInternalClass");
 		assertEquals("ContainInternalClass", type.getSimpleName());
-		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(
-				CtClass.class));
+		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(CtClass.class));
 		assertEquals(4, classes.size());
 		CtClass<?> c1 = classes.get(1);
 		assertEquals("InternalClass", c1.getSimpleName());
@@ -48,13 +47,10 @@ public class InternalTest {
 	public void testStaticFinalFieldInAnonymousClass() throws Exception {
 		CtClass<?> type = build("spoon.test.limits.utils.testclasses",
 				"ContainInternalClass");
-		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(
-				CtClass.class));
+		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(CtClass.class));
 		CtClass<?> c3 = classes.get(3);
 		List<CtNamedElement> fields = c3
 				.getElements(new NamedElementFilter<>(CtNamedElement.class,"serialVersionUID"));
 		assertEquals(1, fields.size());
-
 	}
-
 }
