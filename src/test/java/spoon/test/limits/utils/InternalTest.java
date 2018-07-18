@@ -16,8 +16,7 @@ public class InternalTest {
 
 	@Test
 	public void testInternalClasses() throws Exception {
-		CtClass<?> type = build("spoon.test.limits.utils.testclasses",
-				"ContainInternalClass");
+		CtClass<?> type = build("spoon.test.limits.utils.testclasses", "ContainInternalClass");
 		assertEquals("ContainInternalClass", type.getSimpleName());
 		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(CtClass.class));
 		assertEquals(4, classes.size());
@@ -26,27 +25,20 @@ public class InternalTest {
 		assertEquals(
 				"spoon.test.limits.utils.testclasses.ContainInternalClass$InternalClass",
 				c1.getQualifiedName());
-		assertEquals("spoon.test.limits.utils.testclasses", c1.getPackage()
-				.getQualifiedName());
-		assertEquals(
-				ContainInternalClass.InternalClass.class,
-				c1.getActualClass());
+		assertEquals("spoon.test.limits.utils.testclasses", c1.getPackage().getQualifiedName());
+		assertEquals(ContainInternalClass.InternalClass.class, c1.getActualClass());
 
 		CtClass<?> c2 = classes.get(2);
 		assertEquals("InsideInternalClass", c2.getSimpleName());
 		assertEquals(
 				"spoon.test.limits.utils.testclasses.ContainInternalClass$InternalClass$InsideInternalClass",
 				c2.getQualifiedName());
-		assertEquals(
-				ContainInternalClass.InternalClass.InsideInternalClass.class,
-				c2.getActualClass());
-
+		assertEquals(ContainInternalClass.InternalClass.InsideInternalClass.class, c2.getActualClass());
 	}
 
 	@Test
 	public void testStaticFinalFieldInAnonymousClass() throws Exception {
-		CtClass<?> type = build("spoon.test.limits.utils.testclasses",
-				"ContainInternalClass");
+		CtClass<?> type = build("spoon.test.limits.utils.testclasses", "ContainInternalClass");
 		List<CtClass<?>> classes = type.getElements(new TypeFilter<CtClass<?>>(CtClass.class));
 		CtClass<?> c3 = classes.get(3);
 		List<CtNamedElement> fields = c3
