@@ -141,8 +141,8 @@ public class NewClassTest {
 			}
 		});
 		assertEquals(13, elements.size());
-		assertEquals(Foo2.class.getCanonicalName() + "$12", elements.get(11).getAnonymousClass().getQualifiedName());
-		assertEquals(Foo2.class.getCanonicalName() + "$12$1", elements.get(12).getAnonymousClass().getQualifiedName());
+		assertEquals(Foo2.class.getCanonicalName() + "$" + CtTypeReference.ANONYMOUS_CLASS_PREFIX + "12", elements.get(11).getAnonymousClass().getQualifiedName());
+		assertEquals(Foo2.class.getCanonicalName() + "$" + CtTypeReference.ANONYMOUS_CLASS_PREFIX + "12$" + CtTypeReference.ANONYMOUS_CLASS_PREFIX + "1", elements.get(12).getAnonymousClass().getQualifiedName());
 	}
 
 	@Test
@@ -165,8 +165,8 @@ public class NewClassTest {
 		assertEquals("org.apache.lucene.store.Lock$With", anonymousClass.getSuperclass().getQualifiedName());
 		assertEquals("Lock", anonymousClass.getSuperclass().getDeclaringType().getSimpleName());
 		assertEquals("org.apache.lucene.store.Lock.With", anonymousClass.getSuperclass().toString());
-		assertEquals("1", anonymousClass.getSimpleName());
-		assertEquals("2", secondNewClass.getAnonymousClass().getSimpleName());
+		assertEquals(CtTypeReference.ANONYMOUS_CLASS_PREFIX + "1", anonymousClass.getSimpleName());
+		assertEquals(CtTypeReference.ANONYMOUS_CLASS_PREFIX + "2", secondNewClass.getAnonymousClass().getSimpleName());
 		assertEquals(1, anonymousClass.getMethods().size());
 
 		canBeBuilt("./target/new-class", 8, true);

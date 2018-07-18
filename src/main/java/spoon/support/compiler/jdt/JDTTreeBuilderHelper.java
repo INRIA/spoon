@@ -75,6 +75,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +100,15 @@ public class JDTTreeBuilderHelper {
 	 */
 	static String computeAnonymousName(char[] anonymousQualifiedName) {
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return CtTypeReference.ANONYMOUS_CLASS_PREFIX + poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
+		String result = poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
+
+		try {
+			// it's anonymous only if the name contains only a number
+			Integer.parseInt(result);
+			return CtTypeReference.ANONYMOUS_CLASS_PREFIX + result;
+		} catch (NumberFormatException e) {
+			return result;
+		}
 	}
 
 	/**
