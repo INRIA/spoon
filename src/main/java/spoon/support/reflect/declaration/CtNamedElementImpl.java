@@ -47,7 +47,7 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		if (simpleName == null) {
 			simpleName = "";
 		}
-		IdentifierHelper.checkIdentifier(simpleName, false);
+		IdentifierHelper.checkIdentifier(simpleName, IdentifierHelper.IdentifierType.STRUCTURAL_ELEMENTS);
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simpleName = simpleName;

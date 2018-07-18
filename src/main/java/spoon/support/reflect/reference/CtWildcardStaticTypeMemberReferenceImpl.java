@@ -34,7 +34,7 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl
 	@Override
 	public <T extends CtReference> T setSimpleName(String newName) {
 		if (!newName.endsWith(".*")) {
-			IdentifierHelper.checkIdentifier(newName, false);
+			IdentifierHelper.checkIdentifier(newName, IdentifierHelper.IdentifierType.OTHER_REFERENCE);
 			newName += ".*";
 		}
 

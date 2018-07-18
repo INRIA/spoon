@@ -71,7 +71,7 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 		if (simplename == null) {
 			simplename = "";
 		}
-		IdentifierHelper.checkIdentifier(simplename, true);
+		IdentifierHelper.checkIdentifier(simplename, IdentifierHelper.IdentifierType.PACKAGE_REFERENCE);
 		return super.setSimpleNameNoCheck(simplename);
 	}
 }

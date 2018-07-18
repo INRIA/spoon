@@ -17,12 +17,19 @@
 package spoon.support.util;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class IdentifierHelper {
+    public enum IdentifierType {
+        STRUCTURAL_ELEMENTS,
+        PACKAGE_REFERENCE,
+        OTHER_REFERENCE
+    };
+
     private static String[] keywords = {
             "abstract", "continue", "for", "new", "switch",
             "assert", "default", "if", "package", "synchronized",
@@ -39,9 +46,12 @@ public class IdentifierHelper {
             "double", "byte", "char", "short"
     };
 
-    private static String[] identifierExceptions = {
+    private static String[] structuralIdentifierExceptions = {
             CtPackage.TOP_LEVEL_PACKAGE_NAME,
-            CtModule.TOP_LEVEL_MODULE_NAME,
+            CtModule.TOP_LEVEL_MODULE_NAME
+    };
+
+    private static String[] otherReferenceIdentifierExceptions = {
             CtExecutableReference.CONSTRUCTOR_NAME,
             CtExecutableReference.UNKNOWN_TYPE,
             CtTypeReference.NULL_TYPE_NAME,
@@ -60,9 +70,30 @@ public class IdentifierHelper {
      * This method checks that the given identifier respects the definition
      * given in the JLS (see: https://docs.oracle.com/javase/specs/jls/se9/html/jls-3.html#jls-3.8
      *
-     * @param withDot : can be used in case of checking a fully qualified identifier. Then dots are also authorized.
+     * @param identifierType: allow to use different exception strategy depending on the type of element to check:
+     *                      if it's a {@link IdentifierType#STRUCTURAL_ELEMENTS} then all JLS rules must be respected, excepted for top level package and module names and anonymous types which are using figure for their name (see {@link CtClass#isAnonymous()});
+     *                      if it's a {@link IdentifierType#PACKAGE_REFERENCE} then dots are also accepted;
+     *                      if it's a {@link IdentifierType#OTHER_REFERENCE} then primitive types names, numbers and few other exceptions are accepted.
      */
-    public static void checkIdentifier(String identifier, boolean withDot) {
+    public static void checkIdentifier(String identifier, IdentifierType identifierType) {
+        String[] identifierExceptions;
+
+        // we check first against exception based on the identifier type
+        switch (identifierType) {
+            case STRUCTURAL_ELEMENTS:
+                identifierExceptions = structuralIdentifierExceptions;
+                break;
+
+            case OTHER_REFERENCE:
+                identifierExceptions = otherReferenceIdentifierExceptions;
+                break;
+
+            default:
+                identifierExceptions = new String[0];
+                break;
+        }
+
+        // in case of exception: it's accepted directly
         for (String identifierException : identifierExceptions) {
             if (identifier.equals(identifierException)) {
                 return;
@@ -71,15 +102,30 @@ public class IdentifierHelper {
 
         boolean isRight = true;
 
+        // outside exception, java keywords should never be used as identifier
         for (int i = 0; isRight && i < keywords.length; i++) {
             isRight = !identifier.equals(keywords[i]);
         }
 
+        // in case of an anonymous type or type reference, the name can be a simple figure:
+        // in that case only we accept it directly
+        if (identifierType == IdentifierType.STRUCTURAL_ELEMENTS || identifierType == IdentifierType.OTHER_REFERENCE) {
+            try {
+                Integer.parseInt(identifier);
+                return;
+            } catch (NumberFormatException e) {
+                // do nothing
+            }
+        }
+
+        // for other cases we check the name based on JLS rules
         for (int i = 0; isRight && i < identifier.length(); i++) {
             if (i == 0) {
                 isRight = Character.isJavaIdentifierStart(identifier.charAt(i));
             } else {
-                if (withDot) {
+
+                // if it's a package reference, we allow dots in the name
+                if (identifierType == IdentifierType.PACKAGE_REFERENCE) {
                     isRight = Character.isJavaIdentifierPart(identifier.charAt(i)) || identifier.charAt(i) == '.';
                 } else {
                     isRight = Character.isJavaIdentifierPart(identifier.charAt(i));

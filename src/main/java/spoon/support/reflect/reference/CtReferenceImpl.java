@@ -57,7 +57,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		if (simplename == null) {
 			simplename = "";
 		}
-		IdentifierHelper.checkIdentifier(simplename, false);
+		IdentifierHelper.checkIdentifier(simplename, IdentifierHelper.IdentifierType.OTHER_REFERENCE);
 		return this.setSimpleNameNoCheck(simplename);
 	}
 
