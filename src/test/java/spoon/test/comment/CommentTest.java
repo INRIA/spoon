@@ -982,7 +982,7 @@ public class CommentTest {
 		assertEquals(Arrays.asList("// c1"), getCommentStrings(ifStatement));
 		assertEquals(Arrays.asList("// c2 belongs to toto"), getCommentStrings(((CtBlock) ifStatement.getThenStatement()).getStatement(0)));
 		CtIf if2Statement = (CtIf) ((CtBlock) ifStatement.getElseStatement()).getStatement(0);
-		assertEquals("this.getClass()", ((CtBlock) if2Statement.getThenStatement()).getStatement(0).toString());
+		assertEquals("// c3 belongs to getClass\nthis.getClass()", ((CtBlock) if2Statement.getThenStatement()).getStatement(0).toString());
 		assertEquals(Arrays.asList("// c3 belongs to getClass"), getCommentStrings(((CtBlock) if2Statement.getThenStatement()).getStatement(0)));
 
 		assertEquals(Arrays.asList("// c4 comment of return"), getCommentStrings(statements.get(1)));
