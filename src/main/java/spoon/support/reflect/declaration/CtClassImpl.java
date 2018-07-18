@@ -187,12 +187,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	public boolean isAnonymous() {
-		try {
-			Integer.parseInt(getSimpleName());
-		} catch (NumberFormatException e) {
-			return false;
-		}
-		return true;
+		return getSimpleName().startsWith(CtTypeReference.ANONYMOUS_CLASS_PREFIX);
 	}
 
 	@Override

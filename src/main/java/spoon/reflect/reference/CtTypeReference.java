@@ -42,6 +42,8 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 */
 	String NULL_TYPE_NAME = "<nulltype>";
 
+	String ANONYMOUS_CLASS_PREFIX = "<anonymous>";
+
 	/**
 	 * Returns the simple (unqualified) name of this element.
 	 * Following the compilation convention, if the type is a local type,
