@@ -81,10 +81,11 @@ public class CtQueryImpl implements CtQuery {
 			this.inputs = new ArrayList<>();
 		}
 		if (input != null) {
-			this.inputs.addAll(Arrays.asList(input));
+			Collections.addAll(this.inputs, input);
 		}
 		return this;
 	}
+
 	public CtQueryImpl addInput(Iterable<?> input) {
 		if (this.inputs == null) {
 			this.inputs = new ArrayList<>();
@@ -327,6 +328,7 @@ public class CtQueryImpl implements CtQuery {
 		}
 
 		protected abstract Object _accept(Object input);
+
 		protected void handleResult(Object result, Object input) {
 		}
 
@@ -353,6 +355,7 @@ public class CtQueryImpl implements CtQuery {
 				return failurePolicy == QueryFailurePolicy.FAIL;
 			}
 		}
+
 		private void setLocalFailurePolicy(QueryFailurePolicy localFailurePolicy) {
 			this.localFailurePolicy = localFailurePolicy;
 		}
