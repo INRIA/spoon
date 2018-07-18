@@ -24,6 +24,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class IdentifierHelper {
+    public static final String CLASS_SUFFIX = "class";
+
     public enum IdentifierType {
         STRUCTURAL_ELEMENTS,
         PACKAGE_REFERENCE,
@@ -63,7 +65,8 @@ public class IdentifierHelper {
             Double.TYPE.getName(),
             Byte.TYPE.getName(),
             Character.TYPE.getName(),
-            Short.TYPE.getName()
+            Short.TYPE.getName(),
+            CLASS_SUFFIX
     };
 
     /**

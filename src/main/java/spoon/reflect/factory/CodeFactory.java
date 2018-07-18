@@ -57,6 +57,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.support.util.IdentifierHelper;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class CodeFactory extends SubFactory {
 		CtTypeAccess<T> typeAccess = factory.Code().createTypeAccess(type);
 
 		CtFieldReference<Class<T>> fieldReference = factory.Core().createFieldReference();
-		fieldReference.setSimpleName("class");
+		fieldReference.setSimpleName(IdentifierHelper.CLASS_SUFFIX);
 		fieldReference.setType(classType);
 		fieldReference.setDeclaringType(type);
 
