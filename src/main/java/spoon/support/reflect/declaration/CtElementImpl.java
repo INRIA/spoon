@@ -82,6 +82,7 @@ import static spoon.reflect.path.CtRole.COMMENT;
 import static spoon.reflect.path.CtRole.IS_IMPLICIT;
 import static spoon.reflect.path.CtRole.POSITION;
 
+
 /**
  * Contains the default implementation of most CtElement methods.
  *
@@ -105,7 +106,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
 	}
 
-	Factory factory;
+	transient Factory factory;
 
 	protected CtElement parent;
 
@@ -596,3 +597,4 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return this::descendantIterator;
 	}
 }
+
