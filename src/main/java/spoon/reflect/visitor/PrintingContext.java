@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
@@ -26,17 +27,22 @@ import java.util.Deque;
 
 public class PrintingContext {
 
-	private long NO_TYPE_DECL 			= 1 << 0;
+	private long NEXT_FOR_VARIABLE 			= 1 << 0;
 	private long IGNORE_GENERICS 		= 1 << 1;
 	private long SKIP_ARRAY 			= 1 << 2;
 	private long IGNORE_STATIC_ACCESS   = 1 << 3;
 	private long IGNORE_ENCLOSING_CLASS = 1 << 4;
 	private long FORCE_WILDCARD_GENERICS = 1 << 5;
+	private long FIRST_FOR_VARIABLE 	= 1 << 6;
 
 	private long state;
+	private CtStatement statement;
 
-	public boolean noTypeDecl() {
-		return (state & NO_TYPE_DECL) != 0L;
+	public boolean isFirstForVariable() {
+		return (state & FIRST_FOR_VARIABLE) != 0L;
+	}
+	public boolean isNextForVariable() {
+		return (state & NEXT_FOR_VARIABLE) != 0L;
 	}
 	public boolean ignoreGenerics() {
 		return (state & IGNORE_GENERICS) != 0L;
@@ -53,20 +59,30 @@ public class PrintingContext {
 	public boolean forceWildcardGenerics() {
 		return (state & FORCE_WILDCARD_GENERICS) != 0L;
 	}
+	public boolean isStatement(CtStatement stmt) {
+		return this.statement == stmt;
+	}
 
 	public class Writable implements AutoCloseable {
 		private long oldState;
+		private CtStatement oldStatement;
 
 		protected Writable() {
 			oldState = state;
+			oldStatement = statement;
 		}
 		@Override
 		public void close() {
 			state = oldState;
+			statement = oldStatement;
 		}
 
-		public <T extends Writable> T noTypeDecl(boolean v) {
-			setState(NO_TYPE_DECL, v);
+		public <T extends Writable> T isFirstForVariable(boolean v) {
+			setState(FIRST_FOR_VARIABLE, v);
+			return (T) this;
+		}
+		public <T extends Writable> T isNextForVariable(boolean v) {
+			setState(NEXT_FOR_VARIABLE, v);
 			return (T) this;
 		}
 		public <T extends Writable> T ignoreGenerics(boolean v) {
@@ -87,6 +103,10 @@ public class PrintingContext {
 		}
 		public <T extends Writable> T forceWildcardGenerics(boolean v) {
 			setState(FORCE_WILDCARD_GENERICS, v);
+			return (T) this;
+		}
+		public <T extends Writable> T setStatement(CtStatement stmt) {
+			statement = stmt;
 			return (T) this;
 		}
 		private void setState(long mask, boolean v) {
