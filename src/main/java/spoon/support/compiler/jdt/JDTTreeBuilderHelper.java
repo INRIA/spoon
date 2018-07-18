@@ -651,7 +651,12 @@ public class JDTTreeBuilderHelper {
 				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
 			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
-				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+				if (typeDeclaration.name.length == 0) {
+					type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
+				} else {
+					type.setSimpleName(new String(typeDeclaration.name));
+				}
+
 			} else {
 				type.setSimpleName(new String(typeDeclaration.name));
 			}

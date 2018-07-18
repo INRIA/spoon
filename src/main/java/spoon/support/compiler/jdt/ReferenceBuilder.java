@@ -847,7 +847,12 @@ public class ReferenceBuilder {
 				if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				} else if (binding.enclosingMethod() != null) {
-					ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
+					if (((LocalTypeBinding) binding).sourceName.length == 0) {
+						ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
+					} else {
+						ref.setSimpleName(new String(((LocalTypeBinding) binding).sourceName));
+					}
+
 					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				}
 			}
