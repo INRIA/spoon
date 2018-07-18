@@ -17,6 +17,7 @@
 package spoon.support.reflect;
 
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.ModifierKind;
 
 import java.io.Serializable;
@@ -25,7 +26,7 @@ import java.io.Serializable;
  * When a modifier is "implicit", it does not appear in the source code (eg public for interface methods)
  * ModifierKind in kept for sake of full backward-compatibility.
  */
-public class CtExtendedModifier implements Serializable {
+public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 	private boolean implicit;
 	private ModifierKind kind;
 	private SourcePosition position;
@@ -55,6 +56,7 @@ public class CtExtendedModifier implements Serializable {
 		this.kind = kind;
 	}
 
+	@Override
 	public SourcePosition getPosition() {
 		if (position == null) {
 			return SourcePosition.NOPOSITION;

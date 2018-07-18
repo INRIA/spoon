@@ -17,6 +17,7 @@
 package spoon.pattern;
 
 import spoon.SpoonException;
+import spoon.metamodel.Metamodel;
 import spoon.pattern.internal.ValueConvertor;
 import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.node.MapEntryNode;
@@ -691,6 +692,10 @@ public class PatternParameterConfigurator {
 		private void visitStringAttribute(CtElement element) {
 			for (RoleHandler roleHandler : stringAttributeRoleHandlers) {
 				if (roleHandler.getTargetType().isInstance(element)) {
+					if (Metamodel.getInstance().getConcept(element.getClass()).getProperty(roleHandler.getRole()).isUnsettable()) {
+						//do not visit unsettable string attributes, which cannot be modified by pattern
+						continue;
+					}
 					Object value = roleHandler.getValue(element);
 					if (value instanceof String) {
 						visitStringAttribute(roleHandler, element, (String) value);
