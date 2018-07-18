@@ -30,6 +30,7 @@ import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,7 +48,7 @@ import static spoon.reflect.path.CtRole.POSITION;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable {
+public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable, Serializable {
 
 	/**
 	 * Searches for an annotation of the given class that annotates the
