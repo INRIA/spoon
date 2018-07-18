@@ -20,11 +20,13 @@ import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class IdentifierHelper {
     public static final String CLASS_SUFFIX = "class";
+    public static final String NULL_TYPE_NAME = "null";
 
     public enum IdentifierType {
         STRUCTURAL_ELEMENTS,
@@ -50,7 +52,8 @@ public class IdentifierHelper {
 
     private static String[] structuralIdentifierExceptions = {
             CtPackage.TOP_LEVEL_PACKAGE_NAME,
-            CtModule.TOP_LEVEL_MODULE_NAME
+            CtModule.TOP_LEVEL_MODULE_NAME,
+            CtType.NAME_UNKNOWN
     };
 
     private static String[] otherReferenceIdentifierExceptions = {
@@ -66,7 +69,8 @@ public class IdentifierHelper {
             Byte.TYPE.getName(),
             Character.TYPE.getName(),
             Short.TYPE.getName(),
-            CLASS_SUFFIX
+            CLASS_SUFFIX,
+            NULL_TYPE_NAME
     };
 
     /**
@@ -128,7 +132,7 @@ public class IdentifierHelper {
             } else {
 
                 // if it's a package reference, we allow dots in the name
-                if (identifierType == IdentifierType.PACKAGE_REFERENCE) {
+                if (identifierType == IdentifierType.PACKAGE_REFERENCE || identifierType == IdentifierType.OTHER_REFERENCE) {
                     isRight = Character.isJavaIdentifierPart(identifier.charAt(i)) || identifier.charAt(i) == '.';
                 } else {
                     isRight = Character.isJavaIdentifierPart(identifier.charAt(i));
