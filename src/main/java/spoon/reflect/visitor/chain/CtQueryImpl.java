@@ -16,14 +16,6 @@
  */
 package spoon.reflect.visitor.chain;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -31,6 +23,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
@@ -80,12 +80,11 @@ public class CtQueryImpl implements CtQuery {
 			this.inputs = new ArrayList<>();
 		}
 		if (input != null) {
-			for (Object in : input) {
-				this.inputs.add(in);
-			}
+			Collections.addAll(this.inputs, input);
 		}
 		return this;
 	}
+
 	public CtQueryImpl addInput(Iterable<?> input) {
 		if (this.inputs == null) {
 			this.inputs = new ArrayList<>();
@@ -328,6 +327,7 @@ public class CtQueryImpl implements CtQuery {
 		}
 
 		protected abstract Object _accept(Object input);
+
 		protected void handleResult(Object result, Object input) {
 		}
 
@@ -354,6 +354,7 @@ public class CtQueryImpl implements CtQuery {
 				return failurePolicy == QueryFailurePolicy.FAIL;
 			}
 		}
+
 		private void setLocalFailurePolicy(QueryFailurePolicy localFailurePolicy) {
 			this.localFailurePolicy = localFailurePolicy;
 		}
@@ -596,6 +597,7 @@ public class CtQueryImpl implements CtQuery {
 			throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
 		}
 	}
+
 	private static Class<?> detectTargetClassFromCCE(ClassCastException e, Object input) {
 		//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
 		String message = e.getMessage();
