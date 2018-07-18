@@ -170,10 +170,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static ListOfNodes listOfNodesToNode(List<? extends RootNode> nodes) {
-		//The attribute is matched different if there is List of one ParameterizedNode and when there is one ParameterizedNode
-//		if (nodes.size() == 1) {
-//			return nodes.get(0);
-//		}
 		return new ListOfNodes((List) nodes);
 	}
 
