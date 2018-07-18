@@ -572,32 +572,6 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
-	 * CodeElement element identified by `simpleName`
-	 * @param simpleName the name of the element or reference
-	 * @return {@link PatternParameterConfigurator} to support fluent API
-	 */
-//	public PatternParameterConfigurator codeElementBySimpleName(String simpleName) {
-//		ParameterInfo pi = getCurrentParameter();
-//		pattern.getModel().filterChildren((CtNamedElement named) -> simpleName.equals(named.getSimpleName()))
-//			.forEach((CtNamedElement named) -> {
-//				if (named instanceof CtCodeElement) {
-//					addSubstitutionRequest(pi, named);
-//				}
-//			});
-//		pattern.getModel().filterChildren((CtReference ref) -> simpleName.equals(ref.getSimpleName()))
-//		.forEach((CtReference ref) -> {
-//			if (ref instanceof CtTypeReference<?>) {
-//				return;
-//			}
-//			CtCodeElement codeElement = ref.getParent(CtCodeElement.class);
-//			if (codeElement != null) {
-//				addSubstitutionRequest(pi, codeElement);
-//			}
-//		});
-//		return this;
-//	}
-
-	/**
 	 * All spoon model string attributes whose value is equal to `stringMarker`
 	 * are subject for substitution by current parameter
 	 * @param stringMarker a string value which has to be substituted
