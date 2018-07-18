@@ -27,6 +27,7 @@ import spoon.reflect.reference.CtTypeReference;
 public class IdentifierHelper {
     public static final String CLASS_SUFFIX = "class";
     public static final String NULL_TYPE_NAME = "null";
+    public static final String THIS_ARGUMENT = "this";
 
     public enum IdentifierType {
         STRUCTURAL_ELEMENTS,
@@ -53,7 +54,8 @@ public class IdentifierHelper {
     private static String[] structuralIdentifierExceptions = {
             CtPackage.TOP_LEVEL_PACKAGE_NAME,
             CtModule.TOP_LEVEL_MODULE_NAME,
-            CtType.NAME_UNKNOWN
+            CtType.NAME_UNKNOWN,
+            THIS_ARGUMENT
     };
 
     private static String[] otherReferenceIdentifierExceptions = {

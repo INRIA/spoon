@@ -624,7 +624,19 @@ public class ReferenceBuilder {
 			}
 			if (m.find()) {
 				main.setSimpleName(m.group(1));
-				final String[] split = m.group(2).split(",");
+				String arguments = m.group(2);
+
+				final String[] split;
+
+				// we have to be careful when splitting arguments:
+				// we can be on a case like: arguments = Foo<A,B,C>
+				// then splitting directly will led us to creating an argument Foo<A
+				if (!arguments.contains("<") || arguments.indexOf(",") < arguments.indexOf("<")) {
+					split = m.group(2).split(",");
+				} else {
+					split = new String[] {arguments};
+				}
+
 				for (String parameter : split) {
 					((CtTypeReference) main).addActualTypeArgument(getTypeParameterReference(parameter.trim()));
 				}
