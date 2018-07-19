@@ -62,6 +62,7 @@ public class TobeMatched {
 	}
 
 	private TobeMatched(ImmutableMap parameters, Object target) {
+		//It is correct to put whole container as single value in cases when ParameterNode matches agains whole attribute value
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
 		this.targets = Collections.singletonList(target);
