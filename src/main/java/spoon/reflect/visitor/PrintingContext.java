@@ -27,7 +27,7 @@ import java.util.Deque;
 
 public class PrintingContext {
 
-	private long NEXT_FOR_VARIABLE 			= 1 << 0;
+	private long NEXT_FOR_VARIABLE 		= 1 << 0;
 	private long IGNORE_GENERICS 		= 1 << 1;
 	private long SKIP_ARRAY 			= 1 << 2;
 	private long IGNORE_STATIC_ACCESS   = 1 << 3;
@@ -38,9 +38,19 @@ public class PrintingContext {
 	private long state;
 	private CtStatement statement;
 
+	/**
+	 * @return true if we are printing first variable declaration of CtFor statement
+	 */
 	public boolean isFirstForVariable() {
 		return (state & FIRST_FOR_VARIABLE) != 0L;
 	}
+	@Deprecated
+	public boolean noTypeDecl() {
+		return isNextForVariable();
+	}
+	/**
+	 * @return true if we are printing second or next variable declaration of CtFor statement
+	 */
 	public boolean isNextForVariable() {
 		return (state & NEXT_FOR_VARIABLE) != 0L;
 	}
@@ -59,6 +69,9 @@ public class PrintingContext {
 	public boolean forceWildcardGenerics() {
 		return (state & FORCE_WILDCARD_GENERICS) != 0L;
 	}
+	/**
+	 * @return true if `stmt` has to be handled as statement in current printing context
+	 */
 	public boolean isStatement(CtStatement stmt) {
 		return this.statement == stmt;
 	}
@@ -77,10 +90,21 @@ public class PrintingContext {
 			statement = oldStatement;
 		}
 
+		/**
+		 * @param v use true if printing first variable declaration of CtFor statement
+		 */
 		public <T extends Writable> T isFirstForVariable(boolean v) {
 			setState(FIRST_FOR_VARIABLE, v);
 			return (T) this;
 		}
+		@Deprecated
+		public <T extends Writable> T noTypeDecl(boolean v) {
+			isFirstForVariable(v);
+			return (T) this;
+		}
+		/**
+		 * @param v use true if printing second or next variable declaration of CtFor statement
+		 */
 		public <T extends Writable> T isNextForVariable(boolean v) {
 			setState(NEXT_FOR_VARIABLE, v);
 			return (T) this;
@@ -105,6 +129,14 @@ public class PrintingContext {
 			setState(FORCE_WILDCARD_GENERICS, v);
 			return (T) this;
 		}
+		/**
+		 * There are statements (e.g. invocation), which may play role of expression too.
+		 * They have to be suffixed by semicolon depending on the printing context.
+		 * Call this method to inform printer that invocation is used as statement.
+		 *
+		 * @param stmt the instance of the actually printed statement.
+		 * Such statement will be finished by semicolon.
+		 */
 		public <T extends Writable> T setStatement(CtStatement stmt) {
 			statement = stmt;
 			return (T) this;
