@@ -34,7 +34,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class TestModule {
+public class ModuleTest {
 	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
 
 	private void checkJavaVersion() {

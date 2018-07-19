@@ -25,6 +25,5 @@ public class StringTest {
 		assertEquals(BinaryOperatorKind.PLUS, op.getKind());
 		assertTrue(op.getLeftHandOperand() instanceof CtLiteral);
 		assertTrue(op.getRightHandOperand() instanceof CtLiteral);
-
 	}
 }

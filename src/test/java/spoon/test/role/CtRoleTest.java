@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-public class TestCtRole {
+public class CtRoleTest {
     @Test
     public void testGetCtRoleByName() {
         // contract: one should be able to get CtRole based on its name (without '_' whatever the case is, or with '_' in uppercase)

@@ -66,5 +66,4 @@ public class OneCanCallSetterWithNullParameterizedTest {
 		// we invoke the setter
 		toTest.invoke(element, new Object[] { null });
 	}
-
 }

@@ -13,7 +13,7 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 
 public class JDTBuilderTest {
-	private final static String TEST_CLASSPATH = "./src/test/java/spoon/test/";
+	private static final String TEST_CLASSPATH = "./src/test/java/spoon/test/";
 
 	@Test
 	public void testJdtBuilder() throws Exception {

@@ -216,9 +216,9 @@ public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void testGoodTestClassNames() throws Exception {
-		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
-		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
-		// "**/Test*.java" and "**/*Test.java"
+		// contract: to be run by Maven surefire, all test classes must be called *Test
+		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard pattern:"
+		// "**/*Test.java"
 		// http://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/java/");
@@ -230,7 +230,7 @@ public class SpoonArchitectureEnforcerTest {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
 			}
 		})) {
-			assertTrue("naming contract violated for " + meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
+			assertTrue("naming contract violated for " + meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
 		}
 
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
