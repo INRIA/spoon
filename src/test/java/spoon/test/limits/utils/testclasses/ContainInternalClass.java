@@ -1,4 +1,4 @@
-package spoon.test.limits.utils;
+package spoon.test.limits.utils.testclasses;
 
 public class ContainInternalClass {
 
