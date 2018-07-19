@@ -274,7 +274,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected void enterCtStatement(CtStatement s) {
 		elementPrinterHelper.writeComment(s, CommentOffset.BEFORE);
 		getPrinterHelper().mapLine(s, sourceCompilationUnit);
-		elementPrinterHelper.writeAnnotations(s);
+		if (!context.isNextForVariable()) {
+			//TODO AnnotationLoopTest#testAnnotationDeclaredInForInit expects that annotations of next for variables are not printed
+			//but may be correct is that the next variables are not annotated, because they might have different annotation then first param!
+			elementPrinterHelper.writeAnnotations(s);
+		}
 		if (!context.isFirstForVariable() && !context.isNextForVariable()) {
 			if (s.getLabel() != null) {
 				printer.writeIdentifier(s.getLabel()).writeSpace().writeSeparator(":").writeSpace();
