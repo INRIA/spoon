@@ -1897,8 +1897,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
-		elementPrinterHelper.writeComment(statement);
+		enterCtStatement(statement);
 		printer.writeCodeSnippet(statement.getValue());
+		exitCtStatement(statement);
 	}
 
 	public ElementPrinterHelper getElementPrinterHelper() {
