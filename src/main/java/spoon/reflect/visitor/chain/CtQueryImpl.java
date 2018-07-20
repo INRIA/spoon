@@ -414,9 +414,6 @@ public class CtQueryImpl implements CtQuery {
 			if (indexOfCallerInStack < 0) {
 				//this is an exotic JVM, where we cannot detect type of parameter of Lambda expression
 				//Silently ignore this CCE, which was may be expected or may be problem in client's code.
-//				if (Launcher.LOGGER.isDebugEnabled()) {
-//					Launcher.LOGGER.debug("ClassCastException thrown by client's code or Query engine ...", e);
-//				}
 				return;
 			}
 			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
