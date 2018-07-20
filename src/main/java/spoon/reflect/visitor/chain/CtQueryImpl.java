@@ -585,8 +585,8 @@ public class CtQueryImpl implements CtQuery {
 			for (int i = 0; i < stack.length; i++) {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
-					Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
-					if (detectectedClass == null || CtType.class.equals(detectectedClass) == false) {
+					Class<?> detectedClass = detectTargetClassFromCCE(e, obj);
+					if (detectedClass == null || CtType.class.equals(detectedClass) == false) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;
