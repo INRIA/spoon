@@ -128,16 +128,16 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	public <T, A extends T> void visitCtAssignment(final spoon.reflect.code.CtAssignment<T, A> assignement) {
-		spoon.reflect.code.CtAssignment<T, A> aCtAssignment = assignement.getFactory().Core().createAssignment();
-		aCtAssignment.setAnnotations(this.cloneHelper.clone(assignement.getAnnotations()));
-		aCtAssignment.setType(this.cloneHelper.clone(assignement.getType()));
-		aCtAssignment.setTypeCasts(this.cloneHelper.clone(assignement.getTypeCasts()));
-		aCtAssignment.setAssigned(this.cloneHelper.clone(assignement.getAssigned()));
-		aCtAssignment.setAssignment(this.cloneHelper.clone(assignement.getAssignment()));
-		aCtAssignment.setComments(this.cloneHelper.clone(assignement.getComments()));
-		this.builder.copy(assignement, aCtAssignment);
-		this.cloneHelper.tailor(assignement, aCtAssignment);
+	public <T, A extends T> void visitCtAssignment(final spoon.reflect.code.CtAssignment<T, A> assignment) {
+		spoon.reflect.code.CtAssignment<T, A> aCtAssignment = assignment.getFactory().Core().createAssignment();
+		aCtAssignment.setAnnotations(this.cloneHelper.clone(assignment.getAnnotations()));
+		aCtAssignment.setType(this.cloneHelper.clone(assignment.getType()));
+		aCtAssignment.setTypeCasts(this.cloneHelper.clone(assignment.getTypeCasts()));
+		aCtAssignment.setAssigned(this.cloneHelper.clone(assignment.getAssigned()));
+		aCtAssignment.setAssignment(this.cloneHelper.clone(assignment.getAssignment()));
+		aCtAssignment.setComments(this.cloneHelper.clone(assignment.getComments()));
+		this.builder.copy(assignment, aCtAssignment);
+		this.cloneHelper.tailor(assignment, aCtAssignment);
 		this.other = aCtAssignment;
 	}
 
