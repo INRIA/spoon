@@ -616,7 +616,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeExtendsClause(ctClass);
 			elementPrinterHelper.writeImplementsClause(ctClass);
 		}
-		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
 		printer.writeSpace().writeSeparator("{").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		getPrinterHelper().adjustEndPosition(ctClass);
