@@ -102,15 +102,6 @@ public class TypeReferenceScanner extends CtScanner {
 		exit(reference);
 	}
 
-	//	public <T> boolean isImported(CtTypeReference<T> ref) {
-	//		if (imports.containsKey(ref.getSimpleName())) {
-	//			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
-	//			if (exist.getQualifiedName().equals(ref.getQualifiedName()))
-	//				return true;
-	//		}
-	//		return false;
-	//	}
-
 	@Override
 	public <T> void visitCtExecutableReference(
 			CtExecutableReference<T> reference) {
