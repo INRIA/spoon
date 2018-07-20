@@ -94,66 +94,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return getSimpleName().equals(CONSTRUCTOR_NAME);
 	}
 
-	//	@Override
-	//	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-	//		A annotation = super.getAnnotation(annotationType);
-	//		if (annotation != null) {
-	//			return annotation;
-	//		}
-	//		// use reflection
-	//		Class<?> c = getDeclaringType().getActualClass();
-	//		for (Method m : RtHelper.getAllMethods(c)) {
-	//			if (!getSimpleName().equals(m.getName())) {
-	//				continue;
-	//			}
-	//			if (getParameterTypes().size() != m.getParameterTypes().length) {
-	//				continue;
-	//			}
-	//			int i = 0;
-	//			for (Class<?> t : m.getParameterTypes()) {
-	//				if (t != getParameterTypes().get(i).getActualClass()) {
-	//					break;
-	//				}
-	//				i++;
-	//			}
-	//			if (i == getParameterTypes().size()) {
-	//				m.setAccessible(true);
-	//				return m.getAnnotation(annotationType);
-	//			}
-	//		}
-	//		return null;
-	//	}
-
-	//	@Override
-	//	public Annotation[] getAnnotations() {
-	//		Annotation[] annotations = super.getAnnotations();
-	//		if (annotations != null) {
-	//			return annotations;
-	//		}
-	//		// use reflection
-	//		Class<?> c = getDeclaringType().getActualClass();
-	//		for (Method m : RtHelper.getAllMethods(c)) {
-	//			if (!getSimpleName().equals(m.getName())) {
-	//				continue;
-	//			}
-	//			if (getParameterTypes().size() != m.getParameterTypes().length) {
-	//				continue;
-	//			}
-	//			int i = 0;
-	//			for (Class<?> t : m.getParameterTypes()) {
-	//				if (t != getParameterTypes().get(i).getActualClass()) {
-	//					break;
-	//				}
-	//				i++;
-	//			}
-	//			if (i == getParameterTypes().size()) {
-	//				m.setAccessible(true);
-	//				return m.getAnnotations();
-	//			}
-	//		}
-	//		return null;
-	//	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
