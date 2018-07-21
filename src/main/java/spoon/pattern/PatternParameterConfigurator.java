@@ -630,7 +630,7 @@ public class PatternParameterConfigurator {
 						}
 						return oldAttrNode;
 					});
-			}
+				}
 			}
 		}.scan(patternBuilder.getPatternModel());
 		return this;
