@@ -670,7 +670,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeOperator(":").writeSpace();
 
 		CtExpression<T> elseExpression = conditional.getElseExpression();
-		boolean isAssign = false;
+		boolean isAssign;
 		if ((isAssign = elseExpression instanceof CtAssignment)) {
 			printer.writeSeparator("(");
 		}
