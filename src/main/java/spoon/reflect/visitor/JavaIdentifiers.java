@@ -37,7 +37,7 @@ public enum JavaIdentifiers {
 	/**
 	 * Contains the Java keywords.
 	 */
-	public static Set<String> KEYWORDS;
+	public static final Set<String> KEYWORDS;
 
 	static {
 		KEYWORDS = new HashSet<>();
