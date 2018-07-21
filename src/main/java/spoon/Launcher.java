@@ -714,7 +714,6 @@ public class Launcher implements SpoonAPI {
 
 		env.reportProgressMessage("start processing...");
 
-		long t = 0;
 		long tstart = System.currentTimeMillis();
 
 		buildModel();
@@ -728,7 +727,7 @@ public class Launcher implements SpoonAPI {
 			modelBuilder.compile(InputType.CTTYPES);
 		}
 
-		t = System.currentTimeMillis();
+		long t = System.currentTimeMillis();
 
 		env.debugMessage("program spooning done in " + (t - tstart) + " ms");
 		env.reportEnd();
