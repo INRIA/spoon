@@ -90,12 +90,10 @@ public class VariableReferencesTest {
 				}
 				//check only these variables whose name is isTestFieldName(name)==true
 				Integer val = getLiteralValue(var);
-//				System.out.println("key = "+val+" - "+var.toString());
 				context.checkKey(val, var);
 			}
 			return false;
 		}).list();
-//		System.out.println("Next available key is: "+(context.maxKey+1));
 		assertTrue(context.unique.size()>0);
 		assertEquals("Only these keys were found: "+context.unique.keySet(), context.maxKey, context.unique.size());
 		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class,"maxValue")).first()), context.maxKey);
@@ -242,7 +240,6 @@ public class VariableReferencesTest {
 			});
 			//check that both scans found same number of references
 			assertEquals("Number of references to field="+value+" does not match", context.expectedCount, context.realCount);
-//			System.out.println("field="+value+" found "+context.realCount+" referenes");
 			
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -294,7 +291,6 @@ public class VariableReferencesTest {
 			} else {
 				CtExecutableReference<?> l_execRef = l_exec.getReference();
 				List<CtAbstractInvocation<?>> list = l_exec.getFactory().Package().getRootPackage().filterChildren((CtAbstractInvocation inv)->{
-//					return inv.getExecutable().equals(l_execRef);
 					return inv.getExecutable().getExecutableDeclaration()==l_exec;
 				}).list();
 				CtAbstractInvocation inv = list.get(0);
