@@ -400,9 +400,8 @@ public class Metamodel {
 				"spoon/reflect/reference",
 				"spoon/support/reflect/declaration",
 				"spoon/support/reflect/code",
-				"spoon/support/reflect/reference").forEach(path -> {
-			launcher.addInputResource(new FileSystemFolder(new File(spoonJavaSourcesDirectory, path)));
-		});
+				"spoon/support/reflect/reference").forEach(path ->
+				launcher.addInputResource(new FileSystemFolder(new File(spoonJavaSourcesDirectory, path))));
 		launcher.buildModel();
 		return launcher.getFactory();
 	}
