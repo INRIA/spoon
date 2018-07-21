@@ -106,5 +106,4 @@ public enum JavaIdentifiers {
 		}
 		return isLegalJavaIdentifier(string);
 	}
-
 }
