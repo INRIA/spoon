@@ -12,6 +12,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -26,7 +27,9 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -693,6 +696,27 @@ public class PositionTest {
 		assertEquals(start, bhsp.getNameStart());
 		assertEquals(start - 1, bhsp.getNameEnd());
 	}
+	
+	@Test
+	public void testPositionOfCtImport() throws Exception {
+		//contract: the CtImport has position
+		final CtType<?> foo = ModelUtils.buildClass(
+			launcher ->	launcher.getEnvironment().setAutoImports(true), 
+			AnnonymousClassNewIface.class);
+		String originSources = foo.getPosition().getCompilationUnit().getOriginalSourceCode();
+		Set<CtImport> imports = foo.getPosition().getCompilationUnit().getImports();
+		assertEquals(2, imports.size());
+		Iterator<CtImport> iter = imports.iterator();
+		{
+			CtImport ctImport = iter.next();
+			assertEquals("import java.util.Set;", contentAtPosition(originSources, ctImport.getPosition()));
+		}
+		{
+			CtImport ctImport = iter.next();
+			assertEquals("import java.util.function.Consumer;", contentAtPosition(originSources, ctImport.getPosition()));
+		}
+	}
+	
 
 	@Test
 	public void testEmptyModifiersOfMethod() throws Exception {
