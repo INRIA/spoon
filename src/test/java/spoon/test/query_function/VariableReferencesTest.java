@@ -52,7 +52,7 @@ import static org.junit.Assert.*;
 
 public class VariableReferencesTest {
 	CtClass<?> modelClass;
-	
+
 	@Before
 	public void setup() throws Exception {
 		final Launcher launcher = new Launcher();
@@ -66,8 +66,7 @@ public class VariableReferencesTest {
 
 	@Test
 	public void testCheckModelConsistency() throws Exception {
-		
-		//1) search for all variable declarations with name isTestFieldName(name)==true 
+		//1) search for all variable declarations with name isTestFieldName(name)==true
 		//2) check that each of them is using different identification value
 		class Context {
 			Map<Integer, CtElement> unique = new HashMap<>();
@@ -81,7 +80,7 @@ public class VariableReferencesTest {
 			}
 		}
 		Context context = new Context();
-		
+
 		modelClass.filterChildren((CtElement e)->{
 			if (e instanceof CtVariable) {
 				CtVariable<?> var = (CtVariable<?>) e;
@@ -98,7 +97,7 @@ public class VariableReferencesTest {
 		assertEquals("Only these keys were found: "+context.unique.keySet(), context.maxKey, context.unique.size());
 		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class,"maxValue")).first()), context.maxKey);
 	}
-	
+
 	@Test
 	public void testCatchVariableReferenceFunction() throws Exception {
 		//visits all the CtCatchVariable elements whose name is isTestFieldName(name)==true and search for all their references
@@ -129,7 +128,7 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-	}	
+	}
 
 	@Test
 	public void testParameterReferenceFunction() throws Exception {
@@ -162,7 +161,7 @@ public class VariableReferencesTest {
 			return false;
 		}).list();
 	}
-	
+
 	private boolean isTestFieldName(String name) {
 		return "field".equals(name);
 	}
@@ -195,7 +194,7 @@ public class VariableReferencesTest {
 		}).list();
 		assertTrue(list.size()>0);
 	}
-	
+
 	@Test
 	public void testLocalVariableReferenceDeclarationFunction() throws Exception {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{
@@ -207,7 +206,6 @@ public class VariableReferencesTest {
 			return false;
 		}).list();
 	}
-	
 
 	private void checkVariableAccess(CtVariable<?> var, int value, CtConsumableFunction<?> query) {
 		class Context {
@@ -259,7 +257,7 @@ public class VariableReferencesTest {
 			return ele.getParent(CtType.class).getSimpleName()+"#annonymous block";
 		}
 	}
-	
+
 	private int getVariableReferenceValue(CtVariableReference<?> fr) {
 		CtBinaryOperator binOp = fr.getParent(CtBinaryOperator.class);
 		if(binOp==null) {
@@ -304,7 +302,7 @@ public class VariableReferencesTest {
 		}
 		return getCommentValue(var);
 	}
-	
+
 	private int getCommentValue(CtElement e) {
 		while(true) {
 			if(e==null) {
@@ -321,11 +319,11 @@ public class VariableReferencesTest {
 		}
 		return -1;
 	}
-	
+
 	private Integer getLiteralValue(CtExpression<?> exp) {
 		return ((CtLiteral<Integer>) exp).getValue();
 	}
-	
+
 	private SourcePosition getPosition(CtElement e) {
 		SourcePosition sp = e.getPosition();
 		while(sp instanceof NoSourcePosition) {
@@ -337,7 +335,7 @@ public class VariableReferencesTest {
 		}
 		return sp;
 	}
-	
+
 	@Test
 	public void testPotentialVariableAccessFromStaticMethod() throws Exception {
 		Factory factory = ModelUtils.build(VariableReferencesFromStaticMethod.class);
@@ -349,5 +347,4 @@ public class VariableReferencesTest {
 		List<CtVariable> vars = varRef.map(new PotentialVariableDeclarationFunction()).list();
 		assertEquals("Found unexpected variable declaration.", 1, vars.size());
 	}
-
 }
