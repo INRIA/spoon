@@ -225,7 +225,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@SuppressWarnings("unchecked")
 	private Object convertElementToRuntimeObject(CtElement value) {
 		if (value instanceof CtFieldReference) {
-			Class<?> c = null;
+			Class<?> c;
 			try {
 				c = ((CtFieldReference<?>) value).getDeclaringType().getActualClass();
 			} catch (Exception e) {
