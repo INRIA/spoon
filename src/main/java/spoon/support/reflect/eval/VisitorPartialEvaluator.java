@@ -425,7 +425,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				}
 			} else {
 				// try to completely evaluate
-				T r = null;
+				T r;
 				try {
 					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
