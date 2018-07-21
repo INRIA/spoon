@@ -351,7 +351,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public CtElement getParent() throws ParentNotInitializedException {
 		if (parent == null) {
-			String exceptionMsg = "";
+			String exceptionMsg;
 			if (this instanceof CtReference) {
 				exceptionMsg = "parent not initialized for " + ((CtReference) this).getSimpleName() + "(" + this.getClass() + ")";
 			} else {
