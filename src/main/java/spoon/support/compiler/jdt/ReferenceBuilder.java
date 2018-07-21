@@ -682,7 +682,7 @@ public class ReferenceBuilder {
 			return null;
 		}
 
-		CtTypeReference<?> ref = null;
+		CtTypeReference<?> ref;
 
 		if (binding instanceof RawTypeBinding) {
 			ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
