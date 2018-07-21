@@ -54,7 +54,7 @@ public class VariableReferencesTest {
 	CtClass<?> modelClass;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -65,7 +65,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testCheckModelConsistency() throws Exception {
+	public void testCheckModelConsistency() {
 		//1) search for all variable declarations with name isTestFieldName(name)==true
 		//2) check that each of them is using different identification value
 		class Context {
@@ -99,7 +99,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testCatchVariableReferenceFunction() throws Exception {
+	public void testCatchVariableReferenceFunction() {
 		//visits all the CtCatchVariable elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -115,7 +115,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testLocalVariableReferenceFunction() throws Exception {
+	public void testLocalVariableReferenceFunction() {
 		//visits all the CtLocalVariable elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -131,7 +131,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testParameterReferenceFunction() throws Exception {
+	public void testParameterReferenceFunction() {
 		//visits all the CtParameter elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -147,7 +147,7 @@ public class VariableReferencesTest {
 	}	
 
 	@Test
-	public void testVariableReferenceFunction() throws Exception {
+	public void testVariableReferenceFunction() {
 		//visits all the CtVariable elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -167,7 +167,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testVariableScopeFunction() throws Exception {
+	public void testVariableScopeFunction() {
 		//visits all the CtVariable elements whose name is "field" and search for all elements in their scopes
 		//Comparing with the result found by basic functions
 		List list = modelClass.filterChildren((CtVariable<?> var)->{
@@ -196,7 +196,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testLocalVariableReferenceDeclarationFunction() throws Exception {
+	public void testLocalVariableReferenceDeclarationFunction() {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{
 			if(isTestFieldName(varRef.getSimpleName())) {
 				CtLocalVariable<?> var = varRef.getDeclaration();
