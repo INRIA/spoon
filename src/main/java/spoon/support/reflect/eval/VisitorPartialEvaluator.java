@@ -411,7 +411,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			CtType<?> aType = invocation.getParent(CtType.class);
 			CtTypeReference<?> execDeclaringType = invocation.getExecutable().getDeclaringType();
 			// try to inline partial evaluation results for local calls
-			// (including to superclasses)
+			// (including superclasses)
 			if (executable != null && aType != null && invocation.getType() != null && execDeclaringType != null
 					&& execDeclaringType.isSubtypeOf(aType.getReference())) {
 				CtBlock<?> b = evaluate(executable.getBody());
