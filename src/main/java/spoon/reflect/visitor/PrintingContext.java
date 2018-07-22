@@ -44,6 +44,9 @@ public class PrintingContext {
 	public boolean isFirstForVariable() {
 		return (state & FIRST_FOR_VARIABLE) != 0L;
 	}
+	/**
+	 * {@link #isNextForVariable()}
+	 */
 	@Deprecated
 	public boolean noTypeDecl() {
 		return isNextForVariable();
