@@ -73,9 +73,9 @@ public class VariableReferencesTest {
 			Map<Integer, CtElement> unique = new HashMap<>();
 			int maxKey = 0;
 			void checkKey(int key, CtElement ele) {
-				CtElement ambiquous = unique.put(key, ele);
-				if(ambiquous!=null) {
-					fail("Two variables ["+ambiquous.toString()+" in "+getParentMethodName(ambiquous)+","+ele.toString()+" in "+getParentMethodName(ele)+"] has same value");
+				CtElement ambiguous = unique.put(key, ele);
+				if(ambiguous!=null) {
+					fail("Two variables ["+ambiguous.toString()+" in "+getParentMethodName(ambiguous)+","+ele.toString()+" in "+getParentMethodName(ele)+"] has same value");
 				}
 				maxKey = Math.max(maxKey, key);
 			}
