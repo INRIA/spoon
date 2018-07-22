@@ -1260,7 +1260,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
-		} catch (spoon.SpoonException ignore) {
 		}
 	}
 
@@ -1269,7 +1268,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
-		} catch (spoon.SpoonException ignore) {
 		}
 	}
 

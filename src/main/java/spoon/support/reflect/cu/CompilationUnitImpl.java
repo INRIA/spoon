@@ -58,6 +58,11 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	File file;
 
+	private SourcePosition sourcePosition;
+	/**
+	 * The index of line breaks, as computed by JDT.
+	 * Used to compute line numbers afterwards.
+	 */
 	private int[] lineSeparatorPositions;
 
 	@Override
@@ -203,7 +208,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	@Override
 	public String getOriginalSourceCode() {
 
-		if (originalSourceCode == null) {
+		if (originalSourceCode == null && getFile() != null) {
 			try (FileInputStream s = new FileInputStream(getFile())) {
 				byte[] elementBytes = new byte[s.available()];
 				s.read(elementBytes);
@@ -304,5 +309,18 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	@Override
 	public void setLineSeparatorPositions(int[] lineSeparatorPositions) {
 		this.lineSeparatorPositions = lineSeparatorPositions;
+	}
+
+	@Override
+	public SourcePosition getPosition() {
+		if (sourcePosition == null) {
+			String sourceCode = getOriginalSourceCode();
+			if (sourceCode != null) {
+				sourcePosition = getFactory().Core().createSourcePosition(this, 0, sourceCode.length() - 1, getLineSeparatorPositions());
+			} else {
+				sourcePosition = SourcePosition.NOPOSITION;
+			}
+		}
+		return sourcePosition;
 	}
 }

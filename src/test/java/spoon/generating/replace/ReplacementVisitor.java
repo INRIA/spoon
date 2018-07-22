@@ -16,7 +16,6 @@
  */
 package spoon.generating.replace;
 
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.visitor.replace.InvalidReplaceException;
@@ -44,7 +43,6 @@ class ReplacementVisitor extends CtScanner {
 			new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
 		} catch (InvalidReplaceException e) {
 			throw e;
-		} catch (SpoonException ignore) {
 		}
 	}
 	public static <E extends CtElement> void replace(CtElement original, Collection<E> replaces) {
@@ -52,7 +50,6 @@ class ReplacementVisitor extends CtScanner {
 			new ReplacementVisitor(original, replaces.toArray(new CtElement[replaces.size()])).scan(original.getParent());
 		} catch (InvalidReplaceException e) {
 			throw e;
-		} catch (SpoonException ignore) {
 		}
 	}
 

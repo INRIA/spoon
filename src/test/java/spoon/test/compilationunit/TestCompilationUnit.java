@@ -103,6 +103,22 @@ public class TestCompilationUnit {
     }
 
     @Test
+    public void testCompilationUnitSourcePosition() throws IOException {
+        // contract: the CompilationUnit has root source position
+        File resource = new File("./src/test/java/spoon/test/model/Foo.java");
+        final Launcher launcher = new Launcher();
+        launcher.addInputResource(resource.getPath());
+        launcher.buildModel();
+
+        CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(resource.getCanonicalPath());
+        SourcePosition sp = cu.getPosition();
+        assertNotNull(sp);
+        assertEquals(0, sp.getSourceStart());
+        assertEquals(cu.getOriginalSourceCode().length(), sp.getSourceEnd() + 1);
+        assertSame(cu, sp.getCompilationUnit());
+    }
+
+    @Test
     public void testAddDeclaredTypeInCU() throws IOException {
         // contract: when a type is added to a CU, it should also be pretty printed in cu mode
         File resource = new File("./src/test/java/spoon/test/model/Foo.java");
