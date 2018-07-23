@@ -386,7 +386,7 @@ public class PositionTest {
 		assertEquals(15, position2.getEndLine());
 
 		assertEquals("/**\n"
-				+ "\t * Mathod with javadoc\n"
+				+ "\t * Method with javadoc\n"
 				+ "\t * @param parm1 the parameter\n"
 				+ "\t */\n"
 				+ "\tint mWithDoc(int parm1) {\n"
