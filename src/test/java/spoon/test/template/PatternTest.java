@@ -554,7 +554,7 @@ public class PatternTest {
 		// pattern
 //		public void matcher1() {
 //			statements1.S(); // Quantifier.GREEDY
-//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurrence and setMaxOccurence set
+//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurrence and setMaxOccurrence set
 //			System.out.println("something"); // "something" -> anything
 //		}
 
@@ -590,7 +590,7 @@ public class PatternTest {
 		// pattern:
 //		public void matcher1(List<String> something) {
 //			statements1.S(); // Quantifier.GREEDY
-//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurrence and setMaxOccurence set
+//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurrence and setMaxOccurrence set
 //			for (String v : something) {
 //				System.out.println(v); // can be inlined
 //			}
@@ -624,7 +624,7 @@ public class PatternTest {
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters().build();
 //				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
-//				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurence(countFinal);
+//				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurrence(countFinal);
 //				pb.parameter("inlinedSysOut").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurrence(2);
 //			});
 
