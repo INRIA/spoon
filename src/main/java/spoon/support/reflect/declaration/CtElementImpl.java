@@ -132,7 +132,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null) {
+		if (!(o instanceof CtElementImpl)) {
 			return false;
 		}
 		if (this == o) {
