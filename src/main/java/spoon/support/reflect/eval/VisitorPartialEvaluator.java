@@ -417,7 +417,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				CtBlock<?> b = evaluate(executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
-				if ((last != null) && (last instanceof CtReturn)) {
+				if ((last instanceof CtReturn)) {
 					if (((CtReturn<?>) last).getReturnedExpression() instanceof CtLiteral) {
 						setResult(((CtReturn<?>) last).getReturnedExpression());
 						return;

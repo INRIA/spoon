@@ -285,8 +285,7 @@ public class ContextBuilder {
 		if (lookingForFields) {
 			final CtReference potentialReferenceToField =
 					referenceBuilder.getDeclaringReferenceFromImports(name.toCharArray());
-			if (potentialReferenceToField != null
-					&& potentialReferenceToField instanceof CtTypeReference) {
+			if (potentialReferenceToField instanceof CtTypeReference) {
 				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
 				try {
 					final Class classOfType = typeReference.getActualClass();
