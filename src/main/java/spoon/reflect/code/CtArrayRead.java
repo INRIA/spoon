@@ -17,9 +17,9 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines an read access to an array.
+ * This code element defines a read access to an array.
  *
- * In Java, it is a usage of a array outside an assignment. For example,
+ * In Java, it is a usage of an array outside an assignment. For example,
  * <pre>
  *     int[] array = new int[10];
  *     System.out.println(

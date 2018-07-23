@@ -155,9 +155,6 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
@@ -462,14 +459,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(MemberValuePair pair, ClassScope scope) {
 		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
-			throw new RuntimeException("Unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 	}
 
 	@Override
 	public void endVisit(MemberValuePair pair, BlockScope scope) {
 		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
-			throw new RuntimeException("Unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 	}
 
@@ -585,7 +582,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(SingleMemberAnnotation annotation, BlockScope scope) {
 		if (!context.annotationValueName.pop().equals("value")) {
-			throw new RuntimeException("unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 		context.exit(annotation);
 		skipTypeInAnnotation = false;
@@ -1103,8 +1100,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
-
-		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (fieldDeclaration.binding != null) {
 			if (fieldDeclaration.binding.declaringClass != null && fieldDeclaration.binding.declaringClass.isEnum()) {
 				//enum values take over visibility from enum type

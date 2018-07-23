@@ -863,13 +863,6 @@ public class ReferenceBuilder {
 				} else {
 					ref.setPackage(getPackageReference(binding.getPackage()));
 				}
-				// if(((SourceTypeBinding) binding).typeVariables!=null &&
-				// ((SourceTypeBinding) binding).typeVariables.length>0){
-				// for (TypeBinding b : ((SourceTypeBinding)
-				// binding).typeVariables) {
-				// ref.getActualTypeArguments().add(getTypeReference(b));
-				// }
-				// }
 			}
 		} else if (binding instanceof ArrayBinding) {
 			CtArrayTypeReference<Object> arrayref;

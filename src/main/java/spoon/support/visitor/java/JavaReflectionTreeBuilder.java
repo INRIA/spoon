@@ -399,14 +399,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctTypeReference.setSimpleName(((Class) type.getRawType()).getSimpleName());
 
 		RuntimeBuilderContext context = new TypeReferenceRuntimeBuilderContext(type, ctTypeReference) {
-//			@Override
-//			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-//				ctTypeReference.setSimpleName(typeReference.getSimpleName());
-//				ctTypeReference.setPackage(typeReference.getPackage());
-//				ctTypeReference.setDeclaringType(typeReference.getDeclaringType());
-//				ctTypeReference.setActualTypeArguments(typeReference.getActualTypeArguments());
-//				ctTypeReference.setAnnotations(typeReference.getAnnotations());
-//			}
 
 			@Override
 			public void addType(CtType<?> aType) {
