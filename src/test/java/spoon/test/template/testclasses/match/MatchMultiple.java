@@ -29,7 +29,7 @@ public class MatchMultiple {
 					pb.setMinOccurrence(minCount);
 				}
 				if (maxCount != null) {
-					pb.setMaxOccurence(maxCount);
+					pb.setMaxOccurrence(maxCount);
 				}
 				pb.parameter("printedValue").byFilter((CtLiteral<?> literal) -> "something".equals(literal.getValue()));
 			})

@@ -137,7 +137,7 @@ public class PatternParameterConfigurator {
 		return this;
 	}
 
-	public PatternParameterConfigurator setMaxOccurence(int maxOccurrence) {
+	public PatternParameterConfigurator setMaxOccurrence(int maxOccurrence) {
 		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && currentParameter.isMultiple() == false) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}

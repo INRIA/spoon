@@ -325,7 +325,7 @@ public class PatternTest {
 	@Test
 	public void testMatchGreedyMultiValueMaxCountLimit() throws Exception {
 		//contract: it is possible to stop matching after a specific number of times
-		// This is done with method parameterBuilder.setMaxOccurence(maxCount)
+		// This is done with method parameterBuilder.setMaxOccurrence(maxCount)
 
 		// explanation: greedy matching eats everything until max count = 3
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
@@ -514,7 +514,7 @@ public class PatternTest {
 	}
 	@Test
 	public void testMatchPossesiveMultiValueMaxCount4() throws Exception {
-		//contract: maxCount (#setMaxOccurence) can be used to stop Quantifier.POSSESSIVE for matching too much
+		//contract: maxCount (#setMaxOccurrence) can be used to stop Quantifier.POSSESSIVE for matching too much
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
 		// note that if we set maxCount = 3, it fails because there is one dangling statement before System.out.println("something")
@@ -568,7 +568,7 @@ public class PatternTest {
 					.configurePatternParameters()
 					.configurePatternParameters(pb -> {
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
-						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurence(countFinal);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurrence(countFinal);
 						pb.parameter("printedValue").byFilter((CtLiteral<?> literal) -> "something".equals(literal.getValue()));
 					})
 					.build();
@@ -606,7 +606,7 @@ public class PatternTest {
 			.configurePatternParameters(pb -> {
 				pb.byTemplateParameter();
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
-				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurence(countFinal);
+				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurrence(countFinal);
 				pb.parameter("inlinedSysOut").byVariable("something").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurrence(2).matchInlinedStatements();
 			})
 			.build();
@@ -647,7 +647,7 @@ public class PatternTest {
 					.configurePatternParameters(pb -> {
 						pb.byTemplateParameter();
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
-						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurrence(count);
 						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
 						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurrence(2);
 					})
