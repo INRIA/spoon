@@ -54,6 +54,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	@Override
 	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		if (iterableParameter == oldNode) {
+			iterableParameter = (PrimitiveMatcher) newNode;
 			return true;
 		}
 		if (iterableParameter.replaceNode(oldNode, newNode)) {
