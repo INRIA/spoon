@@ -136,6 +136,7 @@ public class PatternParameterConfigurator {
 		currentParameter.setMinOccurrences(minOccurence);
 		return this;
 	}
+
 	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {
 		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
@@ -143,6 +144,7 @@ public class PatternParameterConfigurator {
 		currentParameter.setMaxOccurrences(maxOccurence);
 		return this;
 	}
+
 	public PatternParameterConfigurator setMatchingStrategy(Quantifier quantifier) {
 		currentParameter.setMatchingStrategy(quantifier);
 		return this;
@@ -185,6 +187,7 @@ public class PatternParameterConfigurator {
 	public PatternParameterConfigurator byType(Class<?> type) {
 		return byType(type.getName());
 	}
+
 	/**
 	 * type identified by `typeQualifiedName` itself and all the references (with arbitrary actual type arguments)
 	 * to that type are subject for substitution by current parameter
@@ -208,6 +211,7 @@ public class PatternParameterConfigurator {
 		}
 		return this;
 	}
+
 	/**
 	 * type referred by {@link CtTypeReference} `type` and all the references (with same actual type arguments)
 	 * to that type are subject for substitution by current parameter
@@ -243,6 +247,7 @@ public class PatternParameterConfigurator {
 		byLocalType(searchScope, localTypeSimpleName, false);
 		return this;
 	}
+
 	PatternParameterConfigurator byLocalType(CtType<?> searchScope, String localTypeSimpleName, boolean optional) {
 		String nestedType = getLocalTypeRefBySimpleName(searchScope, localTypeSimpleName);
 		if (nestedType == null) {
@@ -334,6 +339,7 @@ public class PatternParameterConfigurator {
 		}
 		return this;
 	}
+
 	/**
 	 * Add parameters for each variable reference of `variable`
 	 * @param variable to be substituted variable
@@ -371,6 +377,7 @@ public class PatternParameterConfigurator {
 	public PatternParameterConfigurator byTemplateParameter() {
 		return byTemplateParameter(null);
 	}
+
 	/**
 	 * Creates pattern parameter for each field of type {@link TemplateParameter}
 	 * @param parameterValues pattern parameter values.
@@ -630,7 +637,7 @@ public class PatternParameterConfigurator {
 						}
 						return oldAttrNode;
 					});
-			}
+				}
 			}
 		}.scan(patternBuilder.getPatternModel());
 		return this;
@@ -808,6 +815,7 @@ public class PatternParameterConfigurator {
 	void addSubstitutionRequest(ParameterInfo parameter, CtElement element, CtRole attributeRole) {
 		patternBuilder.setNodeOfAttributeOfElement(element, attributeRole, new ParameterNode(parameter), conflictResolutionMode);
 	}
+
 	/**
 	 * Adds request to substitute substring of {@link String} value of `attributeRole` of `element`, by the value of this {@link ListOfNodes} parameter {@link ParameterInfo} value
 	 * @param element whose part of String attribute of {@link CtRole} `attributeRole` have to be replaced
@@ -894,6 +902,7 @@ public class PatternParameterConfigurator {
 		}
 		return pep;
 	}
+
 	/**
 	 * @return an invocation of {@link TemplateParameter#S()} if it is parent of `element`
 	 */

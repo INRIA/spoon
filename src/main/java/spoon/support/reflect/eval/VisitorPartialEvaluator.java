@@ -427,7 +427,6 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				// try to completely evaluate
 				T r = null;
 				try {
-					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
 					if (isLiteralType(r)) {
 						CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
