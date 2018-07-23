@@ -32,7 +32,7 @@ import java.util.Set;
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
-public interface CompilationUnit extends FactoryAccessor, Serializable {
+public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, Serializable {
 
 	enum UNIT_TYPE {
 		TYPE_DECLARATION,

@@ -170,10 +170,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static ListOfNodes listOfNodesToNode(List<? extends RootNode> nodes) {
-		//The attribute is matched different if there is List of one ParameterizedNode and when there is one ParameterizedNode
-//		if (nodes.size() == 1) {
-//			return nodes.get(0);
-//		}
 		return new ListOfNodes((List) nodes);
 	}
 
@@ -378,33 +374,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	public String toString() {
 		return elementType.getName() + ": " + super.toString();
 	}
-//	@Override
-//	public String toString() {
-//		PrinterHelper printer = new PrinterHelper(getTemplateNode().getFactory().getEnvironment());
-//		printer.write(NodeAttributeSubstitutionRequest.getElementTypeName(getTemplateNode().getParent())).writeln().incTab();
-//		appendDescription(printer);
-//		return printer.toString();
-//	}
-//
-//	public void appendDescription(PrinterHelper printer) {
-//		if (attributeSubstititionRequests == null || attributeSubstititionRequests.values().isEmpty()) {
-//			printer.write("** no attribute substitution **");
-//		} else {
-//			boolean multipleAttrs = attributeSubstititionRequests.size() > 1;
-//			if (multipleAttrs) {
-//				printer.incTab();
-//			}
-//			for (Node node : attributeSubstititionRequests.values()) {
-//				if (multipleAttrs) {
-//					printer.writeln();
-//				}
-//				printer.write(node.toString());
-//			}
-//			if (multipleAttrs) {
-//				printer.decTab();
-//			}
-//		}
-//	}
 
 	public MetamodelConcept getElementType() {
 		return elementType;

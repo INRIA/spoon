@@ -77,7 +77,6 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		for (; i < this.totalUnits; i++) {
 			unit = unitsToProcess[i];
 			this.reportProgress(Messages.bind(Messages.compilation_processing, new String(unit.getFileName())));
-			// System.err.println(unit);
 			this.parser.getMethodBodies(unit);
 
 			// fault in fields & methods

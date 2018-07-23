@@ -17,9 +17,9 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines an write access to an array.
+ * This code element defines a write access to an array.
  *
- * In Java, it is a usage of a array inside an assignment.
+ * In Java, it is a usage of an array inside an assignment.
  *
  * For example:
  * <pre>

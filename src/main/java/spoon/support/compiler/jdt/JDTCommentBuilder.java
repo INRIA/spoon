@@ -516,7 +516,7 @@ class JDTCommentBuilder {
 				if (element == null) {
 					return;
 				}
-				if (element.isImplicit()) {
+				if (element.isImplicit() && !(element instanceof CtBlock)) {
 					return;
 				}
 				CtElement body = getBody(element);

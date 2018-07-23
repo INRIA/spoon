@@ -414,9 +414,6 @@ public class CtQueryImpl implements CtQuery {
 			if (indexOfCallerInStack < 0) {
 				//this is an exotic JVM, where we cannot detect type of parameter of Lambda expression
 				//Silently ignore this CCE, which was may be expected or may be problem in client's code.
-//				if (Launcher.LOGGER.isDebugEnabled()) {
-//					Launcher.LOGGER.debug("ClassCastException thrown by client's code or Query engine ...", e);
-//				}
 				return;
 			}
 			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
@@ -585,8 +582,8 @@ public class CtQueryImpl implements CtQuery {
 			for (int i = 0; i < stack.length; i++) {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
-					Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
-					if (detectectedClass == null || CtType.class.equals(detectectedClass) == false) {
+					Class<?> detectedClass = detectTargetClassFromCCE(e, obj);
+					if (detectedClass == null || CtType.class.equals(detectedClass) == false) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;
