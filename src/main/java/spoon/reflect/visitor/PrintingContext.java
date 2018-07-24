@@ -200,6 +200,6 @@ public class PrintingContext {
 	 */
 	public boolean isInCurrentScope(CtTypeReference<?> typeRef) {
 		CtTypeReference<?> currentTypeRef = getCurrentTypeReference();
-		return currentTypeRef != null && typeRef.equals(currentTypeRef);
+		return typeRef.equals(currentTypeRef);
 	}
 }
