@@ -76,7 +76,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
 
 	public CtExecutableReferenceImpl() {
-		super();
 	}
 
 	@Override

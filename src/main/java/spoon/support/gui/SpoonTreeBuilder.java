@@ -31,7 +31,6 @@ public class SpoonTreeBuilder extends CtScanner {
 	DefaultMutableTreeNode root;
 
 	public SpoonTreeBuilder() {
-		super();
 		root = new DefaultMutableTreeNode("Spoon Tree Root");
 		nodes = new ArrayDeque<>();
 		nodes.push(root);

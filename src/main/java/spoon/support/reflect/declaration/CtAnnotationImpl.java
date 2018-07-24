@@ -97,7 +97,6 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	};
 
 	public CtAnnotationImpl() {
-		super();
 	}
 
 	public void accept(CtVisitor visitor) {
@@ -506,7 +505,6 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 			CtAnnotation<? extends Annotation> annotation;
 
 			AnnotationInvocationHandler(CtAnnotation<? extends Annotation> annotation) {
-				super();
 				this.annotation = annotation;
 			}
 

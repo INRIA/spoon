@@ -32,7 +32,6 @@ public class FileSystemFolder implements SpoonFolder {
 	File file;
 
 	public FileSystemFolder(File file) {
-		super();
 		if (!file.isDirectory()) {
 			throw new SpoonException("Not a directory " + file);
 		}

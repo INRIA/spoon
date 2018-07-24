@@ -42,7 +42,6 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractProcessor() {
-		super();
 		for (Method m : getClass().getMethods()) {
 			if ("process".equals(m.getName()) && (m.getParameterTypes().length == 1)) {
 				Class<?> c = m.getParameterTypes()[0];

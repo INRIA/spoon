@@ -74,7 +74,6 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 	 * This is the default constructor
 	 */
 	public SpoonModelTree(Factory factory) {
-		super();
 		SpoonTreeBuilder cst = new SpoonTreeBuilder();
 		cst.scan(factory.Package().getRootPackage());
 		this.factory = factory;
@@ -83,7 +82,6 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 	}
 
 	public SpoonModelTree(CtElement rootElement) {
-		super();
 		SpoonTreeBuilder cst = new SpoonTreeBuilder();
 		cst.scan(rootElement);
 		this.factory = rootElement.getFactory();

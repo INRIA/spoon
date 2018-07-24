@@ -58,7 +58,6 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtParameterImpl() {
-		super();
 	}
 
 	@Override

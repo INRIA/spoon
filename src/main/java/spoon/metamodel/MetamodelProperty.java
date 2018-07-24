@@ -103,7 +103,6 @@ public class MetamodelProperty {
 	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
 	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
-		super();
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;

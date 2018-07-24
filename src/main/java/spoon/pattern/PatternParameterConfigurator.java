@@ -830,7 +830,6 @@ public class PatternParameterConfigurator {
 		final ParameterInfo parameter;
 		final CtElement element;
 		public ParameterElementPair(ParameterInfo parameter, CtElement element) {
-			super();
 			this.parameter = parameter;
 			this.element = element;
 		}

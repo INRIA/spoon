@@ -35,7 +35,6 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
-		super();
 	}
 
 	@Override

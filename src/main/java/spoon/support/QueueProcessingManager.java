@@ -55,7 +55,6 @@ public class QueueProcessingManager implements ProcessingManager {
 	 * 		meta-model)
 	 */
 	public QueueProcessingManager(Factory factory) {
-		super();
 		setFactory(factory);
 	}
 

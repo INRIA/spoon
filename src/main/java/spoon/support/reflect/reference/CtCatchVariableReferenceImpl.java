@@ -27,7 +27,6 @@ public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> 
 	private static final long serialVersionUID = 1L;
 
 	public CtCatchVariableReferenceImpl() {
-		super();
 	}
 
 	@Override

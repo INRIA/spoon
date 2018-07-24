@@ -28,7 +28,6 @@ public abstract class SubFactory {
 	 * The sub-factory constructor takes an instance of the parent factory.
 	 */
 	public SubFactory(Factory factory) {
-		super();
 		this.factory = factory;
 	}
 }

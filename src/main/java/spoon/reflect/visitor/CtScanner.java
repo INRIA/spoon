@@ -120,7 +120,6 @@ public abstract class CtScanner implements CtVisitor {
 	 * Default constructor.
 	 */
 	public CtScanner() {
-		super();
 	}
 
 	/**
