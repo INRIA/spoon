@@ -1,4 +1,4 @@
-package spoon.test.path;
+package spoon.test.path.testclasses;
 
 class Foo {
 	Foo() {
