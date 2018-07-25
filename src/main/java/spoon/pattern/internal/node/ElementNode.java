@@ -151,7 +151,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		if (object instanceof CtElement) {
 			return create((CtElement) object, patternElementToSubstRequests);
 		}
-		return new ConstantNode<Object>(object);
+		return new ConstantNode<>(object);
 	}
 
 	private static RootNode create(ContainerKind containerKind, Object templates, Map<CtElement, RootNode> patternElementToSubstRequests) {

@@ -113,7 +113,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 		if (set.isEmpty()) {
 			return;
 		}
-		getModelChangeListener().onSetDeleteAll(getOwner(), getRole(), set, new LinkedHashSet<T>(set));
+		getModelChangeListener().onSetDeleteAll(getOwner(), getRole(), set, new LinkedHashSet<>(set));
 		set.clear();
 	}
 
