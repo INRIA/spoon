@@ -295,7 +295,7 @@ public class TypeFactory extends SubFactory {
 	 * Creates a reference to an n-dimension array of given type.
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
-		CtTypeReference<?> componentType = null;
+		CtTypeReference<?> componentType;
 		if (n == 1) {
 			return createArrayReference(reference);
 		}

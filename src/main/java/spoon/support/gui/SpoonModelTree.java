@@ -284,7 +284,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 
 	/** move to the next node matching the search criterion */
 	public DefaultMutableTreeNode next() {
-		DefaultMutableTreeNode current = null;
+		DefaultMutableTreeNode current;
 		while ((enume != null) && enume.hasMoreElements()) {
 			current = (DefaultMutableTreeNode) enume.nextElement();
 			if ((current.getUserObject() != null)
