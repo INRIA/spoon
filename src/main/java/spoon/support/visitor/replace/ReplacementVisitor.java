@@ -17,6 +17,8 @@
 package spoon.support.visitor.replace;
 
 
+import spoon.reflect.declaration.CtElement;
+
 /**
  * Used to replace an element by another one.
  *
@@ -1347,8 +1349,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		if (shouldBeDeleted != null) {
 			list.remove(index);
 			if ((replace.length) > 0) {
-				for (int i = 0; i < (replace.length); i++) {
-					T ele = ((T) (replace[i]));
+				for (CtElement e : replace) {
+					T ele = ((T) (e));
 					if (ele != null) {
 						list.add(index, ele);
 						ele.setParent(shouldBeDeleted.getParent());
