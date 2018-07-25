@@ -633,7 +633,7 @@ public abstract class Substitution {
 	private static <T> void checkTemplateContracts(CtClass<T> c) {
 		for (CtField f : c.getFields()) {
 			Parameter templateParamAnnotation = f.getAnnotation(Parameter.class);
-			if (templateParamAnnotation != null && !templateParamAnnotation.value().equals("")) {
+			if (templateParamAnnotation != null && !templateParamAnnotation.value().isEmpty()) {
 				String proxyName = templateParamAnnotation.value();
 				// contract: if value, then the field type must be String or CtTypeReference
 				String fieldTypeQName = f.getType().getQualifiedName();
