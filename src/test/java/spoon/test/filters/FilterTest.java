@@ -63,6 +63,7 @@ import spoon.test.filters.testclasses.AbstractTostada;
 import spoon.test.filters.testclasses.Antojito;
 import spoon.test.filters.testclasses.FieldAccessFilterTacos;
 import spoon.test.filters.testclasses.Foo;
+import spoon.test.filters.testclasses.FooLine;
 import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
@@ -884,7 +885,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(7, context.count);
+		assertEquals(8, context.count);
 		context.count=0; //reset
 
 		// again second query, but now with CtConsumableFunction
@@ -896,7 +897,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(7, context.count);
+		assertEquals(8, context.count);
 		context.count=0; //reset
 
 		// again second query, but with low-level circuitry thanks to cast
@@ -908,7 +909,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(7, context.count);
+		assertEquals(8, context.count);
 	}
 	
 	@Test

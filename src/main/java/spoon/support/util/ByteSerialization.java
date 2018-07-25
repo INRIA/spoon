@@ -27,25 +27,20 @@ public class ByteSerialization {
 	private ByteSerialization() { }
 
 	public static byte[] serialize(Object obj) throws IOException {
-
-		byte[] serializedObject = null;
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
 		ObjectOutputStream so = new ObjectOutputStream(bo);
 		so.writeObject(obj);
 		so.flush();
-		serializedObject = bo.toByteArray();
+		byte[] serializedObject = bo.toByteArray();
 		so.close();
 		return serializedObject;
 	}
 
 	public static Object deserialize(byte[] serializedObject) throws Exception {
-
-		Object objInput = null;
 		ByteArrayInputStream bi = new ByteArrayInputStream(serializedObject);
 		ObjectInputStream si = new ObjectInputStream(bi);
-		objInput = si.readObject();
+		Object objInput = si.readObject();
 		si.close();
 		return objInput;
 	}
-
 }
