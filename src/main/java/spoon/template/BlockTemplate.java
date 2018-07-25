@@ -36,8 +36,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	 * Returns the block.
 	 */
 	public static CtBlock<?> getBlock(CtClass<? extends BlockTemplate> p) {
-		CtBlock<?> b = p.getMethod("block").getBody();
-		return b;
+		return p.getMethod("block").getBody();
 	}
 
 	/**

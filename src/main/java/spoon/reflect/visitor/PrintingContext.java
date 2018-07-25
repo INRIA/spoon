@@ -170,8 +170,7 @@ public class PrintingContext {
 	}
 	private TypeContext getCurrentTypeContext() {
 		if (currentThis != null && !currentThis.isEmpty()) {
-			TypeContext tc = currentThis.peek();
-			return tc;
+			return currentThis.peek();
 		}
 		return null;
 	}

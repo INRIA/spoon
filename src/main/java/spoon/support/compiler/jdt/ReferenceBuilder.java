@@ -501,8 +501,7 @@ public class ReferenceBuilder {
 			insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
 			return ctRef;
 		}
-		CtTypeReference<T> result = getTypeReference(ref);
-		return result;
+		return getTypeReference(ref);
 	}
 
 	CtTypeReference<Object> getTypeParameterReference(TypeBinding binding, TypeReference ref) {
