@@ -51,6 +51,7 @@ import spoon.test.generics.testclasses2.LikeCtClassImpl;
 import spoon.test.generics.testclasses2.SameSignature2;
 import spoon.test.generics.testclasses2.SameSignature3;
 import spoon.test.generics.testclasses3.Bar;
+import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
 import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
 import spoon.test.generics.testclasses3.Foo;
 import spoon.test.generics.testclasses3.GenericConstructor;

@@ -1,6 +1,6 @@
-package spoon.test.filters;
+package spoon.test.filters.testclasses;
 
-class FooLine {
+public class FooLine {
 	void simple() {
 		int x = 3;
 		int z = 0;
