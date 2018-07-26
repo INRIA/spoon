@@ -53,6 +53,24 @@ public class ChangeCollector {
 	}
 
 	/**
+	 * allows to run code in `run` using switched off change collector.
+	 * It means any change of spoon model is ignored by change collector.
+	 * @param env Spoon environment
+	 * @param run the code to be run
+	 */
+	public static void ignoreChanges(Environment env, Runnable run) {
+		FineModelChangeListener mcl = env.getModelChangeListener();
+		if (mcl instanceof ChangeListener) {
+			env.setModelChangeListener(new EmptyModelChangeListener());
+			try {
+				run.run();
+			} finally {
+				env.setModelChangeListener(mcl);
+			}
+		}
+	}
+
+	/**
 	 * Attaches itself to {@link CtModel} to listen to all changes of it's child elements
 	 * TODO: it would be nicer if we might listen on changes on {@link CtElement}
 	 * @param env to be attached to {@link Environment}
@@ -96,7 +114,7 @@ public class ChangeCollector {
 					checkedRole = scanner.getScannedRole();
 				}
 				if (changes.contains(checkedRole)) {
-					//we already know that som echild of `checkedRole` attribute is modified. Skip others
+					//we already know that some child of `checkedRole` attribute is modified. Skip others
 					return ScanningMode.SKIP_ALL;
 				}
 				if (elementToChangeRole.containsKey(element)) {

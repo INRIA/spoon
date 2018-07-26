@@ -38,6 +38,7 @@ import spoon.compiler.builder.ComplianceOptions;
 import spoon.compiler.builder.JDTBuilder;
 import spoon.compiler.builder.JDTBuilderImpl;
 import spoon.compiler.builder.SourceOptions;
+import spoon.experimental.modelobs.SourceFragmentsTreeCreatingChangeCollector;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
@@ -128,6 +129,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		factory.getEnvironment().debugMessage("built in " + (System.currentTimeMillis() - t) + " ms");
 		checkModel();
 		factory.getModel().setBuildModelIsFinished(true);
+
+		if (factory.getEnvironment().isSniperMode()) {
+			//setup a model change collector
+			new SourceFragmentsTreeCreatingChangeCollector().attachTo(factory.getEnvironment());
+		}
+
 		return srcSuccess && templateSuccess;
 	}
 
@@ -661,7 +668,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		spoon.reflect.cu.CompilationUnit cu = factory.CompilationUnit().getMap().get(path);
 		List<CtType<?>> toBePrinted = cu.getDeclaredTypes();
 
-		PrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
+		PrettyPrinter printer = env.createPrettyPrinter();
 		printer.calculate(cu, toBePrinted);
 
 		return new ByteArrayInputStream(printer.getResult().getBytes());

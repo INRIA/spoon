@@ -43,6 +43,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.printer.internal.SniperJavaPrettyPrinter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
@@ -676,7 +677,9 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public Environment createEnvironment() {
-		return new StandardEnvironment();
+		Environment env = new StandardEnvironment();
+		env.setPrettyPrinterCreator(() -> createPrettyPrinter());
+		return env;
 	}
 
 	public JavaOutputProcessor createOutputWriter() {
@@ -686,6 +689,9 @@ public class Launcher implements SpoonAPI {
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
+		if (getEnvironment().isSniperMode()) {
+			return new SniperJavaPrettyPrinter(getEnvironment());
+		}
 		return new DefaultJavaPrettyPrinter(getEnvironment());
 	}
 

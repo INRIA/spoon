@@ -210,7 +210,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Compilation unit we are printing.
 	 */
-	private CompilationUnit sourceCompilationUnit;
+	protected CompilationUnit sourceCompilationUnit;
 
 	/**
 	 * Imports computed
@@ -1982,6 +1982,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			imports.addAll(computeImports(t));
 		}
 		this.writeHeader(types, imports);
+		printTypes(types);
+	}
+
+	protected void printTypes(List<CtType<?>> types) {
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {
