@@ -75,7 +75,7 @@ public class MavenLauncher extends Launcher {
 	 * @param mvnHome Path to maven install
 	 */
 	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String mvnHome) {
-		this(mavenProject,m2RepositoryPath,sourceType, buildClassPath(mvnHome, mavenProject, sourceType));
+		this(mavenProject, m2RepositoryPath, sourceType, buildClassPath(mvnHome, mavenProject, sourceType));
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class MavenLauncher extends Launcher {
 		}
 	}
 
-	private static String[] readClassPath(File classPathFile) {
+	public static String[] readClassPath(File classPathFile) {
 		String[] classpath = null;
 
 		//Read the content of spoon.classpath.tmp
@@ -179,12 +179,6 @@ public class MavenLauncher extends Launcher {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Cause: " + e.getCause());
-			System.err.println("Message: " + e.getMessage());
-			e.printStackTrace(System.err);
-			System.out.println("Cause: " + e.getCause());
-			System.out.println("Message: " + e.getMessage());
-			e.printStackTrace(System.out);
 			throw new SpoonException("Failed to read classpath written in temporary file " + classPathFile.getAbsolutePath() + ".");
 		} finally {
 			if (br != null) {
@@ -223,7 +217,7 @@ public class MavenLauncher extends Launcher {
 		return mvnHome;
 	}
 
-	private static String[] buildClassPath(String mvnHome, String mavenProject, SOURCE_TYPE sourceType) {
+	public static String[] buildClassPath(String mvnHome, String mavenProject, SOURCE_TYPE sourceType) {
 		if (mvnHome == null) {
 			mvnHome = guessMavenHome();
 			if (mvnHome == null) {
@@ -237,6 +231,8 @@ public class MavenLauncher extends Launcher {
 		File pom = new File(projectPath);
 		File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
 		generateClassPathFile(pom, new File(mvnHome), sourceType, classPathPrint);
-		return readClassPath(classPathPrint);
+		String[] classpath = readClassPath(classPathPrint);
+		//classPathPrint.delete();
+		return classpath;
 	}
 }
