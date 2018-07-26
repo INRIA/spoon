@@ -176,6 +176,12 @@ public class MavenLauncher extends Launcher {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println("Cause: " + e.getCause());
+			System.err.println("Message: " + e.getMessage());
+			e.printStackTrace(System.err);
+			System.out.println("Cause: " + e.getCause());
+			System.out.println("Message: " + e.getMessage());
+			e.printStackTrace(System.out);
 			throw new SpoonException("Failed to read classpath written in temporary file " + classPathPrint.getAbsolutePath() + ".");
 		} finally {
 			if (br != null) {
