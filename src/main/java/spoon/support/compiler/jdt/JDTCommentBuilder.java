@@ -266,7 +266,7 @@ class JDTCommentBuilder {
 				spoonUnit.getDeclaredModule().addComment(comment);
 			} else {
 				comment.setCommentType(CtComment.CommentType.FILE);
-				addCommentToNear(comment, new ArrayList<CtElement>(spoonUnit.getDeclaredTypes()));
+				addCommentToNear(comment, new ArrayList<>(spoonUnit.getDeclaredTypes()));
 			}
 			return;
 		}
@@ -298,7 +298,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <R> void visitCtStatementList(CtStatementList e) {
-				addCommentToNear(comment, new ArrayList<CtElement>(e.getStatements()));
+				addCommentToNear(comment, new ArrayList<>(e.getStatements()));
 				try {
 					comment.getParent();
 				} catch (ParentNotInitializedException ex) {
@@ -392,7 +392,7 @@ class JDTCommentBuilder {
 					} else {
 						if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()
 								&& ctCase.getPosition().getSourceStart() > comment.getPosition().getSourceStart()) {
-							addCommentToNear(comment, new ArrayList<CtElement>(previous.getStatements()));
+							addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 							try {
 								comment.getParent();
 							} catch (ParentNotInitializedException ex) {
@@ -404,7 +404,7 @@ class JDTCommentBuilder {
 					previous = ctCase;
 				}
 				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
-					addCommentToNear(comment, new ArrayList<CtElement>(previous.getStatements()));
+					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();
 					} catch (ParentNotInitializedException ex) {
@@ -455,7 +455,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtNewArray(CtNewArray<T> e) {
-				addCommentToNear(comment, new ArrayList<CtElement>(e.getElements()));
+				addCommentToNear(comment, new ArrayList<>(e.getElements()));
 				try {
 					comment.getParent();
 				} catch (ParentNotInitializedException ex) {
