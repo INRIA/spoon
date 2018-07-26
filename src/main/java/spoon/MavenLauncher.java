@@ -75,13 +75,18 @@ public class MavenLauncher extends Launcher {
 	 * @param mvnHome Path to maven install
 	 */
 	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String mvnHome) {
+		this(mavenProject,m2RepositoryPath,sourceType, buildClassPath(mvnHome, mavenProject, sourceType));
+	}
+
+	/**
+	 *
+	 * @param mavenProject the path to the root of the project
+	 * @param m2RepositoryPath the path to the m2repository
+	 * @param sourceType the source type (App, test, or all)
+	 * @param classpath String array containing the classpath elements
+	 */
+	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String[] classpath) {
 		super();
-		if (mvnHome == null) {
-			mvnHome = guessMavenHome();
-			if (mvnHome == null) {
-				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
-			}
-		}
 		this.m2RepositoryPath = m2RepositoryPath;
 		this.sourceType = sourceType;
 
@@ -117,19 +122,15 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// dependencies
-		String[] classpath = buildClassPath(mavenProject, new File(mvnHome), sourceType);
+
 		this.getModelBuilder().setSourceClasspath(classpath);
 
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
 
-	private String[] buildClassPath(String projectPath, File mvnHome, SOURCE_TYPE sourceType) {
-		if (!projectPath.endsWith(".xml") && !projectPath.endsWith(".pom")) {
-			projectPath = Paths.get(projectPath, "pom.xml").toString();
-		}
-		File pom = new File(projectPath);
-		File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
+	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType, File outputFile) {
+		//File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
 
 		//Run mvn dependency:build-classpath -Dmdep.outputFile="spoon.classpath.tmp"
 		//This should write the classpath used by maven in spoon.classpath.tmp
@@ -140,7 +141,7 @@ public class MavenLauncher extends Launcher {
 		if (sourceType == SOURCE_TYPE.APP_SOURCE) {
 			properties.setProperty("mdep.includeScope", "runtime");
 		}
-		properties.setProperty("mdep.outputFile", classPathPrint.getAbsolutePath());
+		properties.setProperty("mdep.outputFile", outputFile.getAbsolutePath());
 		request.setProperties(properties);
 
 		//FIXME Should the standard output made silent and error verbose?
@@ -156,13 +157,15 @@ public class MavenLauncher extends Launcher {
 			e.printStackTrace();
 			throw new SpoonException("Maven invocation failed to build a classpath.");
 		}
+	}
 
+	private static String[] readClassPath(File classPathFile) {
 		String[] classpath = null;
 
 		//Read the content of spoon.classpath.tmp
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new FileReader(classPathPrint));
+			br = new BufferedReader(new FileReader(classPathFile));
 			StringBuilder sb = new StringBuilder();
 			String line = br.readLine();
 			while (line != null) {
@@ -182,12 +185,11 @@ public class MavenLauncher extends Launcher {
 			System.out.println("Cause: " + e.getCause());
 			System.out.println("Message: " + e.getMessage());
 			e.printStackTrace(System.out);
-			throw new SpoonException("Failed to read classpath written in temporary file " + classPathPrint.getAbsolutePath() + ".");
+			throw new SpoonException("Failed to read classpath written in temporary file " + classPathFile.getAbsolutePath() + ".");
 		} finally {
 			if (br != null) {
 				try {
 					br.close();
-					classPathPrint.delete(); // delete
 				} catch (IOException e) {
 					e.printStackTrace(); //These Exceptions occur after the classpath has been read, so it should not prevent normal execution.
 				}
@@ -219,5 +221,22 @@ public class MavenLauncher extends Launcher {
 			e.printStackTrace();
 		}
 		return mvnHome;
+	}
+
+	private static String[] buildClassPath(String mvnHome, String mavenProject, SOURCE_TYPE sourceType) {
+		if (mvnHome == null) {
+			mvnHome = guessMavenHome();
+			if (mvnHome == null) {
+				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
+			}
+		}
+		String projectPath = mavenProject;
+		if (!projectPath.endsWith(".xml") && !projectPath.endsWith(".pom")) {
+			projectPath = Paths.get(projectPath, "pom.xml").toString();
+		}
+		File pom = new File(projectPath);
+		File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
+		generateClassPathFile(pom, new File(mvnHome), sourceType, classPathPrint);
+		return readClassPath(classPathPrint);
 	}
 }
