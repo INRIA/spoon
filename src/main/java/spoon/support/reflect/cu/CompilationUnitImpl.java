@@ -16,16 +16,19 @@
  */
 package spoon.support.reflect.cu;
 
+import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.printer.change.ElementSourceFragment;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;
@@ -64,6 +67,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	 * Used to compute line numbers afterwards.
 	 */
 	private int[] lineSeparatorPositions;
+
+	private ElementSourceFragment rootFragment;
 
 	@Override
 	public UNIT_TYPE getUnitType() {
@@ -299,6 +304,31 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 			myPartialSourcePosition = new PartialSourcePositionImpl(this);
 		}
 		return myPartialSourcePosition;
+	}
+
+	@Override
+	public ElementSourceFragment getRootSourceFragment() {
+		if (rootFragment == null) {
+			String originSourceCode = getOriginalSourceCode();
+			rootFragment = new ElementSourceFragment(this, null);
+			for (CtImport imprt : getImports()) {
+				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
+			}
+			for (CtType<?> ctType : declaredTypes) {
+				rootFragment.addTreeOfSourceFragmentsOfElement(ctType);
+			}
+		}
+		return rootFragment;
+	}
+
+	@Override
+	public ElementSourceFragment getSourceFragment(SourcePositionHolder element) {
+		ElementSourceFragment rootFragment = getRootSourceFragment();
+		SourcePosition sp = element.getPosition();
+		if (sp.getCompilationUnit() != this) {
+			throw new SpoonException("Cannot return SourceFragment of element for different CompilationUnit");
+		}
+		return rootFragment.getSourceFragmentOf(element, sp.getSourceStart(), sp.getSourceEnd() + 1);
 	}
 
 	@Override
