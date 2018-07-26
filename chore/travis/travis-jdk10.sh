@@ -9,6 +9,7 @@ chmod +x install-jdk.sh
 
 export JAVA_HOME=$HOME/openjdk8
 source ./install-jdk.sh -f 10
-update-ca-certificates --fresh
+sudo rm -f /etc/ssl/certs/java/cacerts
+sudo update-ca-certificates --fresh
 
 mvn -Djava.src.version=1.10 test
