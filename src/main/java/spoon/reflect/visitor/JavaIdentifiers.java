@@ -41,7 +41,7 @@ public enum JavaIdentifiers {
 
 	static {
 		KEYWORDS = new HashSet<>();
-		for (JavaIdentifiers kw : Arrays.asList(JavaIdentifiers.values())) {
+		for (JavaIdentifiers kw : JavaIdentifiers.values()) {
 			KEYWORDS.add(kw.name().toLowerCase());
 		}
 	}
