@@ -21,6 +21,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class LiteralTest {
+
 	@Test
 	public void testCharLiteralInNoClasspath() throws Exception {
 		final Launcher launcher = new Launcher();

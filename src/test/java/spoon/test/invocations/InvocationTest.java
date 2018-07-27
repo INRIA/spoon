@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class InvocationTest {
+
 	@Test
 	public void testTypeOfStaticInvocation() throws Exception {
 		SpoonAPI launcher = new Launcher();
