@@ -173,8 +173,8 @@ class JDTCommentBuilder {
 
 		// TODO: remove the " *", see spoon.test.javadoc.JavaDocTest.testJavaDocReprint()
 		String[] lines = commentContent.split("\n");
-		for (String l : lines) {
-			String line = l.trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
 				int endIndex = line.indexOf(" ");
 				if (endIndex == -1) {
@@ -189,7 +189,7 @@ class JDTCommentBuilder {
 					currentTagContent = line.substring(endIndex + 1);
 				}
 			} else {
-				currentTagContent += "\n" + l;
+				currentTagContent += "\n" + aLine;
 			}
 		}
 		defineCommentContent(comment, currentTagContent, currentTag);
