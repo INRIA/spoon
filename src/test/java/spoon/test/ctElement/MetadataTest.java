@@ -14,7 +14,6 @@ import static spoon.testing.utils.ModelUtils.build;
 
 public class MetadataTest {
 
-
 	@Test
 	public void testMetadata() throws Exception {
 

@@ -43,6 +43,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class IntercessionTest {
 	Factory factory = createFactory();
+
 	@Test
 	public void testInsertBegin() {
 		CtClass<?> clazz = factory
@@ -83,7 +84,6 @@ public class IntercessionTest {
 		assertSame(returnStmt, body.getStatements().get(2));
 
 		Assert.assertNotEquals(foo, fooClone);
-
 	}
 
 	@Test
