@@ -95,7 +95,7 @@ public class ArraysTest {
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testParameterizedVarargReference() throws Exception {
 		//contract: check actual type arguments of parameter type: List<?>...
@@ -107,7 +107,7 @@ public class ArraysTest {
 		assertEquals(1, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
 		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
 	}
-	
+
 	@Test
 	public void testParameterizedArrayReference() throws Exception {
 		//contract: check actual type arguments of parameter type: List<?>[]

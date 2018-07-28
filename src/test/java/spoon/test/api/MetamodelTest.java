@@ -161,12 +161,13 @@ public class MetamodelTest {
 				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC) || candidate.hasModifier(ModifierKind.TRANSIENT)) {
 					return false;
 				}
-				if ( 	// not a role
-						"parent".equals(candidate.getSimpleName())
-						|| "metadata".equals(candidate.getSimpleName())
-						|| "factory".equals(candidate.getSimpleName())
-						// cache field
-						|| "valueOfMethod".equals(candidate.getSimpleName())) {
+				if (
+					// not a role
+					"parent".equals(candidate.getSimpleName())
+					|| "metadata".equals(candidate.getSimpleName())
+					|| "factory".equals(candidate.getSimpleName())
+					// cache field
+					|| "valueOfMethod".equals(candidate.getSimpleName())) {
 					return false;
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
@@ -177,13 +178,14 @@ public class MetamodelTest {
 						|| parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtElement.class))
 						);
 			}
-		}).stream().map(x -> { result.add(x.toString()); return x; }).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
+		}).stream().map(x -> {
+			result.add(x.toString()); return x;
+		}).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
 
 		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)" + nl + "boolean isShadow;"));
 		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)" + nl + "spoon.reflect.reference.CtTypeReference<T> type;"));
 		assertTrue(result.size() > 100);
 		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
-
 
 		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
 		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
@@ -223,7 +225,6 @@ public class MetamodelTest {
 			assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
 			assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
 		}
-
 	}
 
 	@Test
@@ -677,5 +678,4 @@ public class MetamodelTest {
 		field.setSimpleName(name);
 		return field;
 	}
-
 }

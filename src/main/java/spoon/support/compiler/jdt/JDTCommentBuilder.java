@@ -173,8 +173,8 @@ class JDTCommentBuilder {
 
 		// TODO: remove the " *", see spoon.test.javadoc.JavaDocTest.testJavaDocReprint()
 		String[] lines = commentContent.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
 				int endIndex = line.indexOf(" ");
 				if (endIndex == -1) {
@@ -189,7 +189,7 @@ class JDTCommentBuilder {
 					currentTagContent = line.substring(endIndex + 1);
 				}
 			} else {
-				currentTagContent += "\n" + lines[i];
+				currentTagContent += "\n" + aLine;
 			}
 		}
 		defineCommentContent(comment, currentTagContent, currentTag);
@@ -381,8 +381,7 @@ class JDTCommentBuilder {
 			public <E> void visitCtSwitch(CtSwitch<E> e) {
 				List<CtCase<? super E>> cases = e.getCases();
 				CtCase previous = null;
-				for (int i = 0; i < cases.size(); i++) {
-					CtCase<? super E> ctCase = cases.get(i);
+				for (CtCase<? super E> ctCase : cases) {
 					if (previous == null) {
 						if (comment.getPosition().getSourceStart() < ctCase.getPosition().getSourceStart()
 								&& e.getPosition().getSourceStart() < comment.getPosition().getSourceStart()) {

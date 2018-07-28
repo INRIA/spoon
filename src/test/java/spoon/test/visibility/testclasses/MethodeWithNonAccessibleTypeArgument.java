@@ -1,4 +1,4 @@
-package spoon.test.visibility;
+package spoon.test.visibility.testclasses;
 
 import spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf;
 
