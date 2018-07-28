@@ -16,7 +16,7 @@ public class JDTBuilderTest {
 	private static final String TEST_CLASSPATH = "./src/test/java/spoon/test/";
 
 	@Test
-	public void testJdtBuilder() throws Exception {
+	public void testJdtBuilder() {
 		final String[] builder = new JDTBuilderImpl() //
 				.classpathOptions(new ClasspathOptions().classpath(TEST_CLASSPATH).bootclasspath(TEST_CLASSPATH).binaries(".").encoding("UTF-8")) //
 				.complianceOptions(new ComplianceOptions().compliance(8)) //
