@@ -557,8 +557,7 @@ public class MavenLauncher extends Launcher {
 			if (version != null && version.startsWith("[")) {
 				List<Version> versionsFromM2 = getVersionsFromM2(groupId, artifactId);
 				RangeVersion rangeVersion = new RangeVersion(version);
-				for (int i = 0; i < versionsFromM2.size(); i++) {
-					Version v = versionsFromM2.get(i);
+				for (Version v : versionsFromM2) {
 					if (rangeVersion.include(v)) {
 						version = v.version;
 						break;
