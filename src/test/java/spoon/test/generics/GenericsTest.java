@@ -666,7 +666,7 @@ public class GenericsTest {
 		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
 			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
-			// contract: getTypeParameterDeclaration goes back to the declaration, eevn without context
+			// contract: getTypeParameterDeclaration goes back to the declaration, even without context
 			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
 		}
