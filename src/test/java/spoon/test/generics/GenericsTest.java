@@ -659,7 +659,6 @@ public class GenericsTest {
 
 		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
 		//this returns a type reference with uninitialized actual type arguments.
-//		CtTypeReference<?> genericTypeRef = aTacos.getReference();
 		CtTypeReference<?> genericTypeRef = aTacos.getFactory().Type().createReference(aTacos, true);
 		
 		assertTrue(genericTypeRef.getActualTypeArguments().size()>0);
