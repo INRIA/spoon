@@ -247,7 +247,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	/**
-	 * Generates type in the package `ownerPackage` with simple name `typeSimpleName` using this {@link GeneratorImpl} and provided `params`
+	 * Generates type in the package `ownerPackage` with simple name `typeSimpleName` using this {@link Generator} and provided `params`
 	 *
 	 * Note: the root of pattern element must be one or more types.
 	 *
