@@ -108,7 +108,7 @@ public class TypeReferenceTest {
 
 		// now we retrieve the reference to ReferencedClass
 		CtTypeReference referencedType = null;
-		ReferenceTypeFilter<CtTypeReference> referenceTypeFilter = new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class);
+		ReferenceTypeFilter<CtTypeReference> referenceTypeFilter = new ReferenceTypeFilter<>(CtTypeReference.class);
 		List<CtTypeReference> elements = Query.getElements(theClass, referenceTypeFilter);
 		for (CtTypeReference reference : elements) {
 			if (reference.getQualifiedName().equals(referencedQualifiedName)) {
@@ -635,7 +635,7 @@ public class TypeReferenceTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.buildModel();
 
-		CtField field = launcher.getModel().getElements(new TypeFilter<CtField>(CtField.class)).get(0);
+		CtField field = launcher.getModel().getElements(new TypeFilter<>(CtField.class)).get(0);
 		CtTypeReference fieldTypeRef = field.getType();
 
 		assertEquals("spoon.test.imports.testclasses.withgenerics.Target", fieldTypeRef.getQualifiedName());

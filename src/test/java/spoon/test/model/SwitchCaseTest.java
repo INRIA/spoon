@@ -46,7 +46,7 @@ public class SwitchCaseTest {
 		assertEquals(0, ((CtLiteral<?>) c.getCaseExpression()).getValue());
 		assertEquals(2, c.getStatements().size());
 
-		List<CtStatement> l = new ArrayList<CtStatement>();
+		List<CtStatement> l = new ArrayList<>();
 
 		// this compiles (thanks to the new CtCase extends CtStatementList)
 		for (CtStatement s : c) {
