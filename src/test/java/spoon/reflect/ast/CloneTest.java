@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 public class CloneTest {
 
 	@Test
-	public void testCloneMethodsDeclaredInAST() throws Exception {
+	public void testCloneMethodsDeclaredInAST() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
@@ -93,7 +93,7 @@ public class CloneTest {
 	}
 
 	@Test
-	public void testCloneCastConditional() throws Exception {
+	public void testCloneCastConditional() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
@@ -119,7 +119,7 @@ public class CloneTest {
 	}
 
 	@Test
-	public void testCloneListener() throws Exception {
+	public void testCloneListener() {
 		// contract: it is possible to extend the cloning behavior
 
 		// in this example extension, a listener of cloning process gets access to origin node and cloned node
@@ -157,7 +157,7 @@ public class CloneTest {
 	}
 
 	@Test
-	public void testCopyMethod() throws Exception {
+	public void testCopyMethod() {
 		// contract: the copied method is well-formed, lookup of executable references is preserved after copying, esp for recursive methods
 		Launcher l = new Launcher();
 		l.getEnvironment().setNoClasspath(true);
@@ -201,7 +201,7 @@ public class CloneTest {
 	}
 
 	@Test
-	public void testCopyType() throws Exception {
+	public void testCopyType() {
 		// contract: the copied type is well formed, it never points to the initial type
 		Factory factory = ModelUtils.build(new File("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java"));
 		CtType<?> intialElement = factory.Type().get(DefaultJavaPrettyPrinter.class);

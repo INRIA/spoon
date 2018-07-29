@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class AstCheckerTest {
 
 	@Test
-	public void testAvoidSetCollectionSavedOnAST() throws Exception {
+	public void testAvoidSetCollectionSavedOnAST() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("src/main/java");
@@ -85,7 +85,7 @@ public class AstCheckerTest {
 	}
 
 	@Test
-	public void testPushToStackChanges() throws Exception {
+	public void testPushToStackChanges() {
 		// contract: setters should check the given parameters against NPE and the ModelChangeListener must be called!
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
