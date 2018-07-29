@@ -123,10 +123,5 @@ public class ExceptionTest {
 		CtCatchVariable variable2 = catches.get(1).getParameter(); // outside the lambda
 
 		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
-
-		// for now the type of CtCatchVariable is not the same
-		// this should be fix in the future (see: https://github.com/INRIA/spoon/issues/1420)
-		//assertEquals(variable2, variable1);
 	}
-
 }
