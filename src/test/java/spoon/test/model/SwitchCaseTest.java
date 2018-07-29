@@ -57,7 +57,7 @@ public class SwitchCaseTest {
 
 	@Test
 	public void testSwitchStatementOnAString() throws Exception {
-		CtClass<?> clazz = build("spoon.test.model", "SwitchStringClass");
+		CtClass<?> clazz = build("spoon.test.model.testclasses", "SwitchStringClass");
 
 		CtMethod<?> method = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtSwitch<?> ctSwitch = method
