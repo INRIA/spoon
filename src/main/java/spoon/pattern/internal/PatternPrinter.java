@@ -161,8 +161,7 @@ public class PatternPrinter extends DefaultGenerator {
 
 	/**
 	 * Creates a element which will be printed in source code of pattern as marker of parameter
-	 * @param factory a SpoonFactory which has to be used to create new elements
-	 * @param potentialParameterMarker
+	 * @param parameterInfo
 	 * @param type
 	 * @return dummy template element, which represents a template type in source of generated Pattern.
 	 * Or null if potentialParameterMarker is not a marker of parameter
