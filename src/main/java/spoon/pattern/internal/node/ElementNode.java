@@ -353,9 +353,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	/**
-	 * @param roleHandler the to be checked role
+	 * @param role the role to be checked
 	 * @param targetClass the class which is going to be checked
-	 * @return true if the role is relevant for matching process
+	 * @return true if the role is relevant to matching process
 	 */
 	private static boolean isMatchingRole(CtRole role, Class<?> targetClass) {
 		Class<?>[] classes = roleToSkippedClass.get(role);
