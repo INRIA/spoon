@@ -1,4 +1,4 @@
-package spoon.test.model;
+package spoon.test.model.testclasses;
 
 import java.util.HashMap;
 import java.util.Map;
