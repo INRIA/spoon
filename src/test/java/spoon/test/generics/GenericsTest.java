@@ -254,7 +254,7 @@ public class GenericsTest {
 
 			CtField<?> INSTANCE2 = type.getElements(
 					new NamedElementFilter<>(CtField.class,"INSTANCE2")).get(0);
-			INSTANCE2.setAnnotations(new ArrayList<CtAnnotation<?>>());
+			INSTANCE2.setAnnotations(new ArrayList<>());
 			assertEquals(
 					"public static final spoon.test.generics.testclasses3.ACLass<?> INSTANCE2 = new spoon.test.generics.testclasses3.ACLass();",
 					INSTANCE2.toString());
@@ -542,7 +542,7 @@ public class GenericsTest {
 		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
 		final CtType<?> burritos = aTacos.getNestedType("Burritos");
 
-		SortedList<CtConstructorCall> elements = new SortedList<CtConstructorCall>(new CtLineElementComparator());
+		SortedList<CtConstructorCall> elements = new SortedList<>(new CtLineElementComparator());
 		elements.addAll(burritos.getElements(new TypeFilter<>(CtConstructorCall.class)));
 
 		assertEquals(3, elements.size());
@@ -588,7 +588,7 @@ public class GenericsTest {
 
 	@Test
 	public void testWildcard() throws Exception {
-		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class));
+		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<>(CtWildcardReference.class));
 		// 4 = the class declaration + the constructor declaration + the method declaration + the type parameter of the method declaration
 		assertEquals(4, wildcardReferences.size());
 	}
