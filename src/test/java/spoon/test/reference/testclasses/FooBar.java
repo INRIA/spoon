@@ -1,4 +1,4 @@
-package spoon.test.reference;
+package spoon.test.reference.testclasses;
 
 public class FooBar {
 	public class Bar {
