@@ -39,7 +39,7 @@ public class VariableAccessTest {
 
 	@Test
 	public void testVariableAccessDeclarationInAnonymousClass() throws Exception {
-		CtClass<?> type = build("spoon.test.reference", "FooBar");
+		CtClass<?> type = build("spoon.test.reference.testclasses", "FooBar");
 		assertEquals("FooBar", type.getSimpleName());
 
 		final CtParameterReference<?> ref = type.getElements(new AbstractReferenceFilter<CtParameterReference<?>>(CtParameterReference.class) {

@@ -153,7 +153,7 @@ public class ExecutableReferenceTest {
 	@Test
 	public void testInvokeEnumMethod() {
 		final spoon.Launcher launcher = new spoon.Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/reference/Enum.java");
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Enum.java");
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setComplianceLevel(8);
 		launcher.buildModel();
