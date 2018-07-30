@@ -210,7 +210,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	public JDTTreeBuilder(Factory factory) {
-		super();
 		this.factory = factory;
 		this.position = new PositionBuilder(this);
 		this.context = new ContextBuilder(this);

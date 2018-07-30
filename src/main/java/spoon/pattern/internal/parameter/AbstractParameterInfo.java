@@ -58,7 +58,6 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	private Class<?> parameterValueType;
 
 	protected AbstractParameterInfo(ParameterInfo containerItemAccessor) {
-		super();
 		this.containerItemAccessor = (AbstractParameterInfo) containerItemAccessor;
 	}
 

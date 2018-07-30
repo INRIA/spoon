@@ -25,7 +25,6 @@ public class ASTPair {
 	public ASTNode node;
 
 	public ASTPair(CtElement element, ASTNode node) {
-		super();
 		this.element = element;
 		this.node = node;
 	}

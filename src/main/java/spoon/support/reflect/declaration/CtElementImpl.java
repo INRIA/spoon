@@ -121,9 +121,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	Map<String, Object> metadata;
 
 	public CtElementImpl() {
-		super();
 	}
-
 
 	@Override
 	public String getShortRepresentation() {

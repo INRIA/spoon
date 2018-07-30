@@ -48,7 +48,6 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	private ParameterInfo localParameter;
 
 	public ForEachNode() {
-		super();
 	}
 
 	@Override

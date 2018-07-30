@@ -50,7 +50,6 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	boolean stat = false;
 
 	public CtFieldReferenceImpl() {
-		super();
 	}
 
 	@Override

@@ -186,7 +186,6 @@ public class StringNode extends AbstractPrimitiveMatcher {
 		int to;
 
 		Region(ParameterInfo param, int from, int to) {
-			super();
 			this.param = param;
 			this.from = from;
 			this.to = to;

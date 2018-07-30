@@ -42,7 +42,6 @@ public class ZipFolder implements SpoonFolder {
 	List<SpoonFile> files;
 
 	public ZipFolder(File file) throws IOException {
-		super();
 		if (!file.isFile()) {
 			throw new IOException(file.getName() + " is not a valid zip file");
 		}

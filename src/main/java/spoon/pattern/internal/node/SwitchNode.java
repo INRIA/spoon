@@ -50,7 +50,6 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 	private List<CaseNode> cases = new ArrayList<>();
 
 	public SwitchNode() {
-		super();
 	}
 
 	@Override
@@ -128,7 +127,6 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 		private PrimitiveMatcher vrOfExpression;
 		private RootNode statement;
 		private CaseNode(PrimitiveMatcher vrOfExpression, RootNode statement) {
-			super();
 			this.vrOfExpression = vrOfExpression;
 			this.statement = statement;
 		}

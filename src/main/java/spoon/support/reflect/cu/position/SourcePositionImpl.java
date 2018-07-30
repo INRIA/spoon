@@ -107,7 +107,6 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	private int sourceStartline = -1;
 
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
-		super();
 		checkArgsAreAscending(sourceStart, sourceEnd + 1);
 		if (compilationUnit == null) {
 			throw new SpoonException("Mandatory parameter compilationUnit is null");

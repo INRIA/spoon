@@ -70,7 +70,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
