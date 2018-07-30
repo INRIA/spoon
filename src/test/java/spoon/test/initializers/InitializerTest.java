@@ -57,6 +57,5 @@ public class InitializerTest {
 		// static initializer
 		CtAnonymousExecutable ex = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertEquals("x = 3", ex.getBody().getStatements().get(0).toString());
-
 	}
 }
