@@ -13,7 +13,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class AssignmentsEqualsTest {
 
 	@Test
-	public void testEquals() throws Exception {
+	public void testEquals() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/spoon/test/visitor/Assignments.java");
 		launcher.buildModel();
