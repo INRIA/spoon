@@ -123,7 +123,7 @@ public class TypeTest {
 		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> eat = aPozole.getMethodsByName("eat").get(0);
 
-		final List<CtTypeAccess<?>> typeAccesses = eat.getElements(new TypeFilter<CtTypeAccess<?>>(CtTypeAccess.class));
+		final List<CtTypeAccess<?>> typeAccesses = eat.getElements(new TypeFilter<>(CtTypeAccess.class));
 		assertEquals(2, typeAccesses.size());
 
 		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
@@ -148,7 +148,7 @@ public class TypeTest {
 		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> season = aPozole.getMethodsByName("season").get(0);
 
-		final List<CtTypeAccess<?>> typeAccesses = season.getElements(new TypeFilter<CtTypeAccess<?>>(CtTypeAccess.class));
+		final List<CtTypeAccess<?>> typeAccesses = season.getElements(new TypeFilter<>(CtTypeAccess.class));
 		assertEquals(2, typeAccesses.size());
 
 		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
@@ -201,7 +201,7 @@ public class TypeTest {
 		assertIntersectionTypeForPozolePrepareMethod(aPozole, typeParameter.getSuperclass());
 
 		// Intersection type in casts.
-		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<>(CtLambda.class));
 		assertEquals(1, lambdas.size());
 
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
@@ -246,7 +246,7 @@ public class TypeTest {
 		assertIntersectionTypeForPozoleFinishMethod(aPozole, typeParameter.getSuperclass());
 
 		// Intersection type in casts.
-		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<>(CtLambda.class));
 		assertEquals(1, lambdas.size());
 
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());

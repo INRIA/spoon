@@ -219,7 +219,7 @@ public class ParentTest {
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
-			Deque<CtElement> elementStack = new ArrayDeque<CtElement>();
+			Deque<CtElement> elementStack = new ArrayDeque<>();
 			@Override
 			public void scan(CtElement e) {
 				if (e==null) { return; }
@@ -243,7 +243,7 @@ public class ParentTest {
 		CtMethod<Object> m = clazz.getMethod("m");
 		// get three = "" in one = two = three = "";
 		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getStatement(3)).getAssignment()).getAssignment();
-		CtPackage ctPackage = statement.getParent(new TypeFilter<CtPackage>(CtPackage.class));
+		CtPackage ctPackage = statement.getParent(new TypeFilter<>(CtPackage.class));
 		assertEquals(Foo.class.getPackage().getName(), ctPackage.getQualifiedName());
 
 		CtStatement ctStatement = statement
@@ -278,7 +278,7 @@ public class ParentTest {
 		assertNotEquals(ctStatement1.getParent(CtType.class), parent);
 
 		// not present element
-		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<CtWhile>(CtWhile.class));
+		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<>(CtWhile.class));
 		assertEquals(null, ctWhile);
 
 		CtStatement statementParent = statement

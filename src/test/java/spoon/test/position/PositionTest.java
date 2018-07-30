@@ -639,7 +639,7 @@ public class PositionTest {
 		launcher.addInputResource("./src/test/java/spoon/test/position/testclasses/ImplicitBlock.java");
 		launcher.buildModel();
 
-		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<>(CtIf.class)).get(0);
 		CtStatement thenStatement = ifElement.getThenStatement();
 
 		assertTrue(thenStatement instanceof CtBlock);
