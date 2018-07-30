@@ -15,7 +15,7 @@ public abstract class GenericCtTypeProcessor<T extends CtType> extends AbstractP
         super.addProcessedElementType(zeClass);
     }
 
-    public List<T> elements = new ArrayList<T>();
+    public List<T> elements = new ArrayList<>();
 
     @Override
     public void process(T element) {
