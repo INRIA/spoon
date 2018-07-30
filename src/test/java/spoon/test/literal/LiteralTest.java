@@ -31,7 +31,7 @@ public class LiteralTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.apache.cassandra.index.SecondaryIndexManager");
-		TreeSet<CtLiteral<?>> ts = new TreeSet<CtLiteral<?>>(new DeepRepresentationComparator());
+		TreeSet<CtLiteral<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 
 		ts.addAll(aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
 			@Override
