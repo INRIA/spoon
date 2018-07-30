@@ -219,7 +219,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -247,7 +247,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
