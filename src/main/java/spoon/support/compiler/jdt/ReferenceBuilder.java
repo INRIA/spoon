@@ -35,7 +35,6 @@ import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BaseTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
@@ -799,7 +798,6 @@ public class ReferenceBuilder {
 				}
 			}
 			if (bounds && b.superInterfaces != null && b.superInterfaces != Binding.NO_SUPERINTERFACES) {
-				bounds = false;
 				bindingCache.put(binding, ref);
 				List<CtTypeReference<?>> bounds = new ArrayList<>();
 				CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) ref;
@@ -957,7 +955,6 @@ public class ReferenceBuilder {
 				CtParameterReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createParameterReference();
 				ref.setSimpleName(new String(varbin.name));
 				ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
-				final ReferenceContext referenceContext = localVariableBinding.declaringScope.referenceContext();
 				return ref;
 			} else if (localVariableBinding.declaration.binding instanceof CatchParameterBinding) {
 				CtCatchVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createCatchVariableReference();
