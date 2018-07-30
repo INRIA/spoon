@@ -95,7 +95,7 @@ public class FilterTest {
 	public void testFilters() throws Exception {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
-		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
+		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<>(".* = .*"));
 		assertEquals(2, expressions.size());
 	}
 
@@ -171,7 +171,7 @@ public class FilterTest {
 		final CtType<FieldAccessFilterTacos> fieldAccessFilterTacos = build.Type().get(FieldAccessFilterTacos.class);
 
 		try {
-			List<CtField> fields = fieldAccessFilterTacos.getElements(new TypeFilter<CtField>(CtField.class));
+			List<CtField> fields = fieldAccessFilterTacos.getElements(new TypeFilter<>(CtField.class));
 			for (CtField ctField : fields) {
 				fieldAccessFilterTacos.getElements(new FieldAccessFilter(ctField.getReference()));
 			}
@@ -196,7 +196,7 @@ public class FilterTest {
 	public void filteredElementsAreOfTheCorrectType() throws Exception {
 		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		Class<CtMethod> filterClass = CtMethod.class;
-		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(filterClass);
+		TypeFilter<CtMethod> statementFilter = new TypeFilter<>(filterClass);
 		List<CtMethod> elements = Query.getElements(factory, statementFilter);
 		for (CtMethod element : elements) {
 			assertTrue(filterClass.isInstance(element));
@@ -207,8 +207,8 @@ public class FilterTest {
 	@Test
 	public void intersectionOfTwoFilters() throws Exception {
 		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
-		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(CtMethod.class);
-		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<CtMethodImpl>(CtMethodImpl.class);
+		TypeFilter<CtMethod> statementFilter = new TypeFilter<>(CtMethod.class);
+		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<>(CtMethodImpl.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, statementFilter, statementImplFilter);
 
 		List<CtMethod> methodsWithInterfaceSuperclass = Query.getElements(factory, statementFilter);
@@ -227,15 +227,15 @@ public class FilterTest {
 	@Test
 	public void unionOfTwoFilters() throws Exception {
 		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
-		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<CtNewClass>(CtNewClass.class);
-		TypeFilter<CtMethod> methodFilter = new TypeFilter<CtMethod>(CtMethod.class);
+		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<>(CtNewClass.class);
+		TypeFilter<CtMethod> methodFilter = new TypeFilter<>(CtMethod.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.UNION, methodFilter, newClassFilter);
 
 		List filteredWithCompositeFilter = Query.getElements(factory, compositeFilter);
 		List<CtMethod> methods = Query.getElements(factory, methodFilter);
 		List<CtNewClass> newClasses = Query.getElements(factory, newClassFilter);
 
-		List<CtElement> union = new ArrayList<CtElement>();
+		List<CtElement> union = new ArrayList<>();
 		union.addAll(methods);
 		union.addAll(newClasses);
 
@@ -265,7 +265,7 @@ public class FilterTest {
 		launcher.run();
 
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aClass.getMethodsByName("prepare").get(0)));
 		ts.addAll(elements);
 		assertEquals(5, elements.size());
@@ -288,7 +288,7 @@ public class FilterTest {
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
 
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aTostada.getMethodsByName("prepare").get(0)));
 		ts.addAll(elements);
 
@@ -314,7 +314,7 @@ public class FilterTest {
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
 
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aITostada.getMethodsByName("make").get(0)));
 		ts.addAll(elements);
 		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
@@ -516,7 +516,7 @@ public class FilterTest {
 		launcher.run();
 
 		//First collect all classes using tested TypeFilter
-		List<CtClass<?>> allClasses = launcher.getFactory().Package().getRootPackage().getElements(new TypeFilter<CtClass<?>>(CtClass.class));
+		List<CtClass<?>> allClasses = launcher.getFactory().Package().getRootPackage().getElements(new TypeFilter<>(CtClass.class));
 		assertTrue(allClasses.size()>0);
 		allClasses.forEach(result->{
 			assertTrue(result instanceof CtClass);
