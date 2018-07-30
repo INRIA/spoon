@@ -26,7 +26,6 @@ public class CtPackageReferenceImpl extends CtReferenceImpl implements CtPackage
 	private static final long serialVersionUID = 1L;
 
 	public CtPackageReferenceImpl() {
-		super();
 	}
 
 	@Override

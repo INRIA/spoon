@@ -94,7 +94,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotationFactory() throws Exception {
+	public void testAnnotationFactory() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 
@@ -108,7 +108,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotateWithEnum() throws Exception {
+	public void testAnnotateWithEnum() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING, "field");
@@ -120,7 +120,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotationPrintAnnotation() throws Exception {
+	public void testAnnotationPrintAnnotation() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
 		launcher.getEnvironment().setNoClasspath(true);

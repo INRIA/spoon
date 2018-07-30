@@ -43,7 +43,6 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractAnnotationProcessor() {
-		super();
 		clearProcessedElementType();
 
 		for (Method m : getClass().getMethods()) {

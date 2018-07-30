@@ -65,7 +65,7 @@ public class SignatureTest {
 		// since the signature is null, CtElement.equals throws an exception and
 		// should not
 		CtLiteral<?> lit2 = ((CtLiteral<?>) lit).clone();
-		HashSet<CtExpression<?>> s = new HashSet<CtExpression<?>>();
+		HashSet<CtExpression<?>> s = new HashSet<>();
 		s.add(lit);
 		s.add(lit2);
 	}
@@ -203,7 +203,7 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		ts.addAll(clazz1.getMethods());
 		CtMethod[] methodArray = ts.toArray(new CtMethod[0]);
 		CtMethod<?> methodInteger = methodArray[0];

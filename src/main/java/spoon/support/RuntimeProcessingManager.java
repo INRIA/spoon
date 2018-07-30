@@ -52,7 +52,6 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	 * 		meta-model)
 	 */
 	public RuntimeProcessingManager(Factory factory) {
-		super();
 		setFactory(factory);
 	}
 

@@ -47,7 +47,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	private CtPackage rootPackage;
 
 	public CtModuleImpl() {
-		super();
 	}
 
 	@Override

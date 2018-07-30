@@ -32,7 +32,6 @@ public class ZipFile implements SpoonFile {
 	ZipFolder parent;
 
 	public ZipFile(ZipFolder parent, String name, byte[] buffer) {
-		super();
 		this.buffer = buffer;
 		this.name = name;
 		this.parent = parent;

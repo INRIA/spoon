@@ -41,7 +41,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	protected String simplename = "";
 
 	public CtReferenceImpl() {
-		super();
 	}
 
 	protected abstract AnnotatedElement getActualAnnotatedElement();

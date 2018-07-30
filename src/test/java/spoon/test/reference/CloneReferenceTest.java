@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 public class CloneReferenceTest {
 
     @Test
-    public void testGetDeclarationAfterClone() throws Exception {
+    public void testGetDeclarationAfterClone() {
         // contract: all variable references of the clone (but fields) should point to the variable of the clone
         Launcher spoon = new Launcher();
 
@@ -49,7 +49,7 @@ public class CloneReferenceTest {
     }
 
     @Test
-    public void testGetDeclarationOfFieldAfterClone() throws Exception {
+    public void testGetDeclarationOfFieldAfterClone() {
         // contract: all field references of the clone point to the old class
         // behaviour changed on https://github.com/INRIA/spoon/pull/1215
         Launcher spoon = new Launcher();
