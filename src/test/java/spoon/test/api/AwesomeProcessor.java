@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AwesomeProcessor extends AbstractProcessor<CtClass<Bar>> {
-	final List<CtClass<Bar>> elements = new ArrayList<CtClass<Bar>>();
+	final List<CtClass<Bar>> elements = new ArrayList<>();
 
 	@Override
 	public void process(CtClass<Bar> element) {
