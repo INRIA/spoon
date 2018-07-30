@@ -132,16 +132,16 @@ public class PatternParameterConfigurator {
 		return this;
 	}
 
-	public PatternParameterConfigurator setMinOccurence(int minOccurence) {
-		currentParameter.setMinOccurrences(minOccurence);
+	public PatternParameterConfigurator setMinOccurrence(int minOccurrence) {
+		currentParameter.setMinOccurrences(minOccurrence);
 		return this;
 	}
 
-	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {
-		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
+	public PatternParameterConfigurator setMaxOccurrence(int maxOccurrence) {
+		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && currentParameter.isMultiple() == false) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
-		currentParameter.setMaxOccurrences(maxOccurence);
+		currentParameter.setMaxOccurrences(maxOccurrence);
 		return this;
 	}
 
