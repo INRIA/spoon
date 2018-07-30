@@ -123,5 +123,6 @@ public class ExceptionTest {
 		CtCatchVariable variable2 = catches.get(1).getParameter(); // outside the lambda
 
 		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
+		assertEquals(variable2, variable1);
 	}
 }
