@@ -659,7 +659,6 @@ public class GenericsTest {
 
 		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
 		//this returns a type reference with uninitialized actual type arguments.
-//		CtTypeReference<?> genericTypeRef = aTacos.getReference();
 		CtTypeReference<?> genericTypeRef = aTacos.getFactory().Type().createReference(aTacos, true);
 		
 		assertTrue(genericTypeRef.getActualTypeArguments().size()>0);
@@ -667,7 +666,7 @@ public class GenericsTest {
 		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
 			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
-			// contract: getTypeParameterDeclaration goes back to the declaration, eevn without context
+			// contract: getTypeParameterDeclaration goes back to the declaration, even without context
 			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
 		}
