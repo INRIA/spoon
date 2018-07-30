@@ -13,17 +13,17 @@ public class AbstractAssertTest {
 	public static final String PATH = "./src/test/java/spoon/testing/testclasses/";
 
 	@Test
-	public void testTransformationWithProcessorInstantiated() throws Exception {
+	public void testTransformationWithProcessorInstantiated() {
 		assertThat(PATH + "Foo.java").withProcessor(new FooToBarProcessor()).isEqualTo(PATH + "Bar.java");
 	}
 
 	@Test
-	public void testTransformationWithProcessorClass() throws Exception {
+	public void testTransformationWithProcessorClass() {
 		assertThat(PATH + "Foo.java").withProcessor(FooToBarProcessor.class).isEqualTo(PATH + "Bar.java");
 	}
 
 	@Test
-	public void testTransformationWithProcessorName() throws Exception {
+	public void testTransformationWithProcessorName() {
 		assertThat(PATH + "Foo.java").withProcessor(FooToBarProcessor.class.getName()).isEqualTo(PATH + "Bar.java");
 	}
 
