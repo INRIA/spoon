@@ -58,7 +58,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 			//May be it makes no sense, because
 			//1) the iterable parameter has to be defined first
 			//2) then ForEachNode can be created for that
-			//3) then this method might be called to replace iterable parameter again 
+			//3) then this method might be called to replace iterable parameter again
 			//... but does that use case makes sense? Probably not.
 			iterableParameter = (PrimitiveMatcher) newNode;
 			return true;
