@@ -128,8 +128,8 @@ class ReplacementVisitor extends CtScanner {
 		if (shouldBeDeleted != null) {
 			list.remove(index);
 			if (replace.length > 0) {
-				for (int i = 0; i < replace.length; i++) {
-					T ele = (T) replace[i];
+				for (CtElement aReplace : replace) {
+					T ele = (T) aReplace;
 					if (ele != null) {
 						list.add(index, ele);
 						ele.setParent(shouldBeDeleted.getParent());

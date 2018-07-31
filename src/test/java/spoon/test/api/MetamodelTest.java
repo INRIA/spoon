@@ -199,8 +199,7 @@ public class MetamodelTest {
 				roles.add(((CtFieldRead) roleExpression).getVariable().getSimpleName());
 			} else  if (roleExpression instanceof CtNewArray) {
 				List<CtFieldRead> elements = ((CtNewArray) roleExpression).getElements();
-				for (int i = 0; i < elements.size(); i++) {
-					CtFieldRead ctFieldRead =  elements.get(i);
+				for (CtFieldRead ctFieldRead : elements) {
 					roles.add(ctFieldRead.getVariable().getSimpleName());
 				}
 			}

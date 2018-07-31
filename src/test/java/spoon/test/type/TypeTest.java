@@ -172,8 +172,7 @@ public class TypeTest {
 		CtType<?> ctType = launcher.getFactory().Class().getAll().get(0);
 		List<CtNewClass> elements = ctType.getElements(new TypeFilter<>(CtNewClass.class));
 		assertEquals(4, elements.size());
-		for (int i = 0; i < elements.size(); i++) {
-			CtNewClass ctNewClass = elements.get(i);
+		for (CtNewClass ctNewClass : elements) {
 			assertEquals("android.content.DialogInterface$OnClickListener", ctNewClass.getAnonymousClass().getSuperclass().getQualifiedName());
 		}
 	}
