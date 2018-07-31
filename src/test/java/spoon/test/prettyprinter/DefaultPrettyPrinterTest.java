@@ -83,7 +83,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAClassWithImports() throws Exception {
+	public void testPrintAClassWithImports() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -114,7 +114,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAMethodWithImports() throws Exception {
+	public void testPrintAMethodWithImports() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -141,7 +141,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAMethodWithGeneric() throws Exception {
+	public void testPrintAMethodWithGeneric() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -166,7 +166,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
+	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);

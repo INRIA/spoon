@@ -203,7 +203,7 @@ public class FieldAccessTest {
 
 
 	@Test
-	public void testFieldAccessNoClasspath() throws Exception {
+	public void testFieldAccessNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/import-resources/fr/inria/");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -292,7 +292,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessDeclaredInADefaultClass() throws Exception {
+	public void testFieldAccessDeclaredInADefaultClass() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Tacos.java");
@@ -344,7 +344,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessWithoutAnyImport() throws Exception {
+	public void testFieldAccessWithoutAnyImport() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Kuu.java");
@@ -358,7 +358,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessOnUnknownType() throws Exception {
+	public void testFieldAccessOnUnknownType() {
 		final Launcher launcher = new Launcher();
 
 		launcher.addInputResource("./src/test/resources/noclasspath/FieldAccessRes.java");
@@ -384,7 +384,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testGetReference() throws Exception {
+	public void testGetReference() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

@@ -56,7 +56,7 @@ public class CtTypeTest {
 	}
 
 	@Test
-	public void testHasMethodInSuperClass() throws Exception {
+	public void testHasMethodInSuperClass() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
 		launcher.run();
@@ -69,7 +69,7 @@ public class CtTypeTest {
 	}
 
 	@Test
-	public void testHasMethodInDefaultMethod() throws Exception {
+	public void testHasMethodInDefaultMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
 		launcher.getEnvironment().setComplianceLevel(8);
@@ -135,7 +135,7 @@ public class CtTypeTest {
 	}
 	
 	@Test
-	public void testIsSubTypeOfonTypeReferences() throws Exception {
+	public void testIsSubTypeOfonTypeReferences() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[]{"-c"});
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/SubtypeModel.java");
