@@ -1,4 +1,4 @@
-package spoon.test.processing.testclasses;
+package spoon.test.processing.processors;
 
 import spoon.reflect.declaration.CtClass;
 

@@ -21,9 +21,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.test.processing.processors.RenameProcessor;
-import spoon.test.processing.testclasses.CtClassProcessor;
-import spoon.test.processing.testclasses.CtInterfaceProcessor;
-import spoon.test.processing.testclasses.CtTypeProcessor;
+import spoon.test.processing.processors.CtClassProcessor;
+import spoon.test.processing.processors.CtInterfaceProcessor;
+import spoon.test.processing.processors.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.io.File;
