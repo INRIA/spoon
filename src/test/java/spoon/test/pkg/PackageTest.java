@@ -21,7 +21,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
-import spoon.test.pkg.testclasses.ElementProcessor;
+import spoon.test.pkg.processors.ElementProcessor;
 import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.ModelUtils;
 
