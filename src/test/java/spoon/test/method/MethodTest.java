@@ -97,7 +97,7 @@ public class MethodTest {
 		l.addInputResource("src/test/resources/noclasspath/spring/PropertyComparator.java");
 		l.buildModel();
 
-		CtType<?> propertyComparator = l.getModel().getElements(new NamedElementFilter<CtType>(CtType.class, "PropertyComparator")).get(0);
+		CtType<?> propertyComparator = l.getModel().getElements(new NamedElementFilter<>(CtType.class, "PropertyComparator")).get(0);
 		Set<CtMethod<?>> allMethods = propertyComparator.getAllMethods();
 
 		boolean compareFound = false;

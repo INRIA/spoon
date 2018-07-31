@@ -371,8 +371,7 @@ public class MainTest {
 	}
 
 	public static void checkAssignmentContracts(CtElement pack) {
-		for (CtAssignment assign : pack.getElements(new TypeFilter<CtAssignment>(
-				CtAssignment.class))) {
+		for (CtAssignment assign : pack.getElements(new TypeFilter<>(CtAssignment.class))) {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {

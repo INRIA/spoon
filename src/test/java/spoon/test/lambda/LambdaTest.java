@@ -378,7 +378,7 @@ public class LambdaTest {
 
 	@Test
 	public void testGetOverriddenMethodWithFunction() throws Exception {
-		List<CtLambda<?>> allLambdas = lambdaRxJava.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		List<CtLambda<?>> allLambdas = lambdaRxJava.getElements(new TypeFilter<>(CtLambda.class));
 		assertEquals(1, allLambdas.size());
 		CtLambda<?> lambda = allLambdas.get(0);
 		CtMethod<?> method = lambda.getOverriddenMethod();

@@ -112,7 +112,7 @@ public class InsertMethodsTest {
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertBefore(s);
@@ -145,7 +145,7 @@ public class InsertMethodsTest {
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertAfter(s);
@@ -248,7 +248,7 @@ public class InsertMethodsTest {
 		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/intercession/insertBefore/InsertBeforeExample2.java")).build();
 
 		// Get the 'while'
-		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<CtWhile>(CtWhile.class));
+		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<>(CtWhile.class));
 		assertTrue(1 == elements.size());
 		CtWhile theWhile = elements.get(0);
 
