@@ -9,6 +9,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.test.staticFieldAccess.processors.InsertBlockProcessor;
 
 import java.io.File;
 import java.util.Arrays;
