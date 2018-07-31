@@ -49,7 +49,7 @@ import spoon.testing.utils.ModelUtils;
 public class CompilationTest {
 
 	@Test
-	public void compileCommandLineTest() throws Exception {
+	public void compileCommandLineTest() {
 		// the --compile option works, shouldCompile is set
 
 		String sourceFile = "./src/test/resources/noclasspath/Simple.java";
@@ -147,7 +147,7 @@ public class CompilationTest {
 	}
 
 	@Test
-	public void testNewInstance() throws Exception {
+	public void testNewInstance() {
 		// contract: a ctclass can be instantiated, and each modification results in a new valid object
 		Factory factory = new Launcher().getFactory();
 		CtClass<Ifoo> c = factory.Code().createCodeSnippetStatement(
@@ -168,7 +168,7 @@ public class CompilationTest {
 	}
 
 	@Test
-	public void testFilterResourcesFile() throws Exception {
+	public void testFilterResourcesFile() {
 		// shows how to filter input java files, for https://github.com/INRIA/spoon/issues/877
 		Launcher launcher = new Launcher() {
 			@Override
@@ -206,7 +206,7 @@ public class CompilationTest {
 	}
 
 	@Test
-	public void testFilterResourcesDir() throws Exception {
+	public void testFilterResourcesDir() {
 		// shows how to filter input java dir
 		// only in package called "reference"
 		Launcher launcher = new Launcher() {
@@ -357,7 +357,7 @@ public class CompilationTest {
 	
 
 	@Test
-	public void testExoticClassLoader() throws Exception {
+	public void testExoticClassLoader() {
 		// contract: Spoon uses the exotic class loader
 
 		final List<String> l = new ArrayList<>();

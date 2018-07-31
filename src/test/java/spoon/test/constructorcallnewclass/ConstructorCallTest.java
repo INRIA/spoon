@@ -27,7 +27,7 @@ public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCallsPanini;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/" + Foo.class.getCanonicalName().replace(".", "/") + ".java");
 		launcher.addInputResource("./src/test/java/" + Panini.class.getCanonicalName().replace(".", "/") + ".java");
@@ -48,7 +48,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallStringWithoutParameters() throws Exception {
+	public void testConstructorCallStringWithoutParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(2);
 		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -56,7 +56,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallStringWithParameters() throws Exception {
+	public void testConstructorCallStringWithParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(1);
 		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -64,7 +64,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallObjectWithoutParameters() throws Exception {
+	public void testConstructorCallObjectWithoutParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(3);
 		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -72,7 +72,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallObjectWithParameters() throws Exception {
+	public void testConstructorCallObjectWithParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(4);
 		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -80,7 +80,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallWithGenericArray() throws Exception {
+	public void testConstructorCallWithGenericArray() {
 		final CtConstructorCall<?> ctConstructorCall = constructorCallsPanini.get(0);
 
 		assertEquals(1, ctConstructorCall.getType().getActualTypeArguments().size());
@@ -111,7 +111,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testCoreConstructorCall() throws Exception {
+	public void testCoreConstructorCall() {
 		Launcher spoon = new Launcher();
 		// the minimum is setType()
 		CtConstructorCall call = spoon.getFactory().Core().createConstructorCall();

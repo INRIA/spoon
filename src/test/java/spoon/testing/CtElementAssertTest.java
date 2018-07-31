@@ -33,7 +33,7 @@ public class CtElementAssertTest {
 	}
 
 	@Test(expected = AssertionError.class)
-	public void testEqualityBetweenTwoCtElementWithTypeDifferent() throws Exception {
+	public void testEqualityBetweenTwoCtElementWithTypeDifferent() {
 		assertThat(createFactory().Core().createAnnotation()).isEqualTo(createFactory().Core().createBlock());
 	}
 
