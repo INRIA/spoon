@@ -202,7 +202,7 @@ public class TypeReferenceTest {
 	public void unboxTest() {
 		Factory factory = new Launcher().createFactory();
 		CtTypeReference<Boolean> boxedBoolean = factory.Class().createReference(Boolean.class);
-		assertEquals(boxedBoolean.unbox().getActualClass(), boolean.class);
+		assertEquals(boolean.class, boxedBoolean.unbox().getActualClass());
 	}
 
 	@Test

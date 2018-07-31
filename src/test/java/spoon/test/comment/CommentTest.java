@@ -822,7 +822,7 @@ public class CommentTest {
 		);
 
 		try {
-			assertEquals("doc outdated, please commit doc/code_elements.md", codeElementsDocumentationPage.toString(), IOUtils.toString(new FileReader("doc/code_elements.md")));
+			assertEquals("doc outdated, please commit doc/code_elements.md", IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString());
 		} finally {
 			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}

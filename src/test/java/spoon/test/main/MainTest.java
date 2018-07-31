@@ -486,7 +486,7 @@ public class MainTest {
 						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
 						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
 						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
-						assertEquals(returnedElements.size(), 1);
+						assertEquals(1, returnedElements.size());
 						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertSame(element, actualElement);

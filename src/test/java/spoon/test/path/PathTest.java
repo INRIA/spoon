@@ -108,15 +108,15 @@ public class PathTest {
 		// When role match a list but no index is provided, all of them must be returned
 		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 3);
+		assertEquals(3, results.size());
 		// When role match a set but no name is provided, all of them must be returned
 		results = new CtPathStringBuilder().fromString("#subPackage")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 1);
+		assertEquals(1, results.size());
 		// When role match a map but no key is provided, all of them must be returned
 		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 1);
+		assertEquals(1, results.size());
 
 	}
 
@@ -125,19 +125,19 @@ public class PathTest {
 		// match the else part of the if in Foo.bar() method which does not exist (Test non existing unique element)
 		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar#body#statement[index=2]#else")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 		// match the third statement of Foo.foo() method which does not exist (Test non existing element of a list)
 		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=3]")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 		// match an non existing package (Test non existing element of a set)
 		results = new CtPathStringBuilder().fromString("#subPackage[name=nonExistingPackage]")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 		//match a non existing field of an annotation (Test non existing element of a map)
 		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value[key=misspelled]")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 	}
 
 	@Test
