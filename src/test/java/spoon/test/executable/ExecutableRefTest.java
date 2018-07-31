@@ -84,7 +84,7 @@ public class ExecutableRefTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.objectweb.carol.jndi.spi.CmiContext");
-		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class));
+		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<>(CtConstructorCall.class));
 
 		for (CtConstructorCall constructorCall : ctConstructorCalls) {
 			assertNotNull(constructorCall.getExecutable());

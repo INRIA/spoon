@@ -309,7 +309,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getReferencesOfAMethod(CtMethod<?> method1) {
-		return method1.getElements(new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
+		return method1.getElements(new ReferenceTypeFilter<>(CtExecutableReference.class));
 	}
 
 	private CtMethod<?> getCtMethodByNameFromCtClass(CtClass<?> clazz, String nameMethod5) {

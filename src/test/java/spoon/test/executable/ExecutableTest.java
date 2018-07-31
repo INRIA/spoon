@@ -30,7 +30,7 @@ public class ExecutableTest {
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/AnonymousExecutableSample.java");
 		launcher.run();
 
-		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class));
+		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<>(CtAnonymousExecutable.class));
 
 		assertEquals(2, anonymousExecutables.size());
 
