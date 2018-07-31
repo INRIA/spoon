@@ -29,7 +29,7 @@ public class SetParentTest<T extends CtVisitable> {
 	private static Factory factory = createFactory();
 
 	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		return createReceiverList();
 	}
 

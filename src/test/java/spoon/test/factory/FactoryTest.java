@@ -150,7 +150,7 @@ public class FactoryTest {
 		assertEquals(0, model.getAllTypes().size());
 	}
 
-	public void testIncrementalModel() throws Exception {
+	public void testIncrementalModel() {
 
 		// contract: one can merge two models together
 		// May 2018: we realize that the merge is incomplete see https://github.com/INRIA/spoon/issues/2001
@@ -199,7 +199,7 @@ public class FactoryTest {
 	}
 
 	@Test
-	public void specificationCoreFactoryCreate() throws Exception {
+	public void specificationCoreFactoryCreate() {
 		// contract: all concrete metamodel classes must be instantiable by CoreFactory.create
 		for(CtType<? extends CtElement> itf : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
 			CtElement o = itf.getFactory().Core().create(itf.getActualClass());
