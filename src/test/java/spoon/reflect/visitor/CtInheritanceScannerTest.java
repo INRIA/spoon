@@ -61,7 +61,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<Method> getMethodToInvoke(Class<?> entry) throws Exception {
+	private List<Method> getMethodToInvoke(Class<?> entry) {
 		Queue<Class<?>> tocheck = new LinkedList<>();
 		tocheck.add(entry);
 

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ExecutableTest {
 	@Test
-	public void testInfoInsideAnonymousExecutable() throws Exception {
+	public void testInfoInsideAnonymousExecutable() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/AnonymousExecutableSample.java");

@@ -103,7 +103,7 @@ public class FactoryTest {
 	}
 
 	@Test
-	public void testCtModel() throws Exception {
+	public void testCtModel() {
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/java/spoon/test/factory/testclasses");
 		spoon.buildModel();

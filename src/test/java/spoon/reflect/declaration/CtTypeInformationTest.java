@@ -141,7 +141,7 @@ public class CtTypeInformationTest {
 	}
 
 	@Test
-	public void testGetSuperclass() throws Exception {
+	public void testGetSuperclass() {
 		final CtType<?> extendsArrayList = this.factory.Type().get(ExtendsArrayList.class);
 
 		// only 1 method directly in this class

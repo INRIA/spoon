@@ -46,7 +46,7 @@ public class EnumsTest {
 	}
 
 	@Test
-	public void testAnnotationsOnEnum() throws Exception {
+	public void testAnnotationsOnEnum() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/enums/testclasses",
