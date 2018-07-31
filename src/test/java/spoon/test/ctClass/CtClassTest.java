@@ -86,7 +86,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testParentOfTheEnclosingClassOfStaticClass() throws Exception {
+	public void testParentOfTheEnclosingClassOfStaticClass() {
 		// contract: When we have a static class which extends a superclass in the classpath,
 		// the enclosing class don't have a superclass. This is probably a bug in JDT but good
 		// luck to report a bug about noclasspath in their bugtracker. :)
@@ -112,7 +112,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testNoClasspathWithSuperClassOfAClassInAnInterface() throws Exception {
+	public void testNoClasspathWithSuperClassOfAClassInAnInterface() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -173,7 +173,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
+	public void testSpoonShouldInferImplicitPackageInNoClasspath() {
 		// contract: in noClasspath, when a type is used and no import is specified, then Spoon
 		// should infer that this type is in the same package as the current class.
 		final Launcher launcher2 = new Launcher();
@@ -191,7 +191,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testDefaultConstructorAreOk() throws Exception {
+	public void testDefaultConstructorAreOk() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 

@@ -47,7 +47,7 @@ public class ComputeClasspathTest {
 	}
 
 	@Test
-	public void testSourceClasspath() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testSourceClasspath() {
 		final ClasspathOptions options = new ClasspathOptions().classpath(systemClasspath);
 		Assert.assertEquals("-cp " + TEST_CLASSPATH, String.join(" ", options.build()));
 	}

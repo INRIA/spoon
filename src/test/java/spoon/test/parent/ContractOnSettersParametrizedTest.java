@@ -44,7 +44,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 		return createReceiverList();
 	}
 
-	public static Collection<Object[]> createReceiverList() throws Exception {
+	public static Collection<Object[]> createReceiverList() {
 		List<Object[]> values = new ArrayList<>();
 		for (CtType t : allInstantiableMetamodelInterfaces) {
 			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
