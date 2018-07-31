@@ -36,6 +36,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.template.Local;
 import spoon.template.TemplateMatcher;
 import spoon.template.TemplateParameter;
+import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
 
 import java.io.File;

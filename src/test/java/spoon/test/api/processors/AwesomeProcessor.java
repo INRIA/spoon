@@ -1,4 +1,4 @@
-package spoon.test.api;
+package spoon.test.api.processors;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
