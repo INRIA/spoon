@@ -79,7 +79,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 public class PositionTest {
 
 	@Test
-	public void testPositionClass() throws Exception {
+	public void testPositionClass() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
@@ -110,7 +110,7 @@ public class PositionTest {
 	
 	
 	@Test
-	public void testPositionClassWithComments() throws Exception {
+	public void testPositionClassWithComments() {
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
 		//and it produces correct `modifierEnd`
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
@@ -197,7 +197,7 @@ public class PositionTest {
 	}
 	
 	@Test
-	public void testPositionInterface() throws Exception {
+	public void testPositionInterface() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
 		String classContent = getClassContent(foo);
@@ -231,7 +231,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testPositionAnnotation() throws Exception {
+	public void testPositionAnnotation() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
 		String classContent = getClassContent(foo);
@@ -602,7 +602,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testSourcePosition() throws Exception {
+	public void testSourcePosition() {
 		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
 		assertFalse(s.isValidPosition());
 		assertFails(() -> s.getSourceStart());

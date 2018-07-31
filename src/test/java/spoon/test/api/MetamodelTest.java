@@ -281,7 +281,7 @@ public class MetamodelTest {
 	}
 
 	@Test
-	public void testMetamodelCachedInFactory() throws IOException {
+	public void testMetamodelCachedInFactory() {
 		//contract: Metamodel concepts are accessible
 		Metamodel.getInstance().getConcepts();
 	}

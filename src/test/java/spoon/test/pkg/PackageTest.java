@@ -83,7 +83,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testAnnotationOnPackage() throws Exception {
+	public void testAnnotationOnPackage() {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 
@@ -105,7 +105,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testPrintPackageInfoWhenNothingInPackage() throws Exception {
+	public void testPrintPackageInfoWhenNothingInPackage() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/pkg/testclasses/internal");
 		launcher.setSourceOutputDirectory("./target/spooned/package");
@@ -138,7 +138,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenamePackageAndPrettyPrint() throws Exception {
+	public void testRenamePackageAndPrettyPrint() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
 		spoon.buildModel();
@@ -157,7 +157,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenamePackageAndPrettyPrintNoclasspath() throws Exception {
+	public void testRenamePackageAndPrettyPrintNoclasspath() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
@@ -197,7 +197,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenameRootPackage() throws Exception {
+	public void testRenameRootPackage() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
@@ -210,7 +210,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenameRootPackageWithNullOrEmpty() throws Exception {
+	public void testRenameRootPackageWithNullOrEmpty() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);

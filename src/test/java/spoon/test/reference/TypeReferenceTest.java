@@ -186,7 +186,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testNullReferenceSubtype() throws Exception {
+	public void testNullReferenceSubtype() {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 
@@ -206,7 +206,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testToStringEqualityBetweenTwoGenericTypeDifferent() throws Exception {
+	public void testToStringEqualityBetweenTwoGenericTypeDifferent() {
 		// contract: generic type references with different bounds should not be considered equals
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput", "--noclasspath"});
@@ -223,7 +223,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testRecursiveTypeReference() throws Exception {
+	public void testRecursiveTypeReference() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Tacos.java");
 		launcher.setSourceOutputDirectory("./target/spoon-test");
@@ -257,7 +257,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testRecursiveTypeReferenceInGenericType() throws Exception {
+	public void testRecursiveTypeReferenceInGenericType() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/EnumValue.java");
 		launcher.setSourceOutputDirectory("./target/spoon-test");
@@ -280,7 +280,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testUnknownSuperClassWithSameNameInNoClasspath() throws Exception {
+	public void testUnknownSuperClassWithSameNameInNoClasspath() {
 		// contract: Gets the import of a type specified in the declaration of a class.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Attachment.java");
@@ -330,7 +330,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspath() throws Exception {
+	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspath() {
 		// contract: Gets the import of a type specified in the declaration of a class.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo.java");
@@ -356,7 +356,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspathWithGenerics() throws Exception {
+	public void testTypeReferenceSpecifiedInClassDeclarationInNoClasspathWithGenerics() {
 		// contract: Gets the import of a type specified in the declaration of a class.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo2.java");
@@ -386,7 +386,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testArgumentOfAInvocationIsNotATypeAccess() throws Exception {
+	public void testArgumentOfAInvocationIsNotATypeAccess() {
 		// contract: In no classpath, an unknown field specified as argument isn't a CtTypeAccess.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo3.java");
@@ -405,7 +405,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testInvocationWithFieldAccessInNoClasspath() throws Exception {
+	public void testInvocationWithFieldAccessInNoClasspath() {
 		// contract: In no classpath mode, if we have field accesses in an invocation, we should build field access and not type access.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo4.java");
@@ -429,7 +429,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testAnnotationOnMethodWithPrimitiveReturnTypeInNoClasspath() throws Exception {
+	public void testAnnotationOnMethodWithPrimitiveReturnTypeInNoClasspath() {
 		// contract: In no classpath mode, if we have an annotation declared on a method and overridden
 		// from a super class in an anonymous class, we should rewrite correctly the annotation and don't
 		// throw a NPE.
@@ -448,7 +448,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testAnonymousClassesHaveAnEmptyStringForItsNameInNoClasspath() throws Exception {
+	public void testAnonymousClassesHaveAnEmptyStringForItsNameInNoClasspath() {
 		// contract: In no classpath mode, a type reference have an empty string for its name.
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/A.java");
@@ -473,7 +473,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testConstructorCallInNoClasspath() throws Exception {
+	public void testConstructorCallInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/noclasspath/Demo5.java");
@@ -489,7 +489,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testShortTypeReference() throws Exception {
+	public void testShortTypeReference() {
 
 		CtTypeReference<Short> aShort = ModelUtils.createFactory().Type().SHORT;
 		CtTypeReference<Short> shortPrimitive = ModelUtils.createFactory().Type().SHORT_PRIMITIVE;
@@ -500,7 +500,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testClearBoundsForTypeParameterReference() throws Exception {
+	public void testClearBoundsForTypeParameterReference() {
 		final Factory factory = createFactory();
 		final CtTypeParameterReference reference = factory.Type().createTypeParameterReference("T");
 		reference.addBound(factory.Type().createReference(String.class));
@@ -553,7 +553,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testImproveAPIActualTypeReference() throws Exception {
+	public void testImproveAPIActualTypeReference() {
 		final Factory factory = createFactory();
 		List<CtTypeParameterReference> typeParameterReferences = new ArrayList<>();
 		typeParameterReferences.add(factory.Type().createTypeParameterReference("Foo"));
@@ -564,7 +564,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testIsSubTypeSuperClassNull() throws Exception {
+	public void testIsSubTypeSuperClassNull() {
 		Factory factory = createFactory();
 
 		factory.Class().create("Tacos");
@@ -586,7 +586,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testGetTypeDeclaration() throws Exception {
+	public void testGetTypeDeclaration() {
 		Launcher l = new Launcher();
 		l.addInputResource("src/test/resources/compilation/compilation-tests/");
 		l.buildModel();
@@ -597,7 +597,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testTypeDeclarationWildcard() throws Exception {
+	public void testTypeDeclarationWildcard() {
 		// contract1: getTypeDeclaration nevers returns null, even for wilddards
 		// contract2: getTypeDeclaration returns a CtTYpe representing Object as the compiler does
 		CtLocalVariable<?> s = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<?> l = null").compile();
@@ -627,7 +627,7 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testTypeReferenceWithGenerics() throws Exception {
+	public void testTypeReferenceWithGenerics() {
 		// contract: in noclasspath, a generic type name should not contain generic information
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");

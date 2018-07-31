@@ -63,7 +63,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class TypeTest {
 	@Test
-	public void testTypeAccessForDotClass() throws Exception {
+	public void testTypeAccessForDotClass() {
 		// contract: When we use .class on a type, this must be a CtTypeAccess.
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
@@ -90,7 +90,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeAccessOnPrimitive() throws Exception {
+	public void testTypeAccessOnPrimitive() {
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //
 				"class X {" //
@@ -111,7 +111,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeAccessForTypeAccessInInstanceOf() throws Exception {
+	public void testTypeAccessForTypeAccessInInstanceOf() {
 		// contract: the right hand operator must be a CtTypeAccess.
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
@@ -136,7 +136,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeAccessOfArrayObjectInFullyQualifiedName() throws Exception {
+	public void testTypeAccessOfArrayObjectInFullyQualifiedName() {
 		// contract: A type access in fully qualified name must to rewrite well.
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
@@ -163,7 +163,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -179,7 +179,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testIntersectionTypeReferenceInGenericsAndCasts() throws Exception {
+	public void testIntersectionTypeReferenceInGenericsAndCasts() {
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
@@ -224,7 +224,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeReferenceInGenericsAndCasts() throws Exception {
+	public void testTypeReferenceInGenericsAndCasts() {
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
@@ -283,7 +283,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testUnboxingTypeReference() throws Exception {
+	public void testUnboxingTypeReference() {
 		// contract: When you call CtTypeReference#unbox on a class which doesn't exist
 		// in the spoon path, the method return the type reference itself.
 		final Factory factory = createFactory();
@@ -297,14 +297,14 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testDeclarationCreatedByFactory() throws Exception {
+	public void testDeclarationCreatedByFactory() {
 		final Factory factory = createFactory();
 		assertNotNull(factory.Interface().create("fr.inria.ITest").getReference().getDeclaration());
 		assertNotNull(factory.Enum().create("fr.inria.ETest").getReference().getDeclaration());
 	}
 
 	@Test
-	public void testPolyTypBindingInTernaryExpression() throws Exception {
+	public void testPolyTypBindingInTernaryExpression() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/ternary-bug");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -321,7 +321,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testShadowType() throws Exception {
+	public void testShadowType() {
 
 		/* Objects and factory have to be the sames */
 
@@ -378,7 +378,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeMemberOrder() throws Exception {
+	public void testTypeMemberOrder() {
 		// contract: The TypeMembers keeps order of members same like in source file 
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();

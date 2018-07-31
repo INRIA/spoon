@@ -42,7 +42,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 	private static Metamodel metaModel;
 
 	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		metaModel = Metamodel.getInstance();
 
 		List<Object[]> values = new ArrayList<>();
@@ -59,7 +59,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 	
 
 	@Test
-	public void testContract() throws Throwable {
+	public void testContract() {
 		List<String> problems = new ArrayList<>();
 		
 		// contract: all elements are replaceable wherever they are in the model

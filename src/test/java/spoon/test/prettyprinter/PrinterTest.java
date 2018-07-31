@@ -50,7 +50,7 @@ public class PrinterTest {
 	}
 
 	@Test
-	public void testChangeAutoImportModeWorks() throws Exception {
+	public void testChangeAutoImportModeWorks() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setAutoImports(false);
 		PrettyPrinter printer = spoon.createPrettyPrinter();

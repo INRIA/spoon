@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 public class MethodOverriddingTest {
 
 	@Test
-	public void testShadowInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+	public void testShadowInterfaceMethodsCanOverrideObjectMethods() {
 		//contract: Interface (made by reflection) method equals overrides Object#equals
 		Factory f = new Launcher().getFactory();
 		CtType<?> iface = f.Interface().get(Comparator.class);

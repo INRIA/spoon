@@ -75,7 +75,7 @@ public class SourcePositionTest {
 	}
 
 	@Test
-	public void testSourcePositionStringFragment() throws Exception {
+	public void testSourcePositionStringFragment() {
 		CompilationUnit cu = new CompilationUnitImpl() {
 			@Override
 			public String getOriginalSourceCode() {

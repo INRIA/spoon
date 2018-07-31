@@ -62,7 +62,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testGetUsedTypesForTypeInRootPackage() throws Exception {
+	public void testGetUsedTypesForTypeInRootPackage() {
 		CtClass<?> cl = createFactory().Code().createCodeSnippetStatement("class X { X x; }").compile();
 		assertEquals(0, cl.getUsedTypes(false).size());
 	}

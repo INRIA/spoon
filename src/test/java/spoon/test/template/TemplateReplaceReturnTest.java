@@ -20,7 +20,7 @@ import spoon.testing.utils.ModelUtils;
 public class TemplateReplaceReturnTest {
 
 	@Test
-	public void testReturnReplaceTemplate() throws Exception {
+	public void testReturnReplaceTemplate() {
 		//contract: the template engine supports replace of `return _param_.S()` by `<CtBlock>`
 		Launcher launcher = new Launcher();
 		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ReturnReplaceTemplate.java"));

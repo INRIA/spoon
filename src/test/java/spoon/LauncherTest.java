@@ -93,7 +93,7 @@ public class LauncherTest {
 	}
 
 	@Test
-	public void testLLauncherBuildModelReturnAModel() throws Exception {
+	public void testLLauncherBuildModelReturnAModel() {
 		// contract: Launcher#buildModel should return a consistent CtModel
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/spoon/test/api/Foo.java");

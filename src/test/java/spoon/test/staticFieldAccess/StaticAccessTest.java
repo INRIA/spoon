@@ -37,7 +37,7 @@ public class StaticAccessTest {
     }
 
     @Test
-    public void testReferences() throws Exception {
+    public void testReferences() {
 
         CtType<?> type = (CtType<?>) factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
         CtBlock<?> block = type.getMethod("references").getBody();

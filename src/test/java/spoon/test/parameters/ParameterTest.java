@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 public class ParameterTest {
 
 	@Test
-	public void testParameterInNoClasspath() throws Exception {
+	public void testParameterInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/parameter");
 		launcher.setSourceOutputDirectory("./target/parameter");
@@ -35,7 +35,7 @@ public class ParameterTest {
 	}
 
 	@Test
-	public void testGetParameterReferenceInLambdaNoClasspath() throws Exception {
+	public void testGetParameterReferenceInLambdaNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Tacos.java");
 		launcher.getEnvironment().setNoClasspath(true);

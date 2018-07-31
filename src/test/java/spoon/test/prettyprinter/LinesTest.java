@@ -38,7 +38,7 @@ public class LinesTest {
 	}
 
 	@Test
-	public void testPrettyPrinterWithLines() throws Exception {
+	public void testPrettyPrinterWithLines() {
 
 		for (CtType<?> t : factory.Type().getAll()) {
 			if (t.isTopLevel()) {
@@ -61,7 +61,7 @@ public class LinesTest {
 	}
 
 	@Test
-	public void testIdenticalPrettyPrinter() throws  Exception{
+	public void testIdenticalPrettyPrinter() {
 		// contract: the end line should also be preserved
 
 		// setup
