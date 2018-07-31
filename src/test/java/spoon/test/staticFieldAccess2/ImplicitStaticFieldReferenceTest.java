@@ -13,7 +13,7 @@ public class ImplicitStaticFieldReferenceTest
 	private static final boolean expectImplicit = false;
 
     @Test
-    public void testImplicitStaticFieldReference() throws Exception {
+    public void testImplicitStaticFieldReference() {
     	Launcher launcher = checkFile(false, "ImplicitStaticFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitStaticFieldReference.class);
@@ -25,7 +25,7 @@ public class ImplicitStaticFieldReferenceTest
     }
 
     @Test
-    public void testImplicitStaticFieldReferenceAutoImport() throws Exception {
+    public void testImplicitStaticFieldReferenceAutoImport() {
     	Launcher launcher = checkFile(true, "ImplicitStaticFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitStaticFieldReference.class);
@@ -37,7 +37,7 @@ public class ImplicitStaticFieldReferenceTest
     }
 
     @Test
-    public void testImplicitFieldReference() throws Exception {
+    public void testImplicitFieldReference() {
     	Launcher launcher = checkFile(false, "ImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitFieldReference.class);
@@ -48,7 +48,7 @@ public class ImplicitStaticFieldReferenceTest
     	}
     }
     @Test
-    public void testImplicitFieldReferenceAutoImport() throws Exception {
+    public void testImplicitFieldReferenceAutoImport() {
     	Launcher launcher = checkFile(true, "ImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitFieldReference.class);
@@ -60,7 +60,7 @@ public class ImplicitStaticFieldReferenceTest
     }
     
     @Test
-    public void testAmbiguousImplicitFieldReference() throws Exception {
+    public void testAmbiguousImplicitFieldReference() {
     	Launcher launcher = checkFile(false, "AmbiguousImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(AmbiguousImplicitFieldReference.class);
@@ -71,7 +71,7 @@ public class ImplicitStaticFieldReferenceTest
     	}
     }
     @Test
-    public void testAmbiguousImplicitFieldReferenceAutoImport() throws Exception {
+    public void testAmbiguousImplicitFieldReferenceAutoImport() {
     	Launcher launcher = checkFile(true, "AmbiguousImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(AmbiguousImplicitFieldReference.class);
@@ -83,29 +83,29 @@ public class ImplicitStaticFieldReferenceTest
     }
 
     @Test
-    public void testImplicitStaticClassAccess() throws Exception {
+    public void testImplicitStaticClassAccess() {
     	Launcher launcher = checkFile(false, "ImplicitStaticClassAccess.java");
     }
     @Test
-    public void testImplicitStaticClassAccessAutoImport() throws Exception {
+    public void testImplicitStaticClassAccessAutoImport() {
     	Launcher launcher = checkFile(true, "ImplicitStaticClassAccess.java");
     }
     @Test
-    public void testGenericsWithAmbiguousStaticField() throws Exception {
+    public void testGenericsWithAmbiguousStaticField() {
     	Launcher launcher = checkFile(false, "GenericsWithAmbiguousStaticField.java");
     }
     @Test
-    public void testGenericsWithAmbiguousStaticFieldAutoImport() throws Exception {
+    public void testGenericsWithAmbiguousStaticFieldAutoImport() {
     	Launcher launcher = checkFile(true, "GenericsWithAmbiguousStaticField.java");
     }
     
     @Test
-    public void testChildOfGenericsWithAmbiguousStaticField() throws Exception {
+    public void testChildOfGenericsWithAmbiguousStaticField() {
     	Launcher launcher = checkFile(false, "ChildOfGenericsWithAmbiguousStaticField.java");
     }
     
     @Test
-    public void testChildOfGenericsWithAmbiguousStaticFieldAutoImport() throws Exception {
+    public void testChildOfGenericsWithAmbiguousStaticFieldAutoImport() {
     	Launcher launcher = checkFile(true, "ChildOfGenericsWithAmbiguousStaticField.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ChildOfGenericsWithAmbiguousStaticField.class);
@@ -117,21 +117,21 @@ public class ImplicitStaticFieldReferenceTest
     }
 
     @Test
-    public void testGenericsWithAmbiguousMemberField() throws Exception {
+    public void testGenericsWithAmbiguousMemberField() {
     	Launcher launcher = checkFile(false, "GenericsWithAmbiguousMemberField.java");
     }
     @Test
-    public void testGenericsWithAmbiguousMemberFieldAutoImport() throws Exception {
+    public void testGenericsWithAmbiguousMemberFieldAutoImport() {
     	Launcher launcher = checkFile(true, "GenericsWithAmbiguousMemberField.java");
     }
 
     @Test
-    public void testAnnotationInChildWithConstants() throws Exception {
+    public void testAnnotationInChildWithConstants() {
     	Launcher launcher = checkFile(false, "ChildOfConstants.java", "Constants.java");
     }
 
     @Test
-    public void testAnnotationInChildWithConstantsAutoImport() throws Exception {
+    public void testAnnotationInChildWithConstantsAutoImport() {
     	Launcher launcher = checkFile(true, "ChildOfConstants.java", "Constants.java");
     }
     

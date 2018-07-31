@@ -74,7 +74,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 public class JavaReflectionTreeBuilderTest {
 
 	@Test
-	public void testScannerClass() throws Exception {
+	public void testScannerClass() {
 		final CtClass<Class> aClass = new JavaReflectionTreeBuilder(createFactory()).scan(Class.class);
 		assertNotNull(aClass);
 		assertEquals("java.lang.Class", aClass.getQualifiedName());
@@ -88,7 +88,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testScannerEnum() throws Exception {
+	public void testScannerEnum() {
 		final CtEnum<TextStyle> anEnum = new JavaReflectionTreeBuilder(createFactory()).scan(TextStyle.class);
 		assertNotNull(anEnum);
 		assertEquals("java.time.format.TextStyle", anEnum.getQualifiedName());
@@ -100,7 +100,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testScannerInterface() throws Exception {
+	public void testScannerInterface() {
 		final CtInterface<CtLambda> anInterface = new JavaReflectionTreeBuilder(createFactory()).scan(CtLambda.class);
 		assertNotNull(anInterface);
 		assertEquals("spoon.reflect.code.CtLambda", anInterface.getQualifiedName());
@@ -111,7 +111,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testScannerAnnotation() throws Exception {
+	public void testScannerAnnotation() {
 		final CtAnnotationType<SuppressWarnings> suppressWarning = new JavaReflectionTreeBuilder(createFactory()).scan(SuppressWarnings.class);
 		assertNotNull(suppressWarning);
 		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
@@ -128,7 +128,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testScannerGenericsInClass() throws Exception {
+	public void testScannerGenericsInClass() {
 		final CtType<ComparableComparatorBug> aType = new JavaReflectionTreeBuilder(createFactory()).scan(ComparableComparatorBug.class);
 		assertNotNull(aType);
 
@@ -142,7 +142,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testScannerArrayReference() throws Exception {
+	public void testScannerArrayReference() {
 		final CtType<URLClassLoader> aType = new JavaReflectionTreeBuilder(createFactory()).scan(URLClassLoader.class);
 		assertNotNull(aType);
 		final CtMethod<Object> aMethod = aType.getMethod("getURLs");
@@ -154,7 +154,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testDeclaredMethods() throws Exception {
+	public void testDeclaredMethods() {
 		final CtType<StringBuilder> type = new JavaReflectionTreeBuilder(createFactory()).scan(StringBuilder.class);
 		assertNotNull(type);
 		// All methods overridden from AbstractStringBuilder and with a type changed have been removed.
@@ -166,7 +166,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testDeclaredField() throws Exception {
+	public void testDeclaredField() {
 		final CtType<CookieManager> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CookieManager.class);
 		assertNotNull(aType);
 		// CookieManager have only 2 fields. Java reflection doesn't give us field of its superclass.
@@ -174,7 +174,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testDeclaredConstructor() throws Exception {
+	public void testDeclaredConstructor() {
 		final CtType<JDTSnippetCompiler> aType = new JavaReflectionTreeBuilder(createFactory()).scan(JDTSnippetCompiler.class);
 		assertNotNull(aType);
 		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
@@ -508,7 +508,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testSuperOfActualTypeArgumentsOfReturnTypeOfMethod() throws Exception {
+	public void testSuperOfActualTypeArgumentsOfReturnTypeOfMethod() {
 
 		Consumer<CtType<?>> checker = type -> {
 			{

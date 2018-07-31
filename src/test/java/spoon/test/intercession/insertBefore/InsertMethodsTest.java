@@ -70,7 +70,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfter() throws Exception {
+	public void testInsertAfter() {
 		CtMethod<Void> foo = (CtMethod<Void>) assignmentClass.getMethods().toArray()[0];
 
 		CtBlock<?> body = foo.getBody();
@@ -89,7 +89,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithoutBrace() throws Exception {
+	public void testInsertBeforeWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -106,7 +106,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithBrace() throws Exception {
+	public void testInsertBeforeWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
@@ -122,7 +122,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithoutBrace() throws Exception {
+	public void testInsertAfterWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -139,7 +139,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithBrace() throws Exception {
+	public void testInsertAfterWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
@@ -155,7 +155,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeSwitchCase() throws Exception {
+	public void testInsertBeforeSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -191,7 +191,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterSwitchCase() throws Exception {
+	public void testInsertAfterSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.

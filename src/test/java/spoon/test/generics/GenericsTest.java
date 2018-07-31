@@ -367,7 +367,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testConstructorCallGenerics() throws Exception {
+	public void testConstructorCallGenerics() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -420,7 +420,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testInvocationGenerics() throws Exception {
+	public void testInvocationGenerics() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -447,7 +447,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testNewClassGenerics() throws Exception {
+	public void testNewClassGenerics() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -471,7 +471,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testMethodsWithGenericsWhoExtendsObject() throws Exception {
+	public void testMethodsWithGenericsWhoExtendsObject() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -491,7 +491,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testName() throws Exception {
+	public void testName() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -532,7 +532,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testGenericsInQualifiedNameInConstructorCall() throws Exception {
+	public void testGenericsInQualifiedNameInConstructorCall() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -672,7 +672,7 @@ public class GenericsTest {
 		}
 	}
 	@Test
-	public void testisGeneric() throws Exception {
+	public void testisGeneric() {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 
 		/*
@@ -841,7 +841,7 @@ public class GenericsTest {
 
 	}
 	@Test
-	public void testCtTypeReference_getSuperclass() throws Exception {
+	public void testCtTypeReference_getSuperclass() {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
 		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NamedElementFilter<>(CtNamedElement.class,"disgust")).map((CtTypedElement te)->{
@@ -905,7 +905,7 @@ public class GenericsTest {
 
 
 	@Test
-	public void testClassTypingContext() throws Exception {
+	public void testClassTypingContext() {
 		// contract: a ClassTypingContext enables one to perform type resolution of generic types
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
@@ -1003,7 +1003,7 @@ public class GenericsTest {
 	}
 	
 	@Test
-	public void testMethodTypingContext() throws Exception {
+	public void testMethodTypingContext() {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
 		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
@@ -1068,7 +1068,7 @@ public class GenericsTest {
 	}
 	
 	@Test
-	public void testMethodTypingContextAdaptMethod() throws Exception {
+	public void testMethodTypingContextAdaptMethod() {
 		// core contracts of MethodTypingContext#adaptMethod
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
@@ -1116,7 +1116,7 @@ public class GenericsTest {
 	}
 	
 	@Test
-	public void testClassTypingContextMethodSignature() throws Exception {
+	public void testClassTypingContextMethodSignature() {
 		// core contracts of MethodTypingContext#adaptMethod
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
@@ -1177,7 +1177,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testWildCardonShadowClass() throws Exception {
+	public void testWildCardonShadowClass() {
 		// contract: generics should be treated the same way in shadow classes
 
 		// test that apply argument type contains a wildcard
