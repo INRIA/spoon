@@ -244,7 +244,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testComputeImportsInClassWithSameName() throws Exception {
+	public void testComputeImportsInClassWithSameName() {
 		String packageName = "spoon.test.imports.testclasses2";
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
@@ -285,7 +285,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testTargetTypeNull() throws Exception {
+	public void testTargetTypeNull() {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 		CtFieldReference fieldRef = factory.createFieldReference();

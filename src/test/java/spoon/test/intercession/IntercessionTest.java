@@ -181,7 +181,7 @@ public class IntercessionTest {
 	}
 
 	@Test
-	public void testSettersAreAllGood() throws Exception {
+	public void testSettersAreAllGood() {
 		ArrayList classpath = new ArrayList();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -242,7 +242,7 @@ public class IntercessionTest {
 
 	@Test
 	@Ignore // interesting but too fragile with conventions
-	public void testResetCollectionInSetters() throws Exception {
+	public void testResetCollectionInSetters() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		final Factory factory = launcher.getFactory();

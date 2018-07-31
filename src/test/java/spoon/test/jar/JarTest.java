@@ -44,7 +44,7 @@ public class JarTest {
 	}
 
 	@Test
-	public void testResource() throws Exception {
+	public void testResource() {
 		Launcher launcher = new Launcher();
 
 		SpoonModelBuilder compiler = launcher.createCompiler(
