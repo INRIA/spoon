@@ -76,7 +76,7 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void testDeclarationOfVariableReference() throws Exception {
+	public void testDeclarationOfVariableReference() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo2.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -128,7 +128,7 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void testGetDeclarationAfterClone() throws Exception {
+	public void testGetDeclarationAfterClone() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/noclasspath/A2.java");

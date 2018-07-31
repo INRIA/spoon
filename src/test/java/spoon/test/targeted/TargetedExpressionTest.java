@@ -235,7 +235,7 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testStaticTargetsOfFieldAccessNoClasspath() throws Exception {
+	public void testStaticTargetsOfFieldAccessNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Foo.java");
@@ -385,7 +385,7 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testStaticTargetsOfInvNoClasspath() throws Exception {
+	public void testStaticTargetsOfInvNoClasspath() {
 		// contract: Specify declaring type of the executable of an invocation, the target of the invocation and its result. All this in no classpath mode.
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -414,7 +414,7 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testInitializeFieldAccessInNoclasspathMode() throws Exception {
+	public void testInitializeFieldAccessInNoclasspathMode() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Foo.java");

@@ -32,7 +32,7 @@ import spoon.test.api.testclasses.Bar;
 public class NoClasspathTest {
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		// do we still have a correct model when the complete classpath is not given as input?
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);
@@ -154,7 +154,7 @@ public class NoClasspathTest {
 	}
 
 	@Test
-	public void testInheritanceInNoClassPathWithClasses() throws IOException {
+	public void testInheritanceInNoClassPathWithClasses() {
 		// contract: when using noclasspath in combination with a source classpath
 		// spoon is able to resolve the inheritance between classes contained in source cp
 		String sourceInputDirPath = "./src/test/resources/spoon/test/inheritance";

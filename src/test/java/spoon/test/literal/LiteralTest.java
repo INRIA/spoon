@@ -23,7 +23,7 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 public class LiteralTest {
 
 	@Test
-	public void testCharLiteralInNoClasspath() throws Exception {
+	public void testCharLiteralInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/SecondaryIndexManager.java");
 		launcher.setSourceOutputDirectory("./target/literal");
@@ -130,7 +130,7 @@ public class LiteralTest {
 	}
 
 	@Test
-	public void testEscapedString() throws Exception {
+	public void testEscapedString() {
 
 		/* test escaped char: spoon change octal values by equivalent unicode values */
 

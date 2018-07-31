@@ -173,7 +173,7 @@ public class TryCatchTest {
 	}
 
 	@Test
-	public void testMultiTryCatchWithCustomExceptions() throws Exception {
+	public void testMultiTryCatchWithCustomExceptions() {
 		final Launcher launcher = new Launcher();
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/trycatch/testclasses/"));
@@ -193,7 +193,7 @@ public class TryCatchTest {
 	}
 
 	@Test
-	public void testCompileMultiTryCatchWithCustomExceptions() throws Exception {
+	public void testCompileMultiTryCatchWithCustomExceptions() {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/java/spoon/test/trycatch/testclasses",
 				"-o", "target/spooned"
@@ -209,7 +209,7 @@ public class TryCatchTest {
 		}
 	}
 	@Test
-	public void testTryCatchVariableGetType() throws Exception {
+	public void testTryCatchVariableGetType() {
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()

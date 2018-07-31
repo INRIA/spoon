@@ -87,7 +87,7 @@ public class QualifiedThisRefTest {
 	}
 
 	@Test
-	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() throws Exception {
+	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() {
 		CtClass zeclass = factory.Class().get(QualifiedThisRef.class);
 
 		List<CtMethod> methods = zeclass.getMethodsByName("bla");

@@ -278,7 +278,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		final Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		spoon.addInputResource("./src/test/java/spoon/test/main/testclasses");
@@ -532,7 +532,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testTest() throws Exception {
+	public void testTest() {
 		// the tests should be spoonable
 		Launcher launcher = new Launcher();
 		launcher.run(new String[] {
@@ -560,7 +560,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testResourcesCopiedInTargetDirectory() throws Exception {
+	public void testResourcesCopiedInTargetDirectory() {
 		StringBuilder classpath = new StringBuilder();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -585,7 +585,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testResourcesNotCopiedInTargetDirectory() throws Exception {
+	public void testResourcesNotCopiedInTargetDirectory() {
 		StringBuilder classpath = new StringBuilder();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -615,14 +615,14 @@ public class MainTest {
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
 	@Test
-	public void testLauncherWithoutArgumentsExitWithSystemExit() throws Exception {
+	public void testLauncherWithoutArgumentsExitWithSystemExit() {
 		exit.expectSystemExit();
 
 		final PrintStream oldErr = System.err;
 		System.setErr(new PrintStream(errContent));
 		exit.checkAssertionAfterwards(new Assertion() {
 			@Override
-			public void checkAssertion() throws Exception {
+			public void checkAssertion() {
 				assertTrue(errContent.toString().contains("Usage: java <launcher name> [option(s)]"));
 				System.setErr(oldErr);
 			}

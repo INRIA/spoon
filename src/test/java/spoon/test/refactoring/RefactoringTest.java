@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 public class RefactoringTest {
 	@Test
-	public void testRefactoringClassChangeAllCtTypeReferenceAssociatedWithClassConcerned() throws Exception {
+	public void testRefactoringClassChangeAllCtTypeReferenceAssociatedWithClassConcerned() {
 		Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
@@ -58,7 +58,7 @@ public class RefactoringTest {
 	}
 
 	@Test
-	public void testThisInConstructor() throws Exception {
+	public void testThisInConstructor() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
@@ -77,7 +77,7 @@ public class RefactoringTest {
 	}
 
 	@Test
-	public void testThisInConstructorAfterATransformation() throws Exception {
+	public void testThisInConstructorAfterATransformation() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
@@ -96,7 +96,7 @@ public class RefactoringTest {
 	}
 
 	@Test
-	public void testTransformedInstanceofAfterATransformation() throws Exception {
+	public void testTransformedInstanceofAfterATransformation() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",

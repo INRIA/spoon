@@ -46,7 +46,7 @@ public class VisibilityTest {
     }
 
 	@Test
-	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() throws Exception {
+	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() {
 		final File sourceOutputDir = new File("target/spooned/spoon/test/visibility_package/testclasses");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
@@ -71,7 +71,7 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testFullyQualifiedNameOfTypeReferenceWithGeneric() throws Exception {
+	public void testFullyQualifiedNameOfTypeReferenceWithGeneric() {
 		// contract: Generics are written when there are specified in the return type of a method.
 		final String target = "./target/spooned/spoon/test/visibility_generics/testclasses/";
 		final SpoonAPI launcher = new Launcher();
@@ -116,7 +116,7 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testName() throws Exception {
+	public void testName() {
 		final SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/visibility/testclasses/Tacos.java",
@@ -138,7 +138,7 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testInvocationVisibilityInFieldDeclaration() throws Exception {
+	public void testInvocationVisibilityInFieldDeclaration() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/noclasspath/Solver.java");

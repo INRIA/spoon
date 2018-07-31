@@ -14,7 +14,7 @@ import spoon.test.template.testclasses.ClassAccessTemplate;
 public class TemplateClassAccessTest {
 
 	@Test
-	public void testClassAccessTest() throws Exception {
+	public void testClassAccessTest() {
 		//contract: the template engine supports class access substitution
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ClassAccessTemplate.java"));

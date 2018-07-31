@@ -36,7 +36,7 @@ public class VisitorTest {
     }
 
     @Test
-    public void testRecursiveDescent() throws Exception {
+    public void testRecursiveDescent() {
         Launcher launcher = new Launcher();
         launcher.addInputResource("./src/test/resources/spoon/test/visitor/Foo.java");
         launcher.buildModel();

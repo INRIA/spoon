@@ -24,7 +24,7 @@ public class LoopTest {
 	private static final String nl = System.lineSeparator();
 
 	@Test
-	public void testAnnotationInForLoop() throws Exception {
+	public void testAnnotationInForLoop() {
 		CtType<?> aFoo = ModelUtils.build(new File("./src/test/resources/spoon/test/loop/testclasses/")).Type().get("spoon.test.loop.testclasses.Foo");
 
 		CtFor aFor = aFoo.getMethod("m").getElements(new TypeFilter<>(CtFor.class)).get(0);

@@ -38,7 +38,7 @@ import static spoon.metamodel.ConceptKind.ABSTRACT;
 public class SpoonArchitectureEnforcerTest {
 
 	@Test
-	public void statelessFactory() throws Exception {
+	public void statelessFactory() {
 		// the factories must be stateless
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/main/java/spoon/reflect/factory");
@@ -66,7 +66,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testFactorySubFactory() throws Exception {
+	public void testFactorySubFactory() {
 		// contract:: all subfactory methods must also be in the main factory
 		// this is very important for usability and discoverability
 		final Launcher launcher = new Launcher();
@@ -129,7 +129,7 @@ public class SpoonArchitectureEnforcerTest {
 	// this test contains all the architectural rules that are valid for the whole src/main/java
 	// we put them in the same test in order to only build the full model once
 	@Test
-	public void testSrcMainJava() throws Exception {
+	public void testSrcMainJava() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.addInputResource("src/main/java/");
@@ -187,7 +187,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void metamodelPackageRule() throws Exception {
+	public void metamodelPackageRule() {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
 		List<String> exceptions = Arrays.asList("CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructorImpl");
 
@@ -215,7 +215,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testGoodTestClassNames() throws Exception {
+	public void testGoodTestClassNames() {
 		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
 		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
 		// "**/Test*.java" and "**/*Test.java"
@@ -268,7 +268,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testStaticClasses() throws Exception {
+	public void testStaticClasses() {
 		// contract: helper classes only have static methods and a private constructor
 
 //		spoon.compiler.SpoonResourceHelper
@@ -330,7 +330,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testSpecPackage() throws Exception {
+	public void testSpecPackage() {
 		// contract: when a pull-request introduces a new package, it is made explicit during code review
 		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
 

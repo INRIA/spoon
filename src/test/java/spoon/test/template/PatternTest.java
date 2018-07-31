@@ -1232,7 +1232,7 @@ public class PatternTest {
 	}
 
 	@Test
-	public void testMatchSample1() throws Exception {
+	public void testMatchSample1() {
 		// contract: a super complex pattern is well matched
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
@@ -1512,7 +1512,7 @@ public class PatternTest {
 	}
 
 	@Test
-	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
+	public void testExtensionDecoupledSubstitutionVisitor() {
 		//contract: one can add type members with Generator
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

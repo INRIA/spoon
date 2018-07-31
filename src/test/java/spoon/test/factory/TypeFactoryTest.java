@@ -40,7 +40,7 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void reflectionAPI() throws Exception {
+	public void reflectionAPI() {
 		// Spoon can be used as reflection API
 		CtType s = new TypeFactory().get(String.class);
 		assertEquals("String", s.getSimpleName());
@@ -76,7 +76,7 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void testGetClassWithDollarAndNestedClass() throws Exception {
+	public void testGetClassWithDollarAndNestedClass() {
 		//Classes with name containing $ without being nested classes can contain nested classes
 		Factory factory = ModelUtils.build(new File("./src/test/resources/dollar-and-nested-classes"));
 		CtType<?> poorName = factory.Type().get("$Poor$Name");

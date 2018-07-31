@@ -66,7 +66,7 @@ public class MethodTest {
 	}
 
 	@Test
-	public void testAddSameMethodsTwoTimes() throws Exception {
+	public void testAddSameMethodsTwoTimes() {
 		final Factory factory = createFactory();
 		final CtClass<Object> tacos = factory.Class().create("Tacos");
 		final CtMethod<Void> method = factory.Method().create(tacos, new HashSet<>(), factory.Type().voidType(), "m", new ArrayList<>(), new HashSet<>());
@@ -78,7 +78,7 @@ public class MethodTest {
 	}
 
 	@Test
-	public void testGetAllMethods() throws Exception {
+	public void testGetAllMethods() {
 		/* getAllMethods must not throw Exception in no classpath mode */
 		Launcher l = new Launcher();
 		l.getEnvironment().setNoClasspath(true);
@@ -89,7 +89,7 @@ public class MethodTest {
 	}
 
 	@Test
-	public void testGetAllMethodsAdaptingType() throws Exception {
+	public void testGetAllMethodsAdaptingType() {
 		// contract: AbstractTypingContext should not enter in recursive calls when resolving autoreferenced bounding type
 		// such as T extends Comparable<? super T>
 		Launcher l = new Launcher();
