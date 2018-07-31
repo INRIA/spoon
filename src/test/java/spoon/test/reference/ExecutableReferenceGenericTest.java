@@ -41,9 +41,9 @@ public class ExecutableReferenceGenericTest {
 		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/reference/MyClass.java",
-						"./src/test/java/spoon/test/reference/MyClass2.java",
-						"./src/test/java/spoon/test/reference/MyClass3.java"));
+						"./src/test/java/spoon/test/reference/testclasses/MyClass.java",
+						"./src/test/java/spoon/test/reference/testclasses/MyClass2.java",
+						"./src/test/java/spoon/test/reference/testclasses/MyClass3.java"));
 
 		compiler.build();
 	}

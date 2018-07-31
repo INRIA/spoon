@@ -52,7 +52,7 @@ public class FieldTest {
 		final Factory factory = createFactory();
 		final CtClass<Object> fieldClass = factory.Class().create("FieldClass");
 
-		final HashSet<ModifierKind> modifiers = new HashSet<ModifierKind>();
+		final HashSet<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.STATIC);
 		final CtField<Integer> first = createField(factory, modifiers, "FIELD");
 		fieldClass.addField(first);

@@ -44,7 +44,7 @@ public class ConstructorCallTest {
 		}));
 		constructorCalls = new ArrayList(ts);
 		final CtType<Panini> panini = factory.Type().get(Panini.class);
-		constructorCallsPanini = panini.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class));
+		constructorCallsPanini = panini.getElements(new TypeFilter<>(CtConstructorCall.class));
 	}
 
 	@Test

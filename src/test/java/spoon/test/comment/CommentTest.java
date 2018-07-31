@@ -263,7 +263,7 @@ public class CommentTest {
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		String strType = type.toString();
 
-		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
 		assertEquals(69, comments.size());
 
@@ -462,7 +462,7 @@ public class CommentTest {
 		CtClass<?> type = (CtClass<?>) f.Type().get(BlockComment.class);
 		String strType = type.toString();
 
-		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
 		assertEquals(52, comments.size());
 
@@ -832,11 +832,11 @@ public class CommentTest {
 	public void testCommentsInComment1And2() {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(Comment1.class);
-		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		assertEquals(4, comments.size());
 
 		type = (CtClass<?>) f.Type().get(Comment2.class);
-		comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		comments = type.getElements(new TypeFilter<>(CtComment.class));
 		assertEquals(2, comments.size());
 
 		CtComment commentD = comments.get(1);

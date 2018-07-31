@@ -140,11 +140,6 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 							found = true;
 							return;
 						}
-//						if (rh.getRole()==CtRole.TYPE && role == CtRole.MULTI_TYPE) {
-//							//CtCatchVaraible#type sets CtCatchVaraible#multiType - OK 
-//							found = true;
-//							return;
-//						}
 						problems.add("Argument was set into " + rh.getRole() + " but was found in " + role);
 					}
 				}

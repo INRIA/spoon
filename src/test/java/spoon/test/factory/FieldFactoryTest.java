@@ -28,7 +28,7 @@ public class FieldFactoryTest {
 		FieldFactory ff = type.getFactory().Field();
 		TypeFactory tf = type.getFactory().Type();
 
-		Set<ModifierKind> mods = new HashSet<ModifierKind>();
+		Set<ModifierKind> mods = new HashSet<>();
 		mods.add(ModifierKind.PRIVATE);
 		CtTypeReference<?> tref = tf.createReference(String.class);
 		ff.create(type,mods,tref,"name");
