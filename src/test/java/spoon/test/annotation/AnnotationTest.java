@@ -694,8 +694,7 @@ public class AnnotationTest {
 		assertEquals("Type annotation on generic parameter declared in the method",
 					expectedFirstStatement, firstStatement.toString());
 		final CtConstructorCall firstConstructorCall =
-				firstStatement.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
-							.get(0);
+				firstStatement.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		final CtTypeReference<?> firstTypeReference = firstConstructorCall.getType()
 																		.getActualTypeArguments()
 																		.get(0);
@@ -709,8 +708,7 @@ public class AnnotationTest {
 		assertEquals("Wildcard with an type annotation must be well printed",
 					expectedSecondStatement, secondStatement.toString());
 		final CtConstructorCall secondConstructorCall =
-				secondStatement.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class))
-							.get(0);
+				secondStatement.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		final CtTypeReference<?> secondTypeReference = secondConstructorCall.getType()
 																			.getActualTypeArguments()
 																			.get(0);
@@ -1155,7 +1153,7 @@ public class AnnotationTest {
 
 		Factory factory = spoon.getFactory();
 
-		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "bidule"));
+		List<CtMethod> methods = factory.getModel().getElements(new NamedElementFilter<>(CtMethod.class, "bidule"));
 
 		assertThat(methods.size(), is(1));
 
@@ -1174,7 +1172,7 @@ public class AnnotationTest {
 		spoon.addInputResource("./src/test/resources/noclasspath/annotation/issue1307/SpecIterator.java");
 		spoon.buildModel();
 
-		List<CtAnnotation> overrideAnnotations = factory.getModel().getElements(new TypeFilter<CtAnnotation>(CtAnnotation.class));
+		List<CtAnnotation> overrideAnnotations = factory.getModel().getElements(new TypeFilter<>(CtAnnotation.class));
 
 		for (CtAnnotation annotation : overrideAnnotations) {
 			CtTypeReference typeRef = annotation.getAnnotationType();
@@ -1435,7 +1433,7 @@ public class AnnotationTest {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/shadow");
 		CtModel model = launcher.buildModel();
-		CtClass<?> dumbKlass = model.getElements(new NamedElementFilter<CtClass>(CtClass.class, "DumbKlass")).get(0);
+		CtClass<?> dumbKlass = model.getElements(new NamedElementFilter<>(CtClass.class, "DumbKlass")).get(0);
 		CtMethod<?> fooMethod = dumbKlass.getMethodsByName("foo").get(0);
 
 		final Factory shadowFactory = createFactory();

@@ -81,7 +81,7 @@ public class APITest {
 	@Test
 	public void testOverrideOutputWriter() {
 		// this test that we can correctly set the Java output processor
-		final List<Object> l = new ArrayList<Object>();
+		final List<Object> l = new ArrayList<>();
 		Launcher spoon = new Launcher() {
 			@Override
 			public JavaOutputProcessor createOutputWriter() {
