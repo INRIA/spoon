@@ -30,6 +30,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCodeSnippetStatement(this);
 	}
@@ -49,6 +50,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 		return (C) this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends CtStatement> S compile() throws SnippetCompilationError {
 		return (S) SnippetCompilationHelper.compileStatement(this);
