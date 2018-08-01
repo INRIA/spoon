@@ -77,7 +77,7 @@ public class LiteralTest {
 
 
 		literal = (CtLiteral<?>) ctType.getField("d").getDefaultExpression();
-		assertEquals(0l, literal.getValue());
+		assertEquals(0L, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
 		assertEquals(typeFactory.LONG_PRIMITIVE, literal.getType());
 
