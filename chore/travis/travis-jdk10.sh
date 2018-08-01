@@ -8,6 +8,6 @@ wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
 chmod +x install-jdk.sh
 
 export JAVA_HOME=$HOME/openjdk8
-source ./install-jdk.sh -f 10
+source ./install-jdk.sh -f 10 -c
 
 mvn -Djava.src.version=1.10 test
