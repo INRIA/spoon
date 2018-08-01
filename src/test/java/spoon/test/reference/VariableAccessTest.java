@@ -226,10 +226,10 @@ public class VariableAccessTest {
 					final CtLocalVariableReference<T> reference) {
 				assertNotNull(reference.getDeclaration());
 				final CtLocalVariable decl = reference.getDeclaration();
-				assertEquals(decl.getPosition().getLine(), 7);
+				assertEquals(7, decl.getPosition().getLine());
 				assertTrue(decl.getDefaultExpression() instanceof CtLiteral);
 				final CtLiteral literal = (CtLiteral) decl.getDefaultExpression();
-				assertEquals(literal.getValue(), 42);
+				assertEquals(42, literal.getValue());
 				super.visitCtLocalVariableReference(reference);
 			}
 		}
