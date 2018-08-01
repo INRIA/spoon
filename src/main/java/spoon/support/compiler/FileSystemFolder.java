@@ -46,6 +46,7 @@ public class FileSystemFolder implements SpoonFolder {
 		this(new File(path));
 	}
 
+	@Override
 	public List<SpoonFile> getAllFiles() {
 		List<SpoonFile> all = new ArrayList<>(getFiles());
 		for (SpoonFolder f : getSubFolders()) {
@@ -54,6 +55,7 @@ public class FileSystemFolder implements SpoonFolder {
 		return all;
 	}
 
+	@Override
 	public List<SpoonFile> getFiles() {
 		List<SpoonFile> files;
 		files = new ArrayList<>();
@@ -65,10 +67,12 @@ public class FileSystemFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public String getName() {
 		return file.getName();
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
@@ -78,6 +82,7 @@ public class FileSystemFolder implements SpoonFolder {
 		return null;
 	}
 
+	@Override
 	public List<SpoonFolder> getSubFolders() {
 		List<SpoonFolder> subFolders;
 		subFolders = new ArrayList<>();
@@ -93,6 +98,7 @@ public class FileSystemFolder implements SpoonFolder {
 		return subFolders;
 	}
 
+	@Override
 	public boolean isFile() {
 		return false;
 	}
@@ -102,6 +108,7 @@ public class FileSystemFolder implements SpoonFolder {
 		return getPath();
 	}
 
+	@Override
 	public List<SpoonFile> getAllJavaFiles() {
 		List<SpoonFile> files = new ArrayList<>();
 		for (SpoonFile f : getFiles()) {
@@ -115,6 +122,7 @@ public class FileSystemFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public String getPath() {
 			return file.getPath();
 		}

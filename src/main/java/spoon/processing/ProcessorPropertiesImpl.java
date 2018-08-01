@@ -24,6 +24,7 @@ import java.util.Map;
 public class ProcessorPropertiesImpl implements ProcessorProperties {
 	private final Map<String, Object> _properties = new HashMap<>();
 
+	@Override
 	public <T> T get(Class<T> type, String name) {
 		if (type.isPrimitive()) {
 			type = (Class<T>) ClassUtils.primitiveToWrapper(type);
@@ -36,6 +37,7 @@ public class ProcessorPropertiesImpl implements ProcessorProperties {
 		}
 	}
 
+	@Override
 	public void set(String name, Object o) {
 		_properties.put(name, o);
 	}
@@ -43,6 +45,7 @@ public class ProcessorPropertiesImpl implements ProcessorProperties {
 	/**
 	 * Gets the corresponding processor name.
 	 */
+	@Override
 	public String getProcessorName() {
 		return (String) _properties.get("__NAME__");
 	}

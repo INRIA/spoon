@@ -70,10 +70,12 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		return printer;
 	}
 
+	@Override
 	public List<File> getCreatedFiles() {
 		return printedFiles;
 	}
 
+	@Override
 	public File getOutputDirectory() {
 		return this.getEnvironment().getSourceOutputDirectory();
 	}
@@ -148,6 +150,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 * Creates a source file for each processed top-level type and pretty prints
 	 * its contents.
 	 */
+	@Override
 	public void process(CtNamedElement nameElement) {
 		if (nameElement instanceof CtType && ((CtType) nameElement).isTopLevel()) {
 			createJavaFile((CtType<?>) nameElement);

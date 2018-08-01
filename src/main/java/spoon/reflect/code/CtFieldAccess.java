@@ -28,6 +28,7 @@ import static spoon.reflect.path.CtRole.VARIABLE;
  * 		Type of this field
  */
 public interface CtFieldAccess<T> extends CtVariableAccess<T>, CtTargetedExpression<T, CtExpression<?>> {
+	@Override
 	@PropertyGetter(role = VARIABLE)
 	CtFieldReference<T> getVariable();
 

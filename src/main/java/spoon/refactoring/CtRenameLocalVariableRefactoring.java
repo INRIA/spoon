@@ -67,6 +67,7 @@ public class CtRenameLocalVariableRefactoring extends AbstractRenameRefactoring<
 		super(validVariableNameRE);
 	}
 
+	@Override
 	protected void refactorNoCheck() {
 		getTarget().map(new VariableReferenceFunction()).forEach(new CtConsumer<CtReference>() {
 			@Override
