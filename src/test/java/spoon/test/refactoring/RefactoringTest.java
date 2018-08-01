@@ -11,6 +11,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.refactoring.processors.ThisTransformationProcessor;
 import spoon.test.refactoring.testclasses.AClass;
 
 import java.util.List;
