@@ -50,7 +50,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	boolean upper = true;
 
 	public CtTypeParameterReferenceImpl() {
-		super();
 		// calling null will set the default value of boundingType
 		this.setBoundingType(null);
 	}

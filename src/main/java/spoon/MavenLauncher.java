@@ -132,7 +132,7 @@ public class MavenLauncher extends Launcher {
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
 
-	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType) {//, File outputFile) {
+	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType) {
 		//Run mvn dependency:build-classpath -Dmdep.outputFile="spoon.classpath.tmp"
 		//This should write the classpath used by maven in spoon.classpath.tmp
 		InvocationRequest request = new DefaultInvocationRequest();
@@ -140,9 +140,9 @@ public class MavenLauncher extends Launcher {
 		request.setGoals(Arrays.asList("dependency:build-classpath"));
 		Properties properties = new Properties();
 		if (sourceType == SOURCE_TYPE.APP_SOURCE) {
-			properties.setProperty("mdep.includeScope", "runtime");
+			properties.setProperty("includeScope", "runtime");
 		}
-		properties.setProperty("mdep.outputFile", "spoon.classpath.tmp");// outputFile.getAbsolutePath());
+		properties.setProperty("mdep.outputFile", "spoon.classpath.tmp");
 		request.setProperties(properties);
 
 		//FIXME Should the standard output made silent and error verbose?
@@ -168,7 +168,7 @@ public class MavenLauncher extends Launcher {
 		List<String> classpathElements = new ArrayList<>();
 
 		//Read the content of spoon.classpath.tmp
-		for(File classPathFile: classPathFiles) {
+		for (File classPathFile: classPathFiles) {
 			BufferedReader br = null;
 			try {
 				br = new BufferedReader(new FileReader(classPathFile));
@@ -248,14 +248,14 @@ public class MavenLauncher extends Launcher {
 			projectPath = Paths.get(projectPath, "pom.xml").toString();
 		}
 		File pom = new File(projectPath);
-		generateClassPathFile(pom, new File(mvnHome), sourceType);//, classPathPrint);
+		generateClassPathFile(pom, new File(mvnHome), sourceType);
 
 		List<File> classPathPrints = null;
 		try {
 			classPathPrints = Files.find(Paths.get(pom.getParentFile().getAbsolutePath()),
 					Integer.MAX_VALUE,
 					(filePath, fileAttr) -> filePath.endsWith("spoon.classpath.tmp"))
-					.map( p -> p.toFile())
+					.map(p -> p.toFile())
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			e.printStackTrace();

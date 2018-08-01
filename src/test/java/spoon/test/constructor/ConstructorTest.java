@@ -34,7 +34,7 @@ public class ConstructorTest {
 	private CtClass<?> aClass;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/constructor/testclasses/",
@@ -53,7 +53,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTransformationOnConstructorWithInsertBegin() throws Exception {
+	public void testTransformationOnConstructorWithInsertBegin() {
 		final CtConstructor<?> ctConstructor = aClass.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0);
 		ctConstructor.getBody().insertBegin(factory.Code().createCodeSnippetStatement("int i = 0"));
 
@@ -64,7 +64,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTransformationOnConstructorWithInsertBefore() throws Exception {
+	public void testTransformationOnConstructorWithInsertBefore() {
 		final CtConstructor<?> ctConstructor = aClass.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0);
 		try {
 			ctConstructor.getBody().getStatement(0).insertBefore(factory.Code().createCodeSnippetStatement("int i = 0"));
@@ -76,7 +76,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void callParamConstructor() throws Exception {
+	public void callParamConstructor() {
 		CtClass<Object> aClass = factory.Class().get(AClass.class);
 		CtConstructor<Object> constructor = aClass.getConstructors().iterator().next();
 		assertEquals("{" + System.lineSeparator() +
@@ -85,7 +85,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testConstructorCallFactory() throws Exception {
+	public void testConstructorCallFactory() {
 		CtTypeReference<ArrayList> ctTypeReference = factory.Code()
 				.createCtTypeReference(ArrayList.class);
 		CtConstructorCall<ArrayList> constructorCall = factory.Code()
@@ -99,7 +99,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTypeAnnotationOnExceptionDeclaredInConstructors() throws Exception {
+	public void testTypeAnnotationOnExceptionDeclaredInConstructors() {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
 		assertEquals(1, aConstructor.getThrownTypes().size());
@@ -111,7 +111,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTypeAnnotationWithConstructorsOnFormalType() throws Exception {
+	public void testTypeAnnotationWithConstructorsOnFormalType() {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
 		assertEquals(1, aConstructor.getFormalCtTypeParameters().size());

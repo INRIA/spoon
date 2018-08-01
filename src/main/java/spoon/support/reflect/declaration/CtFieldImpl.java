@@ -58,7 +58,6 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtFieldImpl() {
-		super();
 	}
 
 	@Override

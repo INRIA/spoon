@@ -7,6 +7,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
@@ -49,6 +50,7 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
+import spoon.test.comment.testclasses.CommentsOnStatements;
 import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
@@ -63,10 +65,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.io.IOUtils.write;
 import static org.junit.Assert.*;
@@ -259,7 +263,7 @@ public class CommentTest {
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		String strType = type.toString();
 
-		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
 		assertEquals(69, comments.size());
 
@@ -405,7 +409,7 @@ public class CommentTest {
 				+ ") ? // comment before then CtConditional" + newLine
 				+ "null// comment after then CtConditional" + newLine
 				+ " : // comment before else CtConditional" + newLine
-				+ "new java.lang.Double((j / ((double) (i - 1))))", ctLocalVariable1.toString());
+				+ "new java.lang.Double((j / ((double) (i - 1))))// comment after else CtConditional" + newLine, ctLocalVariable1.toString());
 
 		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
 		assertEquals(createFakeComment(f, "last comment at the end of array"), ctNewArray.getComments().get(0));
@@ -458,7 +462,7 @@ public class CommentTest {
 		CtClass<?> type = (CtClass<?>) f.Type().get(BlockComment.class);
 		String strType = type.toString();
 
-		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
 		assertEquals(52, comments.size());
 
@@ -818,7 +822,7 @@ public class CommentTest {
 		);
 
 		try {
-			assertEquals("doc outdated, please commit doc/code_elements.md", codeElementsDocumentationPage.toString(), IOUtils.toString(new FileReader("doc/code_elements.md")));
+			assertEquals("doc outdated, please commit doc/code_elements.md", IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString());
 		} finally {
 			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
@@ -828,11 +832,11 @@ public class CommentTest {
 	public void testCommentsInComment1And2() {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(Comment1.class);
-		List<CtComment> comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		assertEquals(4, comments.size());
 
 		type = (CtClass<?>) f.Type().get(Comment2.class);
-		comments = type.getElements(new TypeFilter<CtComment>(CtComment.class));
+		comments = type.getElements(new TypeFilter<>(CtComment.class));
 		assertEquals(2, comments.size());
 
 		CtComment commentD = comments.get(1);
@@ -962,5 +966,30 @@ public class CommentTest {
 		} catch (SpoonException e) {
 			assertTrue(e.getMessage().contains("consider using a block comment"));
 		}
+	}
+	@Test
+	public void testStatementComments() {
+		// contract: the statements have their comment even if they are nested in another block
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/CommentsOnStatements.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+		
+		List<CtStatement> statements = launcher.getFactory().Type().get(CommentsOnStatements.class).getMethodsByName("m1").get(0).getBody().getStatements();
+		assertEquals(2, statements.size());
+		CtIf ifStatement = (CtIf) statements.get(0);
+		assertEquals(Arrays.asList("// c1"), getCommentStrings(ifStatement));
+		assertEquals(Arrays.asList("// c2 belongs to toto"), getCommentStrings(((CtBlock) ifStatement.getThenStatement()).getStatement(0)));
+		CtIf if2Statement = (CtIf) ((CtBlock) ifStatement.getElseStatement()).getStatement(0);
+		assertEquals("// c3 belongs to getClass" + newLine 
+				+ "this.getClass()", ((CtBlock) if2Statement.getThenStatement()).getStatement(0).toString());
+		assertEquals(Arrays.asList("// c3 belongs to getClass"), getCommentStrings(((CtBlock) if2Statement.getThenStatement()).getStatement(0)));
+
+		assertEquals(Arrays.asList("// c4 comment of return"), getCommentStrings(statements.get(1)));
+	}
+	
+	private List<String> getCommentStrings(CtElement ele) {
+		return ele.getComments().stream().map(Object::toString).collect(Collectors.toList());
 	}
 }

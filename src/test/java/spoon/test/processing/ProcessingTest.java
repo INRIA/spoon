@@ -21,9 +21,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.test.processing.processors.RenameProcessor;
-import spoon.test.processing.testclasses.CtClassProcessor;
-import spoon.test.processing.testclasses.CtInterfaceProcessor;
-import spoon.test.processing.testclasses.CtTypeProcessor;
+import spoon.test.processing.processors.CtClassProcessor;
+import spoon.test.processing.processors.CtInterfaceProcessor;
+import spoon.test.processing.processors.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.io.File;
@@ -126,7 +126,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testProcessorNotFoundThrowAnException() throws Exception {
+	public void testProcessorNotFoundThrowAnException() {
 		try {
 			new Launcher().run(new String[]{
 					"-p", "fr.inria.gforge.spoon.MakeAnAwesomeTacosProcessor"
@@ -149,7 +149,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testProcessorWithNoArgumentsInConstructor() throws Exception {
+	public void testProcessorWithNoArgumentsInConstructor() {
 
 		/* throw correctly an exception when trying to use a processor with constructor with args */
 
@@ -167,7 +167,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitProperties() throws Exception {
+	public void testInitProperties() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -228,7 +228,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitPropertiesWithWrongType() throws Exception {
+	public void testInitPropertiesWithWrongType() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -268,7 +268,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitPropertiesWithStringType() throws Exception {
+	public void testInitPropertiesWithStringType() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;

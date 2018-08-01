@@ -170,7 +170,6 @@ public class LocalVariableReferenceFunction implements CtConsumableFunction<CtEl
 		CtQuery query;
 
 		QueryCreator(CtElement scope, CtScannerListener listener) {
-			super();
 			this.scope = scope;
 			this.listener = listener;
 		}

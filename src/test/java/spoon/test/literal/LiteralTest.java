@@ -21,8 +21,9 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class LiteralTest {
+
 	@Test
-	public void testCharLiteralInNoClasspath() throws Exception {
+	public void testCharLiteralInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/SecondaryIndexManager.java");
 		launcher.setSourceOutputDirectory("./target/literal");
@@ -30,7 +31,7 @@ public class LiteralTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.apache.cassandra.index.SecondaryIndexManager");
-		TreeSet<CtLiteral<?>> ts = new TreeSet<CtLiteral<?>>(new DeepRepresentationComparator());
+		TreeSet<CtLiteral<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 
 		ts.addAll(aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
 			@Override
@@ -129,7 +130,7 @@ public class LiteralTest {
 	}
 
 	@Test
-	public void testEscapedString() throws Exception {
+	public void testEscapedString() {
 
 		/* test escaped char: spoon change octal values by equivalent unicode values */
 

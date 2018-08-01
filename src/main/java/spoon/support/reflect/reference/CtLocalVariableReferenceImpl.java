@@ -39,7 +39,6 @@ public class CtLocalVariableReferenceImpl<T>
 	 * Default constructor.
 	 */
 	public CtLocalVariableReferenceImpl() {
-		super();
 	}
 
 	@Override

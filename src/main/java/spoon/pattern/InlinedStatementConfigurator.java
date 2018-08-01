@@ -135,7 +135,6 @@ public class InlinedStatementConfigurator {
 			throw new SpoonException("Each inline `for(x : iterable)` statement must have defined pattern parameter for `iterable` expression");
 		}
 		PrimitiveMatcher parameterOfExpression = (PrimitiveMatcher) vr;
-//		PatternBuilder localPatternBuilder = patternBuilder.create(bodyToStatements(foreach.getBody()));
 		ForEachNode mvr = new ForEachNode();
 		mvr.setIterableParameter(parameterOfExpression);
 		CtLocalVariable<?> lv = foreach.getVariable();

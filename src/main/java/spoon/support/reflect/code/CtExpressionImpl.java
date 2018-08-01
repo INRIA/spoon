@@ -38,6 +38,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 	@MetamodelPropertyField(role = CAST)
 	List<CtTypeReference<?>> typeCasts = emptyList();
 
+	@Override
 	public CtTypeReference<T> getType() {
 		return type;
 	}

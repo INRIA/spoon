@@ -32,11 +32,11 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 public class VisibilityTest {
     @Test
     public void testMethodeWithNonAccessibleTypeArgument() throws Exception {
-        Factory f = build(spoon.test.visibility.MethodeWithNonAccessibleTypeArgument.class,
+        Factory f = build(spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument.class,
                 spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf.class,
                 Class.forName("spoon.test.visibility.packageprotected.NonAccessibleInterf")
                 );
-        CtClass<?> type = f.Class().get(spoon.test.visibility.MethodeWithNonAccessibleTypeArgument.class);
+        CtClass<?> type = f.Class().get(spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument.class);
         assertEquals("MethodeWithNonAccessibleTypeArgument", type.getSimpleName());
         CtMethod<?> m = type.getMethodsByName("method").get(0);
         assertEquals(
@@ -46,7 +46,7 @@ public class VisibilityTest {
     }
 
 	@Test
-	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() throws Exception {
+	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() {
 		final File sourceOutputDir = new File("target/spooned/spoon/test/visibility_package/testclasses");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
@@ -71,7 +71,7 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testFullyQualifiedNameOfTypeReferenceWithGeneric() throws Exception {
+	public void testFullyQualifiedNameOfTypeReferenceWithGeneric() {
 		// contract: Generics are written when there are specified in the return type of a method.
 		final String target = "./target/spooned/spoon/test/visibility_generics/testclasses/";
 		final SpoonAPI launcher = new Launcher();
@@ -116,7 +116,7 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testName() throws Exception {
+	public void testName() {
 		final SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/visibility/testclasses/Tacos.java",
@@ -138,7 +138,7 @@ public class VisibilityTest {
 	}
 
 	@Test
-	public void testInvocationVisibilityInFieldDeclaration() throws Exception {
+	public void testInvocationVisibilityInFieldDeclaration() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/noclasspath/Solver.java");

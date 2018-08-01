@@ -82,7 +82,7 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateCtBiScanner() throws Exception {
+	public void testGenerateCtBiScanner() {
 		// contract: generates the biscanner that is used for equality checking
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -111,7 +111,7 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateCloneVisitor() throws Exception {
+	public void testGenerateCloneVisitor() {
 		// contract: generates CloneBuilder.java and CloneBuilder.java
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -159,7 +159,7 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateRoleHandler() throws Exception {
+	public void testGenerateRoleHandler() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);

@@ -27,8 +27,9 @@ import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class InvocationTest {
+
 	@Test
-	public void testTypeOfStaticInvocation() throws Exception {
+	public void testTypeOfStaticInvocation() {
 		SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/invocations/testclasses/", "-o", "./target/spooned/"

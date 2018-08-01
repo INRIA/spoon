@@ -64,10 +64,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class MainTest {
-	
+
 	static Launcher launcher;
 	static CtPackage rootPackage;
-	
+
 	/**
 	 * load model once into static variable and use it for more read-only tests
 	 */
@@ -101,7 +101,7 @@ public class MainTest {
 
 		rootPackage = launcher.getFactory().Package().getRootPackage();
 	}
-	
+
 	@Test
 	public void testMain_ModelPrintAndCompile() {
 		//contract: check that spoon sources can be printed
@@ -109,12 +109,12 @@ public class MainTest {
 		//contract: check that spoon sources can be compiled
 		launcher.getModelBuilder().compile(InputType.CTTYPES);
 	}
-	
+
 	@Test
 	public void testMain_checkGenericContracts() {
 		checkGenericContracts(rootPackage);
 	}
-	
+
 	@Test
 	public void testMain_checkShadow() {
 		checkShadow(rootPackage);
@@ -278,7 +278,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		final Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		spoon.addInputResource("./src/test/java/spoon/test/main/testclasses");
@@ -371,15 +371,13 @@ public class MainTest {
 	}
 
 	public static void checkAssignmentContracts(CtElement pack) {
-		for (CtAssignment assign : pack.getElements(new TypeFilter<CtAssignment>(
-				CtAssignment.class))) {
+		for (CtAssignment assign : pack.getElements(new TypeFilter<>(CtAssignment.class))) {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
 				throw new AssertionError("AssignmentContract error:" + assign.getPosition()+"\n"+assign.toString()+"\nAssigned is "+assigned.getClass());
 			}
 		}
-
 	}
 
 	public static void checkParentConsistency(CtElement ele) {
@@ -418,7 +416,7 @@ public class MainTest {
 		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
-	
+
 	/*
 	 * contract: each element is used only once
 	 * For example this is always true: field.getType() != field.getDeclaringType()
@@ -488,7 +486,7 @@ public class MainTest {
 						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
 						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
 						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
-						assertEquals(returnedElements.size(), 1);
+						assertEquals(1, returnedElements.size());
 						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertSame(element, actualElement);
@@ -534,7 +532,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testTest() throws Exception {
+	public void testTest() {
 		// the tests should be spoonable
 		Launcher launcher = new Launcher();
 		launcher.run(new String[] {
@@ -562,7 +560,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testResourcesCopiedInTargetDirectory() throws Exception {
+	public void testResourcesCopiedInTargetDirectory() {
 		StringBuilder classpath = new StringBuilder();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -587,7 +585,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testResourcesNotCopiedInTargetDirectory() throws Exception {
+	public void testResourcesNotCopiedInTargetDirectory() {
 		StringBuilder classpath = new StringBuilder();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -617,14 +615,14 @@ public class MainTest {
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
 	@Test
-	public void testLauncherWithoutArgumentsExitWithSystemExit() throws Exception {
+	public void testLauncherWithoutArgumentsExitWithSystemExit() {
 		exit.expectSystemExit();
 
 		final PrintStream oldErr = System.err;
 		System.setErr(new PrintStream(errContent));
 		exit.checkAssertionAfterwards(new Assertion() {
 			@Override
-			public void checkAssertion() throws Exception {
+			public void checkAssertion() {
 				assertTrue(errContent.toString().contains("Usage: java <launcher name> [option(s)]"));
 				System.setErr(oldErr);
 			}
@@ -632,5 +630,4 @@ public class MainTest {
 
 		new Launcher().run(new String[] { });
 	}
-
 }

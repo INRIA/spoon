@@ -62,7 +62,7 @@ import static org.junit.Assert.fail;
 public class CtScannerTest {
 
 	@Test
-	public void testScannerContract() throws Exception {
+	public void testScannerContract() {
 		// contract: CtScanner must call enter and exit methods in each visit methods.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -112,7 +112,7 @@ public class CtScannerTest {
 	}
 
 	@Test
-	public void testScannerCallsAllProperties() throws Exception {
+	public void testScannerCallsAllProperties() {
 		// contract: CtScanner must visit all metamodel properties and use correct CtRole!
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
@@ -220,7 +220,7 @@ public class CtScannerTest {
 	}
 
 	@Test
-	public void testScan() throws Exception {
+	public void testScan() {
 		// contract: all AST nodes are visisted through method "scan"
 		Launcher launcher;
 		launcher = new Launcher();

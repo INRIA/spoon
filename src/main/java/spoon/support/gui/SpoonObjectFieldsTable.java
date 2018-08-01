@@ -40,7 +40,6 @@ public class SpoonObjectFieldsTable extends JFrame {
 		transient Object o;
 
 		public SpoonObjectTableModel(Object o) {
-			super();
 
 			this.o = o;
 			field = new ArrayList<>();
@@ -119,7 +118,6 @@ public class SpoonObjectFieldsTable extends JFrame {
 	 * This is the default constructor
 	 */
 	public SpoonObjectFieldsTable(Object o) {
-		super();
 		this.o = o;
 		initialize();
 	}

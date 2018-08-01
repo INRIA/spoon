@@ -23,9 +23,9 @@ import spoon.testing.utils.ModelUtils;
 import static org.junit.Assert.*;
 
 public class MethodOverriddingTest {
-	
+
 	@Test
-	public void testShadowInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+	public void testShadowInterfaceMethodsCanOverrideObjectMethods() {
 		//contract: Interface (made by reflection) method equals overrides Object#equals
 		Factory f = new Launcher().getFactory();
 		CtType<?> iface = f.Interface().get(Comparator.class);
@@ -62,11 +62,12 @@ public class MethodOverriddingTest {
 	public void testMethodOverride() {
 		checkMethodOverride((m1, m2)->m1.isOverriding(m2));
 	}
+
 	@Test
 	public void testMethodOverrideByReference() {
 		checkMethodOverride((m1, m2)->m1.getReference().isOverriding(m2.getReference()));
 	}
-	
+
 	private void checkMethodOverride(BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
 		Factory factory = ModelUtils.build(new File("src/test/java/spoon/test/method_overriding/testclasses").listFiles());
 		Map<String, List<CtMethod>> methodsByName = new HashMap<>();
@@ -104,6 +105,7 @@ public class MethodOverriddingTest {
 		assertTrue(descr(m1)+" overriding "+descr(m2), 		isOverriding.apply(m1, m2));
 		assertFalse(descr(m2)+" NOT overriding "+descr(m1), isOverriding.apply(m2, m1));
 	}
+
 	private void checkNotOverride(CtMethod m1, CtMethod m2, BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
 		assertFalse(descr(m1)+" NOT overriding "+descr(m2), isOverriding.apply(m1, m2));
 		assertFalse(descr(m2)+" NOT overriding "+descr(m1), isOverriding.apply(m2, m1));

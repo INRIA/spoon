@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +18,7 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(32, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(189, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 56 because of the sub folders of src/main/java
 		assertEquals(59, launcher.getModelBuilder().getInputSources().size());
@@ -27,7 +26,7 @@ public class MavenLauncherTest {
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 
-		assertEquals(32, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(194, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 236 because of the sub folders of src/main/java and src/test/java
 		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
@@ -68,7 +67,7 @@ public class MavenLauncherTest {
 		// in order to work on CI, make sure the version is the same in Spoon pom.xml
 		// else, we cannot guarantee that the dependency is present in .m2 cache and the test might fail
 
-		String lookingFor = Paths.get("junit","junit", "4.12", "junit-4.12.jar").toString();
+		String lookingFor = Paths.get("junit", "junit", "4.12", "junit-4.12.jar").toString();
 
 		boolean findIt = false;
 		for (String s : classpath) {

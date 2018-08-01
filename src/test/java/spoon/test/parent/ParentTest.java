@@ -71,9 +71,8 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParent() throws Exception {
-		// toString should not throw a parent exception even if parents are not
-		// set
+	public void testParent() {
+		// toString should not throw a parent exception even if parents are not set
 		try {
 			CtLiteral<Object> literal = factory.Core().createLiteral();
 			literal.setValue(1);
@@ -87,7 +86,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParentSet() throws Exception {
+	public void testParentSet() {
 		CtClass<?> foo = factory.Package().get("spoon.test.parent")
 				.getType("Foo");
 
@@ -112,7 +111,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParentPackage() throws Exception {
+	public void testParentPackage() {
 		// addType should set Parent
 		CtClass<?> clazz = factory.Core().createClass();
 		clazz.setSimpleName("Foo");
@@ -124,7 +123,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParentOfCtPackageReference() throws Exception {
+	public void testParentOfCtPackageReference() {
 		// contract: a parent at a top level must be the root package and in the code, the element which call getParent().
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -219,7 +218,7 @@ public class ParentTest {
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
-			Deque<CtElement> elementStack = new ArrayDeque<CtElement>();
+			Deque<CtElement> elementStack = new ArrayDeque<>();
 			@Override
 			public void scan(CtElement e) {
 				if (e==null) { return; }
@@ -236,14 +235,14 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testGetParentWithFilter() throws Exception {
+	public void testGetParentWithFilter() {
 		// addType should set Parent
 		CtClass<Foo> clazz = (CtClass<Foo>) factory.Class().getAll().get(0);
 
 		CtMethod<Object> m = clazz.getMethod("m");
 		// get three = "" in one = two = three = "";
 		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getStatement(3)).getAssignment()).getAssignment();
-		CtPackage ctPackage = statement.getParent(new TypeFilter<CtPackage>(CtPackage.class));
+		CtPackage ctPackage = statement.getParent(new TypeFilter<>(CtPackage.class));
 		assertEquals(Foo.class.getPackage().getName(), ctPackage.getQualifiedName());
 
 		CtStatement ctStatement = statement
@@ -278,7 +277,7 @@ public class ParentTest {
 		assertNotEquals(ctStatement1.getParent(CtType.class), parent);
 
 		// not present element
-		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<CtWhile>(CtWhile.class));
+		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<>(CtWhile.class));
 		assertEquals(null, ctWhile);
 
 		CtStatement statementParent = statement
@@ -293,7 +292,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testHasParent() throws Exception {
+	public void testHasParent() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/reference-package/Panini.java");
@@ -312,7 +311,7 @@ public class ParentTest {
 
 	@Test
 	@Ignore // too fragile because of conventions
-	public void testParentSetInSetter() throws Exception {
+	public void testParentSetInSetter() {
 		// contract: Check that all setters protect their parameter.
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();

@@ -38,7 +38,6 @@ public class FileSystemFile implements SpoonFile {
 	}
 
 	public FileSystemFile(File file) {
-		super();
 		try {
 			this.file = file.getCanonicalFile();
 		} catch (IOException e) {

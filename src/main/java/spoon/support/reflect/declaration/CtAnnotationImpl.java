@@ -97,9 +97,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	};
 
 	public CtAnnotationImpl() {
-		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnnotation(this);
 	}
@@ -225,7 +225,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@SuppressWarnings("unchecked")
 	private Object convertElementToRuntimeObject(CtElement value) {
 		if (value instanceof CtFieldReference) {
-			Class<?> c = null;
+			Class<?> c;
 			try {
 				c = ((CtFieldReference<?>) value).getDeclaringType().getActualClass();
 			} catch (Exception e) {
@@ -293,6 +293,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return null;
 	}
 
+	@Override
 	public CtTypeReference<A> getAnnotationType() {
 		return annotationType;
 	}
@@ -500,16 +501,17 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return CtAnnotation.getAnnotatedElementTypeForCtElement(annotatedElement);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public A getActualAnnotation() {
 		class AnnotationInvocationHandler implements InvocationHandler {
 			CtAnnotation<? extends Annotation> annotation;
 
 			AnnotationInvocationHandler(CtAnnotation<? extends Annotation> annotation) {
-				super();
 				this.annotation = annotation;
 			}
 
+			@Override
 			public Object invoke(Object proxy, Method method, Object[] args) {
 				String fieldname = method.getName();
 				if ("toString".equals(fieldname)) {
@@ -517,8 +519,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 				} else if ("annotationType".equals(fieldname)) {
 					return annotation.getAnnotationType().getActualClass();
 				}
-				Object ret = getValueAsObject(fieldname);
-				return ret;
+				return getValueAsObject(fieldname);
 			}
 		}
 		return (A) Proxy.newProxyInstance(annotationType.getActualClass().getClassLoader(), new Class[] { annotationType.getActualClass() }, new AnnotationInvocationHandler(this));

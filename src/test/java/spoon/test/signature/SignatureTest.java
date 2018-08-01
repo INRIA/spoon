@@ -42,7 +42,7 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 public class SignatureTest {
 
 	@Test
-	public void testNullSignature() throws Exception {
+	public void testNullSignature() {
 		// bug found by Thomas Vincent et Mathieu Schepens (students at the
 		// University of Lille) on Nov 4 2014
 		// in their analysis, they put CtExpressions in a Map
@@ -65,13 +65,13 @@ public class SignatureTest {
 		// since the signature is null, CtElement.equals throws an exception and
 		// should not
 		CtLiteral<?> lit2 = ((CtLiteral<?>) lit).clone();
-		HashSet<CtExpression<?>> s = new HashSet<CtExpression<?>>();
+		HashSet<CtExpression<?>> s = new HashSet<>();
 		s.add(lit);
 		s.add(lit2);
 	}
 
 	@Test
-	public void testNullSignatureInUnboundVariable() throws Exception {
+	public void testNullSignatureInUnboundVariable() {
 		//Unbound variable access bug fix:
 		//Bug description: The signature printer ignored the element Unbound variable reference
 		//(as well all Visitor that extend CtVisitor)
@@ -169,7 +169,7 @@ public class SignatureTest {
 	}
 
 	@Test
-	public void testMethodInvocationSignatureWithVariableAccess() throws Exception{
+	public void testMethodInvocationSignatureWithVariableAccess() {
 
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
 				new StandardEnvironment());
@@ -203,7 +203,7 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		ts.addAll(clazz1.getMethods());
 		CtMethod[] methodArray = ts.toArray(new CtMethod[0]);
 		CtMethod<?> methodInteger = methodArray[0];
@@ -286,7 +286,7 @@ public class SignatureTest {
 	}
 
 	@Test
-	public void testArgumentNotNullForExecutableReference() throws Exception {
+	public void testArgumentNotNullForExecutableReference() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/variable/PropPanelUseCase_1.40.java");

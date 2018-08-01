@@ -51,6 +51,7 @@ import spoon.test.generics.testclasses2.LikeCtClassImpl;
 import spoon.test.generics.testclasses2.SameSignature2;
 import spoon.test.generics.testclasses2.SameSignature3;
 import spoon.test.generics.testclasses3.Bar;
+import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
 import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
 import spoon.test.generics.testclasses3.Foo;
 import spoon.test.generics.testclasses3.GenericConstructor;
@@ -253,7 +254,7 @@ public class GenericsTest {
 
 			CtField<?> INSTANCE2 = type.getElements(
 					new NamedElementFilter<>(CtField.class,"INSTANCE2")).get(0);
-			INSTANCE2.setAnnotations(new ArrayList<CtAnnotation<?>>());
+			INSTANCE2.setAnnotations(new ArrayList<>());
 			assertEquals(
 					"public static final spoon.test.generics.testclasses3.ACLass<?> INSTANCE2 = new spoon.test.generics.testclasses3.ACLass();",
 					INSTANCE2.toString());
@@ -366,7 +367,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testConstructorCallGenerics() throws Exception {
+	public void testConstructorCallGenerics() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -419,7 +420,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testInvocationGenerics() throws Exception {
+	public void testInvocationGenerics() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -446,7 +447,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testNewClassGenerics() throws Exception {
+	public void testNewClassGenerics() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -470,7 +471,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testMethodsWithGenericsWhoExtendsObject() throws Exception {
+	public void testMethodsWithGenericsWhoExtendsObject() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -490,7 +491,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testName() throws Exception {
+	public void testName() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -531,7 +532,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testGenericsInQualifiedNameInConstructorCall() throws Exception {
+	public void testGenericsInQualifiedNameInConstructorCall() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/generics/testclasses/",
@@ -541,7 +542,7 @@ public class GenericsTest {
 		final CtClass<Tacos> aTacos = launcher.getFactory().Class().get(Tacos.class);
 		final CtType<?> burritos = aTacos.getNestedType("Burritos");
 
-		SortedList<CtConstructorCall> elements = new SortedList<CtConstructorCall>(new CtLineElementComparator());
+		SortedList<CtConstructorCall> elements = new SortedList<>(new CtLineElementComparator());
 		elements.addAll(burritos.getElements(new TypeFilter<>(CtConstructorCall.class)));
 
 		assertEquals(3, elements.size());
@@ -587,7 +588,7 @@ public class GenericsTest {
 
 	@Test
 	public void testWildcard() throws Exception {
-		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<CtWildcardReference>(CtWildcardReference.class));
+		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<>(CtWildcardReference.class));
 		// 4 = the class declaration + the constructor declaration + the method declaration + the type parameter of the method declaration
 		assertEquals(4, wildcardReferences.size());
 	}
@@ -658,7 +659,6 @@ public class GenericsTest {
 
 		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
 		//this returns a type reference with uninitialized actual type arguments.
-//		CtTypeReference<?> genericTypeRef = aTacos.getReference();
 		CtTypeReference<?> genericTypeRef = aTacos.getFactory().Type().createReference(aTacos, true);
 		
 		assertTrue(genericTypeRef.getActualTypeArguments().size()>0);
@@ -666,13 +666,13 @@ public class GenericsTest {
 		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
 			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
-			// contract: getTypeParameterDeclaration goes back to the declaration, eevn without context
+			// contract: getTypeParameterDeclaration goes back to the declaration, even without context
 			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
 
 		}
 	}
 	@Test
-	public void testisGeneric() throws Exception {
+	public void testisGeneric() {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 
 		/*
@@ -841,7 +841,7 @@ public class GenericsTest {
 
 	}
 	@Test
-	public void testCtTypeReference_getSuperclass() throws Exception {
+	public void testCtTypeReference_getSuperclass() {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
 		CtTypeReference<?> trWeddingLunch_Mole = ctClassCelebrationLunch.filterChildren(new NamedElementFilter<>(CtNamedElement.class,"disgust")).map((CtTypedElement te)->{
@@ -905,7 +905,7 @@ public class GenericsTest {
 
 
 	@Test
-	public void testClassTypingContext() throws Exception {
+	public void testClassTypingContext() {
 		// contract: a ClassTypingContext enables one to perform type resolution of generic types
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassCelebrationLunch = factory.Class().get(CelebrationLunch.class);
@@ -1003,7 +1003,7 @@ public class GenericsTest {
 	}
 	
 	@Test
-	public void testMethodTypingContext() throws Exception {
+	public void testMethodTypingContext() {
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassWeddingLunch = factory.Class().get(WeddingLunch.class);
 		CtMethod<?> trWeddingLunch_eatMe = ctClassWeddingLunch.filterChildren(new NamedElementFilter<>(CtMethod.class,"eatMe")).first();
@@ -1068,7 +1068,7 @@ public class GenericsTest {
 	}
 	
 	@Test
-	public void testMethodTypingContextAdaptMethod() throws Exception {
+	public void testMethodTypingContextAdaptMethod() {
 		// core contracts of MethodTypingContext#adaptMethod
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
@@ -1116,7 +1116,7 @@ public class GenericsTest {
 	}
 	
 	@Test
-	public void testClassTypingContextMethodSignature() throws Exception {
+	public void testClassTypingContextMethodSignature() {
 		// core contracts of MethodTypingContext#adaptMethod
 		Factory factory = build(new File("src/test/java/spoon/test/generics/testclasses"));
 		CtClass<?> ctClassLunch = factory.Class().get(Lunch.class);
@@ -1177,7 +1177,7 @@ public class GenericsTest {
 	}
 
 	@Test
-	public void testWildCardonShadowClass() throws Exception {
+	public void testWildCardonShadowClass() {
 		// contract: generics should be treated the same way in shadow classes
 
 		// test that apply argument type contains a wildcard

@@ -20,21 +20,21 @@ public class ConditionalTest {
 	@Test
 	public void testConditional() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final CtConditional aConditional = aFoo.getMethod("m2").getElements(new TypeFilter<CtConditional>(CtConditional.class)).get(0);
+		final CtConditional aConditional = aFoo.getMethod("m2").getElements(new TypeFilter<>(CtConditional.class)).get(0);
 		assertEquals("return a == 18 ? true : false", aConditional.getParent().toString());
 	}
 
 	@Test
 	public void testConditionalWithAssignment() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final CtConditional aConditional = aFoo.getMethod("m").getElements(new TypeFilter<CtConditional>(CtConditional.class)).get(0);
+		final CtConditional aConditional = aFoo.getMethod("m").getElements(new TypeFilter<>(CtConditional.class)).get(0);
 		assertEquals("x = (a == 18) ? true : false", aConditional.getParent().toString());
 	}
 
 	@Test
 	public void testBlockInConditionAndLoop() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final List<CtIf> conditions = aFoo.getMethod("m3").getElements(new TypeFilter<CtIf>(CtIf.class));
+		final List<CtIf> conditions = aFoo.getMethod("m3").getElements(new TypeFilter<>(CtIf.class));
 		assertEquals(4, conditions.size());
 		for (CtIf condition : conditions) {
 			assertTrue(condition.getThenStatement() instanceof CtBlock);
@@ -50,10 +50,8 @@ public class ConditionalTest {
 		
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
 		CtMethod<Object> method = aFoo.getMethod("m3");
-		final List<CtIf> conditions = method.getElements(new TypeFilter<CtIf>(CtIf.class));
-		for (int i = 0; i < conditions.size(); i++) {
-			CtIf ctIf = conditions.get(i);
-
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+		for (CtIf ctIf : conditions) {
 			// replace the block to a statement
 			CtStatement then = ((CtBlock) ctIf.getThenStatement()).getStatement(0);
 			ctIf.setThenStatement(then);

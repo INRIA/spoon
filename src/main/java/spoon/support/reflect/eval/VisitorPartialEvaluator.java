@@ -411,13 +411,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			CtType<?> aType = invocation.getParent(CtType.class);
 			CtTypeReference<?> execDeclaringType = invocation.getExecutable().getDeclaringType();
 			// try to inline partial evaluation results for local calls
-			// (including to superclasses)
+			// (including superclasses)
 			if (executable != null && aType != null && invocation.getType() != null && execDeclaringType != null
 					&& execDeclaringType.isSubtypeOf(aType.getReference())) {
 				CtBlock<?> b = evaluate(executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
-				if ((last != null) && (last instanceof CtReturn)) {
+				if ((last instanceof CtReturn)) {
 					if (((CtReturn<?>) last).getReturnedExpression() instanceof CtLiteral) {
 						setResult(((CtReturn<?>) last).getReturnedExpression());
 						return;
@@ -425,9 +425,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				}
 			} else {
 				// try to completely evaluate
-				T r = null;
+				T r;
 				try {
-					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
 					if (isLiteralType(r)) {
 						CtLiteral<T> l = invocation.getFactory().Core().createLiteral();

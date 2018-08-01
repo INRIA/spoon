@@ -94,7 +94,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	};
 
 	public CtPackageImpl() {
-		super();
 	}
 
 	@Override

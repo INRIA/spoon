@@ -100,7 +100,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
-		super();
 	}
 
 	@Override

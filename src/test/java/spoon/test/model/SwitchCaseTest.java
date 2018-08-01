@@ -46,7 +46,7 @@ public class SwitchCaseTest {
 		assertEquals(0, ((CtLiteral<?>) c.getCaseExpression()).getValue());
 		assertEquals(2, c.getStatements().size());
 
-		List<CtStatement> l = new ArrayList<CtStatement>();
+		List<CtStatement> l = new ArrayList<>();
 
 		// this compiles (thanks to the new CtCase extends CtStatementList)
 		for (CtStatement s : c) {
@@ -57,7 +57,7 @@ public class SwitchCaseTest {
 
 	@Test
 	public void testSwitchStatementOnAString() throws Exception {
-		CtClass<?> clazz = build("spoon.test.model", "SwitchStringClass");
+		CtClass<?> clazz = build("spoon.test.model.testclasses", "SwitchStringClass");
 
 		CtMethod<?> method = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtSwitch<?> ctSwitch = method

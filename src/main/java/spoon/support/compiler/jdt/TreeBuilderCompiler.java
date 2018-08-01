@@ -65,19 +65,17 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 		this.reportProgress(Messages.compilation_beginningToCompile);
 
-		CompilationUnitDeclaration unit = null;
-		int i = 0;
-
 		this.sortModuleDeclarationsFirst(sourceUnits);
 		// build and record parsed units
 		beginToCompile(sourceUnits);
 
-		// process all units (some more could be injected in the loop by
-		// the lookup environment)
+		CompilationUnitDeclaration unit;
+		int i = 0;
+
+		// process all units (some more could be injected in the loop by the lookup environment)
 		for (; i < this.totalUnits; i++) {
 			unit = unitsToProcess[i];
 			this.reportProgress(Messages.bind(Messages.compilation_processing, new String(unit.getFileName())));
-			// System.err.println(unit);
 			this.parser.getMethodBodies(unit);
 
 			// fault in fields & methods

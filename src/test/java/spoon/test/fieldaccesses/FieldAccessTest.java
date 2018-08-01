@@ -154,8 +154,7 @@ public class FieldAccessTest {
 	@Test
 	public void testTargetedAccessPosition() throws Exception {
 		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "TargetedAccessPosition");
-		List<CtFieldAccess<?>> vars = type.getElements(
-				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		List<CtFieldAccess<?>> vars = type.getElements(new TypeFilter<>(CtFieldAccess.class));
 		//vars is [t.ta.ta, t.ta]
 		assertEquals(2, vars.size());
 
@@ -204,7 +203,7 @@ public class FieldAccessTest {
 
 
 	@Test
-	public void testFieldAccessNoClasspath() throws Exception {
+	public void testFieldAccessNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/import-resources/fr/inria/");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -238,7 +237,7 @@ public class FieldAccessTest {
 		// contract: When we use var++, the variable is a read access with an unary operator.
 		final CtType<Panini> aMole = buildClass(Panini.class);
 		final CtMethod<?> make = aMole.getMethodsByName("make").get(0);
-		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
+		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<>(CtUnaryOperator.class));
 
 		final CtFieldWrite<Object> fieldRead = aMole.getFactory().Core().createFieldWrite();
 		fieldRead.setTarget(aMole.getFactory().Code().createThisAccess(aMole.getReference(), true));
@@ -293,7 +292,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessDeclaredInADefaultClass() throws Exception {
+	public void testFieldAccessDeclaredInADefaultClass() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Tacos.java");
@@ -345,7 +344,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessWithoutAnyImport() throws Exception {
+	public void testFieldAccessWithoutAnyImport() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Kuu.java");
@@ -359,7 +358,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessOnUnknownType() throws Exception {
+	public void testFieldAccessOnUnknownType() {
 		final Launcher launcher = new Launcher();
 
 		launcher.addInputResource("./src/test/resources/noclasspath/FieldAccessRes.java");
@@ -385,7 +384,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testGetReference() throws Exception {
+	public void testGetReference() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

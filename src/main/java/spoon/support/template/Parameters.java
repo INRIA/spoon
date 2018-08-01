@@ -138,7 +138,6 @@ public abstract class Parameters {
 	 */
 	@SuppressWarnings("null")
 	public static void setValue(Template<?> template, String parameterName, Integer index, Object value) {
-		Object tparamValue = null;
 		try {
 			Field rtField = null;
 			for (Field f : RtHelper.getAllFields(template.getClass())) {
@@ -163,9 +162,7 @@ public abstract class Parameters {
 			rtField.setAccessible(true);
 			rtField.set(template, value);
 			if (rtField.getType().isArray()) {
-				// TODO: RP: THIS IS WRONG!!!! tparamValue is never used or
-				// set!!
-				tparamValue = ((Object[]) tparamValue)[index];
+				// TODO: RP: THIS IS WRONG!!!! tparamValue is never used or set!
 			}
 		} catch (Exception e) {
 			throw new UndefinedParameterException();
@@ -175,7 +172,7 @@ public abstract class Parameters {
 	private static String getParameterName(Field f) {
 		String name = f.getName();
 		Parameter p = f.getAnnotation(Parameter.class);
-		if ((p != null) && !p.value().equals("")) {
+		if ((p != null) && !p.value().isEmpty()) {
 			name = p.value();
 		}
 		return name;
@@ -184,7 +181,7 @@ public abstract class Parameters {
 	private static String getParameterName(CtFieldReference<?> f) {
 		String name = f.getSimpleName();
 		Parameter p = f.getDeclaration().getAnnotation(Parameter.class);
-		if ((p != null) && !p.value().equals("")) {
+		if ((p != null) && !p.value().isEmpty()) {
 			name = p.value();
 		}
 		return name;

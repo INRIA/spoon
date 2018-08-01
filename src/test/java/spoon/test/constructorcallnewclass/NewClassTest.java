@@ -41,7 +41,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassWithObjectClass() throws Exception {
+	public void testNewClassWithObjectClass() {
 		final CtNewClass<?> newClass = newClasses.get(0);
 		assertType(Object.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -51,7 +51,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassWithInterface() throws Exception {
+	public void testNewClassWithInterface() {
 		final CtNewClass<?> newClass = newClasses.get(1);
 		assertType(Foo.Bar.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -61,7 +61,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassWithInterfaceGeneric() throws Exception {
+	public void testNewClassWithInterfaceGeneric() {
 		final CtNewClass<?> newClass = newClasses.get(2);
 		assertType(Foo.Tacos.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -74,7 +74,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassInterfaceWithParameters() throws Exception {
+	public void testNewClassInterfaceWithParameters() {
 		final CtNewClass<?> newClass = newClasses.get(3);
 		assertType(Foo.BarImpl.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -146,7 +146,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testCtNewClassInNoClasspath() throws Exception {
+	public void testCtNewClassInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/new-class");
 		launcher.setSourceOutputDirectory("./target/new-class");

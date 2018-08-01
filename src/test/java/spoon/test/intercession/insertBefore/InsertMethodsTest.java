@@ -70,7 +70,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfter() throws Exception {
+	public void testInsertAfter() {
 		CtMethod<Void> foo = (CtMethod<Void>) assignmentClass.getMethods().toArray()[0];
 
 		CtBlock<?> body = foo.getBody();
@@ -89,7 +89,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithoutBrace() throws Exception {
+	public void testInsertBeforeWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -106,13 +106,13 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithBrace() throws Exception {
+	public void testInsertBeforeWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertBefore(s);
@@ -122,7 +122,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithoutBrace() throws Exception {
+	public void testInsertAfterWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -139,13 +139,13 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithBrace() throws Exception {
+	public void testInsertAfterWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertAfter(s);
@@ -155,7 +155,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeSwitchCase() throws Exception {
+	public void testInsertBeforeSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -191,7 +191,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterSwitchCase() throws Exception {
+	public void testInsertAfterSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -248,7 +248,7 @@ public class InsertMethodsTest {
 		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/intercession/insertBefore/InsertBeforeExample2.java")).build();
 
 		// Get the 'while'
-		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<CtWhile>(CtWhile.class));
+		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<>(CtWhile.class));
 		assertTrue(1 == elements.size());
 		CtWhile theWhile = elements.get(0);
 

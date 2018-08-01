@@ -34,7 +34,6 @@ public class CtProvidedServiceImpl extends CtElementImpl implements CtProvidedSe
 	private List<CtTypeReference> implementationTypes = CtElementImpl.emptyList();
 
 	public CtProvidedServiceImpl() {
-		super();
 	}
 
 	@Override

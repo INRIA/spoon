@@ -39,10 +39,10 @@ import spoon.test.ctClass.testclasses.Pozole;
 
 public class CtClassTest {
 
-    @Test
-    public void getConstructor() throws Exception {
-        final Factory build = build(Foo.class);
-        final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
+	@Test
+	public void getConstructor() throws Exception {
+		final Factory build = build(Foo.class);
+		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
 
 		assertEquals(3, foo.getConstructors().size());
 
@@ -86,7 +86,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testParentOfTheEnclosingClassOfStaticClass() throws Exception {
+	public void testParentOfTheEnclosingClassOfStaticClass() {
 		// contract: When we have a static class which extends a superclass in the classpath,
 		// the enclosing class don't have a superclass. This is probably a bug in JDT but good
 		// luck to report a bug about noclasspath in their bugtracker. :)
@@ -112,7 +112,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testNoClasspathWithSuperClassOfAClassInAnInterface() throws Exception {
+	public void testNoClasspathWithSuperClassOfAClassInAnInterface() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -173,8 +173,8 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
-    	// contract: in noClasspath, when a type is used and no import is specified, then Spoon
+	public void testSpoonShouldInferImplicitPackageInNoClasspath() {
+		// contract: in noClasspath, when a type is used and no import is specified, then Spoon
 		// should infer that this type is in the same package as the current class.
 		final Launcher launcher2 = new Launcher();
 		launcher2.addInputResource("./src/test/resources/noclasspath/issue1293/com/cristal/ircica/applicationcolis/userinterface/fragments/TransporteurFragment.java");
@@ -191,7 +191,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testDefaultConstructorAreOk() throws Exception {
+	public void testDefaultConstructorAreOk() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -211,7 +211,7 @@ public class CtClassTest {
 
 	@Test
 	public void testCloneAnonymousClassInvocation() {
-    	// contract: after cloning an anonymous class invocation, we still should be able to print it, when not using autoimport
+		// contract: after cloning an anonymous class invocation, we still should be able to print it, when not using autoimport
 
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java");
@@ -219,7 +219,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -247,7 +247,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();

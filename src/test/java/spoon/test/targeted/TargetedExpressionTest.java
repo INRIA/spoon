@@ -85,7 +85,7 @@ public class TargetedExpressionTest {
 		final CtClass<Object> type = factory.Class().get(Foo.class);
 		CtConstructor<?> constructor = type.getConstructors().toArray(new CtConstructor<?>[0])[0];
 
-		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(2, elements.size());
 
 		assertEquals("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
@@ -131,7 +131,7 @@ public class TargetedExpressionTest {
 
 		final CtThisAccess<Foo> expectedThisAccess = type.getFactory().Code().createThisAccess(expectedType);
 
-		final List<CtFieldAccess<?>> elements = fieldMethod.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		final List<CtFieldAccess<?>> elements = fieldMethod.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(10, elements.size());
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.i"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("i"), elements.get(1));
@@ -157,7 +157,7 @@ public class TargetedExpressionTest {
 		final CtTypeAccess<Foo> expectedTypeAccess = type.getFactory().Code().createTypeAccess(expectedType);
 		final CtTypeAccess<Bar> expectedBarTypeAccess = type.getFactory().Code().createTypeAccess(expectedBarType);
 
-		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(10, elements.size());
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedThisAccess).result("this.k"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(1));
@@ -235,7 +235,7 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testStaticTargetsOfFieldAccessNoClasspath() throws Exception {
+	public void testStaticTargetsOfFieldAccessNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Foo.java");
@@ -281,7 +281,7 @@ public class TargetedExpressionTest {
 		final CtThisAccess<Foo> expectedSuperThisAccess = factory.Code().createThisAccess(expectedType);
 		expectedSuperThisAccess.setTarget(superClassTypeAccess);
 
-		final List<CtInvocation<?>> elements = type.getMethodsByName("inv").get(0).getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		final List<CtInvocation<?>> elements = type.getMethodsByName("inv").get(0).getElements(new TypeFilter<>(CtInvocation.class));
 		assertEquals(7, elements.size());
 
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtConstructorCallImpl.class).result("new spoon.test.targeted.testclasses.Foo(0, 0).method()"), elements.get(0));
@@ -311,7 +311,7 @@ public class TargetedExpressionTest {
 		final CtTypeAccess<Bar> expectedBarTypeAccess = type.getFactory().Code().createTypeAccess(expectedBarType);
 
 		final CtMethod<?> invMethod = type.getMethodsByName("invStatic").get(0);
-		final List<CtInvocation<?>> elements = invMethod.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		final List<CtInvocation<?>> elements = invMethod.getElements(new TypeFilter<>(CtInvocation.class));
 		assertEquals(8, elements.size());
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtConstructorCallImpl.class).result("new spoon.test.targeted.testclasses.Foo(0, 0).staticMethod()"), elements.get(0));
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(CtFieldReadImpl.class).result("foo.staticMethod()"), elements.get(1));
@@ -342,7 +342,7 @@ public class TargetedExpressionTest {
 		final CtThisAccess expectedNestedAccess = factory.Code().createThisAccess(expectedNested);
 
 		final CtMethod<?> innerInvMethod = innerClass.getMethodsByName("innerInv").get(0);
-		final List<CtInvocation<?>> elements = innerInvMethod.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		final List<CtInvocation<?>> elements = innerInvMethod.getElements(new TypeFilter<>(CtInvocation.class));
 		assertEquals(8, elements.size());
 		expectedThisAccess.setType(expectedInnerClass);
 		assertEqualsInvocation(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("inv()"), elements.get(0));
@@ -385,7 +385,7 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testStaticTargetsOfInvNoClasspath() throws Exception {
+	public void testStaticTargetsOfInvNoClasspath() {
 		// contract: Specify declaring type of the executable of an invocation, the target of the invocation and its result. All this in no classpath mode.
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -414,7 +414,7 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
-	public void testInitializeFieldAccessInNoclasspathMode() throws Exception {
+	public void testInitializeFieldAccessInNoclasspathMode() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Foo.java");

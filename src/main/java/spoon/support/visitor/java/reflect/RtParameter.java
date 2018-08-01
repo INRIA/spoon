@@ -54,7 +54,7 @@ public class RtParameter {
 		// Note: empty strings as parameter names are now outlawed.
 		// The .equals("") is for compatibility with current JVM
 		// behavior.  It may be removed at some point.
-		if (name == null || name.equals("")) {
+		if (name == null || name.isEmpty()) {
 			return "arg" + index;
 		} else {
 			return name;

@@ -18,7 +18,7 @@ import spoon.testing.utils.ModelUtils;
 public class TemplateEnumAccessTest {
 
 	@Test
-	public void testEnumAccessTest() throws Exception {
+	public void testEnumAccessTest() {
 		//contract: the template engine supports enum value access substitution
 		Launcher launcher = new Launcher();
 		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/EnumAccessTemplate.java"));
