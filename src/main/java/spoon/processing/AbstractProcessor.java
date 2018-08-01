@@ -70,14 +70,17 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		processedElementTypes.clear();
 	}
 
+	@Override
 	public Environment getEnvironment() {
 		return getFactory().getEnvironment();
 	}
 
+	@Override
 	public Factory getFactory() {
 		return this.factory;
 	}
 
+	@Override
 	public Set<Class<? extends CtElement>> getProcessedElementTypes() {
 		return processedElementTypes;
 	}
@@ -99,14 +102,17 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		return props;
 	}
 
+	@Override
 	public TraversalStrategy getTraversalStrategy() {
 		return TraversalStrategy.POST_ORDER;
 	}
 
+	@Override
 	public void init() {
 		this.initProperties(loadProperties());
 	}
 
+	@Override
 	public boolean isToBeProcessed(E candidate) {
 		return true;
 	}
@@ -114,6 +120,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	/**
 	 * Helper method to initialize the properties of a given processor.
 	 */
+	@Override
 	public void initProperties(ProcessorProperties properties) {
 		ProcessorUtils.initProperties(this, properties);
 	}
@@ -122,9 +129,11 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 	 * The manual meta-model processing cannot be overridden (use
 	 * {@link AbstractManualProcessor}) to do so.
 	 */
+	@Override
 	public final void process() {
 	}
 
+	@Override
 	public void processingDone() {
 		// do nothing by default
 	}
@@ -136,6 +145,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		processedElementTypes.remove(elementType);
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 	}

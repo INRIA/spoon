@@ -308,6 +308,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return null;
 	}
 
+	@Override
 	public Constructor<?> getActualConstructor() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
@@ -330,6 +331,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return null;
 	}
 
+	@Override
 	public boolean isStatic() {
 		return stat;
 	}

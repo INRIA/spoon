@@ -32,10 +32,12 @@ public abstract class AbstractProblemFixer<T extends CtElement>
 	public AbstractProblemFixer() {
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 	}

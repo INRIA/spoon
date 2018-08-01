@@ -68,6 +68,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 		return executable;
 	}
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
