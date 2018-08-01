@@ -38,6 +38,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotation(final spoon.reflect.declaration.CtAnnotation<A> annotation) {
 		spoon.reflect.declaration.CtAnnotation<A> aCtAnnotation = annotation.getFactory().Core().createAnnotation();
 		aCtAnnotation.setType(this.cloneHelper.clone(annotation.getType()));
@@ -51,6 +52,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <A extends java.lang.annotation.Annotation> void visitCtAnnotationType(final spoon.reflect.declaration.CtAnnotationType<A> annotationType) {
 		spoon.reflect.declaration.CtAnnotationType<A> aCtAnnotationType = annotationType.getFactory().Core().createAnnotationType();
 		aCtAnnotationType.setAnnotations(this.cloneHelper.clone(annotationType.getAnnotations()));
@@ -62,6 +64,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtAnonymousExecutable(final spoon.reflect.declaration.CtAnonymousExecutable anonymousExec) {
 		spoon.reflect.declaration.CtAnonymousExecutable aCtAnonymousExecutable = anonymousExec.getFactory().Core().createAnonymousExecutable();
 		aCtAnonymousExecutable.setAnnotations(this.cloneHelper.clone(anonymousExec.getAnnotations()));
@@ -103,6 +106,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtArrayTypeReference(final spoon.reflect.reference.CtArrayTypeReference<T> reference) {
 		spoon.reflect.reference.CtArrayTypeReference<T> aCtArrayTypeReference = reference.getFactory().Core().createArrayTypeReference();
 		aCtArrayTypeReference.setPackage(this.cloneHelper.clone(reference.getPackage()));
@@ -116,6 +120,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtAssert(final spoon.reflect.code.CtAssert<T> asserted) {
 		spoon.reflect.code.CtAssert<T> aCtAssert = asserted.getFactory().Core().createAssert();
 		aCtAssert.setAnnotations(this.cloneHelper.clone(asserted.getAnnotations()));
@@ -128,6 +133,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T, A extends T> void visitCtAssignment(final spoon.reflect.code.CtAssignment<T, A> assignement) {
 		spoon.reflect.code.CtAssignment<T, A> aCtAssignment = assignement.getFactory().Core().createAssignment();
 		aCtAssignment.setAnnotations(this.cloneHelper.clone(assignement.getAnnotations()));
@@ -142,6 +148,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtBinaryOperator(final spoon.reflect.code.CtBinaryOperator<T> operator) {
 		spoon.reflect.code.CtBinaryOperator<T> aCtBinaryOperator = operator.getFactory().Core().createBinaryOperator();
 		aCtBinaryOperator.setAnnotations(this.cloneHelper.clone(operator.getAnnotations()));
@@ -156,6 +163,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <R> void visitCtBlock(final spoon.reflect.code.CtBlock<R> block) {
 		spoon.reflect.code.CtBlock<R> aCtBlock = block.getFactory().Core().createBlock();
 		aCtBlock.setAnnotations(this.cloneHelper.clone(block.getAnnotations()));
@@ -167,6 +175,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtBreak(final spoon.reflect.code.CtBreak breakStatement) {
 		spoon.reflect.code.CtBreak aCtBreak = breakStatement.getFactory().Core().createBreak();
 		aCtBreak.setAnnotations(this.cloneHelper.clone(breakStatement.getAnnotations()));
@@ -177,6 +186,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <S> void visitCtCase(final spoon.reflect.code.CtCase<S> caseStatement) {
 		spoon.reflect.code.CtCase<S> aCtCase = caseStatement.getFactory().Core().createCase();
 		aCtCase.setAnnotations(this.cloneHelper.clone(caseStatement.getAnnotations()));
@@ -189,6 +199,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtCatch(final spoon.reflect.code.CtCatch catchBlock) {
 		spoon.reflect.code.CtCatch aCtCatch = catchBlock.getFactory().Core().createCatch();
 		aCtCatch.setAnnotations(this.cloneHelper.clone(catchBlock.getAnnotations()));
@@ -201,6 +212,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtClass(final spoon.reflect.declaration.CtClass<T> ctClass) {
 		spoon.reflect.declaration.CtClass<T> aCtClass = ctClass.getFactory().Core().createClass();
 		aCtClass.setAnnotations(this.cloneHelper.clone(ctClass.getAnnotations()));
@@ -227,6 +239,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtConditional(final spoon.reflect.code.CtConditional<T> conditional) {
 		spoon.reflect.code.CtConditional<T> aCtConditional = conditional.getFactory().Core().createConditional();
 		aCtConditional.setType(this.cloneHelper.clone(conditional.getType()));
@@ -242,6 +255,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtConstructor(final spoon.reflect.declaration.CtConstructor<T> c) {
 		spoon.reflect.declaration.CtConstructor<T> aCtConstructor = c.getFactory().Core().createConstructor();
 		aCtConstructor.setAnnotations(this.cloneHelper.clone(c.getAnnotations()));
@@ -256,6 +270,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtContinue(final spoon.reflect.code.CtContinue continueStatement) {
 		spoon.reflect.code.CtContinue aCtContinue = continueStatement.getFactory().Core().createContinue();
 		aCtContinue.setAnnotations(this.cloneHelper.clone(continueStatement.getAnnotations()));
@@ -266,6 +281,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtDo(final spoon.reflect.code.CtDo doLoop) {
 		spoon.reflect.code.CtDo aCtDo = doLoop.getFactory().Core().createDo();
 		aCtDo.setAnnotations(this.cloneHelper.clone(doLoop.getAnnotations()));
@@ -278,6 +294,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T extends java.lang.Enum<?>> void visitCtEnum(final spoon.reflect.declaration.CtEnum<T> ctEnum) {
 		spoon.reflect.declaration.CtEnum<T> aCtEnum = ctEnum.getFactory().Core().createEnum();
 		aCtEnum.setAnnotations(this.cloneHelper.clone(ctEnum.getAnnotations()));
@@ -291,6 +308,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtExecutableReference(final spoon.reflect.reference.CtExecutableReference<T> reference) {
 		spoon.reflect.reference.CtExecutableReference<T> aCtExecutableReference = reference.getFactory().Core().createExecutableReference();
 		aCtExecutableReference.setDeclaringType(this.cloneHelper.clone(reference.getDeclaringType()));
@@ -305,6 +323,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtField(final spoon.reflect.declaration.CtField<T> f) {
 		spoon.reflect.declaration.CtField<T> aCtField = f.getFactory().Core().createField();
 		aCtField.setAnnotations(this.cloneHelper.clone(f.getAnnotations()));
@@ -344,6 +363,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtAnnotationFieldAccess(final spoon.reflect.code.CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		spoon.reflect.code.CtAnnotationFieldAccess<T> aCtAnnotationFieldAccess = annotationFieldAccess.getFactory().Core().createAnnotationFieldAccess();
 		aCtAnnotationFieldAccess.setComments(this.cloneHelper.clone(annotationFieldAccess.getComments()));
@@ -357,6 +377,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtFieldReference(final spoon.reflect.reference.CtFieldReference<T> reference) {
 		spoon.reflect.reference.CtFieldReference<T> aCtFieldReference = reference.getFactory().Core().createFieldReference();
 		aCtFieldReference.setDeclaringType(this.cloneHelper.clone(reference.getDeclaringType()));
@@ -368,6 +389,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtFor(final spoon.reflect.code.CtFor forLoop) {
 		spoon.reflect.code.CtFor aCtFor = forLoop.getFactory().Core().createFor();
 		aCtFor.setAnnotations(this.cloneHelper.clone(forLoop.getAnnotations()));
@@ -382,6 +404,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtForEach(final spoon.reflect.code.CtForEach foreach) {
 		spoon.reflect.code.CtForEach aCtForEach = foreach.getFactory().Core().createForEach();
 		aCtForEach.setAnnotations(this.cloneHelper.clone(foreach.getAnnotations()));
@@ -395,6 +418,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtIf(final spoon.reflect.code.CtIf ifElement) {
 		spoon.reflect.code.CtIf aCtIf = ifElement.getFactory().Core().createIf();
 		aCtIf.setAnnotations(this.cloneHelper.clone(ifElement.getAnnotations()));
@@ -408,6 +432,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtInterface(final spoon.reflect.declaration.CtInterface<T> intrface) {
 		spoon.reflect.declaration.CtInterface<T> aCtInterface = intrface.getFactory().Core().createInterface();
 		aCtInterface.setAnnotations(this.cloneHelper.clone(intrface.getAnnotations()));
@@ -421,6 +446,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtInvocation(final spoon.reflect.code.CtInvocation<T> invocation) {
 		spoon.reflect.code.CtInvocation<T> aCtInvocation = invocation.getFactory().Core().createInvocation();
 		aCtInvocation.setAnnotations(this.cloneHelper.clone(invocation.getAnnotations()));
@@ -435,6 +461,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtLiteral(final spoon.reflect.code.CtLiteral<T> literal) {
 		spoon.reflect.code.CtLiteral<T> aCtLiteral = literal.getFactory().Core().createLiteral();
 		aCtLiteral.setAnnotations(this.cloneHelper.clone(literal.getAnnotations()));
@@ -447,6 +474,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtLocalVariable(final spoon.reflect.code.CtLocalVariable<T> localVariable) {
 		spoon.reflect.code.CtLocalVariable<T> aCtLocalVariable = localVariable.getFactory().Core().createLocalVariable();
 		aCtLocalVariable.setAnnotations(this.cloneHelper.clone(localVariable.getAnnotations()));
@@ -459,6 +487,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtLocalVariableReference(final spoon.reflect.reference.CtLocalVariableReference<T> reference) {
 		spoon.reflect.reference.CtLocalVariableReference<T> aCtLocalVariableReference = reference.getFactory().Core().createLocalVariableReference();
 		aCtLocalVariableReference.setType(this.cloneHelper.clone(reference.getType()));
@@ -469,6 +498,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtCatchVariable(final spoon.reflect.code.CtCatchVariable<T> catchVariable) {
 		spoon.reflect.code.CtCatchVariable<T> aCtCatchVariable = catchVariable.getFactory().Core().createCatchVariable();
 		aCtCatchVariable.setComments(this.cloneHelper.clone(catchVariable.getComments()));
@@ -480,6 +510,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtCatchVariableReference(final spoon.reflect.reference.CtCatchVariableReference<T> reference) {
 		spoon.reflect.reference.CtCatchVariableReference<T> aCtCatchVariableReference = reference.getFactory().Core().createCatchVariableReference();
 		aCtCatchVariableReference.setType(this.cloneHelper.clone(reference.getType()));
@@ -490,6 +521,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtMethod(final spoon.reflect.declaration.CtMethod<T> m) {
 		spoon.reflect.declaration.CtMethod<T> aCtMethod = m.getFactory().Core().createMethod();
 		aCtMethod.setAnnotations(this.cloneHelper.clone(m.getAnnotations()));
@@ -518,6 +550,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtNewArray(final spoon.reflect.code.CtNewArray<T> newArray) {
 		spoon.reflect.code.CtNewArray<T> aCtNewArray = newArray.getFactory().Core().createNewArray();
 		aCtNewArray.setAnnotations(this.cloneHelper.clone(newArray.getAnnotations()));
@@ -547,6 +580,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtNewClass(final spoon.reflect.code.CtNewClass<T> newClass) {
 		spoon.reflect.code.CtNewClass<T> aCtNewClass = newClass.getFactory().Core().createNewClass();
 		aCtNewClass.setAnnotations(this.cloneHelper.clone(newClass.getAnnotations()));
@@ -593,6 +627,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T, A extends T> void visitCtOperatorAssignment(final spoon.reflect.code.CtOperatorAssignment<T, A> assignment) {
 		spoon.reflect.code.CtOperatorAssignment<T, A> aCtOperatorAssignment = assignment.getFactory().Core().createOperatorAssignment();
 		aCtOperatorAssignment.setAnnotations(this.cloneHelper.clone(assignment.getAnnotations()));
@@ -607,6 +642,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtPackage(final spoon.reflect.declaration.CtPackage ctPackage) {
 		spoon.reflect.declaration.CtPackage aCtPackage = ctPackage.getFactory().Core().createPackage();
 		aCtPackage.setAnnotations(this.cloneHelper.clone(ctPackage.getAnnotations()));
@@ -619,6 +655,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtPackageReference(final spoon.reflect.reference.CtPackageReference reference) {
 		spoon.reflect.reference.CtPackageReference aCtPackageReference = reference.getFactory().Core().createPackageReference();
 		aCtPackageReference.setAnnotations(this.cloneHelper.clone(reference.getAnnotations()));
@@ -628,6 +665,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtParameter(final spoon.reflect.declaration.CtParameter<T> parameter) {
 		spoon.reflect.declaration.CtParameter<T> aCtParameter = parameter.getFactory().Core().createParameter();
 		aCtParameter.setAnnotations(this.cloneHelper.clone(parameter.getAnnotations()));
@@ -639,6 +677,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtParameterReference(final spoon.reflect.reference.CtParameterReference<T> reference) {
 		spoon.reflect.reference.CtParameterReference<T> aCtParameterReference = reference.getFactory().Core().createParameterReference();
 		aCtParameterReference.setType(this.cloneHelper.clone(reference.getType()));
@@ -649,6 +688,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <R> void visitCtReturn(final spoon.reflect.code.CtReturn<R> returnStatement) {
 		spoon.reflect.code.CtReturn<R> aCtReturn = returnStatement.getFactory().Core().createReturn();
 		aCtReturn.setAnnotations(this.cloneHelper.clone(returnStatement.getAnnotations()));
@@ -660,6 +700,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <R> void visitCtStatementList(final spoon.reflect.code.CtStatementList statements) {
 		spoon.reflect.code.CtStatementList aCtStatementList = statements.getFactory().Core().createStatementList();
 		aCtStatementList.setAnnotations(this.cloneHelper.clone(statements.getAnnotations()));
@@ -671,6 +712,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <S> void visitCtSwitch(final spoon.reflect.code.CtSwitch<S> switchStatement) {
 		spoon.reflect.code.CtSwitch<S> aCtSwitch = switchStatement.getFactory().Core().createSwitch();
 		aCtSwitch.setAnnotations(this.cloneHelper.clone(switchStatement.getAnnotations()));
@@ -683,6 +725,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtSynchronized(final spoon.reflect.code.CtSynchronized synchro) {
 		spoon.reflect.code.CtSynchronized aCtSynchronized = synchro.getFactory().Core().createSynchronized();
 		aCtSynchronized.setAnnotations(this.cloneHelper.clone(synchro.getAnnotations()));
@@ -695,6 +738,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtThrow(final spoon.reflect.code.CtThrow throwStatement) {
 		spoon.reflect.code.CtThrow aCtThrow = throwStatement.getFactory().Core().createThrow();
 		aCtThrow.setAnnotations(this.cloneHelper.clone(throwStatement.getAnnotations()));
@@ -706,6 +750,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtTry(final spoon.reflect.code.CtTry tryBlock) {
 		spoon.reflect.code.CtTry aCtTry = tryBlock.getFactory().Core().createTry();
 		aCtTry.setAnnotations(this.cloneHelper.clone(tryBlock.getAnnotations()));
@@ -734,6 +779,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtTypeParameterReference(final spoon.reflect.reference.CtTypeParameterReference ref) {
 		spoon.reflect.reference.CtTypeParameterReference aCtTypeParameterReference = ref.getFactory().Core().createTypeParameterReference();
 		aCtTypeParameterReference.setPackage(this.cloneHelper.clone(ref.getPackage()));
@@ -773,6 +819,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtTypeReference(final spoon.reflect.reference.CtTypeReference<T> reference) {
 		spoon.reflect.reference.CtTypeReference<T> aCtTypeReference = reference.getFactory().Core().createTypeReference();
 		aCtTypeReference.setPackage(this.cloneHelper.clone(reference.getPackage()));
@@ -799,6 +846,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtUnaryOperator(final spoon.reflect.code.CtUnaryOperator<T> operator) {
 		spoon.reflect.code.CtUnaryOperator<T> aCtUnaryOperator = operator.getFactory().Core().createUnaryOperator();
 		aCtUnaryOperator.setAnnotations(this.cloneHelper.clone(operator.getAnnotations()));
@@ -838,6 +886,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtWhile(final spoon.reflect.code.CtWhile whileLoop) {
 		spoon.reflect.code.CtWhile aCtWhile = whileLoop.getFactory().Core().createWhile();
 		aCtWhile.setAnnotations(this.cloneHelper.clone(whileLoop.getAnnotations()));
@@ -850,6 +899,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtCodeSnippetExpression(final spoon.reflect.code.CtCodeSnippetExpression<T> expression) {
 		spoon.reflect.code.CtCodeSnippetExpression<T> aCtCodeSnippetExpression = expression.getFactory().Core().createCodeSnippetExpression();
 		aCtCodeSnippetExpression.setType(this.cloneHelper.clone(expression.getType()));
@@ -862,6 +912,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public void visitCtCodeSnippetStatement(final spoon.reflect.code.CtCodeSnippetStatement statement) {
 		spoon.reflect.code.CtCodeSnippetStatement aCtCodeSnippetStatement = statement.getFactory().Core().createCodeSnippetStatement();
 		aCtCodeSnippetStatement.setComments(this.cloneHelper.clone(statement.getComments()));
@@ -872,6 +923,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@Override
 	public <T> void visitCtUnboundVariableReference(final spoon.reflect.reference.CtUnboundVariableReference<T> reference) {
 		spoon.reflect.reference.CtUnboundVariableReference<T> aCtUnboundVariableReference = reference.getFactory().Core().createUnboundVariableReference();
 		aCtUnboundVariableReference.setType(this.cloneHelper.clone(reference.getType()));
