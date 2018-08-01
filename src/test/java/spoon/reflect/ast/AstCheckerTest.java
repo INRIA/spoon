@@ -182,7 +182,7 @@ public class AstCheckerTest {
 				return false;
 			}
 			CtExecutable declaration = potentialDelegate.getExecutable().getDeclaration();
-			if (declaration == null || !(declaration instanceof CtMethod)) {
+			if (!(declaration instanceof CtMethod)) {
 				return false;
 			}
 			// check if the invocation has a model change listener
