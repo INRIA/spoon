@@ -2,8 +2,6 @@ language: java
 
 dist: trusty
 
-sudo: required
-
 group: edge
 
 jdk: openjdk8

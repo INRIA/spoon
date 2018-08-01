@@ -26,13 +26,16 @@ import spoon.internal.mavenlauncher.InheritanceModel;
 
 import java.io.File;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Create a Spoon launcher from a maven pom file
@@ -129,9 +132,7 @@ public class MavenLauncher extends Launcher {
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
 
-	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType, File outputFile) {
-		//File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
-
+	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType) {//, File outputFile) {
 		//Run mvn dependency:build-classpath -Dmdep.outputFile="spoon.classpath.tmp"
 		//This should write the classpath used by maven in spoon.classpath.tmp
 		InvocationRequest request = new DefaultInvocationRequest();
@@ -141,7 +142,7 @@ public class MavenLauncher extends Launcher {
 		if (sourceType == SOURCE_TYPE.APP_SOURCE) {
 			properties.setProperty("mdep.includeScope", "runtime");
 		}
-		properties.setProperty("mdep.outputFile", outputFile.getAbsolutePath());
+		properties.setProperty("mdep.outputFile", "spoon.classpath.tmp");// outputFile.getAbsolutePath());
 		request.setProperties(properties);
 
 		//FIXME Should the standard output made silent and error verbose?
@@ -159,37 +160,47 @@ public class MavenLauncher extends Launcher {
 		}
 	}
 
-	public static String[] readClassPath(File classPathFile) {
-		String[] classpath = null;
+	/**
+	 *
+	 * @param classPathFiles File[] containing the classpath elements separated with ':'
+	 */
+	public static String[] readClassPath(File ... classPathFiles) {
+		List<String> classpathElements = new ArrayList<>();
 
 		//Read the content of spoon.classpath.tmp
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(classPathFile));
-			StringBuilder sb = new StringBuilder();
-			String line = br.readLine();
-			while (line != null) {
-				sb.append(line);
-				line = br.readLine();
-			}
-			if (sb.toString().equals("")) {
-				classpath = new String[0];
-			} else {
-				classpath = sb.toString().split(":");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SpoonException("Failed to read classpath written in temporary file " + classPathFile.getAbsolutePath() + ".");
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace(); //These Exceptions occur after the classpath has been read, so it should not prevent normal execution.
+		for(File classPathFile: classPathFiles) {
+			BufferedReader br = null;
+			try {
+				br = new BufferedReader(new FileReader(classPathFile));
+				StringBuilder sb = new StringBuilder();
+				String line = br.readLine();
+				while (line != null) {
+					sb.append(line);
+					line = br.readLine();
+				}
+				if (!sb.toString().equals("")) {
+					String[] classpath = sb.toString().split(":");
+					for (String cpe : classpath) {
+						if (!classpathElements.contains(cpe)) {
+							classpathElements.add(cpe);
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new SpoonException("Failed to read classpath written in temporary file " + classPathFile.getAbsolutePath() + ".");
+			} finally {
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace(); //These Exceptions occur after the classpath has been read, so it should not prevent normal execution.
+					}
 				}
 			}
 		}
-
+		String[] classpath = new String[classpathElements.size()];
+		classpath = classpathElements.toArray(classpath);
 		return classpath;
 	}
 
@@ -217,6 +228,14 @@ public class MavenLauncher extends Launcher {
 		return mvnHome;
 	}
 
+	/**
+	 * Call maven invoker to generate the classpath. Either M2_HOME must be
+	 * initialized, or the command mvn must be in PATH.
+	 *
+	 * @param mvnHome the path to the m2repository
+	 * @param mavenProject the path to the root of the project
+	 * @param sourceType the source type (App, test, or all)
+	 */
 	public static String[] buildClassPath(String mvnHome, String mavenProject, SOURCE_TYPE sourceType) {
 		if (mvnHome == null) {
 			mvnHome = guessMavenHome();
@@ -229,10 +248,21 @@ public class MavenLauncher extends Launcher {
 			projectPath = Paths.get(projectPath, "pom.xml").toString();
 		}
 		File pom = new File(projectPath);
-		File classPathPrint = new File(pom.getParentFile(), "spoon.classpath.tmp");
-		generateClassPathFile(pom, new File(mvnHome), sourceType, classPathPrint);
-		String[] classpath = readClassPath(classPathPrint);
-		//classPathPrint.delete();
+		generateClassPathFile(pom, new File(mvnHome), sourceType);//, classPathPrint);
+
+		List<File> classPathPrints = null;
+		try {
+			classPathPrints = Files.find(Paths.get(pom.getParentFile().getAbsolutePath()),
+					Integer.MAX_VALUE,
+					(filePath, fileAttr) -> filePath.endsWith("spoon.classpath.tmp"))
+					.map( p -> p.toFile())
+					.collect(Collectors.toList());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		File[] classPathPrintFiles = new File[classPathPrints.size()];
+		classPathPrintFiles = classPathPrints.toArray(classPathPrintFiles);
+		String[] classpath = readClassPath(classPathPrintFiles);
 		return classpath;
 	}
 }
