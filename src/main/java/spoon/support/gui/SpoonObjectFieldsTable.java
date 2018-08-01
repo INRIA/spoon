@@ -47,6 +47,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 			scanFields(o.getClass());
 		}
 
+		@Override
 		public int getColumnCount() {
 			return columnsName.length;
 		}
@@ -56,10 +57,12 @@ public class SpoonObjectFieldsTable extends JFrame {
 			return columnsName[column];
 		}
 
+		@Override
 		public int getRowCount() {
 			return field.size();
 		}
 
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Field m = field.get(rowIndex);
 			switch (columnIndex) {
