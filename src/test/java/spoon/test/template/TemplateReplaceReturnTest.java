@@ -39,7 +39,7 @@ public class TemplateReplaceReturnTest {
 	}
 
 	@Test
-	public void testNoReturnReplaceTemplate() throws Exception {
+	public void testNoReturnReplaceTemplate() {
 		//contract: the template engine supports replace of return expression by `<CtExpression>`
 		Launcher launcher = new Launcher();
 		launcher.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ReturnReplaceTemplate.java"));

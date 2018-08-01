@@ -99,7 +99,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 public class AnnotationTest {
 
 	@Test
-	public void testAnnotationValueReflection() throws Exception {
+	public void testAnnotationValueReflection() {
 		Factory factory = new Launcher().getFactory();
 
 		CtTypeReference reference = factory.createCtTypeReference(PropertyGetter.class);
@@ -110,7 +110,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testModelBuildingAnnotationBound() throws Exception {
+	public void testModelBuildingAnnotationBound() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bound.java");
 		launcher.buildModel();
@@ -121,7 +121,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testWritingAnnotParamArray() throws Exception {
+	public void testWritingAnnotParamArray() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotParam.java");
 		launcher.buildModel();
@@ -132,7 +132,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testModelBuildingAnnotationBoundUsage() throws Exception {
+	public void testModelBuildingAnnotationBoundUsage() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
 		launcher.buildModel();
@@ -176,7 +176,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testPersistenceProperty() throws Exception {
+	public void testPersistenceProperty() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java");
 		launcher.buildModel();
@@ -196,7 +196,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAnnotationParameterTypes() throws Exception {
+	public void testAnnotationParameterTypes() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
 		launcher.buildModel();
@@ -287,7 +287,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAnnotatedElementTypes() throws Exception {
+	public void testAnnotatedElementTypes() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/");
 		launcher.buildModel();
@@ -407,7 +407,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAnnotationWithDefaultArrayValue() throws Throwable {
+	public void testAnnotationWithDefaultArrayValue() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArrayInnerClass.java");
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArray.java");
@@ -428,7 +428,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testInnerAnnotationsWithArray() throws Exception {
+	public void testInnerAnnotationsWithArray() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Foo.java");
 		launcher.buildModel();
@@ -460,7 +460,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAccessAnnotationValue() throws Exception {
+	public void testAccessAnnotationValue() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
 		launcher.buildModel();
@@ -476,7 +476,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationInNewInstance() throws Exception {
+	public void testUsageOfTypeAnnotationInNewInstance() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -498,7 +498,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationInCast() throws Exception {
+	public void testUsageOfTypeAnnotationInCast() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -521,7 +521,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationBeforeExceptionInSignatureOfMethod() throws Exception {
+	public void testUsageOfTypeAnnotationBeforeExceptionInSignatureOfMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -540,7 +540,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationInReturnTypeInMethod() throws Exception {
+	public void testUsageOfTypeAnnotationInReturnTypeInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
@@ -561,7 +561,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationOnParameterInMethod() throws Exception {
+	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
@@ -580,7 +580,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationOnLocalVariableInMethod() throws Exception {
+	public void testUsageOfTypeAnnotationOnLocalVariableInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
@@ -604,7 +604,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationInExtendsImplementsOfAClass() throws Exception {
+	public void testUsageOfTypeAnnotationInExtendsImplementsOfAClass() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -651,7 +651,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationWithGenericTypesInClassDeclaration() throws Exception {
+	public void testUsageOfTypeAnnotationWithGenericTypesInClassDeclaration() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -672,7 +672,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfTypeAnnotationWithGenericTypesInStatements() throws Exception {
+	public void testUsageOfTypeAnnotationWithGenericTypesInStatements() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -720,7 +720,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testUsageOfParametersInTypeAnnotation() throws Exception {
+	public void testUsageOfParametersInTypeAnnotation() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
 		launcher.buildModel();
@@ -763,7 +763,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testOutputGeneratedByTypeAnnotation() throws Exception {
+	public void testOutputGeneratedByTypeAnnotation() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
@@ -776,7 +776,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnClass() throws Exception {
+	public void testRepeatSameAnnotationOnClass() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.buildModel();
@@ -792,7 +792,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnField() throws Exception {
+	public void testRepeatSameAnnotationOnField() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.buildModel();
@@ -809,7 +809,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnMethod() throws Exception {
+	public void testRepeatSameAnnotationOnMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.buildModel();
@@ -826,7 +826,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnConstructor() throws Exception {
+	public void testRepeatSameAnnotationOnConstructor() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.buildModel();
@@ -843,7 +843,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnParameter() throws Exception {
+	public void testRepeatSameAnnotationOnParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.buildModel();
@@ -861,7 +861,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnLocalVariable() throws Exception {
+	public void testRepeatSameAnnotationOnLocalVariable() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.buildModel();
@@ -884,7 +884,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testRepeatSameAnnotationOnPackage() throws Exception {
+	public void testRepeatSameAnnotationOnPackage() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsRepeated.java");
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/package-info.java");
@@ -901,7 +901,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testDefaultValueInAnnotationsForAnnotationFields() throws Exception {
+	public void testDefaultValueInAnnotationsForAnnotationFields() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationDefaultAnnotation.java");
 		launcher.buildModel();
@@ -915,7 +915,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testGetAnnotationOuter() throws Exception {
+	public void testGetAnnotationOuter() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Foo.java");
 		launcher.buildModel();
@@ -928,7 +928,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAbstractAllAnnotationProcessor() throws Exception {
+	public void testAbstractAllAnnotationProcessor() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(false);
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationsAppliedOnAnyTypeInAClass.java");
@@ -952,7 +952,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAbstractAllAnnotationProcessorWithGlobalAnnotation() throws Exception {
+	public void testAbstractAllAnnotationProcessorWithGlobalAnnotation() {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/ClassProcessed.java");
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/TypeAnnotation.java");
@@ -977,7 +977,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAnnotationIntrospection() throws Exception {
+	public void testAnnotationIntrospection() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationIntrospection.java");
 		launcher.buildModel();
@@ -1007,7 +1007,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testAnnotationInterfacePreserveMethods() throws Exception {
+	public void testAnnotationInterfacePreserveMethods() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/PortRange.java");
 		launcher.buildModel();
@@ -1078,7 +1078,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testSpoonSpoonResult() throws Exception {
+	public void testSpoonSpoonResult() {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/annotation/testclasses/dropwizard/GraphiteReporterFactory.java");
 		String output = "target/spooned-" + this.getClass().getSimpleName() + "-firstspoon/";
@@ -1183,7 +1183,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testCreateAnnotation() throws Exception {
+	public void testCreateAnnotation() {
 		final Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 		CtType<?> type = factory.Annotation().create("spoon.test.annotation.testclasses.NewAnnot");
@@ -1192,7 +1192,7 @@ public class AnnotationTest {
 	}
 
 	@Test
-	public void testReplaceAnnotationValue() throws Exception {
+	public void testReplaceAnnotationValue() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Main.java");
 		launcher.buildModel();

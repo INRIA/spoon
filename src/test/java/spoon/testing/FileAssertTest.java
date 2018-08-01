@@ -14,7 +14,7 @@ public class FileAssertTest {
 	}
 
 	@Test(expected = AssertionError.class)
-	public void testEqualsBetweenTwoDifferentFile() throws Exception {
+	public void testEqualsBetweenTwoDifferentFile() {
 		assertThat(PATH + "Foo.java").isEqualTo(PATH + "Bar.java");
 	}
 }
