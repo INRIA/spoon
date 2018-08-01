@@ -110,9 +110,9 @@ public class IncrementalLauncherTest {
 		assertTrue(c1.equals(c2));
 		assertFalse(d1.equals(d2));
 
-		assertTrue(d1.getDeclaredFields().size() == 0);
+		assertTrue(d1.getDeclaredFields().isEmpty());
 		assertTrue(d2.getDeclaredFields().size() == 2);
-		assertTrue(d1.getMethods().size() == 0);
+		assertTrue(d1.getMethods().isEmpty());
 		assertTrue(d2.getMethods().size() == 1);
 	}
 

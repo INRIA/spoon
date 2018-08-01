@@ -404,7 +404,7 @@ public class APITest {
 		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
-		assertTrue("Number of setters found null", setters.size() > 0);
+		assertTrue("Number of setters found null", !setters.isEmpty());
 
 		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
 

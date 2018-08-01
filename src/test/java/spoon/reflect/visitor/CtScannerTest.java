@@ -204,7 +204,7 @@ public class CtScannerTest {
 			calledMethods.removeAll(checkedMethods);
 
 			// contract: CtScanner only calls methods that have a role and the associated getter
-			if (calledMethods.size() > 0) {
+			if (!calledMethods.isEmpty()) {
 				problems.add("CtScanner " + visitMethod.getPosition() + " calls unexpected methods: " + calledMethods);
 			}
 		}
@@ -213,7 +213,7 @@ public class CtScannerTest {
 		if (scannerVisitMethodsByName.isEmpty() == false) {
 			problems.add("These CtScanner visit methods were not checked: " + scannerVisitMethodsByName.keySet());
 		}
-		if (problems.size() > 0) {
+		if (!problems.isEmpty()) {
 			fail(String.join("\n", problems));
 		}
 		assertTrue("not enough checks " + c.nbChecks, c.nbChecks >= 200);

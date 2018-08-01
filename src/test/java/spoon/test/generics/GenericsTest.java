@@ -661,7 +661,7 @@ public class GenericsTest {
 		//this returns a type reference with uninitialized actual type arguments.
 		CtTypeReference<?> genericTypeRef = aTacos.getFactory().Type().createReference(aTacos, true);
 		
-		assertTrue(genericTypeRef.getActualTypeArguments().size()>0);
+		assertTrue(!genericTypeRef.getActualTypeArguments().isEmpty());
 		assertEquals(aTacos.getFormalCtTypeParameters().size(), genericTypeRef.getActualTypeArguments().size());
 		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
 			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());

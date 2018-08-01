@@ -321,7 +321,7 @@ public class ReplaceTest {
 		final List<CtTypeReference> references = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
+				return !reference.getActualTypeArguments().isEmpty() && super.matches(reference);
 			}
 		});
 

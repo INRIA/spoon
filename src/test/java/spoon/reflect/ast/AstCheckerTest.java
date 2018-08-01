@@ -74,7 +74,7 @@ public class AstCheckerTest {
 				return simpleName.startsWith("add") || simpleName.startsWith("remove") || simpleName.startsWith("put");
 			}
 		});
-		if (invocations.size() > 0) {
+		if (!invocations.isEmpty()) {
 			final String error = invocations.stream() //
 					.sorted(new CtLineElementComparator()) //
 					.map(i -> "see " + i.getPosition().getFile().getAbsoluteFile() + " at " + i.getPosition().getLine()) //
@@ -141,7 +141,7 @@ public class AstCheckerTest {
 				return false;
 			}
 			return candidate.getBody() != null //
-					&& candidate.getParameters().size() != 0 //
+					&& !candidate.getParameters().isEmpty() //
 					&& candidate.hasModifier(ModifierKind.PUBLIC) //
 					&& (candidate.getSimpleName().startsWith("add")
 						|| candidate.getSimpleName().startsWith("set")
@@ -162,7 +162,7 @@ public class AstCheckerTest {
 
 		private boolean isSurcharged(CtMethod<?> candidate) {
 			CtBlock<?> block = candidate.getBody();
-			if (block.getStatements().size() == 0) {
+			if (block.getStatements().isEmpty()) {
 				return false;
 			}
 			CtInvocation potentialDelegate;
@@ -190,7 +190,7 @@ public class AstCheckerTest {
 		}
 
 		private boolean isDelegateMethod(CtMethod<?> candidate) {
-			if (candidate.getBody().getStatements().size() == 0) {
+			if (candidate.getBody().getStatements().isEmpty()) {
 				return false;
 			}
 			if (!(candidate.getBody().getStatement(0) instanceof CtIf)) {
@@ -216,7 +216,7 @@ public class AstCheckerTest {
 		}
 
 		private boolean isUnsupported(CtBlock<?> body) {
-			return body.getStatements().size() != 0 //
+			return !body.getStatements().isEmpty() //
 					&& body.getStatements().get(0) instanceof CtThrow //
 					&& "UnsupportedOperationException".equals(((CtThrow) body.getStatements().get(0)).getThrownExpression().getType().getSimpleName());
 		}
@@ -247,12 +247,12 @@ public class AstCheckerTest {
 		}
 
 		private boolean hasPushToStackInvocation(CtBlock<?> body) {
-			return body.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
+			return !body.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class) {
 				@Override
 				public boolean matches(CtInvocation<?> element) {
 					return FineModelChangeListener.class.getSimpleName().equals(element.getExecutable().getDeclaringType().getSimpleName()) && super.matches(element);
 				}
-			}).size() > 0;
+			}).isEmpty();
 		}
 
 		private void process(CtMethod<?> element) {

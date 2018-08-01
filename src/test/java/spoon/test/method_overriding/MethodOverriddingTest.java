@@ -79,7 +79,7 @@ public class MethodOverriddingTest {
 			}
 			methods.add(m);
 		});
-		assertTrue(methodsByName.size()>0);
+		assertTrue(!methodsByName.isEmpty());
 		for (Map.Entry<String, List<CtMethod>> e : methodsByName.entrySet()) {
 			combine(e.getValue(), 0, isOverriding);
 		}

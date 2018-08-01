@@ -231,8 +231,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertTrue(!newClassInvocation.toString().isEmpty());
+		assertTrue(!newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
@@ -259,8 +259,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertTrue(!newClassInvocation.toString().isEmpty());
+		assertTrue(!newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}

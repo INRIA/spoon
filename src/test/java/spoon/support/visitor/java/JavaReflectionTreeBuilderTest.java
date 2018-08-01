@@ -80,10 +80,10 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("java.lang.Class", aClass.getQualifiedName());
 		//The Class extends Object, but CtElementImpl (made from sources) getSuperclass() returns null. See CtTypeInformation#getSuperclass() comment.
 		assertNull(aClass.getSuperclass());
-		assertTrue(aClass.getSuperInterfaces().size() > 0);
-		assertTrue(aClass.getFields().size() > 0);
-		assertTrue(aClass.getMethods().size() > 0);
-		assertTrue(aClass.getNestedTypes().size() > 0);
+		assertTrue(!aClass.getSuperInterfaces().isEmpty());
+		assertTrue(!aClass.getFields().isEmpty());
+		assertTrue(!aClass.getMethods().isEmpty());
+		assertTrue(!aClass.getNestedTypes().isEmpty());
 		assertTrue(aClass.isShadow());
 	}
 
@@ -93,9 +93,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(anEnum);
 		assertEquals("java.time.format.TextStyle", anEnum.getQualifiedName());
 		assertNotNull(anEnum.getSuperclass());
-		assertTrue(anEnum.getFields().size() > 0);
-		assertTrue(anEnum.getEnumValues().size() > 0);
-		assertTrue(anEnum.getMethods().size() > 0);
+		assertTrue(!anEnum.getFields().isEmpty());
+		assertTrue(!anEnum.getEnumValues().isEmpty());
+		assertTrue(!anEnum.getMethods().isEmpty());
 		assertTrue(anEnum.isShadow());
 	}
 
@@ -105,8 +105,8 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(anInterface);
 		assertEquals("spoon.reflect.code.CtLambda", anInterface.getQualifiedName());
 		assertNull(anInterface.getSuperclass());
-		assertTrue(anInterface.getSuperInterfaces().size() > 0);
-		assertTrue(anInterface.getMethods().size() > 0);
+		assertTrue(!anInterface.getSuperInterfaces().isEmpty());
+		assertTrue(!anInterface.getMethods().isEmpty());
 		assertTrue(anInterface.isShadow());
 	}
 
@@ -115,8 +115,8 @@ public class JavaReflectionTreeBuilderTest {
 		final CtAnnotationType<SuppressWarnings> suppressWarning = new JavaReflectionTreeBuilder(createFactory()).scan(SuppressWarnings.class);
 		assertNotNull(suppressWarning);
 		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
-		assertTrue(suppressWarning.getAnnotations().size() > 0);
-		assertTrue(suppressWarning.getTypeMembers().size() > 0);
+		assertTrue(!suppressWarning.getAnnotations().isEmpty());
+		assertTrue(!suppressWarning.getTypeMembers().isEmpty());
 		assertTrue(suppressWarning.getTypeMembers().get(0) instanceof CtAnnotationMethod);
 
 		assertTrue(suppressWarning.isShadow());
@@ -279,7 +279,7 @@ public class JavaReflectionTreeBuilderTest {
 		public void scan(CtElement element) {
 			currentDiff = new Diff(element, other);
 			super.scan(element);
-			if (currentDiff.roles.size() > 0) {
+			if (!currentDiff.roles.isEmpty()) {
 				differences.add(currentDiff);
 			}
 		}

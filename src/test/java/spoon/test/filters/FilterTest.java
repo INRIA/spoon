@@ -517,7 +517,7 @@ public class FilterTest {
 
 		//First collect all classes using tested TypeFilter
 		List<CtClass<?>> allClasses = launcher.getFactory().Package().getRootPackage().getElements(new TypeFilter<>(CtClass.class));
-		assertTrue(allClasses.size()>0);
+		assertTrue(!allClasses.isEmpty());
 		allClasses.forEach(result->{
 			assertTrue(result instanceof CtClass);
 		});
@@ -612,7 +612,7 @@ public class FilterTest {
 		List<CtElement> realList = launcher.getFactory().Package().getRootPackage().filterChildren(e->{return true;}).select(new TypeFilter<>(CtClass.class)).list();
 		List<CtElement> expectedList = launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class)).list();
 		assertArrayEquals(expectedList.toArray(), realList.toArray());
-		assertTrue(expectedList.size()>0);
+		assertTrue(!expectedList.isEmpty());
 	}
 
 	@Test
@@ -632,7 +632,7 @@ public class FilterTest {
 				assertEquals(expected, real);
 			}
 		});
-		assertTrue(list.size()>0);
+		assertTrue(!list.isEmpty());
 		assertTrue(iter.hasNext()==false);
 	}
 
@@ -1212,7 +1212,7 @@ public class FilterTest {
 
 		//check that test is visiting some nodes
 		assertTrue(context1.nrOfEnter>0);
-		assertTrue(result1.size()>0);
+		assertTrue(!result1.isEmpty());
 		//contract: if enter is called and returns SKIP_CHILDREN or NORMAL, then exit must be called too. Exceptions are ignored for now
 		assertEquals(context1.nrOfEnter, context1.nrOfExit);
 
