@@ -311,8 +311,7 @@ public class TypeReferenceTest {
 		boolean containsStringReference = false;
 		boolean containsJoinerReference = false;
 
-		for (Iterator<CtTypeReference<?>> iterator = referencedTypes.iterator(); iterator.hasNext(); ) {
-			CtTypeReference<?> reference = iterator.next();
+		for (CtTypeReference<?> reference : referencedTypes) {
 			if (reference.toString().equals("Demo")) {
 				containsDemoReference = true;
 			} else if (reference.toString().equals("void")) {

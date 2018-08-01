@@ -51,9 +51,7 @@ public class ConditionalTest {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
 		CtMethod<Object> method = aFoo.getMethod("m3");
 		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
-		for (int i = 0; i < conditions.size(); i++) {
-			CtIf ctIf = conditions.get(i);
-
+		for (CtIf ctIf : conditions) {
 			// replace the block to a statement
 			CtStatement then = ((CtBlock) ctIf.getThenStatement()).getStatement(0);
 			ctIf.setThenStatement(then);

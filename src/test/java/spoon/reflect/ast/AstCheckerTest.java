@@ -60,8 +60,7 @@ public class AstCheckerTest {
 					return false;
 				}
 				boolean isDataStructure = false;
-				for (int i = 0; i < collectionsRef.size(); i++) {
-					CtTypeReference<?> ctTypeReference = collectionsRef.get(i);
+				for (CtTypeReference<?> ctTypeReference : collectionsRef) {
 					if (element.getType().isSubtypeOf(ctTypeReference)) {
 						isDataStructure = true;
 						break;
