@@ -44,6 +44,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public SerializationModelStreamer() {
 	}
 
+	@Override
 	public void save(Factory f, OutputStream out) throws IOException {
 		if (f.getEnvironment().getCompressionType() == CompressionType.GZIP) {
 			out = new GZIPOutputStream(out);
@@ -54,6 +55,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 		oos.close();
 	}
 
+	@Override
 	public Factory load(InputStream in) throws IOException {
 		try {
 			BufferedInputStream buffered = new BufferedInputStream(in, 2);
