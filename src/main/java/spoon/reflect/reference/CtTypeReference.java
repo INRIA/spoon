@@ -73,6 +73,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the referenced element or <code>null</code> if the type
 	 * declaration is not the analyzed source files.
 	 */
+	@Override
 	@DerivedProperty
 	CtType<T> getDeclaration();
 

@@ -50,6 +50,7 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	}
 
 
+	@Override
 	public boolean matches(T element) {
 		try {
 			return name.equals(element.getSimpleName());

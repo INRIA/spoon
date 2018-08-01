@@ -593,6 +593,7 @@ public class PatternParameterConfigurator {
 					addSubstitutionRequest(pi, element, roleHandler.getRole());
 				}
 			}
+			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
 				if (stringMarker.equals(mapEntryKey)) {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
@@ -624,6 +625,7 @@ public class PatternParameterConfigurator {
 					addSubstitutionRequest(pi, element, roleHandler.getRole(), stringMarker);
 				}
 			}
+			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
 				if (mapEntryKey != null && mapEntryKey.indexOf(stringMarker) >= 0) {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
