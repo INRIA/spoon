@@ -7,6 +7,10 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
+import spoon.test.staticFieldAccess2.testclasses.AmbiguousImplicitFieldReference;
+import spoon.test.staticFieldAccess2.testclasses.ChildOfGenericsWithAmbiguousStaticField;
+import spoon.test.staticFieldAccess2.testclasses.ImplicitFieldReference;
+import spoon.test.staticFieldAccess2.testclasses.ImplicitStaticFieldReference;
 
 public class ImplicitStaticFieldReferenceTest
 {
@@ -110,8 +114,8 @@ public class ImplicitStaticFieldReferenceTest
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ChildOfGenericsWithAmbiguousStaticField.class);
         	//The toString of the method does not have a context of class, so it different result 
-//        	assertEquals("spoon.test.staticFieldAccess2.GenericsWithAmbiguousStaticField.<V, C>genericMethod()", cls.getMethod("m1").getBody().getStatements().get(0).toString());
-        	assertTrue(cls.toString().indexOf("spoon.test.staticFieldAccess2.GenericsWithAmbiguousStaticField.<V, C>genericMethod()")>=0);
+//        	assertEquals("spoon.test.staticFieldAccess2.testclasses.GenericsWithAmbiguousStaticField.<V, C>genericMethod()", cls.getMethod("m1").getBody().getStatements().get(0).toString());
+        	assertTrue(cls.toString().indexOf("spoon.test.staticFieldAccess2.testclasses.GenericsWithAmbiguousStaticField.<V, C>genericMethod()")>=0);
         	assertEquals("genericMethod()", cls.getMethod("m1").getBody().getStatements().get(1).toString());
     	}
     }
@@ -139,7 +143,7 @@ public class ImplicitStaticFieldReferenceTest
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(autoImports);
 
-		String pckg = "spoon/test/staticFieldAccess2/";
+		String pckg = "spoon/test/staticFieldAccess2/testclasses/";
 		for (String fn : fileName)
 		{
 			launcher.addInputResource("src/test/java/"+pckg+fn);
