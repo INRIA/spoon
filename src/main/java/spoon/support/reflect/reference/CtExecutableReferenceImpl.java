@@ -123,7 +123,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (typeDecl == null) {
 			return null;
 		}
-		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]);
+		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReferenceImpl<?>[0]);
 		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), arrayParameters);
 		if ((method == null) && (typeDecl instanceof CtClass) && this.isConstructor()) {
 			try {

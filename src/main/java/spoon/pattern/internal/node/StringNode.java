@@ -172,7 +172,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 				re.append(escapeRegExp(getStringValueWithMarkers().substring(start)));
 			}
 			regExpPattern = Pattern.compile(re.toString());
-			params = paramsByRegions.toArray(new ParameterInfo[paramsByRegions.size()]);
+			params = paramsByRegions.toArray(new ParameterInfo[0]);
 		}
 		return regExpPattern;
 	}

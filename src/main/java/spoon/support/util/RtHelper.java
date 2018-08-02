@@ -120,7 +120,7 @@ public abstract class RtHelper {
 		for (CtTypeReference<?> type : i.getExecutable().getActualTypeArguments()) {
 			argTypes.add(type.getActualClass());
 		}
-		return (T) c.getMethod(i.getExecutable().getSimpleName(), argTypes.toArray(new Class[argTypes.size()]))
+		return (T) c.getMethod(i.getExecutable().getSimpleName(), argTypes.toArray(new Class[0]))
 				.invoke(target, args.toArray());
 	}
 

@@ -1267,7 +1267,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	public static <E extends spoon.reflect.declaration.CtElement> void replace(spoon.reflect.declaration.CtElement original, java.util.Collection<E> replaces) {
 		try {
-			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
+			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new CtElement[0])).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
 		}
