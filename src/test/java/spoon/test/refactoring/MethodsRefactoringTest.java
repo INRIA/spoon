@@ -153,7 +153,7 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction()).list();
 			assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
-			assertTrue(!executables.isEmpty());
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				boolean found = removeSame(executables, m);
@@ -174,7 +174,7 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true)).list();
 			assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
-			assertTrue(!executables.isEmpty());
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
@@ -194,7 +194,7 @@ public class MethodsRefactoringTest {
 			}
 			
 			//check that some method was found
-			assertTrue(!executables.isEmpty());
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				if(m instanceof CtLambda) {
@@ -269,7 +269,7 @@ public class MethodsRefactoringTest {
 	}
 
 	private int checkExecutableReferenceFilter(Factory factory, List<CtExecutable<?>> executables) {
-		assertTrue(!executables.isEmpty());
+		assertFalse(executables.isEmpty());
 		ExecutableReferenceFilter execRefFilter = new ExecutableReferenceFilter();
 		executables.forEach((CtExecutable<?> e)->execRefFilter.addExecutable(e));
 		final List<CtExecutableReference<?>> refs = new ArrayList<>(factory.getModel().filterChildren(execRefFilter).list());
