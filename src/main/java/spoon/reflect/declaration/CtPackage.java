@@ -86,6 +86,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@Override
 	@DerivedProperty
 	CtPackageReference getReference();
 
