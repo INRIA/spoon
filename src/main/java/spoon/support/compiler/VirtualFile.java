@@ -39,18 +39,22 @@ public class VirtualFile implements SpoonFile {
 		this.name = name;
 	}
 
+	@Override
 	public InputStream getContent() {
 		return new ByteArrayInputStream(content.getBytes());
 	}
 
+	@Override
 	public boolean isJava() {
 		return true;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		return new VirtualFolder();
 	}
@@ -60,10 +64,12 @@ public class VirtualFile implements SpoonFile {
 		return null;
 	}
 
+	@Override
 	public String getPath() {
 		return name;
 	}
 
+	@Override
 	public boolean isFile() {
 		return true;
 	}
