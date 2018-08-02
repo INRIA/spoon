@@ -93,7 +93,7 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-		assertTrue(!context.unique.isEmpty());
+		assertFalse(context.unique.isEmpty());
 		assertEquals("Only these keys were found: "+context.unique.keySet(), context.maxKey, context.unique.size());
 		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class,"maxValue")).first()), context.maxKey);
 	}
@@ -192,7 +192,7 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-		assertTrue(!list.isEmpty());
+		assertFalse(list.isEmpty());
 	}
 
 	@Test
