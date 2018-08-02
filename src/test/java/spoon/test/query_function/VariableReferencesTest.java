@@ -29,6 +29,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
+import spoon.reflect.visitor.filter.FieldScopeFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -180,7 +181,7 @@ public class VariableReferencesTest {
 				if(var instanceof CtLocalVariable) {
 					assertArrayEquals(var.map(new LocalVariableScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtField) {
-					//assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
+					assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtParameter) {
 					assertArrayEquals(var.map(new ParameterScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtCatchVariable) {
