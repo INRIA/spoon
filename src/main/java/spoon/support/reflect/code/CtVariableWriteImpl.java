@@ -22,6 +22,7 @@ import spoon.reflect.visitor.CtVisitor;
 public class CtVariableWriteImpl<T> extends CtVariableAccessImpl<T> implements CtVariableWrite<T> {
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtVariableWrite(this);
 	}
