@@ -237,7 +237,7 @@ public class MethodsRefactoringTest {
 			}
 			TestHierarchy th = ele.getAnnotation(TestHierarchy.class);
 			if (th!=null) {
-				return Arrays.asList(th.value()).indexOf(hierarchyName)>=0;
+				return Arrays.asList(th.value()).contains(hierarchyName);
 			}
 			return false;
 		}).list();

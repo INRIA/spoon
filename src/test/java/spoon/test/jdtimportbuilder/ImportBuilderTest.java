@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ImportBuilderTest {
 
-	private final static String nl = System.getProperty("line.separator");
+	private static final String nl = System.getProperty("line.separator");
 
 	@Test
 	public void testWithNoImport() {
