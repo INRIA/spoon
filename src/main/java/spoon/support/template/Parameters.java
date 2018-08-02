@@ -317,12 +317,14 @@ public abstract class Parameters {
 	public static <T> TemplateParameter<T> NIL(Class<? extends T> type) {
 		if (Number.class.isAssignableFrom(type)) {
 			return (TemplateParameter<T>) new TemplateParameter<Number>() {
+				@Override
 				public Number S() {
 					return 0;
 				}
 			};
 		}
 		return new TemplateParameter<T>() {
+			@Override
 			public T S() {
 				return null;
 			}
