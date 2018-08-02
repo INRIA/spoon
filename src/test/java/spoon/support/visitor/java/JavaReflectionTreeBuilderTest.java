@@ -80,10 +80,10 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("java.lang.Class", aClass.getQualifiedName());
 		//The Class extends Object, but CtElementImpl (made from sources) getSuperclass() returns null. See CtTypeInformation#getSuperclass() comment.
 		assertNull(aClass.getSuperclass());
-		assertTrue(!aClass.getSuperInterfaces().isEmpty());
-		assertTrue(!aClass.getFields().isEmpty());
-		assertTrue(!aClass.getMethods().isEmpty());
-		assertTrue(!aClass.getNestedTypes().isEmpty());
+		assertFalse(aClass.getSuperInterfaces().isEmpty());
+		assertFalse(aClass.getFields().isEmpty());
+		assertFalse(aClass.getMethods().isEmpty());
+		assertFalse(aClass.getNestedTypes().isEmpty());
 		assertTrue(aClass.isShadow());
 	}
 
@@ -93,9 +93,9 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(anEnum);
 		assertEquals("java.time.format.TextStyle", anEnum.getQualifiedName());
 		assertNotNull(anEnum.getSuperclass());
-		assertTrue(!anEnum.getFields().isEmpty());
-		assertTrue(!anEnum.getEnumValues().isEmpty());
-		assertTrue(!anEnum.getMethods().isEmpty());
+		assertFalse(anEnum.getFields().isEmpty());
+		assertFalse(anEnum.getEnumValues().isEmpty());
+		assertFalse(anEnum.getMethods().isEmpty());
 		assertTrue(anEnum.isShadow());
 	}
 
@@ -105,8 +105,8 @@ public class JavaReflectionTreeBuilderTest {
 		assertNotNull(anInterface);
 		assertEquals("spoon.reflect.code.CtLambda", anInterface.getQualifiedName());
 		assertNull(anInterface.getSuperclass());
-		assertTrue(!anInterface.getSuperInterfaces().isEmpty());
-		assertTrue(!anInterface.getMethods().isEmpty());
+		assertFalse(anInterface.getSuperInterfaces().isEmpty());
+		assertFalse(anInterface.getMethods().isEmpty());
 		assertTrue(anInterface.isShadow());
 	}
 
@@ -115,16 +115,12 @@ public class JavaReflectionTreeBuilderTest {
 		final CtAnnotationType<SuppressWarnings> suppressWarning = new JavaReflectionTreeBuilder(createFactory()).scan(SuppressWarnings.class);
 		assertNotNull(suppressWarning);
 		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
-		assertTrue(!suppressWarning.getAnnotations().isEmpty());
-		assertTrue(!suppressWarning.getTypeMembers().isEmpty());
+		assertFalse(suppressWarning.getAnnotations().isEmpty());
+		assertFalse(suppressWarning.getTypeMembers().isEmpty());
 		assertTrue(suppressWarning.getTypeMembers().get(0) instanceof CtAnnotationMethod);
-
 		assertTrue(suppressWarning.isShadow());
-
 		assertNotNull(suppressWarning.getAnnotation(Retention.class));
-
 		assertEquals("SOURCE", suppressWarning.getAnnotation(Retention.class).value().toString());
-
 	}
 
 	@Test
@@ -169,7 +165,7 @@ public class JavaReflectionTreeBuilderTest {
 	public void testDeclaredField() {
 		final CtType<CookieManager> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CookieManager.class);
 		assertNotNull(aType);
-		// CookieManager have only 2 fields. Java reflection doesn't give us field of its superclass.
+		// CookieManager has only 2 fields. Java reflection doesn't give us field of its superclass.
 		assertEquals(2, aType.getFields().size());
 	}
 
@@ -177,7 +173,7 @@ public class JavaReflectionTreeBuilderTest {
 	public void testDeclaredConstructor() {
 		final CtType<JDTSnippetCompiler> aType = new JavaReflectionTreeBuilder(createFactory()).scan(JDTSnippetCompiler.class);
 		assertNotNull(aType);
-		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
+		// JDTSnippetCompiler has only 1 constructor with 2 arguments but its super class has 1 constructor with 1 argument.
 		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
 
@@ -495,7 +491,7 @@ public class JavaReflectionTreeBuilderTest {
 
 	@Test
 	public void testSuperClass() {
-		//contract: the super class have actual type arguments
+		//contract: the super class has actual type arguments
 		TypeFactory typeFactory = createFactory().Type();
 		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtEnumValueImpl.class);
 		CtType aType = aTypeRef.getTypeDeclaration();
