@@ -31,8 +31,8 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
  * Create a Spoon launcher from a maven pom file
  */
 public class MavenLauncher extends Launcher {
+	static String mavenVersionParsing = "Maven home: ";
+	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
 	private String m2RepositoryPath;
 	private SOURCE_TYPE sourceType;
 
@@ -136,26 +138,27 @@ public class MavenLauncher extends Launcher {
 		//Run mvn dependency:build-classpath -Dmdep.outputFile="spoon.classpath.tmp"
 		//This should write the classpath used by maven in spoon.classpath.tmp
 		InvocationRequest request = new DefaultInvocationRequest();
+		request.setBatchMode(true);
 		request.setPomFile(pom);
-		request.setGoals(Arrays.asList("dependency:build-classpath"));
+		request.setGoals(Collections.singletonList("dependency:build-classpath"));
 		Properties properties = new Properties();
 		if (sourceType == SOURCE_TYPE.APP_SOURCE) {
 			properties.setProperty("includeScope", "runtime");
 		}
-		properties.setProperty("mdep.outputFile", "spoon.classpath.tmp");
+		properties.setProperty("mdep.outputFile", spoonClasspathTmpFileName);
 		request.setProperties(properties);
 
-		//FIXME Should the standard output made silent and error verbose?
-		//request.getOutputHandler(s -> System.err.println(s));
-		//request.getErrorHandler(s -> System.err.println(s));
+		request.getOutputHandler(s -> LOGGER.debug(s));
+		request.getErrorHandler(s -> LOGGER.debug(s));
 
 		Invoker invoker = new DefaultInvoker();
 		invoker.setMavenHome(mvnHome);
 		invoker.setWorkingDirectory(pom.getParentFile());
+		invoker.setErrorHandler(s -> LOGGER.debug(s));
+		invoker.setOutputHandler(s -> LOGGER.debug(s));
 		try {
 			InvocationResult ir = invoker.execute(request);
 		} catch (MavenInvocationException e) {
-			e.printStackTrace();
 			throw new SpoonException("Maven invocation failed to build a classpath.");
 		}
 	}
@@ -187,14 +190,14 @@ public class MavenLauncher extends Launcher {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				throw new SpoonException("Failed to read classpath written in temporary file " + classPathFile.getAbsolutePath() + ".");
 			} finally {
 				if (br != null) {
 					try {
 						br.close();
 					} catch (IOException e) {
-						e.printStackTrace(); //These Exceptions occur after the classpath has been read, so it should not prevent normal execution.
+						//These Exceptions occur after the classpath has been read, so it should not prevent normal execution.
+						LOGGER.warn("Error when closing " + classPathFile.getAbsolutePath());
 					}
 				}
 			}
@@ -213,17 +216,17 @@ public class MavenLauncher extends Launcher {
 			String line;
 
 			while ((line = output.readLine()) != null) {
-				if (line.contains("Maven home: ")) {
-					mvnHome = line.replace("Maven home: ", "");
+				if (line.contains(mavenVersionParsing)) {
+					mvnHome = line.replace(mavenVersionParsing, "");
 					return mvnHome;
 				}
 			}
 
 			p.waitFor();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SpoonException("Maven home detection has failed.");
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			throw new SpoonException("Maven home detection was interrupted.");
 		}
 		return mvnHome;
 	}
@@ -254,11 +257,11 @@ public class MavenLauncher extends Launcher {
 		try {
 			classPathPrints = Files.find(Paths.get(pom.getParentFile().getAbsolutePath()),
 					Integer.MAX_VALUE,
-					(filePath, fileAttr) -> filePath.endsWith("spoon.classpath.tmp"))
+					(filePath, fileAttr) -> filePath.endsWith(spoonClasspathTmpFileName))
 					.map(p -> p.toFile())
 					.collect(Collectors.toList());
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new SpoonException("Failed to read pom parent directory: " + pom.getParentFile().getAbsolutePath() + ".");
 		}
 		File[] classPathPrintFiles = new File[classPathPrints.size()];
 		classPathPrintFiles = classPathPrints.toArray(classPathPrintFiles);
