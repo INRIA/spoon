@@ -275,6 +275,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	/**
 	 * This method should be called to report the end of the processing.
 	 */
+	@Override
 	public void reportEnd() {
 		logger.info("end of processing: ");
 		if (warningCount > 0) {
@@ -299,6 +300,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 	}
 
+	@Override
 	public void reportProgressMessage(String message) {
 		logger.info(message);
 	}
@@ -306,14 +308,17 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setDebug(boolean debug) {
 	}
 
+	@Override
 	public void setDefaultFileGenerator(FileGenerator<? extends CtElement> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
 	}
 
+	@Override
 	public void setManager(ProcessingManager manager) {
 		this.manager = manager;
 	}
 
+	@Override
 	public void setProcessingStopped(boolean processingStopped) {
 		this.processingStopped = processingStopped;
 	}
@@ -323,34 +328,41 @@ public class StandardEnvironment implements Serializable, Environment {
 
 
 
+	@Override
 	public int getComplianceLevel() {
 		return complianceLevel;
 	}
 
+	@Override
 	public void setComplianceLevel(int level) {
 		complianceLevel = level;
 	}
 
+	@Override
 	public void setProcessorProperties(String processorName, ProcessorProperties prop) {
 		processorProperties.put(processorName, prop);
 	}
 
 	boolean useTabulations = false;
 
+	@Override
 	public boolean isUsingTabulations() {
 		return useTabulations;
 	}
 
+	@Override
 	public void useTabulations(boolean tabulation) {
 		useTabulations = tabulation;
 	}
 
 	int tabulationSize = 4;
 
+	@Override
 	public int getTabulationSize() {
 		return tabulationSize;
 	}
 
+	@Override
 	public void setTabulationSize(int tabulationSize) {
 		this.tabulationSize = tabulationSize;
 	}

@@ -125,18 +125,22 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return true;
 	}
 
+	@Override
 	public int getColumn() {
 		return searchColumnNumber(sourceStart);
 	}
 
+	@Override
 	public int getEndColumn() {
 		return searchColumnNumber(sourceEnd);
 	}
 
+	@Override
 	public File getFile() {
 		return compilationUnit == null ? null : compilationUnit.getFile();
 	}
 
+	@Override
 	public int getLine() {
 		if (sourceStartline == -1) {
 			this.sourceStartline = searchLineNumber(this.sourceStart);
@@ -144,14 +148,17 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return sourceStartline;
 	}
 
+	@Override
 	public int getEndLine() {
 		return searchLineNumber(sourceEnd);
 	}
 
+	@Override
 	public int getSourceEnd() {
 		return this.sourceEnd;
 	}
 
+	@Override
 	public int getSourceStart() {
 		return this.sourceStart;
 	}
@@ -190,6 +197,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	private final CompilationUnit compilationUnit;
 
+	@Override
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
 	}
