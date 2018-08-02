@@ -54,7 +54,7 @@ public class DefaultPrettyPrinterTest {
 		comp.build();
 		Factory factory = comp.getFactory();
 		CtType<?> theClass = factory.Type().get(qualifiedName);
-		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<>(CtInvocation.class));
 		assertEquals(3, elements.size());
 		CtInvocation<?> mathAbsInvocation = elements.get(1);
 		assertEquals("java.lang.Math.abs(message.length())", mathAbsInvocation.toString());
@@ -319,7 +319,7 @@ public class DefaultPrettyPrinterTest {
 		launcher.getEnvironment().setComplianceLevel(8);
 		CtModel model = launcher.buildModel();
 
-		CtMethod<?> machin = model.getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "machin")).get(0);
+		CtMethod<?> machin = model.getElements(new NamedElementFilter<>(CtMethod.class, "machin")).get(0);
 		assertEquals("machin", machin.getSimpleName());
 
 		List<CtParameter<?>> parameters = machin.getParameters();
