@@ -44,6 +44,7 @@ public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
 		this.acceptedClass = acceptedClass;
 	}
 
+	@Override
 	public boolean matches(T element) {
 		try {
 			return acceptedClass.isAssignableFrom(element.getClass()) && name.equals(element.getSimpleName());
