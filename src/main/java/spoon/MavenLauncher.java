@@ -127,7 +127,6 @@ public class MavenLauncher extends Launcher {
 		}
 
 		// dependencies
-
 		this.getModelBuilder().setSourceClasspath(classpath);
 
 		// compliance level
@@ -166,41 +165,29 @@ public class MavenLauncher extends Launcher {
 	/**
 	 *
 	 * @param classPathFiles File[] containing the classpath elements separated with ':'
+	 *                       It can be an array of file instead of an unique one for multi module projects.
 	 */
-	public static String[] readClassPath(File ... classPathFiles) {
+	static String[] readClassPath(File ... classPathFiles) throws IOException {
 		List<String> classpathElements = new ArrayList<>();
 
 		//Read the content of spoon.classpath.tmp
 		for (File classPathFile: classPathFiles) {
-			BufferedReader br = null;
-			try {
-				br = new BufferedReader(new FileReader(classPathFile));
-				StringBuilder sb = new StringBuilder();
-				String line = br.readLine();
-				while (line != null) {
-					sb.append(line);
-					line = br.readLine();
-				}
-				if (!sb.toString().equals("")) {
-					String[] classpath = sb.toString().split(":");
-					for (String cpe : classpath) {
-						if (!classpathElements.contains(cpe)) {
-							classpathElements.add(cpe);
-						}
-					}
-				}
-			} catch (Exception e) {
-				throw new SpoonException("Failed to read classpath written in temporary file " + classPathFile.getAbsolutePath() + ".");
-			} finally {
-				if (br != null) {
-					try {
-						br.close();
-					} catch (IOException e) {
-						//These Exceptions occur after the classpath has been read, so it should not prevent normal execution.
-						LOGGER.warn("Error when closing " + classPathFile.getAbsolutePath());
+			BufferedReader br = new BufferedReader(new FileReader(classPathFile));
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
+			while (line != null) {
+				sb.append(line);
+				line = br.readLine();
+			}
+			if (!sb.toString().equals("")) {
+				String[] classpath = sb.toString().split(":");
+				for (String cpe : classpath) {
+					if (!classpathElements.contains(cpe)) {
+						classpathElements.add(cpe);
 					}
 				}
 			}
+			br.close();
 		}
 		String[] classpath = new String[classpathElements.size()];
 		classpath = classpathElements.toArray(classpath);
@@ -254,18 +241,19 @@ public class MavenLauncher extends Launcher {
 		generateClassPathFile(pom, new File(mvnHome), sourceType);
 
 		List<File> classPathPrints = null;
+		String[] classpath;
 		try {
 			classPathPrints = Files.find(Paths.get(pom.getParentFile().getAbsolutePath()),
 					Integer.MAX_VALUE,
 					(filePath, fileAttr) -> filePath.endsWith(spoonClasspathTmpFileName))
 					.map(p -> p.toFile())
 					.collect(Collectors.toList());
+			File[] classPathPrintFiles = new File[classPathPrints.size()];
+			classPathPrintFiles = classPathPrints.toArray(classPathPrintFiles);
+			classpath = readClassPath(classPathPrintFiles);
 		} catch (IOException e) {
-			throw new SpoonException("Failed to read pom parent directory: " + pom.getParentFile().getAbsolutePath() + ".");
+			throw new SpoonException("Failed to generate class path for " + pom.getAbsolutePath() + ".");
 		}
-		File[] classPathPrintFiles = new File[classPathPrints.size()];
-		classPathPrintFiles = classPathPrints.toArray(classPathPrintFiles);
-		String[] classpath = readClassPath(classPathPrintFiles);
 		return classpath;
 	}
 }
