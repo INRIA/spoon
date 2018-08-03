@@ -372,7 +372,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		} else {
 			CtIf ifRes = ifElement.getFactory().Core().createIf();
 			ifRes.setCondition(r);
-			boolean thenEnded = false, elseEnded = false;
+			boolean thenEnded = false;
+			boolean elseEnded = false;
 			ifRes.setThenStatement((CtStatement) evaluate(ifElement.getThenStatement()));
 			if (flowEnded) {
 				thenEnded = true;
