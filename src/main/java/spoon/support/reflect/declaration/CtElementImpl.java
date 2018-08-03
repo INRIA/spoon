@@ -222,7 +222,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		if (annotations == null || annotations.isEmpty()) {
-			this.annotations = CtElementImpl.emptyList();
+			this.annotations = emptyList();
 			return (E) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
@@ -565,7 +565,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <E extends CtElement> E setComments(List<CtComment> comments) {
 		if (comments == null || comments.isEmpty()) {
-			this.comments = CtElementImpl.emptyList();
+			this.comments = emptyList();
 			return (E) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, COMMENT, this.comments, new ArrayList<>(this.comments));

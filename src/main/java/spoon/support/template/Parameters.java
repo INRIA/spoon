@@ -235,7 +235,7 @@ public abstract class Parameters {
 	 * 		the template that holds the parameter values
 	 */
 	public static Map<String, Object> getTemplateParametersAsMap(Factory f, CtType<?> targetType, Template<?> template) {
-		Map<String, Object> params = new HashMap<>(Parameters.getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
+		Map<String, Object> params = new HashMap<>(getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
 		//detect reference to to be generated type
 		CtTypeReference<?> targetTypeRef = targetType == null ? null : targetType.getReference();
 		if (targetType == null) {
