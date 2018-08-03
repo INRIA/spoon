@@ -24,6 +24,7 @@ import spoon.support.DerivedProperty;
  */
 public interface CtModuleReference extends CtReference {
 
+	@Override
 	@DerivedProperty
 	CtModule getDeclaration();
 
