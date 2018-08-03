@@ -368,6 +368,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return null;
 	}
 
+	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
 		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
