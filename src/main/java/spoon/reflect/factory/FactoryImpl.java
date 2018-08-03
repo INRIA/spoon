@@ -367,6 +367,7 @@ public class FactoryImpl implements Factory, Serializable {
 	/**
 	 * The module sub-factory
 	 */
+	@Override
 	public ModuleFactory Module() {
 		if (module == null) {
 			module = new ModuleFactory(this);
@@ -1213,6 +1214,7 @@ public class FactoryImpl implements Factory, Serializable {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
 	}
 
+	@Override
 	public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
 		return Module().createPackageExport(ctPackageReference);
 	}
