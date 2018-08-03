@@ -32,11 +32,11 @@ public class SpoonTestHelpers {
 			return true;
 		}
 		// limit case because of a bug to be fixed
-		if (typeReference.getActualTypeArguments().size()>0 && "?".equals(typeReference.getActualTypeArguments()
+		if (!typeReference.getActualTypeArguments().isEmpty() && "?".equals(typeReference.getActualTypeArguments()
 				.get(0).getQualifiedName())) {
 			return false;
 		}
-		return (typeReference.getActualTypeArguments().size()>0
+		return (!typeReference.getActualTypeArguments().isEmpty()
 				&& typeReference.getActualTypeArguments()
 				.get(0).getTypeDeclaration()
 				.isSubtypeOf(ctElRef))
@@ -110,7 +110,7 @@ public class SpoonTestHelpers {
 
 		// return one that is as low as possible in the hierarchy
 		for(Object o : tentativeSetters) {
-			if (baseType.getPackage().getElements(new OverridingMethodFilter((CtMethod<?>) o)).size() == 0) {
+			if (baseType.getPackage().getElements(new OverridingMethodFilter((CtMethod<?>) o)).isEmpty()) {
 				return (CtMethod<?>) o;
 			}
 		}
@@ -122,7 +122,7 @@ public class SpoonTestHelpers {
 	public static boolean isMetamodelProperty(CtType<?> baseType, CtMethod<?> m) {
 		return
 				m.getSimpleName().startsWith("get")
-						&& m.getParameters().size() == 0 // a getter has no parameter
+						&& m.getParameters().isEmpty() // a getter has no parameter
 						&& !m.hasAnnotation(DerivedProperty.class)
 						&&
 						// return type

@@ -272,7 +272,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getCtConstructorsByCtConstructor(CtConstructor<?> aConstructor) {
-		if (aConstructor.getBody().getStatements().size() == 0) {
+		if (aConstructor.getBody().getStatements().isEmpty()) {
 			return new ArrayList<>();
 		}
 		if (!(aConstructor.getBody().getStatement(0) instanceof CtInvocation)) {

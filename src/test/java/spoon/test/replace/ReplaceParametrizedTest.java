@@ -165,13 +165,13 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 				}
 			}).size() == 1);
 		}
-		if (problems.size() > 0) {
+		if (!problems.isEmpty()) {
 			fail(getReport(problems));
 		}
 	}
 	
 	private String getReport(List<String> problems) {
-		if (problems.size() > 0) {
+		if (!problems.isEmpty()) {
 			StringBuilder report = new StringBuilder();
 			report.append("The accessors of " + typeToTest + " have problems:");
 			for (String problem : problems) {

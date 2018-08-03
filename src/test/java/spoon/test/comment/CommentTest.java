@@ -769,15 +769,15 @@ public class CommentTest {
 		launcher.getModel().getElements(new TypeFilter<>(CtInterface.class)).stream().forEach(x -> {
 
 			assertTrue(x.getSimpleName()+ " has no documentation", x.getDocComment() != null);
-			assertTrue(x.getSimpleName()+ " has no documentation", x.getDocComment().length() > 0);
+			assertTrue(x.getSimpleName()+ " has no documentation", !x.getDocComment().isEmpty());
 
 			// we only consider instantiable interfaces
 			if (launcher.getModel().getElements(new AbstractFilter<CtElement>() {
 				@Override
 				public boolean matches(CtElement element) {
-					return (element instanceof CtNamedElement) && ((CtNamedElement)element).getSimpleName().equals(x.getSimpleName()+"Impl") && (element instanceof CtClass) && !((CtClass)element).hasModifier(ModifierKind.ABSTRACT);
+					return (element instanceof CtNamedElement) && ((CtNamedElement) element).getSimpleName().equals(x.getSimpleName() + "Impl") && (element instanceof CtClass) && !((CtClass) element).hasModifier(ModifierKind.ABSTRACT);
 				}
-			}).size() == 0 ) { return; }
+			}).isEmpty()) { return; }
 
 			// we don't consider references
 			if (x.getSimpleName().endsWith("Reference")) { return; }
@@ -810,7 +810,7 @@ public class CommentTest {
 					CtElement el = launcher.getFactory().Code().createCodeSnippetStatement(snippet).compile();
 
 					// the snippet contains this element
-					assertTrue(snippet + " does not contain a " + x.getSimpleName(), el.getElements(new TypeFilter<>(x.getActualClass())).size() > 0);
+					assertTrue(snippet + " does not contain a " + x.getSimpleName(), !el.getElements(new TypeFilter<>(x.getActualClass())).isEmpty());
 
 					codeElementsDocumentationPage.append(snippet+"\n");
 

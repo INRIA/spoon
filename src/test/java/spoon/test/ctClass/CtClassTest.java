@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -231,8 +232,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertFalse(newClassInvocation.toString().isEmpty());
+		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
@@ -259,8 +260,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertFalse(newClassInvocation.toString().isEmpty());
+		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}

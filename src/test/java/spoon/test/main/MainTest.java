@@ -223,17 +223,17 @@ public class MainTest {
 				}
 
 				// contract: the reference and method signature are the same
-				if (reference.getActualTypeArguments().size() == 0
+				if (reference.getActualTypeArguments().isEmpty()
 						&& executableDeclaration instanceof CtMethod
-						&& ((CtMethod)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						&& !((CtMethod) executableDeclaration).getFormalCtTypeParameters().isEmpty()
 						) {
 					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
 				}
 
 				// contract: the reference and constructor signature are the same
-				if (reference.getActualTypeArguments().size() == 0
+				if (reference.getActualTypeArguments().isEmpty()
 						&& executableDeclaration instanceof CtConstructor
-						&& ((CtConstructor)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						&& !((CtConstructor) executableDeclaration).getFormalCtTypeParameters().isEmpty()
 						) {
 					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
 				}
@@ -448,7 +448,7 @@ public class MainTest {
 		});
 		
 		String report = problems.toString();
-		if (report.length() > 0) {
+		if (!report.isEmpty()) {
 			Assert.fail(report);
 		}
 	}

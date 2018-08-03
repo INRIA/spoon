@@ -189,7 +189,7 @@ public class ParentTest {
 		final CtTypeReference referenceWithGeneric = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
+				return !reference.getActualTypeArguments().isEmpty() && super.matches(reference);
 			}
 		}).get(0);
 		final CtTypeReference<?> generic = referenceWithGeneric.getActualTypeArguments().get(0);
@@ -405,7 +405,7 @@ public class ParentTest {
 						return "setParent".equals(element.getExecutable().getSimpleName()) && super.matches(element);
 					}
 				});
-				return ctInvocations.size() >0 ? ctInvocations.get(0) :  null;
+				return !ctInvocations.isEmpty() ? ctInvocations.get(0) :  null;
 			}
 		}.scan(launcher.getModel().getRootPackage());
 	}

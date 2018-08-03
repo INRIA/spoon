@@ -419,8 +419,8 @@ public class LambdaTest {
 		for (String str : strs) {
 			assertTrue("List should contain "+str+" but it is missing.", methodNames.remove(str));
 		}
-		if(methodNames.size()>0) {
-			fail("List should't contain "+methodNames);
+		if(!methodNames.isEmpty()) {
+			fail("List shouldn't contain "+methodNames);
 		}
 	}
 

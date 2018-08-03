@@ -78,12 +78,12 @@ public class CloneTest {
 			}
 
 			private <T> boolean hasConcreteImpl(CtInterface<T> intrface) {
-				return Query.getElements(intrface.getFactory(), new TypeFilter<CtClass<?>>(CtClass.class) {
+				return !Query.getElements(intrface.getFactory(), new TypeFilter<CtClass<?>>(CtClass.class) {
 					@Override
 					public boolean matches(CtClass<?> element) {
 						return super.matches(element) && element.getSuperInterfaces().contains(intrface.getReference());
 					}
-				}).size() > 0;
+				}).isEmpty();
 			}
 
 			private <T> boolean isRootDeclaration(CtInterface<T> intrface) {

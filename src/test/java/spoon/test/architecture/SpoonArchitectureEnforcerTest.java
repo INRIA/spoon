@@ -146,7 +146,7 @@ public class SpoonArchitectureEnforcerTest {
 					&& !method.getSimpleName().startsWith("is")
 					&& !method.getSimpleName().startsWith("add")
 					&& !method.getSimpleName().startsWith("remove")
-					&& method.getTopDefinitions().size() == 0 // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+					&& method.getTopDefinitions().isEmpty() // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
 					&& (
 							method.hasModifier(ModifierKind.ABSTRACT) // all interface methods and abstract class methods must be documented
 
@@ -171,7 +171,7 @@ public class SpoonArchitectureEnforcerTest {
 				}
 			}
 		}
-		if (notDocumented.size() > 0) {
+		if (!notDocumented.isEmpty()) {
 			fail(notDocumented.size() + " public methods should be documented with proper API documentation: \n" + StringUtils.join(notDocumented, "\n"));
 		}
 
@@ -179,7 +179,7 @@ public class SpoonArchitectureEnforcerTest {
 		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
-				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().size() == 0;
+				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().isEmpty();
 			}
 		}).list();
 
@@ -290,7 +290,7 @@ public class SpoonArchitectureEnforcerTest {
 		for (CtClass<?> klass : spoon.getModel().getElements(new TypeFilter<CtClass>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass element) {
-				return element.getSuperclass() == null && super.matches(element) && element.getMethods().size() > 0
+				return element.getSuperclass() == null && super.matches(element) && !element.getMethods().isEmpty()
 						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.STATIC));
 			}
 		})) {
