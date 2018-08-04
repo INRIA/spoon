@@ -161,7 +161,7 @@ public class PatternPrinter extends DefaultGenerator {
 
 	/**
 	 * Creates a element which will be printed in source code of pattern as marker of parameter
-	 * @param parameterInfo
+	 * @param parameterInfo describes a pattern parameter to be printed
 	 * @param type
 	 * @return dummy template element, which represents a template type in source of generated Pattern.
 	 * Or null if potentialParameterMarker is not a marker of parameter
