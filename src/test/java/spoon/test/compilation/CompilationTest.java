@@ -396,7 +396,7 @@ public class CompilationTest {
 		String expected = "target/classes/";
 
 		File f = new File(expected);
-		URL[] urls = new URL[]{f.toURL()};
+		URL[] urls = { f.toURL() };
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
@@ -416,7 +416,7 @@ public class CompilationTest {
 
 		File f = new File(file);
 		URL url = new URL(distantJar);
-		URL[] urls = new URL[]{ f.toURL(), url };
+		URL[] urls = { f.toURL(), url };
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		try {

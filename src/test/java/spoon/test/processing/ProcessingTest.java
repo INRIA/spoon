@@ -206,11 +206,11 @@ public class ProcessingTest {
 		Object o = new Object();
 		props.set("anObject", o);
 
-		int[] arrayInt = new int[]{ 1, 2, 3};
+		int[] arrayInt = { 1, 2, 3};
 		props.set("arrayInt", arrayInt);
 		props.set("listString", Arrays.asList(new String[]{"42"}));
 
-		boolean[] arrayBoolean = new boolean[] {true};
+		boolean[] arrayBoolean = { true };
 		props.set("arrayBoolean", arrayBoolean);
 		HashMap<String,Double> mapTest = new HashMap<>();
 		mapTest.put("foobar",42.42);

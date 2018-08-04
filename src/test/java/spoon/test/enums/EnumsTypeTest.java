@@ -28,7 +28,7 @@ public class EnumsTypeTest {
 
 		Factory factory = launcher.getFactory();
 		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test/EnumJar.jar");
-		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
+		String[] dependencyClasspath = { classpath.get(0).getPath() };
 		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
 		assertEquals(1, classpath.size());
 
@@ -58,7 +58,7 @@ public class EnumsTypeTest {
 
 		Factory factory = launcher.getFactory();
 		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test/InterfaceWithEnumJar.jar");
-		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
+		String[] dependencyClasspath = { classpath.get(0).getPath() };
 		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
 		assertEquals(1, classpath.size());
 
