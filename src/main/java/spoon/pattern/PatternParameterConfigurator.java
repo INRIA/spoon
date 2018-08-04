@@ -862,7 +862,7 @@ public class PatternParameterConfigurator {
 	/**
 	 * for input `element` expression `X` in expression `X[Y]` it returns expression `X[Y]`
 	 * and registers extra {@link ListParameterInfo} to the parameter assigned to `X`
-	 * @param pep
+	 * @param pep pair of parameter and element which has to be transformed
 	 * @return
 	 */
 	private ParameterElementPair transformArrayAccess(ParameterElementPair pep) {
