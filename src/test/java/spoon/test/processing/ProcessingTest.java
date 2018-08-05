@@ -194,7 +194,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -243,7 +243,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -295,7 +295,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();

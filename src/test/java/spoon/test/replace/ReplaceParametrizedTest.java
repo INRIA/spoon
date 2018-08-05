@@ -143,7 +143,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 						problems.add("Argument was set into " + rh.getRole() + " but was found in " + role);
 					}
 				}
-			};
+			}
 			Scanner s = new Scanner();
 			receiver.accept(s);
 			assertTrue("Settable field " + mmField.toString() + " should set value.\n" + getReport(problems), s.found);

@@ -229,7 +229,7 @@ public class ParentTest {
 				elementStack.push(e);
 				e.accept(this);
 				elementStack.pop();
-			};
+			}
 		}.scan(pack);
 
 	}

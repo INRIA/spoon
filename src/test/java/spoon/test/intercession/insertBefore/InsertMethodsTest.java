@@ -30,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 public class InsertMethodsTest {
 
 	Factory factory;
-	;
 	private CtClass<?> assignmentClass;
 	private CtClass<?> insertExampleClass;
 

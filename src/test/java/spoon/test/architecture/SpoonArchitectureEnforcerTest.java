@@ -49,7 +49,7 @@ public class SpoonArchitectureEnforcerTest {
 			public boolean matches(CtType element) {
 				return super.matches(element)
 						&& element.getSimpleName().contains("Factory");
-			};
+			}
 		})) {
 			for (Object o : t.getFields()) {
 				CtField f = (CtField) o;
@@ -71,7 +71,7 @@ public class SpoonArchitectureEnforcerTest {
 		// this is very important for usability and discoverability
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/factory");
-		class SanityCheck { int val = 0; };
+		class SanityCheck { int val = 0; }
 		SanityCheck sanityCheck = new SanityCheck();
 		launcher.addProcessor(new AbstractManualProcessor() {
 			@Override
