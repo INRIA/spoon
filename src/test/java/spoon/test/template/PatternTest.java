@@ -1276,7 +1276,7 @@ public class PatternTest {
 
 		params = matches.get(1).getParameters();
 		// all method arguments to createListPrinter have been matched
-		assertEquals(null, params.getValue("startKeyword"));
+		assertNull(params.getValue("startKeyword"));
 		assertEquals(Boolean.FALSE, params.getValue("useStartKeyword"));
 		assertEquals("false", params.getValue("startPrefixSpace").toString());
 		assertEquals("null", params.getValue("start").toString());

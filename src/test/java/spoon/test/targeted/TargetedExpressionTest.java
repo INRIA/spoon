@@ -199,7 +199,7 @@ public class TargetedExpressionTest {
 		assertEquals(6, elements.size());
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("this.i"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedInnerClass).target(expectedInnerClassAccess).result("i"), elements.get(1));
-		assertEquals(true, elements.get(1).getTarget().isImplicit());
+		assertTrue(elements.get(1).getTarget().isImplicit());
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(expectedThisAccess).result("this.i"), elements.get(2));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedType).target(fooTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(3));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedSuperClassType).target(expectedThisAccess).result("this.o"), elements.get(4));

@@ -141,7 +141,7 @@ public class NoClasspathTest {
 		CtMethod<?> method = clazz.getMethodsByName("doSomething").get(0);
 		CtReturn<?> ctReturn = method.getElements(new TypeFilter<CtReturn<?>>(CtReturn.class)).get(0);
 
-		assertEquals(true, ctReturn.getReferencedTypes().contains(expectedType));
+		assertTrue(ctReturn.getReferencedTypes().contains(expectedType));
 	}
 
 	@Test

@@ -86,6 +86,7 @@ import java.util.Set;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -227,7 +228,7 @@ public class AnnotationTest {
 		assertEquals(2, annot.classes().length);
 		assertEquals(Integer.class, annot.classes()[0]);
 		assertEquals(String.class, annot.classes()[1]);
-		assertEquals(true, annot.b());
+		assertTrue(annot.b());
 		assertEquals('c', annot.c());
 		assertEquals(42, annot.byt());
 		assertEquals((short) 42, annot.s());
@@ -251,7 +252,7 @@ public class AnnotationTest {
 		assertEquals(2, annot.strings().length);
 		assertEquals("Hello", annot.strings()[0]);
 		assertEquals("world", annot.strings()[1]);
-		assertEquals(false, annot.b());
+		assertFalse(annot.b());
 		assertEquals(42, annot.byt());
 		assertEquals((short) 42, annot.s());
 		assertEquals(42, annot.l());
@@ -276,7 +277,7 @@ public class AnnotationTest {
 		assertEquals(2, annot.strings().length);
 		assertEquals("Helloconcatenated", annot.strings()[0]);
 		assertEquals("worldconcatenated", annot.strings()[1]);
-		assertEquals(true, annot.b());
+		assertTrue(annot.b());
 		assertEquals(42 ^ 1, annot.byt());
 		assertEquals((short) 42 / 2, annot.s());
 		assertEquals(43, annot.l());

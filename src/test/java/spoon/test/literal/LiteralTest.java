@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -100,7 +101,7 @@ public class LiteralTest {
 		assertEquals(typeFactory.STRING, literal.getType());
 
 		literal = (CtLiteral<?>) ctType.getField("h").getDefaultExpression();
-		assertEquals(null, literal.getValue());
+		assertNull(literal.getValue());
 		assertFalse(literal.getType().isPrimitive());
 		assertEquals(typeFactory.NULL_TYPE, literal.getType());
 

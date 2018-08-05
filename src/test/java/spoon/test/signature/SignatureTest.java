@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -122,7 +123,7 @@ public class SignatureTest {
 		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("String hello =\"t1\"; System.out.println(hello)")
 				.compile();
 
-		assertFalse(sta1.equals(sta2));// equals depends on deep equality
+		assertNotEquals(sta1, sta2);// equals depends on deep equality
 
 		String parameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).toString();
 		assertEquals("\"hello\"",parameterWithQuotes);
@@ -144,7 +145,7 @@ public class SignatureTest {
 		String signature1 = ((CtInvocation)sta1).getExecutable().getSignature();
 		String signature2 = ((CtInvocation)sta2).getExecutable().getSignature();
 		assertEquals(signature1,  signature2);
-		assertFalse(sta1.equals(sta2));
+		assertNotEquals(sta1, sta2);
 
 
 		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
@@ -155,7 +156,7 @@ public class SignatureTest {
 		String signature1b = ((CtInvocation)sta1).getExecutable().getSignature();
 		String signature2b = ((CtInvocation)sta2).getExecutable().getSignature();
 		assertEquals(signature1b,  signature2b);
-		assertFalse(stb1.equals(stb2));
+		assertNotEquals(stb1, stb2);
 
 
 		CtStatement stc1 = (factory).Code().createCodeSnippetStatement("String.format(\"format1\",\"f2\" )")
@@ -165,7 +166,7 @@ public class SignatureTest {
 		String signaturestc1 = ((CtInvocation)sta1).getExecutable().getSignature();
 		String signaturestc2 = ((CtInvocation)sta2).getExecutable().getSignature();
 		assertEquals(signaturestc1,  signaturestc2);
-		assertFalse(stc1.equals(stc2));
+		assertNotEquals(stc1, stc2);
 	}
 
 	@Test
@@ -279,7 +280,7 @@ public class SignatureTest {
 
 		CtExpression<?> left = invoToInt1.getAssigned();
 		assertEquals("this.mfield",left.toString());
-		assertEquals(null,left.getType());// null because noclasspath
+		assertNull(left.getType());// null because noclasspath
 		assertEquals("this.mfield = p",invoToInt1.toString());
 
 

@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.Assert.assertThat;
@@ -127,7 +128,7 @@ public class FieldAccessTest {
 
 		// testing the proxy method setAssignment/getAssignment on local variables
 		var.setAssignment(null);
-		assertEquals(null, var.getAssignment());
+		assertNull(var.getAssignment());
 		assertEquals("int a", var.toString());
 
 		// testing the proxy method setAssignment/getAssignment on fields
@@ -135,7 +136,7 @@ public class FieldAccessTest {
 				new TypeFilter<CtField<?>>(CtField.class)).get(0);
 		assertNotNull(field.getAssignment());
 		field.setAssignment(null);
-		assertEquals(null, field.getAssignment());
+		assertNull(field.getAssignment());
 		assertEquals("java.lang.Object[] data;", field.toString());
 
 	}

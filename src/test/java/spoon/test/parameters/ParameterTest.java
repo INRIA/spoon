@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ParameterTest {
 
@@ -104,7 +105,7 @@ public class ParameterTest {
 		for (final CtParameter param : parameters) {
 			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
 			// unknown parameters have no type
-			assertEquals(null, refType);
+			assertNull(refType);
 		}
 	}
 }

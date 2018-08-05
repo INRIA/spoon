@@ -1134,8 +1134,8 @@ public class FilterTest {
 			context.failIfTerminated("CtFunction#apply of map after CtConsumableFunction");
 			return e;
 		}).first(CtMethod.class);
-		
-		assertTrue(firstMethod!=null);
+
+		assertNotNull(firstMethod);
 		assertTrue(context.wasTerminated);
 	}
 	@Test

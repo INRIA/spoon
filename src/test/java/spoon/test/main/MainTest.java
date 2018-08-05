@@ -59,6 +59,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -344,7 +345,7 @@ public class MainTest {
 				} else {
 					// contract: all elements have been cloned and are still equal
 					assertEquals(element, other);
-					assertFalse(element == other);
+					assertNotSame(element, other);
 				}
 				super.biScan(element, other);
 			}

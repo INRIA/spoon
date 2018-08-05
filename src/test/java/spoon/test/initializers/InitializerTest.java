@@ -11,6 +11,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -46,7 +47,7 @@ public class InitializerTest {
 		assertTrue(l.getDefaultExpression() instanceof CtConstructorCall);
 
 		CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x")).get(0);
-		assertTrue(x.getDefaultExpression() == null);
+		assertNull(x.getDefaultExpression());
 
 		CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y")).get(0);
 		assertTrue(y.getDefaultExpression() instanceof CtLiteral);
