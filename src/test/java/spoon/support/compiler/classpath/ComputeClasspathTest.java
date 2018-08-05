@@ -10,7 +10,6 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 public class ComputeClasspathTest {
 

@@ -11,7 +11,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
