@@ -1281,7 +1281,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement... replace) {
 		this.original = original;
-		this.replace = (replace == null) ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : replace;
+		this.replace = (replace == null) ? EMPTY : replace;
 	}
 
 	private <K, V extends spoon.reflect.declaration.CtElement> void replaceInMapIfExist(java.util.Map<K, V> mapProtected, spoon.support.visitor.replace.ReplaceMapListener listener) {
