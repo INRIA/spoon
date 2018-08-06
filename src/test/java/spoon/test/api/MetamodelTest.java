@@ -43,7 +43,6 @@ import spoon.support.visitor.ClassTypingContext;
 import spoon.template.Parameter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
