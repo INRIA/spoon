@@ -45,8 +45,10 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		if (length == 0) {
 			return -1;
 		}
-		int g = 0, d = length - 1;
-		int m = 0, start;
+		int g = 0;
+		int d = length - 1;
+		int m = 0;
+		int start;
 		while (g <= d) {
 			m = (g + d) / 2;
 			if (position < (start = lineSeparatorPositions[m])) {

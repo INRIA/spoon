@@ -405,7 +405,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		String refQualifiedName = "";
 		CtTypeReference refDeclaringType = null;
 
-		boolean isTypeRef = false, isExecRef = false, isFieldRef = false;
+		boolean isTypeRef = false;
+		boolean isExecRef = false;
+		boolean isFieldRef = false;
 
 		if (ref instanceof CtTypeReference) {
 			refQualifiedName = ((CtTypeReference) ref).getQualifiedName();
