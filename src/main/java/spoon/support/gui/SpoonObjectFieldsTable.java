@@ -103,7 +103,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 		}
 	}
 
-	public static final String[] columnsName = new String[] {
+	public static final String[] columnsName = {
 			"Name", "FieldType", "currentType", "Value"
 	};
 

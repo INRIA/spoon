@@ -95,7 +95,7 @@ public class TypeReferenceTest {
 
 		// Spoon requires the binary version of ReferencedClass
 		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test/ReferenceTest.jar");
-		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
+		String[] dependencyClasspath = { classpath.get(0).getPath() };
 
 		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
 		assertEquals(1, classpath.size());
@@ -149,7 +149,7 @@ public class TypeReferenceTest {
 
 		// Spoon requires the binary version of dependencies
 		List<SpoonResource> classpath = SpoonResourceHelper.resources("./src/test/resources/reference-test-2/ReferenceTest2.jar");
-		String[] dependencyClasspath = new String[] { classpath.get(0).getPath() };
+		String[] dependencyClasspath = { classpath.get(0).getPath() };
 
 		factory.getEnvironment().setSourceClasspath(dependencyClasspath);
 		assertEquals(1, classpath.size());

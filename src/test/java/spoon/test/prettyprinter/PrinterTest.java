@@ -208,7 +208,7 @@ public class PrinterTest {
 			"instanceof"
 	));
 
-	private final String[] javaKeywordsJoined = new String[] {
+	private final String[] javaKeywordsJoined = {
 			"abstract continue for new switch",
 			"assert default goto package synchronized",
 			"boolean do if private this",
@@ -218,7 +218,8 @@ public class PrinterTest {
 			"catch extends int short try",
 			"char final interface static void",
 			"class finally long strictfp volatile",
-			"const float native super while"};
+			"const float native super while"
+	};
 
 	private final Set<String> javaKeywords = new HashSet<>();
 	{
@@ -452,7 +453,7 @@ public class PrinterTest {
 
 		ElementPrinterHelper elementPrinterHelper = pp.getElementPrinterHelper();
 
-		String[] listString = new String[] {"un", "deux", "trois"};
+		String[] listString = {"un", "deux", "trois"};
 
 		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
 
