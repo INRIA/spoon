@@ -1,6 +1,7 @@
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -243,8 +244,8 @@ public class PrinterTest {
 //this case needs longer, but checks contract on all spoon java sources
 //				.resources("./src/main/java/"))
 				.build();
-		
-		assertTrue(factory.Type().getAll().size() > 0);
+
+		assertFalse(factory.Type().getAll().isEmpty());
 		for (CtType<?> t : factory.Type().getAll()) {
 			//create DefaultJavaPrettyPrinter with standard DefaultTokenWriter
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
@@ -283,7 +284,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
-					assertTrue(literal.length() > 0);
+					assertFalse(literal.isEmpty());
 					handleTabs();
 					allTokens.append(literal);
 					return this;
@@ -361,7 +362,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeCodeSnippet(String token) {
 					checkRepeatingOfTokens("writeCodeSnippet");
-					assertTrue(token.length() > 0);
+					assertFalse(token.isEmpty());
 					handleTabs();
 					allTokens.append(token);
 					return this;
@@ -425,7 +426,7 @@ public class PrinterTest {
 
 	private void checkTokenWhitespace(String stringToken, boolean isWhitespace) {
 		//contract: there is no empty token
-		assertTrue(stringToken.length() > 0);
+		assertFalse(stringToken.isEmpty());
 		//contract: only whitespace token contains whitespace
 		for (int i = 0; i < stringToken.length(); i++) {
 			char c = stringToken.charAt(i);
