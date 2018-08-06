@@ -233,7 +233,7 @@ public class CtScannerTest {
 			int nObject = 0;
 			int nElement = 0;
 			Deque<CollectionContext> contexts = new ArrayDeque<>();
-		};
+		}
 		Counter counter = new Counter();
 		launcher.getModel().getRootPackage().accept(new CtScanner() {
 			@Override

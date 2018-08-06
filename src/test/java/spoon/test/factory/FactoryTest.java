@@ -53,7 +53,7 @@ public class FactoryTest {
 	public void testFactoryOverriding()  throws Exception {
 
 		@SuppressWarnings("serial")
-		class MyCtMethod<T> extends CtMethodImpl<T>{};
+		class MyCtMethod<T> extends CtMethodImpl<T>{}
 
 		@SuppressWarnings("serial")
 		final CoreFactory specialCoreFactory = new DefaultCoreFactory() {

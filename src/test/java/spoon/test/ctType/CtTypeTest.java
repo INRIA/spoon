@@ -156,7 +156,7 @@ public class CtTypeTest {
 			for (CtComment comment : ass.getComments()) {
 				checkIsNotSubtype(comment, nameToTypeRef);
 				count[0]++;
-			};
+			}
 			count[0]++;
 			checkIsSubtype(((CtVariableAccess) ass.getAssigned()).getVariable().getType(), ((CtVariableAccess) ass.getAssignment()).getVariable().getType(), nameToTypeRef);
 		});
