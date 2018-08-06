@@ -18,6 +18,8 @@
 package spoon.test.field;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -114,7 +116,7 @@ public class FieldTest {
 		assertEquals(1, fieldReads.size());
 		assertEquals("i", fieldReads.get(0).toString());
 		fieldReads.get(0).getTarget().setImplicit(false);
-		assertEquals(false, fieldReads.get(0).getTarget().isImplicit());
+		assertFalse(fieldReads.get(0).getTarget().isImplicit());
 		assertEquals("this.i", fieldReads.get(0).toString());
 	}
 
@@ -157,7 +159,7 @@ public class FieldTest {
 
 		Object retour = visitorPartial.evaluate(methods.get(0));
 
-		assertTrue(retour != null);
+		assertNotNull(retour);
 	}
 
 	@Test

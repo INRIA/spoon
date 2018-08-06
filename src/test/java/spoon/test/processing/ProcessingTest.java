@@ -38,6 +38,7 @@ import java.util.Map;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -81,8 +82,8 @@ public class ProcessingTest {
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
 
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
 
 	}
 
@@ -120,8 +121,8 @@ public class ProcessingTest {
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
 
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
 
 	}
 

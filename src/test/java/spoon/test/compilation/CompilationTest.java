@@ -3,6 +3,7 @@ package spoon.test.compilation;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -68,9 +69,9 @@ public class CompilationTest {
 				"--level", "OFF"
 		});
 
-		assertEquals(true, launcher.getEnvironment().shouldCompile());
+		assertTrue(launcher.getEnvironment().shouldCompile());
 
-		assertEquals(true, new File(compiledFile).exists());
+		assertTrue(new File(compiledFile).exists());
 	}
 
 	@Test
@@ -352,7 +353,7 @@ public class CompilationTest {
 		Class<?> foo = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.Foo");
 
 		assertTrue(ifoo.isAssignableFrom(foo));
-		assertTrue(ifoo.getClassLoader()==foo.getClassLoader());
+		assertSame(ifoo.getClassLoader(), foo.getClassLoader());
 	}
 	
 

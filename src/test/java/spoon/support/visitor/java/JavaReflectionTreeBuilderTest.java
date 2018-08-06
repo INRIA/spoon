@@ -563,7 +563,7 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeParameter typeParameter = shadowType.getFormalCtTypeParameters().get(0);
 
 		assertEquals("T", typeParameter.getSimpleName());
-		assertTrue(typeParameter.getSuperclass() == null);
+		assertNull(typeParameter.getSuperclass());
 	}
 
 	@Test

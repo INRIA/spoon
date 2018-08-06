@@ -17,6 +17,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TypeFactoryTest {
 
@@ -32,7 +33,7 @@ public class TypeFactoryTest {
 		assertEquals("java.lang.Object", ctTypeReference.getQualifiedName());
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
-		assertEquals(null, ctTypeReference);
+		assertNull(ctTypeReference);
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(CtJavaDoc.CommentType.class);
 		assertEquals("CommentType", ctTypeReference.getSimpleName());

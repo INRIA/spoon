@@ -551,7 +551,7 @@ public class MetamodelTest {
 		assertListContracts(packages, typeRef, 1, null);
 
 		//contract: set of new value replaces existing value
-		assertEquals(null, packages.set(0, factory.Package().createReference("some.test.package")));
+		assertNull(packages.set(0, factory.Package().createReference("some.test.package")));
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 
 		//contract: set of null value keeps size==1 even if value is replaced by null

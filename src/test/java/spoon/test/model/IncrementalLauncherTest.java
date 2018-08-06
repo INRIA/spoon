@@ -1,6 +1,8 @@
 package spoon.test.model;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -63,8 +65,8 @@ public class IncrementalLauncherTest {
 		assertTrue(originalModel.getAllTypes().equals(cachedCachedModel.getAllTypes()));
 
 		for (CtType<?> t : cachedCachedModel.getAllTypes()) {
-			assertTrue(t.getPosition() != null);
-			assertTrue(t.getPosition().getFile() != null);
+			assertNotNull(t.getPosition());
+			assertNotNull(t.getPosition().getFile());
 			assertTrue(t.getPosition().getLine() != -1);
 		}
 	}
@@ -95,7 +97,7 @@ public class IncrementalLauncherTest {
 		Collection<CtType<?>> types1 = originalModel.getAllTypes();
 		Collection<CtType<?>> types2 = newModel.getAllTypes();
 
-		assertFalse(types1.equals(types2));
+		assertNotEquals(types1, types2);
 
 		CtType<?> a1 = getTypeByName(types1, "A");
 		CtType<?> b1 = getTypeByName(types1, "B");
@@ -108,7 +110,7 @@ public class IncrementalLauncherTest {
 		assertTrue(a1.equals(a2));
 		assertTrue(b1.equals(b2));
 		assertTrue(c1.equals(c2));
-		assertFalse(d1.equals(d2));
+		assertNotEquals(d1, d2);
 
 		assertTrue(d1.getDeclaredFields().isEmpty());
 		assertTrue(d2.getDeclaredFields().size() == 2);
@@ -154,7 +156,7 @@ public class IncrementalLauncherTest {
 		CtType<?> d2 = getTypeByName(types2, "D");
 		assertTrue(a1.equals(a2));
 		assertTrue(b1.equals(b2));
-		assertFalse(c1.equals(d2));
+		assertNotEquals(c1, d2);
 	}
 
 	@Test

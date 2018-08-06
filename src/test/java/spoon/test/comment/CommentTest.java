@@ -768,7 +768,7 @@ public class CommentTest {
 		codeElementsDocumentationPage.append("\n\n");
 		launcher.getModel().getElements(new TypeFilter<>(CtInterface.class)).stream().forEach(x -> {
 
-			assertTrue(x.getSimpleName()+ " has no documentation", x.getDocComment() != null);
+			assertNotNull(x.getSimpleName() + " has no documentation", x.getDocComment());
 			assertTrue(x.getSimpleName()+ " has no documentation", !x.getDocComment().isEmpty());
 
 			// we only consider instantiable interfaces

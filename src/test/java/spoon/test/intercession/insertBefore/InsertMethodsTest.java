@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -266,7 +267,7 @@ public class InsertMethodsTest {
 
 		// We make sure the parent of the while is updated
 		CtElement newParent = theWhile.getParent();
-		assertTrue(newParent != ifParent);
+		assertNotSame(newParent, ifParent);
 		assertTrue(newParent instanceof CtBlock);
 		assertFalse(newParent.isImplicit());
 	}
