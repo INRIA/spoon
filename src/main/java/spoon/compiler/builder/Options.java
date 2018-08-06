@@ -29,7 +29,7 @@ public abstract class Options<T extends Options<T>> {
 	}
 
 	public String[] build() {
-		return args.toArray(new String[args.size()]);
+		return args.toArray(new String[0]);
 	}
 
 	protected String join(String delimiter, String[] classpath) {

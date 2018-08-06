@@ -104,6 +104,6 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 				unitsToReturn.add(cud);
 			}
 		}
-		return unitsToReturn.toArray(new CompilationUnitDeclaration[unitsToReturn.size()]);
+		return unitsToReturn.toArray(new CompilationUnitDeclaration[0]);
 	}
 }

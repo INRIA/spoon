@@ -241,7 +241,7 @@ public class IncrementalLauncher extends Launcher {
 			setBinaryOutputDirectory(mClassFilesDir);
 		}
 
-		getEnvironment().setSourceClasspath(mSourceClasspath.toArray(new String[mSourceClasspath.size()]));
+		getEnvironment().setSourceClasspath(mSourceClasspath.toArray(new String[0]));
 	}
 
 	/**
