@@ -39,7 +39,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.reflect.visitor.filter.VariableScopeFunction;
 import spoon.test.query_function.testclasses.VariableReferencesFromStaticMethod;
-import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class VariableReferencesTest {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.addInputResource("./src/test/java/spoon/test/query_function/testclasses/VariableReferencesModelTest.java");
+		launcher.addInputResource("./src/test/java/spoon/test/query_function/VariableReferencesModelTest.java");
 		launcher.run();
 		Factory factory = launcher.getFactory();
 		modelClass = factory.Class().get(VariableReferencesModelTest.class);
