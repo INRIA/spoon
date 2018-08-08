@@ -47,7 +47,6 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -66,7 +65,6 @@ public class CtGenerationTest {
 		}
 
 		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
-		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
@@ -117,7 +115,6 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -166,7 +163,6 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// Spoon model interfaces
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
