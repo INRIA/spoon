@@ -113,7 +113,7 @@ import spoon.reflect.reference.CtVariableReference;
 /**
  * Contains implementations of {@link RoleHandler}s for all {@link CtRole}s of all model elements
  */
-final class ModelRoleHandlers {
+class ModelRoleHandlers {
 	static class CtTypeAccess_ACCESSED_TYPE_RoleHandler extends SingleHandler<CtTypeAccess, CtTypeReference<?>> {
 		private CtTypeAccess_ACCESSED_TYPE_RoleHandler() {
 			super(CtRole.ACCESSED_TYPE, CtTypeAccess.class, CtTypeReference.class);
