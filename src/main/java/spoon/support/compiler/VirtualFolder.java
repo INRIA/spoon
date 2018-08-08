@@ -45,7 +45,7 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getAllFiles() {
-		List<SpoonFile> result = new ArrayList<>();
+		Set<SpoonFile> result = new HashSet<>();
 
 		for (SpoonFile f : getFiles()) {
 			// we take care not to add a file that was already found in a folder
@@ -53,7 +53,9 @@ public class VirtualFolder implements SpoonFolder {
 				result.add(f);
 			}
 		}
-		return result;
+
+		List<SpoonFile> resultAsList = new ArrayList<>(result);
+		return resultAsList;
 	}
 
 	@Override
