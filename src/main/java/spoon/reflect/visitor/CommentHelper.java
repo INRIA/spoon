@@ -34,7 +34,7 @@ import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.COMMENT_STAR;
 /**
  * Computes source code representation of the Comment literal
  */
-class CommentHelper {
+final class CommentHelper {
 
 	/**
 	 * RegExp which matches all possible line separators

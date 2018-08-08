@@ -22,9 +22,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class ByteSerialization {
+public final class ByteSerialization {
 
-	private ByteSerialization() { }
+	private ByteSerialization() {
+	}
 
 	public static byte[] serialize(Object obj) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
