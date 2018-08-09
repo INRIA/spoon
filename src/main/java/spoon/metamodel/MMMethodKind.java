@@ -65,7 +65,7 @@ public enum MMMethodKind {
 	 * void addOn(int, T)
 	 */
 	ADD_ON(1, true, 1, m -> {
-		if (m.getParameters().size() == 2 && m.getParameters().get(0).getType().getSimpleName().equals("int")) {
+		if (m.getParameters().size() == 2 && "int".equals(m.getParameters().get(0).getType().getSimpleName())) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
 				return true;
 			}

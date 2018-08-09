@@ -361,7 +361,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 								if (declaringType != null) {
 									if (declaringType.getPackage() != null && !declaringType.getPackage().isUnnamedPackage()) {
 										// ignore java.lang package
-										if (!declaringType.getPackage().getSimpleName().equals("java.lang")) {
+										if (!"java.lang".equals(declaringType.getPackage().getSimpleName())) {
 											// ignore type in same package
 											if (declaringType.getPackage().getSimpleName()
 													.equals(pack.getSimpleName())) {
@@ -380,7 +380,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			CtPackageReference pack = targetType.getPackage();
 			if (pack != null && ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
-				if (ref.getPackage().getSimpleName().equals("java.lang")) {
+				if ("java.lang".equals(ref.getPackage().getSimpleName())) {
 					return false;
 				} else {
 					// ignore type in same package
@@ -493,7 +493,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			// then it is imported by default
 			if (pack != null &&  ref.getPackage() != null && !ref.getPackage().isUnnamedPackage()) {
 				// ignore java.lang package
-				if (!ref.getPackage().getSimpleName().equals("java.lang")) {
+				if (!"java.lang".equals(ref.getPackage().getSimpleName())) {
 					// ignore type in same package
 					if (ref.getPackage().getSimpleName()
 							.equals(pack.getSimpleName())) {
