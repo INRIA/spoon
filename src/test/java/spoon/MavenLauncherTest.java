@@ -2,30 +2,56 @@ package spoon;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
+
 
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class MavenLauncherTest {
+
+
+
+	@Test
+	public void testTypeResolution() {
+		MavenLauncher launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		launcher.buildModel();
+		launcher.getModel().getRootPackage().accept(new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element instanceof CtTypeReference) {
+					CtTypeReference ref = (CtTypeReference) element;
+					if(ref.getSimpleName().contains(".")) {//Excludes nulltype, generics, ? extends E, etc
+						//contract: For a maven project with a correct classpath, all type references should point to a resolvable type
+						assertNotNull("Reference to " + ref.getSimpleName() + " point to unresolved type", ref.getTypeDeclaration());
+					}
+				}
+				super.scan(element);
+			}
+		});
+	}
 
 	@Test
 	public void spoonMavenLauncherTest() {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(23, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(190, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 56 because of the sub folders of src/main/java
-		assertEquals(58, launcher.getModelBuilder().getInputSources().size());
+		assertEquals(59, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 
-		assertEquals(30, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(195, launcher.getEnvironment().getSourceClasspath().length);
 
 		// 236 because of the sub folders of src/main/java and src/test/java
 		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
