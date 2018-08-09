@@ -180,7 +180,7 @@ public class MavenLauncher extends Launcher {
 				line = br.readLine();
 			}
 			if (!sb.toString().equals("")) {
-				String[] classpath = sb.toString().split(":");
+				String[] classpath = sb.toString().split(File.pathSeparator);
 				for (String cpe : classpath) {
 					if (!classpathElements.contains(cpe)) {
 						classpathElements.add(cpe);
