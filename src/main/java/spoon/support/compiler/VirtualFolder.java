@@ -45,17 +45,9 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getAllFiles() {
-		Set<SpoonFile> result = new HashSet<>();
-
-		for (SpoonFile f : getFiles()) {
-			// we take care not to add a file that was already found in a folder
-			if (!result.contains(f)) {
-				result.add(f);
-			}
-		}
-
-		List<SpoonFile> resultAsList = new ArrayList<>(result);
-		return resultAsList;
+		// there are never folders added to files in this class so just return a List here.
+		// The files are already deduplicated based on Set logic.
+		return new ArrayList<>(files);
 	}
 
 	@Override
