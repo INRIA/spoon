@@ -64,7 +64,6 @@ public class InheritanceModel {
 		this.sourceType = sourceType;
 		this.environment = environment;
 		init(model, parent, directory);
-
 	}
 
 	private void init(Model model, InheritanceModel parent, File directory) {
