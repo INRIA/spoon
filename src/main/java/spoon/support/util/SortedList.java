@@ -28,7 +28,6 @@ public class SortedList<E> extends LinkedList<E> {
 	Comparator<? super E> comparator;
 
 	public SortedList(Comparator<? super E> comparator) {
-		super();
 		this.comparator = comparator;
 	}
 

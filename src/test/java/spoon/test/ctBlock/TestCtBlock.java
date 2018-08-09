@@ -15,6 +15,7 @@ import spoon.test.ctBlock.testclasses.Toto;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -43,7 +44,7 @@ public class TestCtBlock {
 
         CtStatement newLastStatement = block.getLastStatement();
 
-        assertTrue(newLastStatement != lastStatement);
+        assertNotSame(newLastStatement, lastStatement);
         assertTrue(newLastStatement instanceof CtIf);
     }
 

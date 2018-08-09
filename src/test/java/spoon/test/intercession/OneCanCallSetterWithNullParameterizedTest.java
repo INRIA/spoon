@@ -23,7 +23,7 @@ import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatib
 public class OneCanCallSetterWithNullParameterizedTest {
 
 	@Parameterized.Parameters(name = "{1}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -66,5 +66,4 @@ public class OneCanCallSetterWithNullParameterizedTest {
 		// we invoke the setter
 		toTest.invoke(element, new Object[] { null });
 	}
-
 }

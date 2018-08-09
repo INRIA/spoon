@@ -122,7 +122,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			throw new SpoonException("Model already built");
 		}
 
-		boolean srcSuccess, templateSuccess;
+		boolean srcSuccess;
+		boolean templateSuccess;
 		factory.getEnvironment().debugMessage("building sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
@@ -441,9 +442,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
 
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-
-		return units;
+		return batchCompiler.getUnits();
 	}
 
 	protected List<CompilationUnitDeclaration> sortCompilationUnits(CompilationUnitDeclaration[] units) {

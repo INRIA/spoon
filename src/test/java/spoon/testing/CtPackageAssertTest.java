@@ -24,7 +24,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 public class CtPackageAssertTest {
 
 	@Test
-	public void testEqualityBetweenTwoCtPackage() throws Exception {
+	public void testEqualityBetweenTwoCtPackage() {
 		//contract: two packages, one made by test code, second made by compilation from sources are equal
 		final Factory factory = createFactory();
 		final CtPackage aRootPackage = factory.Package().getOrCreate("");
@@ -40,12 +40,12 @@ public class CtPackageAssertTest {
 	}
 
 	@Test(expected = AssertionError.class)
-	public void testEqualityBetweenTwoDifferentCtPackage() throws Exception {
+	public void testEqualityBetweenTwoDifferentCtPackage() {
 		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.pakage"));
 	}
 
 	@Test(expected = AssertionError.class)
-	public void testEqualityBetweenTwoCtPackageWithDifferentTypes() throws Exception {
+	public void testEqualityBetweenTwoCtPackageWithDifferentTypes() {
 		final Factory factory = createFactory();
 		final CtPackage aRootPackage = factory.Package().getOrCreate("");
 		factory.Class().create("spoon.testing.testclasses.Foo").addModifier(ModifierKind.PUBLIC);
@@ -53,7 +53,7 @@ public class CtPackageAssertTest {
 	}
 
 	@Test
-	public void testAddTypeToPackage() throws Exception {
+	public void testAddTypeToPackage() {
 		final Factory factory = createFactory();
 		final CtType<?> type = factory.Core().createClass();
 		type.setSimpleName("X");

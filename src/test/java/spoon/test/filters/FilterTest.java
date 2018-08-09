@@ -63,6 +63,7 @@ import spoon.test.filters.testclasses.AbstractTostada;
 import spoon.test.filters.testclasses.Antojito;
 import spoon.test.filters.testclasses.FieldAccessFilterTacos;
 import spoon.test.filters.testclasses.Foo;
+import spoon.test.filters.testclasses.FooLine;
 import spoon.test.filters.testclasses.ITostada;
 import spoon.test.filters.testclasses.SubTostada;
 import spoon.test.filters.testclasses.Tacos;
@@ -91,15 +92,15 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testFilters() throws Exception {
+	public void testFilters() {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
-		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<CtExpression<?>>(".* = .*"));
+		List<CtExpression<?>> expressions = foo.getElements(new RegexFilter<>(".* = .*"));
 		assertEquals(2, expressions.size());
 	}
 
 	@Test
-	public void testReturnOrThrowFilter() throws Exception {
+	public void testReturnOrThrowFilter() {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtCFlowBreak> expressions = foo.getElements(new ReturnOrThrowFilter());
@@ -170,7 +171,7 @@ public class FilterTest {
 		final CtType<FieldAccessFilterTacos> fieldAccessFilterTacos = build.Type().get(FieldAccessFilterTacos.class);
 
 		try {
-			List<CtField> fields = fieldAccessFilterTacos.getElements(new TypeFilter<CtField>(CtField.class));
+			List<CtField> fields = fieldAccessFilterTacos.getElements(new TypeFilter<>(CtField.class));
 			for (CtField ctField : fields) {
 				fieldAccessFilterTacos.getElements(new FieldAccessFilter(ctField.getReference()));
 			}
@@ -181,7 +182,7 @@ public class FilterTest {
 
 
 	@Test
-	public void testAnnotationFilter() throws Exception {
+	public void testAnnotationFilter() {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtElement> expressions = foo.getElements(new AnnotationFilter<>(SuppressWarnings.class));
@@ -195,7 +196,7 @@ public class FilterTest {
 	public void filteredElementsAreOfTheCorrectType() throws Exception {
 		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
 		Class<CtMethod> filterClass = CtMethod.class;
-		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(filterClass);
+		TypeFilter<CtMethod> statementFilter = new TypeFilter<>(filterClass);
 		List<CtMethod> elements = Query.getElements(factory, statementFilter);
 		for (CtMethod element : elements) {
 			assertTrue(filterClass.isInstance(element));
@@ -206,8 +207,8 @@ public class FilterTest {
 	@Test
 	public void intersectionOfTwoFilters() throws Exception {
 		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
-		TypeFilter<CtMethod> statementFilter = new TypeFilter<CtMethod>(CtMethod.class);
-		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<CtMethodImpl>(CtMethodImpl.class);
+		TypeFilter<CtMethod> statementFilter = new TypeFilter<>(CtMethod.class);
+		TypeFilter<CtMethodImpl> statementImplFilter = new TypeFilter<>(CtMethodImpl.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.INTERSECTION, statementFilter, statementImplFilter);
 
 		List<CtMethod> methodsWithInterfaceSuperclass = Query.getElements(factory, statementFilter);
@@ -226,15 +227,15 @@ public class FilterTest {
 	@Test
 	public void unionOfTwoFilters() throws Exception {
 		Factory factory = build("spoon.test.testclasses", "SampleClass").getFactory();
-		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<CtNewClass>(CtNewClass.class);
-		TypeFilter<CtMethod> methodFilter = new TypeFilter<CtMethod>(CtMethod.class);
+		TypeFilter<CtNewClass> newClassFilter = new TypeFilter<>(CtNewClass.class);
+		TypeFilter<CtMethod> methodFilter = new TypeFilter<>(CtMethod.class);
 		CompositeFilter compositeFilter = new CompositeFilter(FilteringOperator.UNION, methodFilter, newClassFilter);
 
 		List filteredWithCompositeFilter = Query.getElements(factory, compositeFilter);
 		List<CtMethod> methods = Query.getElements(factory, methodFilter);
 		List<CtNewClass> newClasses = Query.getElements(factory, newClassFilter);
 
-		List<CtElement> union = new ArrayList<CtElement>();
+		List<CtElement> union = new ArrayList<>();
 		union.addAll(methods);
 		union.addAll(newClasses);
 
@@ -255,7 +256,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverridingMethodFromAbstractClass() throws Exception {
+	public void testOverridingMethodFromAbstractClass() {
 		// contract: When we declare an abstract method on an abstract class, we must return all overriding
 		// methods in sub classes and anonymous classes.
 		final Launcher launcher = new Launcher();
@@ -264,7 +265,7 @@ public class FilterTest {
 		launcher.run();
 
 		final CtClass<AbstractTostada> aClass = launcher.getFactory().Class().get(AbstractTostada.class);
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aClass.getMethodsByName("prepare").get(0)));
 		ts.addAll(elements);
 		assertEquals(5, elements.size());
@@ -277,7 +278,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverridingMethodFromSubClassOfAbstractClass() throws Exception {
+	public void testOverridingMethodFromSubClassOfAbstractClass() {
 		// contract: When we ask all overriding methods from an overriding method, we must returns all methods
 		// below and not above (including the declaration).
 		final Launcher launcher = new Launcher();
@@ -287,7 +288,7 @@ public class FilterTest {
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
 
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aTostada.getMethodsByName("prepare").get(0)));
 		ts.addAll(elements);
 
@@ -303,7 +304,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverridingMethodFromInterface() throws Exception {
+	public void testOverridingMethodFromInterface() {
 		// contract: When we declare a method in an interface, we must return all overriding
 		// methods in sub classes and anonymous classes.
 		final Launcher launcher = new Launcher();
@@ -313,7 +314,7 @@ public class FilterTest {
 
 		final CtInterface<ITostada> aITostada = launcher.getFactory().Interface().get(ITostada.class);
 
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		List<CtMethod<?>> elements = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aITostada.getMethodsByName("make").get(0)));
 		ts.addAll(elements);
 		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
@@ -325,7 +326,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverridingMethodFromSubClassOfInterface() throws Exception {
+	public void testOverridingMethodFromSubClassOfInterface() {
 		// contract: When we ask all overriding methods from an overriding method, we must returns all methods
 		// below and not above (including the declaration).
 		final Launcher launcher = new Launcher();
@@ -347,7 +348,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverriddenMethodFromAbstractClass() throws Exception {
+	public void testOverriddenMethodFromAbstractClass() {
 		// contract: When we declare an abstract method on an abstract class, we must return an empty list
 		// when we ask all overriden methods from this declaration.
 		final Launcher launcher = new Launcher();
@@ -362,7 +363,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverriddenMethodsFromSubClassOfAbstractClass() throws Exception {
+	public void testOverriddenMethodsFromSubClassOfAbstractClass() {
 		// contract: When we ask all overridden methods from an overriding method, we must returns all methods
 		// above and not below.
 		final Launcher launcher = new Launcher();
@@ -384,7 +385,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testgetTopDefinitions() throws Exception {
+	public void testgetTopDefinitions() {
 		// contract: getTopDefinitions returns the correct number of definitions
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -429,7 +430,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverriddenMethodFromInterface() throws Exception {
+	public void testOverriddenMethodFromInterface() {
 		// contract: When we declare a method in an interface, we must return an empty list
 		// when we ask all overridden methods from this declaration.
 		final Launcher launcher = new Launcher();
@@ -447,7 +448,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testOverriddenMethodFromSubClassOfInterface() throws Exception {
+	public void testOverriddenMethodFromSubClassOfInterface() {
 		// contract: When we ask all overridden methods from an overriding method, we must returns all methods
 		// above and not below.
 		final Launcher launcher = new Launcher();
@@ -470,7 +471,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testInvocationFilterWithExecutableInLibrary() throws Exception {
+	public void testInvocationFilterWithExecutableInLibrary() {
 		// contract: When we have an invocation of an executable declared in a library,
 		// we can filter it and get the executable of the invocation.
 		final Launcher launcher = new Launcher();
@@ -508,15 +509,15 @@ public class FilterTest {
 	}
 	
 	@Test
-	public void testReflectionBasedTypeFilter() throws Exception {
+	public void testReflectionBasedTypeFilter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 
 		//First collect all classes using tested TypeFilter
-		List<CtClass<?>> allClasses = launcher.getFactory().Package().getRootPackage().getElements(new TypeFilter<CtClass<?>>(CtClass.class));
-		assertTrue(allClasses.size()>0);
+		List<CtClass<?>> allClasses = launcher.getFactory().Package().getRootPackage().getElements(new TypeFilter<>(CtClass.class));
+		assertFalse(allClasses.isEmpty());
 		allClasses.forEach(result->{
 			assertTrue(result instanceof CtClass);
 		});
@@ -547,7 +548,7 @@ public class FilterTest {
 		assertNotNull(invSize);
 	}
 	@Test
-	public void testQueryStepScannWithConsumer() throws Exception {
+	public void testQueryStepScannWithConsumer() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -569,7 +570,7 @@ public class FilterTest {
 	}
 	
 	@Test
-	public void testQueryBuilderWithFilterChain() throws Exception {
+	public void testQueryBuilderWithFilterChain() {
 		// contract: query methods can be lazy evaluated in a foreach
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -601,7 +602,7 @@ public class FilterTest {
 	}
 	
 	@Test
-	public void testFilterQueryStep() throws Exception {
+	public void testFilterQueryStep() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -611,11 +612,11 @@ public class FilterTest {
 		List<CtElement> realList = launcher.getFactory().Package().getRootPackage().filterChildren(e->{return true;}).select(new TypeFilter<>(CtClass.class)).list();
 		List<CtElement> expectedList = launcher.getFactory().Package().getRootPackage().filterChildren(new TypeFilter<>(CtClass.class)).list();
 		assertArrayEquals(expectedList.toArray(), realList.toArray());
-		assertTrue(expectedList.size()>0);
+		assertFalse(expectedList.isEmpty());
 	}
 
 	@Test
-	public void testFilterChildrenWithoutFilterQueryStep() throws Exception {
+	public void testFilterChildrenWithoutFilterQueryStep() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -631,12 +632,12 @@ public class FilterTest {
 				assertEquals(expected, real);
 			}
 		});
-		assertTrue(list.size()>0);
+		assertFalse(list.isEmpty());
 		assertTrue(iter.hasNext()==false);
 	}
 
 	@Test
-	public void testFunctionQueryStep() throws Exception {
+	public void testFunctionQueryStep() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -663,7 +664,7 @@ public class FilterTest {
 		assertTrue(context.count>0);
 	}
 	@Test
-	public void testInvalidQueryStep() throws Exception {
+	public void testInvalidQueryStep() {
 		// contract: with default policy an exception is thrown is the input type of a query step
 		// does not correspond to the output type of the previous step
 		final Launcher launcher = new Launcher();
@@ -683,7 +684,7 @@ public class FilterTest {
 		}
 	}
 	@Test
-	public void testInvalidQueryStepFailurePolicyIgnore() throws Exception {
+	public void testInvalidQueryStepFailurePolicyIgnore() {
 		// contract: with QueryFailurePolicy.IGNORE, no exception is thrown
 		// and only valid elements are kept for the next step
 
@@ -708,7 +709,7 @@ public class FilterTest {
 		assertTrue(context.count>0);
 	}
 	@Test
-	public void testElementMapFunction() throws Exception {
+	public void testElementMapFunction() {
 		// contract: a map(Function) can be followed by a forEach(...) or by a list()
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -723,7 +724,7 @@ public class FilterTest {
 		assertEquals(cls.getParent(), cls.map((CtClass<?> c)->c.getParent()).list().get(0));
 	}
 	@Test
-	public void testElementMapFunctionOtherContracts() throws Exception {
+	public void testElementMapFunctionOtherContracts() {
 		// contract: when a function returns an array, all non-null values are sent to the next step
 		final Launcher launcher = new Launcher();
 		CtQuery q = launcher.getFactory().Query().createQuery().map((String s)->new String[]{"a", null, s});
@@ -746,7 +747,7 @@ public class FilterTest {
 		assertEquals(0, q2.setInput(null).list().size());
 	}
 	@Test
-	public void testElementMapFunctionNull() throws Exception {
+	public void testElementMapFunctionNull() {
 		// contract: when a function returns null, it is discarded at the next step
 		final Launcher launcher = new Launcher();
 		CtQuery q = launcher.getFactory().Query().createQuery().map((String s)->null);
@@ -754,7 +755,7 @@ public class FilterTest {
 		assertEquals(0, list.size());
 	}
 	@Test
-	public void testReuseOfQuery() throws Exception {
+	public void testReuseOfQuery() {
 		// contract: a query created from an existing element can be reused on other inputs
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -782,7 +783,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testReuseOfBaseQuery() throws Exception {
+	public void testReuseOfBaseQuery() {
 		// contract: an empty  query can be used on several inputs
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
@@ -801,7 +802,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testQueryWithOptionalNumberOfInputs() throws Exception {
+	public void testQueryWithOptionalNumberOfInputs() {
 		// contract: QueryFactory allows to create query with an optional number of inputs
 		// the input can be provided as Array or Iterable
 		final Launcher launcher = new Launcher();
@@ -833,7 +834,7 @@ public class FilterTest {
 	// now testing map(CtConsumableFunction)
 
 	@Test
-	public void testElementMapConsumableFunction() throws Exception {
+	public void testElementMapConsumableFunction() {
 		// contract: a method map(CtConsumableFunction) is provided
 		// a simple consumer.accept() is equivalent to a single return in a CtFunction
 
@@ -858,7 +859,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testQueryInQuery() throws Exception {
+	public void testQueryInQuery() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
@@ -884,7 +885,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(7, context.count);
+		assertEquals(8, context.count);
 		context.count=0; //reset
 
 		// again second query, but now with CtConsumableFunction
@@ -896,7 +897,7 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(7, context.count);
+		assertEquals(8, context.count);
 		context.count=0; //reset
 
 		// again second query, but with low-level circuitry thanks to cast
@@ -908,11 +909,11 @@ public class FilterTest {
 			assertTrue(clazz instanceof CtClass);
 			assertTrue(((CtClass<?>)clazz).hasModifier(ModifierKind.PUBLIC));
 		});
-		assertEquals(7, context.count);
+		assertEquals(8, context.count);
 	}
 	
 	@Test
-	public void testEmptyQuery() throws Exception {
+	public void testEmptyQuery() {
 		// contract: unbound or empty query
 
 		final Launcher launcher = new Launcher();
@@ -932,7 +933,7 @@ public class FilterTest {
 	}
 	
 	@Test
-	public void testBoundQuery() throws Exception {
+	public void testBoundQuery() {
 		// contract: bound query, without any mapping
 
 		final Launcher launcher = new Launcher();
@@ -944,7 +945,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testClassCastExceptionOnForEach() throws Exception {
+	public void testClassCastExceptionOnForEach() {
 		// contract: bound query, without any mapping
 		// This test could fail with a version of JDK <= 8.0.40. 
 
@@ -1092,7 +1093,7 @@ public class FilterTest {
 	}
 	
 	@Test
-	public void testEarlyTerminatingQuery() throws Exception {
+	public void testEarlyTerminatingQuery() {
 		// contract: a method first evaluates query until first element is found and then terminates the query
 
 		final Launcher launcher = new Launcher();
@@ -1133,12 +1134,12 @@ public class FilterTest {
 			context.failIfTerminated("CtFunction#apply of map after CtConsumableFunction");
 			return e;
 		}).first(CtMethod.class);
-		
-		assertTrue(firstMethod!=null);
+
+		assertNotNull(firstMethod);
 		assertTrue(context.wasTerminated);
 	}
 	@Test
-	public void testParentFunction() throws Exception {
+	public void testParentFunction() {
 		// contract: a mapping function which returns all parents of CtElement
 
 		final Launcher launcher = new Launcher();
@@ -1175,7 +1176,7 @@ public class FilterTest {
 		assertNull(factory.Type().createReference("p.T").map(new ParentFunction()).first());
 	}
 	@Test
-	public void testCtScannerListener() throws Exception {
+	public void testCtScannerListener() {
 		// contract: CtScannerFunction can be subclassed and configured by a CtScannerListener
 
 		final Launcher launcher = new Launcher();
@@ -1211,7 +1212,7 @@ public class FilterTest {
 
 		//check that test is visiting some nodes
 		assertTrue(context1.nrOfEnter>0);
-		assertTrue(result1.size()>0);
+		assertFalse(result1.isEmpty());
 		//contract: if enter is called and returns SKIP_CHILDREN or NORMAL, then exit must be called too. Exceptions are ignored for now
 		assertEquals(context1.nrOfEnter, context1.nrOfExit);
 
@@ -1259,7 +1260,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testSubInheritanceHierarchyResolver() throws Exception {
+	public void testSubInheritanceHierarchyResolver() {
 		// contract; SubInheritanceHierarchyResolver supports finding subtypes in an incremental manner
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });

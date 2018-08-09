@@ -47,7 +47,6 @@ public class CtGenerationTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -66,7 +65,6 @@ public class CtGenerationTest {
 		}
 
 		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
-		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
@@ -82,7 +80,7 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateCtBiScanner() throws Exception {
+	public void testGenerateCtBiScanner() {
 		// contract: generates the biscanner that is used for equality checking
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -111,13 +109,12 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateCloneVisitor() throws Exception {
+	public void testGenerateCloneVisitor() {
 		// contract: generates CloneBuilder.java and CloneBuilder.java
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -159,14 +156,13 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateRoleHandler() throws Exception {
+	public void testGenerateRoleHandler() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// Spoon model interfaces
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");

@@ -29,7 +29,7 @@ public class TopLevelTypeTest
 
 
 	@Test
-	public void testTopLevelType() throws Exception {
+	public void testTopLevelType() {
 		CtClass<?> foo = factory.Class().get(Foo.class);
 		assertEquals(foo, foo.getTopLevelType());
 		CtMethod<?> internalClassMethod = foo.getMethod("internalClass");

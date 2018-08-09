@@ -39,7 +39,6 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 	private RootNode value;
 
 	public MapEntryNode(RootNode key, RootNode value) {
-		super();
 		this.key = key;
 		this.value = value;
 	}
@@ -81,7 +80,6 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 		private CtElement value;
 
 		Entry(String key, CtElement value) {
-			super();
 			this.key = key;
 			this.value = value;
 		}

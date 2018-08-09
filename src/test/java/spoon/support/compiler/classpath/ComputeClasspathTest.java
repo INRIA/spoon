@@ -10,7 +10,6 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 public class ComputeClasspathTest {
 
@@ -47,7 +46,7 @@ public class ComputeClasspathTest {
 	}
 
 	@Test
-	public void testSourceClasspath() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testSourceClasspath() {
 		final ClasspathOptions options = new ClasspathOptions().classpath(systemClasspath);
 		Assert.assertEquals("-cp " + TEST_CLASSPATH, String.join(" ", options.build()));
 	}

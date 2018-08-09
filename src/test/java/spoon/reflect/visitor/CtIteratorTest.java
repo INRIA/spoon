@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class CtIteratorTest {
 
 	@Test
-	public void testCtElementIteration() throws Exception {
+	public void testCtElementIteration() {
 		// contract: CtIterator must go over all nodes in dfs order
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[]{"--output-type", "nooutput"});

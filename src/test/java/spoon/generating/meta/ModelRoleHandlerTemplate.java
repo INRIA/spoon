@@ -27,5 +27,5 @@ class ModelRoleHandlerTemplate {
 	private ModelRoleHandlerTemplate() {
 	}
 
-	static final RoleHandler[] roleHandlers = new RoleHandler[] { };
+	static final RoleHandler[] roleHandlers = { };
 }

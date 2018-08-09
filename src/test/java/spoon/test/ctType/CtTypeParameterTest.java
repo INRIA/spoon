@@ -67,7 +67,7 @@ public class CtTypeParameterTest {
 		assertEquals("TypeErasure of type param "+getTypeParamIdentification(typeParam), field.getType().getName(), typeParam.getTypeErasure().getQualifiedName());
 	}
 
-	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws NoSuchFieldException, SecurityException {
+	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws SecurityException {
 		CtExecutable<?> exec = (CtExecutable<?>) typeParam.getParent();
 		CtParameter<?> param = exec.filterChildren(new NamedElementFilter<>(CtParameter.class,"param"+typeParam.getSimpleName())).first();
 		assertNotNull("Missing param"+typeParam.getSimpleName() + " in "+ exec.getSignature(), param);

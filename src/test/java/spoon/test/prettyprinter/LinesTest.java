@@ -38,16 +38,14 @@ public class LinesTest {
 	}
 
 	@Test
-	public void testPrettyPrinterWithLines() throws Exception {
+	public void testPrettyPrinterWithLines() {
 
 		for (CtType<?> t : factory.Type().getAll()) {
 			if (t.isTopLevel()) {
-				// System.out.println("calculate " + t.getSimpleName());
 				DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
 						factory.getEnvironment());
 				pp.calculate(t.getPosition().getCompilationUnit(), t
 						.getPosition().getCompilationUnit().getDeclaredTypes());
-				// System.out.println(pp.getResult().toString());
 			}
 		}
 		assertEquals(0, factory.getEnvironment().getWarningCount());
@@ -61,7 +59,7 @@ public class LinesTest {
 	}
 
 	@Test
-	public void testIdenticalPrettyPrinter() throws  Exception{
+	public void testIdenticalPrettyPrinter() {
 		// contract: the end line should also be preserved
 
 		// setup
@@ -73,12 +71,6 @@ public class LinesTest {
 		List<String> paths = new ArrayList<>();
 		paths.add("spoon/test/prettyprinter/testclasses/A.java");
 		paths.add("spoon/test/prettyprinter/testclasses/AClass.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/QualifiedThisRef.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/ImportStatic.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/QualifiedThisRef.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/Rule.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java");
-
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(options);

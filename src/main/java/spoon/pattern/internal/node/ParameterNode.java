@@ -34,7 +34,6 @@ public class ParameterNode extends AbstractPrimitiveMatcher {
 	private final ParameterInfo parameterInfo;
 
 	public ParameterNode(ParameterInfo parameterInfo) {
-		super();
 		this.parameterInfo = parameterInfo;
 	}
 

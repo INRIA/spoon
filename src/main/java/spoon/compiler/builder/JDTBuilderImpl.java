@@ -61,7 +61,7 @@ public class JDTBuilderImpl implements JDTBuilder {
 
 	@Override
 	public String[] build() {
-		return args.toArray(new String[args.size()]);
+		return args.toArray(new String[0]);
 	}
 
 	private void checkSources() {

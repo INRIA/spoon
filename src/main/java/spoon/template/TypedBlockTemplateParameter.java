@@ -58,6 +58,7 @@ public abstract class TypedBlockTemplateParameter<R> implements TemplateParamete
 		return m.getBody().clone();
 	}
 
+	@Override
 	public R S() {
 		return null;
 	}

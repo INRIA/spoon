@@ -61,7 +61,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<Method> getMethodToInvoke(Class<?> entry) throws Exception {
+	private List<Method> getMethodToInvoke(Class<?> entry) {
 		Queue<Class<?>> tocheck = new LinkedList<>();
 		tocheck.add(entry);
 
@@ -125,12 +125,12 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 		instance.accept(mocked);
 
 		// verify we call all methods
-		for (int i = 0; i < toInvoke.size(); i++) {
+		for (Method aToInvoke : toInvoke) {
 			try {
-				toInvoke.get(i).invoke(verify(mocked), instance);
+				aToInvoke.invoke(verify(mocked), instance);
 			} catch (InvocationTargetException e) {
 				if (e.getTargetException() instanceof AssertionError) {
-					fail("visit" + instance.getClass().getSimpleName().replaceAll("Impl$", "") + " does not call " + toInvoke.get(i).getName());
+					fail("visit" + instance.getClass().getSimpleName().replaceAll("Impl$", "") + " does not call " + aToInvoke.getName());
 				} else {
 					throw e.getTargetException();
 				}

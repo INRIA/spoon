@@ -31,6 +31,7 @@ public class TreeBuilderRequestor implements ICompilerRequestor {
 		this.jdtCompiler = jdtCompiler;
 	}
 
+	@Override
 	public void acceptResult(CompilationResult result) {
 		if (result.hasErrors()) {
 			for (CategorizedProblem problem : result.problems) {

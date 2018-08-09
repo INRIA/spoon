@@ -103,7 +103,6 @@ public class MetamodelProperty {
 	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
 	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
-		super();
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;
@@ -355,7 +354,6 @@ public class MetamodelProperty {
 	private int getIdxOfBestMatchByInputParameter(List<MMMethod> methods, MMMethodKind key, CtTypeReference<?> expectedValueType)  {
 		int idx = -1;
 		MatchLevel maxMatchLevel = null;
-		CtTypeReference<?> newValueType = null;
 		if (key.isMulti()) {
 			expectedValueType = getTypeofItems(expectedValueType);
 		}
@@ -368,13 +366,11 @@ public class MetamodelProperty {
 				if (idx == -1) {
 					idx = i;
 					maxMatchLevel = matchLevel;
-					newValueType = mMethod.getValueType();
 				} else {
 					//both methods have matching value type. Use the better match
 					if (maxMatchLevel.ordinal() < matchLevel.ordinal()) {
 						idx = i;
 						maxMatchLevel = matchLevel;
-						newValueType = mMethod.getValueType();
 					} else if (maxMatchLevel == matchLevel) {
 						//there is conflict
 						return -1;

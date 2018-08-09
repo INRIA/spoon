@@ -193,8 +193,7 @@ public class CodeFactory extends SubFactory {
 		executableReference.setDeclaringType(type == null ? type : type.clone());
 		executableReference.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 		List<CtTypeReference<?>> typeReferences = new ArrayList<>();
-		for (int i = 0; i < parameters.length; i++) {
-			CtExpression<?> parameter = parameters[i];
+		for (CtExpression<?> parameter : parameters) {
 			typeReferences.add(parameter.getType());
 		}
 		executableReference.setParameters(typeReferences);

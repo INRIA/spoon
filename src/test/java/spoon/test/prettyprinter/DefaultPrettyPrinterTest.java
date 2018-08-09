@@ -33,7 +33,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -55,7 +54,7 @@ public class DefaultPrettyPrinterTest {
 		comp.build();
 		Factory factory = comp.getFactory();
 		CtType<?> theClass = factory.Type().get(qualifiedName);
-		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<>(CtInvocation.class));
 		assertEquals(3, elements.size());
 		CtInvocation<?> mathAbsInvocation = elements.get(1);
 		assertEquals("java.lang.Math.abs(message.length())", mathAbsInvocation.toString());
@@ -84,7 +83,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAClassWithImports() throws Exception {
+	public void testPrintAClassWithImports() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -115,7 +114,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAMethodWithImports() throws Exception {
+	public void testPrintAMethodWithImports() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -142,7 +141,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAMethodWithGeneric() throws Exception {
+	public void testPrintAMethodWithGeneric() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -167,7 +166,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
+	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -320,7 +319,7 @@ public class DefaultPrettyPrinterTest {
 		launcher.getEnvironment().setComplianceLevel(8);
 		CtModel model = launcher.buildModel();
 
-		CtMethod<?> machin = model.getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "machin")).get(0);
+		CtMethod<?> machin = model.getElements(new NamedElementFilter<>(CtMethod.class, "machin")).get(0);
 		assertEquals("machin", machin.getSimpleName());
 
 		List<CtParameter<?>> parameters = machin.getParameters();

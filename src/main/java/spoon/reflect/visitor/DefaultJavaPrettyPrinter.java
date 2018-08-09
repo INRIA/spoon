@@ -274,10 +274,29 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected void enterCtStatement(CtStatement s) {
 		elementPrinterHelper.writeComment(s, CommentOffset.BEFORE);
 		getPrinterHelper().mapLine(s, sourceCompilationUnit);
-		elementPrinterHelper.writeAnnotations(s);
-		if (s.getLabel() != null) {
-			printer.writeIdentifier(s.getLabel()).writeSpace().writeSeparator(":").writeSpace();
+		if (!context.isNextForVariable()) {
+			//TODO AnnotationLoopTest#testAnnotationDeclaredInForInit expects that annotations of next for variables are not printed
+			//but may be correct is that the next variables are not annotated, because they might have different annotation then first param!
+			elementPrinterHelper.writeAnnotations(s);
 		}
+		if (!context.isFirstForVariable() && !context.isNextForVariable()) {
+			if (s.getLabel() != null) {
+				printer.writeIdentifier(s.getLabel()).writeSpace().writeSeparator(":").writeSpace();
+			}
+		}
+	}
+
+	/**
+	 * Exits a statement.
+	 */
+	protected void exitCtStatement(CtStatement statement) {
+		if (!(statement instanceof CtBlock || statement instanceof CtIf || statement instanceof CtFor || statement instanceof CtForEach || statement instanceof CtWhile || statement instanceof CtTry
+				|| statement instanceof CtSwitch || statement instanceof CtSynchronized || statement instanceof CtClass || statement instanceof CtComment)) {
+			if (context.isStatement(statement) && !context.isFirstForVariable() && !context.isNextForVariable()) {
+				printer.writeSeparator(";");
+			}
+		}
+		elementPrinterHelper.writeComment(statement, CommentOffset.AFTER);
 	}
 
 	/**
@@ -487,7 +506,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace().writeSeparator(":").writeSpace();
 			scan(asserted.getExpression());
 		}
-
+		exitCtStatement(asserted);
 	}
 
 	@Override
@@ -498,6 +517,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeOperator("=").writeSpace();
 		scan(assignement.getAssignment());
 		exitCtExpression(assignement);
+		exitCtStatement(assignement);
 	}
 
 	@Override
@@ -541,6 +561,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeSeparator("}");
 			}
 		}
+		exitCtStatement(block);
 	}
 
 	@Override
@@ -550,6 +571,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (breakStatement.getTargetLabel() != null) {
 			printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
 		}
+		exitCtStatement(breakStatement);
 	}
 
 	@Override
@@ -582,6 +604,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeStatement(statement);
 		}
 		printer.decTab();
+		exitCtStatement(caseStatement);
 	}
 
 	@Override
@@ -616,7 +639,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeExtendsClause(ctClass);
 			elementPrinterHelper.writeImplementsClause(ctClass);
 		}
-		// lst.addAll(elementPrinterHelper.getComments(ctClass, CommentOffset.INSIDE));
 		printer.writeSpace().writeSeparator("{").incTab();
 		elementPrinterHelper.writeElementList(ctClass.getTypeMembers());
 		getPrinterHelper().adjustEndPosition(ctClass);
@@ -670,7 +692,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeOperator(":").writeSpace();
 
 		CtExpression<T> elseExpression = conditional.getElseExpression();
-		boolean isAssign = false;
+		boolean isAssign;
 		if ((isAssign = elseExpression instanceof CtAssignment)) {
 			printer.writeSeparator("(");
 		}
@@ -710,6 +732,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (continueStatement.getTargetLabel() != null) {
 			printer.writeSpace().writeIdentifier(continueStatement.getTargetLabel());
 		}
+		exitCtStatement(continueStatement);
 	}
 
 	@Override
@@ -720,6 +743,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeKeyword("while").writeSpace().writeSeparator("(");
 		scan(doLoop.getLoopingExpression());
 		printer.writeSpace().writeSeparator(")");
+		exitCtStatement(doLoop);
 	}
 
 	@Override
@@ -1152,10 +1176,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeKeyword("for").writeSpace().writeSeparator("(");
 		List<CtStatement> st = forLoop.getForInit();
 		if (!st.isEmpty()) {
-			scan(st.get(0));
+			try (Writable _context = context.modify().isFirstForVariable(true)) {
+				scan(st.get(0));
+			}
 		}
 		if (st.size() > 1) {
-			try (Writable _context = context.modify().noTypeDecl(true)) {
+			try (Writable _context = context.modify().isNextForVariable(true)) {
 				for (int i = 1; i < st.size(); i++) {
 					printer.writeSeparator(",").writeSpace();
 					scan(st.get(i));
@@ -1173,6 +1199,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			s -> scan(s));
 		printer.writeSeparator(")");
 		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getBody());
+		exitCtStatement(forLoop);
 	}
 
 	@Override
@@ -1184,6 +1211,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(foreach.getExpression());
 		printer.writeSeparator(")");
 		elementPrinterHelper.writeIfOrLoopBlock(foreach.getBody());
+		exitCtStatement(foreach);
 	}
 
 	@Override
@@ -1205,6 +1233,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeKeyword("else");
 			elementPrinterHelper.writeIfOrLoopBlock(ifElement.getElseStatement());
 		}
+		exitCtStatement(ifElement);
 	}
 
 	@Override
@@ -1275,6 +1304,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			null, false, "(", false, false, ",", true, false, ")",
 			e -> scan(e));
 		exitCtExpression(invocation);
+		exitCtStatement(invocation);
 	}
 
 	@Override
@@ -1286,13 +1316,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-		if (!context.noTypeDecl()) {
-			enterCtStatement(localVariable);
-		}
+		enterCtStatement(localVariable);
 		if (env.isPreserveLineNumbers()) {
 			getPrinterHelper().adjustStartPosition(localVariable);
 		}
-		if (!context.noTypeDecl()) {
+		if (!context.isNextForVariable()) {
 			elementPrinterHelper.writeModifiers(localVariable);
 			if (localVariable.isInferred() && this.env.getComplianceLevel() >= 10) {
 				getPrinterTokenWriter().writeKeyword("var");
@@ -1306,6 +1334,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(localVariable.getDefaultExpression());
 		}
+		exitCtStatement(localVariable);
 	}
 
 	@Override
@@ -1432,6 +1461,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printConstructorCall(ctConstructorCall);
 
 		exitCtExpression(ctConstructorCall);
+		exitCtStatement(ctConstructorCall);
 	}
 
 	@Override
@@ -1443,6 +1473,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		scan(newClass.getAnonymousClass());
 		exitCtExpression(newClass);
+		exitCtStatement(newClass);
 	}
 
 	private <T> void printConstructorCall(CtConstructorCall<T> ctConstructorCall) {
@@ -1472,12 +1503,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * JDT doesn't support <code>new Foo<K>.Bar()</code>. To avoid reprint this kind of type reference,
+	 * JDT doesn't support <code>new Foo<K>.Bar()</code>. To avoid reprinting this kind of type reference,
 	 * we check that the reference has a declaring type with generics.
 	 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=474593
 	 *
 	 * @param reference Type reference concerned by the bug.
-	 * @return true if a declaring type have generic types.
+	 * @return true if a declaring type has generic types.
 	 */
 	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {
 		// We don't have a declaring type, it can't have generics.
@@ -1548,6 +1579,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace();
 		scan(assignment.getAssignment());
 		exitCtExpression(assignment);
+		exitCtStatement(assignment);
 	}
 
 	@Override
@@ -1595,6 +1627,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace();
 		}
 		scan(returnStatement.getReturnedExpression());
+		exitCtStatement(returnStatement);
 	}
 
 	private <T> void visitCtType(CtType<T> type) {
@@ -1629,6 +1662,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.decTab().writeln().writeSeparator("}");
 		}
+		exitCtStatement(switchStatement);
 	}
 
 	@Override
@@ -1641,6 +1675,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSeparator(")").writeSpace();
 		}
 		scan(synchro.getBlock());
+		exitCtStatement(synchro);
 	}
 
 	@Override
@@ -1648,6 +1683,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(throwStatement);
 		printer.writeKeyword("throw").writeSpace();
 		scan(throwStatement.getThrownExpression());
+		exitCtStatement(throwStatement);
 	}
 
 	@Override
@@ -1663,6 +1699,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace().writeKeyword("finally").writeSpace();
 			scan(tryBlock.getFinalizer());
 		}
+		exitCtStatement(tryBlock);
 	}
 
 	@Override
@@ -1684,6 +1721,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace().writeKeyword("finally").writeSpace();
 			scan(tryWithResource.getFinalizer());
 		}
+		exitCtStatement(tryWithResource);
 	}
 
 	@Override
@@ -1826,6 +1864,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeOperator(OperatorHelper.getOperatorText(op));
 		}
 		exitCtExpression(operator);
+		exitCtStatement(operator);
 	}
 
 	@Override
@@ -1850,6 +1889,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSeparator(")");
 
 		elementPrinterHelper.writeIfOrLoopBlock(whileLoop.getBody());
+		exitCtStatement(whileLoop);
 	}
 
 	@Override
@@ -1860,8 +1900,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
-		elementPrinterHelper.writeComment(statement);
+		enterCtStatement(statement);
 		printer.writeCodeSnippet(statement.getValue());
+		exitCtStatement(statement);
 	}
 
 	public ElementPrinterHelper getElementPrinterHelper() {

@@ -114,6 +114,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Return {@code true} if the referenced type is a anonymous type
 	 * By convention, a class is anonymous if its name can be parsed to an integer.
 	 */
+	@Override
 	boolean isAnonymous();
 
 	@Override

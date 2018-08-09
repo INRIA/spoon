@@ -28,7 +28,6 @@ import spoon.support.util.IdentifierHelper;
 public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl {
 
 	public CtWildcardStaticTypeMemberReferenceImpl() {
-		super();
 	}
 
 	@Override

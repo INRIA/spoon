@@ -24,6 +24,7 @@ public class CtThisAccessImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtThisAccess(this);
 	}

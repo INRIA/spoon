@@ -254,13 +254,13 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 							element.getParameters().get(0).getType(), setterOfField, //
 							createGetterInvocation(element.getParameters().get(0), getGetterOf(ctField)));
 					final List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setterOfField);
-					if (methodsToAvoid.size() > 0) {
+					if (!methodsToAvoid.isEmpty()) {
 						clone.getBody().addStatement(createProtectionToException(setterInvocation, methodsToAvoid));
 					} else {
 						clone.getBody().addStatement(setterInvocation);
 					}
 				}
-				if (clone.getBody().getStatements().size() > 0) {
+				if (!clone.getBody().getStatements().isEmpty()) {
 					clone.getBody().insertEnd(createSuperInvocation(element));
 
 					// Add auto-generated comment.
@@ -478,7 +478,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						if (!ctMethod.getType().equals(ctField.getType())) {
 							continue;
 						}
-						if (ctMethod.getParameters().size() != 0) {
+						if (!ctMethod.getParameters().isEmpty()) {
 							continue;
 						}
 						return ctMethod;

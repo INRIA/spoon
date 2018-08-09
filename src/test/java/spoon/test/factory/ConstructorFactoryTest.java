@@ -33,16 +33,15 @@ public class ConstructorFactoryTest {
 		ConstructorFactory ctorf = factory.Constructor();
 		CoreFactory coref = factory.Core();
 
-		Set<ModifierKind> mods = new HashSet<ModifierKind>();
+		Set<ModifierKind> mods = new HashSet<>();
 		mods.add(ModifierKind.PUBLIC);
-		List<CtParameter<?>> params = new ArrayList<CtParameter<?>>();
+		List<CtParameter<?>> params = new ArrayList<>();
 		CtParameter<?> param = coref.createParameter();
 		CtTypeReference<?> tref = factory.Type().createReference(String.class);
 		param.setType((CtTypeReference)tref);
 		param.setSimpleName("str");
 		params.add(param);
-		Set<CtTypeReference<? extends Throwable>> thrownTypes =
-				new HashSet<CtTypeReference<? extends Throwable>>();
+		Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
 		ctorf.create(type,mods,params,thrownTypes);
 

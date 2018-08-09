@@ -48,7 +48,7 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testCompileSnippetSeveralTimes() throws Exception {
+	public void testCompileSnippetSeveralTimes() {
 		// contract: a snippet object can be reused several times
 		final Factory factory = createFactory();
 		final CtCodeSnippetExpression<Object> snippet = factory.Code().createCodeSnippetExpression("1 > 2");
@@ -71,7 +71,7 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testCompileSnippetWithContext() throws Exception {
+	public void testCompileSnippetWithContext() {
 		// contract: a snippet object can be compiled with a context in the factory.
 		try {
 			// Add a class in the context.
@@ -84,7 +84,7 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testCompileStatementWithReturn() throws Exception {
+	public void testCompileStatementWithReturn() {
 		// contract: a snippet with return can be compiled.
 		CtElement el = SnippetCompilationHelper.compileStatement(
 				factory.Code().createCodeSnippetStatement("return 3"),
@@ -95,7 +95,7 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testIssue981() throws Exception {
+	public void testIssue981() {
 		// contract: one can get the package of a string
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);

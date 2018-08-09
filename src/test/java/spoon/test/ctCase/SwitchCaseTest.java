@@ -1,6 +1,7 @@
 package spoon.test.ctCase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -32,7 +33,7 @@ public class SwitchCaseTest {
 		statements.get(0).insertAfter(newStatement);
 		statements = firstCase.getStatements();
 		assertEquals(3, statements.size());
-		assertTrue(statements.get(1) == newStatement);
+		assertSame(statements.get(1), newStatement);
 	}
 
 	@Test
@@ -49,7 +50,7 @@ public class SwitchCaseTest {
 		statements.get(0).insertBefore(newStatement);
 		statements = firstCase.getStatements();
 		assertEquals(3, statements.size());
-		assertTrue(statements.get(0) == newStatement);
+		assertSame(statements.get(0), newStatement);
 	}
 
 	private <T extends CtElement> List<T> elementsOfType(Class<T> type, Factory factory) {

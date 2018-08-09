@@ -45,10 +45,12 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 			Class<? extends CtElement> elementType) {
 	}
 
+	@Override
 	public Environment getEnvironment() {
 		return getFactory().getEnvironment();
 	}
 
+	@Override
 	public final Factory getFactory() {
 		return this.factory;
 	}
@@ -56,6 +58,7 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	/**
 	 * Invalid method in this context.
 	 */
+	@Override
 	public final Set<Class<? extends CtElement>> getProcessedElementTypes() {
 		return null;
 	}
@@ -63,10 +66,12 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	/**
 	 * Invalid method in this context.
 	 */
+	@Override
 	public final TraversalStrategy getTraversalStrategy() {
 		return TraversalStrategy.POST_ORDER;
 	}
 
+	@Override
 	public void init() {
 	}
 
@@ -80,6 +85,7 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	/**
 	 * Always returns false in this context.
 	 */
+	@Override
 	public final boolean isToBeProcessed(CtElement candidate) {
 		return false;
 	}
@@ -87,17 +93,21 @@ public abstract class AbstractManualProcessor implements Processor<CtElement> {
 	/**
 	 * Does nothing in this context.
 	 */
+	@Override
 	public final void process(CtElement element) {
 	}
 
+	@Override
 	public void processingDone() {
 		// do nothing by default
 	}
 
+	@Override
 	public final void setFactory(Factory factory) {
 		this.factory = factory;
 	}
 
+	@Override
 	public final void initProperties(ProcessorProperties properties) {
 		ProcessorUtils.initProperties(this, properties);
 	}

@@ -24,7 +24,7 @@ import spoon.reflect.visitor.processors.CheckVisitorTestProcessor;
 public class CtVisitorTest {
 
 	@Test
-	public void testMethodsInVisitor() throws Exception {
+	public void testMethodsInVisitor() {
 		// contract: CtVisitor must declare all visit methods.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

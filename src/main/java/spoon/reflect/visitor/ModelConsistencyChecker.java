@@ -32,8 +32,8 @@ import java.util.Deque;
  */
 public class ModelConsistencyChecker extends CtScanner {
 
-	boolean fixInconsistencies = false;
-	boolean fixNullParents = false;
+	boolean fixInconsistencies;
+	boolean fixNullParents;
 
 	Environment environment;
 
