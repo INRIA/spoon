@@ -10,6 +10,7 @@ import spoon.reflect.visitor.CtScanner;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Ignore;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
