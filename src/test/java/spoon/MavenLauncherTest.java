@@ -17,6 +17,9 @@ import static org.junit.Assert.assertTrue;
 
 public class MavenLauncherTest {
 
+	// fixme: the test consumes too much memory for now
+	// we should reduce its footprint
+	@Ignore
 	@Test
 	public void testTypeResolution() {
 		MavenLauncher launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
