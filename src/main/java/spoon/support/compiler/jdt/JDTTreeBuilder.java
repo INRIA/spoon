@@ -580,7 +580,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(SingleMemberAnnotation annotation, BlockScope scope) {
-		if (!context.annotationValueName.pop().equals("value")) {
+		if (!"value".equals(context.annotationValueName.pop())) {
 			throw new RuntimeException("Inconsistent Stack");
 		}
 		context.exit(annotation);
@@ -1583,7 +1583,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if (new String(typeDeclaration.name).equals("package-info")) {
+		if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {

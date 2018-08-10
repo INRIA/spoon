@@ -280,7 +280,7 @@ public abstract class Parameters {
 			//the template fields, which are using generic type like <T>, are not template parameters
 			return false;
 		}
-		if (ref.getSimpleName().equals("this")) {
+		if ("this".equals(ref.getSimpleName())) {
 			//the reference to this is not template parameter
 			return false;
 		}
