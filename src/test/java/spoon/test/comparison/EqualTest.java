@@ -50,23 +50,20 @@ public class EqualTest {
 
 		CtLiteral<?> argument1 = (CtLiteral<?>) invo.getArguments().get(0);
 
-		assertEquals(realParam1 , argument1.toString());
+		assertEquals(realParam1, argument1.toString());
 
 
 		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
 
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 
-		assertEquals(realParam1 , returnExp.toString() );
+		assertEquals(realParam1, returnExp.toString());
 
-		try{
+		try {
 			assertEquals(argument1, returnExp);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
-
 	}
 
 	@Test
