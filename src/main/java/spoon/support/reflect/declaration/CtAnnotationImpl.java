@@ -233,7 +233,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 						.partiallyEvaluate()).getValue();
 			}
 
-			if (((CtFieldReference<?>) value).getSimpleName().equals("class")) {
+			if ("class".equals(((CtFieldReference<?>) value).getSimpleName())) {
 				return c;
 			}
 			CtField<?> field = ((CtFieldReference<?>) value).getDeclaration();

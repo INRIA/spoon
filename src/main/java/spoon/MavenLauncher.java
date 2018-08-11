@@ -167,7 +167,7 @@ public class MavenLauncher extends Launcher {
 	 * @param classPathFiles File[] containing the classpath elements separated with ':'
 	 *                       It can be an array of file instead of an unique one for multi module projects.
 	 */
-	static String[] readClassPath(File ... classPathFiles) throws IOException {
+	static String[] readClassPath(File... classPathFiles) throws IOException {
 		List<String> classpathElements = new ArrayList<>();
 
 		//Read the content of spoon.classpath.tmp
@@ -179,7 +179,7 @@ public class MavenLauncher extends Launcher {
 				sb.append(line);
 				line = br.readLine();
 			}
-			if (!sb.toString().equals("")) {
+			if (!"".equals(sb.toString())) {
 				String[] classpath = sb.toString().split(File.pathSeparator);
 				for (String cpe : classpath) {
 					if (!classpathElements.contains(cpe)) {

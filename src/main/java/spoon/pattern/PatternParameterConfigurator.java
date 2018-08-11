@@ -914,7 +914,7 @@ public class PatternParameterConfigurator {
 			if (parent instanceof CtInvocation<?>) {
 				CtInvocation<?> invocation = (CtInvocation<?>) parent;
 				CtExecutableReference<?> executableRef = invocation.getExecutable();
-				if (executableRef.getSimpleName().equals("S")) {
+				if ("S".equals(executableRef.getSimpleName())) {
 					if (TemplateParameter.class.getName().equals(executableRef.getDeclaringType().getQualifiedName())) {
 						/*
 						 * the invocation of TemplateParameter#S() has to be substituted

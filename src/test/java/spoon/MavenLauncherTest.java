@@ -17,8 +17,6 @@ import static org.junit.Assert.assertTrue;
 
 public class MavenLauncherTest {
 
-
-
 	@Test
 	public void testTypeResolution() {
 		MavenLauncher launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
@@ -28,7 +26,7 @@ public class MavenLauncherTest {
 			public void scan(CtElement element) {
 				if (element instanceof CtTypeReference) {
 					CtTypeReference ref = (CtTypeReference) element;
-					if(ref.getSimpleName().contains(".")) {//Excludes nulltype, generics, ? extends E, etc
+					if (ref.getSimpleName().contains(".")) { //Excludes nulltype, generics, ? extends E, etc
 						//contract: For a maven project with a correct classpath, all type references should point to a resolvable type
 						assertNotNull("Reference to " + ref.getSimpleName() + " point to unresolved type", ref.getTypeDeclaration());
 					}

@@ -383,7 +383,7 @@ private transient  ClassLoader inputClassloader;
 				// Check that the URLs are only file URLs
 				boolean onlyFileURLs = true;
 				for (URL url : urls) {
-					if (!url.getProtocol().equals("file")) {
+					if (!"file".equals(url.getProtocol())) {
 						onlyFileURLs = false;
 					}
 				}

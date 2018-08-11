@@ -64,7 +64,6 @@ public class InheritanceModel {
 		this.sourceType = sourceType;
 		this.environment = environment;
 		init(model, parent, directory);
-
 	}
 
 	private void init(Model model, InheritanceModel parent, File directory) {
@@ -210,7 +209,6 @@ public class InheritanceModel {
 		return versions;
 	}
 
-
 	private String extractVersion(String groupId, String artifactId, String version) {
 		if (version == null) {
 			String depKey = groupId + ":" + artifactId;
@@ -224,8 +222,7 @@ public class InheritanceModel {
 		if (version != null && version.startsWith("[")) {
 			List<Version> versionsFromM2 = getVersionsFromM2(groupId, artifactId);
 			RangeVersion rangeVersion = new RangeVersion(version);
-			for (int i = 0; i < versionsFromM2.size(); i++) {
-				Version v = versionsFromM2.get(i);
+			for (Version v : versionsFromM2) {
 				if (rangeVersion.include(v)) {
 					version = v.version;
 					break;
@@ -322,7 +319,6 @@ public class InheritanceModel {
 			return dependence;
 		}
 		hierarchy.add(dependence);
-
 
 		// add the parent has a dependency
 		if (this.parent != null) {

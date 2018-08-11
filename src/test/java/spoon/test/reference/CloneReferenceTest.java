@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 public class CloneReferenceTest {
 
