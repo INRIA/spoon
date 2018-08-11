@@ -192,7 +192,7 @@ public class PackageTest {
 
 		BufferedReader reader = new BufferedReader(new FileReader(f));
 		assertTrue(reader.lines().anyMatch((s) -> {
-			return s.equals("package newtest;");
+			return "package newtest;".equals(s);
 		}));
 	}
 

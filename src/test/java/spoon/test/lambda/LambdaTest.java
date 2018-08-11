@@ -96,7 +96,7 @@ public class LambdaTest {
 				runLaunch.getModel().getElements(new Filter<CtTypeAccess>() {
 			@Override
 			public boolean matches(final CtTypeAccess element) {
-				return element.getAccessedType().getSimpleName().equals("Strings");
+				return "Strings".equals(element.getAccessedType().getSimpleName());
 			}
 		}).size());
 	}
@@ -114,14 +114,14 @@ public class LambdaTest {
 			@Override
 			public boolean matches(final CtFieldAccess element) {
 				final String name = element.getVariable().getSimpleName();
-				return name.equals("localField")
-						|| name.equals("pathSeparator")
-						|| name.equals("fieldInSeparateInterface")
-						|| name.equals("fieldInClassBase")
-						|| name.equals("fieldInClass")
-						|| name.equals("fieldInInterfaceBase")
-						|| name.equals("fieldInInterface")
-						|| name.equals("iAmToLazyForAnotherFieldName");
+				return "localField".equals(name)
+						|| "pathSeparator".equals(name)
+						|| "fieldInSeparateInterface".equals(name)
+						|| "fieldInClassBase".equals(name)
+						|| "fieldInClass".equals(name)
+						|| "fieldInInterfaceBase".equals(name)
+						|| "fieldInInterface".equals(name)
+						|| "iAmToLazyForAnotherFieldName".equals(name);
 			}
 		});
 		assertEquals(8, fieldAccesses.size());
@@ -137,7 +137,7 @@ public class LambdaTest {
 		assertEquals(3, runLaunch.getModel().getElements(new Filter<CtFieldAccess>() {
 			@Override
 			public boolean matches(final CtFieldAccess element) {
-				return element.getVariable().getSimpleName().equals("DEFAULT_RATING");
+				return "DEFAULT_RATING".equals(element.getVariable().getSimpleName());
 			}
 		}).size());
 	}

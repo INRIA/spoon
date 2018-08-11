@@ -91,7 +91,7 @@ public class ExecutableTest {
 		List<CtExecutableReference> listValueOf = ctModel.
 				filterChildren(new TypeFilter<>(CtExecutableReference.class)).
 				filterChildren((Filter<CtExecutableReference>) element -> {
-					return element.getSimpleName().equals("valueOf");
+					return "valueOf".equals(element.getSimpleName());
 				}).list();
 
 		assertEquals(1, listValueOf.size());
@@ -101,7 +101,7 @@ public class ExecutableTest {
 		CtType<?> ctType = launcher.getFactory().Type().get(WithEnum.class);
 		List<CtExecutableReference> listShadowValueOf = ctType.filterChildren(new TypeFilter<>(CtExecutableReference.class))
 				.filterChildren((Filter<CtExecutableReference>) element -> {
-					return element.getSimpleName().equals("valueOf");
+					return "valueOf".equals(element.getSimpleName());
 				}).list();
 		assertEquals(1, listShadowValueOf.size());
 		CtExecutableReference shadowValueOf = listShadowValueOf.get(0);

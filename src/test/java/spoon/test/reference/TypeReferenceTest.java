@@ -312,13 +312,13 @@ public class TypeReferenceTest {
 		boolean containsJoinerReference = false;
 
 		for (CtTypeReference<?> reference : referencedTypes) {
-			if (reference.toString().equals("Demo")) {
+			if ("Demo".equals(reference.toString())) {
 				containsDemoReference = true;
-			} else if (reference.toString().equals("void")) {
+			} else if ("void".equals(reference.toString())) {
 				containsVoidReference = true;
-			} else if (reference.toString().equals("java.lang.String")) {
+			} else if ("java.lang.String".equals(reference.toString())) {
 				containsStringReference = true;
-			} else if (reference.toString().equals("com.google.common.base.Joiner")) {
+			} else if ("com.google.common.base.Joiner".equals(reference.toString())) {
 				containsJoinerReference = true;
 			}
 		}
@@ -616,7 +616,7 @@ public class TypeReferenceTest {
 		CtClass<ParamRefs> aClass = (CtClass) buildClass(ParamRefs.class);
 		CtParameter<?> parameter = aClass.getElements(new NamedElementFilter<>(CtParameter.class,"param")).get(0);
 		CtParameterReference<?> parameterRef1 = parameter.getReference();
-		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)->ref.getSimpleName().equals("param")).get(0);
+		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)-> "param".equals(ref.getSimpleName())).get(0);
 
 		// fresh reference not put in a context
 		assertNull(parameterRef1.getDeclaringExecutable());

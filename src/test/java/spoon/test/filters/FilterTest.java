@@ -653,7 +653,7 @@ public class FilterTest {
 			.map((CtClass<?> c)->c.getSuperInterfaces()).name("super interfaces")
 			.map((CtTypeReference<?> iface)->iface.getTypeDeclaration())
 			.map((CtType<?> iface)->iface.getAllMethods()).name("allMethods if interface")
-			.map((CtMethod<?> method)->method.getSimpleName().equals("make"))
+			.map((CtMethod<?> method)-> "make".equals(method.getSimpleName()))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
 		((CtQueryImpl)query).logging(true);

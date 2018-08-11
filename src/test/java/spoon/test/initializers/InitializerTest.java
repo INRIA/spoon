@@ -53,7 +53,7 @@ public class InitializerTest {
 		assertTrue(y.getDefaultExpression() instanceof CtLiteral);
 
 		CtField<?> z = type.getElements(new NamedElementFilter<>(CtField.class,"z")).get(0);
-		assertTrue(z.getDefaultExpression().toString().equals("5"));
+		assertTrue("5".equals(z.getDefaultExpression().toString()));
 
 		// static initializer
 		CtAnonymousExecutable ex = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);

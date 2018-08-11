@@ -1177,7 +1177,7 @@ public class AnnotationTest {
 
 		for (CtAnnotation annotation : overrideAnnotations) {
 			CtTypeReference typeRef = annotation.getAnnotationType();
-			if (typeRef.getSimpleName().equals("Override")) {
+			if ("Override".equals(typeRef.getSimpleName())) {
 				assertThat(typeRef.getQualifiedName(), is("java.lang.Override"));
 			}
 		}

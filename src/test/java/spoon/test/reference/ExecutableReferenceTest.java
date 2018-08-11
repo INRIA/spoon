@@ -162,7 +162,7 @@ public class ExecutableReferenceTest {
 			@Override
 			public boolean matches(CtInvocation element) {
 				return super.matches(element) 
-					&& element.getExecutable().getSimpleName().equals("valueOf");
+					&& "valueOf".equals(element.getExecutable().getSimpleName());
 			}
 		}).get(0);
 		assertNotNull(invocation.getExecutable().getExecutableDeclaration());

@@ -1209,7 +1209,7 @@ public class GenericsTest {
 
 		boolean invocationDetected = false;
 		for (CtConstructorCall call : invocations) {
-			if (call.getType().getSimpleName().equals("ToNotificationSubscriber")) {
+			if ("ToNotificationSubscriber".equals(call.getType().getSimpleName())) {
 				assertEquals(1, call.getType().getActualTypeArguments().size());
 
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);

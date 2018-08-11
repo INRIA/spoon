@@ -20,7 +20,7 @@ public class JDTBasedSpoonCompilerTest {
 
 		List<CompilationUnitDeclaration> compilationUnitDeclarations1 = spoonCompiler.sortCompilationUnits(compilationUnitDeclarations);
 
-		if (System.getenv("SPOON_SEED_CU_COMPARATOR") == null || System.getenv("SPOON_SEED_CU_COMPARATOR").equals("0")) {
+		if (System.getenv("SPOON_SEED_CU_COMPARATOR") == null || "0".equals(System.getenv("SPOON_SEED_CU_COMPARATOR"))) {
 			for (int i = 1; i < compilationUnitDeclarations1.size(); i++) {
 				CompilationUnitDeclaration cu0 = compilationUnitDeclarations1.get(i - 1);
 				CompilationUnitDeclaration cu1 = compilationUnitDeclarations1.get(i);

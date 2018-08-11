@@ -191,7 +191,7 @@ public class CtTypeInformationTest {
 
 		boolean detectedCompareTo = false;
 		for (CtMethod<?> ctMethod : listCtMethods) {
-			if (ctMethod.getSimpleName().equals("compareTo")) {
+			if ("compareTo".equals(ctMethod.getSimpleName())) {
 				assertFalse(ctMethod.hasModifier(ModifierKind.ABSTRACT));
 				assertFalse(ctMethod.getParameters().get(0).getType() instanceof CtTypeParameter);
 				assertEquals("Object", ctMethod.getParameters().get(0).getType().getSimpleName());

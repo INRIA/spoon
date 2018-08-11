@@ -204,7 +204,7 @@ public class CtRenameLocalVariableRefactoringTest
 	@Test
 	public void testRefactorWrongUsage() throws Exception {
 		CtType varRenameClass = ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
-		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)-> "local1".equals(var.getSimpleName())).first();
 		
 		//contract: a target variable is not defined. Throw SpoonException
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
@@ -252,7 +252,7 @@ public class CtRenameLocalVariableRefactoringTest
 	@Test
 	public void testRenameLocalVariableToSameName() throws Exception {
 		CtType varRenameClass = ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
-		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)-> "local1".equals(var.getSimpleName())).first();
 		
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
 		refactor.setTarget(local1Var);

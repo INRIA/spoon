@@ -136,7 +136,7 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 		assertTrue(originalModel.getAllTypes().size() == 3);
 
-		inputResources.removeIf(f -> f.getName().equals("C.java"));
+		inputResources.removeIf(f -> "C.java".equals(f.getName()));
 		inputResources.add(new File(WORKING_DIR, "D.java"));
 
 		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
@@ -178,15 +178,15 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 
 		CtType<?> c1 = getTypeByName(originalModel.getAllTypes(), "C");
-		assertTrue(c1.getField("val").getType().getSimpleName().equals("int"));
+		assertTrue("int".equals(c1.getField("val").getType().getSimpleName()));
 
 		CtType<?> b1 = getTypeByName(originalModel.getAllTypes(), "B");
 		CtMethod<?> method1 = b1.getMethodsByName("func").get(0);
 		CtStatement stmt1 = method1.getBody().getStatement(0);
 		CtAssignment<?, ?> assignment1 = (CtAssignment<?, ?>) stmt1;
 		CtExpression<?> lhs1 = assignment1.getAssigned();
-		assertTrue(assignment1.getType().getSimpleName().equals("int"));
-		assertTrue(lhs1.getType().getSimpleName().equals("int"));
+		assertTrue("int".equals(assignment1.getType().getSimpleName()));
+		assertTrue("int".equals(lhs1.getType().getSimpleName()));
 
 		TimeUnit.MILLISECONDS.sleep(1000);
 		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "C.java"), new File(WORKING_DIR, "C.java"), true);
@@ -198,15 +198,15 @@ public class IncrementalLauncherTest {
 		launcher2.saveCache();
 
 		CtType<?> c2 = getTypeByName(newModel.getAllTypes(), "C");
-		assertTrue(c2.getField("val").getType().getSimpleName().equals("float"));
+		assertTrue("float".equals(c2.getField("val").getType().getSimpleName()));
 
 		CtType<?> b2 = getTypeByName(newModel.getAllTypes(), "B");
 		CtMethod<?> method2 = b2.getMethodsByName("func").get(0);
 		CtStatement stmt2 = method2.getBody().getStatement(0);
 		CtAssignment<?, ?> assignment2 = (CtAssignment<?, ?>) stmt2;
 		CtExpression<?> lhs2 = assignment2.getAssigned();
-		assertTrue(assignment2.getType().getSimpleName().equals("float"));
-		assertTrue(lhs2.getType().getSimpleName().equals("float"));
+		assertTrue("float".equals(assignment2.getType().getSimpleName()));
+		assertTrue("float".equals(lhs2.getType().getSimpleName()));
 	}
 
 	@Test
