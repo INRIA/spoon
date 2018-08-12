@@ -41,7 +41,7 @@ public class RangeVersion {
 		}
 	}
 
-	boolean include(Version v) {
+	boolean isIncluded(Version v) {
 		int compareToStart = v.compareTo(start);
 		int compareToEnd = v.compareTo(end);
 		if (compareToStart < 0 || compareToEnd > 0) {
