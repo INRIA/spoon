@@ -70,7 +70,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -83,31 +82,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (!isPrimitive()) {
 			return this;
 		}
-		if (getSimpleName().equals("int")) {
+		if ("int".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Integer.class);
 		}
-		if (getSimpleName().equals("float")) {
+		if ("float".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Float.class);
 		}
-		if (getSimpleName().equals("long")) {
+		if ("long".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Long.class);
 		}
-		if (getSimpleName().equals("char")) {
+		if ("char".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Character.class);
 		}
-		if (getSimpleName().equals("double")) {
+		if ("double".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Double.class);
 		}
-		if (getSimpleName().equals("boolean")) {
+		if ("boolean".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Boolean.class);
 		}
-		if (getSimpleName().equals("short")) {
+		if ("short".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Short.class);
 		}
-		if (getSimpleName().equals("byte")) {
+		if ("byte".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Byte.class);
 		}
-		if (getSimpleName().equals("void")) {
+		if ("void".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Void.class);
 		}
 		return this;
@@ -369,6 +368,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return null;
 	}
 
+	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
 		CtType<?> t = getTypeDeclaration();
 		if (t != null) {

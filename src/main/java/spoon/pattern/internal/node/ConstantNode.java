@@ -31,7 +31,6 @@ public class ConstantNode<T> extends AbstractPrimitiveMatcher {
 	protected final T template;
 
 	public ConstantNode(T template) {
-		super();
 		this.template = template;
 	}
 

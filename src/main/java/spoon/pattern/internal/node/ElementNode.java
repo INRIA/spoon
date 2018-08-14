@@ -183,7 +183,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	 * 	It is used e.g. to generate generatedBy comment
 	 */
 	public ElementNode(MetamodelConcept elementType, CtElement templateElement) {
-		super();
 		this.elementType = elementType;
 		this.templateElement = templateElement;
 	}

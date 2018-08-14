@@ -40,11 +40,11 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 	private static final List<CtType<? extends CtElement>> allInstantiableMetamodelInterfaces = SpoonTestHelpers.getAllInstantiableMetamodelInterfaces();
 
 	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		return createReceiverList();
 	}
 
-	public static Collection<Object[]> createReceiverList() throws Exception {
+	public static Collection<Object[]> createReceiverList() {
 		List<Object[]> values = new ArrayList<>();
 		for (CtType t : allInstantiableMetamodelInterfaces) {
 			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {

@@ -62,6 +62,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * Returns the simple name of the array type core component type (with no
 	 * []s). Use toString() to get the full array type including []s.
 	 */
+	@Override
 	@DerivedProperty
 	String getSimpleName();
 

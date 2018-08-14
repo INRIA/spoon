@@ -52,10 +52,10 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	 * 		meta-model)
 	 */
 	public RuntimeProcessingManager(Factory factory) {
-		super();
 		setFactory(factory);
 	}
 
+	@Override
 	public void addProcessor(Class<? extends Processor<?>> type) {
 		try {
 			Processor<?> p = type.newInstance();
@@ -67,11 +67,13 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@Override
 	public boolean addProcessor(Processor<?> p) {
 		p.setFactory(getFactory());
 		return getProcessors().add(p);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
@@ -85,10 +87,12 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return current;
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public List<Processor<?>> getProcessors() {
 		if (processors == null) {
 			processors = new LinkedList<>();
@@ -103,6 +107,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
+	@Override
 	public void process(Collection<? extends CtElement> elements) {
 		for (Processor<?> p : getProcessors()) {
 			current = p;
@@ -124,6 +129,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@Override
 	public void process(CtElement element) {
 		for (Processor<?> p : getProcessors()) {
 			current = p;
@@ -143,6 +149,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		processor.processingDone();
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 		factory.getEnvironment().setManager(this);

@@ -34,7 +34,6 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	private CtReference localReference;
 
 	public CtImportImpl() {
-		super();
 	}
 
 	@Override

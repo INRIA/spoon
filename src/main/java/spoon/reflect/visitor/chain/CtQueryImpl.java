@@ -461,7 +461,6 @@ public class CtQueryImpl implements CtQuery {
 	 */
 	private class OutputFunctionWrapper extends AbstractStep {
 		OutputFunctionWrapper() {
-			super();
 			localFailurePolicy = QueryFailurePolicy.IGNORE;
 		}
 		@Override
@@ -492,7 +491,6 @@ public class CtQueryImpl implements CtQuery {
 
 		@SuppressWarnings("unchecked")
 		LazyFunctionWrapper(CtConsumableFunction<?> fnc) {
-			super();
 			this.fnc = (CtConsumableFunction<Object>) fnc;
 			handleListenerSetQuery(this.fnc);
 			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 2, 0);
@@ -513,7 +511,6 @@ public class CtQueryImpl implements CtQuery {
 
 		@SuppressWarnings("unchecked")
 		FunctionWrapper(CtFunction<?, ?> code) {
-			super();
 			fnc = (CtFunction<Object, Object>) code;
 			handleListenerSetQuery(fnc);
 			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 1, 0);

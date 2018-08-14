@@ -55,10 +55,10 @@ public class QueueProcessingManager implements ProcessingManager {
 	 * 		meta-model)
 	 */
 	public QueueProcessingManager(Factory factory) {
-		super();
 		setFactory(factory);
 	}
 
+	@Override
 	public void addProcessor(Class<? extends Processor<?>> type) {
 		try {
 			Processor<?> p = type.newInstance();
@@ -68,11 +68,13 @@ public class QueueProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@Override
 	public boolean addProcessor(Processor<?> p) {
 		p.setFactory(getFactory());
 		return getProcessors().add(p);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
@@ -86,10 +88,12 @@ public class QueueProcessingManager implements ProcessingManager {
 		return current;
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public Queue<Processor<?>> getProcessors() {
 		if (processors == null) {
 			processors = new LinkedList<>();
@@ -104,6 +108,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
+	@Override
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
 		// copy so that one can reuse the processing manager
@@ -136,12 +141,14 @@ public class QueueProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@Override
 	public void process(CtElement element) {
 		List<CtElement> l = new ArrayList<>();
 		l.add(element);
 		process(l);
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 		factory.getEnvironment().setManager(this);

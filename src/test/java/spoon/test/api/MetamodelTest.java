@@ -43,7 +43,6 @@ import spoon.support.visitor.ClassTypingContext;
 import spoon.template.Parameter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -128,11 +127,11 @@ public class MetamodelTest {
 
 		Set<String> expectedRoles = Arrays.stream(CtRole.values()).map(r -> r.name()).collect(Collectors.toSet());
 
-		List<CtMethod<?>> getters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod<?>>(PropertyGetter.class));
+		List<CtMethod<?>> getters = interfaces.getModel().getElements(new AnnotationFilter<>(PropertyGetter.class));
 		Set<String> getterRoles = getters.stream().map(g -> ((CtFieldRead) g.getAnnotation(propertyGetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
 		Set<CtMethod<?>> isNotGetter = getters.stream().filter(m -> !(m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))).collect(Collectors.toSet());
 
-		List<CtMethod<?>> setters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod<?>>(PropertySetter.class));
+		List<CtMethod<?>> setters = interfaces.getModel().getElements(new AnnotationFilter<>(PropertySetter.class));
 		Set<String> setterRoles = setters.stream().map(g -> ((CtFieldRead) g.getAnnotation(propertySetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
 		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
@@ -190,7 +189,7 @@ public class MetamodelTest {
 		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
 		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
 
-		List<CtField> fields = factory.getModel().getElements(new AnnotationFilter<CtField>(MetamodelPropertyField.class));
+		List<CtField> fields = factory.getModel().getElements(new AnnotationFilter<>(MetamodelPropertyField.class));
 		for (CtField field : fields) {
 			CtClass parent = field.getParent(CtClass.class);
 			CtExpression roleExpression = field.getAnnotation(metamodelPropertyField).getValue("role");
@@ -199,8 +198,7 @@ public class MetamodelTest {
 				roles.add(((CtFieldRead) roleExpression).getVariable().getSimpleName());
 			} else  if (roleExpression instanceof CtNewArray) {
 				List<CtFieldRead> elements = ((CtNewArray) roleExpression).getElements();
-				for (int i = 0; i < elements.size(); i++) {
-					CtFieldRead ctFieldRead =  elements.get(i);
+				for (CtFieldRead ctFieldRead : elements) {
 					roles.add(ctFieldRead.getVariable().getSimpleName());
 				}
 			}
@@ -281,7 +279,7 @@ public class MetamodelTest {
 	}
 
 	@Test
-	public void testMetamodelCachedInFactory() throws IOException {
+	public void testMetamodelCachedInFactory() {
 		//contract: Metamodel concepts are accessible
 		Metamodel.getInstance().getConcepts();
 	}
@@ -552,7 +550,7 @@ public class MetamodelTest {
 		assertListContracts(packages, typeRef, 1, null);
 
 		//contract: set of new value replaces existing value
-		assertEquals(null, packages.set(0, factory.Package().createReference("some.test.package")));
+		assertNull(packages.set(0, factory.Package().createReference("some.test.package")));
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 
 		//contract: set of null value keeps size==1 even if value is replaced by null

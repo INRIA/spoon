@@ -21,7 +21,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
-import spoon.test.pkg.testclasses.ElementProcessor;
+import spoon.test.pkg.processors.ElementProcessor;
 import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.ModelUtils;
 
@@ -83,7 +83,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testAnnotationOnPackage() throws Exception {
+	public void testAnnotationOnPackage() {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 
@@ -105,7 +105,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testPrintPackageInfoWhenNothingInPackage() throws Exception {
+	public void testPrintPackageInfoWhenNothingInPackage() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/pkg/testclasses/internal");
 		launcher.setSourceOutputDirectory("./target/spooned/package");
@@ -138,15 +138,15 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenamePackageAndPrettyPrint() throws Exception {
+	public void testRenamePackageAndPrettyPrint() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
 		spoon.buildModel();
 
-		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<CtPackage>(CtPackage.class, "spoon")).get(0);
+		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<>(CtPackage.class, "spoon")).get(0);
 		ctPackage.setSimpleName("otherName");
 
-		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<CtClass>(CtClass.class, "Foo")).get(0);
+		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<>(CtClass.class, "Foo")).get(0);
 		assertEquals("otherName.test.pkg.testclasses.Foo", foo.getQualifiedName());
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
@@ -157,16 +157,16 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenamePackageAndPrettyPrintNoclasspath() throws Exception {
+	public void testRenamePackageAndPrettyPrintNoclasspath() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.buildModel();
 
-		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<CtPackage>(CtPackage.class, "app")).get(0);
+		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<>(CtPackage.class, "app")).get(0);
 		ctPackage.setSimpleName("otherName");
 
-		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<CtClass>(CtClass.class, "Test")).get(0);
+		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<>(CtClass.class, "Test")).get(0);
 		assertEquals("otherName.Test", foo.getQualifiedName());
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
@@ -197,7 +197,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenameRootPackage() throws Exception {
+	public void testRenameRootPackage() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
@@ -210,7 +210,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenameRootPackageWithNullOrEmpty() throws Exception {
+	public void testRenameRootPackageWithNullOrEmpty() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);

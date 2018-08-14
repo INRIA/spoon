@@ -79,7 +79,7 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 public class ImportTest {
 
 	@Test
-	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() throws Exception {
+	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
 		spoon.getEnvironment().setAutoImports(true);
@@ -110,7 +110,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() throws Exception {
+	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
 		spoon.getEnvironment().setAutoImports(false);
@@ -253,7 +253,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testSpoonWithImports() throws Exception {
+	public void testSpoonWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses", "--output-type", "nooutput", "--with-imports"
@@ -282,7 +282,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testStaticImportForInvocationInNoClasspath() throws Exception {
+	public void testStaticImportForInvocationInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/import-static", "--output-type", "nooutput", "--noclasspath"
@@ -346,7 +346,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportOfInvocationOfPrivateClass() throws Exception {
+	public void testImportOfInvocationOfPrivateClass() {
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
@@ -361,7 +361,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNotImportExecutableType() throws Exception {
+	public void testNotImportExecutableType() {
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal3/Foo.java",
 				"./src/test/java/spoon/test/imports/testclasses/internal3/Bar.java",
@@ -380,7 +380,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportOfInvocationOfStaticMethod() throws Exception {
+	public void testImportOfInvocationOfStaticMethod() {
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
@@ -395,7 +395,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportStaticAndFieldAccess() throws Exception {
+	public void testImportStaticAndFieldAccess() {
 		// contract: Qualified field access and an import static should rewrite in fully qualified mode.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -410,7 +410,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportStaticAndFieldAccessWithImport() throws Exception {
+	public void testImportStaticAndFieldAccessWithImport() {
 		// contract: Qualified field access and an import static with import should import the type first, and not use static import
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
@@ -438,7 +438,7 @@ public class ImportTest {
 	}
 	
 	@Test
-	public void testAccessToNestedClass() throws Exception {
+	public void testAccessToNestedClass() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
@@ -454,7 +454,7 @@ public class ImportTest {
 	}
 	
 	@Test
-	public void testAccessType() throws Exception {
+	public void testAccessType() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
@@ -479,7 +479,7 @@ public class ImportTest {
 	}
 	
 	@Test
-	public void testCanAccess() throws Exception {
+	public void testCanAccess() {
 		
 		class Checker {
 			final Launcher launcher;
@@ -564,7 +564,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNestedAccessPathWithTypedParameter() throws Exception {
+	public void testNestedAccessPathWithTypedParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
@@ -587,7 +587,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNestedAccessPathWithTypedParameterWithImports() throws Exception {
+	public void testNestedAccessPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
@@ -611,7 +611,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNestedStaticPathWithTypedParameter() throws Exception {
+	public void testNestedStaticPathWithTypedParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java"
@@ -629,7 +629,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
+	public void testNestedStaticPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
@@ -647,7 +647,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testDeepNestedStaticPathWithTypedParameter() throws Exception {
+	public void testDeepNestedStaticPathWithTypedParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/StaticWithNested.java"
@@ -664,7 +664,7 @@ public class ImportTest {
 		 								  
 	}
 	@Test
-	public void testDeepNestedStaticPathWithTypedParameterWithImports() throws Exception {
+	public void testDeepNestedStaticPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/StaticWithNested.java", "--with-imports"
@@ -1247,7 +1247,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportWithGenerics() throws IOException {
+	public void testImportWithGenerics() {
 		// contract: in noclasspath autoimport, we should be able to use generic type
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");

@@ -9,6 +9,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.test.staticFieldAccess.processors.InsertBlockProcessor;
 
 import java.io.File;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class StaticAccessTest {
     }
 
     @Test
-    public void testReferences() throws Exception {
+    public void testReferences() {
 
         CtType<?> type = (CtType<?>) factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
         CtBlock<?> block = type.getMethod("references").getBody();

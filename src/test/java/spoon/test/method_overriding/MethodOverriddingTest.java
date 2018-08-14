@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 public class MethodOverriddingTest {
 
 	@Test
-	public void testShadowInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+	public void testShadowInterfaceMethodsCanOverrideObjectMethods() {
 		//contract: Interface (made by reflection) method equals overrides Object#equals
 		Factory f = new Launcher().getFactory();
 		CtType<?> iface = f.Interface().get(Comparator.class);
@@ -79,7 +79,7 @@ public class MethodOverriddingTest {
 			}
 			methods.add(m);
 		});
-		assertTrue(methodsByName.size()>0);
+		assertFalse(methodsByName.isEmpty());
 		for (Map.Entry<String, List<CtMethod>> e : methodsByName.entrySet()) {
 			combine(e.getValue(), 0, isOverriding);
 		}

@@ -34,7 +34,6 @@ public class ListOfNodes extends AbstractNode {
 	protected List<RootNode> nodes;
 
 	public ListOfNodes(List<RootNode> nodes) {
-		super();
 		this.nodes = nodes;
 	}
 

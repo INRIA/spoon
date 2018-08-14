@@ -27,6 +27,7 @@ public interface CtPackageReference extends CtReference {
 	/**
 	 * Gets the package element when available in the source code.
 	 */
+	@Override
 	@DerivedProperty
 	CtPackage getDeclaration();
 

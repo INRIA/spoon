@@ -24,7 +24,7 @@ public class ControlTest {
 		CtType<?> type = build("spoon.test.control.testclasses", "Fors");
 		assertEquals("Fors", type.getSimpleName());
 
-		List<CtFor> fors = type.getElements(new TypeFilter<CtFor>(CtFor.class));
+		List<CtFor> fors = type.getElements(new TypeFilter<>(CtFor.class));
 
 		assertEquals(4, fors.size());
 

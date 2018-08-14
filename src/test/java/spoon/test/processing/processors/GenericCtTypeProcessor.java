@@ -1,4 +1,4 @@
-package spoon.test.processing.testclasses;
+package spoon.test.processing.processors;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtType;
@@ -15,7 +15,7 @@ public abstract class GenericCtTypeProcessor<T extends CtType> extends AbstractP
         super.addProcessedElementType(zeClass);
     }
 
-    public List<T> elements = new ArrayList<T>();
+    public List<T> elements = new ArrayList<>();
 
     @Override
     public void process(T element) {

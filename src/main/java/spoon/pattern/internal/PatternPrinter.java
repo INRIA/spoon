@@ -93,7 +93,7 @@ public class PatternPrinter extends DefaultGenerator {
 						paramsOnElement.add(new ParamOnElement((CtElement) firstResult, mmField.getRole(), attrNode));
 					});
 				}
-				addParameterCommentTo((CtElement) firstResult, paramsOnElement.toArray(new ParamOnElement[paramsOnElement.size()]));
+				addParameterCommentTo((CtElement) firstResult, paramsOnElement.toArray(new ParamOnElement[0]));
 			} else if (node instanceof ParameterNode) {
 				addParameterCommentTo((CtElement) firstResult, new ParamOnElement((CtElement) firstResult, node));
 			}

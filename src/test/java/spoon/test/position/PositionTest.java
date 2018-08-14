@@ -3,7 +3,22 @@ package spoon.test.position;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
@@ -21,7 +36,29 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.comment.testclasses.Comment1;
-import spoon.test.position.testclasses.*;
+import spoon.test.position.testclasses.AnnonymousClassNewIface;
+import spoon.test.position.testclasses.ArrayArgParameter;
+import spoon.test.position.testclasses.CatchPosition;
+import spoon.test.position.testclasses.Expressions;
+import spoon.test.position.testclasses.Foo;
+import spoon.test.position.testclasses.FooAbstractMethod;
+import spoon.test.position.testclasses.FooAnnotation;
+import spoon.test.position.testclasses.FooClazz;
+import spoon.test.position.testclasses.FooClazz2;
+import spoon.test.position.testclasses.FooClazzWithComments;
+import spoon.test.position.testclasses.FooEnum;
+import spoon.test.position.testclasses.FooField;
+import spoon.test.position.testclasses.FooForEach;
+import spoon.test.position.testclasses.FooGeneric;
+import spoon.test.position.testclasses.FooInterface;
+import spoon.test.position.testclasses.FooMethod;
+import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.FooSwitch;
+import spoon.test.position.testclasses.NoMethodModifiers;
+import spoon.test.position.testclasses.PositionParameterTypeWithReference;
+import spoon.test.position.testclasses.PositionTry;
+import spoon.test.position.testclasses.SomeEnum;
+import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
@@ -42,7 +79,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 public class PositionTest {
 
 	@Test
-	public void testPositionClass() throws Exception {
+	public void testPositionClass() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
@@ -73,7 +110,7 @@ public class PositionTest {
 	
 	
 	@Test
-	public void testPositionClassWithComments() throws Exception {
+	public void testPositionClassWithComments() {
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
 		//and it produces correct `modifierEnd`
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
@@ -160,7 +197,7 @@ public class PositionTest {
 	}
 	
 	@Test
-	public void testPositionInterface() throws Exception {
+	public void testPositionInterface() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
 		String classContent = getClassContent(foo);
@@ -194,7 +231,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testPositionAnnotation() throws Exception {
+	public void testPositionAnnotation() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
 		String classContent = getClassContent(foo);
@@ -565,7 +602,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testSourcePosition() throws Exception {
+	public void testSourcePosition() {
 		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
 		assertFalse(s.isValidPosition());
 		assertFails(() -> s.getSourceStart());
@@ -602,7 +639,7 @@ public class PositionTest {
 		launcher.addInputResource("./src/test/java/spoon/test/position/testclasses/ImplicitBlock.java");
 		launcher.buildModel();
 
-		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<>(CtIf.class)).get(0);
 		CtStatement thenStatement = ifElement.getThenStatement();
 
 		assertTrue(thenStatement instanceof CtBlock);

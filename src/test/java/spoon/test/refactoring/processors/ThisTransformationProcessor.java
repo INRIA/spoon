@@ -1,4 +1,4 @@
-package spoon.test.refactoring;
+package spoon.test.refactoring.processors;
 
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;

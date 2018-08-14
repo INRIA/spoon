@@ -162,7 +162,7 @@ public class InlinedStatementConfigurator {
 	 */
 	public InlinedStatementConfigurator markAsInlined(CtIf ifElement) {
 		SwitchNode osp = new SwitchNode();
-		boolean[] canBeInline = new boolean[]{true};
+		boolean[] canBeInline = { true };
 		forEachIfCase(ifElement, (expression, block) -> {
 			//detect meta elements by different way - e.g. comments?
 			if (expression != null) {

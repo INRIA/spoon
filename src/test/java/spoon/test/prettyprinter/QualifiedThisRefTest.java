@@ -73,11 +73,11 @@ public class QualifiedThisRefTest {
 		final CtMethod<?> m2 = adobada.getMethod("methodUsingjlObjectMethods");
 
 		CtThisAccess th = (CtThisAccess) m2.getElements(new TypeFilter(CtThisAccess.class)).get(0);
-		assertEquals(true,th.isImplicit());
+		assertTrue(th.isImplicit());
 		assertEquals("notify()",th.getParent().toString());
 		CtInvocation<?> clone = m2.clone().getBody().getStatement(0);
 		// clone preserves implicitness
-		assertEquals(true, clone.getTarget().isImplicit());
+		assertTrue(clone.getTarget().isImplicit());
 		assertEquals("notify()", clone.toString()); // the original bug
 
 		// note that this behavior means that you can only keep cloned "this" in the same class,
@@ -87,7 +87,7 @@ public class QualifiedThisRefTest {
 	}
 
 	@Test
-	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() throws Exception {
+	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() {
 		CtClass zeclass = factory.Class().get(QualifiedThisRef.class);
 
 		List<CtMethod> methods = zeclass.getMethodsByName("bla");

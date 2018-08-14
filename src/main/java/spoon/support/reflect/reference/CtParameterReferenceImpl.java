@@ -30,7 +30,6 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 	private static final long serialVersionUID = 1L;
 
 	public CtParameterReferenceImpl() {
-		super();
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class VariableAccessTest {
 
 	@Test
 	public void testVariableAccessDeclarationInAnonymousClass() throws Exception {
-		CtClass<?> type = build("spoon.test.reference", "FooBar");
+		CtClass<?> type = build("spoon.test.reference.testclasses", "FooBar");
 		assertEquals("FooBar", type.getSimpleName());
 
 		final CtParameterReference<?> ref = type.getElements(new AbstractReferenceFilter<CtParameterReference<?>>(CtParameterReference.class) {
@@ -61,7 +61,7 @@ public class VariableAccessTest {
 		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
 		final CtMethod<Object> m2 = aPozole.getMethod("m2");
 		final CtArrayWrite<?> ctArrayWrite = m2.getElements(new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class)).get(0);
-		final CtLocalVariable expected = m2.getElements(new TypeFilter<CtLocalVariable>(CtLocalVariable.class)).get(0);
+		final CtLocalVariable expected = m2.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 
 		assertEquals(expected, ((CtVariableAccess) ctArrayWrite.getTarget()).getVariable().getDeclaration());
 	}
@@ -76,7 +76,7 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void testDeclarationOfVariableReference() throws Exception {
+	public void testDeclarationOfVariableReference() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo2.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -128,7 +128,7 @@ public class VariableAccessTest {
 	}
 
 	@Test
-	public void testGetDeclarationAfterClone() throws Exception {
+	public void testGetDeclarationAfterClone() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/noclasspath/A2.java");
@@ -226,10 +226,10 @@ public class VariableAccessTest {
 					final CtLocalVariableReference<T> reference) {
 				assertNotNull(reference.getDeclaration());
 				final CtLocalVariable decl = reference.getDeclaration();
-				assertEquals(decl.getPosition().getLine(), 7);
+				assertEquals(7, decl.getPosition().getLine());
 				assertTrue(decl.getDefaultExpression() instanceof CtLiteral);
 				final CtLiteral literal = (CtLiteral) decl.getDefaultExpression();
-				assertEquals(literal.getValue(), 42);
+				assertEquals(42, literal.getValue());
 				super.visitCtLocalVariableReference(reference);
 			}
 		}

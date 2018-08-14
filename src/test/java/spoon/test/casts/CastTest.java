@@ -63,7 +63,7 @@ public class CastTest {
 								+ "public void foo() {" + " Class<?> x = null;"
 								+ " addConsumedAnnotationType((Class<A>) x);"
 								+ "}" + "};").compile();
-		CtMethod<?> foo = clazz.getElements(new NamedElementFilter<>(CtMethod.class,"foo"))
+		CtMethod<?> foo = clazz.getElements(new NamedElementFilter<>(CtMethod.class, "foo"))
 				.get(0);
 		CtVariableRead<?> a = (CtVariableRead<?>) clazz.getElements(
 				new TypeFilter<>(CtVariableRead.class)).get(0);

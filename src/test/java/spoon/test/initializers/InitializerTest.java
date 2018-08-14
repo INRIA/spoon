@@ -11,6 +11,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -23,9 +24,7 @@ public class InitializerTest {
 
 		CtClass<?> InternalClass = type.getNestedType("InternalClass");
 		assertTrue(InternalClass.getModifiers().contains(ModifierKind.STATIC));
-		CtAnonymousExecutable staticBlock = type.getElements(
-				new TypeFilter<CtAnonymousExecutable>(
-						CtAnonymousExecutable.class)).get(0);
+		CtAnonymousExecutable staticBlock = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertTrue(staticBlock.getModifiers().contains(ModifierKind.STATIC));
 		assertEquals(1, staticBlock.getBody().getStatements().size());
 
@@ -48,7 +47,7 @@ public class InitializerTest {
 		assertTrue(l.getDefaultExpression() instanceof CtConstructorCall);
 
 		CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x")).get(0);
-		assertTrue(x.getDefaultExpression() == null);
+		assertNull(x.getDefaultExpression());
 
 		CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y")).get(0);
 		assertTrue(y.getDefaultExpression() instanceof CtLiteral);
@@ -57,10 +56,7 @@ public class InitializerTest {
 		assertTrue(z.getDefaultExpression().toString().equals("5"));
 
 		// static initializer
-		CtAnonymousExecutable ex = type.getElements(
-				new TypeFilter<CtAnonymousExecutable>(
-						CtAnonymousExecutable.class)).get(0);
+		CtAnonymousExecutable ex = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertEquals("x = 3", ex.getBody().getStatements().get(0).toString());
-
 	}
 }

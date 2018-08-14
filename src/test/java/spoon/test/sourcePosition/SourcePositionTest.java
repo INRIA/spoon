@@ -34,7 +34,7 @@ public class SourcePositionTest {
 		String sampleClassName = "SampleClass";
 		String qualifiedName = packageName + "." + sampleClassName;
 
-		Filter<CtMethod<?>> methodFilter = new TypeFilter<CtMethod<?>>(CtMethod.class);
+		Filter<CtMethod<?>> methodFilter = new TypeFilter<>(CtMethod.class);
 
 		Factory aFactory = factoryFor(packageName, sampleClassName);
 		List<CtMethod<?>> methods = aFactory.Class().get(qualifiedName).getElements(methodFilter);
@@ -75,7 +75,7 @@ public class SourcePositionTest {
 	}
 
 	@Test
-	public void testSourcePositionStringFragment() throws Exception {
+	public void testSourcePositionStringFragment() {
 		CompilationUnit cu = new CompilationUnitImpl() {
 			@Override
 			public String getOriginalSourceCode() {

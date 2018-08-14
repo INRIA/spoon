@@ -97,9 +97,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	};
 
 	public CtAnnotationImpl() {
-		super();
 	}
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtAnnotation(this);
 	}
@@ -233,7 +233,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 						.partiallyEvaluate()).getValue();
 			}
 
-			if (((CtFieldReference<?>) value).getSimpleName().equals("class")) {
+			if ("class".equals(((CtFieldReference<?>) value).getSimpleName())) {
 				return c;
 			}
 			CtField<?> field = ((CtFieldReference<?>) value).getDeclaration();
@@ -293,6 +293,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return null;
 	}
 
+	@Override
 	public CtTypeReference<A> getAnnotationType() {
 		return annotationType;
 	}
@@ -500,16 +501,17 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return CtAnnotation.getAnnotatedElementTypeForCtElement(annotatedElement);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public A getActualAnnotation() {
 		class AnnotationInvocationHandler implements InvocationHandler {
 			CtAnnotation<? extends Annotation> annotation;
 
 			AnnotationInvocationHandler(CtAnnotation<? extends Annotation> annotation) {
-				super();
 				this.annotation = annotation;
 			}
 
+			@Override
 			public Object invoke(Object proxy, Method method, Object[] args) {
 				String fieldname = method.getName();
 				if ("toString".equals(fieldname)) {

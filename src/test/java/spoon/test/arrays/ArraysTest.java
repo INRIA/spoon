@@ -42,7 +42,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testInitializeWithNewArray() throws Exception {
+	public void testInitializeWithNewArray() {
 		Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo.java");
@@ -68,7 +68,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testCtNewArrayInnerCtNewArray() throws Exception {
+	public void testCtNewArrayInnerCtNewArray() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/Foo.java");
 		launcher.setSourceOutputDirectory("target/foo");
@@ -82,7 +82,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testCtNewArrayWitComments() throws Exception {
+	public void testCtNewArrayWitComments() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/NewArrayWithComment.java");
 		launcher.getEnvironment().setCommentEnabled(true);

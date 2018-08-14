@@ -3,6 +3,7 @@ package spoon.test.compilation;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -49,7 +50,7 @@ import spoon.testing.utils.ModelUtils;
 public class CompilationTest {
 
 	@Test
-	public void compileCommandLineTest() throws Exception {
+	public void compileCommandLineTest() {
 		// the --compile option works, shouldCompile is set
 
 		String sourceFile = "./src/test/resources/noclasspath/Simple.java";
@@ -68,9 +69,9 @@ public class CompilationTest {
 				"--level", "OFF"
 		});
 
-		assertEquals(true, launcher.getEnvironment().shouldCompile());
+		assertTrue(launcher.getEnvironment().shouldCompile());
 
-		assertEquals(true, new File(compiledFile).exists());
+		assertTrue(new File(compiledFile).exists());
 	}
 
 	@Test
@@ -142,12 +143,12 @@ public class CompilationTest {
 			bar = barCtType.newInstance();
 			value = bar.m();
 			fail();
-		} catch (Exception ignore) {}
+		} catch (Exception ignore) { }
 
 	}
 
 	@Test
-	public void testNewInstance() throws Exception {
+	public void testNewInstance() {
 		// contract: a ctclass can be instantiated, and each modification results in a new valid object
 		Factory factory = new Launcher().getFactory();
 		CtClass<Ifoo> c = factory.Code().createCodeSnippetStatement(
@@ -168,7 +169,7 @@ public class CompilationTest {
 	}
 
 	@Test
-	public void testFilterResourcesFile() throws Exception {
+	public void testFilterResourcesFile() {
 		// shows how to filter input java files, for https://github.com/INRIA/spoon/issues/877
 		Launcher launcher = new Launcher() {
 			@Override
@@ -195,7 +196,7 @@ public class CompilationTest {
 
 		launcher.addInputResource("./src/test/java/spoon/test/imports");
 		launcher.buildModel();
-		int n=0;
+		int n = 0;
 		// we indeed only have types declared in a file called *Foo*
 		for (CtType<?> t : launcher.getFactory().getModel().getAllTypes()) {
 			n++;
@@ -206,7 +207,7 @@ public class CompilationTest {
 	}
 
 	@Test
-	public void testFilterResourcesDir() throws Exception {
+	public void testFilterResourcesDir() {
 		// shows how to filter input java dir
 		// only in package called "reference"
 		Launcher launcher = new Launcher() {
@@ -236,13 +237,12 @@ public class CompilationTest {
 		launcher.buildModel();
 
 		// we indeed only have types declared in a file in package reference
-		int n=0;
+		int n = 0;
 		for (CtType<?> t : launcher.getModel().getAllTypes()) {
 			n++;
 			assertTrue(t.getQualifiedName().contains("reference"));
 		}
 		assertTrue(n >= 2);
-
 	}
 
 	@Test
@@ -256,7 +256,7 @@ public class CompilationTest {
 		try {
 			klass.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass();
 			fail();
-		} catch (SpoonClassNotFoundException ignore) {}
+		} catch (SpoonClassNotFoundException ignore) { }
 
 		// with precompile
 		Launcher l2 = new Launcher();
@@ -273,7 +273,6 @@ public class CompilationTest {
 		l3.setArgs(new String[] {"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/", "-p", "compilation.SimpleProcessor"});
 		l3.run();
 	}
-
 
 	@Test
 	public void testClassLoader() throws Exception {
@@ -299,13 +298,13 @@ public class CompilationTest {
 		Class c = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.a.ClassA");
 		assertEquals("spoontest.a.ClassA", c.getName());
 	}
-	
+
 	@Test
 	public void testSingleClassLoader() throws Exception {
 		/*
-		 *  contract: the environment exposes a classloader configured by the spoonclass path, 
-		 *  there is one class loader, so the loaded classes are compatible
-		 */
+		*  contract: the environment exposes a classloader configured by the spoonclass path,
+		*  there is one class loader, so the loaded classes are compatible
+		*/
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(new FileSystemFolder("./src/test/resources/classloader-test"));
 		File outputBinDirectory = new File("./target/classloader-test");
@@ -314,17 +313,17 @@ public class CompilationTest {
 		}
 		launcher.setBinaryOutputDirectory(outputBinDirectory);
 		launcher.getModelBuilder().build();
-		
+
 		CtTypeReference<?> mIFoo = launcher.getFactory().Type().createReference("spoontest.IFoo");
 		CtTypeReference<?> mFoo = launcher.getFactory().Type().createReference("spoontest.Foo");
 		assertTrue("Foo subtype of IFoo", mFoo.isSubtypeOf(mIFoo));
 
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
-		
+
 		//Create new launcher which uses classes compiled by previous launcher.
 		//It simulates the classes without sources, which has to be accessed using reflection
 		launcher = new Launcher();
-		
+
 		// not in the classpath
 		try {
 			Class.forName("spoontest.IFoo");
@@ -338,26 +337,24 @@ public class CompilationTest {
 			fail();
 		} catch (ClassNotFoundException expected) {
 		}
-		
+
 		launcher.getEnvironment().setSourceClasspath(new String[]{outputBinDirectory.getAbsolutePath()});
-		
+
 		mIFoo = launcher.getFactory().Type().createReference("spoontest.IFoo");
 		mFoo = launcher.getFactory().Type().createReference("spoontest.Foo");
 		//if it fails then it is because each class is loaded by different class loader
 		assertTrue("Foo subtype of IFoo", mFoo.isSubtypeOf(mIFoo));
-		
 
 		// not in the spoon classpath before setting it
 		Class<?> ifoo = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.IFoo");
 		Class<?> foo = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.Foo");
 
 		assertTrue(ifoo.isAssignableFrom(foo));
-		assertTrue(ifoo.getClassLoader()==foo.getClassLoader());
+		assertSame(ifoo.getClassLoader(), foo.getClassLoader());
 	}
-	
 
 	@Test
-	public void testExoticClassLoader() throws Exception {
+	public void testExoticClassLoader() {
 		// contract: Spoon uses the exotic class loader
 
 		final List<String> l = new ArrayList<>();
@@ -380,7 +377,7 @@ public class CompilationTest {
 				try {
 					// forcing loading it
 					reference.getTypeDeclaration();
-				} catch (SpoonClassNotFoundException ignore) {}
+				} catch (SpoonClassNotFoundException ignore) { }
 			}
 		});
 
@@ -388,22 +385,22 @@ public class CompilationTest {
 		assertTrue(l.contains("KJHKY"));
 		assertEquals(MyClassLoader.class, launcher.getEnvironment().getInputClassLoader().getClass());
 	}
-	
+
 	@Test
 	public void testURLClassLoader() throws Exception {
 		// contract: Spoon handles URLClassLoader and retrieves path elements
-		
+
 		String expected = "target/classes/";
 
 		File f = new File(expected);
-		URL[] urls = new URL[]{f.toURL()};
+		URL[] urls = { f.toURL() };
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
-		
+
 		String[] sourceClassPath = launcher.getEnvironment().getSourceClasspath();
 		assertEquals(1, sourceClassPath.length);
-		String tail = sourceClassPath[0].substring(sourceClassPath[0].length()-expected.length());
+		String tail = sourceClassPath[0].substring(sourceClassPath[0].length() - expected.length());
 		assertEquals(expected, tail);
 	}
 
@@ -416,7 +413,7 @@ public class CompilationTest {
 
 		File f = new File(file);
 		URL url = new URL(distantJar);
-		URL[] urls = new URL[]{ f.toURL(), url };
+		URL[] urls = { f.toURL(), url };
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		try {

@@ -136,7 +136,7 @@ public class TryCatchTest {
 		// Checks we throw 2 exceptions and not one.
 		assertEquals(2, thrownTypes.size());
 
-		CtTry ctTry = clazz.getElements(new TypeFilter<CtTry>(CtTry.class))
+		CtTry ctTry = clazz.getElements(new TypeFilter<>(CtTry.class))
 				.get(0);
 
 		Class<? extends CtCatchVariableReference> exceptionClass = ctTry
@@ -154,7 +154,7 @@ public class TryCatchTest {
 
 		CtMethod<?> method = clazz.getMethodsByName("readFirstLineFromFile").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
-				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(0);
+				new TypeFilter<>(CtTryWithResource.class)).get(0);
 
 		// Checks try has only one resource.
 		assertTrue(ctTryWithResource.getResources().size() == 1);
@@ -166,14 +166,14 @@ public class TryCatchTest {
 
 		CtMethod<?> method = clazz.getMethodsByName("writeToFileZipFileContents").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
-				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(0);
+				new TypeFilter<>(CtTryWithResource.class)).get(0);
 
 		// Checks try has more than one resource.
 		assertTrue(ctTryWithResource.getResources().size() > 1);
 	}
 
 	@Test
-	public void testMultiTryCatchWithCustomExceptions() throws Exception {
+	public void testMultiTryCatchWithCustomExceptions() {
 		final Launcher launcher = new Launcher();
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/trycatch/testclasses/"));
@@ -193,7 +193,7 @@ public class TryCatchTest {
 	}
 
 	@Test
-	public void testCompileMultiTryCatchWithCustomExceptions() throws Exception {
+	public void testCompileMultiTryCatchWithCustomExceptions() {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/java/spoon/test/trycatch/testclasses",
 				"-o", "target/spooned"
@@ -209,7 +209,7 @@ public class TryCatchTest {
 		}
 	}
 	@Test
-	public void testTryCatchVariableGetType() throws Exception {
+	public void testTryCatchVariableGetType() {
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()
@@ -301,7 +301,7 @@ public class TryCatchTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		CtModel model = launcher.buildModel();
 
-		List<CtCatch> catches = model.getElements(new TypeFilter<CtCatch>(CtCatch.class));
+		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
 		assertNotNull(catches.get(0).getParameter().getType()); // catch with single UnknownException
 		assertNull(catches.get(1).getParameter().getType()); // multicatch with UnknownException
 		assertNull(catches.get(2).getParameter().getType()); // multicatch with UnknownException

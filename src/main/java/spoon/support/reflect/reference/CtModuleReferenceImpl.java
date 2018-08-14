@@ -25,7 +25,6 @@ import java.lang.reflect.AnnotatedElement;
 public class CtModuleReferenceImpl extends CtReferenceImpl implements CtModuleReference {
 
 	public CtModuleReferenceImpl() {
-		super();
 	}
 
 	@Override

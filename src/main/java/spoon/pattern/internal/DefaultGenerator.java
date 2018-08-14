@@ -47,7 +47,6 @@ public class DefaultGenerator implements Generator {
 	private ListOfNodes nodes;
 
 	public DefaultGenerator(Factory factory, ListOfNodes nodes) {
-		super();
 		this.nodes = nodes;
 		this.factory = factory;
 	}

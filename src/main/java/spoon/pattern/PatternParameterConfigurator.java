@@ -132,16 +132,16 @@ public class PatternParameterConfigurator {
 		return this;
 	}
 
-	public PatternParameterConfigurator setMinOccurence(int minOccurence) {
-		currentParameter.setMinOccurrences(minOccurence);
+	public PatternParameterConfigurator setMinOccurrence(int minOccurrence) {
+		currentParameter.setMinOccurrences(minOccurrence);
 		return this;
 	}
 
-	public PatternParameterConfigurator setMaxOccurence(int maxOccurence) {
-		if (maxOccurence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurence > 1 && currentParameter.isMultiple() == false) {
+	public PatternParameterConfigurator setMaxOccurrence(int maxOccurrence) {
+		if (maxOccurrence == ParameterInfo.UNLIMITED_OCCURRENCES || maxOccurrence > 1 && currentParameter.isMultiple() == false) {
 			throw new SpoonException("Cannot set maxOccurrences > 1 for single value parameter. Call setMultiple(true) first.");
 		}
-		currentParameter.setMaxOccurrences(maxOccurence);
+		currentParameter.setMaxOccurrences(maxOccurrence);
 		return this;
 	}
 
@@ -593,6 +593,7 @@ public class PatternParameterConfigurator {
 					addSubstitutionRequest(pi, element, roleHandler.getRole());
 				}
 			}
+			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
 				if (stringMarker.equals(mapEntryKey)) {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
@@ -624,6 +625,7 @@ public class PatternParameterConfigurator {
 					addSubstitutionRequest(pi, element, roleHandler.getRole(), stringMarker);
 				}
 			}
+			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
 				if (mapEntryKey != null && mapEntryKey.indexOf(stringMarker) >= 0) {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
@@ -830,7 +832,6 @@ public class PatternParameterConfigurator {
 		final ParameterInfo parameter;
 		final CtElement element;
 		public ParameterElementPair(ParameterInfo parameter, CtElement element) {
-			super();
 			this.parameter = parameter;
 			this.element = element;
 		}
@@ -911,7 +912,7 @@ public class PatternParameterConfigurator {
 			if (parent instanceof CtInvocation<?>) {
 				CtInvocation<?> invocation = (CtInvocation<?>) parent;
 				CtExecutableReference<?> executableRef = invocation.getExecutable();
-				if (executableRef.getSimpleName().equals("S")) {
+				if ("S".equals(executableRef.getSimpleName())) {
 					if (TemplateParameter.class.getName().equals(executableRef.getDeclaringType().getQualifiedName())) {
 						/*
 						 * the invocation of TemplateParameter#S() has to be substituted

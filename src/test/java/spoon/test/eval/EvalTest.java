@@ -19,7 +19,6 @@ import spoon.test.eval.testclasses.Foo;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -111,7 +110,7 @@ public class EvalTest {
 	}
 
 	@Test
-	public void testVisitorPartialEvaluator_binary() throws Exception {
+	public void testVisitorPartialEvaluator_binary() {
 		Launcher launcher = new Launcher();
 
 		{ // binary operator
@@ -145,7 +144,7 @@ public class EvalTest {
 	}
 
 	@Test
-	public void testVisitorPartialEvaluator_if() throws Exception {
+	public void testVisitorPartialEvaluator_if() {
 		Launcher launcher = new Launcher();
 		{ // the untaken branch is removed
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetStatement("if (false) {System.out.println(\"foo\");} else {System.out.println(\"bar\");} ").compile();
@@ -159,7 +158,7 @@ public class EvalTest {
 	}
 
 	@Test
-	public void testVisitorPartialEvaluatorScanner() throws Exception {
+	public void testVisitorPartialEvaluatorScanner() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
 		launcher.buildModel();

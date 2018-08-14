@@ -14,11 +14,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ParameterTest {
 
 	@Test
-	public void testParameterInNoClasspath() throws Exception {
+	public void testParameterInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/parameter");
 		launcher.setSourceOutputDirectory("./target/parameter");
@@ -35,7 +36,7 @@ public class ParameterTest {
 	}
 
 	@Test
-	public void testGetParameterReferenceInLambdaNoClasspath() throws Exception {
+	public void testGetParameterReferenceInLambdaNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Tacos.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -104,7 +105,7 @@ public class ParameterTest {
 		for (final CtParameter param : parameters) {
 			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
 			// unknown parameters have no type
-			assertEquals(null, refType);
+			assertNull(refType);
 		}
 	}
 }

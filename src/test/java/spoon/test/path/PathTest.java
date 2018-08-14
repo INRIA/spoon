@@ -58,7 +58,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testBuilderMethod() throws Exception {
+	public void testBuilderMethod() {
 		equalsSet(
 				new CtPathBuilder().name("spoon").name("test").name("path").name("testclasses").name("Foo").type(CtMethod.class).build(),
 
@@ -83,7 +83,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testPathFromString() throws Exception {
+	public void testPathFromString() {
 		// match the first statement of Foo.foo() method
 		equals(
 				new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=0]"),
@@ -104,44 +104,44 @@ public class PathTest {
 	}
 
 	@Test
-	public void testMultiPathFromString() throws Exception {
+	public void testMultiPathFromString() {
 		// When role match a list but no index is provided, all of them must be returned
 		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 3);
+		assertEquals(3, results.size());
 		// When role match a set but no name is provided, all of them must be returned
 		results = new CtPathStringBuilder().fromString("#subPackage")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 1);
+		assertEquals(1, results.size());
 		// When role match a map but no key is provided, all of them must be returned
 		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 1);
+		assertEquals(1, results.size());
 
 	}
 
 	@Test
-	public void testIncorrectPathFromString() throws Exception {
+	public void testIncorrectPathFromString() {
 		// match the else part of the if in Foo.bar() method which does not exist (Test non existing unique element)
 		Collection<CtElement> results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar#body#statement[index=2]#else")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 		// match the third statement of Foo.foo() method which does not exist (Test non existing element of a list)
 		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=3]")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 		// match an non existing package (Test non existing element of a set)
 		results = new CtPathStringBuilder().fromString("#subPackage[name=nonExistingPackage]")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 		//match a non existing field of an annotation (Test non existing element of a map)
 		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value[key=misspelled]")
 				.evaluateOn(factory.getModel().getRootPackage());
-		assertEquals(results.size(), 0);
+		assertEquals(0, results.size());
 	}
 
 	@Test
-	public void testGetPathFromNonParent() throws Exception {
+	public void testGetPathFromNonParent() {
 		CtMethod fooMethod = (CtMethod) new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo")
 				.evaluateOn(factory.getModel().getRootPackage()).iterator().next();
 		CtMethod barMethod = (CtMethod) new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar")
@@ -155,7 +155,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testWildcards() throws Exception {
+	public void testWildcards() {
 		// get the first statements of all Foo methods
 		List<CtElement> list = new LinkedList<>();
 		list.add(factory.getModel().getRootPackage());
@@ -171,7 +171,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void testRoles() throws Exception {
+	public void testRoles() {
 		// get the then statement
 		equals(new CtPathStringBuilder().fromString(".**/CtIf#else"),
 				((CtIf) factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getBody()
@@ -184,7 +184,7 @@ public class PathTest {
 	}
 
 	@Test
-	public void toStringTest() throws Exception {
+	public void toStringTest() {
 		comparePath(".spoon.test.path.testclasses.Foo/CtMethod");
 		comparePath(".spoon.test.path.testclasses.Foo.foo#body#statement[index=0]");
 		comparePath(".spoon.test.path.testclasses.Foo.bar/CtParameter");

@@ -24,7 +24,6 @@ public abstract class CtCodeElementImpl extends CtElementImpl implements CtCodeE
 	private static final long serialVersionUID = 1L;
 
 	public CtCodeElementImpl() {
-		super();
 	}
 
 	@SuppressWarnings("unchecked")

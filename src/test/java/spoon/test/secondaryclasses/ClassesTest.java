@@ -104,14 +104,14 @@ public class ClassesTest {
 	public void testIsAnonymousMethodInCtClass() throws Exception {
 		CtClass<?> type = build("spoon.test.secondaryclasses.testclasses", "AnonymousClass");
 
-		TreeSet<CtClass<?>> ts = new TreeSet<CtClass<?>>(new CtLineElementComparator());
+		TreeSet<CtClass<?>> ts = new TreeSet<>(new CtLineElementComparator());
 		ts.addAll(type.getElements(new AbstractFilter<CtClass<?>>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass<?> element) {
 				return element.isAnonymous();
 			}
 		}));
-		List<CtClass<?>> anonymousClass = new ArrayList<CtClass<?>>();
+		List<CtClass<?>> anonymousClass = new ArrayList<>();
 		anonymousClass.addAll(ts);
 		assertFalse(type.isAnonymous());
 		assertTrue(ts.first().isAnonymous());

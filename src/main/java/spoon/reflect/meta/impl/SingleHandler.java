@@ -40,10 +40,12 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 		return ContainerKind.SINGLE;
 	}
 
+	@Override
 	public <W, X> java.util.Collection<X> asCollection(W element) {
 		return asList(element);
 	}
 
+	@Override
 	public <W, X> java.util.List<X> asList(W e) {
 		return new AbstractList<X>() {
 			T element = castTarget(e);
@@ -125,6 +127,7 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 		};
 	}
 
+	@Override
 	public <W, X> java.util.Set<X> asSet(W element) {
 		return Collections.<X>singleton(getValue(element));
 	}

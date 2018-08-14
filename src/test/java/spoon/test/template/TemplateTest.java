@@ -85,6 +85,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
@@ -622,7 +623,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testExtensionBlock() throws Exception {
+	public void testExtensionBlock() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
@@ -672,7 +673,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testTemplateMatcherWithWholePackage() throws Exception {
+	public void testTemplateMatcherWithWholePackage() {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/ContextHelper.java");
 		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/BServiceImpl.java");
@@ -717,7 +718,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testTemplateMatcherMatchTwoSnippets() throws Exception {
+	public void testTemplateMatcherMatchTwoSnippets() {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/template/testclasses/TwoSnippets.java");
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SecurityCheckerTemplate.java"));
@@ -751,7 +752,7 @@ public class TemplateTest {
 		assertTrue(match1.equals(match2));
 	}
 	@Test
-	public void testTemplateInvocationSubstitution() throws Exception {
+	public void testTemplateInvocationSubstitution() {
 		//contract: the template engine supports substitution of method names in method calls.
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InvocationTemplate.java"));
@@ -801,7 +802,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testTemplateArrayAccess() throws Exception {
+	public void testTemplateArrayAccess() {
 		//contract: the template engine supports substitution of arrays of parameters.
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ArrayAccessTemplate.java"));
@@ -829,7 +830,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testSubstituteInnerClass() throws Exception {
+	public void testSubstituteInnerClass() {
 		//contract: the inner class is substituted well too and references to target class are substituted well
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InnerClassTemplate.java"));
@@ -851,7 +852,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testStatementTemplateRootSubstitution() throws Exception {
+	public void testStatementTemplateRootSubstitution() {
 		//contract: the template engine supports substitution of root element
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteRootTemplate.java"));
@@ -868,7 +869,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testExpressionTemplate() throws Exception {
+	public void testExpressionTemplate() {
 		//contract: the template engine supports expression templates
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/AnExpressionTemplate.java"));
@@ -888,7 +889,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void createTypeFromTemplate() throws Exception {
+	public void createTypeFromTemplate() {
 		//contract: the Substitution API provides a method createTypeFromTemplate
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -920,7 +921,7 @@ public class TemplateTest {
 		CtMethod<?> generatedClassMethod = genClass.getMethod("genMethod");
 		assertNotNull(generatedClassMethod);
 		assertNull(genClass.getMethod("someMethod"));
-		assertTrue(generatedIfaceMethod!=generatedClassMethod);
+		assertNotSame(generatedIfaceMethod, generatedClassMethod);
 		assertTrue(generatedClassMethod.isOverriding(generatedIfaceMethod));
 
 		//contract: we can generate enum
@@ -936,7 +937,7 @@ public class TemplateTest {
 	}
 	
 	@Test
-	public void substituteStringLiteral() throws Exception {
+	public void substituteStringLiteral() {
 		//contract: the substitution of literals is possible too
 		//contract: the template engine supports substitution of root element
 		Launcher spoon = new Launcher();
@@ -979,7 +980,7 @@ public class TemplateTest {
 		}
 	}
 	@Test
-	public void substituteSubString() throws Exception {
+	public void substituteSubString() {
 		//contract: the substitution of substrings works on named elements and references too
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubStringTemplate.java"));
@@ -1044,7 +1045,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testObjectIsNotParamTemplate() throws Exception {
+	public void testObjectIsNotParamTemplate() {
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/ObjectIsNotParamTemplate.java"));
 
@@ -1057,7 +1058,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testFieldAccessNameSubstitution() throws Exception {
+	public void testFieldAccessNameSubstitution() {
 		//contract: the substitution of name of whole field is possible
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessTemplate.java"));
@@ -1075,7 +1076,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testFieldAccessNameSubstitutionInInnerClass() throws Exception {
+	public void testFieldAccessNameSubstitutionInInnerClass() {
 		//contract: the substitution of name of whole field is possible in inner class too
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/FieldAccessOfInnerClassTemplate.java"));
@@ -1094,7 +1095,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testAnotherFieldAccessNameSubstitution() throws Exception {
+	public void testAnotherFieldAccessNameSubstitution() {
 		//contract: the substitution of name of whole field is possible
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/AnotherFieldAccessTemplate.java"));
@@ -1113,7 +1114,7 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void substituteTypeAccessReference() throws Exception {
+	public void substituteTypeAccessReference() {
 		//contract: the substitution of CtTypeAccess expression ignores actual type arguments if it have to
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/TypeReferenceClassAccessTemplate.java"));

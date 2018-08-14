@@ -235,7 +235,7 @@ public abstract class Parameters {
 	 * 		the template that holds the parameter values
 	 */
 	public static Map<String, Object> getTemplateParametersAsMap(Factory f, CtType<?> targetType, Template<?> template) {
-		Map<String, Object> params = new HashMap<>(Parameters.getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
+		Map<String, Object> params = new HashMap<>(getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
 		//detect reference to to be generated type
 		CtTypeReference<?> targetTypeRef = targetType == null ? null : targetType.getReference();
 		if (targetType == null) {
@@ -280,7 +280,7 @@ public abstract class Parameters {
 			//the template fields, which are using generic type like <T>, are not template parameters
 			return false;
 		}
-		if (ref.getSimpleName().equals("this")) {
+		if ("this".equals(ref.getSimpleName())) {
 			//the reference to this is not template parameter
 			return false;
 		}
@@ -317,12 +317,14 @@ public abstract class Parameters {
 	public static <T> TemplateParameter<T> NIL(Class<? extends T> type) {
 		if (Number.class.isAssignableFrom(type)) {
 			return (TemplateParameter<T>) new TemplateParameter<Number>() {
+				@Override
 				public Number S() {
 					return 0;
 				}
 			};
 		}
 		return new TemplateParameter<T>() {
+			@Override
 			public T S() {
 				return null;
 			}

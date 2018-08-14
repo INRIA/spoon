@@ -1140,7 +1140,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		boolean isStatic = reference.getSimpleName().equals("class") || !reference.getSimpleName().equals("super") && reference.isStatic();
+		boolean isStatic = "class".equals(reference.getSimpleName()) || !"super".equals(reference.getSimpleName()) && reference.isStatic();
 
 		boolean printType = true;
 
@@ -1163,7 +1163,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.writeSeparator(".");
 		}
-		if (reference.getSimpleName().equals("class")) {
+		if ("class".equals(reference.getSimpleName())) {
 			printer.writeKeyword("class");
 		} else {
 			printer.writeIdentifier(reference.getSimpleName());
@@ -1756,7 +1756,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
+		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && "java.lang".equals(ref.getPackage().getSimpleName()))) {
 			// If my.pkg.Something is imported, but
 			//A) we are in the context of a class which is also called "Something",
 			//B) we are in the context of a class which defines field which is also called "Something",

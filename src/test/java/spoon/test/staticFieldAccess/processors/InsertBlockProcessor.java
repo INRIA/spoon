@@ -1,4 +1,4 @@
-package spoon.test.staticFieldAccess;
+package spoon.test.staticFieldAccess.processors;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;

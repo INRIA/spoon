@@ -6,12 +6,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -86,7 +86,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testParentOfTheEnclosingClassOfStaticClass() throws Exception {
+	public void testParentOfTheEnclosingClassOfStaticClass() {
 		// contract: When we have a static class which extends a superclass in the classpath,
 		// the enclosing class don't have a superclass. This is probably a bug in JDT but good
 		// luck to report a bug about noclasspath in their bugtracker. :)
@@ -112,7 +112,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testNoClasspathWithSuperClassOfAClassInAnInterface() throws Exception {
+	public void testNoClasspathWithSuperClassOfAClassInAnInterface() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -173,7 +173,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
+	public void testSpoonShouldInferImplicitPackageInNoClasspath() {
 		// contract: in noClasspath, when a type is used and no import is specified, then Spoon
 		// should infer that this type is in the same package as the current class.
 		final Launcher launcher2 = new Launcher();
@@ -191,7 +191,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testDefaultConstructorAreOk() throws Exception {
+	public void testDefaultConstructorAreOk() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -219,7 +219,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -231,8 +231,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertFalse(newClassInvocation.toString().isEmpty());
+		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
@@ -247,7 +247,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -259,8 +259,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertFalse(newClassInvocation.toString().isEmpty());
+		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
