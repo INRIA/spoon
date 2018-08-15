@@ -621,13 +621,13 @@ public class PatternParameterConfigurator {
 		new StringAttributeScanner() {
 			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String value) {
-				if (value != null && value.indexOf(stringMarker) >= 0) {
+				if (value != null && value.contains(stringMarker)) {
 					addSubstitutionRequest(pi, element, roleHandler.getRole(), stringMarker);
 				}
 			}
 			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
-				if (mapEntryKey != null && mapEntryKey.indexOf(stringMarker) >= 0) {
+				if (mapEntryKey != null && mapEntryKey.contains(stringMarker)) {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
 						List<RootNode> nodes = ((ListOfNodes) oldAttrNode).getNodes();
 						for (int i = 0; i < nodes.size(); i++) {

@@ -222,11 +222,11 @@ public class CommentTest {
 		assertEquals("Long description", classJavaDoc.getLongDescription());
 
 		CtJavaDocTag deprecatedTag = classJavaDoc.getTags().get(0);
-		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+		assertTrue(classJavaDoc.toString().contains("@deprecated"));
 		classJavaDoc.removeTag(0);
 		assertEquals(-1, classJavaDoc.toString().indexOf("@deprecated"));
 		classJavaDoc.addTag(deprecatedTag);
-		assertTrue(classJavaDoc.toString().indexOf("@deprecated") >= 0);
+		assertTrue(classJavaDoc.toString().contains("@deprecated"));
 	}
 
 	@Test
