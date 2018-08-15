@@ -155,8 +155,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	}
 
 	private CtType<?> getTemplate(String templateQName) {
-		CtType<?> template = getFactory().Class().get(templateQName);
-		return template;
+		return getFactory().Class().get(templateQName);
 	}
 
 	private File file(String name) {
