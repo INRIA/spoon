@@ -36,8 +36,6 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.ImmutableMap;
 
-/**
- */
 public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	/**
