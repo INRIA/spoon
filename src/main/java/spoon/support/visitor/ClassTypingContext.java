@@ -569,18 +569,17 @@ public class ClassTypingContext extends AbstractTypingContext {
 			//the raw type or not a generic type. Arguments are ignored in sub type detection
 			return true;
 		}
-		List<CtTypeReference<?>> subTypeArgs = expectedSuperTypeArguments;
-		if (subTypeArgs.isEmpty()) {
+		if (expectedSuperTypeArguments.isEmpty()) {
 			//the raw type or not a generic type
 			return true;
 		}
-		if (subTypeArgs.size() != superTypeArgs.size()) {
+		if (expectedSuperTypeArguments.size() != superTypeArgs.size()) {
 			//the number of arguments is not same - it should not happen ...
 			return false;
 		}
-		for (int i = 0; i < subTypeArgs.size(); i++) {
+		for (int i = 0; i < expectedSuperTypeArguments.size(); i++) {
 			CtTypeReference<?> superArg = superTypeArgs.get(i);
-			CtTypeReference<?> subArg = subTypeArgs.get(i);
+			CtTypeReference<?> subArg = expectedSuperTypeArguments.get(i);
 			if (isSubTypeArg(subArg, superArg) == false) {
 				return false;
 			}
