@@ -240,7 +240,7 @@ public class MavenLauncher extends Launcher {
 		File pom = new File(projectPath);
 		generateClassPathFile(pom, new File(mvnHome), sourceType);
 
-		List<File> classPathPrints = null;
+		List<File> classPathPrints;
 		String[] classpath;
 		try {
 			classPathPrints = Files.find(Paths.get(pom.getParentFile().getAbsolutePath()),
