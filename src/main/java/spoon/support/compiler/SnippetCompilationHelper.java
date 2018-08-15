@@ -50,13 +50,12 @@ public class SnippetCompilationHelper {
 
 	public static void compileAndReplaceSnippetsIn(CtType<?> c) {
 		Factory f = c.getFactory();
-		CtType<?> workCopy = c;
 		Set<ModifierKind> backup = EnumSet.noneOf(ModifierKind.class);
-		backup.addAll(workCopy.getModifiers());
-		workCopy.removeModifier(ModifierKind.PUBLIC);
+		backup.addAll(c.getModifiers());
+		c.removeModifier(ModifierKind.PUBLIC);
 
 		try {
-			build(f, workCopy.toString());
+			build(f, c.toString());
 		} finally {
 			// restore modifiers
 			c.setModifiers(backup);
