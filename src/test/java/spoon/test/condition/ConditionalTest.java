@@ -47,7 +47,7 @@ public class ConditionalTest {
 	@Test
 	public void testNoBlockInConditionAndLoop() throws Exception {
 		String newLine = System.getProperty("line.separator");
-		
+
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
 		CtMethod<Object> method = aFoo.getMethod("m3");
 		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
