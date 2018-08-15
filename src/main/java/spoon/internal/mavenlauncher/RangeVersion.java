@@ -16,7 +16,6 @@
  */
 package spoon.internal.mavenlauncher;
 
-
 public class RangeVersion {
 	String range;
 	boolean includeStart;
