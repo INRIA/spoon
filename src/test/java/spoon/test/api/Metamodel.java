@@ -73,7 +73,6 @@ public class Metamodel {
 		private final Map<CtRole, Field> fieldsByRole;
 
 		private Type(String name, Class<? extends CtElement> modelInterface, Class<? extends CtElement> modelClass, Consumer<FieldMaker> fieldsCreator) {
-			super();
 			this.name = name;
 			this.modelClass = modelClass;
 			this.modelInterface = modelInterface;
@@ -143,7 +142,6 @@ public class Metamodel {
 		private final boolean unsettable;
 
 		private Field(Type owner, CtRole role, boolean derived, boolean unsettable) {
-			super();
 			this.owner = owner;
 			this.role = role;
 			this.derived = derived;
