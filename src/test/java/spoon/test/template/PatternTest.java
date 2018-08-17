@@ -77,7 +77,6 @@ import static org.junit.Assert.fail;
 // main test of Spoon's patterns
 public class PatternTest {
 
-
 	@Test
 	public void testMatchForeach() throws Exception {
 		//contract: a foreach template can also match inlined lists of statements
@@ -217,7 +216,6 @@ public class PatternTest {
 			assertEquals(false, match.getParameters().getValue("option"));
 			assertEquals("3.14", match.getParameters().getValue("value").toString());
 		}
-
 	}
 
 	@Test
@@ -250,7 +248,7 @@ public class PatternTest {
 			assertEquals("java.lang.System.out.println(2.1)", statements.get(0).toString());
 		}
 	}
-	
+
 	@Test
 	public void testGenerateMultiValues() throws Exception {
 		// contract: the pattern parameter (in this case 'statements')
@@ -369,7 +367,6 @@ public class PatternTest {
 		}
 	}
 
-
 	@Test
 	public void testMatchReluctantMultivalue() throws Exception {
 		//contract: reluctant matching (Quantifier.RELUCTANT) matches only the minimal amount of time
@@ -423,6 +420,7 @@ public class PatternTest {
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
+
 	@Test
 	public void testMatchReluctantMultivalueMinCount1() throws Exception {
 		//contract: one can do reluctant matches with a minCount of 1 node
@@ -466,6 +464,7 @@ public class PatternTest {
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
+
 	@Test
 	public void testMatchReluctantMultivalueExactly2() throws Exception {
 		//contract: one can do reluctant matches min 2 nodes and max 2 nodes
@@ -512,6 +511,7 @@ public class PatternTest {
 		// consequently, no match of the full template
 		assertEquals(0, matches.size());
 	}
+
 	@Test
 	public void testMatchPossesiveMultiValueMaxCount4() throws Exception {
 		//contract: maxCount (#setMaxOccurrence) can be used to stop Quantifier.POSSESSIVE for matching too much
@@ -623,17 +623,11 @@ public class PatternTest {
 			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters().build();
-//				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
-//				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurrence(countFinal);
-//				pb.parameter("inlinedSysOut").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurrence(2);
-//			});
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 			//the possessive matcher eat too much. There is no target element for last `printedValue` variable
 			assertEquals("count="+countFinal, 0, matches.size());
-
 		}
-
 	}
 
 	@Test
@@ -892,7 +886,6 @@ public class PatternTest {
 		}
 	}
 
-
 	@Test
 	public void testMatchOfMapAttribute() throws Exception {
 		//contract: there is support for matching annotations with different annotation values
@@ -1125,7 +1118,6 @@ public class PatternTest {
 		}
 	}
 
-
 	@Test
 	public void testPatternParameters() {
 		//contract: all the parameters of Pattern are available through getParameterInfos
@@ -1302,10 +1294,7 @@ public class PatternTest {
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
-
 	}
-
-
 
 	@Test
 	public void testGenerateClassWithSelfReferences() throws Exception {
@@ -1488,7 +1477,6 @@ public class PatternTest {
 		).build();
 	}
 
-
 	private void assertSequenceOn(List<? extends CtElement> source, int expectedOffset, int expectedSize, List<CtElement> matches) {
 		//check the number of matches
 		assertEquals(expectedSize, matches.size());
@@ -1552,13 +1540,9 @@ public class PatternTest {
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
 
-
 	private Map<String, Object> getMap(Match match, String name) {
 		Object v = match.getParametersMap().get(name);
 		assertNotNull(v);
 		return ((ImmutableMap) v).asMap();
 	}
-
-
-
 }
