@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.Assert.assertThat;
@@ -183,9 +184,9 @@ public class FieldAccessTest {
 
 		final CtFieldAccess logFieldAccess = Query.getElements(build, new TypeFilter<>(CtFieldAccess.class)).get(0);
 
-		assertEquals(Logger.class, logFieldAccess.getType().getActualClass());
+		assertSame(Logger.class, logFieldAccess.getType().getActualClass());
 		assertEquals("LOG", logFieldAccess.getVariable().getSimpleName());
-		assertEquals(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
+		assertSame(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
 
 		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.testclasses.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
 		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());

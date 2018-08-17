@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -65,7 +66,7 @@ public class SwitchCaseTest {
 				.get(0);
 
 		// Checks the selector is a string.
-		assertEquals(String.class,
+		assertSame(String.class,
 				ctSwitch.getSelector().getType().getActualClass());
 
 		// Checks all cases are strings.
@@ -74,7 +75,7 @@ public class SwitchCaseTest {
 				// default case
 				continue;
 			}
-			assertEquals(String.class,
+			assertSame(String.class,
 					aCase.getCaseExpression().getType().getActualClass());
 		}
 	}

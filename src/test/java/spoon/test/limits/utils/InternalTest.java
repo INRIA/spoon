@@ -10,6 +10,7 @@ import spoon.test.limits.utils.testclasses.ContainInternalClass;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class InternalTest {
@@ -26,14 +27,14 @@ public class InternalTest {
 				"spoon.test.limits.utils.testclasses.ContainInternalClass$InternalClass",
 				c1.getQualifiedName());
 		assertEquals("spoon.test.limits.utils.testclasses", c1.getPackage().getQualifiedName());
-		assertEquals(ContainInternalClass.InternalClass.class, c1.getActualClass());
+		assertSame(ContainInternalClass.InternalClass.class, c1.getActualClass());
 
 		CtClass<?> c2 = classes.get(2);
 		assertEquals("InsideInternalClass", c2.getSimpleName());
 		assertEquals(
 				"spoon.test.limits.utils.testclasses.ContainInternalClass$InternalClass$InsideInternalClass",
 				c2.getQualifiedName());
-		assertEquals(ContainInternalClass.InternalClass.InsideInternalClass.class, c2.getActualClass());
+		assertSame(ContainInternalClass.InternalClass.InsideInternalClass.class, c2.getActualClass());
 	}
 
 	@Test

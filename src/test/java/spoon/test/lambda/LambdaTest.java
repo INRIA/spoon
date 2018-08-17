@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -425,7 +426,7 @@ public class LambdaTest {
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
-		assertEquals("Lambda must be typed", expectedType, type.getActualClass());
+		assertSame("Lambda must be typed", expectedType, type.getActualClass());
 	}
 
 	private void assertParametersSizeIs(int nbParameters, List<CtParameter<?>> parameters) {
@@ -438,7 +439,7 @@ public class LambdaTest {
 
 	private void assertParameterTypedBy(Class<?> expectedType, CtParameter<?> parameter) {
 		assertNotNull("Lambda has a parameter typed", parameter.getType());
-		assertEquals("Lambda has a parameter typed by", expectedType, parameter.getType().getActualClass());
+		assertSame("Lambda has a parameter typed by", expectedType, parameter.getType().getActualClass());
 	}
 
 	private void assertHasExpressionBody(CtLambda<?> lambda) {

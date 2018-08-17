@@ -267,7 +267,7 @@ public class MethodReferenceTest {
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
-		assertEquals("Method reference must be typed.", expected, type.getActualClass());
+		assertSame("Method reference must be typed.", expected, type.getActualClass());
 	}
 
 	private void assertTargetedBy(String expected, CtExpression<?> target) {

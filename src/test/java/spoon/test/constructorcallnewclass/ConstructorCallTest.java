@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class ConstructorCallTest {
@@ -107,7 +108,7 @@ public class ConstructorCallTest {
 	}
 
 	private void assertConstructorCallWithType(Class<?> typeExpected, CtConstructorCall<?> constructorCall) {
-		assertEquals("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
+		assertSame("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
 	}
 
 	@Test

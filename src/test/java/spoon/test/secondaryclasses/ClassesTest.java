@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -90,7 +91,7 @@ public class ClassesTest {
 		assertNotNull(x.getType().getTypeDeclaration());
 
 		// but the actual class is known
-		assertEquals(ActionListener.class, x.getType().getActualClass());
+		assertSame(ActionListener.class, x.getType().getActualClass());
 
 		assertNotNull(y.getType().getDeclaration());
 

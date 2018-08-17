@@ -276,8 +276,8 @@ public class TypeTest {
 		assertNotNull(boundingType);
 		assertTrue(boundingType instanceof CtIntersectionTypeReference);
 		assertEquals(2, boundingType.asCtIntersectionTypeReference().getBounds().size());
-		assertEquals(Number.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
-		assertEquals(Comparable.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
+		assertSame(Number.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
+		assertSame(Comparable.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
 		assertEquals("public class Mole<NUMBER extends java.lang.Number & java.lang.Comparable<NUMBER>> {}", aMole.toString());
 	}
 

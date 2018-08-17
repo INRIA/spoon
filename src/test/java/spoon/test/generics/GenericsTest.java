@@ -189,7 +189,7 @@ public class GenericsTest {
 		assertTrue(tr3 instanceof CtTypeParameterReference);
 
 		assertEquals("File", trExtends.getSimpleName());
-		assertEquals(java.io.File.class, trExtends.getActualClass());
+		assertSame(java.io.File.class, trExtends.getActualClass());
 		assertEquals("T", tr2.getSimpleName());
 		assertEquals("T", tr3.getSimpleName());
 	}
@@ -281,7 +281,7 @@ public class GenericsTest {
 			assertEquals("java.util.Map.Entry", ref.toString());
 
 			// now visitCtTypeReference
-			assertEquals(java.util.Map.class, ref.getDeclaringType()
+			assertSame(java.util.Map.class, ref.getDeclaringType()
 					.getActualClass());
 			pp.visitCtTypeReference(ref);
 
