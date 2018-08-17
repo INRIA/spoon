@@ -173,7 +173,7 @@ public class ElementPrinterHelper {
 	 * Writes a statement.
 	 */
 	public void writeStatement(CtStatement statement) {
-		try (Writable _context = prettyPrinter.context.modify().setStatement(statement)) {
+		try (Writable _context = prettyPrinter.getContext().modify().setStatement(statement)) {
 			prettyPrinter.scan(statement);
 		}
 	}
@@ -255,7 +255,7 @@ public class ElementPrinterHelper {
 			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
 				null, false, "<", false, false, ",", true, false, ">",
 				argument -> {
-					if (prettyPrinter.context.forceWildcardGenerics()) {
+					if (prettyPrinter.getContext().forceWildcardGenerics()) {
 						printer.writeSeparator("?");
 					} else {
 						prettyPrinter.scan(argument);

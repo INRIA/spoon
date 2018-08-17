@@ -182,7 +182,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * The printing context.
 	 */
-	public PrintingContext context = new PrintingContext();
+	private PrintingContext context = new PrintingContext();
 
 	/**
 	 * Handle imports of classes.
