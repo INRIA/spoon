@@ -204,8 +204,7 @@ public class MavenLauncher extends Launcher {
 
 				while ((line = output.readLine()) != null) {
 					if (line.contains(mavenVersionParsing)) {
-						mvnHome = line.replace(mavenVersionParsing, "");
-						return mvnHome;
+						return line.replace(mavenVersionParsing, "");
 					}
 				}
 			}
