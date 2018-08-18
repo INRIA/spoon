@@ -218,10 +218,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 				return false;
 			}
 			CtTypeReference<?> declaringType = getDeclaringType();
-			if (declaringType == null || !declaringType.isSubtypeOf(executable.getDeclaringType())) {
-				return false;
-			}
-			return true;
+			return declaringType != null && declaringType.isSubtypeOf(executable.getDeclaringType());
 		}
 		if (exec instanceof CtMethod<?> && thisExec instanceof CtMethod<?>) {
 			return new ClassTypingContext(((CtTypeMember) thisExec).getDeclaringType()).isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
