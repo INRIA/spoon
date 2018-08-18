@@ -69,10 +69,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 			nestedModel = newNode;
 			return true;
 		}
-		if (nestedModel.replaceNode(oldNode, newNode)) {
-			return true;
-		}
-		return false;
+		return nestedModel.replaceNode(oldNode, newNode);
 	}
 
 	@Override
