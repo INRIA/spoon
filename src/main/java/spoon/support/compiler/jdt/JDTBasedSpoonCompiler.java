@@ -96,11 +96,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	private void initializeCUCOmparator() {
 		try {
-			if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
-				this.sortList = false;
-			} else {
-				this.sortList = true;
-			}
+			this.sortList = System.getenv("SPOON_SEED_CU_COMPARATOR") == null;
 		} catch (NumberFormatException | SecurityException e) {
 			Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
 			this.sortList = true;
