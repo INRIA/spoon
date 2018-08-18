@@ -189,9 +189,8 @@ public class MavenLauncher extends Launcher {
 				}
 			}
 		}
-		String[] classpath = new String[classpathElements.size()];
-		classpath = classpathElements.toArray(classpath);
-		return classpath;
+
+		return classpathElements.toArray(new String[0]);
 	}
 
 	static String guessMavenHome() {
