@@ -84,8 +84,9 @@ public class CtRenameLocalVariableRefactoring extends AbstractRenameRefactoring<
 
 		@Override
 		public ScanningMode enter(CtElement element) {
-			if (ignoredParent != null && element instanceof CtElement) {
-				if (((CtElement) element).hasParent(ignoredParent)) {
+			CtElement ele = element;
+			if (ele.hasParent(ignoredParent)) {
+				if (element.hasParent(ignoredParent)) {
 					return ScanningMode.SKIP_ALL;
 				}
 			}
