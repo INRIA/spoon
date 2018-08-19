@@ -223,7 +223,7 @@ public class InheritanceModel {
 			List<Version> versionsFromM2 = getVersionsFromM2(groupId, artifactId);
 			RangeVersion rangeVersion = new RangeVersion(version);
 			for (Version v : versionsFromM2) {
-				if (rangeVersion.include(v)) {
+				if (rangeVersion.isIncluded(v)) {
 					version = v.version;
 					break;
 				}
