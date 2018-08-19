@@ -250,9 +250,9 @@ public class MetamodelTest {
 			assertNull(runtimeConcept.getImplementationClass());
 		} else {
 			assertNotNull(runtimeConcept.getImplementationClass());
-			assertEquals(expectedConcept.getImplementationClass().getActualClass(), runtimeConcept.getImplementationClass().getActualClass());
+			assertSame(expectedConcept.getImplementationClass().getActualClass(), runtimeConcept.getImplementationClass().getActualClass());
 		}
-		assertEquals(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
+		assertSame(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
 		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
 		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());
 		for (int i = 0; i < expectedConcept.getSuperConcepts().size(); i++) {
@@ -270,7 +270,7 @@ public class MetamodelTest {
 	private void assertPropertiesEqual(MetamodelProperty expectedProperty, MetamodelProperty runtimeProperty) {
 		assertSame(expectedProperty.getRole(), runtimeProperty.getRole());
 		assertEquals(expectedProperty.getName(), runtimeProperty.getName());
-		assertEquals(expectedProperty.getTypeofItems().getActualClass(), runtimeProperty.getTypeofItems().getActualClass());
+		assertSame(expectedProperty.getTypeofItems().getActualClass(), runtimeProperty.getTypeofItems().getActualClass());
 		assertEquals(expectedProperty.getOwner().getName(), runtimeProperty.getOwner().getName());
 		assertSame(expectedProperty.getContainerKind(), runtimeProperty.getContainerKind());
 		assertEquals(expectedProperty.getTypeOfField(), runtimeProperty.getTypeOfField());
@@ -385,10 +385,10 @@ public class MetamodelTest {
 		//check contract of low level RoleHandler
 		RoleHandler roleHandler = RoleHandlerHelper.getRoleHandler(type.getClass(), CtRole.ANNOTATION);
 		assertNotNull(roleHandler);
-		assertEquals(CtElement.class, roleHandler.getTargetType());
+		assertSame(CtElement.class, roleHandler.getTargetType());
 		assertSame(CtRole.ANNOTATION, roleHandler.getRole());
 		assertSame(ContainerKind.LIST, roleHandler.getContainerKind());
-		assertEquals(CtAnnotation.class, roleHandler.getValueClass());
+		assertSame(CtAnnotation.class, roleHandler.getValueClass());
 
 		//check getting value using role handler
 		List<CtAnnotation<?>> value = roleHandler.getValue(type);

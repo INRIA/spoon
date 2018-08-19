@@ -48,6 +48,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -202,7 +203,7 @@ public class TypeReferenceTest {
 	public void unboxTest() {
 		Factory factory = new Launcher().createFactory();
 		CtTypeReference<Boolean> boxedBoolean = factory.Class().createReference(Boolean.class);
-		assertEquals(boolean.class, boxedBoolean.unbox().getActualClass());
+		assertSame(boolean.class, boxedBoolean.unbox().getActualClass());
 	}
 
 	@Test
@@ -493,8 +494,8 @@ public class TypeReferenceTest {
 		CtTypeReference<Short> aShort = ModelUtils.createFactory().Type().SHORT;
 		CtTypeReference<Short> shortPrimitive = ModelUtils.createFactory().Type().SHORT_PRIMITIVE;
 
-		assertEquals(Short.class, aShort.getActualClass());
-		assertEquals(short.class, shortPrimitive.getActualClass());
+		assertSame(Short.class, aShort.getActualClass());
+		assertSame(short.class, shortPrimitive.getActualClass());
 
 	}
 
@@ -603,12 +604,12 @@ public class TypeReferenceTest {
 		assertEquals("?", s.getType().getActualTypeArguments().get(0).getSimpleName());
 		assertTrue(CtWildcardReference.class.isInstance(s.getType().getActualTypeArguments().get(0)));
 		assertEquals("Object", s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getSimpleName());
-		assertEquals(Object.class, s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
+		assertSame(Object.class, s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
 
 		// some additional tests
 		CtLocalVariable<?> s2 = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<String> l = null").compile();
 		assertEquals("String", s2.getType().getActualTypeArguments().get(0).getSimpleName());
-		assertEquals(String.class, s2.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
+		assertSame(String.class, s2.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
 	}
 
 	@Test

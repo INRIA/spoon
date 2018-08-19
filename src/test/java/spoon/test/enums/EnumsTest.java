@@ -22,6 +22,7 @@ import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -56,7 +57,7 @@ public class EnumsTest {
 		final CtEnum<?> foo = (CtEnum) launcher.getFactory().Type().get(Foo.class);
 		assertEquals(1, foo.getFields().size());
 		assertEquals(1, foo.getFields().get(0).getAnnotations().size());
-		assertEquals(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
+		assertSame(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
 		assertEquals(
 				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR

@@ -25,6 +25,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -60,12 +61,12 @@ public class VisibilityTest {
 		// Class must be imported.
 		final CtClass<?> aDouble = (CtClass<?>) factory.Type().get(spoon.test.visibility.testclasses.internal.Double.class);
 		assertNotNull(aDouble);
-		assertEquals(spoon.test.visibility.testclasses.internal.Double.class, aDouble.getActualClass());
+		assertSame(spoon.test.visibility.testclasses.internal.Double.class, aDouble.getActualClass());
 
 		// Class mustn't be imported.
 		final CtClass<?> aFloat = (CtClass<?>) factory.Type().get(spoon.test.visibility.testclasses.Float.class);
 		assertNotNull(aFloat);
-		assertEquals(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
+		assertSame(spoon.test.visibility.testclasses.Float.class, aFloat.getActualClass());
 
 		canBeBuilt(new File("./target/spooned/spoon/test/visibility_package/testclasses/"), 7);
 	}

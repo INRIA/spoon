@@ -323,7 +323,7 @@ public class TemplateTest {
 
 		CtField<?> toBeInserted = c1.getElements(
 				new NamedElementFilter<>(CtField.class,"toBeInserted")).get(0);
-		assertEquals(Date.class, toBeInserted.getType()
+		assertSame(Date.class, toBeInserted.getType()
 				.getActualTypeArguments().get(0).getActualClass());
 		assertEquals(
 				"java.util.List<java.util.Date> toBeInserted = new java.util.ArrayList<java.util.Date>();",
