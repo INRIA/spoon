@@ -220,7 +220,6 @@ public class JavaReflectionTreeBuilderTest {
 		CtElement other;
 		Set<CtRole> roles = new HashSet<>();
 		Diff(CtElement element, CtElement other) {
-			super();
 			this.element = element;
 			this.other = other;
 		}
