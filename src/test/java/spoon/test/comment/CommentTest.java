@@ -168,7 +168,7 @@ public class CommentTest {
 			if (first) {
 				//first
 				first = false;
-				assertEquals(line.length(), 3);
+				assertEquals(3, line.length());
 				assertEquals("/**", line);
 			} else {
 				if (st.hasMoreTokens()) {
@@ -878,7 +878,7 @@ public class CommentTest {
 			while ((b = is.read()) != -1) {
 				if (lastWasCR) {
 					//next must be LF
-					assertEquals(b, '\n');
+					assertEquals('\n', b);
 					lastWasCR = false;
 				}
 				if (b == '\r') {
@@ -904,7 +904,7 @@ public class CommentTest {
 			if (first) {
 				//first
 				first = false;
-				assertEquals(line.length(), 3);
+				assertEquals(3, line.length());
 				assertEquals("/**", line);
 			} else {
 				if (st.hasMoreTokens()) {
