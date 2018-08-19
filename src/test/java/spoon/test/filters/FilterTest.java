@@ -271,10 +271,10 @@ public class FilterTest {
 		assertEquals(5, elements.size());
 		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
 		assertEquals("spoon.test.filters.testclasses.AbstractTostada$1", overridingMethods.get(3).getParent(CtClass.class).getQualifiedName());
-		assertEquals(Antojito.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
-		assertEquals(SubTostada.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
+		assertSame(Antojito.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
+		assertSame(SubTostada.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
 		assertEquals("spoon.test.filters.testclasses.Tostada$1", overridingMethods.get(0).getParent(CtClass.class).getQualifiedName());
-		assertEquals(Tostada.class, overridingMethods.get(4).getParent(CtClass.class).getActualClass());
+		assertSame(Tostada.class, overridingMethods.get(4).getParent(CtClass.class).getActualClass());
 	}
 
 	@Test
@@ -296,7 +296,7 @@ public class FilterTest {
 		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
 		assertEquals(3, overridingMethods.size());
 		assertEquals("spoon.test.filters.testclasses.AbstractTostada$1", overridingMethods.get(2).getParent(CtClass.class).getQualifiedName());
-		assertEquals(SubTostada.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
+		assertSame(SubTostada.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
 		assertEquals("spoon.test.filters.testclasses.Tostada$1", overridingMethods.get(0).getParent(CtClass.class).getQualifiedName());
 
 		final CtClass<SubTostada> aSubTostada = launcher.getFactory().Class().get(SubTostada.class);
@@ -319,10 +319,10 @@ public class FilterTest {
 		ts.addAll(elements);
 		final List<CtMethod<?>> overridingMethods = Arrays.asList(ts.toArray(new CtMethod[0]));
 		assertEquals(4, overridingMethods.size());
-		assertEquals(AbstractTostada.class, overridingMethods.get(3).getParent(CtType.class).getParent(CtClass.class).getActualClass());
+		assertSame(AbstractTostada.class, overridingMethods.get(3).getParent(CtType.class).getParent(CtClass.class).getActualClass());
 		assertEquals("spoon.test.filters.testclasses.AbstractTostada", overridingMethods.get(1).getParent(CtClass.class).getQualifiedName());
-		assertEquals(Tostada.class, overridingMethods.get(0).getParent(CtClass.class).getActualClass());
-		assertEquals(Tacos.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
+		assertSame(Tostada.class, overridingMethods.get(0).getParent(CtClass.class).getActualClass());
+		assertSame(Tacos.class, overridingMethods.get(2).getParent(CtClass.class).getActualClass());
 	}
 
 	@Test
@@ -339,7 +339,7 @@ public class FilterTest {
 		List<CtMethod<?>> overridingMethods = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(anAbstractTostada.getMethodsByName("make").get(0)));
 		assertEquals(2, overridingMethods.size());
 		assertEquals("spoon.test.filters.testclasses.AbstractTostada$1", overridingMethods.get(0).getParent(CtClass.class).getQualifiedName());
-		assertEquals(Tostada.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
+		assertSame(Tostada.class, overridingMethods.get(1).getParent(CtClass.class).getActualClass());
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
 		overridingMethods = Query.getElements(launcher.getFactory(), new OverridingMethodFilter(aTostada.getMethodsByName("make").get(0)));
@@ -375,13 +375,13 @@ public class FilterTest {
 
 		final List<CtMethod<?>> overridenMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aTostada.getMethodsByName("prepare").get(0)));
 		assertEquals(1, overridenMethods.size());
-		assertEquals(AbstractTostada.class, overridenMethods.get(0).getParent(CtClass.class).getActualClass());
+		assertSame(AbstractTostada.class, overridenMethods.get(0).getParent(CtClass.class).getActualClass());
 
 		final CtClass<SubTostada> aSubTostada = launcher.getFactory().Class().get(SubTostada.class);
 		final List<CtMethod<?>> overridenMethodsFromSub = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(aSubTostada.getMethodsByName("prepare").get(0)));
 		assertEquals(2, overridenMethodsFromSub.size());
-		assertEquals(AbstractTostada.class, overridenMethodsFromSub.get(0).getParent(CtClass.class).getActualClass());
-		assertEquals(Tostada.class, overridenMethodsFromSub.get(1).getParent(CtClass.class).getActualClass());
+		assertSame(AbstractTostada.class, overridenMethodsFromSub.get(0).getParent(CtClass.class).getActualClass());
+		assertSame(Tostada.class, overridenMethodsFromSub.get(1).getParent(CtClass.class).getActualClass());
 	}
 
 	@Test
@@ -460,14 +460,14 @@ public class FilterTest {
 
 		final List<CtMethod<?>> overriddenMethods = Query.getElements(launcher.getFactory(), new OverriddenMethodFilter(anAbstractTostada.getMethodsByName("make").get(0)));
 		assertEquals(1, overriddenMethods.size());
-		assertEquals(ITostada.class, overriddenMethods.get(0).getParent(CtInterface.class).getActualClass());
+		assertSame(ITostada.class, overriddenMethods.get(0).getParent(CtInterface.class).getActualClass());
 
 		final CtClass<Tostada> aTostada = launcher.getFactory().Class().get(Tostada.class);
 		OverriddenMethodFilter filter = new OverriddenMethodFilter(aTostada.getMethodsByName("make").get(0));
 		final List<CtMethod<?>> overriddenMethodsFromSub = Query.getElements(launcher.getFactory(), filter);
 		assertEquals(2, overriddenMethodsFromSub.size());
-		assertEquals(AbstractTostada.class, overriddenMethodsFromSub.get(0).getParent(CtType.class).getActualClass());
-		assertEquals(ITostada.class, overriddenMethodsFromSub.get(1).getParent(CtType.class).getActualClass());
+		assertSame(AbstractTostada.class, overriddenMethodsFromSub.get(0).getParent(CtType.class).getActualClass());
+		assertSame(ITostada.class, overriddenMethodsFromSub.get(1).getParent(CtType.class).getActualClass());
 	}
 
 	@Test
