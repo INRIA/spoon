@@ -99,7 +99,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	static String computeAnonymousName(char[] anonymousQualifiedName) {
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
+		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1);
 	}
 
 	/**
