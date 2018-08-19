@@ -181,8 +181,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/**
 	 * The printing context.
+	 *
+	 * @deprecated since Spoon 7.1.0, please use {{@link #getContext()}}
 	 */
-	private PrintingContext context = new PrintingContext();
+	public PrintingContext context = new PrintingContext();
 
 	/**
 	 * Handle imports of classes.
