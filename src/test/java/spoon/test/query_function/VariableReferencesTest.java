@@ -172,7 +172,7 @@ public class VariableReferencesTest {
 		//visits all the CtVariable elements whose name is "field" and search for all elements in their scopes
 		//Comparing with the result found by basic functions
 		List list = modelClass.filterChildren((CtVariable<?> var)->{
-			if(var.getSimpleName().equals("field")) {
+			if("field".equals(var.getSimpleName())) {
 				if(var instanceof CtField) {
 					//field scope is not supported
 					return false;

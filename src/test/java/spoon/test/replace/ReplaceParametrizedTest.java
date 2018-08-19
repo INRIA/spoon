@@ -83,7 +83,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 				//the children of CtLoop wraps CtStatement into an implicit CtBlock. So make a block directly to test plain get/set and not wrapping.
 				itemType = factory.createCtTypeReference(CtBlock.class);
 			}
-			if (o.getClass().getSimpleName().equals("CtAnnotationFieldAccessImpl") && mmField.getRole()==CtRole.VARIABLE) {
+			if ("CtAnnotationFieldAccessImpl".equals(o.getClass().getSimpleName()) && mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);
 			} else if (CtFieldAccess.class.isAssignableFrom(o.getClass()) &&  mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);

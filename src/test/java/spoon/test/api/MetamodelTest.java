@@ -305,7 +305,7 @@ public class MetamodelTest {
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
 					if (new ClassTypingContext(mmConcept.getMetamodelInterface()).isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
-							&& mmConcept.getName().equals("CtTypeInformation") == false) {
+							&& "CtTypeInformation".equals(mmConcept.getName()) == false) {
 						//only NON references needs a setter
 						problems.add("Missing setter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 					}

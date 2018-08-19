@@ -218,7 +218,7 @@ public class MethodReferenceTest {
 
 		CtClass<?> classSun = classCloud.getFactory().Class().get("spoon.test.methodreference.testclasses.Sun");
 		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtInvocation.class))
-				.select(((CtInvocation i)->i.getExecutable().getSimpleName().equals("method")))
+				.select(((CtInvocation i)-> "method".equals(i.getExecutable().getSimpleName())))
 				.map((CtInvocation i)->i.getExecutable())
 				.first();
 		assertNotNull(execRef2);

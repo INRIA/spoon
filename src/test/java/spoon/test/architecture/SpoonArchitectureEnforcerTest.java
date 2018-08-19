@@ -53,7 +53,7 @@ public class SpoonArchitectureEnforcerTest {
 		})) {
 			for (Object o : t.getFields()) {
 				CtField f = (CtField) o;
-				if (f.getSimpleName().equals("factory")) {
+				if ("factory".equals(f.getSimpleName())) {
 					continue;
 				}
 				if (f.hasModifier(ModifierKind.FINAL) || f.hasModifier(ModifierKind.TRANSIENT)) {
@@ -96,7 +96,7 @@ public class SpoonArchitectureEnforcerTest {
 						}
 
 						// too generic, what should we create??
-						if (m.getSimpleName().equals("create")) {
+						if ("create".equals(m.getSimpleName())) {
 							String simpleNameType = m.getType().getSimpleName().replace("Ct", "");
 							CtMethod method = m.clone();
 
@@ -106,7 +106,7 @@ public class SpoonArchitectureEnforcerTest {
 						}
 
 						// too generic, is it a fieldref? an execref? etc
-						if (m.getSimpleName().equals("createReference")) {
+						if ("createReference".equals(m.getSimpleName())) {
 							continue;
 						}
 

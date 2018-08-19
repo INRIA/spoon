@@ -179,7 +179,7 @@ public class CtScannerTest {
 					}
 				}).first();
 
-				if (getter.getName().equals("getComments") && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)) {
+				if ("getComments".equals(getter.getName()) && leafConcept.getMetamodelInterface().isSubtypeOf(ctRefRef)) {
 					//one cannot set comments on references see the @UnsettableProperty of CtReference#setComments
 					return;
 				}

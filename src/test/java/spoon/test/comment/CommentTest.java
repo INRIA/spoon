@@ -793,27 +793,27 @@ public class CommentTest {
 					) {
 
 				// no meaningful snippet
-				if (x.getSimpleName().equals("CtCodeSnippetStatement")) {
+				if ("CtCodeSnippetStatement".equals(x.getSimpleName())) {
 					return;
 				}
 
 				// no meaningful snippet
-				if (x.getSimpleName().equals("CtCodeSnippetExpression")) {
+				if ("CtCodeSnippetExpression".equals(x.getSimpleName())) {
 					return;
 				}
 
 				// no comment in snippet mode
-				if (x.getSimpleName().equals("CtComment")) {
+				if ("CtComment".equals(x.getSimpleName())) {
 					return;
 				}
 
 				// a statement in really rare cases
-				if (x.getSimpleName().equals("CtEnum")) {
+				if ("CtEnum".equals(x.getSimpleName())) {
 					return;
 				}
 
 				// too hard to snippetize
-				if (x.getSimpleName().equals("CtAnnotationFieldAccess")) {
+				if ("CtAnnotationFieldAccess".equals(x.getSimpleName())) {
 					return;
 				}
 

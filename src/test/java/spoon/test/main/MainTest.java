@@ -551,7 +551,7 @@ public class MainTest {
 		// if one analyzes src/main/java and src/test/java at the same time
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
-			if (t.getPackage().getQualifiedName().equals("spoon.metamodel")
+			if ("spoon.metamodel".equals(t.getPackage().getQualifiedName())
 					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;

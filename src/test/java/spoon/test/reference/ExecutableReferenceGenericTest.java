@@ -248,7 +248,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(10, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object()")) {
+			if (!"java.lang.Object()".equals(ref.toString())) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}
@@ -256,7 +256,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(9, refsExecutableClass2.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass2) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object()")) {
+			if (!"java.lang.Object()".equals(ref.toString())) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}

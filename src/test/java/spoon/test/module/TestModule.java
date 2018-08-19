@@ -51,7 +51,7 @@ public class TestModule {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		try (Stream<Path> paths = Files.walk(directory.toPath())) {
 			paths.forEach(path -> {
-				if (path.toFile().getName().equals("module-info-tpl")) {
+				if ("module-info-tpl".equals(path.toFile().getName())) {
 					try {
 						Files.copy(path, new File(path.getParent().toFile(), "module-info.java").toPath());
 					} catch (IOException e) {
@@ -67,7 +67,7 @@ public class TestModule {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		try (Stream<Path> paths = Files.walk(directory.toPath())) {
 			paths.forEach(path -> {
-				if (path.toFile().getName().equals("module-info.java")) {
+				if ("module-info.java".equals(path.toFile().getName())) {
 					try {
 						Files.delete(path);
 					} catch (IOException e) {
@@ -112,7 +112,7 @@ public class TestModule {
 		assertEquals(2, moduleExports.get(0).getTargetExport().size());
 
 		for (CtModuleReference target : moduleExports.get(0).getTargetExport()) {
-			if (!target.getSimpleName().equals("com.other.module") && !target.getSimpleName().equals("com.second.module")) {
+			if (!"com.other.module".equals(target.getSimpleName()) && !"com.second.module".equals(target.getSimpleName())) {
 				fail();
 			}
 		}
