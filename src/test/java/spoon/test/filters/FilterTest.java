@@ -680,7 +680,7 @@ public class FilterTest {
 				});
 			fail();
 		} catch (ClassCastException e) {
-			assertTrue(e.getMessage().indexOf("spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod")>=0);
+			assertTrue(e.getMessage().contains("spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod"));
 		}
 	}
 	@Test

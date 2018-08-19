@@ -129,10 +129,9 @@ public class ImportTest {
 		
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
-		
 
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClass.getSuperclass().getQualifiedName());
-		
+
 		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 
@@ -436,7 +435,7 @@ public class ImportTest {
 				+ "    public class ArrayList extends java.util.ArrayList {}" + newLine
 				+ "}", aClass.toString());
 	}
-	
+
 	@Test
 	public void testAccessToNestedClass() {
 		final Launcher launcher = new Launcher();
@@ -452,7 +451,7 @@ public class ImportTest {
 		Class<?> actualClass = parentClass.getActualClass();
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName()); 
 	}
-	
+
 	@Test
 	public void testAccessType() {
 		final Launcher launcher = new Launcher();
@@ -477,7 +476,7 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
-	
+
 	@Test
 	public void testCanAccess() {
 		
@@ -533,7 +532,7 @@ public class ImportTest {
 						try {
 							accessType = target.getAccessType();
 						} catch (SpoonException e) {
-							if(e.getMessage().indexOf("Cannot compute access path to type: ")==-1) {
+							if(!e.getMessage().contains("Cannot compute access path to type: ")) {
 								throw e;
 							}//else OK, it should throw exception
 							accessType = null;
@@ -546,7 +545,7 @@ public class ImportTest {
 			}
 		}
 		Checker c = new Checker();
-		
+
 		c.checkCanAccess("spoon.test.imports.testclasses.ClientClass", false, true, true, null, null);
 		c.checkCanAccess("spoon.test.imports.testclasses.ClientClass$InnerClass", false, true, false, "spoon.test.imports.testclasses.ClientClass", "spoon.test.imports.testclasses.ClientClass");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.ChildClass", false, true, true, null, null);
@@ -579,7 +578,7 @@ public class ImportTest {
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
@@ -603,11 +602,10 @@ public class ImportTest {
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
-
 	}
 
 	@Test
@@ -624,8 +622,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;")>=0);
-		 								  
+		assertTrue(mm.toString().contains("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;"));
 	}
 
 	@Test
@@ -642,8 +639,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("List<Interners.WeakInterner.Dummy> list;")>=0);
-		 								  
+		assertTrue(mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
 	}
 
 	@Test
@@ -660,9 +656,9 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
-		 								  
+		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().contains("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();"));
 	}
+
 	@Test
 	public void testDeepNestedStaticPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
@@ -677,8 +673,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
-		 								  
+		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().contains("new StaticWithNested.StaticNested.StaticNested2<K>();"));
 	}
 
 	private Factory getFactory(String...inputs) {
@@ -784,7 +779,7 @@ public class ImportTest {
 		assertTrue("The file should not contain a static import for NOFOLLOW_LINKS",!output.contains("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;"));
 		canBeBuilt(outputDir, 7);
 	}
-	
+
 	@Test
 	public void testAccessPath() {
 		final Launcher launcher = new Launcher();
@@ -793,7 +788,7 @@ public class ImportTest {
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 		CtType element = launcher.getFactory().Class().getAll().get(0);
-		
+
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 
 		List<CtType<?>> toPrint = new ArrayList<>();
@@ -804,6 +799,7 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 	}
+
 	@Test
 	public void testSuperInheritanceHierarchyFunction() throws Exception {
 		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
@@ -829,7 +825,7 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertTrue(result.contains(Object.class.getName()));
-		
+
 		//contract: returnTypeReferences(true) returns CtTypeReferences
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
 			assertTrue(e instanceof CtTypeReference);
@@ -840,7 +836,7 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertTrue(result.contains(Object.class.getName()));
-		
+
 		//contract: the mapping can be started on type reference too
 		result = clientClass.getReference().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
 			assertTrue(e instanceof CtTypeReference);
@@ -859,7 +855,7 @@ public class ImportTest {
 		assertEquals(1, typeResult.size());
 		assertEquals(clientClass.getFactory().Type().OBJECT, typeResult.get(0));
 	}
-	
+
 	@Test
 	public void testSuperInheritanceHierarchyFunctionListener() throws Exception {
 		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
@@ -908,7 +904,7 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertFalse(result.contains(superClass.getQualifiedName()));
 		assertFalse(result.contains(Object.class.getName()));
-		
+
 		//contract: if listener skips CHIDLREN, then skipped element is returned but all super classes are not returned
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
 			@Override
@@ -932,7 +928,7 @@ public class ImportTest {
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertFalse(result.contains(Object.class.getName()));
 	}
-	
+
 	@Test
 	public void testSuperInheritanceHierarchyFunctionNoClasspath() {
 		final Launcher launcher = new Launcher();
@@ -940,9 +936,9 @@ public class ImportTest {
 		launcher.addInputResource("src/test/resources/noclasspath/superclass/UnknownSuperClass.java");
 		launcher.buildModel();
 		final CtModel model = launcher.getModel();
-		
+
 		CtClass<?> classUSC = launcher.getFactory().Class().get("UnknownSuperClass");
-		
+
 		//contract: super inheritance scanner returns only Types on class path including final Object
 		List<CtType> types = classUSC.map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
 		assertEquals(2, types.size());
