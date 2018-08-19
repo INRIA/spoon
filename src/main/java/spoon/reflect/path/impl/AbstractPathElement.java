@@ -56,9 +56,7 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 	}
 
 	/**
-	 * Please use {@link #getChildren(CtElement)}
-	 *
-	 * @deprecated since Spoon 7.1.0
+	 * @deprecated since Spoon 7.1.0, please use {@link #getChildren(CtElement)}
 	 */
 	@Deprecated
 	Collection<CtElement> getChilds(CtElement element) {
