@@ -215,18 +215,6 @@ public class JDTTreeBuilderHelper {
 				// have been declared by a method/constructor.
 				final CtExecutable executable = (CtExecutable) variable.getParent();
 
-				// create list of executable's parameter types
-				final List<CtTypeReference<?>> parameterTypesOfExecutable = new ArrayList<>();
-				@SuppressWarnings("unchecked")
-				final List<CtParameter<?>> parametersOfExecutable = executable.getParameters();
-				for (CtParameter<?> parameter : parametersOfExecutable) {
-					parameterTypesOfExecutable.add(parameter.getType() != null
-							? parameter.getType().clone()
-							// it's the best match :(
-							: typeFactory.OBJECT.clone()
-					);
-				}
-
 				// find executable's corresponding jdt element
 				AbstractMethodDeclaration executableJDT = null;
 				for (final ASTPair astPair : contextBuilder.stack) {
