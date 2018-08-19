@@ -91,7 +91,6 @@ public class MavenLauncher extends Launcher {
 	 * @param classpath String array containing the classpath elements
 	 */
 	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String[] classpath) {
-		super();
 		this.m2RepositoryPath = m2RepositoryPath;
 		this.sourceType = sourceType;
 
