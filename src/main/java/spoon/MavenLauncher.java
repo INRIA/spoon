@@ -198,13 +198,13 @@ public class MavenLauncher extends Launcher {
 		try {
 			String[] cmd = {"mvn", "-version"};
 			Process p = Runtime.getRuntime().exec(cmd);
-			BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line;
+			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+				String line;
 
-			while ((line = output.readLine()) != null) {
-				if (line.contains(mavenVersionParsing)) {
-					mvnHome = line.replace(mavenVersionParsing, "");
-					return mvnHome;
+				while ((line = output.readLine()) != null) {
+					if (line.contains(mavenVersionParsing)) {
+						return line.replace(mavenVersionParsing, "");
+					}
 				}
 			}
 
