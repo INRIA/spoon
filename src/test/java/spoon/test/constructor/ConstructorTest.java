@@ -79,8 +79,8 @@ public class ConstructorTest {
 	public void callParamConstructor() {
 		CtClass<Object> aClass = factory.Class().get(AClass.class);
 		CtConstructor<Object> constructor = aClass.getConstructors().iterator().next();
-		assertEquals("{" + System.lineSeparator() +
-				"    enclosingInstance.super();" + System.lineSeparator()
+		assertEquals("{" + System.lineSeparator()
+				+ "    enclosingInstance.super();" + System.lineSeparator()
 				+ "}", constructor.getBody().toString());
 	}
 
