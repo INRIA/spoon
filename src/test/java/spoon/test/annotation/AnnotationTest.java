@@ -224,10 +224,10 @@ public class AnnotationTest {
 		assertEquals("Hello", annot.strings()[0]);
 		assertEquals("World", annot.strings()[1]);
 		assertEquals(Integer.class, a.getValueAsObject("clazz"));
-		assertEquals(Integer.class, annot.clazz());
+		assertSame(Integer.class, annot.clazz());
 		assertEquals(2, annot.classes().length);
-		assertEquals(Integer.class, annot.classes()[0]);
-		assertEquals(String.class, annot.classes()[1]);
+		assertSame(Integer.class, annot.classes()[0]);
+		assertSame(String.class, annot.classes()[1]);
 		assertTrue(annot.b());
 		assertEquals('c', annot.c());
 		assertEquals(42, annot.byt());
@@ -304,7 +304,7 @@ public class AnnotationTest {
 
 		// load class Main from package and check annotated element type of the class annotation
 		CtClass<?> clazz = pkg.getType("Main");
-		assertEquals(Main.class, clazz.getActualClass());
+		assertSame(Main.class, clazz.getActualClass());
 
 		annotations = clazz.getAnnotations();
 		assertEquals(1, annotations.size());
@@ -370,7 +370,7 @@ public class AnnotationTest {
 
 		// load enum AnnotParamTypeEnum and check the annotated element type of the annotation of the enum and of the fields
 		CtEnum<?> enumeration = pkg.getType("AnnotParamTypeEnum");
-		assertEquals(AnnotParamTypeEnum.class, enumeration.getActualClass());
+		assertSame(AnnotParamTypeEnum.class, enumeration.getActualClass());
 
 		annotations = enumeration.getAnnotations();
 		assertEquals(1, annotations.size());
@@ -387,7 +387,7 @@ public class AnnotationTest {
 
 		// load interface type TestInterface and check the annotated element type of the annotation
 		CtInterface<?> ctInterface = pkg.getType("TestInterface");
-		assertEquals(TestInterface.class, ctInterface.getActualClass());
+		assertSame(TestInterface.class, ctInterface.getActualClass());
 
 		annotations = ctInterface.getAnnotations();
 		assertEquals(1, annotations.size());
@@ -396,7 +396,7 @@ public class AnnotationTest {
 
 		// load annotation type Bound and check the annotated element type of the annotations
 		CtAnnotationType<?> annotationType = pkg.getType("Bound");
-		assertEquals(Bound.class, annotationType.getActualClass());
+		assertSame(Bound.class, annotationType.getActualClass());
 		assertNull(annotationType.getSuperclass());
 		assertEquals(1, annotationType.getMethods().size());
 		assertEquals(0, annotationType.getSuperInterfaces().size());
@@ -440,23 +440,23 @@ public class AnnotationTest {
 		assertEquals(1, testMethodAnnotations.size());
 
 		final CtAnnotation<? extends Annotation> firstAnnotation = testMethodAnnotations.get(0);
-		assertEquals(OuterAnnotation.class, getActualClassFromAnnotation(firstAnnotation));
+		assertSame(OuterAnnotation.class, getActualClassFromAnnotation(firstAnnotation));
 
 		final CtNewArray<?> arrayAnnotations = (CtNewArray<?>) firstAnnotation.getValues().get("value");
 		assertEquals(2, arrayAnnotations.getElements().size());
 
 		final CtAnnotation<?> firstAnnotationInArray = getMiddleAnnotation(arrayAnnotations, 0);
-		assertEquals(MiddleAnnotation.class, getActualClassFromAnnotation(firstAnnotationInArray));
+		assertSame(MiddleAnnotation.class, getActualClassFromAnnotation(firstAnnotationInArray));
 
 		final CtAnnotation<?> secondAnnotationInArray = getMiddleAnnotation(arrayAnnotations, 1);
-		assertEquals(MiddleAnnotation.class, getActualClassFromAnnotation(secondAnnotationInArray));
+		assertSame(MiddleAnnotation.class, getActualClassFromAnnotation(secondAnnotationInArray));
 
 		final CtAnnotation<?> innerAnnotationInFirstMiddleAnnotation = getInnerAnnotation(firstAnnotationInArray);
-		assertEquals(InnerAnnotation.class, getActualClassFromAnnotation(innerAnnotationInFirstMiddleAnnotation));
+		assertSame(InnerAnnotation.class, getActualClassFromAnnotation(innerAnnotationInFirstMiddleAnnotation));
 		assertEquals("hello", getLiteralValueInAnnotation(innerAnnotationInFirstMiddleAnnotation).getValue());
 
 		final CtAnnotation<?> innerAnnotationInSecondMiddleAnnotation = getInnerAnnotation(secondAnnotationInArray);
-		assertEquals(InnerAnnotation.class, getActualClassFromAnnotation(innerAnnotationInSecondMiddleAnnotation));
+		assertSame(InnerAnnotation.class, getActualClassFromAnnotation(innerAnnotationInSecondMiddleAnnotation));
 		assertEquals("hello again", getLiteralValueInAnnotation(innerAnnotationInSecondMiddleAnnotation).getValue());
 	}
 
@@ -493,7 +493,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = ctConstructorCall.getType().getAnnotations();
 
 		assertEquals("Type of the new class must use an annotation", 1, typeAnnotations.size());
-		assertEquals("Type of the new class is typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the new class is typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("New class with an type annotation must be well printed", "new java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String()", ctConstructorCall.toString());
 	}
@@ -516,7 +516,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = returnedExpression.getTypeCasts().get(0).getAnnotations();
 
 		assertEquals("Cast with a type annotation must have it in its model", 1, typeAnnotations.size());
-		assertEquals("Type annotation in the cast must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation in the cast must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Cast with an type annotation must be well printed", "((java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String) (s))", returnedExpression.toString());
 	}
@@ -534,7 +534,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = thrownReference.getAnnotations();
 
 		assertEquals("Thrown type with a type annotation must have it in its model", 1, typeAnnotations.size());
-		assertEquals("Type annotation with the thrown type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation with the thrown type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Thrown type with an type annotation must be well printed", "public void m() throws java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "Exception {"
 						+ System.lineSeparator() + "}", method.toString());
@@ -553,7 +553,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = method.getType().getAnnotations();
 
 		assertEquals("Return type with a type annotation must have it in its model", 1, typeAnnotations.size());
-		assertEquals("Type annotation with the return type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation with the return type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Return type with an type annotation must be well printed", "public java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String m3() {"
 						+ System.lineSeparator()
@@ -575,7 +575,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = ctParameter.getType().getAnnotations();
 
 		assertEquals("Parameter type with a type annotation must have it in its model", 1, typeAnnotations.size());
-		assertEquals("Type annotation with the parameter type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation with the parameter type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Parameter type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String param", ctParameter.toString());
 	}
@@ -599,7 +599,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> typeAnnotations = ctLocalVariable.getType().getAnnotations();
 
 		assertEquals("Local variable type with a type annotation must have it in its model", 1, typeAnnotations.size());
-		assertEquals("Type annotation with the local variable type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation with the local variable type must be typed by TypeAnnotation", TypeAnnotation.class, typeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Local variable type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String s = \"\"", ctLocalVariable.toString());
 	}
@@ -617,7 +617,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> extendsTypeAnnotations = extendsActual.getAnnotations();
 		final String superClassExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "AnnotArrayInnerClass";
 		assertEquals("Extends with a type annotation must have it in its model", 1, extendsTypeAnnotations.size());
-		assertEquals("Type annotation on a extends must be typed by TypeAnnotation", TypeAnnotation.class, extendsTypeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation on a extends must be typed by TypeAnnotation", TypeAnnotation.class, extendsTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, extendsTypeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Extends with an type annotation must be well printed", superClassExpected, extendsActual.toString());
 
@@ -626,7 +626,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> implementsTypeAnnotations = firstSuperInterface.getAnnotations();
 		final String superInterfaceExpected = "spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation";
 		assertEquals("Implements with a type annotation must have it in its model", 1, implementsTypeAnnotations.size());
-		assertEquals("Type annotation on a extends must be typed by TypeAnnotation", TypeAnnotation.class, implementsTypeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation on a extends must be typed by TypeAnnotation", TypeAnnotation.class, implementsTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, implementsTypeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Extends with an type annotation must be well printed", superInterfaceExpected, firstSuperInterface.toString());
 
@@ -636,7 +636,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> enumTypeAnnotations = firstSuperInterfaceOfEnum.getAnnotations();
 		final String enumExpected = "public enum DummyEnum implements spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation {" + System.lineSeparator() + "    ;" + System.lineSeparator() + "}";
 		assertEquals("Implements in a enum with a type annotation must have it in its model", 1, enumTypeAnnotations.size());
-		assertEquals("Type annotation on a implements in a enum must be typed by TypeAnnotation", TypeAnnotation.class, enumTypeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation on a implements in a enum must be typed by TypeAnnotation", TypeAnnotation.class, enumTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, enumTypeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Implements in a enum with an type annotation must be well printed", enumExpected, enumActual.toString());
 
@@ -646,7 +646,7 @@ public class AnnotationTest {
 		final List<CtAnnotation<? extends Annotation>> interfaceTypeAnnotations = firstSuperInterfaceOfInterface.getAnnotations();
 		final String interfaceExpected = "public interface DummyInterface extends spoon.test.annotation.testclasses.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "BasicAnnotation {}";
 		assertEquals("Implements in a interface with a type annotation must have it in its model", 1, interfaceTypeAnnotations.size());
-		assertEquals("Type annotation on a implements in a enum must be typed by TypeAnnotation", TypeAnnotation.class, interfaceTypeAnnotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type annotation on a implements in a enum must be typed by TypeAnnotation", TypeAnnotation.class, interfaceTypeAnnotations.get(0).getAnnotationType().getActualClass());
 		assertEquals(CtAnnotatedElementType.TYPE_USE, interfaceTypeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Implements in a interface with an type annotation must be well printed", interfaceExpected, interfaceActual.toString());
 	}
@@ -786,8 +786,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctClass.getAnnotations();
 		assertEquals("Class must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"First\"", "First", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Second\"", "Second", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -803,8 +803,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = field.getAnnotations();
 		assertEquals("Field must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"Field 1\"", "Field 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Field 2\"", "Field 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -820,8 +820,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = method.getAnnotations();
 		assertEquals("Method must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"Method 1\"", "Method 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Method 2\"", "Method 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -837,8 +837,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctConstructor.getAnnotations();
 		assertEquals("Constructor must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"Constructor 1\"", "Constructor 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Constructor 2\"", "Constructor 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -855,8 +855,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctParameter.getAnnotations();
 		assertEquals("Parameter must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"Param 1\"", "Param 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Param 2\"", "Param 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -878,8 +878,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = ctLocalVariable.getAnnotations();
 		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"Local 1\"", "Local 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Local 2\"", "Local 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -895,8 +895,8 @@ public class AnnotationTest {
 
 		final List<CtAnnotation<? extends Annotation>> annotations = pkg.getAnnotations();
 		assertEquals("Local variable must to have multi annotation of the same type", 2, annotations.size());
-		assertEquals("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
-		assertEquals("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
+		assertSame("Type of the first annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(0).getAnnotationType().getActualClass());
+		assertSame("Type of the second annotation is AnnotationRepeated", AnnotationRepeated.class, annotations.get(1).getAnnotationType().getActualClass());
 		assertEquals("Argument of the first annotation is \"Package 1\"", "Package 1", ((CtLiteral) annotations.get(0).getValue("value")).getValue());
 		assertEquals("Argument of the second annotation is \"Package 2\"", "Package 2", ((CtLiteral) annotations.get(1).getValue("value")).getValue());
 	}
@@ -910,8 +910,8 @@ public class AnnotationTest {
 		final CtType<?> annotation = factory.Type().get(AnnotationDefaultAnnotation.class);
 
 		final CtAnnotationMethod<?> ctAnnotations = annotation.getMethods().toArray(new CtAnnotationMethod<?>[0])[0];
-		assertEquals("Field is typed by an annotation.", InnerAnnot.class, ctAnnotations.getType().getActualClass());
-		assertEquals("Default value of a field typed by an annotation must be an annotation",
+		assertSame("Field is typed by an annotation.", InnerAnnot.class, ctAnnotations.getType().getActualClass());
+		assertSame("Default value of a field typed by an annotation must be an annotation",
 				InnerAnnot.class, ctAnnotations.getDefaultExpression().getType().getActualClass());
 	}
 
