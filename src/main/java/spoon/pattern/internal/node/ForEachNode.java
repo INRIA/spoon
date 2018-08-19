@@ -54,7 +54,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	public boolean replaceNode(RootNode oldNode, RootNode newNode) {
 		if (iterableParameter == oldNode) {
 			//before defined iterable parameter has to be replaced by another iterable parameter
-			//May be it makes no sense, because
+			//Maybe it makes no sense, because
 			//1) the iterable parameter has to be defined first
 			//2) then ForEachNode can be created for that
 			//3) then this method might be called to replace iterable parameter again
@@ -91,7 +91,7 @@ public class ForEachNode extends AbstractRepeatableMatcher implements InlineNode
 	public TobeMatched matchAllWith(TobeMatched tobeMatched) {
 		TobeMatched  localMatch = nestedModel.matchAllWith(tobeMatched.copyAndSetParams(tobeMatched.getParameters().checkpoint()));
 		if (localMatch == null) {
-			//nested model did not matched.
+			//nested model did not match.
 			return null;
 		}
 		//it matched.
