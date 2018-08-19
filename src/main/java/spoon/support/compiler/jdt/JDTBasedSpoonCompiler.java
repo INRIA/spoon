@@ -96,7 +96,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	private void initializeCUCOmparator() {
 		this.sortList = System.getenv("SPOON_SEED_CU_COMPARATOR") == null;
-		this.sortList = true;
 	}
 
 	@Override
