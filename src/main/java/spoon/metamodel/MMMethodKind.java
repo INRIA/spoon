@@ -43,9 +43,7 @@ public enum MMMethodKind {
 	ADD_FIRST(0, true, 10, m -> {
 		if (m.getParameters().size() == 1) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
-				if (m.getSimpleName().endsWith("AtTop") || m.getSimpleName().endsWith("Begin")) {
-					return true;
-				}
+				return m.getSimpleName().endsWith("AtTop") || m.getSimpleName().endsWith("Begin");
 			}
 		}
 		return false;
@@ -55,9 +53,7 @@ public enum MMMethodKind {
 	 */
 	ADD_LAST(0, true,  1, m -> {
 		if (m.getParameters().size() == 1) {
-			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
-				return true;
-			}
+			return m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert");
 		}
 		return false;
 	}),
@@ -66,9 +62,7 @@ public enum MMMethodKind {
 	 */
 	ADD_ON(1, true, 1, m -> {
 		if (m.getParameters().size() == 2 && "int".equals(m.getParameters().get(0).getType().getSimpleName())) {
-			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
-				return true;
-			}
+			return m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert");
 		}
 		return false;
 	}),

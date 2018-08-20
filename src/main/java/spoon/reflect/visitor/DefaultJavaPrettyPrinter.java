@@ -909,15 +909,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
-		if (parent instanceof CtFieldWrite
+		return parent instanceof CtFieldWrite
 				&& targetExp.equals(((CtFieldWrite) parent).getTarget())
 				&& anonymousParent != null
 				&& ((CtFieldWrite) parent).getVariable() != null
 				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)
-				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL)) {
-			return true;
-		}
-		return false;
+				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL);
 	}
 
 	@Override
