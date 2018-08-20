@@ -99,7 +99,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	static String computeAnonymousName(char[] anonymousQualifiedName) {
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
+		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1);
 	}
 
 	/**
@@ -465,7 +465,7 @@ public class JDTTreeBuilderHelper {
 	CtTypeAccess<?> createTypeAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<?> fieldReference) {
 		final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
 		if (receiverType != null) {
-			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(//
+			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(
 					qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
 						@Override
 						public boolean onAccess(char[][] tokens, int index) {
