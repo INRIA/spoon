@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -85,12 +86,12 @@ public class TryCatchTest {
 				0);
 
 		// the first caught exception is RuntimeException
-		assertEquals(
+		assertSame(
 				RuntimeException.class,
 				tryStmt.getCatchers().get(0).getParameter().getType().getActualClass());
 		assertEquals("java.lang.System.exit(0)", tryStmt.getCatchers().get(0).getBody().getStatement(0).toString());
 
-		assertEquals(
+		assertSame(
 				Exception.class,
 				tryStmt.getCatchers().get(1).getParameter().getType().getActualClass());
 	}
@@ -108,16 +109,16 @@ public class TryCatchTest {
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
 
-		assertEquals(
+		assertSame(
 				Throwable.class,
 				catchers.get(0).getParameter().getType().getActualClass());
 
 		assertEquals(2, catchers.get(0).getParameter().getMultiTypes().size());
 
-		assertEquals(
+		assertSame(
 				RuntimeException.class,
 				catchers.get(0).getParameter().getMultiTypes().get(0).getActualClass());
-		assertEquals(
+		assertSame(
 				Error.class,
 				catchers.get(0).getParameter().getMultiTypes().get(1).getActualClass());
 
@@ -223,39 +224,39 @@ public class TryCatchTest {
 
 		CtCatchVariable<?> catchVariable = catchers.get(0).getParameter();
 
-		assertEquals(
+		assertSame(
 				RuntimeException.class,
 				catchVariable.getType().getActualClass());
 
 		assertEquals(1, catchVariable.getMultiTypes().size());
 
-		assertEquals(
+		assertSame(
 				RuntimeException.class,
 				catchVariable.getMultiTypes().get(0).getActualClass());
 
 		//contract: the manipulation with catch variable type is possible
 		catchVariable.setType((CtTypeReference)factory.Type().createReference(IllegalArgumentException.class));
-		assertEquals(IllegalArgumentException.class,catchVariable.getType().getActualClass());
+		assertSame(IllegalArgumentException.class,catchVariable.getType().getActualClass());
 		//contract setType influences multitypes
 		assertEquals(1, catchVariable.getMultiTypes().size());
-		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		assertSame(IllegalArgumentException.class, catchVariable.getMultiTypes().get(0).getActualClass());
 
 		catchVariable.setMultiTypes(Collections.singletonList((CtTypeReference)factory.Type().createReference(UnsupportedOperationException.class)));
-		assertEquals(UnsupportedOperationException.class,catchVariable.getType().getActualClass());
+		assertSame(UnsupportedOperationException.class,catchVariable.getType().getActualClass());
 		//contract setType influences multitypes
 		assertEquals(1, catchVariable.getMultiTypes().size());
-		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		assertSame(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
 
 		catchVariable.setMultiTypes(Arrays.asList(
 				factory.Type().createReference(UnsupportedOperationException.class),
 				factory.Type().createReference(IllegalArgumentException.class)
 				));
 		assertEquals(2, catchVariable.getMultiTypes().size());
-		assertEquals(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
-		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(1).getActualClass());
+		assertSame(UnsupportedOperationException.class, catchVariable.getMultiTypes().get(0).getActualClass());
+		assertSame(IllegalArgumentException.class, catchVariable.getMultiTypes().get(1).getActualClass());
 
 		//contract setMultiTypes influences types, which contains common super class of all multi types
-		assertEquals(RuntimeException.class,catchVariable.getType().getActualClass());
+		assertSame(RuntimeException.class,catchVariable.getType().getActualClass());
 	}
 
 	@Test
