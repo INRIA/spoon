@@ -1,6 +1,12 @@
 package spoon.reflect.visitor.printer.change;
 
-enum TokenType {
+import spoon.reflect.visitor.TokenWriter;
+
+/**
+ * Type of {@link TokenSourceFragment} token.
+ * Note: These types mirrors the methods of {@link TokenWriter}
+ */
+public enum TokenType {
 
 	SEPARATOR(false, false),
 	OPERATOR(false, false),
