@@ -49,7 +49,7 @@ public class EnumsTest {
 	@Test
 	public void testAnnotationsOnEnum() {
 		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
+		launcher.run(new String[]{
 				"-i", "./src/test/java/spoon/test/enums/testclasses",
 				"-o", "./target/spooned"
 		});
@@ -114,7 +114,7 @@ public class EnumsTest {
 			assertEquals(asSet(ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 	}
-	
+
 	private <T> Set<T> asSet(T... values) {
 		return new HashSet<>(Arrays.asList(values));
 	}
@@ -136,15 +136,15 @@ public class EnumsTest {
 		assertTrue(content.contains("FAIL,"));
 		assertTrue(content.contains("KEEP_OLD_NODE(),"));
 
-		assertTrue(content.contains("/**\n" +
-				"     * Add new {@link RootNode} after existing nodes\n" +
-				"     */\n" +
-				"    APPEND"));
+		assertTrue(content.contains("/**\n"
+				+ "     * Add new {@link RootNode} after existing nodes\n"
+				+ "     */\n"
+				+ "    APPEND"));
 
-		assertTrue(content.contains("/**\n" +
-				"     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n" +
-				"     */\n" +
-				"    KEEP_OLD_NODE(),"));
+		assertTrue(content.contains("/**\n"
+				+ "     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n"
+				+ "     */\n"
+				+ "    KEEP_OLD_NODE(),"));
 	}
 
 	@Test
