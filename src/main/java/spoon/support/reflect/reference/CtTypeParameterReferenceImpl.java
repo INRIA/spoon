@@ -143,8 +143,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@DerivedProperty
 	public CtTypeReference<?> getBoundingType() {
-		return getDeclaration().getSuperclass();
+		CtTypeParameter typeParam = getDeclaration();
+		if (typeParam != null) {
+			CtTypeReference<?> typeRef = typeParam.getSuperclass();
+			if (typeRef != null) {
+				return typeRef;
+			}
+		}
+		return getFactory().Type().getDefaultBoundingType();
 	}
 
 	@Override
