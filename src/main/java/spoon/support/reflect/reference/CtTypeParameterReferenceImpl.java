@@ -17,7 +17,6 @@
 package spoon.support.reflect.reference;
 
 import spoon.SpoonException;
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -37,21 +36,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.IS_UPPER;
-import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
-
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = BOUNDING_TYPE)
-	CtTypeReference<?> superType;
-
-	@MetamodelPropertyField(role = IS_UPPER)
-	boolean upper = true;
 
 	public CtTypeParameterReferenceImpl() {
-		// calling null will set the default value of boundingType
-		this.setBoundingType(null);
 	}
 
 	@Override
@@ -66,30 +55,16 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean isUpper() {
-		return upper;
+		return true;
 	}
 
 	@Override
 	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		if (bounds == null || bounds.isEmpty()) {
-			setBoundingType(null);
-			return (T) this;
-		}
-		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			getBoundingType().asCtIntersectionTypeReference().setBounds(bounds);
-		} else if (bounds.size() > 1) {
-			final List<CtTypeReference<?>> refs = new ArrayList<>(bounds);
-			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
-		} else {
-			setBoundingType(bounds.get(0));
-		}
 		return (T) this;
 	}
 
 	@Override
 	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_UPPER, upper, this.upper);
-		this.upper = upper;
 		return (T) this;
 	}
 
@@ -136,7 +111,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound) {
-		if (bound == null) {
+		if (bound == null || isWildcard() == false) {
 			return (T) this;
 		}
 		if (isDefaultBoundingType()) {
@@ -154,7 +129,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || isDefaultBoundingType()) {
+		if (bound == null || isDefaultBoundingType() || isWildcard() == false) {
 			return false;
 		}
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
@@ -167,24 +142,11 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	public CtTypeReference<?> getBoundingType() {
-		return superType;
+		return getDeclaration().getSuperclass();
 	}
 
 	@Override
 	public <T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType) {
-		if (superType != null) {
-			superType.setParent(this);
-		}
-
-		// ugly but else make testSetterInNodes failed
-		if (superType == null) { // if null, set bounding type to object
-			superType = getFactory().Type().objectType();
-			superType.setImplicit(true);
-			superType.setParent(this);
-		}
-
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BOUNDING_TYPE, superType, this.superType);
-		this.superType = superType;
 		return (T) this;
 	}
 
@@ -287,5 +249,9 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return true;
 		}
 		return getBoundingType() != null && getBoundingType().isGenerics();
+	}
+
+	protected boolean isWildcard() {
+		return false;
 	}
 }

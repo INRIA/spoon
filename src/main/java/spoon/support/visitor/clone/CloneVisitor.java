@@ -739,7 +739,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtTypeParameterReference.setPackage(this.cloneHelper.clone(ref.getPackage()));
 		aCtTypeParameterReference.setDeclaringType(this.cloneHelper.clone(ref.getDeclaringType()));
 		aCtTypeParameterReference.setAnnotations(this.cloneHelper.clone(ref.getAnnotations()));
-		aCtTypeParameterReference.setBoundingType(this.cloneHelper.clone(ref.getBoundingType()));
 		this.builder.copy(ref, aCtTypeParameterReference);
 		this.cloneHelper.tailor(ref, aCtTypeParameterReference);
 		this.other = aCtTypeParameterReference;

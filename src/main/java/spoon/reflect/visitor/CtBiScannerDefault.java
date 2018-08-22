@@ -707,7 +707,6 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.PACKAGE_REF, ref.getPackage(), other.getPackage());
 		biScan(spoon.reflect.path.CtRole.DECLARING_TYPE, ref.getDeclaringType(), other.getDeclaringType());
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, ref.getAnnotations(), other.getAnnotations());
-		biScan(spoon.reflect.path.CtRole.BOUNDING_TYPE, ref.getBoundingType(), other.getBoundingType());
 		exit(ref);
 	}
 
