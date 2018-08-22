@@ -123,7 +123,7 @@ public class AstCheckerTest {
 					"CtElementImpl#setValueByRole",
 					"CtTypeParameterReferenceImpl#addBound",
 					"CtTypeParameterReferenceImpl#removeBound",
-					"CtTypeParameterReferenceImpl#setBounds",
+					"CtWildcardReferenceImpl#setBounds",
 					"CtModuleImpl#addUsedService",
 					"CtModuleImpl#addExportedPackage",
 					"CtModuleImpl#addOpenedPackage",

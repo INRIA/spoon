@@ -16,10 +16,7 @@
  */
 package spoon.reflect.reference;
 
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
@@ -35,7 +32,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
 	 * {@code false} means a <code>super</code> clause.
 	 */
-	@PropertyGetter(role = CtRole.IS_UPPER)
+	@DerivedProperty
 	boolean isUpper();
 
 	/**
@@ -43,25 +40,22 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *
 	 * If you give null or an empty list, it'll clear bounds of the reference.
 	 */
-	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
 
 	/**
 	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
-	@PropertySetter(role = CtRole.IS_UPPER)
+	@UnsettableProperty
 	<T extends CtTypeParameterReference> T setUpper(boolean upper);
 
 	/**
 	 * Adds a bound.
 	 */
-	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
 
 	/**
 	 * Removes a bound.
 	 */
-	@PropertySetter(role = CtRole.BOUNDING_TYPE)
 	boolean removeBound(CtTypeReference<?> bound);
 
 	/**
@@ -74,13 +68,13 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 *     T extends Interface1 &amp; Interface2
 	 * </pre>
 	 */
-	@PropertyGetter(role = CtRole.BOUNDING_TYPE)
+	@DerivedProperty
 	CtTypeReference<?> getBoundingType();
 
 	/**
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
-	@PropertySetter(role = CtRole.BOUNDING_TYPE)
+	@UnsettableProperty
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
 	/**

@@ -59,11 +59,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@UnsettableProperty
 	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
 		return (T) this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
 		return (T) this;
 	}
@@ -146,6 +148,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
+	@UnsettableProperty
 	public <T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType) {
 		return (T) this;
 	}

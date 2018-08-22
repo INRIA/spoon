@@ -37,12 +37,14 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 	 * {@code false} means a <code>super</code> clause.
 	 */
 	@PropertyGetter(role = CtRole.IS_UPPER)
+	@Override
 	boolean isUpper();
 
 	/**
 	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
 	@PropertySetter(role = CtRole.IS_UPPER)
+	@Override
 	<T extends CtTypeParameterReference> T setUpper(boolean upper);
 
 	/**
@@ -56,11 +58,13 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 	 * </pre>
 	 */
 	@PropertyGetter(role = CtRole.BOUNDING_TYPE)
+	@Override
 	CtTypeReference<?> getBoundingType();
 
 	/**
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
 	@PropertySetter(role = CtRole.BOUNDING_TYPE)
+	@Override
 	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 }

@@ -89,7 +89,7 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			throw new SpoonException("Cannot be CtIntersectionTypeReference");
 		} else if (bounds.size() > 1) {
-			throw new SpoonException("Type parameter reference accepts only one bound");
+			throw new SpoonException("Wildcard reference accepts only one bound");
 		} else {
 			setBoundingType(bounds.get(0));
 		}
