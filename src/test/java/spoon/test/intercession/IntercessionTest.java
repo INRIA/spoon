@@ -43,6 +43,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class IntercessionTest {
 	Factory factory = createFactory();
+
 	@Test
 	public void testInsertBegin() {
 		CtClass<?> clazz = factory
@@ -83,7 +84,6 @@ public class IntercessionTest {
 		assertSame(returnStmt, body.getStatements().get(2));
 
 		Assert.assertNotEquals(foo, fooClone);
-
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class IntercessionTest {
 	}
 
 	@Test
-	public void testSettersAreAllGood() throws Exception {
+	public void testSettersAreAllGood() {
 		ArrayList classpath = new ArrayList();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -242,7 +242,7 @@ public class IntercessionTest {
 
 	@Test
 	@Ignore // interesting but too fragile with conventions
-	public void testResetCollectionInSetters() throws Exception {
+	public void testResetCollectionInSetters() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		final Factory factory = launcher.getFactory();
@@ -315,11 +315,11 @@ public class IntercessionTest {
 				}
 				final CtInvocation inv = (CtInvocation) assignment;
 				if (collectionReference.equals(SET_REFERENCE)) {
-					if (!inv.getExecutable().getSimpleName().equals("emptySet")) {
+					if (!"emptySet".equals(inv.getExecutable().getSimpleName())) {
 						return false;
 					}
 				} else if (collectionReference.equals(LIST_REFERENCE)) {
-					if (!inv.getExecutable().getSimpleName().equals("emptyList")) {
+					if (!"emptyList".equals(inv.getExecutable().getSimpleName())) {
 						return false;
 					}
 				}

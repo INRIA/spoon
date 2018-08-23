@@ -34,11 +34,11 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 		}
 		if (element instanceof CtClass) {
 			CtClass<?> c = (CtClass<?>) element;
-			if (c.getSimpleName().equals("Secondary")) {
+			if ("Secondary".equals(c.getSimpleName())) {
 				@SuppressWarnings("unused")
 				CompilationUnit cu = c.getPosition().getCompilationUnit();
 			}
-			if (c.getSimpleName().equals("C1")) {
+			if ("C1".equals(c.getSimpleName())) {
 				Substitution.insertAll(c, new TemplateWithConstructor(
 						getFactory().Type().createReference(Date.class)));
 			}

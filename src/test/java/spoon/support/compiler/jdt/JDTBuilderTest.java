@@ -13,10 +13,10 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 
 public class JDTBuilderTest {
-	private final static String TEST_CLASSPATH = "./src/test/java/spoon/test/";
+	private static final String TEST_CLASSPATH = "./src/test/java/spoon/test/";
 
 	@Test
-	public void testJdtBuilder() throws Exception {
+	public void testJdtBuilder() {
 		final String[] builder = new JDTBuilderImpl() //
 				.classpathOptions(new ClasspathOptions().classpath(TEST_CLASSPATH).bootclasspath(TEST_CLASSPATH).binaries(".").encoding("UTF-8")) //
 				.complianceOptions(new ComplianceOptions().compliance(8)) //

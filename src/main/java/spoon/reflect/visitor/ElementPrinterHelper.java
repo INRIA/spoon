@@ -23,14 +23,9 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -178,12 +173,9 @@ public class ElementPrinterHelper {
 	 * Writes a statement.
 	 */
 	public void writeStatement(CtStatement statement) {
-		prettyPrinter.scan(statement);
-		if (!(statement instanceof CtBlock || statement instanceof CtIf || statement instanceof CtFor || statement instanceof CtForEach || statement instanceof CtWhile || statement instanceof CtTry
-				|| statement instanceof CtSwitch || statement instanceof CtSynchronized || statement instanceof CtClass || statement instanceof CtComment)) {
-			printer.writeSeparator(";");
+		try (Writable _context = prettyPrinter.getContext().modify().setStatement(statement)) {
+			prettyPrinter.scan(statement);
 		}
-		writeComment(statement, CommentOffset.AFTER);
 	}
 
 	public void writeElementList(List<CtTypeMember> elements) {
@@ -263,7 +255,7 @@ public class ElementPrinterHelper {
 			printList(arguments.stream().filter(a -> !a.isImplicit())::iterator,
 				null, false, "<", false, false, ",", true, false, ">",
 				argument -> {
-					if (prettyPrinter.context.forceWildcardGenerics()) {
+					if (prettyPrinter.getContext().forceWildcardGenerics()) {
 						printer.writeSeparator("?");
 					} else {
 						prettyPrinter.scan(argument);

@@ -78,6 +78,7 @@ abstract class AbstractRoleHandler<T, U, V> implements RoleHandler {
 		return (V) value;
 	}
 
+	@Override
 	public <W, X> void setValue(W element, X value) {
 		throw new SpoonException("Setting of CtRole." + role.name() + " is not supported for " + element.getClass().getSimpleName());
 	}

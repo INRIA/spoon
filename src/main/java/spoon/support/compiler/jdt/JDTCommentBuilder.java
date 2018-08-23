@@ -173,8 +173,8 @@ class JDTCommentBuilder {
 
 		// TODO: remove the " *", see spoon.test.javadoc.JavaDocTest.testJavaDocReprint()
 		String[] lines = commentContent.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
 				int endIndex = line.indexOf(" ");
 				if (endIndex == -1) {
@@ -189,7 +189,7 @@ class JDTCommentBuilder {
 					currentTagContent = line.substring(endIndex + 1);
 				}
 			} else {
-				currentTagContent += "\n" + lines[i];
+				currentTagContent += "\n" + aLine;
 			}
 		}
 		defineCommentContent(comment, currentTagContent, currentTag);
@@ -266,7 +266,7 @@ class JDTCommentBuilder {
 				spoonUnit.getDeclaredModule().addComment(comment);
 			} else {
 				comment.setCommentType(CtComment.CommentType.FILE);
-				addCommentToNear(comment, new ArrayList<CtElement>(spoonUnit.getDeclaredTypes()));
+				addCommentToNear(comment, new ArrayList<>(spoonUnit.getDeclaredTypes()));
 			}
 			return;
 		}
@@ -298,7 +298,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <R> void visitCtStatementList(CtStatementList e) {
-				addCommentToNear(comment, new ArrayList<CtElement>(e.getStatements()));
+				addCommentToNear(comment, new ArrayList<>(e.getStatements()));
 				try {
 					comment.getParent();
 				} catch (ParentNotInitializedException ex) {
@@ -381,8 +381,7 @@ class JDTCommentBuilder {
 			public <E> void visitCtSwitch(CtSwitch<E> e) {
 				List<CtCase<? super E>> cases = e.getCases();
 				CtCase previous = null;
-				for (int i = 0; i < cases.size(); i++) {
-					CtCase<? super E> ctCase = cases.get(i);
+				for (CtCase<? super E> ctCase : cases) {
 					if (previous == null) {
 						if (comment.getPosition().getSourceStart() < ctCase.getPosition().getSourceStart()
 								&& e.getPosition().getSourceStart() < comment.getPosition().getSourceStart()) {
@@ -392,7 +391,7 @@ class JDTCommentBuilder {
 					} else {
 						if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()
 								&& ctCase.getPosition().getSourceStart() > comment.getPosition().getSourceStart()) {
-							addCommentToNear(comment, new ArrayList<CtElement>(previous.getStatements()));
+							addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 							try {
 								comment.getParent();
 							} catch (ParentNotInitializedException ex) {
@@ -404,7 +403,7 @@ class JDTCommentBuilder {
 					previous = ctCase;
 				}
 				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
-					addCommentToNear(comment, new ArrayList<CtElement>(previous.getStatements()));
+					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();
 					} catch (ParentNotInitializedException ex) {
@@ -455,7 +454,7 @@ class JDTCommentBuilder {
 
 			@Override
 			public <T> void visitCtNewArray(CtNewArray<T> e) {
-				addCommentToNear(comment, new ArrayList<CtElement>(e.getElements()));
+				addCommentToNear(comment, new ArrayList<>(e.getElements()));
 				try {
 					comment.getParent();
 				} catch (ParentNotInitializedException ex) {
@@ -516,7 +515,7 @@ class JDTCommentBuilder {
 				if (element == null) {
 					return;
 				}
-				if (element.isImplicit()) {
+				if (element.isImplicit() && !(element instanceof CtBlock)) {
 					return;
 				}
 				CtElement body = getBody(element);

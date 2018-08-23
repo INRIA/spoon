@@ -188,8 +188,8 @@ public class ImportScannerTest {
 	private List<String> getStaticImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith("import static ")) {
 				line = line.substring(13, line.length() - 1);
 				imports.add(line.trim());
@@ -201,8 +201,8 @@ public class ImportScannerTest {
 	private List<String> getTypeImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith("import ") && !line.contains(" static ")) {
 				line = line.substring(7, line.length() - 1);
 				imports.add(line.trim());
@@ -244,7 +244,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testComputeImportsInClassWithSameName() throws Exception {
+	public void testComputeImportsInClassWithSameName() {
 		String packageName = "spoon.test.imports.testclasses2";
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
@@ -285,7 +285,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testTargetTypeNull() throws Exception {
+	public void testTargetTypeNull() {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 		CtFieldReference fieldRef = factory.createFieldReference();

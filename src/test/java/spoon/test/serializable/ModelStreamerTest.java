@@ -65,7 +65,7 @@ public class ModelStreamerTest {
 		Filter<CtElement> filter = new Filter<CtElement>() {
 			public boolean matches(CtElement element) {
 				return true;
-			};
+			}
 		};
 
 		List<CtElement> elementsFactory = factory.getModel().getRootPackage().filterChildren(filter).list();

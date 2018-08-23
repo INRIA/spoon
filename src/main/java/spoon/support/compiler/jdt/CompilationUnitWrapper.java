@@ -45,10 +45,6 @@ class CompilationUnitWrapper extends CompilationUnit {
 		types.add(type);
 		printer.calculate(type.getPosition().getCompilationUnit(), types);
 
-		String result = printer.getResult();
-		char[] content = result.toCharArray();
-		return content;
+		return printer.getResult().toCharArray();
 	}
-
-
 }

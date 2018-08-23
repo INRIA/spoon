@@ -18,6 +18,7 @@ package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
@@ -34,7 +35,6 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -73,6 +73,11 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	@Override
 	public String getSimpleName() {
 		return getComponentType().getSimpleName() + "[]";
+	}
+
+	@Override
+	public <T extends CtReference> T setSimpleName(String simplename) {
+		return (T) this;
 	}
 
 	@Override

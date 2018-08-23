@@ -33,7 +33,6 @@ public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRe
 	private CtModuleReference moduleReference;
 
 	public CtModuleRequirementImpl() {
-		super();
 	}
 
 	@Override

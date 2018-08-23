@@ -24,7 +24,7 @@ import spoon.reflect.visitor.processors.CheckVisitorTestProcessor;
 public class CtInheritanceScannerMethodsTest {
 
 	@Test
-	public void testMethodsInInheritanceScanner() throws Exception {
+	public void testMethodsInInheritanceScanner() {
 		// contract: CtInheritanceScanner must declare all scanner and visitor methods.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

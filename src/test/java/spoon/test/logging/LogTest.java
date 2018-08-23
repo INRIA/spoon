@@ -43,7 +43,7 @@ public class LogTest {
 	public boolean isDebug;
 
 	@Test
-	public void testAllLevelsForLogs() throws Exception {
+	public void testAllLevelsForLogs() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/logging",

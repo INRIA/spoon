@@ -39,7 +39,7 @@ public class ExceptionTest {
 	}
 
 	@Test
-	public void testExceptionNoFile() throws Exception {
+	public void testExceptionNoFile() {
 		try {
 			Launcher spoon = new Launcher();
 			Factory factory = spoon.createFactory();
@@ -72,7 +72,7 @@ public class ExceptionTest {
 	}
 
 	@Test
-	public void testExceptionInvalidAPI() throws Exception {
+	public void testExceptionInvalidAPI() {
 		try {
 			Launcher spoon = new Launcher();
 			spoon.getFactory().getEnvironment().setLevel("OFF");
@@ -123,10 +123,6 @@ public class ExceptionTest {
 		CtCatchVariable variable2 = catches.get(1).getParameter(); // outside the lambda
 
 		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
-
-		// for now the type of CtCatchVariable is not the same
-		// this should be fix in the future (see: https://github.com/INRIA/spoon/issues/1420)
-		//assertEquals(variable2, variable1);
+		assertEquals(variable2, variable1);
 	}
-
 }

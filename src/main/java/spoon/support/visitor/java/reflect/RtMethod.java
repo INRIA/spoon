@@ -200,7 +200,7 @@ public class RtMethod {
 				}
 			}
 		}
-		return methods.toArray(new RtMethod[methods.size()]);
+		return methods.toArray(new RtMethod[0]);
 	}
 
 	private boolean isLightEquals(RtMethod rtMethod) {

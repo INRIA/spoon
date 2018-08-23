@@ -103,8 +103,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 								lastSlash += 1;
 							}
 
-							char[] moduleName = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
-							compilationUnit.module = moduleName;
+							compilationUnit.module = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
 						}
 					} else {
 						for (Map.Entry<String, CompilationUnit> entry : pathToModCU.entrySet()) {
@@ -129,6 +128,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 	public ICompilerRequestor getBatchRequestor() {
 		final ICompilerRequestor r = super.getBatchRequestor();
 		return new ICompilerRequestor() {
+			@Override
 			public void acceptResult(CompilationResult compilationResult) {
 				if (compilationResult.hasErrors()) {
 					for (CategorizedProblem problem:compilationResult.problems) {

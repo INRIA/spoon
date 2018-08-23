@@ -16,7 +16,6 @@
  */
 package spoon.reflect.factory;
 
-
 /**
  * This class is the superclass for all the sub-factories of
  * {@link spoon.reflect.factory.Factory}.
@@ -29,29 +28,7 @@ public abstract class SubFactory {
 	 * The sub-factory constructor takes an instance of the parent factory.
 	 */
 	public SubFactory(Factory factory) {
-		super();
 		this.factory = factory;
 	}
-
-	/**
-	 * Generically sets the parent of a set of elements or lists of elements.
-	 *
-	 * @param parent
-	 *            the parent
-	 * @param elements
-	 *            some {@link CtElement} or lists of {@link CtElement}
-	 */
-	//	protected void setParent(CtElement parent, Object... elements) {
-	//		for (Object o : elements) {
-	//			if (o instanceof CtElement) {
-	//				((CtElement) o).setParent(parent);
-	//			} else if (o instanceof Collection) {
-	//				for (Object o2 : (Collection<?>) o) {
-	//					((CtElement) o2).setParent(parent);
-	//				}
-	//			}
-	//		}
-	//	}
-
 }
 

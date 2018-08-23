@@ -72,7 +72,7 @@ public class PatternPrinter extends DefaultGenerator {
 	public <T> void generateTargets(RootNode node, ResultHolder<T> result, ImmutableMap parameters) {
 		int firstResultIdx = result.getResults().size();
 		if (node instanceof InlineNode) {
-			//this is a inline node. Do not generated nodes normally, but generate origin inline statements
+			//this is an inline node. Does not generate nodes normally, but generates origin inline statements
 			((InlineNode) node).generateInlineTargets(this, result, parameters);
 		} else {
 			super.generateTargets(node, result, parameters);
@@ -89,11 +89,11 @@ public class PatternPrinter extends DefaultGenerator {
 							return;
 						}
 						//it is an attribute with an substitution
-						//it will be added only if it is not already added linked to an CtElement
+						//it will be added only if it is not already added linked to the CtElement
 						paramsOnElement.add(new ParamOnElement((CtElement) firstResult, mmField.getRole(), attrNode));
 					});
 				}
-				addParameterCommentTo((CtElement) firstResult, paramsOnElement.toArray(new ParamOnElement[paramsOnElement.size()]));
+				addParameterCommentTo((CtElement) firstResult, paramsOnElement.toArray(new ParamOnElement[0]));
 			} else if (node instanceof ParameterNode) {
 				addParameterCommentTo((CtElement) firstResult, new ParamOnElement((CtElement) firstResult, node));
 			}
@@ -115,9 +115,7 @@ public class PatternPrinter extends DefaultGenerator {
 		if (obj instanceof CtElement) {
 			MetamodelConcept mmType = Metamodel.getInstance().getConcept((Class) obj.getClass());
 			MetamodelProperty mmCommentField = mmType.getProperty(CtRole.COMMENT);
-			if (mmCommentField != null && !mmCommentField.isDerived()) {
-				return true;
-			}
+			return mmCommentField != null && !mmCommentField.isDerived();
 		}
 		return false;
 	}
@@ -161,9 +159,8 @@ public class PatternPrinter extends DefaultGenerator {
 
 	/**
 	 * Creates a element which will be printed in source code of pattern as marker of parameter
-	 * @param factory a SpoonFactory which has to be used to create new elements
-	 * @param potentialParameterMarker
-	 * @param type
+	 * @param parameterInfo describes a pattern parameter to be printed
+	 * @param type class of the generated element
 	 * @return dummy template element, which represents a template type in source of generated Pattern.
 	 * Or null if potentialParameterMarker is not a marker of parameter
 	 */

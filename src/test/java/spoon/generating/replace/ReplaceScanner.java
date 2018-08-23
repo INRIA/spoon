@@ -90,7 +90,7 @@ public class ReplaceScanner extends CtScanner {
 			invArgs.remove(0);
 			CtInvocation getter = (CtInvocation) invArgs.get(0);
 
-			if (clone.getComments().size() == 0) {
+			if (clone.getComments().isEmpty()) {
 				// Add auto-generated comment.
 				final CtComment comment = factory.Core().createComment();
 				comment.setCommentType(CtComment.CommentType.INLINE);

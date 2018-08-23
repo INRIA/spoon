@@ -45,8 +45,10 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		if (length == 0) {
 			return -1;
 		}
-		int g = 0, d = length - 1;
-		int m = 0, start;
+		int g = 0;
+		int d = length - 1;
+		int m = 0;
+		int start;
 		while (g <= d) {
 			m = (g + d) / 2;
 			if (position < (start = lineSeparatorPositions[m])) {
@@ -75,7 +77,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		if (length == 0) {
 			return -1;
 		}
-		int i = 0;
+		int i;
 		for (i = 0; i < lineSeparatorPositions.length - 1; i++) {
 			if (lineSeparatorPositions[i] < position && (lineSeparatorPositions[i + 1] > position)) {
 				return position - lineSeparatorPositions[i];
@@ -107,7 +109,6 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 	private int sourceStartline = -1;
 
 	public SourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd, int[] lineSeparatorPositions) {
-		super();
 		checkArgsAreAscending(sourceStart, sourceEnd + 1);
 		if (compilationUnit == null) {
 			throw new SpoonException("Mandatory parameter compilationUnit is null");
@@ -126,18 +127,22 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return true;
 	}
 
+	@Override
 	public int getColumn() {
 		return searchColumnNumber(sourceStart);
 	}
 
+	@Override
 	public int getEndColumn() {
 		return searchColumnNumber(sourceEnd);
 	}
 
+	@Override
 	public File getFile() {
 		return compilationUnit == null ? null : compilationUnit.getFile();
 	}
 
+	@Override
 	public int getLine() {
 		if (sourceStartline == -1) {
 			this.sourceStartline = searchLineNumber(this.sourceStart);
@@ -145,14 +150,17 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		return sourceStartline;
 	}
 
+	@Override
 	public int getEndLine() {
 		return searchLineNumber(sourceEnd);
 	}
 
+	@Override
 	public int getSourceEnd() {
 		return this.sourceEnd;
 	}
 
+	@Override
 	public int getSourceStart() {
 		return this.sourceStart;
 	}
@@ -191,6 +199,7 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 
 	private final CompilationUnit compilationUnit;
 
+	@Override
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;
 	}

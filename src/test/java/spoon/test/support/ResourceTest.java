@@ -20,14 +20,14 @@ import spoon.support.compiler.VirtualFolder;
 public class ResourceTest {
 
 	@Test
-	public void testEqualsFileSystemFile() throws Exception {
+	public void testEqualsFileSystemFile() {
 		// two files with equivalent paths are equals
 		String entry = "src/test/resources/spoon/test/api/Foo.java";
 		assertTrue(new FileSystemFile(new File(entry)).equals(new FileSystemFile(new File("./"+entry))));
 	}
 
 	@Test
-	public void testFileSystemFolder() throws Exception {
+	public void testFileSystemFolder() {
 		String dir = "src/test/resources/spoon/test/api/";
 		FileSystemFolder fileSystemFolder = new FileSystemFolder(new File(dir));
 
@@ -46,7 +46,7 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void testVirtualFolder() throws Exception {
+	public void testVirtualFolder() {
 		String dir = "src/test/resources/spoon/test/api/";
 		FileSystemFolder fileSystemFolder = new FileSystemFolder(new File(dir));
 
@@ -64,7 +64,7 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void testFilteringFolder() throws Exception {
+	public void testFilteringFolder() {
 		// contract: one can filter input files
 		// the core of this test is the removeIfMatches at the end
 

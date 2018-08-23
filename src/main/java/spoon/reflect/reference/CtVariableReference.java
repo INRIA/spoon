@@ -47,6 +47,7 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Tries to get the declaration of the reference.
 	 */
+	@Override
 	@DerivedProperty
 	CtVariable<T> getDeclaration();
 

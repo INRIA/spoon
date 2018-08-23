@@ -42,17 +42,18 @@ public class ZipFolder implements SpoonFolder {
 	List<SpoonFile> files;
 
 	public ZipFolder(File file) throws IOException {
-		super();
 		if (!file.isFile()) {
 			throw new IOException(file.getName() + " is not a valid zip file");
 		}
 		this.file = file;
 	}
 
+	@Override
 	public List<SpoonFile> getAllFiles() {
 		return getFiles();
 	}
 
+	@Override
 	public List<SpoonFile> getAllJavaFiles() {
 		List<SpoonFile> files = new ArrayList<>();
 
@@ -68,6 +69,7 @@ public class ZipFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public List<SpoonFile> getFiles() {
 		// Indexing content
 		if (files == null) {
@@ -97,10 +99,12 @@ public class ZipFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public String getName() {
 		return file.getName();
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
@@ -110,10 +114,12 @@ public class ZipFolder implements SpoonFolder {
 		return null;
 	}
 
+	@Override
 	public List<SpoonFolder> getSubFolders() {
 		return new ArrayList<>(0);
 	}
 
+	@Override
 	public boolean isFile() {
 		return false;
 	}
@@ -123,6 +129,7 @@ public class ZipFolder implements SpoonFolder {
 		return getPath();
 	}
 
+	@Override
 	public String getPath() {
 		try {
 			return file.getCanonicalPath();

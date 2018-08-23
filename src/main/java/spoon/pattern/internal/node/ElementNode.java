@@ -151,7 +151,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		if (object instanceof CtElement) {
 			return create((CtElement) object, patternElementToSubstRequests);
 		}
-		return new ConstantNode<Object>(object);
+		return new ConstantNode<>(object);
 	}
 
 	private static RootNode create(ContainerKind containerKind, Object templates, Map<CtElement, RootNode> patternElementToSubstRequests) {
@@ -170,10 +170,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static ListOfNodes listOfNodesToNode(List<? extends RootNode> nodes) {
-		//The attribute is matched different if there is List of one ParameterizedNode and when there is one ParameterizedNode
-//		if (nodes.size() == 1) {
-//			return nodes.get(0);
-//		}
 		return new ListOfNodes((List) nodes);
 	}
 
@@ -187,7 +183,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	 * 	It is used e.g. to generate generatedBy comment
 	 */
 	public ElementNode(MetamodelConcept elementType, CtElement templateElement) {
-		super();
 		this.elementType = elementType;
 		this.templateElement = templateElement;
 	}
@@ -357,9 +352,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	}
 
 	/**
-	 * @param roleHandler the to be checked role
+	 * @param role the role to be checked
 	 * @param targetClass the class which is going to be checked
-	 * @return true if the role is relevant for matching process
+	 * @return true if the role is relevant to matching process
 	 */
 	private static boolean isMatchingRole(CtRole role, Class<?> targetClass) {
 		Class<?>[] classes = roleToSkippedClass.get(role);
@@ -378,33 +373,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	public String toString() {
 		return elementType.getName() + ": " + super.toString();
 	}
-//	@Override
-//	public String toString() {
-//		PrinterHelper printer = new PrinterHelper(getTemplateNode().getFactory().getEnvironment());
-//		printer.write(NodeAttributeSubstitutionRequest.getElementTypeName(getTemplateNode().getParent())).writeln().incTab();
-//		appendDescription(printer);
-//		return printer.toString();
-//	}
-//
-//	public void appendDescription(PrinterHelper printer) {
-//		if (attributeSubstititionRequests == null || attributeSubstititionRequests.values().isEmpty()) {
-//			printer.write("** no attribute substitution **");
-//		} else {
-//			boolean multipleAttrs = attributeSubstititionRequests.size() > 1;
-//			if (multipleAttrs) {
-//				printer.incTab();
-//			}
-//			for (Node node : attributeSubstititionRequests.values()) {
-//				if (multipleAttrs) {
-//					printer.writeln();
-//				}
-//				printer.write(node.toString());
-//			}
-//			if (multipleAttrs) {
-//				printer.decTab();
-//			}
-//		}
-//	}
 
 	public MetamodelConcept getElementType() {
 		return elementType;

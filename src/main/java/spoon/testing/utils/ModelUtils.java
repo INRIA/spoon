@@ -27,6 +27,7 @@ import spoon.support.StandardEnvironment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.function.Consumer;
 
 public final class ModelUtils {
 	private ModelUtils() {
@@ -63,21 +64,24 @@ public final class ModelUtils {
 
 	/** Utility method for testing: creates the model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory build(Class<?>... classesToBuild) throws Exception {
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(false);
-		launcher.getEnvironment().setCommentEnabled(false);
-		SpoonModelBuilder comp = launcher.createCompiler();
-		for (Class<?> classToBuild : classesToBuild) {
-			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
-		}
-		comp.build();
-		return comp.getFactory();
+		return build(launcher -> {
+			launcher.getEnvironment().setNoClasspath(false);
+			launcher.getEnvironment().setCommentEnabled(false);
+		}, classesToBuild);
 	}
 
 	/** Utility method for testing: creates the noclasspath model of the given `classesToBuild` from src/test/java and returns the factory */
 	public static Factory buildNoClasspath(Class<?>... classesToBuild) throws Exception {
+		return build(launcher -> launcher.getEnvironment().setNoClasspath(true), classesToBuild);
+	}
+
+	/**
+	 * Utility method for testing: creates the model of the given `classesToBuild` from src/test/java and returns the factory
+	 * and allows to configure the Launcher first using `config`
+	 */
+	public static Factory build(Consumer<Launcher> config, Class<?>... classesToBuild) throws Exception {
 		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setNoClasspath(true);
+		config.accept(launcher);
 		SpoonModelBuilder comp = launcher.createCompiler();
 		for (Class<?> classToBuild : classesToBuild) {
 			comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + classToBuild.getName().replace('.', '/') + ".java"));
@@ -113,6 +117,10 @@ public final class ModelUtils {
 		} else {
 			return buildNoClasspath(classToBuild).Type().get(classToBuild);
 		}
+	}
+
+	public static <T> CtType<T> buildClass(Consumer<Launcher> config, Class<T> classToBuild) throws Exception {
+		return build(config, classToBuild).Type().get(classToBuild);
 	}
 
 	/** checks that the file `outputDirectoryFile` can be parsed with Spoon , given a compliance level. */

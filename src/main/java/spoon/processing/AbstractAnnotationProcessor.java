@@ -43,7 +43,6 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractAnnotationProcessor() {
-		super();
 		clearProcessedElementType();
 
 		for (Method m : getClass().getMethods()) {
@@ -111,14 +110,17 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 		consumedAnnotationTypes.remove(annotationType.getName());
 	}
 
+	@Override
 	public final Set<Class<? extends A>> getConsumedAnnotationTypes() {
 		return new HashSet<>(consumedAnnotationTypes.values());
 	}
 
+	@Override
 	public final Set<Class<? extends A>> getProcessedAnnotationTypes() {
 		return new HashSet<>(processedAnnotationTypes.values());
 	}
 
+	@Override
 	public boolean inferConsumedAnnotationType() {
 		return true;
 	}
@@ -140,6 +142,7 @@ public abstract class AbstractAnnotationProcessor<A extends Annotation, E extend
 		return false;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public final void process(E element) {
 		for (CtAnnotation<? extends Annotation> annotation : new ArrayList<>(element.getAnnotations())) {

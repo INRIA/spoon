@@ -37,6 +37,7 @@ public interface CtField<T> extends CtVariable<T>, CtTypeMember, CtRHSReceiver<T
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@Override
 	@DerivedProperty
 	CtFieldReference<T> getReference();
 

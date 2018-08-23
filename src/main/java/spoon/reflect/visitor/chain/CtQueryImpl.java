@@ -16,14 +16,6 @@
  */
 package spoon.reflect.visitor.chain;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -31,6 +23,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.support.util.RtHelper;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The facade of {@link CtQuery} which represents a query bound to the {@link CtElement},
@@ -80,12 +80,11 @@ public class CtQueryImpl implements CtQuery {
 			this.inputs = new ArrayList<>();
 		}
 		if (input != null) {
-			for (Object in : input) {
-				this.inputs.add(in);
-			}
+			Collections.addAll(this.inputs, input);
 		}
 		return this;
 	}
+
 	public CtQueryImpl addInput(Iterable<?> input) {
 		if (this.inputs == null) {
 			this.inputs = new ArrayList<>();
@@ -328,6 +327,7 @@ public class CtQueryImpl implements CtQuery {
 		}
 
 		protected abstract Object _accept(Object input);
+
 		protected void handleResult(Object result, Object input) {
 		}
 
@@ -354,6 +354,7 @@ public class CtQueryImpl implements CtQuery {
 				return failurePolicy == QueryFailurePolicy.FAIL;
 			}
 		}
+
 		private void setLocalFailurePolicy(QueryFailurePolicy localFailurePolicy) {
 			this.localFailurePolicy = localFailurePolicy;
 		}
@@ -387,7 +388,7 @@ public class CtQueryImpl implements CtQuery {
 		protected void onCallbackSet(String stackClass, String stackMethodName, Class<?> callbackClass, String callbackMethod, int nrOfParams, int idxOfInputParam) {
 			this.cceStacktraceClass = stackClass;
 			this.cceStacktraceMethodName = stackMethodName;
-			if (callbackClass.getName().indexOf("$$Lambda$") >= 0) {
+			if (callbackClass.getName().contains("$$Lambda$")) {
 				//lambda expressions does not provide runtime information about type of input parameter
 				//clear it now. We can detect input type from first ClassCastException
 				this.expectedClass = null;
@@ -413,9 +414,6 @@ public class CtQueryImpl implements CtQuery {
 			if (indexOfCallerInStack < 0) {
 				//this is an exotic JVM, where we cannot detect type of parameter of Lambda expression
 				//Silently ignore this CCE, which was may be expected or may be problem in client's code.
-//				if (Launcher.LOGGER.isDebugEnabled()) {
-//					Launcher.LOGGER.debug("ClassCastException thrown by client's code or Query engine ...", e);
-//				}
 				return;
 			}
 			//we can detect whether CCE was thrown in client's code (unexpected - must be rethrown) or Query engine (expected - has to be ignored)
@@ -463,7 +461,6 @@ public class CtQueryImpl implements CtQuery {
 	 */
 	private class OutputFunctionWrapper extends AbstractStep {
 		OutputFunctionWrapper() {
-			super();
 			localFailurePolicy = QueryFailurePolicy.IGNORE;
 		}
 		@Override
@@ -494,7 +491,6 @@ public class CtQueryImpl implements CtQuery {
 
 		@SuppressWarnings("unchecked")
 		LazyFunctionWrapper(CtConsumableFunction<?> fnc) {
-			super();
 			this.fnc = (CtConsumableFunction<Object>) fnc;
 			handleListenerSetQuery(this.fnc);
 			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 2, 0);
@@ -515,7 +511,6 @@ public class CtQueryImpl implements CtQuery {
 
 		@SuppressWarnings("unchecked")
 		FunctionWrapper(CtFunction<?, ?> code) {
-			super();
 			fnc = (CtFunction<Object, Object>) code;
 			handleListenerSetQuery(fnc);
 			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 1, 0);
@@ -584,8 +579,8 @@ public class CtQueryImpl implements CtQuery {
 			for (int i = 0; i < stack.length; i++) {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
-					Class<?> detectectedClass = detectTargetClassFromCCE(e, obj);
-					if (detectectedClass == null || !CtType.class.equals(detectectedClass)) {
+					Class<?> detectedClass = detectTargetClassFromCCE(e, obj);
+					if (detectedClass == null || !CtType.class.equals(detectedClass)) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;
@@ -596,6 +591,7 @@ public class CtQueryImpl implements CtQuery {
 			throw new SpoonException("Spoon cannot detect index of caller of lambda expression in stack trace.", e);
 		}
 	}
+
 	private static Class<?> detectTargetClassFromCCE(ClassCastException e, Object input) {
 		//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
 		String message = e.getMessage();

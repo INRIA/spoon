@@ -36,8 +36,6 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.ImmutableMap;
 
-/**
- */
 public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	/**
@@ -58,7 +56,6 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	private Class<?> parameterValueType;
 
 	protected AbstractParameterInfo(ParameterInfo containerItemAccessor) {
-		super();
 		this.containerItemAccessor = (AbstractParameterInfo) containerItemAccessor;
 	}
 
@@ -217,6 +214,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * either replaces only `_expression_.S()` if the parameter value is an expression
 	 * or replaces `return _expression_.S()` if the parameter value is a CtBlock
 	 */
+	@Override
 	public Class<?> getParameterValueType() {
 		return parameterValueType;
 	}
@@ -232,6 +230,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	/**
 	 * @return true if the value container has to be a List, otherwise the container will be a single value
 	 */
+	@Override
 	public boolean isMultiple() {
 		return getContainerKind(null, null) != ContainerKind.SINGLE;
 	}
@@ -268,6 +267,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		this.maxOccurrences = maxOccurrences;
 	}
 
+	@Override
 	public Quantifier getMatchingStrategy() {
 		return matchingStrategy;
 	}
@@ -304,6 +304,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @return true if this matcher can be applied more than once in the same container of targets
 	 * Note: even if false, it may be applied again to another container and to match EQUAL value
 	 */
+	@Override
 	public boolean isRepeatable() {
 		if (repeatable != null) {
 			return repeatable;
@@ -316,6 +317,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @return true if the ValueResolver of this parameter MUST match with next target in the state defined by current `parameters`.
 	 * false if match is optional
 	 */
+	@Override
 	public boolean isMandatory(ImmutableMap parameters) {
 		int nrOfValues = getNumberOfValues(parameters);
 		//current number of values is smaller than minimum number of values. Value is mandatory
@@ -326,6 +328,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 	 * @param parameters matching parameters
 	 * @return true if the ValueResolver of this parameter should be processed again to match next target in the state defined by current `parameters`.
 	 */
+	@Override
 	public boolean isTryNextMatch(ImmutableMap parameters) {
 		int nrOfValues = getNumberOfValues(parameters);
 		if (getContainerKind(parameters) == ContainerKind.SINGLE) {

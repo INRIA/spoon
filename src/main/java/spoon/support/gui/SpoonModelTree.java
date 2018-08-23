@@ -74,7 +74,6 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 	 * This is the default constructor
 	 */
 	public SpoonModelTree(Factory factory) {
-		super();
 		SpoonTreeBuilder cst = new SpoonTreeBuilder();
 		cst.scan(factory.Package().getRootPackage());
 		this.factory = factory;
@@ -83,7 +82,6 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 	}
 
 	public SpoonModelTree(CtElement rootElement) {
-		super();
 		SpoonTreeBuilder cst = new SpoonTreeBuilder();
 		cst.scan(rootElement);
 		this.factory = rootElement.getFactory();
@@ -140,6 +138,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 
 			JMenuItem item = new JMenuItem("Save");
 			item.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					JFileChooser chooser = new JFileChooser();
@@ -163,6 +162,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 			// show reflect table
 			item = new JMenuItem("Reflect");
 			item.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
 							.getLastSelectedPathComponent();
@@ -179,6 +179,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 			// Search value
 			item = new JMenuItem("Search");
 			item.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					search();
 				}
@@ -188,6 +189,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 			// Search value
 			item = new JMenuItem("Search next");
 			item.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					next();
 				}
@@ -199,6 +201,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 			// Expand all
 			item = new JMenuItem("Expand all");
 			item.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
 							.getLastSelectedPathComponent();
@@ -231,14 +234,17 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		this.setVisible(true);
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 		switch (e.getKeyChar()) {
 		case ('s'):
@@ -262,29 +268,34 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		}
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 
 	}
 
+	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
+	@Override
 	public void mouseExited(MouseEvent e) {
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		getJTree().setSelectionRow(
 				getJTree().getClosestRowForLocation(e.getX(), e.getY()));
 		maybeShowPopup(e);
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		maybeShowPopup(e);
 	}
 
 	/** move to the next node matching the search criterion */
 	public DefaultMutableTreeNode next() {
-		DefaultMutableTreeNode current = null;
+		DefaultMutableTreeNode current;
 		while ((enume != null) && enume.hasMoreElements()) {
 			current = (DefaultMutableTreeNode) enume.nextElement();
 			if ((current.getUserObject() != null)
@@ -321,6 +332,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 		}
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.execute(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Queue<DefaultMutableTreeNode> q = new LinkedList<>();
@@ -347,6 +359,7 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 
 	public void expand(final DefaultMutableTreeNode node) {
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				TreePath path = new TreePath(node.getPath());
 				if (!jTree.isExpanded(path)) {

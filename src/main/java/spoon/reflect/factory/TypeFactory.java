@@ -295,7 +295,7 @@ public class TypeFactory extends SubFactory {
 	 * Creates a reference to an n-dimension array of given type.
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
-		CtTypeReference<?> componentType = null;
+		CtTypeReference<?> componentType;
 		if (n == 1) {
 			return createArrayReference(reference);
 		}
@@ -605,18 +605,7 @@ public class TypeFactory extends SubFactory {
 	 * Tells if a given Java qualified name is that of an inner type.
 	 */
 	protected int hasInnerType(String qualifiedName) {
-		int ret = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
-		// if (ret < 0) {
-		// if (hasPackage(qualifiedName) > 0) {
-		// String buf = qualifiedName.substring(0,
-		// hasPackage(qualifiedName));
-		// int tmp = buf.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-		// if (Character.isUpperCase(buf.charAt(tmp + 1))) {
-		// ret = hasPackage(qualifiedName);
-		// }
-		// }
-		// }
-		return ret;
+		return qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 	}
 
 	/**

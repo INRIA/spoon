@@ -213,10 +213,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 	 * @return true if it is allowed parameter use
 	 */
 	protected boolean isAllowedParameterUsage(CtParameterReference<?> paramRef) {
-		if (isRemovedParamOfRefactoredInvocation(paramRef)) {
-			return true;
-		}
-		return false;
+		return isRemovedParamOfRefactoredInvocation(paramRef);
 	}
 
 	/**

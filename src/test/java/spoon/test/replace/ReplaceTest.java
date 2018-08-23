@@ -61,7 +61,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceSet() throws Exception {
+	public void testReplaceSet() {
 
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
@@ -89,7 +89,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceBlock() throws Exception {
+	public void testReplaceBlock() {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 		CtMethod<?> m = foo.getElements(
@@ -119,7 +119,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceReplace() throws Exception {
+	public void testReplaceReplace() {
 		// bug found by Benoit
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
@@ -321,7 +321,7 @@ public class ReplaceTest {
 		final List<CtTypeReference> references = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
+				return !reference.getActualTypeArguments().isEmpty() && super.matches(reference);
 			}
 		});
 
@@ -336,7 +336,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceAPackageReferenceByAnotherOne() throws Exception {
+	public void testReplaceAPackageReferenceByAnotherOne() {
 		// contract: replace a package reference of a reference to another package.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

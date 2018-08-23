@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 public class JDTBatchCompilerTest {
 
 	@Test
-	public void testCompileGeneratedJavaFile() throws Exception {
+	public void testCompileGeneratedJavaFile() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/support/compiler/jdt/testclasses/Foo.java");

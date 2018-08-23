@@ -40,6 +40,7 @@ public class CtDequeScanner extends CtScanner {
 	/**
 	 * Pops the element.
 	 */
+	@Override
 	protected void exit(CtElement e) {
 		CtElement ret = elementsDeque.pop();
 		if (ret != e) {
@@ -51,6 +52,7 @@ public class CtDequeScanner extends CtScanner {
 	/**
 	 * Pushes the element.
 	 */
+	@Override
 	protected void enter(CtElement e) {
 		elementsDeque.push(e);
 		super.enter(e);

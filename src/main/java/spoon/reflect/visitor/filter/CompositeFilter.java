@@ -31,6 +31,7 @@ public class CompositeFilter<T extends CtElement> implements Filter<T> {
 	 * Defines the matching using
 	 * {@link spoon.reflect.visitor.filter.FilteringOperator}.
 	 */
+	@Override
 	public boolean matches(T element) {
 		switch (operator) {
 		case INTERSECTION:

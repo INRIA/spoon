@@ -128,6 +128,6 @@ public class RoleHandlerHelper {
 		if (roleInParent == null) {
 			return null;
 		}
-		return RoleHandlerHelper.getRoleHandler(parent.getClass(), roleInParent);
+		return getRoleHandler(parent.getClass(), roleInParent);
 	}
 }

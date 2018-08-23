@@ -107,9 +107,7 @@ public class MinimalImportScanner extends ImportScannerImpl implements ImportSca
 	protected boolean isImportedInClassImports(CtTypeReference<?> ref) {
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
-			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-				return true;
-			}
+			return exist.getQualifiedName().equals(ref.getQualifiedName());
 		}
 		return false;
 	}

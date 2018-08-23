@@ -51,7 +51,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 	public Collection<CtElement> getElements(Collection<CtElement> roots) {
 		Collection<CtElement> results = new ArrayList<>();
 		for (CtElement element : roots) {
-			results.addAll(scanElements(getChilds(element)));
+			results.addAll(scanElements(getChildren(element)));
 		}
 		return results;
 	}
@@ -84,7 +84,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 		private void recurse(Collection<? extends CtElement> elements) {
 			scan(elements);
 			for (CtElement element : elements) {
-				recurse(getChilds(element));
+				recurse(getChildren(element));
 			}
 		}
 

@@ -15,7 +15,7 @@ import spoon.test.template.testclasses.SubstituteArrayLengthTemplate;
 public class TemplateArrayAccessTest {
 
 	@Test
-	public void testArrayAccess() throws Exception {
+	public void testArrayAccess() {
 		//contract: the template engine supports variable access, typed as Array substitution
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteArrayAccessTemplate.java"));
@@ -29,7 +29,7 @@ public class TemplateArrayAccessTest {
 	}
 
 	@Test
-	public void testArrayLengthAccess() throws Exception {
+	public void testArrayLengthAccess() {
 		//contract: the template engine replaces length of collection of parameter values by number
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteArrayLengthTemplate.java"));

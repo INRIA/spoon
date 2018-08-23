@@ -95,17 +95,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private void initializeCUCOmparator() {
-		try {
-			if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
-				this.sortList = false;
-			} else {
-				this.sortList = true;
-			}
-		} catch (NumberFormatException | SecurityException e) {
-			Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
-			this.sortList = true;
-		}
-
+		this.sortList = System.getenv("SPOON_SEED_CU_COMPARATOR") == null;
 	}
 
 	@Override
@@ -122,7 +112,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			throw new SpoonException("Model already built");
 		}
 
-		boolean srcSuccess, templateSuccess;
+		boolean srcSuccess;
+		boolean templateSuccess;
 		factory.getEnvironment().debugMessage("building sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
@@ -441,9 +432,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
 
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-
-		return units;
+		return batchCompiler.getUnits();
 	}
 
 	protected List<CompilationUnitDeclaration> sortCompilationUnits(CompilationUnitDeclaration[] units) {
@@ -675,7 +664,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		PrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
 		printer.calculate(cu, toBePrinted);
 
-		return new ByteArrayInputStream(printer.getResult().toString().getBytes());
+		return new ByteArrayInputStream(printer.getResult().getBytes());
 	}
 
 	protected Environment getEnvironment() {
