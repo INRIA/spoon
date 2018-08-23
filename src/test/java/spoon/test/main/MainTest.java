@@ -296,7 +296,7 @@ public class MainTest {
 		class Counter {
 			int scan;
 			int enter;
-			int exit = 0;
+			int exit;
 		}
 
 		final Counter counter = new Counter();
