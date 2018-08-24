@@ -1098,4 +1098,12 @@ public class PositionTest {
 		assertEquals(23, pos.getEndLine());
 		assertEquals(2, pos.getEndColumn());
 	}
+
+	@Test
+	public void testFirstLineColumn() throws Exception {
+		//contract: element, positioned before the first line separator in file, should have correct column
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSimpleClass.java"));
+		CtType<?> type = build.Type().get("TestSimpleClass");
+		assertEquals(13, type.getPosition().getColumn());
+	}
 }

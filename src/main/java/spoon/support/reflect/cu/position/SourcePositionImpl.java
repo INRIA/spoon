@@ -77,6 +77,9 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		if (length == 0) {
 			return -1;
 		}
+		if (lineSeparatorPositions[0] > position) {
+			return position;
+		}
 		int i;
 		for (i = 0; i < lineSeparatorPositions.length - 1; i++) {
 			if (lineSeparatorPositions[i] < position && (lineSeparatorPositions[i + 1] > position)) {
