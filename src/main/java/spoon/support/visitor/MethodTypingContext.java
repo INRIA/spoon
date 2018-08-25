@@ -19,7 +19,10 @@ package spoon.support.visitor;
 import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
@@ -35,7 +38,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardReference;
 
 /**
  * For the scope method or constructor and super type hierarchy of it's declaring type,
@@ -210,6 +212,8 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return actualTypeArguments.get(typeParamPosition);
 	}
 
+	private Set<CtFormalTypeDeclarer> checkingFormalTypeParamsOf = Collections.newSetFromMap(new IdentityHashMap<>(1));
+
 	/**
 	 * https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
 	 *
@@ -225,12 +229,21 @@ public class MethodTypingContext extends AbstractTypingContext {
 		if (thisTypeParameters.size() != thatTypeParameters.size()) {
 			return false;
 		}
-		//the methods has same count of formal parameters
-		//check that bounds of formal type parameters are same after adapting
-		for (int i = 0; i < thisTypeParameters.size(); i++) {
-			if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
-				return false;
+		if (checkingFormalTypeParamsOf.contains(typeParamDeclarer)) {
+			//do not check isSameMethodFormalTypeParameter recursively
+			return true;
+		}
+		try {
+			checkingFormalTypeParamsOf.add(typeParamDeclarer);
+			//the methods has same count of formal parameters
+			//check that bounds of formal type parameters are same after adapting
+			for (int i = 0; i < thisTypeParameters.size(); i++) {
+				if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
+					return false;
+				}
 			}
+		} finally {
+			checkingFormalTypeParamsOf.remove(typeParamDeclarer);
 		}
 		return true;
 	}
@@ -238,38 +251,9 @@ public class MethodTypingContext extends AbstractTypingContext {
 	private boolean isSameMethodFormalTypeParameter(CtTypeParameter scopeParam, CtTypeParameter superParam) {
 		CtTypeReference<?> scopeBound = getBound(scopeParam);
 		CtTypeReference<?> superBound = getBound(superParam);
-		int idxOfScopeBoundTypeParam = getIndexOfTypeParam(scopeParam.getTypeParameterDeclarer(), scopeBound);
-		if (idxOfScopeBoundTypeParam >= 0) {
-			int idxOfSuperBoundTypeParam = getIndexOfTypeParam(superParam.getTypeParameterDeclarer(), superBound);
-			if (idxOfSuperBoundTypeParam >= 0) {
-				/*
-				 * Both type parameters have bound defined as sibling type parameter.
-				 * Do not try to adaptType, because it would end with StackOverflowError
-				 * They are same formal type parameters if index is same
-				 */
-				return idxOfScopeBoundTypeParam == idxOfSuperBoundTypeParam;
-			}
-		}
 		if (scopeBound.getActualTypeArguments().size() != superBound.getActualTypeArguments().size()) {
 			return false;
 		}
-
-		for (int i = 0; i < scopeBound.getActualTypeArguments().size(); i++) {
-			CtTypeReference scopeBoundATArg = scopeBound.getActualTypeArguments().get(i);
-			CtTypeReference superBoundATArg = superBound.getActualTypeArguments().get(i);
-
-			if (scopeBoundATArg instanceof CtWildcardReference && superBoundATArg instanceof CtWildcardReference) {
-				CtWildcardReference scopeBoundWildcard = (CtWildcardReference) scopeBoundATArg;
-
-				// we are in a case where we compare Thing<?> with Thing<? super X>
-				// here we choose to not care about X to avoid recursive calls, for example in the case of:
-				// T extends Comparable<? super T>
-				if (scopeBoundWildcard.getBoundingType().equals(scopeMethod.getFactory().Type().getDefaultBoundingType())) {
-					return true;
-				}
-			}
-		}
-
 
 		CtTypeReference<?> superBoundAdapted = adaptType(superBound);
 		if (superBoundAdapted == null) {
