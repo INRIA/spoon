@@ -71,6 +71,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.PackageFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -782,7 +783,13 @@ public class ReferenceBuilder {
 				ref.setSimpleName(new String(binding.sourceName()));
 
 				if (refSuperClass != null) {
-					((CtTypeParameterReference) ref).addBound(refSuperClass);
+					//the CtTypeParameterReference doesn't keeps bounds. They are inherited from declaration.
+					//So we have to create a CtTypeParameter here to have a storage for superclass
+					CtTypeParameter decl = this.jdtTreeBuilder.getFactory().Core().createTypeParameter();
+					decl.setSimpleName(ref.getSimpleName());
+					decl.setSuperclass(refSuperClass);
+					//add it as parent of reference so CtExecutableReference.parameter initializer can found it.
+					ref.setParent(decl);
 				}
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;

@@ -25,13 +25,10 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +103,11 @@ public class ExecutableFactory extends SubFactory {
 		CtTypeReference<?>[] refs = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
-			refs[i++] = getMethodParameterReference(param.getType());
+			refs[i++] = param.getType() != null
+					? param.getType().clone()
+					// With a lambda and in noclasspath (when the type of
+					// parameters isn't specified), we assume Object.
+					: factory.Type().OBJECT.clone();
 		}
 		String executableName = e.getSimpleName();
 		if (e instanceof CtMethod) {
@@ -120,25 +121,6 @@ public class ExecutableFactory extends SubFactory {
 		}
 		// constructor
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
-	}
-
-	/**
-	 * Replaces Type parameter reference by superClass of it's type parameter
-	 * @param type
-	 * @return
-	 */
-	private CtTypeReference<?> getMethodParameterReference(CtTypeReference<?> type) {
-		if (type instanceof CtTypeParameterReference && !(type instanceof CtWildcardReference)) {
-			CtTypeParameterReference typeParamRef = (CtTypeParameterReference) type;
-			CtTypeParameter typeParam = typeParamRef.getDeclaration();
-			type = typeParam.getSuperclass();
-		}
-		if (type == null) {
-			// With a lambda and in noclasspath (when the type of
-			// parameters isn't specified), we assume Object.
-			return factory.Type().OBJECT.clone();
-		}
-		return type.clone();
 	}
 
 	/**

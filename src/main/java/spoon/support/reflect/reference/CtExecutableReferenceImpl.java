@@ -29,7 +29,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -178,6 +180,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	private boolean addParameter(CtTypeReference<?> parameter) {
 		if (parameter == null) {
 			return false;
+		}
+		if (parameter instanceof CtTypeParameterReference && !(parameter instanceof CtWildcardReference)) {
+			parameter = ((CtTypeParameterReference) parameter).getBoundingType().clone();
 		}
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT_TYPE, this.parameters, parameter);

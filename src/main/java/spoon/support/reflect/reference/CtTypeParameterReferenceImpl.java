@@ -35,6 +35,7 @@ import spoon.support.UnsettableProperty;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -175,6 +176,15 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 		CtElement e = this;
 		CtElement parent = getParent();
+
+		if (parent instanceof CtTypeParameter && Objects.equals(getSimpleName(), ((CtTypeParameter) parent).getSimpleName())) {
+			/*
+			 * a special case of newly created (unbound) CtTypeParameterReference,
+			 * whose CtTypeParameter is linked as parent - to temporary remember CtTypeParameterReference bounds
+			 * See ReferenceBuilder#getTypeReference(TypeBinding)
+			 */
+			return (CtTypeParameter) parent;
+		}
 
 		if (parent instanceof CtTypeReference) {
 			if (!parent.isParentInitialized()) {
