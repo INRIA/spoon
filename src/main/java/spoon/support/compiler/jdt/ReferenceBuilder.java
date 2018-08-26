@@ -782,15 +782,13 @@ public class ReferenceBuilder {
 				ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 				ref.setSimpleName(new String(binding.sourceName()));
 
-				if (refSuperClass != null) {
-					//the CtTypeParameterReference doesn't keeps bounds. They are inherited from declaration.
-					//So we have to create a CtTypeParameter here to have a storage for superclass
-					CtTypeParameter decl = this.jdtTreeBuilder.getFactory().Core().createTypeParameter();
-					decl.setSimpleName(ref.getSimpleName());
-					decl.setSuperclass(refSuperClass);
-					//add it as parent of reference so CtExecutableReference.parameter initializer can found it.
-					ref.setParent(decl);
-				}
+				//the CtTypeParameterReference doesn't keeps bounds. They are inherited from declaration.
+				//So we have to create a CtTypeParameter here to have a storage for superclass
+				CtTypeParameter decl = this.jdtTreeBuilder.getFactory().Core().createTypeParameter();
+				decl.setSimpleName(ref.getSimpleName());
+				decl.setSuperclass(refSuperClass);
+				//add it as parent of reference so CtExecutableReference.parameter initializer can found it.
+				ref.setParent(decl);
 			}
 			TypeVariableBinding b = (TypeVariableBinding) binding;
 			if (bounds) {
