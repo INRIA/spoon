@@ -103,7 +103,7 @@ public class MethodTest {
 		boolean compareFound = false;
 		for (CtMethod<?> method : allMethods) {
 			if ("compare".equals(method.getSimpleName())) {
-				assertEquals("compare(T,T)", method.getSignature());
+				assertEquals("compare(java.lang.Object,java.lang.Object)", method.getSignature());
 				compareFound = true;
 			}
 		}
