@@ -1431,7 +1431,7 @@ public class GenericsTest {
 	@Test
 	public void testGenericsOverriding() {
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/overriding/A.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses4/A.java");
 		CtModel model = launcher.buildModel();
 
 		CtClass<?> a = model.getElements(new NamedElementFilter<>(CtClass.class, "A")).get(0);
