@@ -479,12 +479,19 @@ public class MainTest {
 
 	@Test
 	public void testSourcePositionTreeIsCorrectlyOrdered() {
+		/*
+		 * contract: the tree of ElementSourceFragments of all spoon types (= sample set of sources) can be built.
+		 * contract: the tree of ElementSourceFragments is correctly organized. It means:
+		 * - source positions of children elements are smaller or equal to their parents
+		 * - source positions of next siblings are after their previous siblings
+		 * - 
+		 */
 		List<CtType> types = rootPackage.filterChildren(new TypeFilter<>(CtType.class)).filterChildren((CtType t) -> t.isTopLevel()).list();
 		int totalCount = 0;
 		boolean hasComment = false;
 		for (CtType type : types) {
 			SourcePosition sp = type.getPosition();
-			totalCount += assertSourcePositionTreeIsCorrectlyOrder(sp.getCompilationUnit().getRootSourceFragment());
+			totalCount += assertSourcePositionTreeIsCorrectlyOrder(sp.getCompilationUnit().getRootSourceFragment(), 0, sp.getCompilationUnit().getOriginalSourceCode().length());
 			hasComment = hasComment || type.getComments().size() > 0; 
 		};
 		assertTrue(totalCount > 1000);
@@ -494,19 +501,22 @@ public class MainTest {
 	/**
 	 * Asserts that all siblings and children of sp are well ordered
 	 * @param sourceFragment
+	 * @param minOffset TODO
+	 * @param maxOffset TODO
 	 * @return number of checked {@link SourcePosition} nodes
 	 */
-	private int assertSourcePositionTreeIsCorrectlyOrder(ElementSourceFragment sourceFragment) {
+	private int assertSourcePositionTreeIsCorrectlyOrder(ElementSourceFragment sourceFragment, int minOffset, int maxOffset) {
 		int nr = 0;
-		int pos = 0;
+		int pos = minOffset;
 		while (sourceFragment != null) {
 			nr++;
-			assertTrue(pos <= sourceFragment.getStart());
-			assertTrue(sourceFragment.getStart() <= sourceFragment.getEnd());
+			assertTrue("min(" + pos + ") <= fragment.start(" + sourceFragment.getStart() + ")", pos <= sourceFragment.getStart());
+			assertTrue("fragment.start(" + sourceFragment.getStart() + ") <= fragment.end(" + sourceFragment.getEnd() + ")", sourceFragment.getStart() <= sourceFragment.getEnd());
 			pos = sourceFragment.getEnd();
-			nr += assertSourcePositionTreeIsCorrectlyOrder(sourceFragment.getFirstChild());
+			nr += assertSourcePositionTreeIsCorrectlyOrder(sourceFragment.getFirstChild(), sourceFragment.getStart(), sourceFragment.getEnd());
 			sourceFragment = sourceFragment.getNextSibling();
 		}
+		assertTrue("lastFragment.end(" + pos + ") <= max(" + maxOffset + ")", pos <= maxOffset);
 		return nr;
 	}
 
