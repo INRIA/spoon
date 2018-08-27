@@ -309,7 +309,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	@Override
 	public ElementSourceFragment getRootSourceFragment() {
 		if (rootFragment == null) {
-			String originSourceCode = getOriginalSourceCode();
+			if (ctModule != null) {
+				throw new SpoonException("Root source fragment of compilation unit of module is not supported");
+			}
+			if (ctPackage != null && declaredTypes.isEmpty()) {
+				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
+			}
 			rootFragment = new ElementSourceFragment(this, null);
 			for (CtImport imprt : getImports()) {
 				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
