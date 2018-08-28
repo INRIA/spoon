@@ -26,7 +26,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -183,22 +182,19 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (parameter == null) {
 			return false;
 		}
-		if (parameter instanceof CtTypeParameterReference && !(parameter instanceof CtWildcardReference)) {
-			CtTypeParameterReference tpr = (CtTypeParameterReference) parameter;
-			CtTypeParameter typeParam = tpr.getDeclaration();
-			if (typeParam != null) {
-				parameter = typeParam.getSuperclass();
-				if (parameter == null) {
-					parameter = getFactory().Type().getDefaultBoundingType();
-				}
-			} else {
-				throw new SpoonException("Cannot automatically convert CtTypeParameterReference " + tpr.getSimpleName() + " to it's bound, because it is not linked to it's declaration");
-			}
-			parameter = parameter.clone();
-		}
+		checkMethodParameterTypeRef(parameter);
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT_TYPE, this.parameters, parameter);
 		return this.parameters.add(parameter);
+	}
+
+	private void checkMethodParameterTypeRef(CtTypeReference<?> parameterType) {
+		if (parameterType instanceof CtTypeParameterReference && !(parameterType instanceof CtWildcardReference)) {
+			throw new SpoonException("CtExecutableReference cannot use CtTypeParameterReference. Use boundingType of CtTypeParameterReference instead.");
+		}
+		if (parameterType instanceof CtArrayTypeReference) {
+			checkMethodParameterTypeRef(((CtArrayTypeReference<?>) parameterType).getComponentType());
+		}
 	}
 
 	@Override

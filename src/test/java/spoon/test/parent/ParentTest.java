@@ -212,10 +212,10 @@ public class ParentTest {
 	}
 
 	public static void checkParentContract(CtPackage pack) {
-		for(CtElement elem: pack.getElements(new TypeFilter<>(CtElement.class))) {
+		pack.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
-			Assert.assertNotNull("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.getParent());
-		}
+			Assert.assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
+		});
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
