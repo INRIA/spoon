@@ -1109,7 +1109,7 @@ public class PositionTest {
 
 	@Test
 	public void testSingleLineClassColumn() throws Exception {
-		// contract: element, positioned in a file without EOL, should have correct column
+		//contract: element, positioned in a file without EOL, should have correct column
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
 		CtType<?> type = build.Type().get("TestSingleLineClass");
 		assertEquals(13, type.getPosition().getColumn());
