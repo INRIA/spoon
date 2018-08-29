@@ -736,7 +736,6 @@ public class Metamodel {
 			types.add(new Type("CtTypeParameterReference", spoon.reflect.reference.CtTypeParameterReference.class, spoon.support.reflect.reference.CtTypeParameterReferenceImpl.class, fm -> fm
 				.field(CtRole.NAME, false, false)
 				.field(CtRole.IS_SHADOW, false, false)
-				.field(CtRole.IS_UPPER, false, false)
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.MODIFIER, true, true)
 				.field(CtRole.COMMENT, true, true)
@@ -747,7 +746,6 @@ public class Metamodel {
 				.field(CtRole.PACKAGE_REF, false, false)
 				.field(CtRole.DECLARING_TYPE, false, false)
 				.field(CtRole.ANNOTATION, false, false)
-				.field(CtRole.BOUNDING_TYPE, false, false)
 
 			));
 

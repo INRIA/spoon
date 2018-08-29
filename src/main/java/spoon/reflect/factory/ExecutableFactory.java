@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -104,7 +105,7 @@ public class ExecutableFactory extends SubFactory {
 		CtTypeReference<?>[] refs = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
-			refs[i++] = getMethodParameterType(param);
+			refs[i++] = getMethodParameterType(param.getType());
 		}
 		String executableName = e.getSimpleName();
 		if (e instanceof CtMethod) {
@@ -120,10 +121,19 @@ public class ExecutableFactory extends SubFactory {
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
 	}
 
-	private CtTypeReference<?> getMethodParameterType(CtParameter<?> param) {
-		CtTypeReference<?> paramType = param.getType();
+	private CtTypeReference<?> getMethodParameterType(CtTypeReference<?> paramType) {
 		if (paramType instanceof CtTypeParameterReference) {
 			paramType = ((CtTypeParameterReference) paramType).getBoundingType();
+		}
+		if (paramType instanceof CtArrayTypeReference) {
+			CtArrayTypeReference atr = (CtArrayTypeReference) paramType;
+			CtTypeReference<?> originCT = atr.getComponentType();
+			CtTypeReference<?> erasedCT = getMethodParameterType(originCT);
+			if (originCT != erasedCT) {
+				CtArrayTypeReference<?> erased = atr;
+				erased.setComponentType(erasedCT);
+				paramType = erased;
+			}
 		}
 		if (paramType == null) {
 			paramType = factory.Type().OBJECT;
