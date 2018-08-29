@@ -85,6 +85,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.ArrayList;
@@ -222,8 +223,8 @@ public class ReferenceBuilder {
 					}
 				}
 			}
-			if (type instanceof Wildcard && typeReference instanceof CtTypeParameterReference) {
-				((CtTypeParameterReference) typeReference).setBoundingType(buildTypeReference(((Wildcard) type).bound, scope));
+			if (type instanceof Wildcard && typeReference instanceof CtWildcardReference) {
+				((CtWildcardReference) typeReference).setBoundingType(buildTypeReference(((Wildcard) type).bound, scope));
 			}
 			this.jdtTreeBuilder.getContextBuilder().exit(type);
 			currentReference = currentReference.getDeclaringType();
@@ -653,7 +654,9 @@ public class ReferenceBuilder {
 		if (name.contains("extends") || name.contains("super")) {
 			String[] split = name.contains("extends") ? name.split("extends") : name.split("super");
 			param = getTypeParameterReference(split[0].trim());
-			((CtTypeParameterReference) param).setBoundingType(getTypeReference(split[split.length - 1].trim()));
+			if (param instanceof CtWildcardReference) {
+				((CtWildcardReference) param).setBoundingType(getTypeReference(split[split.length - 1].trim()));
+			}
 		} else if (name.matches(".*(<.+>)")) {
 			Pattern pattern = Pattern.compile("([^<]+)<(.+)>");
 			Matcher m = pattern.matcher(name);
@@ -803,7 +806,9 @@ public class ReferenceBuilder {
 				} else if (b.superclass != null && b.firstBound == b.superclass) {
 					bounds = false;
 					bindingCache.put(binding, ref);
-					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(b.superclass, resolveGeneric));
+					if (ref instanceof CtWildcardReference) {
+						((CtWildcardReference) ref).setBoundingType(getTypeReference(b.superclass, resolveGeneric));
+					}
 					bounds = oldBounds;
 				}
 			}
@@ -817,7 +822,9 @@ public class ReferenceBuilder {
 				for (ReferenceBinding superInterface : b.superInterfaces) {
 					bounds.add(getTypeReference(superInterface, resolveGeneric));
 				}
-				((CtTypeParameterReference) ref).setBoundingType(this.jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(bounds));
+				if (ref instanceof CtWildcardReference) {
+					((CtWildcardReference) ref).setBoundingType(this.jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(bounds));
+				}
 			}
 			if (binding instanceof CaptureBinding) {
 				bounds = false;
@@ -829,19 +836,18 @@ public class ReferenceBuilder {
 			ref.setSimpleName(name);
 		} else if (binding instanceof WildcardBinding) {
 			WildcardBinding wildcardBinding = (WildcardBinding) binding;
-			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
+			CtWildcardReference wref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
+			ref = wref;
 
-			if (wildcardBinding.boundKind == Wildcard.SUPER && ref instanceof CtTypeParameterReference) {
-				((CtTypeParameterReference) ref).setUpper(false);
+			if (wildcardBinding.boundKind == Wildcard.SUPER) {
+				wref.setUpper(false);
 			}
 
-			if (wildcardBinding.bound != null && ref instanceof CtTypeParameterReference) {
+			if (wildcardBinding.bound != null) {
 				if (bindingCache.containsKey(wildcardBinding.bound)) {
-					((CtTypeParameterReference) ref).setBoundingType(getCtCircularTypeReference(wildcardBinding.bound));
+					wref.setBoundingType(getCtCircularTypeReference(wildcardBinding.bound));
 				} else {
-
-
-					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
+					wref.setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
 				}
 			}
 		} else if (binding instanceof LocalTypeBinding) {

@@ -74,13 +74,13 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 
 	private CtTypeReference<?> adaptTypeParameterReference(CtTypeParameterReference typeParamRef) {
 		if ((typeParamRef instanceof CtWildcardReference)) {
-			return adaptTypeParameterReferenceBoundingType(typeParamRef, typeParamRef.getBoundingType());
+			return adaptTypeParameterReferenceBoundingType((CtWildcardReference) typeParamRef, typeParamRef.getBoundingType());
 		}
 		return adaptTypeParameter(typeParamRef.getDeclaration());
 	}
 
-	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtTypeParameterReference typeParamRef, CtTypeReference<?> boundingType) {
-		CtTypeParameterReference typeParamRefAdapted = typeParamRef.clone();
+	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtWildcardReference typeParamRef, CtTypeReference<?> boundingType) {
+		CtWildcardReference typeParamRefAdapted = typeParamRef.clone();
 		typeParamRefAdapted.setParent(typeParamRef.getParent());
 		typeParamRefAdapted.setBoundingType(boundingType.equals(boundingType.getFactory().Type().getDefaultBoundingType()) ? boundingType.getFactory().Type().getDefaultBoundingType() : adaptType(boundingType));
 		return typeParamRefAdapted;

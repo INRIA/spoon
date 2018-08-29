@@ -56,7 +56,7 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 		case BOUNDING_TYPE:
 		case SUPER_TYPE:
 			if (typeReference instanceof CtWildcardReference) {
-				((CtWildcardReference) typeReference).addBound(ctTypeReference);
+				((CtWildcardReference) typeReference).setBoundingType(ctTypeReference);
 			} else {
 				//Strange case?
 				this.getClass();
