@@ -29,36 +29,6 @@ import java.util.List;
 public interface CtTypeParameterReference extends CtTypeReference<Object> {
 
 	/**
-	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
-	 * {@code false} means a <code>super</code> clause.
-	 */
-	@DerivedProperty
-	boolean isUpper();
-
-	/**
-	 * Sets the bounds (aka generics) of the referenced parameter.
-	 *
-	 * If you give null or an empty list, it'll clear bounds of the reference.
-	 */
-	<T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds);
-
-	/**
-	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
-	 */
-	@UnsettableProperty
-	<T extends CtTypeParameterReference> T setUpper(boolean upper);
-
-	/**
-	 * Adds a bound.
-	 */
-	<T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound);
-
-	/**
-	 * Removes a bound.
-	 */
-	boolean removeBound(CtTypeReference<?> bound);
-
-	/**
 	 * A type parameter can have an <code>extends</code> clause which declare
 	 * one ({@link CtTypeReference} or more ({@link CtIntersectionTypeReference} references.
 	 * <pre>
@@ -70,12 +40,6 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 	 */
 	@DerivedProperty
 	CtTypeReference<?> getBoundingType();
-
-	/**
-	 * Sets the <code>extends</code> clause of the type parameter.
-	 */
-	@UnsettableProperty
-	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
 
 	/**
 	 * Returns the {@link CtTypeParameter}, a {@link CtTypeParameter}, that declares the type parameter

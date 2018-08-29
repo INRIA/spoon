@@ -24,16 +24,13 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
-import spoon.support.SpoonClassNotFoundException;
 import spoon.support.UnsettableProperty;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,23 +52,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public boolean isUpper() {
-		return true;
-	}
-
-	@Override
-	@UnsettableProperty
-	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		return (T) this;
-	}
-
-	@Override
-	@UnsettableProperty
-	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
-		return (T) this;
-	}
-
-	@Override
 	public boolean isPrimitive() {
 		return false;
 	}
@@ -79,13 +59,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	@Override
 	@SuppressWarnings("unchecked")
 	public Class<Object> getActualClass() {
-		if (isUpper()) {
-			if (isDefaultBoundingType()) {
-				return (Class<Object>) getTypeErasure().getActualClass();
-			}
-			return (Class<Object>) getBoundingType().getActualClass();
-		}
-		throw new SpoonClassNotFoundException("you should never call getActualClass  (" + this.getQualifiedName() + " not found in the classpath)", null);
+		return (Class<Object>) getBoundingType().getActualClass();
 	}
 
 	@Override
@@ -113,37 +87,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public <T extends CtTypeParameterReference> T addBound(CtTypeReference<?> bound) {
-		if (bound == null || isWildcard() == false) {
-			return (T) this;
-		}
-		if (isDefaultBoundingType()) {
-			setBoundingType(bound);
-		} else if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			getBoundingType().asCtIntersectionTypeReference().addBound(bound);
-		} else {
-			final List<CtTypeReference<?>> refs = new ArrayList<>();
-			refs.add(getBoundingType());
-			refs.add(bound);
-			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
-		}
-		return (T) this;
-	}
-
-	@Override
-	public boolean removeBound(CtTypeReference<?> bound) {
-		if (bound == null || isDefaultBoundingType() || isWildcard() == false) {
-			return false;
-		}
-		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			return getBoundingType().asCtIntersectionTypeReference().removeBound(bound);
-		} else {
-			setBoundingType(null);
-			return true;
-		}
-	}
-
-	@Override
 	@DerivedProperty
 	public CtTypeReference<?> getBoundingType() {
 		CtTypeParameter typeParam = getDeclaration();
@@ -154,12 +97,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			}
 		}
 		return getFactory().Type().getDefaultBoundingType();
-	}
-
-	@Override
-	@UnsettableProperty
-	public <T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType) {
-		return (T) this;
 	}
 
 	@Override

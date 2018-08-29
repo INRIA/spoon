@@ -19,12 +19,8 @@ package spoon.support.reflect.reference;
 import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
 import static spoon.reflect.path.CtRole.IS_UPPER;
 
-import java.util.List;
-
-import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -81,22 +77,6 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	}
 
 	@Override
-	public <T extends CtTypeParameterReference> T setBounds(List<CtTypeReference<?>> bounds) {
-		if (bounds == null || bounds.isEmpty()) {
-			setBoundingType(null);
-			return (T) this;
-		}
-		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
-			throw new SpoonException("Cannot be CtIntersectionTypeReference");
-		} else if (bounds.size() > 1) {
-			throw new SpoonException("Wildcard reference accepts only one bound");
-		} else {
-			setBoundingType(bounds.get(0));
-		}
-		return (T) this;
-	}
-
-	@Override
 	public CtTypeReference<?> getBoundingType() {
 		return superType;
 	}
@@ -115,6 +95,15 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	@Override
 	public CtType<Object> getTypeDeclaration() {
 		return getFactory().Type().get(Object.class);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Class<Object> getActualClass() {
+		if (isUpper()) {
+			return (Class<Object>) getBoundingType().getActualClass();
+		}
+		return Object.class;
 	}
 
 	@Override
