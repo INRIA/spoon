@@ -38,10 +38,13 @@ public class FactoryTest {
 		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 		CtMethod<?> m = type.getMethodsByName("method3").get(0);
 		int i = m.getBody().getStatements().size();
+		m.putMetadata("metadata", 1);
+		int metadata = m.getAllMetadata().size();
 
 		m = m.clone();
 
 		assertEquals(i, m.getBody().getStatements().size());
+		assertEquals(metadata, m.getAllMetadata().size());
 		// cloned elements must not have an initialized parent
 		assertFalse(m.isParentInitialized());
 	}
@@ -50,13 +53,13 @@ public class FactoryTest {
 	public void testFactoryOverriding()  throws Exception {
 
 		@SuppressWarnings("serial")
-		class MyCtMethod<T> extends CtMethodImpl<T>{};
+		class MyCtMethod<T> extends CtMethodImpl<T>{}
 
 		@SuppressWarnings("serial")
 		final CoreFactory specialCoreFactory = new DefaultCoreFactory() {
 			@Override
 			public <T> CtMethod<T> createMethod() {
-				MyCtMethod<T> m = new MyCtMethod<T>();
+				MyCtMethod<T> m = new MyCtMethod<>();
 				m.setFactory(getMainFactory());
 				return m;
 			}
@@ -100,7 +103,7 @@ public class FactoryTest {
 	}
 
 	@Test
-	public void testCtModel() throws Exception {
+	public void testCtModel() {
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/test/java/spoon/test/factory/testclasses");
 		spoon.buildModel();
@@ -147,7 +150,7 @@ public class FactoryTest {
 		assertEquals(0, model.getAllTypes().size());
 	}
 
-	public void testIncrementalModel() throws Exception {
+	public void testIncrementalModel() {
 
 		// contract: one can merge two models together
 		// May 2018: we realize that the merge is incomplete see https://github.com/INRIA/spoon/issues/2001
@@ -196,7 +199,7 @@ public class FactoryTest {
 	}
 
 	@Test
-	public void specificationCoreFactoryCreate() throws Exception {
+	public void specificationCoreFactoryCreate() {
 		// contract: all concrete metamodel classes must be instantiable by CoreFactory.create
 		for(CtType<? extends CtElement> itf : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
 			CtElement o = itf.getFactory().Core().create(itf.getActualClass());

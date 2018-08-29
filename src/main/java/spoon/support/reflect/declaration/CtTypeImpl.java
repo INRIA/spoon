@@ -100,7 +100,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
-		super();
 	}
 
 	@Override
@@ -622,11 +621,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					// replace old method by new one (based on signature and not equality)
 					// we have to do it by hand
 					removeTypeMember(m);
-				} else {
-					// checking contract signature implies equal
-					if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
-						throw new AssertionError("violation of core contract! different signature but same equal");
-					}
 				}
 			}
 		}
@@ -791,14 +785,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
 			// both types are generic
-			if (!ctParameterType.equals(expectedType)) {
-				return false;
-			}
+			return ctParameterType.equals(expectedType);
 		} else if (expectedType instanceof CtTypeParameterReference) {
 			// expectedType type is generic, ctParameterType is real type
-			if (!expectedType.getTypeErasure().getQualifiedName().equals(ctParameterType.getQualifiedName())) {
-				return false;
-			}
+			return expectedType.getTypeErasure().getQualifiedName().equals(ctParameterType.getQualifiedName());
 		} else if (ctParameterType instanceof CtTypeParameterReference) {
 			// ctParameterType is generic, expectedType type is real type
 			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
@@ -812,10 +802,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				return declaration.getSuperclass().equals(expectedType);
 			} else {
 				return getFactory().Type().objectType().equals(expectedType);
-			}
-		} else if (!expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName())) {
-			// both are real types
-			return false;
+			} // both are real types
+		} else {
+			return expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName());
 		}
 		return true;
 	}

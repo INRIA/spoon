@@ -100,7 +100,7 @@ public class ExecutableFactory extends SubFactory {
 	}
 
 	private <T> CtExecutableReference<T> createReferenceInternal(CtExecutable<T> e) {
-		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters().size()];
+		CtTypeReference<?>[] refs = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
 			refs[i++] = param.getType() != null

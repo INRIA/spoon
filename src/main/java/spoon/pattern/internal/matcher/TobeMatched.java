@@ -63,9 +63,6 @@ public class TobeMatched {
 
 	private TobeMatched(ImmutableMap parameters, Object target) {
 		//It is correct to put whole container as single value in cases when ParameterNode matches agains whole attribute value
-//		if (target instanceof Collection || target instanceof Map) {
-//			throw new SpoonException("Invalid argument. Use other constructors");
-//		}
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
 		this.targets = Collections.singletonList(target);
@@ -155,7 +152,7 @@ public class TobeMatched {
 	 * @return true if there is anything to match.
 	 */
 	public boolean hasTargets() {
-		return targets.size() > 0;
+		return !targets.isEmpty();
 	}
 
 	/**

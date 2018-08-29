@@ -25,7 +25,7 @@ import static org.junit.Assert.fail;
 public class EqualTest {
 
 	@Test
-	public void testEqualsEmptyException() throws Exception {
+	public void testEqualsEmptyException() {
 
 		Factory factory = new Launcher().createFactory();
 
@@ -50,27 +50,24 @@ public class EqualTest {
 
 		CtLiteral<?> argument1 = (CtLiteral<?>) invo.getArguments().get(0);
 
-		assertEquals(realParam1 , argument1.toString());
+		assertEquals(realParam1, argument1.toString());
 
 
 		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
 
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 
-		assertEquals(realParam1 , returnExp.toString() );
+		assertEquals(realParam1, returnExp.toString());
 
-		try{
+		try {
 			assertEquals(argument1, returnExp);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
-
 	}
 
 	@Test
-	public void testEqualsComment() throws Exception {
+	public void testEqualsComment() {
 		Factory factory = new Launcher().createFactory();
 		CtLocalVariable<?> var = factory.Code().createCodeSnippetStatement("int i=0").compile();
 		CtLocalVariable<?> var2 = var.clone();
@@ -80,7 +77,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsMultitype() throws Exception {
+	public void testEqualsMultitype() {
 		Factory factory = new Launcher().createFactory();
 		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
 		CtTry var2 = var.clone();
@@ -92,7 +89,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsActualTypeRef() throws Exception {
+	public void testEqualsActualTypeRef() {
 		// contract: actual type refs are part of the identity
 		Factory factory = new Launcher().createFactory();
 		CtLocalVariable var = factory.Code().createCodeSnippetStatement("java.util.List<String> l ").compile();
@@ -101,7 +98,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsDetails() throws Exception {
+	public void testEqualsDetails() {
 		Factory factory = new Launcher().createFactory();
 		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
 		CtTry var2 = var.clone();

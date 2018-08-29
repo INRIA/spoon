@@ -42,7 +42,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 	private static Metamodel metaModel;
 
 	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		metaModel = Metamodel.getInstance();
 
 		List<Object[]> values = new ArrayList<>();
@@ -59,7 +59,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 	
 
 	@Test
-	public void testContract() throws Throwable {
+	public void testContract() {
 		List<String> problems = new ArrayList<>();
 		
 		// contract: all elements are replaceable wherever they are in the model
@@ -83,7 +83,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 				//the children of CtLoop wraps CtStatement into an implicit CtBlock. So make a block directly to test plain get/set and not wrapping.
 				itemType = factory.createCtTypeReference(CtBlock.class);
 			}
-			if (o.getClass().getSimpleName().equals("CtAnnotationFieldAccessImpl") && mmField.getRole()==CtRole.VARIABLE) {
+			if ("CtAnnotationFieldAccessImpl".equals(o.getClass().getSimpleName()) && mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);
 			} else if (CtFieldAccess.class.isAssignableFrom(o.getClass()) &&  mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);
@@ -140,15 +140,10 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 							found = true;
 							return;
 						}
-//						if (rh.getRole()==CtRole.TYPE && role == CtRole.MULTI_TYPE) {
-//							//CtCatchVaraible#type sets CtCatchVaraible#multiType - OK 
-//							found = true;
-//							return;
-//						}
 						problems.add("Argument was set into " + rh.getRole() + " but was found in " + role);
 					}
 				}
-			};
+			}
 			Scanner s = new Scanner();
 			receiver.accept(s);
 			assertTrue("Settable field " + mmField.toString() + " should set value.\n" + getReport(problems), s.found);
@@ -170,13 +165,13 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 				}
 			}).size() == 1);
 		}
-		if (problems.size() > 0) {
+		if (!problems.isEmpty()) {
 			fail(getReport(problems));
 		}
 	}
 	
 	private String getReport(List<String> problems) {
-		if (problems.size() > 0) {
+		if (!problems.isEmpty()) {
 			StringBuilder report = new StringBuilder();
 			report.append("The accessors of " + typeToTest + " have problems:");
 			for (String problem : problems) {

@@ -23,7 +23,6 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -44,14 +43,13 @@ import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.BOUNDING_TYPE)
+	@MetamodelPropertyField(role = BOUNDING_TYPE)
 	CtTypeReference<?> superType;
 
-	@MetamodelPropertyField(role = CtRole.IS_UPPER)
+	@MetamodelPropertyField(role = IS_UPPER)
 	boolean upper = true;
 
 	public CtTypeParameterReferenceImpl() {
-		super();
 		// calling null will set the default value of boundingType
 		this.setBoundingType(null);
 	}
@@ -80,8 +78,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (getBoundingType() instanceof CtIntersectionTypeReference<?>) {
 			getBoundingType().asCtIntersectionTypeReference().setBounds(bounds);
 		} else if (bounds.size() > 1) {
-			final List<CtTypeReference<?>> refs = new ArrayList<>();
-			refs.addAll(bounds);
+			final List<CtTypeReference<?>> refs = new ArrayList<>(bounds);
 			setBoundingType(getFactory().Type().createIntersectionTypeReferenceWithBounds(refs));
 		} else {
 			setBoundingType(bounds.get(0));
@@ -289,9 +286,6 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		if (getDeclaration() instanceof CtTypeParameter) {
 			return true;
 		}
-		if (getBoundingType() != null && getBoundingType().isGenerics()) {
-			return true;
-		}
-		return false;
+		return getBoundingType() != null && getBoundingType().isGenerics();
 	}
 }

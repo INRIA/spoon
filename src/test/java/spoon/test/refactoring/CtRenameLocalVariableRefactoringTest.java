@@ -36,7 +36,8 @@ public class CtRenameLocalVariableRefactoringTest
 		//contract: check that all assertions in all methods of the RenameLocalVariableRefactorTestSubject are correct
 		new CtRenameLocalVariableRefactoringTestSubject().checkModelConsistency();
 	}
-	
+
+	/*"nestedClassMethodWithoutRefs", "var3", "var1"*/
 	/**
 	 * If you need to debug behavior of refactoring on the exact method and variable in the {@link CtRenameLocalVariableRefactoringTestSubject} model,
 	 * then provide
@@ -46,7 +47,7 @@ public class CtRenameLocalVariableRefactoringTest
 	 * then put breakpoint on the line `this.getClass();` below and the debugger stops just before 
 	 * the to be inspected refactoring starts
 	 */
-	private String[] DEBUG = new String[]{/*"nestedClassMethodWithoutRefs", "var3", "var1"*/};
+	private String[] DEBUG = {/*"nestedClassMethodWithoutRefs", "var3", "var1"*/};
 
 	/**
 	 * The {@link CtRenameLocalVariableRefactoringTestSubject} class is loaded as spoon model. Then:
@@ -203,7 +204,7 @@ public class CtRenameLocalVariableRefactoringTest
 	@Test
 	public void testRefactorWrongUsage() throws Exception {
 		CtType varRenameClass = ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
-		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)-> "local1".equals(var.getSimpleName())).first();
 		
 		//contract: a target variable is not defined. Throw SpoonException
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
@@ -251,7 +252,7 @@ public class CtRenameLocalVariableRefactoringTest
 	@Test
 	public void testRenameLocalVariableToSameName() throws Exception {
 		CtType varRenameClass = ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
-		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)-> "local1".equals(var.getSimpleName())).first();
 		
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
 		refactor.setTarget(local1Var);

@@ -36,8 +36,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	 * Returns the block.
 	 */
 	public static CtBlock<?> getBlock(CtClass<? extends BlockTemplate> p) {
-		CtBlock<?> b = p.getMethod("block").getBody();
-		return b;
+		return p.getMethod("block").getBody();
 	}
 
 	/**
@@ -46,6 +45,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	public BlockTemplate() {
 	}
 
+	@Override
 	public CtBlock<?> apply(CtType<?> targetType) {
 		CtClass<? extends BlockTemplate> c = Substitution.getTemplateCtClass(targetType, this);
 		return TemplateBuilder.createPattern(getBlock(c), this).setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtBlock.class);

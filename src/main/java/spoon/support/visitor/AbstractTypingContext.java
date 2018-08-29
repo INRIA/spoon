@@ -52,7 +52,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 			result = t.getFactory().Type().createReference(t, true);
 			isCopy = true;
 		}
-		if (result.getActualTypeArguments().size() > 0) {
+		if (!result.getActualTypeArguments().isEmpty()) {
 			//we have to adapt actual type arguments recursive too
 			if (isCopy == false) {
 				CtElement parent = result.getParent();
@@ -76,8 +76,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 		if ((typeParamRef instanceof CtWildcardReference)) {
 			return adaptTypeParameterReferenceBoundingType(typeParamRef, typeParamRef.getBoundingType());
 		}
-		CtTypeReference<?> typeRefAdapted = adaptTypeParameter(typeParamRef.getDeclaration());
-		return typeRefAdapted;
+		return adaptTypeParameter(typeParamRef.getDeclaration());
 	}
 
 	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtTypeParameterReference typeParamRef, CtTypeReference<?> boundingType) {

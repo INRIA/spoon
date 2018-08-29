@@ -28,7 +28,7 @@ import spoon.support.util.ImmutableMap;
  * defines acceptable value of parameter value during matching. For example type, filter on attribute values.
  */
 public interface ParameterInfo {
-	int UNLIMITED_OCCURENCES = Integer.MAX_VALUE;
+	int UNLIMITED_OCCURRENCES = Integer.MAX_VALUE;
 
 	/**
 	 * @return the full name of the parameter from the root of parameter container to the value represented by this {@link ParameterInfo}

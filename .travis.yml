@@ -7,12 +7,14 @@ group: edge
 jdk: openjdk8
 
 env:
+  global:
+  - M2_HOME="/usr/local/maven"
+  matrix:
   - SCRIPT=travis-jdk9.sh
   - SCRIPT=travis-jdk8.sh
   - SCRIPT=travis-coverage.sh
   - SCRIPT=travis-verify.sh
   - SCRIPT=travis-maven339-jdk8.sh
-  - SCRIPT=travis-jdk8-other-seed.sh
   - SCRIPT=travis-jdk10.sh
 
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -B -V

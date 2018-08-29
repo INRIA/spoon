@@ -9,7 +9,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import spoon.experimental.modelobs.ChangeCollector;
+import spoon.support.modelobs.ChangeCollector;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
@@ -24,15 +24,15 @@ public class ChangeCollectorTest {
 	public void testChangeCollector() throws Exception {
 		//contract: test ChangeCollector
 		CtType<?> ctClass = ModelUtils.buildClass(SubjectOfChange.class);
-		
+
 		Factory f = ctClass.getFactory();
 
 		assertNull(ChangeCollector.getChangeCollector(f.getEnvironment()));
-		
+
 		ChangeCollector changeCollector = new ChangeCollector().attachTo(f.getEnvironment());
-		
+
 		assertSame(changeCollector, ChangeCollector.getChangeCollector(f.getEnvironment()));
-		
+
 		//contract: after ChangeCollector is created there is no direct or indirect change
 		assertEquals(0, changeCollector.getChanges(f.getModel().getRootPackage()).size());
 		f.getModel().getRootPackage().filterChildren(null).forEach((CtElement e) -> {
@@ -40,25 +40,24 @@ public class ChangeCollectorTest {
 		});
 
 		ctClass.setSimpleName("aaa");
-		
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.SUB_PACKAGE)), changeCollector.getChanges(f.getModel().getRootPackage()));
 		assertEquals(new HashSet<>(), changeCollector.getDirectChanges(f.getModel().getRootPackage()));
-		
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.CONTAINED_TYPE)), changeCollector.getChanges(ctClass.getPackage()));
 		assertEquals(new HashSet<>(Arrays.asList()), changeCollector.getDirectChanges(ctClass.getPackage()));
-		
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME)), changeCollector.getChanges(ctClass));
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME)), changeCollector.getDirectChanges(ctClass));
-		
+
 		CtField<?> field = ctClass.getField("someField");
 		field.getDefaultExpression().delete();
-		
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME, CtRole.TYPE_MEMBER)), changeCollector.getChanges(ctClass));
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME)), changeCollector.getDirectChanges(ctClass));
-		
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.DEFAULT_EXPRESSION)), changeCollector.getChanges(field));
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.DEFAULT_EXPRESSION)), changeCollector.getDirectChanges(field));
-		
 
 		/*
 		 * TODO:
@@ -69,9 +68,8 @@ public class ChangeCollectorTest {
 
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME, CtRole.TYPE_MEMBER)), changeCollector.getChanges(ctClass));
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME, CtRole.TYPE_MEMBER)), changeCollector.getDirectChanges(ctClass));
-		
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.DEFAULT_EXPRESSION)), changeCollector.getChanges(field));
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.DEFAULT_EXPRESSION)), changeCollector.getDirectChanges(field));
-		
 	}
 }

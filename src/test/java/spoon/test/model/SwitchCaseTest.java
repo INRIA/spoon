@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -46,7 +47,7 @@ public class SwitchCaseTest {
 		assertEquals(0, ((CtLiteral<?>) c.getCaseExpression()).getValue());
 		assertEquals(2, c.getStatements().size());
 
-		List<CtStatement> l = new ArrayList<CtStatement>();
+		List<CtStatement> l = new ArrayList<>();
 
 		// this compiles (thanks to the new CtCase extends CtStatementList)
 		for (CtStatement s : c) {
@@ -57,7 +58,7 @@ public class SwitchCaseTest {
 
 	@Test
 	public void testSwitchStatementOnAString() throws Exception {
-		CtClass<?> clazz = build("spoon.test.model", "SwitchStringClass");
+		CtClass<?> clazz = build("spoon.test.model.testclasses", "SwitchStringClass");
 
 		CtMethod<?> method = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtSwitch<?> ctSwitch = method
@@ -65,7 +66,7 @@ public class SwitchCaseTest {
 				.get(0);
 
 		// Checks the selector is a string.
-		assertEquals(String.class,
+		assertSame(String.class,
 				ctSwitch.getSelector().getType().getActualClass());
 
 		// Checks all cases are strings.
@@ -74,7 +75,7 @@ public class SwitchCaseTest {
 				// default case
 				continue;
 			}
-			assertEquals(String.class,
+			assertSame(String.class,
 					aCase.getCaseExpression().getType().getActualClass());
 		}
 	}

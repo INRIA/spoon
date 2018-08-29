@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import spoon.compiler.Environment;
 import spoon.reflect.factory.Factory;
+import spoon.support.CompressionType;
 
 /**
  * This interface defines the protocol to save and load a factory and it's
@@ -30,6 +32,7 @@ public interface ModelStreamer {
 
 	/**
 	 * Saves a factory (and all its associated Java program elements).
+	 * Stream is GZIP compressed by default, see {@link Environment#setCompressionType(spoon.support.CompressionType)}
 	 *
 	 * @param f
 	 * 		the factory to be save
@@ -42,6 +45,7 @@ public interface ModelStreamer {
 
 	/**
 	 * Loads a factory (and all its associated Java program elements).
+	 * Tries to decompress the file given the available {@link CompressionType}
 	 *
 	 * @param in
 	 * 		the used input stream

@@ -32,7 +32,7 @@ import java.util.Set;
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
-public interface CompilationUnit extends FactoryAccessor, Serializable {
+public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, Serializable {
 
 	enum UNIT_TYPE {
 		TYPE_DECLARATION,
@@ -56,6 +56,16 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	 * Sets the file that corresponds to this compilation unit.
 	 */
 	void setFile(File file);
+
+	/**
+	 * @return array of offsets in the origin source file, where occurs line separator
+	 */
+	int[] getLineSeparatorPositions();
+
+	/**
+	 * @param lineSeparatorPositions array of offsets in the origin source file, where occurs line separator
+	 */
+	void setLineSeparatorPositions(int[] lineSeparatorPositions);
 
 	/**
 	 * Gets all binary (.class) files that corresponds to this compilation unit

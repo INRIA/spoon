@@ -84,7 +84,6 @@ public class PatternBuilder {
 
 	private CtTypeReference<?> templateTypeRef;
 	private final Map<String, AbstractParameterInfo> parameterInfos = new HashMap<>();
-//	ListOfNodes pattern;
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;
 	private boolean addGeneratedBy = false;
@@ -449,7 +448,7 @@ public class PatternBuilder {
 		if (templateTypeRef != null) {
 			return templateTypeRef.getFactory();
 		}
-		if (patternModel.size() > 0) {
+		if (!patternModel.isEmpty()) {
 			return patternModel.get(0).getFactory();
 		}
 		throw new SpoonException("PatternBuilder has no CtElement to provide a Factory");

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class DeleteTest {
+
 	@Test
 	public void testDeleteAStatementInAnonymousExecutable() throws Exception {
 		final Factory factory = build(Adobada.class);

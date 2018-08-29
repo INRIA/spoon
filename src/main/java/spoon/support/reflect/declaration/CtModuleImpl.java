@@ -47,7 +47,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	private CtPackage rootPackage;
 
 	public CtModuleImpl() {
-		super();
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 
 	@Override
 	public <T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective) {
-		if (moduleDirective == null || this.moduleDirectives.size() == 0) {
+		if (moduleDirective == null || this.moduleDirectives.isEmpty()) {
 			return (T) this;
 		}
 		if (this.moduleDirectives.contains(moduleDirective)) {

@@ -45,7 +45,7 @@ public class CtTypedNameElement<P extends CtElement, T extends CtElement> extend
 	public Collection<T> getElements(Collection<P> roots) {
 		Collection<T> elements = new ArrayList<>();
 		for (CtElement root : roots) {
-			for (CtElement child : getChilds(root)) {
+			for (CtElement child : getChildren(root)) {
 				if (match(child)) {
 					elements.add((T) child);
 				}

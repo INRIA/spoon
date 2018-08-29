@@ -1,6 +1,7 @@
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -39,7 +40,7 @@ public class PrinterTest {
 				SpoonResourceHelper
 						.resources(
 								"./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java",
-								"./src/test/java/spoon/test/prettyprinter/Validation.java"))
+								"./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		for (CtType<?> t : factory.Type().getAll()) {
 			t.toString();
@@ -50,7 +51,7 @@ public class PrinterTest {
 	}
 
 	@Test
-	public void testChangeAutoImportModeWorks() throws Exception {
+	public void testChangeAutoImportModeWorks() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setAutoImports(false);
 		PrettyPrinter printer = spoon.createPrettyPrinter();
@@ -207,7 +208,7 @@ public class PrinterTest {
 			"instanceof"
 	));
 
-	private final String[] javaKeywordsJoined = new String[] {
+	private final String[] javaKeywordsJoined = {
 			"abstract continue for new switch",
 			"assert default goto package synchronized",
 			"boolean do if private this",
@@ -217,7 +218,8 @@ public class PrinterTest {
 			"catch extends int short try",
 			"char final interface static void",
 			"class finally long strictfp volatile",
-			"const float native super while"};
+			"const float native super while"
+	};
 
 	private final Set<String> javaKeywords = new HashSet<>();
 	{
@@ -243,8 +245,8 @@ public class PrinterTest {
 //this case needs longer, but checks contract on all spoon java sources
 //				.resources("./src/main/java/"))
 				.build();
-		
-		assertTrue(factory.Type().getAll().size() > 0);
+
+		assertFalse(factory.Type().getAll().isEmpty());
 		for (CtType<?> t : factory.Type().getAll()) {
 			//create DefaultJavaPrettyPrinter with standard DefaultTokenWriter
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
@@ -283,7 +285,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
-					assertTrue(literal.length() > 0);
+					assertFalse(literal.isEmpty());
 					handleTabs();
 					allTokens.append(literal);
 					return this;
@@ -361,7 +363,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeCodeSnippet(String token) {
 					checkRepeatingOfTokens("writeCodeSnippet");
-					assertTrue(token.length() > 0);
+					assertFalse(token.isEmpty());
 					handleTabs();
 					allTokens.append(token);
 					return this;
@@ -425,7 +427,7 @@ public class PrinterTest {
 
 	private void checkTokenWhitespace(String stringToken, boolean isWhitespace) {
 		//contract: there is no empty token
-		assertTrue(stringToken.length() > 0);
+		assertFalse(stringToken.isEmpty());
 		//contract: only whitespace token contains whitespace
 		for (int i = 0; i < stringToken.length(); i++) {
 			char c = stringToken.charAt(i);
@@ -451,7 +453,7 @@ public class PrinterTest {
 
 		ElementPrinterHelper elementPrinterHelper = pp.getElementPrinterHelper();
 
-		String[] listString = new String[] {"un", "deux", "trois"};
+		String[] listString = {"un", "deux", "trois"};
 
 		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
 

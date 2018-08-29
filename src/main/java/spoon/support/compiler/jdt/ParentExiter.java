@@ -197,7 +197,6 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameter) {
 			e.addFormalCtTypeParameter((CtTypeParameter) child);
 		}
-		return;
 	}
 
 	@Override
@@ -405,6 +404,18 @@ public class ParentExiter extends CtInheritanceScanner {
 				operator.setLeftHandOperand((CtExpression<?>) child);
 				return;
 			} else if (operator.getRightHandOperand() == null) {
+				if (child.getPosition().isValidPosition()) {
+					int childEnd = child.getPosition().getSourceEnd();
+					SourcePosition oldPos = operator.getPosition();
+					if (oldPos.isValidPosition() && oldPos.getSourceEnd() < childEnd) {
+						//fix parent position if right hand expression is `x instanceof List<?>` which has bad sourceEnd ending before `<?>
+						int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+						operator.setPosition(operator.getFactory().Core().createSourcePosition(
+								oldPos.getCompilationUnit(),
+								oldPos.getSourceStart(), childEnd,
+								lineSeparatorPositions));
+					}
+				}
 				operator.setRightHandOperand((CtExpression<?>) child);
 				return;
 			} else if (jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof StringLiteralConcatenation) {
@@ -814,6 +825,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		if (child instanceof CtCase) {
 			switchStatement.addCase((CtCase<E>) child);
+			//we have all statements of the case. Update source position now
+			child.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition((CtCase<E>) child));
 			return;
 		}
 		super.visitCtSwitch(switchStatement);
@@ -845,8 +858,11 @@ public class ParentExiter extends CtInheritanceScanner {
 	public void visitCtTry(CtTry tryBlock) {
 		if (child instanceof CtBlock) {
 			final CtBlock<?> childBlock = (CtBlock<?>) this.child;
-			if (tryBlock.getCatchers().size() > 0 && tryBlock.getCatchers().get(tryBlock.getCatchers().size() - 1).getBody() == null) {
-				tryBlock.getCatchers().get(tryBlock.getCatchers().size() - 1).setBody(childBlock);
+			CtCatch lastCatcher = getLastCatcher(tryBlock);
+			if (lastCatcher != null && lastCatcher.getBody() == null) {
+				lastCatcher.setBody(childBlock);
+				//we have finally all the information needed to build full position of CtCatch element
+				lastCatcher.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(lastCatcher));
 			} else if (tryBlock.getBody() != null && tryBlock.getFinalizer() == null) {
 				tryBlock.setFinalizer(childBlock);
 			} else {
@@ -858,6 +874,19 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtTry(tryBlock);
+	}
+
+	/**
+	 * @param tryBlock
+	 * @return last CtCatch of `tryBlock` or null
+	 */
+	private CtCatch getLastCatcher(CtTry tryBlock) {
+		List<CtCatch> catchers = tryBlock.getCatchers();
+		int nrCatchers = catchers.size();
+		if (nrCatchers > 0) {
+			return catchers.get(nrCatchers - 1);
+		}
+		return null;
 	}
 
 	@Override

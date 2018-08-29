@@ -99,7 +99,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	static String computeAnonymousName(char[] anonymousQualifiedName) {
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
+		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1);
 	}
 
 	/**
@@ -110,12 +110,12 @@ public class JDTTreeBuilderHelper {
 	 * @return Qualified name.
 	 */
 	static String createQualifiedTypeName(char[][] typeName) {
-		String s = "";
+		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < typeName.length - 1; i++) {
-			s += CharOperation.charToString(typeName[i]) + ".";
+			s.append(CharOperation.charToString(typeName[i])).append(".");
 		}
-		s += CharOperation.charToString(typeName[typeName.length - 1]);
-		return s;
+		s.append(CharOperation.charToString(typeName[typeName.length - 1]));
+		return s.toString();
 	}
 
 	/**
@@ -214,18 +214,6 @@ public class JDTTreeBuilderHelper {
 				// Since the given parameter has not been declared in a lambda expression it must
 				// have been declared by a method/constructor.
 				final CtExecutable executable = (CtExecutable) variable.getParent();
-
-				// create list of executable's parameter types
-				final List<CtTypeReference<?>> parameterTypesOfExecutable = new ArrayList<>();
-				@SuppressWarnings("unchecked")
-				final List<CtParameter<?>> parametersOfExecutable = executable.getParameters();
-				for (CtParameter<?> parameter : parametersOfExecutable) {
-					parameterTypesOfExecutable.add(parameter.getType() != null
-							? parameter.getType().clone()
-							// it's the best match :(
-							: typeFactory.OBJECT.clone()
-					);
-				}
 
 				// find executable's corresponding jdt element
 				AbstractMethodDeclaration executableJDT = null;
@@ -465,7 +453,7 @@ public class JDTTreeBuilderHelper {
 	CtTypeAccess<?> createTypeAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<?> fieldReference) {
 		final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
 		if (receiverType != null) {
-			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(//
+			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(
 					qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
 						@Override
 						public boolean onAccess(char[][] tokens, int index) {

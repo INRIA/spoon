@@ -152,10 +152,8 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -212,7 +210,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	public JDTTreeBuilder(Factory factory) {
-		super();
 		this.factory = factory;
 		this.position = new PositionBuilder(this);
 		this.context = new ContextBuilder(this);
@@ -461,14 +458,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(MemberValuePair pair, ClassScope scope) {
 		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
-			throw new RuntimeException("Unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 	}
 
 	@Override
 	public void endVisit(MemberValuePair pair, BlockScope scope) {
 		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
-			throw new RuntimeException("Unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 	}
 
@@ -583,8 +580,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(SingleMemberAnnotation annotation, BlockScope scope) {
-		if (!context.annotationValueName.pop().equals("value")) {
-			throw new RuntimeException("unconsistant Stack");
+		if (!"value".equals(context.annotationValueName.pop())) {
+			throw new RuntimeException("Inconsistent Stack");
 		}
 		context.exit(annotation);
 		skipTypeInAnnotation = false;
@@ -858,7 +855,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.buildTypeReference(arrayTypeReference, scope));
+		CtTypeReference<Object> objectCtTypeReference = references.buildTypeReference(arrayTypeReference, scope);
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(objectCtTypeReference);
 		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
 			((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
 		}
@@ -935,7 +933,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CastExpression castExpression, BlockScope scope) {
-		context.casts.add(this.references.buildTypeReference(castExpression.type, scope));
+		CastInfo ci = new CastInfo();
+		//the 8 bits from 21 to 28 represents number of enclosing brackets
+		ci.nrOfBrackets = ((castExpression.bits >>> 21) & 0xF);
+		ci.typeRef = this.references.buildTypeReference(castExpression.type, scope, true);
+		context.casts.add(ci);
 		castExpression.expression.traverse(this, scope);
 		return false;
 	}
@@ -1097,8 +1099,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
-
-		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (fieldDeclaration.binding != null) {
 			if (fieldDeclaration.binding.declaringClass != null && fieldDeclaration.binding.declaringClass.isEnum()) {
 				//enum values take over visibility from enum type
@@ -1583,7 +1583,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if (new String(typeDeclaration.name).equals("package-info")) {
+		if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {

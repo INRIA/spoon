@@ -10,19 +10,18 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 public class ComputeClasspathTest {
 
-	private final static String TEST_CLASSPATH =
-			"./src/test/java/spoon/test/annotation/" +
-					File.pathSeparator +
-					"./src/test/java/spoon/test/api/" +
-					File.pathSeparator +
-					"./src/test/java/spoon/test/arrays/" +
-					File.pathSeparator +
-					"./src/test/java/spoon/test/casts/" +
-					File.pathSeparator;
+	private static final String TEST_CLASSPATH =
+			"./src/test/java/spoon/test/annotation/"
+					+ File.pathSeparator
+					+ "./src/test/java/spoon/test/api/"
+					+ File.pathSeparator
+					+ "./src/test/java/spoon/test/arrays/"
+					+ File.pathSeparator
+					+ "./src/test/java/spoon/test/casts/"
+					+ File.pathSeparator;
 
 	private JDTBasedSpoonCompiler compiler;
 	private Class<? extends JDTBasedSpoonCompiler> compilerClass;
@@ -47,7 +46,7 @@ public class ComputeClasspathTest {
 	}
 
 	@Test
-	public void testSourceClasspath() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testSourceClasspath() {
 		final ClasspathOptions options = new ClasspathOptions().classpath(systemClasspath);
 		Assert.assertEquals("-cp " + TEST_CLASSPATH, String.join(" ", options.build()));
 	}

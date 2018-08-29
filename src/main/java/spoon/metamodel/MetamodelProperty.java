@@ -103,7 +103,6 @@ public class MetamodelProperty {
 	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
 	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
-		super();
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;
@@ -256,7 +255,7 @@ public class MetamodelProperty {
 
 	public MMMethod getMethod(MMMethodKind kind) {
 		List<MMMethod> ms = getMethods(kind);
-		return ms.size() > 0 ? ms.get(0) : null;
+		return !ms.isEmpty() ? ms.get(0) : null;
 	}
 
 	public List<MMMethod> getMethods(MMMethodKind kind) {
@@ -297,7 +296,7 @@ public class MetamodelProperty {
 	 */
 	private int getIdxOfBestMatch(List<MMMethod> methods, MMMethodKind key) {
 		MMMethod mmMethod = methods.get(0);
-		if (mmMethod.getActualCtMethod().getParameters().size() == 0) {
+		if (mmMethod.getActualCtMethod().getParameters().isEmpty()) {
 			return getIdxOfBestMatchByReturnType(methods, key);
 		} else {
 			MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
@@ -355,7 +354,6 @@ public class MetamodelProperty {
 	private int getIdxOfBestMatchByInputParameter(List<MMMethod> methods, MMMethodKind key, CtTypeReference<?> expectedValueType)  {
 		int idx = -1;
 		MatchLevel maxMatchLevel = null;
-		CtTypeReference<?> newValueType = null;
 		if (key.isMulti()) {
 			expectedValueType = getTypeofItems(expectedValueType);
 		}
@@ -368,13 +366,11 @@ public class MetamodelProperty {
 				if (idx == -1) {
 					idx = i;
 					maxMatchLevel = matchLevel;
-					newValueType = mMethod.getValueType();
 				} else {
 					//both methods have matching value type. Use the better match
 					if (maxMatchLevel.ordinal() < matchLevel.ordinal()) {
 						idx = i;
 						maxMatchLevel = matchLevel;
-						newValueType = mMethod.getValueType();
 					} else if (maxMatchLevel == matchLevel) {
 						//there is conflict
 						return -1;
@@ -540,7 +536,7 @@ public class MetamodelProperty {
 	 */
 	public MetamodelProperty getSuperProperty() {
 		List<MetamodelProperty> potentialRootSuperFields = new ArrayList<>();
-		if (roleMethods.size() > 0) {
+		if (!roleMethods.isEmpty()) {
 			potentialRootSuperFields.add(this);
 		}
 		superProperties.forEach(superField -> {

@@ -17,6 +17,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TypeFactoryTest {
 
@@ -32,7 +33,7 @@ public class TypeFactoryTest {
 		assertEquals("java.lang.Object", ctTypeReference.getQualifiedName());
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
-		assertEquals(null, ctTypeReference);
+		assertNull(ctTypeReference);
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(CtJavaDoc.CommentType.class);
 		assertEquals("CommentType", ctTypeReference.getSimpleName());
@@ -40,7 +41,7 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void reflectionAPI() throws Exception {
+	public void reflectionAPI() {
 		// Spoon can be used as reflection API
 		CtType s = new TypeFactory().get(String.class);
 		assertEquals("String", s.getSimpleName());
@@ -76,7 +77,7 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void testGetClassWithDollarAndNestedClass() throws Exception {
+	public void testGetClassWithDollarAndNestedClass() {
 		//Classes with name containing $ without being nested classes can contain nested classes
 		Factory factory = ModelUtils.build(new File("./src/test/resources/dollar-and-nested-classes"));
 		CtType<?> poorName = factory.Type().get("$Poor$Name");

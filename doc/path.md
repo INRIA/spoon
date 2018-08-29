@@ -6,7 +6,7 @@ keywords: quering, query, path, ast, elements
 
 `CtPath` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPath.html)) 
 defines the path to a `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) 
-in a model. For example, `.spoon.test.path.Foo.foo#body#statement[index=0]` represents the first statement of the body of method foo.
+in a model. For example, `.spoon.test.path.testclasses.Foo.foo#body#statement[index=0]` represents the first statement of the body of method foo.
 
 A `CtPath`is based on: names of elements (eg `foo`), and roles of elements with respect to their parent (eg `body`).
 A role is a relation between two AST nodes.
@@ -23,7 +23,7 @@ syntax inspired from XPath and CSS selectors.
 To evaluate a path, ie getting the elements represented by it, use `evaluateOn(List<CtElement>)`
 
 ```java
-path = new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=0]");
+path = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=0]");
 List<CtElement> l = path.evaluateOn(root)
 ```
 
@@ -36,10 +36,10 @@ List<CtElement> l = path.evaluateOn(root)
 builds a path from a string representation.
 
 For instance, if we want the first statement in the body of method `foo`, declared 
-in the class `spoon.test.path.Foo`. 
+in the class `spoon.test.path.testclasses.Foo`. 
 
 ```java
-new CtPathStringBuilder().fromString(".spoon.test.path.Foo.foo#body#statement[index=0]");
+new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=0]");
 ```
 
 ## CtPathBuilder

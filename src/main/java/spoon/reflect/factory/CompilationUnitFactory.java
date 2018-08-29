@@ -56,8 +56,7 @@ public class CompilationUnitFactory extends SubFactory {
 	 * Creates a compilation unit with no associated files.
 	 */
 	public CompilationUnit create() {
-		CompilationUnit cu = factory.Core().createCompilationUnit();
-		return cu;
+		return factory.Core().createCompilationUnit();
 	}
 
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {

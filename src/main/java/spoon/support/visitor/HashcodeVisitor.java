@@ -51,11 +51,10 @@ public class HashcodeVisitor extends CtInheritanceScanner {
 	@Override
 	public void scan(CtElement element) {
 		hashCode += 1;
-		super.scan(element);;
+		super.scan(element);
 	}
 
 	public int getHasCode() {
 		return hashCode;
 	}
-
 }

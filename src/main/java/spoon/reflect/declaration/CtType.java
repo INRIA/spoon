@@ -120,6 +120,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * Overrides the return type.
 	 */
+	@Override
 	@DerivedProperty
 	CtTypeReference<T> getReference();
 

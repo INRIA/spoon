@@ -1,6 +1,9 @@
 package spoon.test.ctBodyHolder;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 import org.junit.Test;
@@ -23,102 +26,101 @@ import spoon.reflect.factory.Factory;
 import spoon.test.ctBodyHolder.testclasses.CWBStatementTemplate;
 import spoon.test.ctBodyHolder.testclasses.ClassWithBodies;
 
-public class CtBodyHolderTest
-{
-    @Test
-    public void testConstructor() throws Exception {
-        Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
-        CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
-        assertEquals(1, cwbClass.getConstructors().size());
-        CtConstructor<?> constructor =  cwbClass.getConstructor();
-        checkCtBody(constructor, "constructor_body", 1);
-    }
+public class CtBodyHolderTest {
 
-    @Test
-    public void testMethod() throws Exception {
-        Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
-        CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
-        assertEquals(2, cwbClass.getMethods().size());
-        CtMethod<?> method =  cwbClass.getMethod("method");
-        checkCtBody(method, "method_body", 0);
-    }
+	@Test
+	public void testConstructor() throws Exception {
+		Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
+		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
+		assertEquals(1, cwbClass.getConstructors().size());
+		CtConstructor<?> constructor = cwbClass.getConstructor();
+		checkCtBody(constructor, "constructor_body", 1);
+	}
 
-    @Test
-    public void testTryCatch() throws Exception {
-        Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
-        CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
-        assertEquals(2, cwbClass.getMethods().size());
-        CtMethod<?> method =  cwbClass.getMethod("method2");
-        CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(0) instanceof CtTry);
-        CtTry tryStmnt = (CtTry)methodBody.getStatement(0);
-        checkCtBody(tryStmnt, "try_body", 0);
-        assertEquals(1, tryStmnt.getCatchers().size());
-        assertTrue(tryStmnt.getCatchers().get(0) instanceof CtCatch);
-        checkCtBody(tryStmnt.getCatchers().get(0), "catch_body", 0);
-    }
+	@Test
+	public void testMethod() throws Exception {
+		Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
+		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
+		assertEquals(2, cwbClass.getMethods().size());
+		CtMethod<?> method = cwbClass.getMethod("method");
+		checkCtBody(method, "method_body", 0);
+	}
 
-    @Test
-    public void testForWithStatement() throws Exception {
-        Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
-        CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
-        assertEquals(2, cwbClass.getMethods().size());
-        CtMethod<?> method =  cwbClass.getMethod("method2");
-        CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(1) instanceof CtFor);
-        CtFor forStmnt = (CtFor)methodBody.getStatement(1);
-        checkCtBody(forStmnt, "for_statemnt", 0);
-    }
+	@Test
+	public void testTryCatch() throws Exception {
+		Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
+		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
+		assertEquals(2, cwbClass.getMethods().size());
+		CtMethod<?> method = cwbClass.getMethod("method2");
+		CtBlock<?> methodBody = method.getBody();
+		assertTrue(methodBody.getStatement(0) instanceof CtTry);
+		CtTry tryStmnt = (CtTry) methodBody.getStatement(0);
+		checkCtBody(tryStmnt, "try_body", 0);
+		assertEquals(1, tryStmnt.getCatchers().size());
+		assertTrue(tryStmnt.getCatchers().get(0) instanceof CtCatch);
+		checkCtBody(tryStmnt.getCatchers().get(0), "catch_body", 0);
+	}
 
-    @Test
-    public void testForWithBlock() throws Exception {
-        Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
-        CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
-        assertEquals(2, cwbClass.getMethods().size());
-        CtMethod<?> method =  cwbClass.getMethod("method2");
-        CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(2) instanceof CtFor);
-        CtFor forStmnt = (CtFor)methodBody.getStatement(2);
-        checkCtBody(forStmnt, "for_block", 0);
-    }
+	@Test
+	public void testForWithStatement() throws Exception {
+		Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
+		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
+		assertEquals(2, cwbClass.getMethods().size());
+		CtMethod<?> method = cwbClass.getMethod("method2");
+		CtBlock<?> methodBody = method.getBody();
+		assertTrue(methodBody.getStatement(1) instanceof CtFor);
+		CtFor forStmnt = (CtFor) methodBody.getStatement(1);
+		checkCtBody(forStmnt, "for_statemnt", 0);
+	}
 
-    @Test
-    public void testWhileWithBlock() throws Exception {
-        Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
-        CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
-        assertEquals(2, cwbClass.getMethods().size());
-        CtMethod<?> method =  cwbClass.getMethod("method2");
-        CtBlock<?> methodBody = method.getBody();
-        assertTrue(methodBody.getStatement(3) instanceof CtWhile);
-        CtWhile whileStmnt = (CtWhile)methodBody.getStatement(3);
-        checkCtBody(whileStmnt, "while_block", 0);
-    }
+	@Test
+	public void testForWithBlock() throws Exception {
+		Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
+		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
+		assertEquals(2, cwbClass.getMethods().size());
+		CtMethod<?> method = cwbClass.getMethod("method2");
+		CtBlock<?> methodBody = method.getBody();
+		assertTrue(methodBody.getStatement(2) instanceof CtFor);
+		CtFor forStmnt = (CtFor) methodBody.getStatement(2);
+		checkCtBody(forStmnt, "for_block", 0);
+	}
 
-    private void checkCtBody(CtBodyHolder p_bodyHolder, String p_constant, int off)
-	{
+	@Test
+	public void testWhileWithBlock() throws Exception {
+		Factory factory = build(ClassWithBodies.class, CWBStatementTemplate.class);
+		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
+		assertEquals(2, cwbClass.getMethods().size());
+		CtMethod<?> method = cwbClass.getMethod("method2");
+		CtBlock<?> methodBody = method.getBody();
+		assertTrue(methodBody.getStatement(3) instanceof CtWhile);
+		CtWhile whileStmnt = (CtWhile) methodBody.getStatement(3);
+		checkCtBody(whileStmnt, "while_block", 0);
+	}
+
+	private void checkCtBody(CtBodyHolder p_bodyHolder, String p_constant, int off) {
 		CtStatement body = p_bodyHolder.getBody();
 		assertTrue(body instanceof CtBlock<?>);
-		
-		CtBlock<?> block = (CtBlock)body;
-		assertEquals(1+off, block.getStatements().size());
-		
+
+		CtBlock<?> block = (CtBlock) body;
+		assertEquals(1 + off, block.getStatements().size());
+
 		assertTrue(block.getStatement(off) instanceof CtAssignment);
-		
+
 		CtAssignment assignment = block.getStatement(off);
-		assertEquals(p_constant, ((CtLiteral<String>)assignment.getAssignment().partiallyEvaluate()).getValue());
-		
+		assertEquals(p_constant, ((CtLiteral<String>) assignment.getAssignment().partiallyEvaluate()).getValue());
+
 		Factory f = body.getFactory();
-		
+
 		CtStatement newStat = new CWBStatementTemplate("xx").apply(body.getParent(CtType.class));
 		try {
 			newStat.getParent();
 			fail();
-		} catch(ParentNotInitializedException e) {
+		} catch (ParentNotInitializedException e) {
 			//expected exception
 		}
 		//try to set statement and get CtBlock
 		p_bodyHolder.setBody(newStat);
-		CtBlock newBlock = (CtBlock)p_bodyHolder.getBody();
+		CtBlock newBlock = (CtBlock) p_bodyHolder.getBody();
 		assertSame(p_bodyHolder, newBlock.getParent());
 		assertSame(newBlock, newStat.getParent());
 
@@ -127,7 +129,7 @@ public class CtBodyHolderTest
 		try {
 			newStat2.getParent();
 			fail();
-		} catch(ParentNotInitializedException e) {
+		} catch (ParentNotInitializedException e) {
 			//expected exception
 		}
 		CtBlock newBlock2 = f.Code().createCtBlock(newStat2);
@@ -135,7 +137,7 @@ public class CtBodyHolderTest
 		try {
 			newBlock2.getParent();
 			fail();
-		} catch(ParentNotInitializedException e) {
+		} catch (ParentNotInitializedException e) {
 			//expected exception
 		}
 

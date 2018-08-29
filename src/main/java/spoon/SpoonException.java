@@ -20,7 +20,6 @@ package spoon;
 public class SpoonException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	public SpoonException() {
-		super();
 	}
 	public SpoonException(String msg) {
 		super(msg);

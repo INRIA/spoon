@@ -51,11 +51,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -64,9 +64,8 @@ import static spoon.testing.utils.ModelUtils.createFactory;
  */
 public class TypeFactory extends SubFactory {
 
-	private static final Set<String> NULL_PACKAGE_CLASSES = Collections.unmodifiableSet(new HashSet<String>(
-			Arrays.asList("void", "boolean", "byte", "short", "char", "int", "float", "long",
-					"double",
+	private static final Set<String> NULL_PACKAGE_CLASSES = Collections.unmodifiableSet(new HashSet<>(
+			Arrays.asList("void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
 					// TODO (leventov) it is questionable to me that nulltype should also be here
 					CtTypeReference.NULL_TYPE_NAME)));
 
@@ -99,7 +98,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Map> MAP = createReference(Map.class);
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
 
-	private final Map<Class<?>, CtType<?>> shadowCache = new HashMap<>();
+	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Returns a reference on the null type (type of null).
@@ -296,7 +295,7 @@ public class TypeFactory extends SubFactory {
 	 * Creates a reference to an n-dimension array of given type.
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
-		CtTypeReference<?> componentType = null;
+		CtTypeReference<?> componentType;
 		if (n == 1) {
 			return createArrayReference(reference);
 		}
@@ -463,7 +462,7 @@ public class TypeFactory extends SubFactory {
 						return super.matches(element) && element.getQualifiedName().equals(qualifiedName);
 					}
 				});
-				if (enclosingClasses.size() == 0) {
+				if (enclosingClasses.isEmpty()) {
 					return null;
 				}
 				return enclosingClasses.get(0);
@@ -479,7 +478,7 @@ public class TypeFactory extends SubFactory {
 						return super.matches(element) && element.getAnonymousClass().getQualifiedName().equals(qualifiedName);
 					}
 				});
-				if (anonymousClasses.size() == 0) {
+				if (anonymousClasses.isEmpty()) {
 					return null;
 				}
 				return anonymousClasses.get(0).getAnonymousClass();
@@ -606,18 +605,7 @@ public class TypeFactory extends SubFactory {
 	 * Tells if a given Java qualified name is that of an inner type.
 	 */
 	protected int hasInnerType(String qualifiedName) {
-		int ret = qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
-		// if (ret < 0) {
-		// if (hasPackage(qualifiedName) > 0) {
-		// String buf = qualifiedName.substring(0,
-		// hasPackage(qualifiedName));
-		// int tmp = buf.lastIndexOf(CtPackage.PACKAGE_SEPARATOR);
-		// if (Character.isUpperCase(buf.charAt(tmp + 1))) {
-		// ret = hasPackage(qualifiedName);
-		// }
-		// }
-		// }
-		return ret;
+		return qualifiedName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR);
 	}
 
 	/**

@@ -167,7 +167,7 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testFieldWriteDeclaredInTheSuperclass() throws Exception {
+	public void testFieldWriteDeclaredInTheSuperclass() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
@@ -181,7 +181,7 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testVariableAccessInNoClasspath() throws Exception {
+	public void testVariableAccessInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/variable");
@@ -200,7 +200,7 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testAccessToStringOnPostIncrement() throws Exception {
+	public void testAccessToStringOnPostIncrement() {
 		// contract: a target to a post increment on a variable access write brackets.
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //

@@ -47,7 +47,6 @@ public class DefaultGenerator implements Generator {
 	private ListOfNodes nodes;
 
 	public DefaultGenerator(Factory factory, ListOfNodes nodes) {
-		super();
 		this.nodes = nodes;
 		this.factory = factory;
 	}
@@ -211,7 +210,7 @@ public class DefaultGenerator implements Generator {
 		String EOL = System.getProperty("line.separator");
 		CtComment comment = getJavaDoc(ele);
 		String content = comment.getContent();
-		if (content.trim().length() > 0) {
+		if (!content.trim().isEmpty()) {
 			content += EOL + EOL;
 		}
 		content += generatedBy;
@@ -247,7 +246,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	/**
-	 * Generates type in the package `ownerPackage` with simple name `typeSimpleName` using this {@link GeneratorImpl} and provided `params`
+	 * Generates type in the package `ownerPackage` with simple name `typeSimpleName` using this {@link Generator} and provided `params`
 	 *
 	 * Note: the root of pattern element must be one or more types.
 	 *

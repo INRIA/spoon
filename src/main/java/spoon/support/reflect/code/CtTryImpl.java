@@ -24,7 +24,6 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -39,13 +38,13 @@ import static spoon.reflect.path.CtRole.FINALIZER;
 public class CtTryImpl extends CtStatementImpl implements CtTry {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.BODY)
+	@MetamodelPropertyField(role = BODY)
 	CtBlock<?> body;
 
-	@MetamodelPropertyField(role = CtRole.CATCH)
+	@MetamodelPropertyField(role = CATCH)
 	List<CtCatch> catchers = emptyList();
 
-	@MetamodelPropertyField(role = CtRole.FINALIZER)
+	@MetamodelPropertyField(role = FINALIZER)
 	CtBlock<?> finalizer;
 
 	@Override

@@ -159,7 +159,7 @@ public class SubInheritanceHierarchyResolver {
 						 * FOUND! we are in super inheritance hierarchy, which extends from an searched super type(s).
 						 * All `currentSubTypes` are sub types of searched super type
 						 */
-						while (currentSubTypes.size() > 0) {
+						while (!currentSubTypes.isEmpty()) {
 							final CtTypeReference<?> currentTypeRef  = currentSubTypes.pop();
 							String currentQName = currentTypeRef.getQualifiedName();
 							/*
@@ -218,15 +218,12 @@ public class SubInheritanceHierarchyResolver {
 	private static final Filter<CtType<?>> typeFilter = new Filter<CtType<?>>() {
 		@Override
 		public boolean matches(CtType<?> type) {
-			if (type instanceof CtTypeParameter) {
-				return false;
-			}
-			return true;
+			return !(type instanceof CtTypeParameter);
 		}
 	};
 
 	/**
 	 * Accept all {@link CtClass}, {@link CtEnum}
 	 */
-	private static final Filter<CtClass<?>> classFilter = new TypeFilter<CtClass<?>>(CtClass.class);
+	private static final Filter<CtClass<?>> classFilter = new TypeFilter<>(CtClass.class);
 }

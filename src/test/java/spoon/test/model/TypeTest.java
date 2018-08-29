@@ -62,7 +62,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testGetUsedTypesForTypeInRootPackage() throws Exception {
+	public void testGetUsedTypesForTypeInRootPackage() {
 		CtClass<?> cl = createFactory().Code().createCodeSnippetStatement("class X { X x; }").compile();
 		assertEquals(0, cl.getUsedTypes(false).size());
 	}
@@ -95,7 +95,7 @@ public class TypeTest {
 
 	@Test
 	public void testGetDeclaredOrIheritedFieldByReflection() throws Exception {
-		CtTypeReference<?> type = build("spoon.test.model", "ClassWithSuperOutOfModel").getReference();
+		CtTypeReference<?> type = build("spoon.test.model.testclasses", "ClassWithSuperOutOfModel").getReference();
 
 		assertEquals("buf", type.getDeclaredOrInheritedField("buf").getSimpleName());
 		assertEquals("count", type.getDeclaredOrInheritedField("count").getSimpleName());
@@ -105,9 +105,9 @@ public class TypeTest {
 	@Test
 	public void testTypeInfoIsInterface() throws Exception {
 		//contract: isInterface returns true only for interfaces
-		CtType<?> clazz = build("spoon.test.model", "ClassWithSuperOutOfModel");
+		CtType<?> clazz = build("spoon.test.model.testclasses", "ClassWithSuperOutOfModel");
 		checkIsSomething("class", clazz);
-		CtType<?> type = build("spoon.test.model", "InterfaceWrithFields");
+		CtType<?> type = build("spoon.test.model.testclasses", "InterfaceWrithFields");
 		checkIsSomething("interface", type);
 		checkIsSomething("enum", type.getFactory().Enum().create(type.getPackage(), "someEnum"));
 		CtType<?> ctAnnotation = type.getFactory().Annotation().create(type.getPackage(), "someAnnotation");

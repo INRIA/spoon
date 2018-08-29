@@ -13,7 +13,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CodeFactoryTest {
 	@Test
-	public void testThisAccess() throws Exception {
+	public void testThisAccess() {
 		final Factory factory = createFactory();
 		final CtTypeReference<Object> type = factory.Type().createReference("fr.inria.Test");
 		final CtThisAccess<Object> thisAccess = factory.Code().createThisAccess(type);

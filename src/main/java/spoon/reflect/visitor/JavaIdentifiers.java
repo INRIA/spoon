@@ -16,12 +16,11 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.Arrays;
+import spoon.reflect.reference.CtExecutableReference;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import spoon.reflect.reference.CtExecutableReference;
 
 /**
  * This enum defines the Java keywords and some helper method to determine if
@@ -37,17 +36,17 @@ public enum JavaIdentifiers {
 	/**
 	 * Contains the Java keywords.
 	 */
-	public static Set<String> KEYWORDS;
+	public static final Set<String> KEYWORDS;
 
 	static {
 		KEYWORDS = new HashSet<>();
-		for (JavaIdentifiers kw : Arrays.asList(JavaIdentifiers.values())) {
+		for (JavaIdentifiers kw : JavaIdentifiers.values()) {
 			KEYWORDS.add(kw.name().toLowerCase());
 		}
 	}
 
 	static boolean isJavaIdentifier(String s) {
-		if (s.length() == 0 || !Character.isJavaIdentifierStart(s.charAt(0))) {
+		if (s.isEmpty() || !Character.isJavaIdentifierStart(s.charAt(0))) {
 			return false;
 		}
 		for (int i = 1; i < s.length(); i++) {
@@ -106,5 +105,4 @@ public enum JavaIdentifiers {
 		}
 		return isLegalJavaIdentifier(string);
 	}
-
 }

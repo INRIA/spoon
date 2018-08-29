@@ -20,17 +20,18 @@ import spoon.testing.utils.ModelUtils;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ExecutableTest {
 	@Test
-	public void testInfoInsideAnonymousExecutable() throws Exception {
+	public void testInfoInsideAnonymousExecutable() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/AnonymousExecutableSample.java");
 		launcher.run();
 
-		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class));
+		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<>(CtAnonymousExecutable.class));
 
 		assertEquals(2, anonymousExecutables.size());
 
@@ -54,29 +55,29 @@ public class ExecutableTest {
 
 		String methodName = "getInt1";
 		CtExecutableReference<?> methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(false, methodRef.isFinal());
-		assertEquals(true, methodRef.isStatic());
+		assertFalse(methodRef.isFinal());
+		assertTrue(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt2";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(true, methodRef.isFinal());
-		assertEquals(true, methodRef.isStatic());
+		assertTrue(methodRef.isFinal());
+		assertTrue(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt3";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(true, methodRef.isFinal());
-		assertEquals(false, methodRef.isStatic());
+		assertTrue(methodRef.isFinal());
+		assertFalse(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt4";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(false, methodRef.isFinal());
-		assertEquals(false, methodRef.isStatic());
+		assertFalse(methodRef.isFinal());
+		assertFalse(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 	}
@@ -90,7 +91,7 @@ public class ExecutableTest {
 		List<CtExecutableReference> listValueOf = ctModel.
 				filterChildren(new TypeFilter<>(CtExecutableReference.class)).
 				filterChildren((Filter<CtExecutableReference>) element -> {
-					return element.getSimpleName().equals("valueOf");
+					return "valueOf".equals(element.getSimpleName());
 				}).list();
 
 		assertEquals(1, listValueOf.size());
@@ -100,7 +101,7 @@ public class ExecutableTest {
 		CtType<?> ctType = launcher.getFactory().Type().get(WithEnum.class);
 		List<CtExecutableReference> listShadowValueOf = ctType.filterChildren(new TypeFilter<>(CtExecutableReference.class))
 				.filterChildren((Filter<CtExecutableReference>) element -> {
-					return element.getSimpleName().equals("valueOf");
+					return "valueOf".equals(element.getSimpleName());
 				}).list();
 		assertEquals(1, listShadowValueOf.size());
 		CtExecutableReference shadowValueOf = listShadowValueOf.get(0);

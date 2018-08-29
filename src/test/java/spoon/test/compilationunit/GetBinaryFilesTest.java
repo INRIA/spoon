@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests {@link CompilationUnit#getBinaryFiles()}.
@@ -63,7 +65,7 @@ public class GetBinaryFilesTest {
 		final File[] files = binaries.get(0).getParentFile().listFiles();
 		assertNotNull(files);
 		assertEquals(2, files.length);
-		assertTrue(files[0].getName().equals("IBar$Test.class") || files[1].getName().equals("IBar$Test.class"));
+		assertTrue("IBar$Test.class".equals(files[0].getName()) || "IBar$Test.class".equals(files[1].getName()));
 	}
 
 	@Test
