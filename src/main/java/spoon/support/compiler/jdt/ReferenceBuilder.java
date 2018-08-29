@@ -689,13 +689,13 @@ public class ReferenceBuilder {
 		CtTypeReference<?> ref;
 
 		if (binding instanceof RawTypeBinding) {
-			ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType(), resolveGeneric);
+			ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 		} else if (binding instanceof ParameterizedTypeBinding) {
 			if (binding.actualType() != null && binding.actualType() instanceof LocalTypeBinding) {
 				// When we define a nested class in a method and when the enclosing class of this method
 				// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
 				// and hide the real class in actualType().
-				ref = getTypeReference(binding.actualType(), resolveGeneric);
+				ref = getTypeReference(binding.actualType());
 			} else {
 				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 				this.exploringParameterizedBindings.put(binding, ref);
@@ -704,14 +704,14 @@ public class ReferenceBuilder {
 				} else {
 					ref.setSimpleName(String.valueOf(binding.sourceName()));
 					if (binding.enclosingType() != null) {
-						ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+						ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 					} else {
 						ref.setPackage(getPackageReference(binding.getPackage()));
 					}
 				}
 			}
 			if (binding.actualType() instanceof MissingTypeBinding) {
-				ref = getTypeReference(binding.actualType(), resolveGeneric);
+				ref = getTypeReference(binding.actualType());
 			}
 
 			if (((ParameterizedTypeBinding) binding).arguments != null) {
@@ -721,7 +721,7 @@ public class ReferenceBuilder {
 					} else {
 						if (!this.exploringParameterizedBindings.containsKey(b)) {
 							this.exploringParameterizedBindings.put(b, null);
-							CtTypeReference typeRefB = getTypeReference(b, resolveGeneric);
+							CtTypeReference typeRefB = getTypeReference(b);
 							this.exploringParameterizedBindings.put(b, typeRefB);
 							ref.addActualTypeArgument(typeRefB);
 						} else {
@@ -748,7 +748,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof BinaryTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			if (binding.enclosingType() != null) {
-				ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
 				ref.setPackage(getPackageReference(binding.getPackage()));
 			}
@@ -841,32 +841,32 @@ public class ReferenceBuilder {
 				} else {
 
 
-					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound, resolveGeneric));
+					((CtTypeParameterReference) ref).setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
 				}
 			}
 		} else if (binding instanceof LocalTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			if (binding.isAnonymousType()) {
 				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
-				ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));
 				if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
-					ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				} else if (binding.enclosingMethod() != null) {
 					ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
-					ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				}
 			}
 		} else if (binding instanceof SourceTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			if (binding.isAnonymousType()) {
 				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
-				ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
 				ref.setSimpleName(new String(binding.sourceName()));
 				if (binding.enclosingType() != null) {
-					ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 				} else {
 					ref.setPackage(getPackageReference(binding.getPackage()));
 				}
@@ -894,11 +894,11 @@ public class ReferenceBuilder {
 		} else if (binding instanceof JDTTreeBuilder.SpoonReferenceBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(new String(binding.sourceName()));
-			ref.setDeclaringType(getTypeReference(binding.enclosingType(), resolveGeneric));
+			ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 		} else if (binding instanceof IntersectionTypeBinding18) {
 			List<CtTypeReference<?>> bounds = new ArrayList<>();
 			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
-				bounds.add(getTypeReference(superInterface, resolveGeneric));
+				bounds.add(getTypeReference(superInterface));
 			}
 			ref = this.jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(bounds);
 		} else {
