@@ -17,7 +17,6 @@
 package spoon.reflect.factory;
 
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -44,7 +43,6 @@ import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -392,14 +390,6 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtTypeParameterReference createReference(CtTypeParameter type) {
 		CtTypeParameterReference ref = factory.Core().createTypeParameterReference();
-
-		if (type.getSuperclass() != null) {
-			ref.setBoundingType(type.getSuperclass().clone());
-		}
-
-		for (CtAnnotation<? extends Annotation> ctAnnotation : type.getAnnotations()) {
-			ref.addAnnotation(ctAnnotation.clone());
-		}
 		ref.setSimpleName(type.getSimpleName());
 		ref.setParent(type);
 		return ref;
