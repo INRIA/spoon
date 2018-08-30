@@ -43,7 +43,7 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
 	@PropertySetter(role = CtRole.IS_UPPER)
-	<T extends CtTypeParameterReference> T setUpper(boolean upper);
+	<T extends CtWildcardReference> T setUpper(boolean upper);
 
 	/**
 	 * A type parameter can have an <code>extends</code> clause which declare

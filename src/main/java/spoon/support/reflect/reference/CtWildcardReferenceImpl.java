@@ -52,7 +52,7 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	}
 
 	@Override
-	public <T extends CtTypeParameterReference> T setUpper(boolean upper) {
+	public <T extends CtWildcardReference> T setUpper(boolean upper) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_UPPER, upper, this.upper);
 		this.upper = upper;
 		return (T) this;
