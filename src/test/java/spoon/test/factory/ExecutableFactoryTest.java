@@ -1,6 +1,5 @@
 package spoon.test.factory;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.factory.Factory;
@@ -9,6 +8,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ExecutableFactoryTest {
@@ -26,10 +26,10 @@ public class ExecutableFactoryTest {
 		List<CtTypeReference<?>> params = eref.getParameters();
 		List<CtTypeReference<?>> atas = eref.getActualTypeArguments();
 
-		Assert.assertEquals("boolean",type);
-		Assert.assertEquals("Object",decltype);
-		Assert.assertEquals("equals",name);
-		Assert.assertEquals(1,params.size());
-		Assert.assertEquals(0,atas.size());
+		assertEquals("boolean", type);
+		assertEquals("Object", decltype);
+		assertEquals("equals", name);
+		assertEquals(1, params.size());
+		assertEquals(0, atas.size());
 	}
 }
