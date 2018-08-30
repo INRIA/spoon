@@ -40,9 +40,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
@@ -743,70 +741,41 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 
 		for (CtMethod<?> candidate : getMethodsByName(name)) {
-			boolean cont = candidate.getParameters().size() == parameterTypes.length;
-			for (int i = 0; cont && (i < candidate.getParameters().size()) && (i < parameterTypes.length); i++) {
-				final CtTypeReference<?> ctParameterType = candidate.getParameters().get(i).getType();
-				final CtTypeReference<?> parameterType = parameterTypes[i];
-				if (parameterType instanceof CtArrayTypeReference) {
-					if (ctParameterType instanceof CtArrayTypeReference) {
-						if (!isSameParameter(candidate, ((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
-							cont = false;
-						} else {
-							if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
-								cont = false;
-							}
-						}
-					} else {
-						cont = false;
-					}
-				} else if (!isSameParameter(candidate, ctParameterType, parameterType)) {
-					cont = false;
-				}
-			}
-			if (cont) {
+			if (hasSameParameters(candidate, parameterTypes)) {
 				return (CtMethod<R>) candidate;
 			}
 		}
 		return null;
 	}
 
-	private boolean isSameParameter(CtMethod<?> method, CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
-		if (expectedType instanceof CtTypeParameterReference) {
-			/*
-			 * the expectedType is a generic parameter whose declaration should be searched in scope of method
-			 * (not in scope of it's parent, where it can found another/wrong type parameter declaration of same name.
-			 */
-			CtTypeParameterReference tpr = (CtTypeParameterReference) expectedType;
-			expectedType = tpr.clone();
-			expectedType.setParent(method);
-			if (expectedType.getDeclaration() == null) {
+	protected boolean hasSameParameters(CtExecutable<?> candidate, CtTypeReference<?>... parameterTypes) {
+		if (candidate.getParameters().size() != parameterTypes.length) {
+			return false;
+		}
+		for (int i = 0; (i < candidate.getParameters().size()) && (i < parameterTypes.length); i++) {
+			final CtTypeReference<?> ctParameterType = candidate.getParameters().get(i).getType();
+			final CtTypeReference<?> parameterType = parameterTypes[i];
+			if (parameterType instanceof CtArrayTypeReference) {
+				if (ctParameterType instanceof CtArrayTypeReference) {
+					if (!isSameParameter(candidate, ((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
+						return false;
+					} else {
+						if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
+							return false;
+						}
+					}
+				} else {
+					return false;
+				}
+			} else if (!isSameParameter(candidate, ctParameterType, parameterType)) {
 				return false;
 			}
 		}
-		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
-			// both types are generic
-			return ctParameterType.equals(expectedType);
-		} else if (expectedType instanceof CtTypeParameterReference) {
-			// expectedType type is generic, ctParameterType is real type
-			return expectedType.getTypeErasure().getQualifiedName().equals(ctParameterType.getQualifiedName());
-		} else if (ctParameterType instanceof CtTypeParameterReference) {
-			// ctParameterType is generic, expectedType type is real type
-			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
-			if (declaration != null && declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
-				for (CtTypeReference<?> ctTypeReference : declaration.getSuperclass().asCtIntersectionTypeReference().getBounds()) {
-					if (ctTypeReference.equals(expectedType)) {
-						return true;
-					}
-				}
-			} else if (declaration != null && declaration.getSuperclass() != null) {
-				return declaration.getSuperclass().equals(expectedType);
-			} else {
-				return getFactory().Type().objectType().equals(expectedType);
-			} // both are real types
-		} else {
-			return expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName());
-		}
 		return true;
+	}
+
+	private boolean isSameParameter(CtExecutable<?> candidate, CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
+		return ctParameterType.getTypeErasure().getQualifiedName().equals(expectedType.getTypeErasure().getQualifiedName());
 	}
 
 	@Override
