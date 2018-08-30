@@ -1,6 +1,5 @@
 package spoon.test.factory;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
