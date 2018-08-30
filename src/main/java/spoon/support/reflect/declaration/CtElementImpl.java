@@ -53,6 +53,7 @@ import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.CtIterator;
+import spoon.reflect.visitor.printer.change.ElementSourceFragment;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
@@ -612,4 +613,13 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public Iterable<CtElement> asIterable() {
 		return this::descendantIterator;
 	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		SourcePosition sp = this.getPosition();
+		ElementSourceFragment rootFragment = (ElementSourceFragment) sp.getCompilationUnit().getOriginalSourceFragment();
+		return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
+	}
+
+
 }

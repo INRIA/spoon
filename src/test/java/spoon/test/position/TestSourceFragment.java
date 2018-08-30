@@ -17,6 +17,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -29,10 +30,31 @@ import spoon.test.position.testclasses.FooSourceFragments;
 
 public class TestSourceFragment {
 
+	class DummySourcePositionHolder implements SourcePositionHolder {
+		private final SourcePosition sp;
+
+		DummySourcePositionHolder(SourcePosition sp) {
+			this.sp = sp;
+		}
+		@Override
+		public SourcePosition getPosition() {
+			return sp;
+		}
+
+		@Override
+		public SourceFragment getOriginalSourceFragment() {
+			return new SourceFragment() {
+				@Override
+				public String getSourceCode() {
+					return "dummy";
+				}
+			};
+		}
+	}
 	@Test
 	public void testSourcePositionFragment() throws Exception {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, 10, 20, null);
-		ElementSourceFragment sf = new ElementSourceFragment(() -> sp, null);
+		ElementSourceFragment sf = new ElementSourceFragment(new DummySourcePositionHolder(sp), null);
 		assertEquals(10, sf.getStart());
 		assertEquals(21, sf.getEnd());
 		assertSame(sp, sf.getSourcePosition());
@@ -139,7 +161,7 @@ public class TestSourceFragment {
 	
 	private ElementSourceFragment createFragment(int start, int end) {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, start, end - 1, null);
-		return new ElementSourceFragment(() -> sp, null);
+		return new ElementSourceFragment(new DummySourcePositionHolder(sp), null);
 	}
 	
 	@Test
@@ -180,7 +202,7 @@ public class TestSourceFragment {
 	}
 	
 	private void checkElementFragments(CtElement ele, Object... expectedFragments) {
-		ElementSourceFragment fragment = ele.getPosition().getCompilationUnit().getSourceFragment(ele);
+		ElementSourceFragment fragment = (ElementSourceFragment) ele.getOriginalSourceFragment();
 		List<SourceFragment> children = fragment.getChildrenFragments();
 		assertEquals(expandGroup(new ArrayList<>(), expectedFragments), childSourceFragmentsToStrings(children));
 		assertGroupsEqual(expectedFragments, fragment.getGroupedChildrenFragments());

@@ -167,18 +167,4 @@ public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, 
 	@Experimental
 	void setImports(Set<CtImport> imports);
 
-	/**
-	 * @return root {@link ElementSourceFragment} of the tree of all the source fragments of origin source code of this compilation unit
-	 * Note: this method creates tree of {@link ElementSourceFragment}s ... it can be a lot of instances
-	 * If the tree of {@link ElementSourceFragment}s is needed then it MUST be created
-	 * BEFORE the Spoon model of this {@link CompilationUnit} is changed. The best creation time is immediately after Spoon model is built.
-	 * Otherwise there might be missing some {@link ElementSourceFragment}s when {@link CtElement}s are deleted
-	 */
-	ElementSourceFragment getRootSourceFragment();
-
-	/**
-	 * @param element the {@link CtElement} whose origin source code is needed.
-	 * @return {@link ElementSourceFragment} which mirrors the origin source code of the `element` or null.
-	 */
-	ElementSourceFragment getSourceFragment(SourcePositionHolder element);
 }

@@ -307,36 +307,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public ElementSourceFragment getRootSourceFragment() {
-		if (rootFragment == null) {
-			if (ctModule != null) {
-				throw new SpoonException("Root source fragment of compilation unit of module is not supported");
-			}
-			if (ctPackage != null && declaredTypes.isEmpty()) {
-				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
-			}
-			rootFragment = new ElementSourceFragment(this, null);
-			for (CtImport imprt : getImports()) {
-				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
-			}
-			for (CtType<?> ctType : declaredTypes) {
-				rootFragment.addTreeOfSourceFragmentsOfElement(ctType);
-			}
-		}
-		return rootFragment;
-	}
-
-	@Override
-	public ElementSourceFragment getSourceFragment(SourcePositionHolder element) {
-		ElementSourceFragment rootFragment = getRootSourceFragment();
-		SourcePosition sp = element.getPosition();
-		if (sp.getCompilationUnit() != this) {
-			throw new SpoonException("Cannot return SourceFragment of element for different CompilationUnit");
-		}
-		return rootFragment.getSourceFragmentOf(element, sp.getSourceStart(), sp.getSourceEnd() + 1);
-	}
-
-	@Override
 	public int[] getLineSeparatorPositions() {
 		return lineSeparatorPositions;
 	}
@@ -358,4 +328,26 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		}
 		return sourcePosition;
 	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		if (rootFragment == null) {
+			if (ctModule != null) {
+				throw new SpoonException("Root source fragment of compilation unit of module is not supported");
+			}
+			if (ctPackage != null && declaredTypes.isEmpty()) {
+				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
+			}
+			rootFragment = new ElementSourceFragment(this, null);
+			for (CtImport imprt : getImports()) {
+				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
+			}
+			for (CtType<?> ctType : declaredTypes) {
+				rootFragment.addTreeOfSourceFragmentsOfElement(ctType);
+			}
+		}
+		return rootFragment;
+	}
+
+
 }
