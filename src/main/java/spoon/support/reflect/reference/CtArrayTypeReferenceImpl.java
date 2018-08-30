@@ -46,7 +46,8 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	public CtTypeReference<?> getComponentType() {
 		if (componentType == null) {
 			// a sensible default component type to facilitate object creation and testing
-			componentType = getFactory().Type().OBJECT;
+			componentType = getFactory().Type().objectType();
+			componentType.setParent(this);
 		}
 		return componentType;
 	}
@@ -101,6 +102,18 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 			return ((CtArrayTypeReference<?>) getComponentType()).getDimensionCount() + 1;
 		}
 		return 1;
+	}
+
+	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		CtTypeReference<?> originCT = getComponentType();
+		CtTypeReference<?> erasedCT = originCT.getTypeErasure();
+		if (originCT == erasedCT) {
+			return this;
+		}
+		CtArrayTypeReference<?> erased = this.clone();
+		erased.setComponentType(erasedCT);
+		return erased;
 	}
 
 	@Override

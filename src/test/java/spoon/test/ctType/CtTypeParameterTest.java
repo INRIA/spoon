@@ -86,7 +86,7 @@ public class CtTypeParameterTest {
 		}
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
 		// contract the type erasure given with Java reflection is the same as the one computed by spoon
-		assertEquals("TypeErasure of executable param " + getTypeParamIdentification(typeParam), paramType.getName(), typeParam.getTypeErasure().toString());
+		assertEquals("TypeErasure of executable param " + getTypeParamIdentification(typeParam), paramType.getTypeName(), param.getType().getTypeErasure().toString());
 	}
 
 	private void checkParameterErasureOfExecutable(CtParameter<?> param) {
@@ -103,7 +103,7 @@ public class CtTypeParameterTest {
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
 		assertEquals(0, typeErasure.getActualTypeArguments().size());
 		// contract the type erasure of the method parameter given with Java reflection is the same as the one computed by spoon
-		assertEquals("TypeErasure of executable " + exec.getSignature() + " parameter " + param.getSimpleName(), paramType.getName(), typeErasure.getQualifiedName());
+		assertEquals("TypeErasure of executable " + exec.getSignature() + " parameter " + param.getSimpleName(), paramType.getTypeName(), typeErasure.getQualifiedName());
 	}
 
 	private Executable getMethodByName(Class declClass, String simpleName) {
