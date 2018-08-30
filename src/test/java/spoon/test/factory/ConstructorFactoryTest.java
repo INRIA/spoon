@@ -20,13 +20,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ConstructorFactoryTest {
 
 	@Test
 	public void testCreate() throws Exception {
-
 		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 
 		Factory factory = type.getFactory();
@@ -38,23 +38,21 @@ public class ConstructorFactoryTest {
 		List<CtParameter<?>> params = new ArrayList<>();
 		CtParameter<?> param = coref.createParameter();
 		CtTypeReference<?> tref = factory.Type().createReference(String.class);
-		param.setType((CtTypeReference)tref);
+		param.setType((CtTypeReference) tref);
 		param.setSimpleName("str");
 		params.add(param);
 		Set<CtTypeReference<? extends Throwable>> thrownTypes = new HashSet<>();
 
-		ctorf.create(type,mods,params,thrownTypes);
+		ctorf.create(type, mods, params, thrownTypes);
 
 		CtConstructor<?> c = type.getConstructor(tref);
-		Assert.assertEquals(1, c.getParameters().size());
-		Assert.assertEquals("str", c.getParameters().get(0).getSimpleName());
+		assertEquals(1, c.getParameters().size());
+		assertEquals("str", c.getParameters().get(0).getSimpleName());
 	}
 
 	@Test
 	public void testCreateDefault() {
-
-		Factory factory =
-			new FactoryImpl(new DefaultCoreFactory(),new StandardEnvironment());
+		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 		ClassFactory classf = factory.Class();
 		ConstructorFactory ctorf = factory.Constructor();
 
@@ -62,6 +60,6 @@ public class ConstructorFactoryTest {
 		ctorf.createDefault(ctclass);
 
 		CtConstructor<?> c = ctclass.getConstructor();
-		Assert.assertEquals(0, c.getParameters().size());
+		assertEquals(0, c.getParameters().size());
 	}
 }
