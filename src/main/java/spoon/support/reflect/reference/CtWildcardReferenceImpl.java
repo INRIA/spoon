@@ -22,7 +22,6 @@ import static spoon.reflect.path.CtRole.IS_UPPER;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -59,7 +58,7 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	}
 
 	@Override
-	public <T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType) {
+	public <T extends CtWildcardReference> T setBoundingType(CtTypeReference<?> superType) {
 		if (superType != null) {
 			superType.setParent(this);
 		}

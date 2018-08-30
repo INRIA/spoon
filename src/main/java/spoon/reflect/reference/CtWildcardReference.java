@@ -63,5 +63,5 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
 	@PropertySetter(role = CtRole.BOUNDING_TYPE)
-	<T extends CtTypeParameterReference> T setBoundingType(CtTypeReference<?> superType);
+	<T extends CtWildcardReference> T setBoundingType(CtTypeReference<?> superType);
 }
