@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,12 +19,14 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.printer.change.SourceFragment;
 import spoon.reflect.visitor.printer.change.CollectionSourceFragment;
 import spoon.reflect.visitor.printer.change.ElementSourceFragment;
+import spoon.support.DefaultCoreFactory;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.test.position.testclasses.FooSourceFragments;
@@ -60,6 +63,10 @@ public class TestSourceFragment {
 		assertSame(sp, sf.getSourcePosition());
 		assertNull(sf.getFirstChild());
 		assertNull(sf.getNextSibling());
+
+		// contract: on a new element, getOriginalSourceFragment returns the actual element toString
+		CtAnnotation<?> annotation = new Launcher().getFactory().createAnnotation();
+		assertEquals("@", annotation.getOriginalSourceFragment().getSourceCode());
 
 	}
 
