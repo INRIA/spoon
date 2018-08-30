@@ -45,9 +45,7 @@ public class ExtendedStringLiteralTest {
 										environment, getHandlingPolicy(), compilerOptions,
 										this.jdtCompiler.requestor, getProblemFactory(), this.out,
 										null);
-								CompilationUnitDeclaration[] units = treeBuilderCompiler
-										.buildUnits(getCompilationUnits());
-								return units;
+								return treeBuilderCompiler.buildUnits(getCompilationUnits());
 							}
 						};
 					}
