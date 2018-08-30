@@ -313,7 +313,7 @@ public class PrinterTest {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					assertEquals("Keyword found in Identifier: " + identifier, false, javaKeywords.contains(identifier));
 					handleTabs();
 					allTokens.append(identifier);
 					return this;
@@ -407,7 +407,7 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
+						assertEquals("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), false, tokenType.equals(this.lastToken));
 					}
 					this.lastToken = tokenType;
 				}
@@ -433,10 +433,10 @@ public class PrinterTest {
 			char c = stringToken.charAt(i);
 			if (isWhitespace) {
 				//a whitespace
-				assertTrue(Character.isWhitespace(c)==true);
+				assertEquals(true, Character.isWhitespace(c));
 			} else {
 				//not a whitespace
-				assertTrue(Character.isWhitespace(c)==false);
+				assertEquals(false, Character.isWhitespace(c));
 			}
 		}
 	}
