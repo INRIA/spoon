@@ -299,7 +299,7 @@ public class AnnotationTest {
 		// check annotated element type of the package annotation
 		List<CtAnnotation<?>> annotations = pkg.getAnnotations();
 		assertEquals(2, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), pkg);
+		assertEquals(pkg, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.PACKAGE, annotations.get(0).getAnnotatedElementType());
 
 		// load class Main from package and check annotated element type of the class annotation
