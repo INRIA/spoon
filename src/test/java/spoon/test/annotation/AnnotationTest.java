@@ -308,7 +308,7 @@ public class AnnotationTest {
 
 		annotations = clazz.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), clazz);
+		assertEquals(clazz, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.TYPE, clazz.getAnnotations().get(0).getAnnotatedElementType());
 
 		// load method toString() from class and check annotated element type of the annotation
@@ -320,7 +320,7 @@ public class AnnotationTest {
 
 		annotations = method.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), method);
+		assertEquals(method, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.METHOD, annotations.get(0).getAnnotatedElementType());
 
 		// load parameter of method m(int) and check annotated element type of the parameter annotation
@@ -336,7 +336,7 @@ public class AnnotationTest {
 		CtParameter<?> parameter = parameters.get(0);
 		annotations = parameter.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), parameter);
+		assertEquals(parameter, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.PARAMETER, annotations.get(0).getAnnotatedElementType());
 
 		// load constructor of the clazz and check annotated element type of the constructor annotation
@@ -346,7 +346,7 @@ public class AnnotationTest {
 		CtConstructor<?> constructor = constructors.iterator().next();
 		annotations = constructor.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), constructor);
+		assertEquals(constructor, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.CONSTRUCTOR, annotations.get(0).getAnnotatedElementType());
 
 		// load value ia of the m1() method annotation, which is also an annotation
@@ -359,13 +359,13 @@ public class AnnotationTest {
 		assertEquals(1, annotations.size());
 
 		CtAnnotation<?> annotation = annotations.get(0);
-		assertEquals(annotations.get(0).getAnnotatedElement(), method);
+		assertEquals(method, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.METHOD, annotations.get(0).getAnnotatedElementType());
 
 		Object element = annotation.getValues().get("ia");
 		assertNotNull(element);
 		assertTrue(element instanceof CtAnnotation);
-		assertEquals(((CtAnnotation<?>) element).getAnnotatedElement(), annotation);
+		assertEquals(annotation, ((CtAnnotation<?>) element).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.ANNOTATION_TYPE, ((CtAnnotation<?>) element).getAnnotatedElementType());
 
 		// load enum AnnotParamTypeEnum and check the annotated element type of the annotation of the enum and of the fields
@@ -374,7 +374,7 @@ public class AnnotationTest {
 
 		annotations = enumeration.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), enumeration);
+		assertEquals(enumeration, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.TYPE, annotations.get(0).getAnnotatedElementType());
 
 		List<CtEnumValue<?>> fields = enumeration.getEnumValues();
@@ -382,7 +382,7 @@ public class AnnotationTest {
 
 		annotations = fields.get(0).getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), fields.get(0));
+		assertEquals(fields.get(0), annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.FIELD, annotations.get(0).getAnnotatedElementType());
 
 		// load interface type TestInterface and check the annotated element type of the annotation
@@ -391,7 +391,7 @@ public class AnnotationTest {
 
 		annotations = ctInterface.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), ctInterface);
+		assertEquals(ctInterface, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.TYPE, annotations.get(0).getAnnotatedElementType());
 
 		// load annotation type Bound and check the annotated element type of the annotations
@@ -403,7 +403,7 @@ public class AnnotationTest {
 
 		annotations = annotationType.getAnnotations();
 		assertEquals(1, annotations.size());
-		assertEquals(annotations.get(0).getAnnotatedElement(), annotationType);
+		assertEquals(annotationType, annotations.get(0).getAnnotatedElement());
 		assertEquals(CtAnnotatedElementType.ANNOTATION_TYPE, annotations.get(0).getAnnotatedElementType());
 	}
 
