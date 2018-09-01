@@ -68,7 +68,7 @@ class JDTImportBuilder {
 			String importName = importRef.toString();
 			if (!importRef.isStatic()) {
 				if (importName.endsWith("*")) {
-					int lastDot = importName.lastIndexOf(".");
+					int lastDot = importName.lastIndexOf('.');
 					String packageName = importName.substring(0, lastDot);
 
 					// only get package from the model by traversing from rootPackage the model
@@ -86,7 +86,7 @@ class JDTImportBuilder {
 					}
 				}
 			} else {
-				int lastDot = importName.lastIndexOf(".");
+				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
 				String methodOrFieldName = importName.substring(lastDot + 1);
 

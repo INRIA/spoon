@@ -26,7 +26,7 @@ public class Version implements Comparable<Version> {
 
 	Version(String version) {
 		this.version = version;
-		int buildIndex = version.indexOf("-");
+		int buildIndex = version.indexOf('-');
 		if (buildIndex != -1) {
 			String build = version.substring(buildIndex + 1);
 			try {

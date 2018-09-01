@@ -706,8 +706,8 @@ public class CodeFactory extends SubFactory {
 		}
 		CtJavaDocTag docTag = factory.Core().createJavaDocTag();
 		if (type != null && type.hasParam()) {
-			int firstWord = content.indexOf(" ");
-			int firstLine = content.indexOf("\n");
+			int firstWord = content.indexOf(' ');
+			int firstLine = content.indexOf('\n');
 			if (firstLine < firstWord && firstLine >= 0) {
 				firstWord = firstLine;
 			}

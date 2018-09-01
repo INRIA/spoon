@@ -90,12 +90,12 @@ public class TreeDependency {
 				}
 			} else {
 				String tmp = version;
-				int buildIndex = version.indexOf("-");
+				int buildIndex = version.indexOf('-');
 				if (buildIndex != -1) {
 					String build = version.substring(buildIndex + 1);
 					tmp = version.replace(build, "SNAPSHOT");
 				} else {
-					buildIndex = version.indexOf("-");
+					buildIndex = version.indexOf('-');
 				}
 				depPath = Paths.get(m2RepositoryPath, groupId.replaceAll("\\.", "/"), artifactId, tmp);
 				depFile = depPath.toFile();

@@ -176,7 +176,7 @@ class JDTCommentBuilder {
 		for (String aLine : lines) {
 			String line = aLine.trim();
 			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
-				int endIndex = line.indexOf(" ");
+				int endIndex = line.indexOf(' ');
 				if (endIndex == -1) {
 					endIndex = line.length();
 				}
