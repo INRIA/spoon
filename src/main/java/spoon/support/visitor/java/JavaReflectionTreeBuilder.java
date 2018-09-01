@@ -272,7 +272,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		/**
 		 * java 8 static interface methods are marked as abstract but has body
 		 */
-		if (Modifier.isAbstract(method.getModifiers()) == false) {
+		if (!Modifier.isAbstract(method.getModifiers())) {
 			ctMethod.setBody(factory.Core().createBlock());
 		}
 		setModifier(ctMethod, method.getModifiers(), method.getDeclaringClass());
@@ -429,7 +429,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
 		//looks like type.getUpperBounds() always returns single value array with Object.class
 		//so we cannot distinguish between <? extends Object> and <?>, which must be upper==true too!
-		wildcard.setUpper((type.getLowerBounds() != null && type.getLowerBounds().length > 0) == false);
+		wildcard.setUpper(!(type.getLowerBounds() != null && type.getLowerBounds().length > 0));
 
 		enter(new TypeReferenceRuntimeBuilderContext(type, wildcard));
 		super.visitTypeReference(role, type);

@@ -442,7 +442,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.printList(annotation.getValues().entrySet(),
 				null, false, "(", false, false, ",", true, false, ")",
 				e -> {
-					if ((annotation.getValues().size() == 1 && "value".equals(e.getKey())) == false) {
+					if (!(annotation.getValues().size() == 1 && "value".equals(e.getKey()))) {
 						//it is not a default value attribute. We must print a attribute name too.
 						printer.writeIdentifier(e.getKey()).writeSpace().writeOperator("=").writeSpace();
 					}

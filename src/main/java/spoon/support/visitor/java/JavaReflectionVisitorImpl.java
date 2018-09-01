@@ -331,7 +331,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	private int getNumberOfEnclosingClasses(Class<?> clazz) {
 		int depth = 0;
-		while (Modifier.isStatic(clazz.getModifiers()) == false && (clazz = clazz.getEnclosingClass()) != null) {
+		while (!Modifier.isStatic(clazz.getModifiers()) && (clazz = clazz.getEnclosingClass()) != null) {
 			depth++;
 		}
 		return depth;

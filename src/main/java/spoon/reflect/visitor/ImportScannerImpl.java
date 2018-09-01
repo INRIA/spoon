@@ -313,7 +313,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			return false;
 		}
 
-		if (targetType != null && targetType.canAccess(ref) == false) {
+		if (targetType != null && !targetType.canAccess(ref)) {
 			//ref type is not visible in targetType we must not add import for it, java compiler would fail on that.
 			return false;
 		}

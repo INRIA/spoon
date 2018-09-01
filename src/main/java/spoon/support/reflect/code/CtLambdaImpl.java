@@ -113,7 +113,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			return null;
 		}
 		CtType<T> lambdaType = lambdaTypeRef.getTypeDeclaration();
-		if (lambdaType.isInterface() == false) {
+		if (!lambdaType.isInterface()) {
 			throw new SpoonException("The lambda can be based on interface only. But type " + lambdaTypeRef.getQualifiedName() + " is not an interface");
 		}
 		Set<CtMethod<?>> lambdaTypeMethods = lambdaType.getAllMethods();

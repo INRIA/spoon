@@ -62,7 +62,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	public void set(Collection<T> elements) {
 		//TODO the best would be to detect added/removed statements and to fire modifications only for them
 		this.clear();
-		if (elements != null && elements.isEmpty() == false) {
+		if (elements != null && !elements.isEmpty()) {
 			this.addAll(elements);
 		}
 	}
@@ -90,7 +90,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	}
 
 	static void linkToParent(CtElement owner, CtElement element) {
-		if (owner.getFactory().getEnvironment().checksAreSkipped() == false && element.isParentInitialized() && element.getParent() != owner) {
+		if (!owner.getFactory().getEnvironment().checksAreSkipped() && element.isParentInitialized() && element.getParent() != owner) {
 			//the `e` already has an different parent. Check if it is still linked to that parent
 			if (element.getRoleInParent() != null) {
 				throw new SpoonException("The default behavior has changed, a new check has been added! Don't worry, you can disable this check\n"

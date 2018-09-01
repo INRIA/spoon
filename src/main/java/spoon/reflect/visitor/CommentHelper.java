@@ -87,7 +87,7 @@ class CommentHelper {
 						}
 					}
 				}
-				if (javaDocTags != null && javaDocTags.isEmpty() == false) {
+				if (javaDocTags != null && !javaDocTags.isEmpty()) {
 					printer.write(" *").writeln();
 					for (CtJavaDocTag docTag : javaDocTags) {
 						printJavaDocTag(printer, docTag);
