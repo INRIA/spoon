@@ -683,7 +683,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 				}
 				//non-generic method can override a generic one if type erasure is allowed
 				if (thisTypeParameters.isEmpty() == false) {
-					//scope methods has some parameters. It is generic too, it is not a subsignature of that method
+					//scope method has some parameters. It is generic too, it is not a subsignature of that method
 					return false;
 				}
 				//scope method has zero formal type parameters. It is not generic.
