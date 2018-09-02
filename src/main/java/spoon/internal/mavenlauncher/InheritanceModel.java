@@ -240,7 +240,7 @@ public class InheritanceModel {
 		try {
 			InheritanceModel model = readPOM(depPath.toString(), null, m2RepositoryPath, sourceType, environment);
 			if (model == null) {
-				int buildIndex = version.indexOf("-");
+				int buildIndex = version.indexOf('-');
 				if (buildIndex != -1) {
 					String build = version.substring(buildIndex + 1);
 					folderVersion = version.replace(build, "SNAPSHOT");

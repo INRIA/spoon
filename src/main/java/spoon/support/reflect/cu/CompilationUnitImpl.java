@@ -104,7 +104,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		}
 		for (CtType<?> t : getDeclaredTypes()) {
 			String name = getFile().getName();
-			name = name.substring(0, name.lastIndexOf("."));
+			name = name.substring(0, name.lastIndexOf('.'));
 			if (t.getSimpleName().equals(name)) {
 				return t;
 			}

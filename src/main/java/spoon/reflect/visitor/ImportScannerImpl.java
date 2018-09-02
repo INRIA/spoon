@@ -449,7 +449,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 						CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
 						String importRefStr = importRef.getQualifiedName();
 
-						importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf("."));
+						importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf('.'));
 						if (qualifiedName.equals(importRefStr)) {
 							return this.setImportUsed(ctImport);
 						}

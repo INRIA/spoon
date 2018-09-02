@@ -100,7 +100,7 @@ public class ImportScannerTest {
 			}
 
 			for (String computedImport : computedStaticImports) {
-				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf("."));
+				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf('.'));
 				if (!staticImports.contains(computedImport) && !typeImports.contains(typeOfStatic)) {
 					if (!unusedImports.containsKey(ctType)) {
 						unusedImports.put(ctType, new ArrayList<>());
@@ -119,7 +119,7 @@ public class ImportScannerTest {
 			}
 
 			for (String anImport : staticImports) {
-				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf("."));
+				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf('.'));
 				if (!computedStaticImports.contains(anImport) && !computedTypeImports.contains(typeOfStatic)) {
 					if (!missingImports.containsKey(ctType)) {
 						missingImports.put(ctType, new ArrayList<>());
