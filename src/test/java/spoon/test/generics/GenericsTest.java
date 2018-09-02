@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtConstructorCall;
@@ -1425,5 +1426,20 @@ public class GenericsTest {
 		//the adaptation of such type parameter keeps that parameter as it is.
 		assertFalse(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("add").get(0)));
 		assertTrue(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("iterator").get(0)));
+	}
+
+	@Test
+	public void testGenericsOverriding() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/overriding/A.java");
+		CtModel model = launcher.buildModel();
+
+		CtClass<?> a = model.getElements(new NamedElementFilter<>(CtClass.class, "A")).get(0);
+		CtClass<?> b = model.getElements(new NamedElementFilter<>(CtClass.class, "B")).get(0);
+
+		CtMethod m6A = a.getMethodsByName("m6").get(0);
+		CtMethod m6B = b.getMethodsByName("m6").get(0);
+
+		assertTrue(m6B.isOverriding(m6A));
 	}
 }
