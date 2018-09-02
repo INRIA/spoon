@@ -48,18 +48,17 @@ public class SnippetCompilationHelper {
 	private static final String WRAPPER_CLASS_NAME = "Wrapper";
 	private static final String WRAPPER_METHOD_NAME = "wrap";
 
-	public static void compileAndReplaceSnippetsIn(CtType<?> c) {
-		Factory f = c.getFactory();
-		CtType<?> workCopy = c;
+	public static void compileAndReplaceSnippetsIn(CtType<?> workType) {
+		Factory f = workType.getFactory();
 		Set<ModifierKind> backup = EnumSet.noneOf(ModifierKind.class);
-		backup.addAll(workCopy.getModifiers());
-		workCopy.removeModifier(ModifierKind.PUBLIC);
+		backup.addAll(workType.getModifiers());
+		workType.removeModifier(ModifierKind.PUBLIC);
 
 		try {
-			build(f, workCopy.toString());
+			build(f, workType.toString());
 		} finally {
 			// restore modifiers
-			c.setModifiers(backup);
+			workType.setModifiers(backup);
 		}
 	}
 
@@ -154,5 +153,4 @@ public class SnippetCompilationHelper {
 
 		return contents;
 	}
-
 }
