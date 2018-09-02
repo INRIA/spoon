@@ -60,20 +60,21 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	boolean stat = false;
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
-	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
+transient 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
 	@MetamodelPropertyField(role = TYPE)
 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = TYPE)
+
 	/**
 	 * For methods, stores the return type of the method. (not pretty-printed).
 	 * For constructors, stores the type of the target constructor (pretty-printed).
 	 */
+@MetamodelPropertyField(role = TYPE)
 	CtTypeReference<T> type;
 
 	@MetamodelPropertyField(role = ARGUMENT_TYPE)
-	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
+transient 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
 
 	public CtExecutableReferenceImpl() {
 	}
@@ -444,3 +445,4 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return (CtExecutableReference<T>) super.clone();
 	}
 }
+
