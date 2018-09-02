@@ -602,7 +602,7 @@ public class TypeReferenceTest {
 		// contract2: getTypeDeclaration returns a CtTYpe representing Object as the compiler does
 		CtLocalVariable<?> s = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<?> l = null").compile();
 		assertEquals("?", s.getType().getActualTypeArguments().get(0).getSimpleName());
-		assertTrue(CtWildcardReference.class.isInstance(s.getType().getActualTypeArguments().get(0)));
+		assertTrue(s.getType().getActualTypeArguments().get(0) instanceof CtWildcardReference);
 		assertEquals("Object", s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getSimpleName());
 		assertSame(Object.class, s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
 
