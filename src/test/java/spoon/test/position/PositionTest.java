@@ -17,8 +17,10 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
@@ -51,6 +53,7 @@ import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooForEach;
 import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
+import spoon.test.position.testclasses.FooLabel;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 import spoon.test.position.testclasses.FooSwitch;
@@ -71,6 +74,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1113,5 +1117,68 @@ public class PositionTest {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
 		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSingleLineClass");
 		assertEquals(54, type.getPosition().getColumn());
+	}
+
+	@Test
+	public void testLabel() throws Exception {
+		//contract: check position of labeled statement
+		final Factory build = build(FooLabel.class);
+		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
+		String classContent = getClassContent(foo);
+		List<CtStatement> stmts = foo.getMethodsByName("m").get(0).getBody().getStatements();
+		int idx = 0;
+		assertEquals("label1: while(x) {}", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("label2: getClass();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("labelx: label3: new String();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		//contract: the nested label from previous line is not moved to next statement
+		assertNull(stmts.get(idx).getLabel());
+		assertEquals("getClass();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("label4: x = false;", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("label5: /*c1*/ return;", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+	}
+
+	@Test
+	public void testNestedLabels() throws Exception {
+		//contract: check position of nested labeled statements
+		final Factory build = build(FooLabel.class);
+		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
+		String classContent = getClassContent(foo);
+		{
+			CtStatement stmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(0);
+			assertTrue(stmt instanceof CtBlock);
+			assertFalse(stmt.isImplicit());
+			assertEquals("label1: {label2: while(x);}", contentAtPosition(classContent, stmt.getPosition()));
+			assertEquals("label2: while(x);", contentAtPosition(classContent, ((CtBlock) stmt).getStatement(0).getPosition()));
+		}
+		{
+			CtStatement stmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(1);
+			assertTrue(stmt instanceof CtBlock);
+			assertTrue(stmt.isImplicit());
+			assertEquals("label1: label2: while(x);", contentAtPosition(classContent, stmt.getPosition()));
+			assertEquals("label2: while(x);", contentAtPosition(classContent, ((CtBlock) stmt).getStatement(0).getPosition()));
+		}
+		{
+			CtStatementList stmts = ((CtSwitch<?>) foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getCases().get(0);
+
+			CtStatement labelledEmtpyStatement = stmts.getStatement(0);
+			assertTrue(labelledEmtpyStatement instanceof CtBlock);
+			assertTrue(labelledEmtpyStatement.isImplicit());
+			assertEquals("label:;", contentAtPosition(classContent, labelledEmtpyStatement.getPosition()));
+
+			CtStatement multiLatbelledStatement = stmts.getStatement(1);
+			assertTrue(multiLatbelledStatement instanceof CtBlock);
+			assertTrue(multiLatbelledStatement.isImplicit());
+			assertEquals("laval3: label1: label2: while(true);", contentAtPosition(classContent, multiLatbelledStatement.getPosition()));
+		}
+		{
+			CtWhile stmt1 = (CtWhile) foo.getMethodsByName("m6").get(0).getBody().getStatement(0);
+			assertEquals("labelW", stmt1.getLabel());
+			CtTry stmt2 = ((CtBlock) stmt1.getBody()).getStatement(0);
+			assertNull(stmt2.getLabel());
+			assertEquals("try { label2: while(true); } finally {}", contentAtPosition(classContent, stmt2.getPosition()));
+			CtWhile stmt3 = stmt2.getBody().getStatement(0);
+			assertEquals("label2", stmt3.getLabel());
+			assertEquals("label2: while(true);", contentAtPosition(classContent, stmt3.getPosition()));
+		}
 	}
 }
