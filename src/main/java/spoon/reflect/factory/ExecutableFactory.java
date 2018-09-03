@@ -210,14 +210,14 @@ public class ExecutableFactory extends SubFactory {
 	 */
 	public <T> CtExecutableReference<T> createReference(String signature) {
 		CtExecutableReference<T> executableRef = factory.Core().createExecutableReference();
-		String type = signature.substring(0, signature.indexOf(" "));
-		String declaringType = signature.substring(signature.indexOf(" ") + 1, signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR));
-		String executableName = signature.substring(signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR) + 1, signature.indexOf("("));
+		String type = signature.substring(0, signature.indexOf(' '));
+		String declaringType = signature.substring(signature.indexOf(' ') + 1, signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR));
+		String executableName = signature.substring(signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR) + 1, signature.indexOf('('));
 		executableRef.setSimpleName(executableName);
 		executableRef.setDeclaringType(factory.Type().createReference(declaringType));
 		CtTypeReference<T> typeRef = factory.Type().createReference(type);
 		executableRef.setType(typeRef);
-		String parameters = signature.substring(signature.indexOf("(") + 1, signature.indexOf(")"));
+		String parameters = signature.substring(signature.indexOf('(') + 1, signature.indexOf(')'));
 		List<CtTypeReference<?>> params = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		StringTokenizer t = new StringTokenizer(parameters, ",");
 		while (t.hasMoreTokens()) {

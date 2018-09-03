@@ -35,7 +35,6 @@ public class ExceptionTest {
 		} catch (ModelBuildingException e) {
 			// perfect
 		}
-
 	}
 
 	@Test
@@ -52,7 +51,6 @@ public class ExceptionTest {
 		} catch (FileNotFoundException e) {
 			// perfect
 		}
-
 	}
 
 	@Test
@@ -93,7 +91,7 @@ public class ExceptionTest {
 		}
 	}
 
-	@Test(expected=ModelBuildingException.class)
+	@Test(expected = ModelBuildingException.class)
 	public void testExceptionDuplicateClass() throws Exception {
 			Launcher spoon = new Launcher();
 			Factory factory = spoon.createFactory();

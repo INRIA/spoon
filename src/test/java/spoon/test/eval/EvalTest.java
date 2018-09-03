@@ -140,7 +140,6 @@ public class EvalTest {
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("false", elnew.toString());
 		}
-
 	}
 
 	@Test
@@ -150,11 +149,10 @@ public class EvalTest {
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetStatement("if (false) {System.out.println(\"foo\");} else {System.out.println(\"bar\");} ").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
-			assertEquals("{" + System.lineSeparator() +
-					"    java.lang.System.out.println(\"bar\");" + System.lineSeparator() +
-					"}", elnew.toString());
+			assertEquals("{" + System.lineSeparator()
+					+ "    java.lang.System.out.println(\"bar\");" + System.lineSeparator()
+					+ "}", elnew.toString());
 		}
-
 	}
 
 	@Test

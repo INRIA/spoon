@@ -1098,4 +1098,20 @@ public class PositionTest {
 		assertEquals(23, pos.getEndLine());
 		assertEquals(2, pos.getEndColumn());
 	}
+
+	@Test
+	public void testFirstLineColumn() throws Exception {
+		//contract: element, positioned before the first line separator in a file, should have correct column
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSimpleClass.java"));
+		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSimpleClass");
+		assertEquals(54, type.getPosition().getColumn());
+	}
+
+	@Test
+	public void testSingleLineClassColumn() throws Exception {
+		//contract: element, positioned in a file without EOL, should have correct column
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
+		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSingleLineClass");
+		assertEquals(54, type.getPosition().getColumn());
+	}
 }

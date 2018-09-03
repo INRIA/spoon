@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -155,8 +155,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	}
 
 	private CtType<?> getTemplate(String templateQName) {
-		CtType<?> template = getFactory().Class().get(templateQName);
-		return template;
+		return getFactory().Class().get(templateQName);
 	}
 
 	private File file(String name) {

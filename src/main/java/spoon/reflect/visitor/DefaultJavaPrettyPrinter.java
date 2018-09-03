@@ -181,7 +181,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/**
 	 * The printing context.
+	 *
+	 * @deprecated since Spoon 7.1.0, please use {{@link #getContext()}}
 	 */
+	@Deprecated
 	public PrintingContext context = new PrintingContext();
 
 	/**
@@ -648,23 +651,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		CtTypeParameterReference ref = typeParameter.getReference();
-		if (ref.isImplicit()) {
-			return;
-		}
-		elementPrinterHelper.writeAnnotations(ref);
-		if (printQualified(ref)) {
-			elementPrinterHelper.writeQualifiedName(ref.getQualifiedName());
-		} else {
-			printer.writeIdentifier(ref.getSimpleName());
-		}
-		if (!ref.isDefaultBoundingType() || !ref.getBoundingType().isImplicit()) {
-			if (ref.isUpper()) {
-				printer.writeSpace().writeKeyword("extends").writeSpace();
-			} else {
-				printer.writeSpace().writeKeyword("super").writeSpace();
-			}
-			scan(ref.getBoundingType());
+		elementPrinterHelper.writeAnnotations(typeParameter);
+		printer.writeIdentifier(typeParameter.getSimpleName());
+		if (typeParameter.getSuperclass() != null && typeParameter.getSuperclass().isImplicit() == false) {
+			printer.writeSpace().writeKeyword("extends").writeSpace();
+			scan(typeParameter.getSuperclass());
 		}
 	}
 
@@ -906,15 +897,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
-		if (parent instanceof CtFieldWrite
+		return parent instanceof CtFieldWrite
 				&& targetExp.equals(((CtFieldWrite) parent).getTarget())
 				&& anonymousParent != null
 				&& ((CtFieldWrite) parent).getVariable() != null
 				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)
-				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL)) {
-			return true;
-		}
-		return false;
+				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL);
 	}
 
 	@Override

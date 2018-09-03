@@ -218,10 +218,7 @@ public class SubInheritanceHierarchyResolver {
 	private static final Filter<CtType<?>> typeFilter = new Filter<CtType<?>>() {
 		@Override
 		public boolean matches(CtType<?> type) {
-			if (type instanceof CtTypeParameter) {
-				return false;
-			}
-			return true;
+			return !(type instanceof CtTypeParameter);
 		}
 	};
 

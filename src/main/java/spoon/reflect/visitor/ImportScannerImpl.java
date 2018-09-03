@@ -449,7 +449,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 						CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
 						String importRefStr = importRef.getQualifiedName();
 
-						importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf("."));
+						importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf('.'));
 						if (qualifiedName.equals(importRefStr)) {
 							return this.setImportUsed(ctImport);
 						}
@@ -509,9 +509,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (!(ref.isImplicit()) && classImports.containsKey(ref.getSimpleName())) {
 			CtTypeReference<?> exist = classImports.get(ref.getSimpleName());
-			if (exist.getQualifiedName().equals(ref.getQualifiedName())) {
-				return true;
-			}
+			return exist.getQualifiedName().equals(ref.getQualifiedName());
 		}
 		return false;
 	}
@@ -609,11 +607,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (!(ref.isImplicit()) && methodImports.containsKey(ref.getSimpleName())) {
 			CtExecutableReference<?> exist = methodImports.get(ref.getSimpleName());
-			if (getSignature(exist).equals(
-					getSignature(ref))
-					) {
-				return true;
-			}
+			return getSignature(exist).equals(getSignature(ref));
 		}
 		return false;
 	}

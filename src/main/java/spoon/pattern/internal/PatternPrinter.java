@@ -115,9 +115,7 @@ public class PatternPrinter extends DefaultGenerator {
 		if (obj instanceof CtElement) {
 			MetamodelConcept mmType = Metamodel.getInstance().getConcept((Class) obj.getClass());
 			MetamodelProperty mmCommentField = mmType.getProperty(CtRole.COMMENT);
-			if (mmCommentField != null && mmCommentField.isDerived() == false) {
-				return true;
-			}
+			return mmCommentField != null && mmCommentField.isDerived() == false;
 		}
 		return false;
 	}

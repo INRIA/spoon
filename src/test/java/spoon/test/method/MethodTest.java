@@ -26,6 +26,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.delete.testclasses.Adobada;
+import spoon.test.method.testclasses.Methods;
 import spoon.test.method.testclasses.Tacos;
 
 import java.util.ArrayList;
@@ -66,6 +67,29 @@ public class MethodTest {
 	}
 
 	@Test
+	public void testMethodSignature() throws Exception {
+		//contract: method signature contains type erasure of parameter types
+		CtType<?> aTacos = buildClass(Methods.class);
+		int methodCount = 0;
+		for (CtMethod<?> method : aTacos.getMethods()) {
+			String name = method.getSimpleName();
+			String signatureParams;
+			if (name.startsWith("object")) {
+				signatureParams = "(java.lang.Object)";
+			} else if (name.startsWith("string")) {
+				signatureParams = "(java.lang.String)";
+			} else if (name.startsWith("list")) {
+				signatureParams = "(java.util.List)";
+			} else {
+				throw new AssertionError("Unexpected method " + name);
+			}
+			assertEquals(name + signatureParams, method.getSignature());
+			methodCount++;
+		}
+		assertTrue(methodCount > 15);
+	}
+
+	@Test
 	public void testAddSameMethodsTwoTimes() {
 		final Factory factory = createFactory();
 		final CtClass<Object> tacos = factory.Class().create("Tacos");
@@ -103,7 +127,7 @@ public class MethodTest {
 		boolean compareFound = false;
 		for (CtMethod<?> method : allMethods) {
 			if ("compare".equals(method.getSimpleName())) {
-				assertEquals("compare(T,T)", method.getSignature());
+				assertEquals("compare(java.lang.Object,java.lang.Object)", method.getSignature());
 				compareFound = true;
 			}
 		}

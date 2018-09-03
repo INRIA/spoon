@@ -285,7 +285,7 @@ public class GenericsTest {
 					.getActualClass());
 			pp.visitCtTypeReference(ref);
 
-			assertEquals("java.util.Map.Entry", pp.getResult().toString());
+			assertEquals("java.util.Map.Entry", pp.getResult());
 
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);

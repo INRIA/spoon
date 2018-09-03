@@ -137,14 +137,14 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				// we check that setParent has been called
 
 				// directly the element
-				if (CtElement.class.isInstance(argument)
+				if (argument instanceof CtElement
 				  && setter.getAnnotation(UnsettableProperty.class) == null) {
 					nAssertsOnParent++;
 					assertTrue(((CtElement)argument).hasParent(receiver));
 				}
 
 				// the element is in a list
-				if (Collection.class.isInstance(argument)
+				if (argument instanceof Collection
 						&& setter.getAnnotation(UnsettableProperty.class) == null) {
 					nAssertsOnParentInList++;
 					assertTrue(((CtElement)((Collection)argument).iterator().next()).hasParent(receiver));

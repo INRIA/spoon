@@ -25,6 +25,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtScanner;
 
 /**
@@ -84,7 +85,20 @@ public class SignaturePrinter extends CtScanner {
 
 	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		write(ref.getQualifiedName());
+		/*
+		 * signature doesn't contain name of type parameter reference,
+		 * because these three methods declarations:
+		 * 	<T extends String> void m(T a);
+		 * 	<S extends String> void m(S b);
+		 * 	void m(String c)
+		 * Should have the same signature.
+		 */
+		scan(ref.getBoundingType());
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference ref) {
+		write(ref.getSimpleName());
 		if (!ref.isDefaultBoundingType() || !ref.getBoundingType().isImplicit()) {
 			if (ref.isUpper()) {
 				write(" extends ");

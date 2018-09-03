@@ -294,7 +294,9 @@ public class MainTest {
 
 	private void checkContractCtScanner(CtPackage pack) {
 		class Counter {
-			int scan, enter, exit = 0;
+			int scan;
+			int enter;
+			int exit;
 		}
 
 		final Counter counter = new Counter();

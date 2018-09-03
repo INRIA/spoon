@@ -53,7 +53,7 @@ public class FactoryTest {
 	public void testFactoryOverriding()  throws Exception {
 
 		@SuppressWarnings("serial")
-		class MyCtMethod<T> extends CtMethodImpl<T>{}
+		class MyCtMethod<T> extends CtMethodImpl<T> { }
 
 		@SuppressWarnings("serial")
 		final CoreFactory specialCoreFactory = new DefaultCoreFactory() {
@@ -130,22 +130,22 @@ public class FactoryTest {
 		assertEquals(5, model.getAllPackages().size());
 
 
-		CtPackage p = model.getElements(new NamedElementFilter<>(CtPackage.class,"spoon")).get(0).clone();
+		CtPackage p = model.getElements(new NamedElementFilter<>(CtPackage.class, "spoon")).get(0).clone();
 		// if we change the implem, merge is impossible
 		CtField f = spoon.getFactory().Core().createField();
 		f.setSimpleName("foo");
 		f.setType(spoon.getFactory().Type().BYTE);
-		p.getElements(new NamedElementFilter<>(CtPackage.class,"testclasses")).get(0).getType("Foo").addField(f);
+		p.getElements(new NamedElementFilter<>(CtPackage.class, "testclasses")).get(0).getType("Foo").addField(f);
 		try {
 			model.getRootPackage().addPackage(p);
 			fail("no exception thrown");
-		} catch (IllegalStateException success) {}
+		} catch (IllegalStateException success) { }
 
 		model.processWith(new AbstractProcessor<CtType>() {
-		    @Override
-		    public void process(CtType element) {
-		        element.delete();
-		    }
+			@Override
+			public void process(CtType element) {
+				element.delete();
+			}
 		});
 		assertEquals(0, model.getAllTypes().size());
 	}
@@ -201,7 +201,7 @@ public class FactoryTest {
 	@Test
 	public void specificationCoreFactoryCreate() {
 		// contract: all concrete metamodel classes must be instantiable by CoreFactory.create
-		for(CtType<? extends CtElement> itf : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
+		for (CtType<? extends CtElement> itf : SpoonTestHelpers.getAllInstantiableMetamodelInterfaces()) {
 			CtElement o = itf.getFactory().Core().create(itf.getActualClass());
 			assertNotNull(o);
 			assertTrue(itf.getActualClass().isInstance(o));
