@@ -23,12 +23,13 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+
+import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -73,8 +74,6 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	Deque<String> label = new ArrayDeque<>();
-
 	boolean isBuildLambda = false;
 
 	boolean isBuildTypeCast = false;
@@ -85,6 +84,10 @@ public class ContextBuilder {
 	 * Stack of all parents elements
 	 */
 	Deque<ASTPair> stack = new ArrayDeque<>();
+	/**
+	 * helper to check consistency after call of {@link #replacedNode}
+	 */
+	ASTNode replacedNode;
 
 	private final JDTTreeBuilder jdtTreeBuilder;
 
@@ -109,9 +112,6 @@ public class ContextBuilder {
 				((CtExpression<?>) current).addTypeCast(casts.remove(0).typeRef);
 			}
 		}
-		if (current instanceof CtStatement && !this.label.isEmpty()) {
-			((CtStatement) current).setLabel(this.label.pop());
-		}
 
 		try {
 			if (e instanceof CtTypedElement && !(e instanceof CtConstructorCall) && !(e instanceof CtCatchVariable) && node instanceof Expression) {
@@ -127,12 +127,18 @@ public class ContextBuilder {
 
 	void exit(ASTNode node) {
 		ASTPair pair = stack.pop();
-		if (pair.node != node) {
+		if (replacedNode != null) {
+			if (pair.node != replacedNode) {
+				throw new RuntimeException("Inconsistent Stack after replace " + replacedNode + "\n" + pair.node);
+			}
+			replacedNode = null;
+		} else if (pair.node != node) {
 			throw new RuntimeException("Inconsistent Stack " + node + "\n" + pair.node);
 		}
-		CtElement current = pair.element;
 		if (!stack.isEmpty()) {
-			this.jdtTreeBuilder.getExiter().setChild(current);
+			//child Java compiler AST node
+			this.jdtTreeBuilder.getExiter().setChild(pair.element);
+			//child Spoon model node
 			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
@@ -164,6 +170,21 @@ public class ContextBuilder {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Can be used by {@link ParentExiter} to replace just scanned element by another element
+	 * @param oldElement old element - the one which is actually scanned by ParentExiter
+	 * @param newElement new element - the one which has to be used in result spoon model instead of the old one
+	 * @param newJDTNode JDT node which represents new element
+	 */
+	void replaceContextElement(CtElement oldElement, CtElement newElement, ASTNode childJDT) {
+		if (stack.peek().element != oldElement) {
+			throw new SpoonException("Invalid usage of replaceContextElement. oldElement is not on top of stack");
+		}
+		stack.peek().element = newElement;
+		stack.peek().node = childJDT;
+		replacedNode = childJDT;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -121,6 +121,7 @@ import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
@@ -425,6 +426,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(IntLiteral intLiteral, BlockScope scope) {
 		context.exit(intLiteral);
+	}
+
+	@Override
+	public void endVisit(LabeledStatement labeledStatement, BlockScope scope) {
+		context.exit(labeledStatement);
 	}
 
 	@Override
@@ -1175,7 +1181,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(LabeledStatement labeledStatement, BlockScope scope) {
-		context.label.push(new String(labeledStatement.label));
+		/*
+		 * Create helper implicit block which holds label until child statement node is available
+		 */
+		CtBlock<?> block = factory.Core().createBlock();
+		block.setLabel(new String(labeledStatement.label));
+		context.enter(block, labeledStatement);
+		//set implicit after position is build, so we know the position of the label
+		block.setImplicit(true);
 		return true;
 	}
 
