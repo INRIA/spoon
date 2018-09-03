@@ -436,6 +436,26 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <R> void visitCtBlock(CtBlock<R> block) {
+		if (block.isImplicit() && block.getLabel() != null) {
+			//this block is a holder for a statement label
+			//check if we can merge it with child statement
+			if (child instanceof CtStatement && ((CtStatement) child).getLabel() == null) {
+				//the child statement has no label, so we can move label from `block` to child statement and to remove this `block`
+				//example code:
+				//label: while(true);
+				((CtStatement) child).setLabel(block.getLabel());
+				SourcePosition oldPos = child.getPosition();
+				int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
+				if (newSourceStart != oldPos.getSourceStart()) {
+					child.setPosition(block.getFactory().Core().createSourcePosition(oldPos.getCompilationUnit(), newSourceStart, oldPos.getSourceEnd(), oldPos.getCompilationUnit().getLineSeparatorPositions()));
+				}
+				jdtTreeBuilder.getContextBuilder().replaceContextElement(block, child, childJDT);
+				return;
+			}
+			//else example code:
+			//label1: label2: while(true);
+			//needs to keep an implicit helper CtBlock as holder of `label1`
+		}
 		if (child instanceof CtStatement) {
 			block.addStatement((CtStatement) child);
 			return;
