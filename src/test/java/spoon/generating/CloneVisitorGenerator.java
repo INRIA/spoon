@@ -345,10 +345,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					return true;
 				}
 				final CtConstructorCall<? extends Throwable> thrownExpression = (CtConstructorCall<? extends Throwable>) ctThrow.getThrownExpression();
-				if (!thrownExpression.getType().equals(factory.Type().createReference(UnsupportedOperationException.class))) {
-					return true;
-				}
-				return false;
+				return !thrownExpression.getType().equals(factory.Type().createReference(UnsupportedOperationException.class));
 			}
 
 			/**
@@ -449,13 +446,10 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 							if (!(assigned instanceof CtFieldAccess)) {
 								return false;
 							}
-							if (!((CtFieldAccess) assigned).getVariable().getSimpleName().equals(ctField.getSimpleName())) {
-								return false;
-							}
+							return ((CtFieldAccess) assigned).getVariable().getSimpleName().equals(ctField.getSimpleName());
 						} else {
 							return false;
 						}
-						return true;
 					}
 				});
 				if (matchers.size() != 1) {
@@ -512,9 +506,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						return true;
 					}
 					if (collectionClasses.contains(type.getQualifiedName())) {
-						if (type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE)) {
-							return true;
-						}
+						return type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE);
 					}
 				}
 				return false;

@@ -226,10 +226,8 @@ public class AstCheckerTest {
 			return body.filterChildren((CtInvocation inv) -> {
 				if (inv.getTarget() instanceof CtFieldRead) {
 					CtFieldRead fielRead = (CtFieldRead) inv.getTarget();
-					if (isModelCollection(fielRead.getType())) {
-						//it is invocation on ModelList, ModelSet or ModelMap
-						return true;
-					}
+					//it is invocation on ModelList, ModelSet or ModelMap
+					return isModelCollection(fielRead.getType());
 				}
 				return false;
 			}).first() != null;
@@ -240,10 +238,7 @@ public class AstCheckerTest {
 			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) {
 				return true;
 			}
-			if (typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class))) {
-				return true;
-			}
-			return false;
+			return typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class));
 		}
 
 		private boolean hasPushToStackInvocation(CtBlock<?> body) {

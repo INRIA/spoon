@@ -54,10 +54,7 @@ public abstract class IntercessionScanner extends CtScanner {
 			return true;
 		}
 		final CtConstructorCall<? extends Throwable> thrownExpression = (CtConstructorCall<? extends Throwable>) ctThrow.getThrownExpression();
-		if (!thrownExpression.getType().equals(factory.Type().createReference(UnsupportedOperationException.class))) {
-			return true;
-		}
-		return false;
+		return !thrownExpression.getType().equals(factory.Type().createReference(UnsupportedOperationException.class));
 	}
 
 	protected boolean takeSetterForCtElement(CtMethod<?> candidate) {
