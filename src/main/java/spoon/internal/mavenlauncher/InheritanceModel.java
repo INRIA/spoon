@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class InheritanceModel {
 	List<InheritanceModel> modules = new ArrayList<>();
@@ -136,14 +138,21 @@ public class InheritanceModel {
 		return output;
 	}
 
+	static Pattern mavenProperty = Pattern.compile("\\$\\{.*\\}");
+
 	/**
 	 * Extract the variable from a string
 	 */
 	String extractVariable(String value) {
-		if (value != null && value.startsWith("$")) {
-			value = getProperty(value.substring(2, value.length() - 1));
+		String val = value;
+		if (value != null && value.contains("$")) {
+			Matcher matcher = mavenProperty.matcher(value);
+			while (matcher.find()) {
+				String var = matcher.group();
+				val = val.replace(var, getProperty(var.substring(2, var.length() - 1)));
+			}
 		}
-		return value;
+		return val;
 	}
 
 	/**
