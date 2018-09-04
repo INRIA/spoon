@@ -59,6 +59,8 @@ public class MavenLauncher extends Launcher {
 	}
 
 	/**
+	 * MavenLauncher constructor assuming either an environment
+	 * variable M2_HOME, or that mvn command exist in PATH.
 	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
@@ -80,6 +82,8 @@ public class MavenLauncher extends Launcher {
 	}
 
 	/**
+	 * MavenLauncher constructor that skips maven invocation building
+	 * classpath.
 	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
@@ -248,11 +252,6 @@ public class MavenLauncher extends Launcher {
 		List<File> classPathPrints;
 		String[] classpath;
 		try {
-			/*classPathPrints = Files.find(Paths.get(pom.getParentFile().getAbsolutePath()),
-					Integer.MAX_VALUE,
-					(filePath, fileAttr) -> filePath.endsWith(getSpoonClasspathTmpFileName(sourceType)))
-					.map(p -> p.toFile())
-					.collect(Collectors.toList());*/
 			classPathPrints = model.getClasspathTmpFiles(getSpoonClasspathTmpFileName(sourceType));
 			File[] classPathPrintFiles = new File[classPathPrints.size()];
 			classPathPrintFiles = classPathPrints.toArray(classPathPrintFiles);

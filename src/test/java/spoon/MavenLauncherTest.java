@@ -61,6 +61,10 @@ public class MavenLauncherTest {
 		// specify the pom.xml
 		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
+
+		// without calling maven to generate classpath
+		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{});
+		assertEquals(0, launcher.getEnvironment().getSourceClasspath().length);
 	}
 
 	@Test

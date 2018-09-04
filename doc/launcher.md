@@ -56,7 +56,18 @@ for(CtType<?> s : model.getAllTypes()) {
 
 ```
 
-
+Note that by default, MavenLauncher relies on an existing local maven binary to build the project's classpath. But a constructor allowing the user to skip this step and to provide a custom classpath is available.
+```java
+MavenLauncher launcher = new MavenLauncher("<path_to_maven_project>",
+        MavenLauncher.SOURCE_TYPE.APP_SOURCE,
+        new String[] {
+            "/home/user/.m2/repository/org/my/jar/1.0/org-my-jar-1.0.jar"
+        }
+    );
+launcher.buildModel();
+CtModel model = launcher.getModel();
+```
+To avoid invoking maven over and over to build a classpath that has not changed, it is stored in a file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed is the file is deleted or if it has not been modified since 1h.
 
 ## About the classpath
 
