@@ -315,13 +315,9 @@ public class IntercessionTest {
 				}
 				final CtInvocation inv = (CtInvocation) assignment;
 				if (collectionReference.equals(SET_REFERENCE)) {
-					if (!"emptySet".equals(inv.getExecutable().getSimpleName())) {
-						return false;
-					}
+					return "emptySet".equals(inv.getExecutable().getSimpleName());
 				} else if (collectionReference.equals(LIST_REFERENCE)) {
-					if (!"emptyList".equals(inv.getExecutable().getSimpleName())) {
-						return false;
-					}
+					return "emptyList".equals(inv.getExecutable().getSimpleName());
 				}
 				return true;
 			}
