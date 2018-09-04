@@ -18,7 +18,9 @@ package spoon.internal.mavenlauncher;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Build;
+import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Profile;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -184,20 +186,22 @@ public class InheritanceModel {
 	 * @return the source version of the project
 	 */
 	public int getSourceVersion() {
+		String javaVersion = null;
 		if (model.getBuild() != null) {
-			for (Plugin plugin : model.getBuild().getPlugins()) {
-				if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
-					continue;
-				}
-				Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
-				Xpp3Dom source = configuration.getChild("source");
-				if (source != null) {
-					return Integer.parseInt(extractVariable(source.getValue()).substring(2));
-				}
-				break;
+			javaVersion = getSourceVersion(model.getBuild());
+		}
+		if (javaVersion != null) {
+			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+		}
+		for (Profile profile: model.getProfiles()) {
+			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault()) {
+				javaVersion = getSourceVersion(profile.getBuild());
 			}
 		}
-		String javaVersion = getProperty("java.version");
+		if (javaVersion != null) {
+			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+		}
+		javaVersion = getProperty("java.version");
 		if (javaVersion != null) {
 			return Integer.parseInt(extractVariable(javaVersion).substring(2));
 		}
@@ -215,6 +219,23 @@ public class InheritanceModel {
 		}
 		// return the current compliance level of spoon
 		return environment.getComplianceLevel();
+	}
+
+	private String getSourceVersion(BuildBase build) {
+		for (Plugin plugin : model.getBuild().getPlugins()) {
+			if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
+				continue;
+			}
+			Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
+			if (configuration != null) {
+				Xpp3Dom source = configuration.getChild("source");
+				if (source != null) {
+					return source.getValue();
+				}
+			}
+			break;
+		}
+		return null;
 	}
 
 	@Override
