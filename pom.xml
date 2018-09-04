@@ -93,6 +93,12 @@
       </roles>
     </developer>
     <developer>
+      <name>Nicolas Harrand</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
       <name>Sebastian Lamelas Marcote</name>
       <roles>
         <role>Contributor</role>
