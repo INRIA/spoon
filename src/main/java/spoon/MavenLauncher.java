@@ -42,7 +42,6 @@ import java.util.Date;
 public class MavenLauncher extends Launcher {
 	static String mavenVersionParsing = "Maven home: ";
 	static long classpathTmpFilesTTL = 60 * 60 * 1000; // 1h in ms
-	private String m2RepositoryPath;
 	private String mvnHome;
 	private SOURCE_TYPE sourceType;
 	private InheritanceModel model;
@@ -59,29 +58,22 @@ public class MavenLauncher extends Launcher {
 		ALL_SOURCE
 	}
 
-	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType) {
-		this(mavenProject, Paths.get(System.getProperty("user.home"), ".m2", "repository").toString(), sourceType);
-	}
-
 	/**
 	 *
 	 * @param mavenProject the path to the root of the project
-	 * @param m2RepositoryPath the path to the m2repository
 	 * @param sourceType the source type (App, test, or all)
 	 */
-	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType) {
-		this(mavenProject, m2RepositoryPath, sourceType, System.getenv().get("M2_HOME"));
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType) {
+		this(mavenProject, sourceType, System.getenv().get("M2_HOME"));
 	}
 
 	/**
 	 *
 	 * @param mavenProject the path to the root of the project
-	 * @param m2RepositoryPath the path to the m2repository
 	 * @param sourceType the source type (App, test, or all)
 	 * @param mvnHome Path to maven install
 	 */
-	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String mvnHome) {
-		this.m2RepositoryPath = m2RepositoryPath;
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String mvnHome) {
 		this.sourceType = sourceType;
 		this.mvnHome = mvnHome;
 		init(mavenProject, null);
@@ -90,12 +82,10 @@ public class MavenLauncher extends Launcher {
 	/**
 	 *
 	 * @param mavenProject the path to the root of the project
-	 * @param m2RepositoryPath the path to the m2repository
 	 * @param sourceType the source type (App, test, or all)
 	 * @param classpath String array containing the classpath elements
 	 */
-	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String[] classpath) {
-		this.m2RepositoryPath = m2RepositoryPath;
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String[] classpath) {
 		this.sourceType = sourceType;
 		init(mavenProject, classpath);
 	}
@@ -107,7 +97,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		try {
-			model = InheritanceModel.readPOM(mavenProject, null, m2RepositoryPath, sourceType, getEnvironment());
+			model = InheritanceModel.readPOM(mavenProject, null, sourceType, getEnvironment());
 		} catch (Exception e) {
 			throw new SpoonException("Unable to read the pom", e);
 		}

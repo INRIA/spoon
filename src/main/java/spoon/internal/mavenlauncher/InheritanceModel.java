@@ -37,15 +37,13 @@ public class InheritanceModel {
 	Model model;
 	InheritanceModel parent;
 	File directory;
-	String m2RepositoryPath;
 	MavenLauncher.SOURCE_TYPE sourceType;
 	Environment environment;
 
-	public InheritanceModel(Model model, InheritanceModel parent, File directory, String m2RepositoryPath, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) {
+	public InheritanceModel(Model model, InheritanceModel parent, File directory, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) {
 		this.model = model;
 		this.parent = parent;
 		this.directory = directory;
-		this.m2RepositoryPath = m2RepositoryPath;
 		this.sourceType = sourceType;
 		this.environment = environment;
 	}
@@ -251,7 +249,7 @@ public class InheritanceModel {
 	 * @throws IOException when the file does not exist
 	 * @throws XmlPullParserException when the file is corrupted
 	 */
-	public static InheritanceModel readPOM(String path, InheritanceModel parent, String m2RepositoryPath, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) throws IOException, XmlPullParserException {
+	public static InheritanceModel readPOM(String path, InheritanceModel parent, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) throws IOException, XmlPullParserException {
 		if (!path.endsWith(".xml") && !path.endsWith(".pom")) {
 			path = Paths.get(path, "pom.xml").toString();
 		}
@@ -262,16 +260,9 @@ public class InheritanceModel {
 		MavenXpp3Reader pomReader = new MavenXpp3Reader();
 		try (FileReader reader = new FileReader(pomFile)) {
 			Model model = pomReader.read(reader);
-			InheritanceModel inheritanceModel = new InheritanceModel(model, parent, pomFile.getParentFile(), m2RepositoryPath, sourceType, environment);
+			InheritanceModel inheritanceModel = new InheritanceModel(model, parent, pomFile.getParentFile(), sourceType, environment);
 			for (String module : model.getModules()) {
-				if (path.contains(m2RepositoryPath)) {
-					InheritanceModel modulePom = readPOM(path.replaceAll(model.getArtifactId(), module), inheritanceModel, m2RepositoryPath, sourceType, environment);
-					if (modulePom != null) {
-						inheritanceModel.addModule(modulePom);
-					}
-				} else {
-					inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel, m2RepositoryPath, sourceType, environment));
-				}
+				inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel, sourceType, environment));
 			}
 			return inheritanceModel;
 		}
