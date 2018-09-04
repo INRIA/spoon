@@ -164,6 +164,7 @@ public class MavenLauncher extends Launcher {
 			} catch (MavenInvocationException e) {
 				throw new SpoonException("Maven invocation failed to build a classpath.");
 			}
+			classpathFile.setLastModified(time);
 		}
 	}
 
