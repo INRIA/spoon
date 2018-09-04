@@ -138,9 +138,9 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 		valueType = valueType.clone();
 		if (valueType instanceof CtTypeParameterReference) {
 			if (valueType instanceof CtWildcardReference) {
-				CtTypeReference<?> boundingType = ((CtTypeParameterReference) valueType).getBoundingType();
+				CtTypeReference<?> boundingType = ((CtWildcardReference) valueType).getBoundingType();
 				if (boundingType instanceof CtTypeParameterReference) {
-					((CtTypeParameterReference) valueType).setBoundingType(null);
+					((CtWildcardReference) valueType).setBoundingType(null);
 				}
 				return valueType;
 			}

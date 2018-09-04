@@ -210,17 +210,12 @@ public class MainTest {
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
 				for (int i = 0; i < reference.getParameters().size(); i++) {
-					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {
-						return;
-					}
-					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
-						return;
-					}
 					//TODO assertions which are checking lambdas. Till then ignore lambdas.
 					if (executableDeclaration instanceof CtLambda) {
 						return;
 					}
-					assertEquals(reference.getParameters().get(i).getQualifiedName(), executableDeclaration.getParameters().get(i).getType().getQualifiedName());
+					CtTypeReference<?> methodParamTypeRef = executableDeclaration.getParameters().get(i).getType();
+					assertEquals(reference.getParameters().get(i).getQualifiedName(), methodParamTypeRef.getTypeErasure().getQualifiedName());
 				}
 
 				// contract: the reference and method signature are the same
