@@ -41,6 +41,9 @@ import java.util.Date;
  */
 public class MavenLauncher extends Launcher {
 	static String mavenVersionParsing = "Maven home: ";
+	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
+	static String spoonClasspathTmpFileNameApp = "spoon.classpath-app.tmp";
+	static String spoonClasspathTmpFileNameTest = "spoon.classpath-test.tmp";
 	static long classpathTmpFilesTTL = 60 * 60 * 1000; // 1h in ms
 	private String mvnHome;
 	private SOURCE_TYPE sourceType;
@@ -267,11 +270,11 @@ public class MavenLauncher extends Launcher {
 		// once per hour, we need a different file for different dependency
 		// resolution scopes.
 		if (SOURCE_TYPE.TEST_SOURCE == sourceType) {
-			return "spoon.classpath-test.tmp";
+			return spoonClasspathTmpFileNameTest;
 		} else if (SOURCE_TYPE.APP_SOURCE == sourceType) {
-			return "spoon.classpath-app.tmp";
+			return spoonClasspathTmpFileNameApp;
 		} else {
-			return "spoon.classpath.tmp";
+			return spoonClasspathTmpFileName;
 		}
 	}
 }
