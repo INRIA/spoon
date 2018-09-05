@@ -25,25 +25,37 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 
-public class TypeContext {
+public class ConflictResolver {
 	CtType<?> type;
 	CtTypeReference<?> typeRef;
-	Set<String> memberNames;
+	Set<String> fieldNames;
+	Set<String> nestedTypeNames;
 
-	TypeContext(CtType<?> p_type) {
+	ConflictResolver(CtType<?> p_type) {
 		type = p_type;
 		typeRef = type.getReference();
 	}
 
-	public boolean isNameConflict(String name) {
-		if (memberNames == null) {
+	public boolean hasFieldConflict(String name) {
+		if (fieldNames == null) {
 			Collection<CtFieldReference<?>> allFields = type.getAllFields();
-			memberNames = new HashSet<>(allFields.size());
+			fieldNames = new HashSet<>(allFields.size());
 			for (CtFieldReference<?> field : allFields) {
-				memberNames.add(field.getSimpleName());
+				fieldNames.add(field.getSimpleName());
 			}
 		}
-		return memberNames.contains(name);
+		return fieldNames.contains(name);
+	}
+
+	public boolean hasNestedCLassConflict(String name) {
+		if (nestedTypeNames == null) {
+			Collection<CtType<?>> allTypes = type.getNestedTypes();
+			nestedTypeNames = new HashSet<>(allTypes.size());
+			for (CtType<?> t : allTypes) {
+				nestedTypeNames.add(t.getSimpleName());
+			}
+		}
+		return nestedTypeNames.contains(name);
 	}
 
 	public String getSimpleName() {
