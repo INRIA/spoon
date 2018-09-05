@@ -85,13 +85,13 @@ public class RtParameter {
 			 * According to oracle sources (for jdk 8) for java.lang.reflect.Executable#getParameterAnnotations(),
 			 * the length of the returned array may vary at the discretion of the compiler.
 			 * It seems that eclipse and javac do not produce the same results.
-			 * In our case the value of index is based on getParameterTypes(), so if
+			 * In our case the value of index is based on getGenericParameterTypes(), so if
 			 * getParameterAnnotations() returns a smaller array, we can assume that
 			 * a synthetic parameter pointing to the outer class has been added at the begining of
-			 * getParameterTypes() and not in getParameterAnnotations().
+			 * getGenericParameterTypes() and not in getParameterAnnotations().
 			 * The actual index is then shifted by the difference.
 			 */
-			int diff = constructor.getParameterTypes().length - constructor.getParameterAnnotations().length;
+			int diff = constructor.getGenericParameterTypes().length - constructor.getParameterAnnotations().length;
 			return constructor.getParameterAnnotations()[index - diff];
 		}
 		return method.getParameterAnnotations()[index];
