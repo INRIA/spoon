@@ -96,7 +96,7 @@ public class MavenLauncher extends Launcher {
 	 */
 	@Deprecated
 	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType) {
-		this(mavenProject,sourceType);
+		this(mavenProject, sourceType);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class MavenLauncher extends Launcher {
 	 */
 	@Deprecated
 	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String mvnHome) {
-		this(mavenProject,sourceType,mvnHome);
+		this(mavenProject, sourceType, mvnHome);
 	}
 
 	/**
