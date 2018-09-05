@@ -500,23 +500,23 @@ public class TypeReferenceTest {
 	}
 
 	@Test
-	public void testClearBoundsForTypeParameterReference() {
+	public void testClearBoundsForWildcardReference() {
 		final Factory factory = createFactory();
-		final CtTypeParameterReference reference = factory.Type().createTypeParameterReference("T");
-		reference.addBound(factory.Type().createReference(String.class));
+		final CtWildcardReference reference = factory.createWildcardReference();
+		reference.setBoundingType(factory.Type().createReference(String.class));
 
-		assertNotNull(reference.getBoundingType());
+		assertEquals(factory.Type().STRING, reference.getBoundingType());
 
-		reference.setBounds(null);
+		reference.setBoundingType(null);
 
 		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
 		assertTrue(reference.isDefaultBoundingType());
 
-		reference.addBound(factory.Type().createReference(String.class));
+		reference.setBoundingType(factory.Type().createReference(String.class));
 
-		assertNotNull(reference.getBoundingType());
+		assertEquals(factory.Type().STRING, reference.getBoundingType());
 
-		reference.setBounds(new ArrayList<>());
+		reference.setBoundingType(factory.Type().objectType());
 
 		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
 		assertTrue(reference.isDefaultBoundingType());

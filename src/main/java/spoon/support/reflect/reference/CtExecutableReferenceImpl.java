@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtClass;
@@ -29,7 +30,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -179,9 +182,19 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (parameter == null) {
 			return false;
 		}
+		checkMethodParameterTypeRef(parameter);
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT_TYPE, this.parameters, parameter);
 		return this.parameters.add(parameter);
+	}
+
+	private void checkMethodParameterTypeRef(CtTypeReference<?> parameterType) {
+		if (parameterType instanceof CtTypeParameterReference && !(parameterType instanceof CtWildcardReference)) {
+			throw new SpoonException("CtExecutableReference cannot use CtTypeParameterReference. Use boundingType of CtTypeParameterReference instead.");
+		}
+		if (parameterType instanceof CtArrayTypeReference) {
+			checkMethodParameterTypeRef(((CtArrayTypeReference<?>) parameterType).getComponentType());
+		}
 	}
 
 	@Override

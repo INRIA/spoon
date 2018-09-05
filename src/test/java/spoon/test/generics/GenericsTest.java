@@ -4,6 +4,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtConstructorCall;
@@ -588,8 +589,8 @@ public class GenericsTest {
 	@Test
 	public void testWildcard() throws Exception {
 		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<>(CtWildcardReference.class));
-		// 4 = the class declaration + the constructor declaration + the method declaration + the type parameter of the method declaration
-		assertEquals(4, wildcardReferences.size());
+		// 3 = the class declaration + the constructor declaration + the method declaration
+		assertEquals(3, wildcardReferences.size());
 	}
 
 	@Test
@@ -1425,5 +1426,20 @@ public class GenericsTest {
 		//the adaptation of such type parameter keeps that parameter as it is.
 		assertFalse(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("add").get(0)));
 		assertTrue(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("iterator").get(0)));
+	}
+
+	@Test
+	public void testGenericsOverriding() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses4/A.java");
+		CtModel model = launcher.buildModel();
+
+		CtClass<?> a = model.getElements(new NamedElementFilter<>(CtClass.class, "A")).get(0);
+		CtClass<?> b = model.getElements(new NamedElementFilter<>(CtClass.class, "B")).get(0);
+
+		CtMethod m6A = a.getMethodsByName("m6").get(0);
+		CtMethod m6B = b.getMethodsByName("m6").get(0);
+
+		assertTrue(m6B.isOverriding(m6A));
 	}
 }
