@@ -25,37 +25,40 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 
+/** Caches some field and nested type names */
 public class ConflictResolver {
 	CtType<?> type;
 	CtTypeReference<?> typeRef;
-	Set<String> fieldNames;
-	Set<String> nestedTypeNames;
+	Set<String> cachedFieldNames;
+	Set<String> cachedNestedTypeNames;
 
 	ConflictResolver(CtType<?> p_type) {
 		type = p_type;
 		typeRef = type.getReference();
 	}
 
+	/** returns true if the given name is a field name */
 	public boolean hasFieldConflict(String name) {
-		if (fieldNames == null) {
+		if (cachedFieldNames == null) {
 			Collection<CtFieldReference<?>> allFields = type.getAllFields();
-			fieldNames = new HashSet<>(allFields.size());
+			cachedFieldNames = new HashSet<>(allFields.size());
 			for (CtFieldReference<?> field : allFields) {
-				fieldNames.add(field.getSimpleName());
+				cachedFieldNames.add(field.getSimpleName());
 			}
 		}
-		return fieldNames.contains(name);
+		return cachedFieldNames.contains(name);
 	}
 
+	/** returns true if the given name is a nested type name */
 	public boolean hasNestedCLassConflict(String name) {
-		if (nestedTypeNames == null) {
+		if (cachedNestedTypeNames == null) {
 			Collection<CtType<?>> allTypes = type.getNestedTypes();
-			nestedTypeNames = new HashSet<>(allTypes.size());
+			cachedNestedTypeNames = new HashSet<>(allTypes.size());
 			for (CtType<?> t : allTypes) {
-				nestedTypeNames.add(t.getSimpleName());
+				cachedNestedTypeNames.add(t.getSimpleName());
 			}
 		}
-		return nestedTypeNames.contains(name);
+		return cachedNestedTypeNames.contains(name);
 	}
 
 	public String getSimpleName() {
