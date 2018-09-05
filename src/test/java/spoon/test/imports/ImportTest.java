@@ -1323,7 +1323,6 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
 		launcher.buildModel();
-		// should build
 		assertEquals("public class JavaLongUse {\n" +
 				"    public class Long {}\n" +
 				"\n" +
@@ -1344,7 +1343,6 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
-		// should build
 		assertEquals("public class JavaLongUse {\n" +
 				"    public class Long {}\n" +
 				"\n" +
