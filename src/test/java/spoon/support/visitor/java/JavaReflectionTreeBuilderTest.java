@@ -306,7 +306,7 @@ public class JavaReflectionTreeBuilderTest {
 				return false;
 			}
 			if (element instanceof CtEnumValue && role == CtRole.VALUE) {
-				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't supports that
+				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't support that
 				this.isNotEqual = false;
 				return false;
 			}
