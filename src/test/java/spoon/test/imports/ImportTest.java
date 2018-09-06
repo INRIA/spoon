@@ -1316,4 +1316,44 @@ public class ImportTest {
 		// should build
 		assertNotNull(launcher.getFactory().Type().get("TestNullable"));
 	}
+
+	@Test
+	public void testBug2369_fqn() throws Exception {
+		// https://github.com/INRIA/spoon/issues/2369
+		final Launcher launcher = new Launcher();
+launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
+		launcher.buildModel();
+		assertEquals("public class JavaLongUse {\n" +
+				"    public class Long {}\n" +
+				"\n" +
+				"    public static long method() {\n" +
+				"        return java.lang.Long.parseLong(\"10000\");\n" +
+				"    }\n" +
+				"\n" +
+				"    public static void main(java.lang.String[] args) {\n" +
+				"        java.lang.System.out.println(spoon.test.imports.testclasses.JavaLongUse.method());\n" +
+				"    }\n" +
+				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+	}
+
+	@Test
+	public void testBug2369_autoimports() throws Exception {
+		// https://github.com/INRIA/spoon/issues/2369
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.buildModel();
+		assertEquals("public class JavaLongUse {\n" +
+				"    public class Long {}\n" +
+				"\n" +
+				"    public static long method() {\n" +
+				"        return java.lang.Long.parseLong(\"10000\");\n" +
+				"    }\n" +
+				"\n" +
+				"    public static void main(String[] args) {\n" +
+				"        System.out.println(JavaLongUse.method());\n" +
+				"    }\n" +
+				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+	}
+
 }
