@@ -16,6 +16,7 @@
  */
 package spoon.reflect.cu;
 
+import spoon.reflect.visitor.printer.SourceFragment;
 import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 
 /**
@@ -29,7 +30,7 @@ public interface SourcePositionHolder {
 	 * Returns the original source code (maybe different from toString() if a transformation has been applied.
 	 * Or {@link ElementSourceFragment#NO_SOURCE_FRAGMENT} if this element has no original source fragment.
 	 */
-	default ElementSourceFragment getOriginalSourceFragment() {
+	default SourceFragment getOriginalSourceFragment() {
 		return ElementSourceFragment.NO_SOURCE_FRAGMENT;
 	}
 }

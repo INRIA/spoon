@@ -179,7 +179,7 @@ public class TestSourceFragment {
 	}
 	
 	private void checkElementFragments(CtElement ele, Object... expectedFragments) {
-		ElementSourceFragment fragment = ele.getOriginalSourceFragment();
+		ElementSourceFragment fragment = (ElementSourceFragment) ele.getOriginalSourceFragment();
 		List<SourceFragment> children = fragment.getChildrenFragments();
 		assertEquals(expandGroup(new ArrayList<>(), expectedFragments), childSourceFragmentsToStrings(children));
 		assertGroupsEqual(expectedFragments, fragment.getGroupedChildrenFragments());
