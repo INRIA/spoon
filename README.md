@@ -143,6 +143,7 @@ Alphabetical order of last names
 * Christophe Dufour
 * Thomas Durieux
 * Alcides Fonseca
+* Nicolas Harrand
 * Sebastian Lamelas Marcote
 * Romain Leventov
 * Matias Martinez

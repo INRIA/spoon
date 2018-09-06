@@ -16,96 +16,40 @@
  */
 package spoon.internal.mavenlauncher;
 
-import org.apache.log4j.Level;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.DependencyManagement;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Build;
-import org.apache.maven.model.Exclusion;
+import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Profile;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.compiler.Environment;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class InheritanceModel {
 	List<InheritanceModel> modules = new ArrayList<>();
 	Model model;
 	InheritanceModel parent;
 	File directory;
-	Map<String, String> dependencyManagements = new HashMap<>();
-	String m2RepositoryPath;
 	MavenLauncher.SOURCE_TYPE sourceType;
 	Environment environment;
 
-	public InheritanceModel(Model model, InheritanceModel parent, File directory, String m2RepositoryPath, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) {
+	public InheritanceModel(Model model, InheritanceModel parent, File directory, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) {
 		this.model = model;
 		this.parent = parent;
 		this.directory = directory;
-		this.m2RepositoryPath = m2RepositoryPath;
 		this.sourceType = sourceType;
 		this.environment = environment;
-		init(model, parent, directory);
-	}
-
-	private void init(Model model, InheritanceModel parent, File directory) {
-		// if possible, build the parent model from the relative path
-		if (parent == null && model.getParent() != null) {
-			try {
-				File parentPath = new File(directory, model.getParent().getRelativePath());
-				this.parent = readPOM(parentPath.getPath(), null, m2RepositoryPath, sourceType, environment);
-				if (this.parent == null) {
-					this.parent = this.readPom(model.getParent().getGroupId(), model.getParent().getArtifactId(), model.getParent().getVersion());
-					if (this.model.getGroupId() == null && this.parent != null) {
-						this.model.setGroupId(this.parent.model.getGroupId());
-					}
-					if (this.model.getVersion() == null && this.parent != null) {
-						this.model.setVersion(this.parent.model.getVersion());
-					}
-				}
-			} catch (Exception e) {
-				Launcher.LOGGER.error("Parent model cannot be resolved: " + e.getMessage(), e);
-			}
-		}
-		DependencyManagement dependencyManagement = model.getDependencyManagement();
-		if (dependencyManagement != null) {
-			List<Dependency> dependencies = dependencyManagement.getDependencies();
-			for (Dependency dependency : dependencies) {
-				if ("import".equals(dependency.getScope())) {
-					InheritanceModel pom = readPom(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
-					if (pom != null) {
-						for (String depKey : pom.dependencyManagements.keySet()) {
-							if (!dependencyManagements.containsKey(depKey)) {
-								dependencyManagements.put(depKey, pom.dependencyManagements.get(depKey));
-							}
-						}
-					}
-				} else {
-					String depKey = dependency.getGroupId() + ":" + dependency.getArtifactId();
-					if (!dependencyManagements.containsKey(depKey)) {
-						dependencyManagements.put(depKey, extractVersion(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion()));
-					}
-				}
-			}
-		}
 	}
 
 	public void addModule(InheritanceModel module) {
@@ -182,166 +126,33 @@ public class InheritanceModel {
 		return output;
 	}
 
+	public List<File> getClasspathTmpFiles(String fileName) {
+		List<File> output = new ArrayList<>();
+		File tmp = new File(directory, fileName);
+		if (tmp.exists() && tmp.isFile()) {
+			output.add(tmp);
+		}
+		for (InheritanceModel module : modules) {
+			output.addAll(module.getClasspathTmpFiles(fileName));
+		}
+		return output;
+	}
+
+	static Pattern mavenProperty = Pattern.compile("\\$\\{.*\\}");
+
 	/**
 	 * Extract the variable from a string
 	 */
 	String extractVariable(String value) {
-		if (value != null && value.startsWith("$")) {
-			value = getProperty(value.substring(2, value.length() - 1));
-		}
-		return value;
-	}
-
-	private List<Version> getVersionsFromM2(String groupId, String artifactId) {
-		String groupIdPath = groupId.replace(".", "/");
-		File[] fileVersion = Paths.get(m2RepositoryPath, groupIdPath, artifactId).toFile().listFiles(file -> {
-			if (!file.isDirectory()) {
-				return false;
-			}
-			String version = file.getName();
-			return Paths.get(m2RepositoryPath, groupIdPath, artifactId, version, artifactId + "-" + version + ".jar").toFile().exists();
-		});
-		if (fileVersion == null) {
-			return Collections.emptyList();
-		}
-		List<Version> versions = Arrays.stream(fileVersion).map(f -> new Version(f.getName())).collect(Collectors.toList());
-		versions.sort(Comparator.reverseOrder());
-		return versions;
-	}
-
-	private String extractVersion(String groupId, String artifactId, String version) {
-		if (version == null) {
-			String depKey = groupId + ":" + artifactId;
-			if (dependencyManagements.containsKey(depKey)) {
-				return dependencyManagements.get(depKey);
-			} else if (this.parent != null) {
-				return this.parent.extractVersion(groupId, artifactId, version);
+		String val = value;
+		if (value != null && value.contains("$")) {
+			Matcher matcher = mavenProperty.matcher(value);
+			while (matcher.find()) {
+				String var = matcher.group();
+				val = val.replace(var, getProperty(var.substring(2, var.length() - 1)));
 			}
 		}
-		version = extractVariable(version);
-		if (version != null && version.startsWith("[")) {
-			List<Version> versionsFromM2 = getVersionsFromM2(groupId, artifactId);
-			RangeVersion rangeVersion = new RangeVersion(version);
-			for (Version v : versionsFromM2) {
-				if (rangeVersion.isIncluded(v)) {
-					version = v.version;
-					break;
-				}
-			}
-		}
-		return version;
-	}
-
-	private InheritanceModel readPom(String groupId, String artifactId, String version) {
-		String folderVersion = extractVersion(groupId, artifactId, version);
-		groupId = groupId.replace(".", "/");
-		String fileName = artifactId + "-" + version;
-		Path depPath = Paths.get(m2RepositoryPath, groupId, artifactId, folderVersion, fileName + ".pom");
-		try {
-			InheritanceModel model = readPOM(depPath.toString(), null, m2RepositoryPath, sourceType, environment);
-			if (model == null) {
-				int buildIndex = version.indexOf('-');
-				if (buildIndex != -1) {
-					String build = version.substring(buildIndex + 1);
-					folderVersion = version.replace(build, "SNAPSHOT");
-				}
-				depPath = Paths.get(m2RepositoryPath, groupId, artifactId, folderVersion, fileName + ".pom");
-				model = readPOM(depPath.toString(), null, m2RepositoryPath, sourceType, environment);
-			}
-			return model;
-		} catch (Exception e) {
-			Launcher.LOGGER.log(Level.ERROR, "Unable to read the POM:" + depPath.toString(), e);
-			return null;
-		}
-	}
-
-	private TreeDependency getTreeDependency(Dependency dependency, boolean isLib, Set<TreeDependency> hierarchy) {
-		String groupId = extractVariable(dependency.getGroupId());
-		String artifactId = extractVariable(dependency.getArtifactId());
-		String version = extractVersion(groupId, artifactId, dependency.getVersion());
-		if (version == null) {
-			Launcher.LOGGER.warn("A dependency version cannot be resolved: " + groupId + ":" + artifactId + ":" + version);
-			return null;
-		}
-		// pass only the optional dependency if it's in a library dependency
-		if (isLib && dependency.isOptional()) {
-			return null;
-		}
-
-		// ignore test dependencies for app source code
-		if ("test".equals(dependency.getScope()) && (MavenLauncher.SOURCE_TYPE.APP_SOURCE == sourceType || isLib)) {
-			return null;
-		}
-		// ignore not transitive dependencies
-		if (isLib && ("test".equals(dependency.getScope()) || "provided".equals(dependency.getScope()))) {
-			Launcher.LOGGER.log(Level.WARN, "Dependency ignored (scope: provided or test):" + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + version);
-			return null;
-		}
-		TreeDependency dependence = new TreeDependency(groupId, artifactId, version, dependency.getType(), m2RepositoryPath);
-		try {
-			InheritanceModel dependencyModel = readPom(groupId, artifactId, version);
-			if (dependencyModel != null) {
-				dependence = dependencyModel.getTreeDependency(true, hierarchy);
-				dependence.groupId = groupId;
-				dependence.artifactId = artifactId;
-				dependence.version = version;
-
-				if (dependency.getExclusions() != null) {
-					for (int i = 0; i < dependency.getExclusions().size(); i++) {
-						Exclusion exclusion = dependency.getExclusions().get(i);
-						dependence.removeDependency(exclusion.getGroupId(), exclusion.getArtifactId());
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			Launcher.LOGGER.log(Level.ERROR, "Unable to read the pom of the dependency:" + dependence.toString(), e);
-		}
-		return dependence;
-	}
-
-	public TreeDependency getTreeDependency() {
-		return getTreeDependency(false, new HashSet<>());
-	}
-
-	/**
-	 * Get the list of dependencies available in the local maven repository
-	 *
-	 * @param isLib: If false take dependency of the main project; if true, take dependencies of a library of the project
-	 * @return the list of  dependencies
-	 */
-	private TreeDependency getTreeDependency(boolean isLib, Set<TreeDependency> hierarchy) {
-		String groupId = extractVariable(model.getGroupId());
-		String artifactId = extractVariable(model.getArtifactId());
-		String version = extractVersion(groupId, artifactId, model.getVersion());
-		TreeDependency dependence = new TreeDependency(groupId, artifactId, version, model.getPackaging(), m2RepositoryPath);
-		if (hierarchy.contains(dependence)) {
-			return dependence;
-		}
-		hierarchy.add(dependence);
-
-		// add the parent has a dependency
-		if (this.parent != null) {
-			dependence.addDependence(this.parent.getTreeDependency(isLib, hierarchy));
-		}
-
-		List<Dependency> dependencies = model.getDependencies();
-		for (Dependency dependency : dependencies) {
-			dependence.addDependence(getTreeDependency(dependency, isLib, hierarchy));
-		}
-
-		if (!isLib) {
-			for (InheritanceModel module : modules) {
-				if (module.model.getGroupId() == null) {
-					module.model.setGroupId(groupId);
-				}
-				if (module.model.getVersion() == null) {
-					module.model.setVersion(version);
-				}
-				dependence.addDependence(module.getTreeDependency(isLib, hierarchy));
-			}
-		}
-		return dependence;
+		return val;
 	}
 
 	/**
@@ -384,20 +195,22 @@ public class InheritanceModel {
 	 * @return the source version of the project
 	 */
 	public int getSourceVersion() {
+		String javaVersion = null;
 		if (model.getBuild() != null) {
-			for (Plugin plugin : model.getBuild().getPlugins()) {
-				if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
-					continue;
-				}
-				Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
-				Xpp3Dom source = configuration.getChild("source");
-				if (source != null) {
-					return Integer.parseInt(extractVariable(source.getValue()).substring(2));
-				}
-				break;
+			javaVersion = getSourceVersion(model.getBuild());
+		}
+		if (javaVersion != null) {
+			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+		}
+		for (Profile profile: model.getProfiles()) {
+			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault()) {
+				javaVersion = getSourceVersion(profile.getBuild());
 			}
 		}
-		String javaVersion = getProperty("java.version");
+		if (javaVersion != null) {
+			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+		}
+		javaVersion = getProperty("java.version");
 		if (javaVersion != null) {
 			return Integer.parseInt(extractVariable(javaVersion).substring(2));
 		}
@@ -415,6 +228,23 @@ public class InheritanceModel {
 		}
 		// return the current compliance level of spoon
 		return environment.getComplianceLevel();
+	}
+
+	private String getSourceVersion(BuildBase build) {
+		for (Plugin plugin : model.getBuild().getPlugins()) {
+			if (!"maven-compiler-plugin".equals(plugin.getArtifactId())) {
+				continue;
+			}
+			Xpp3Dom configuration = (Xpp3Dom) plugin.getConfiguration();
+			if (configuration != null) {
+				Xpp3Dom source = configuration.getChild("source");
+				if (source != null) {
+					return source.getValue();
+				}
+			}
+			break;
+		}
+		return null;
 	}
 
 	@Override
@@ -449,7 +279,7 @@ public class InheritanceModel {
 	 * @throws IOException when the file does not exist
 	 * @throws XmlPullParserException when the file is corrupted
 	 */
-	public static InheritanceModel readPOM(String path, InheritanceModel parent, String m2RepositoryPath, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) throws IOException, XmlPullParserException {
+	public static InheritanceModel readPOM(String path, InheritanceModel parent, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) throws IOException, XmlPullParserException {
 		if (!path.endsWith(".xml") && !path.endsWith(".pom")) {
 			path = Paths.get(path, "pom.xml").toString();
 		}
@@ -460,16 +290,9 @@ public class InheritanceModel {
 		MavenXpp3Reader pomReader = new MavenXpp3Reader();
 		try (FileReader reader = new FileReader(pomFile)) {
 			Model model = pomReader.read(reader);
-			InheritanceModel inheritanceModel = new InheritanceModel(model, parent, pomFile.getParentFile(), m2RepositoryPath, sourceType, environment);
+			InheritanceModel inheritanceModel = new InheritanceModel(model, parent, pomFile.getParentFile(), sourceType, environment);
 			for (String module : model.getModules()) {
-				if (path.contains(m2RepositoryPath)) {
-					InheritanceModel modulePom = readPOM(path.replaceAll(model.getArtifactId(), module), inheritanceModel, m2RepositoryPath, sourceType, environment);
-					if (modulePom != null) {
-						inheritanceModel.addModule(modulePom);
-					}
-				} else {
-					inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel, m2RepositoryPath, sourceType, environment));
-				}
+				inheritanceModel.addModule(readPOM(Paths.get(pomFile.getParent(), module).toString(), inheritanceModel, sourceType, environment));
 			}
 			return inheritanceModel;
 		}
