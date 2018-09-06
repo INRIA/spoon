@@ -47,8 +47,7 @@ import spoon.support.reflect.cu.position.SourcePositionImpl;
 /**
  * Represents a part of source code of an {@link CtElement}
  * It is connected into a tree of {@link ElementSourceFragment}s.
- * That tree can be build by {@link CompilationUnit#getOriginalSourceFragment()}
- * And the tree of {@link ElementSourceFragment}s related to one element can be returned by {@link CompilationUnit#getSourceFragment(SourcePositionHolder)}
+ * Use {@link SourcePositionHolder#getOriginalSourceFragment()} to get it.
  */
 public class ElementSourceFragment implements SourceFragment {
 
