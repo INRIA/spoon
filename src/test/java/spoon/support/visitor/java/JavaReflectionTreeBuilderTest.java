@@ -377,10 +377,7 @@ public class JavaReflectionTreeBuilderTest {
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
 					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
 					Class ac = at.getActualClass();
-					if (ac == Override.class || ac == SuppressWarnings.class || ac == Root.class) {
-						return false;
-					}
-					return true;
+					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;
