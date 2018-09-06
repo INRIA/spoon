@@ -20,6 +20,8 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.printer.change.ElementSourceFragment;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.support.Experimental;
 

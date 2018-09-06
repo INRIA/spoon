@@ -14,17 +14,36 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.cu;
-
-import spoon.reflect.visitor.printer.change.SourceFragment;
+package spoon.reflect.visitor.printer.change;
 
 /**
- * This interface represents an element which knows its position in a source file.
+ * a {@link SourceFragment} of some primitive String token.
  */
-public interface SourcePositionHolder {
-	/** If the element comes from a Java source file (hence has not created during transformation), returns the position in the original source file */
-	SourcePosition getPosition();
+public class TokenSourceFragment implements SourceFragment {
 
-	/** Returns the original source code (maybe different from toString() if a transformation has been applied */
-	SourceFragment getOriginalSourceFragment();
+	private final String source;
+	private final TokenType type;
+
+	public TokenSourceFragment(String source, TokenType type) {
+		super();
+		this.source = source;
+		this.type = type;
+	}
+
+	@Override
+	public String getSourceCode() {
+		return source;
+	}
+
+	/**
+	 * @return type of token of this fragment
+	 */
+	public TokenType getType() {
+		return type;
+	}
+
+	@Override
+	public String toString() {
+		return "|" + getSourceCode() + "|";
+	}
 }

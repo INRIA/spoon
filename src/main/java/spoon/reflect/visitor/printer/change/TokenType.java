@@ -14,17 +14,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.cu;
+package spoon.reflect.visitor.printer.change;
 
-import spoon.reflect.visitor.printer.change.SourceFragment;
+import spoon.reflect.visitor.TokenWriter;
 
 /**
- * This interface represents an element which knows its position in a source file.
+ * Type of {@link TokenSourceFragment} token.
+ * Note: These types mirrors the methods of {@link TokenWriter}
  */
-public interface SourcePositionHolder {
-	/** If the element comes from a Java source file (hence has not created during transformation), returns the position in the original source file */
-	SourcePosition getPosition();
+public enum TokenType {
 
-	/** Returns the original source code (maybe different from toString() if a transformation has been applied */
-	SourceFragment getOriginalSourceFragment();
+	SEPARATOR(false, false),
+	OPERATOR(false, false),
+	LITERAL(false, false),
+	KEYWORD(false, false),
+	IDENTIFIER(false, false),
+	CODE_SNIPPET(false, false),
+	COMMENT(false, false),
+	NEW_LINE(true, false),
+	INC_TAB(true, true),
+	DEC_TAB(true, true),
+	SPACE(true, false);
+
+	private final boolean whiteSpace;
+	private final boolean tab;
+
+	TokenType(boolean whiteSpace, boolean tab) {
+		this.whiteSpace = whiteSpace;
+		this.tab = tab;
+	}
+	boolean isWhiteSpace() {
+		return whiteSpace;
+	}
+	public boolean isTab() {
+		return tab;
+	}
 }
