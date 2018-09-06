@@ -14,14 +14,38 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer;
+package spoon.reflect.visitor.printer.internal;
+
+import spoon.reflect.visitor.printer.SourceFragment;
 
 /**
- *
+ * a {@link SourceFragment} of some primitive String token.
  */
-public interface SourceFragment  {
+public class TokenSourceFragment implements SourceFragment {
+
+	private final String source;
+	private final TokenType type;
+
+	public TokenSourceFragment(String source, TokenType type) {
+		super();
+		this.source = source;
+		this.type = type;
+	}
+
+	@Override
+	public String getSourceCode() {
+		return source;
+	}
+
 	/**
-	 * @return origin source code of whole fragment represented by this instance
+	 * @return type of token of this fragment
 	 */
-	String getSourceCode();
+	public TokenType getType() {
+		return type;
+	}
+
+	@Override
+	public String toString() {
+		return "|" + getSourceCode() + "|";
+	}
 }
