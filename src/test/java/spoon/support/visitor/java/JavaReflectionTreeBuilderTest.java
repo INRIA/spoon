@@ -375,7 +375,7 @@ public class JavaReflectionTreeBuilderTest {
 			if (role == CtRole.ANNOTATION) {
 				//remove all RetentionPolicy#SOURCE level annotations from elements
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
-					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
+					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
 					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class;
 				}).collect(Collectors.toList());
