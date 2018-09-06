@@ -9,6 +9,7 @@ import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -26,6 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -573,5 +575,38 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("ProjectableQuery", type.getSimpleName());
 		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
 		assertEquals(0, type.getMethods().size());
+	}
+
+	@Test
+	public void testInnerClassWithConstructorParameterAnnotated() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(JavaReflectionTreeBuilderTest.class
+				.getClassLoader()
+				.getResource("annotated-parameter-on-nested-class-constructor/Caller.java")
+				.getPath());
+		launcher.getEnvironment().setSourceClasspath(
+				new String[]{
+						JavaReflectionTreeBuilderTest.class
+								.getClassLoader()
+								.getResource("annotated-parameter-on-nested-class-constructor/classes")
+								.getPath()
+				});
+		launcher.getEnvironment().setAutoImports(true);
+		//contract: No error due to runtime annotation of a parameter of a constructor of a shadow nested class
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType caller = factory.Type().get("Caller");
+		CtParameter annotatedParameter = ((CtParameter)
+				((CtConstructor)
+					((CtLocalVariable)
+						((CtConstructor)
+								caller.getTypeMembers().get(0)
+						).getBody().getStatement(2)
+					).getType().getTypeDeclaration().getTypeMembers().get(0)
+				).getParameters().get(0));
+
+		//contract: the annotation is correctly read
+		assertEquals(annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName(),"Bidon");
+
 	}
 }
