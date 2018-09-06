@@ -606,7 +606,6 @@ public class JavaReflectionTreeBuilderTest {
 				).getParameters().get(0));
 
 		//contract: the annotation is correctly read
-		assertEquals(annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName(),"Bidon");
-
+		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
 }
