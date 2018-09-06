@@ -20,7 +20,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.visitor.printer.change.ElementSourceFragment;
+import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 
 import java.io.Serializable;
 

@@ -16,7 +16,7 @@
  */
 package spoon.reflect.cu;
 
-import spoon.reflect.visitor.printer.change.ElementSourceFragment;
+import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 
 /**
  * This interface represents an element which knows its position in a source file.

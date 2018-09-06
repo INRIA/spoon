@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 # checks the links of the Spoon documentation
 # a problem is reported as an exception, hence as a Unic return code != -1, hence as a build failure
 

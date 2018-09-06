@@ -53,7 +53,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.reflect.visitor.printer.change.ElementSourceFragment;
+import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
