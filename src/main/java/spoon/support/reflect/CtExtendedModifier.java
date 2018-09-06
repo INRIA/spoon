@@ -16,9 +16,11 @@
  */
 package spoon.support.reflect;
 
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.visitor.printer.change.ElementSourceFragment;
 
 import java.io.Serializable;
 
@@ -86,5 +88,17 @@ public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 		int result = (implicit ? 1 : 0);
 		result = 31 * result + (kind != null ? kind.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		SourcePosition sp = this.getPosition();
+		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		if (compilationUnit != null) {
+			ElementSourceFragment rootFragment = (ElementSourceFragment) compilationUnit.getOriginalSourceFragment();
+			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
+		} else {
+			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+		}
 	}
 }

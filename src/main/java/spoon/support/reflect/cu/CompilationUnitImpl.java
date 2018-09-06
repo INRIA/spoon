@@ -20,7 +20,6 @@ import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -307,7 +306,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public ElementSourceFragment getRootSourceFragment() {
+	public ElementSourceFragment getOriginalSourceFragment() {
 		if (rootFragment == null) {
 			if (ctModule != null) {
 				throw new SpoonException("Root source fragment of compilation unit of module is not supported");
@@ -324,16 +323,6 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 			}
 		}
 		return rootFragment;
-	}
-
-	@Override
-	public ElementSourceFragment getSourceFragment(SourcePositionHolder element) {
-		ElementSourceFragment rootFragment = getRootSourceFragment();
-		SourcePosition sp = element.getPosition();
-		if (sp.getCompilationUnit() != this) {
-			throw new SpoonException("Cannot return SourceFragment of element for different CompilationUnit");
-		}
-		return rootFragment.getSourceFragmentOf(element, sp.getSourceStart(), sp.getSourceEnd() + 1);
 	}
 
 	@Override
