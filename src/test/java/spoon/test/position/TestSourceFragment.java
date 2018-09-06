@@ -143,7 +143,7 @@ public class TestSourceFragment {
 	}
 	
 	@Test
-	public void testSourceFragmentOfIf() throws Exception {
+	public void testExactSourceFragments() throws Exception {
 		//contract: SourceFragments of some tricky sources are as expected
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
@@ -171,8 +171,7 @@ public class TestSourceFragment {
 				" ", "T", " ", "m3", "(", group("U param", ",", " ", "@Deprecated int p2"), ")", " ", "{\n" + 
 						"		return null;\n" + 
 						"	}");
-		//TODO uncomment and fix source code of element label
-		//checkElementFragments(foo.getMethodsByName("m4").get(0).getBody().getStatement(0),"");
+		checkElementFragments(foo.getMethodsByName("m4").get(0).getBody().getStatement(0),"label",":"," ", "while", "(", "true", ")", ";");
 
 		checkElementFragments(foo.getMethodsByName("m5").get(0).getBody().getStatement(0),"f", " ", "=", " ", "7.2", ";");
 		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getAssignment(),"7.2");
