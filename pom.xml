@@ -184,6 +184,7 @@
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.cfr>0.132.0</version.cfr>
   </properties>
 
   <distributionManagement>
@@ -294,6 +295,13 @@
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
       <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.benf</groupId>
+      <artifactId>cfr</artifactId>
+      <version>${version.cfr}</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/libs/cfr_0_132.jar</systemPath>
     </dependency>
   </dependencies>
 

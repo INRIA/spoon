@@ -190,7 +190,7 @@ public class MavenLauncher extends Launcher {
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
 
-	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType, boolean forceRefresh) {
+	protected static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType, boolean forceRefresh) {
 		// Check if classpath file already exist and is recent enough (1h)
 		File classpathFile = new File(pom.getParentFile(), getSpoonClasspathTmpFileName(sourceType));
 		Date date = new Date();
@@ -231,7 +231,7 @@ public class MavenLauncher extends Launcher {
 	 * @param classPathFiles File[] containing the classpath elements separated with ':'
 	 *                       It can be an array of file instead of an unique one for multi module projects.
 	 */
-	static String[] readClassPath(File... classPathFiles) throws IOException {
+	protected static String[] readClassPath(File... classPathFiles) throws IOException {
 		List<String> classpathElements = new ArrayList<>();
 
 		//Read the content of spoon.classpath.tmp
@@ -257,7 +257,7 @@ public class MavenLauncher extends Launcher {
 		return classpathElements.toArray(new String[0]);
 	}
 
-	static String guessMavenHome() {
+	protected static String guessMavenHome() {
 		String mvnHome = null;
 		try {
 			String[] cmd = {"mvn", "-version"};

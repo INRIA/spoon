@@ -1,0 +1,122 @@
+package spoon;
+
+import spoon.decompiler.CFRDecompiler;
+import spoon.decompiler.Decompiler;
+import spoon.internal.mavenlauncher.InheritanceModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+public class JarLauncher extends Launcher {
+	File pom;
+	File jar;
+	File decompiledRoot;
+	File decompiledSrc;
+	Decompiler decompiler;
+	boolean decompile = false;
+
+	public JarLauncher(String jarPath) {
+		this(jarPath, null, (String) null);
+	}
+
+	public JarLauncher(String jarPath, String decompiledSrcPath) {
+		this(jarPath, decompiledSrcPath, (String) null);
+	}
+
+	public JarLauncher(String jarPath, String decompiledSrcPath, String pom) {
+		this(jarPath, decompiledSrcPath, pom, null);
+	}
+
+	public JarLauncher(String jarPath, String decompiledSrcPath, Decompiler decompiler) {
+		this(jarPath, decompiledSrcPath, null, decompiler);
+	}
+
+	public JarLauncher(String jarPath, String decompiledSrcPath, String pom, Decompiler decompiler) {
+		this.decompiler = decompiler;
+		if (decompiledSrcPath == null) {
+			decompiledSrcPath = System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp";
+			decompile = true;
+		}
+		this.decompiledRoot = new File(decompiledSrcPath);
+		if (decompiledRoot.exists() && !decompiledRoot.canWrite()) {
+			throw new SpoonException("Dir " + decompiledRoot.getPath() + " already exists and is not deletable.");
+		} else if (decompiledRoot.exists() && decompile) {
+			decompiledRoot.delete();
+		}
+		if (!decompiledRoot.exists()) {
+			decompiledRoot.mkdirs();
+			decompile = true;
+		}
+		decompiledSrc = new File(decompiledRoot, "src/main/java");
+		if (!decompiledSrc.exists()) {
+			decompiledSrc.mkdirs();
+			decompile = true;
+		}
+
+		if (decompiler == null) {
+			this.decompiler = getDefaultDecompiler();
+		}
+
+		jar = new File(jarPath);
+		if (!jar.exists() || !jar.isFile()) {
+			throw new SpoonException("Jar " + jar.getPath() + "not found.");
+		}
+
+		//We call the decompiler only if jar has changed since last decompilation.
+		if (jar.lastModified() > decompiledSrc.lastModified()) {
+			decompile = true;
+		}
+		init(pom);
+	}
+
+	private void init(String pomPath) {
+		//We call the decompiler only if jar has changed since last decompilation.
+		if (decompile) {
+			decompiler.decompile(jar, decompiledSrc);
+		}
+
+		if (pomPath != null) {
+			File srcPom =  new File(pomPath);
+			if (!srcPom.exists() || !srcPom.isFile()) {
+				throw new SpoonException("Pom " + srcPom.getPath() + "not found.");
+			}
+			try {
+				pom = new File(decompiledRoot, "pom.xml");
+				Files.copy(srcPom.toPath(), pom.toPath(), REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new SpoonException("Unable to write " + pom.getPath());
+			}
+			try {
+				InheritanceModel model = InheritanceModel.readPOM(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
+				if (model == null) {
+					throw new SpoonException("Unable to create the model, pom not found?");
+				}
+			} catch (Exception e) {
+				throw new SpoonException("Unable to read the pom", e);
+			}
+			MavenLauncher.generateClassPathFile(pom, new File(MavenLauncher.guessMavenHome()), MavenLauncher.SOURCE_TYPE.APP_SOURCE, false);
+			try {
+				String[] classpath = MavenLauncher.readClassPath(new File(decompiledRoot, MavenLauncher.spoonClasspathTmpFileNameApp));
+				// dependencies
+				this.getModelBuilder().setSourceClasspath(classpath);
+			} catch (IOException e) {
+				throw new SpoonException("Failed to read classpath file.");
+			}
+			addInputResource(decompiledSrc.getAbsolutePath());
+		} else {
+			addInputResource(decompiledSrc.getAbsolutePath());
+
+			//TODO
+			// compliance level
+			//this.getEnvironment().setComplianceLevel();
+		}
+	}
+
+	public static Decompiler getDefaultDecompiler() {
+		return new CFRDecompiler();
+	}
+
+}
