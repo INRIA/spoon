@@ -1744,17 +1744,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && "java.lang".equals(ref.getPackage().getSimpleName()))) {
-			// If my.pkg.Something is imported, but
-			//A) we are in the context of a class which is also called "Something",
-			//B) we are in the context of a class which defines field which is also called "Something",
-			//	we should still use qualified version my.pkg.Something
-			for (TypeContext typeContext : context.currentThis) {
+		if (importsContext.isImported(ref)  // If my.pkg.Something is imported
+				|| (this.env.isAutoImports() && ref.getPackage() != null && "java.lang".equals(ref.getPackage().getSimpleName())) // or that we are in java.lang
+				) {
+			for (CacheBasedConflictFinder typeContext : context.currentThis) {
+				//A) we are in the context of a class which is also called "Something",
 				if (typeContext.getSimpleName().equals(ref.getSimpleName())
 						&& !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
 					return true;
 				}
-				if (typeContext.isNameConflict(ref.getSimpleName())) {
+				//B) we are in the context of a class which defines field which is also called "Something",
+				//	we should still use qualified version my.pkg.Something
+				if (typeContext.hasFieldConflict(ref.getSimpleName())
+						|| typeContext.hasNestedTypeConflict(ref.getSimpleName()) // fix of #2369
+						) {
 					return true;
 				}
 			}

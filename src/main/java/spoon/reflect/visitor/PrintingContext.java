@@ -171,14 +171,14 @@ public class PrintingContext {
 		return new Writable();
 	}
 
-	Deque<TypeContext> currentThis = new ArrayDeque<>();
+	Deque<CacheBasedConflictFinder> currentThis = new ArrayDeque<>();
 
 	/**
 	 * @return top level type
 	 */
 	public CtTypeReference<?> getCurrentTypeReference() {
 		if (currentTopLevel != null) {
-			TypeContext tc = getCurrentTypeContext();
+			CacheBasedConflictFinder tc = getCurrentTypeContext();
 			if (tc != null) {
 				return tc.typeRef;
 			}
@@ -187,7 +187,7 @@ public class PrintingContext {
 		return null;
 	}
 
-	private TypeContext getCurrentTypeContext() {
+	private CacheBasedConflictFinder getCurrentTypeContext() {
 		if (currentThis != null && !currentThis.isEmpty()) {
 			return currentThis.peek();
 		}
@@ -195,7 +195,7 @@ public class PrintingContext {
 	}
 
 	public void pushCurrentThis(CtType<?> type) {
-		currentThis.push(new TypeContext(type));
+		currentThis.push(new CacheBasedConflictFinder(type));
 	}
 
 	public void popCurrentThis() {
