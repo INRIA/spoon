@@ -605,4 +605,4 @@ public class JavaReflectionTreeBuilderTest {
 		//contract: the annotation is correctly read
 		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
-}
+} // trigger ci
