@@ -1323,16 +1323,17 @@ public class ImportTest {
 		final Launcher launcher = new Launcher();
 launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
 		launcher.buildModel();
-		assertEquals("public class JavaLongUse {\n" +
-				"    public class Long {}\n" +
-				"\n" +
-				"    public static long method() {\n" +
-				"        return java.lang.Long.parseLong(\"10000\");\n" +
-				"    }\n" +
-				"\n" +
-				"    public static void main(java.lang.String[] args) {\n" +
-				"        java.lang.System.out.println(spoon.test.imports.testclasses.JavaLongUse.method());\n" +
-				"    }\n" +
+		final String nl = System.lineSeparator();
+		assertEquals("public class JavaLongUse {" + nl +
+				"    public class Long {}" + nl +
+				nl +
+				"    public static long method() {" + nl +
+				"        return java.lang.Long.parseLong(\"10000\");" + nl +
+				"    }" + nl +
+				nl +
+				"    public static void main(java.lang.String[] args) {" + nl +
+				"        java.lang.System.out.println(spoon.test.imports.testclasses.JavaLongUse.method());" + nl +
+				"    }" + nl +
 				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
 
@@ -1343,16 +1344,17 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
-		assertEquals("public class JavaLongUse {\n" +
-				"    public class Long {}\n" +
-				"\n" +
-				"    public static long method() {\n" +
-				"        return java.lang.Long.parseLong(\"10000\");\n" +
-				"    }\n" +
-				"\n" +
-				"    public static void main(String[] args) {\n" +
-				"        System.out.println(JavaLongUse.method());\n" +
-				"    }\n" +
+		final String nl = System.lineSeparator();
+		assertEquals("public class JavaLongUse {" + nl +
+				"    public class Long {}" + nl +
+				"" + nl +
+				"    public static long method() {" + nl +
+				"        return java.lang.Long.parseLong(\"10000\");" + nl +
+				"    }" + nl +
+				"" + nl +
+				"    public static void main(String[] args) {" + nl +
+				"        System.out.println(JavaLongUse.method());" + nl +
+				"    }" + nl +
 				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
 
