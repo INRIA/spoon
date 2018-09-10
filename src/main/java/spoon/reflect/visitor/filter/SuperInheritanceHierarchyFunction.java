@@ -357,6 +357,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		}
 	}
 
+
 	protected void sendResult(CtTypeReference<?> typeRef, CtConsumer<Object> outputConsumer) {
 		if (returnTypeReferences) {
 			outputConsumer.accept(typeRef);
