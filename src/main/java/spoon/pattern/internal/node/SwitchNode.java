@@ -211,6 +211,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 		}
 	}
 
+
 	@Override
 	public <T> void generateInlineTargets(DefaultGenerator generator, ResultHolder<T> result, ImmutableMap parameters) {
 		CtStatement resultStmt = null;
