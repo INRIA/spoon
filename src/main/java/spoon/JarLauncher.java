@@ -19,6 +19,7 @@ package spoon;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
 import spoon.internal.mavenlauncher.InheritanceModel;
+import spoon.support.Experimental;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+@Experimental
 public class JarLauncher extends Launcher {
 	File pom;
 	File jar;
@@ -91,8 +93,9 @@ public class JarLauncher extends Launcher {
 	private void init(String pomPath) {
 		//We call the decompiler only if jar has changed since last decompilation.
 		if (decompile) {
-			decompiler.decompile(jar, decompiledSrc);
+			decompiler.decompile(jar);
 		}
+
 
 		if (pomPath != null) {
 			File srcPom =  new File(pomPath);
@@ -131,8 +134,8 @@ public class JarLauncher extends Launcher {
 		}
 	}
 
-	public static Decompiler getDefaultDecompiler() {
-		return new CFRDecompiler();
+	public Decompiler getDefaultDecompiler() {
+		return new CFRDecompiler(decompiledSrc);
 	}
 
 }

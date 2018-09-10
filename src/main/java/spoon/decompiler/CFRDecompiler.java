@@ -17,11 +17,32 @@
 package spoon.decompiler;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.benf.cfr.reader.Main;
+import spoon.compiler.SpoonResource;
+import spoon.support.compiler.FileSystemFile;
 
 public class CFRDecompiler implements Decompiler {
+
+	File outputDir;
+
+	public CFRDecompiler(File outputDir) {
+		this.outputDir = outputDir;
+	}
+
 	@Override
 	public void decompile(File jar, File outputDir) {
 		Main.main(new String[]{jar.getAbsolutePath(), "--outputdir", outputDir.getAbsolutePath()});
+	}
+
+	@Override
+	public List<SpoonResource> decompile(String jarPath) {
+		Main.main(new String[]{jarPath, "--outputdir", outputDir.getAbsolutePath()});
+		SpoonResource output = new FileSystemFile(outputDir);
+		List<SpoonResource> result = new LinkedList<>();
+		result.add(output);
+		return result;
 	}
 }
