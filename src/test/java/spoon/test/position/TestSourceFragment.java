@@ -1,8 +1,10 @@
 package spoon.test.position;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,6 +156,8 @@ public class TestSourceFragment {
 		Factory f = comp.getFactory();
 		
 		final CtType<?> foo = f.Type().get(FooSourceFragments.class);
+
+		// contract: the fragment returned by getOriginalSourceFragment are correct
 		checkElementFragments(foo.getMethodsByName("m1").get(0).getBody().getStatement(0),
 				"if", "(", "x > 0", ")", "{this.getClass();}", "else", "{/*empty*/}");
 		checkElementFragments(foo.getMethodsByName("m2").get(0).getBody().getStatement(0),
@@ -181,7 +185,10 @@ public class TestSourceFragment {
 	private void checkElementFragments(CtElement ele, Object... expectedFragments) {
 		ElementSourceFragment fragment = ele.getOriginalSourceFragment();
 		List<SourceFragment> children = fragment.getChildrenFragments();
-		assertEquals(expandGroup(new ArrayList<>(), expectedFragments), childSourceFragmentsToStrings(children));
+
+		// calls getSourceCode on on elements of children
+		assertEquals(expandGroup(new ArrayList<>(), expectedFragments), toCodeStrings(children));
+
 		assertGroupsEqual(expectedFragments, fragment.getGroupedChildrenFragments());
 	}
 	
@@ -210,13 +217,13 @@ public class TestSourceFragment {
 		}).collect(Collectors.toList()), groupedChildrenFragments.stream().map(item -> {
 			if (item instanceof CollectionSourceFragment) {
 				CollectionSourceFragment csf = (CollectionSourceFragment) item;
-				return "group("+childSourceFragmentsToStrings(csf.getItems()).toString() + ")";
+				return "group("+ toCodeStrings(csf.getItems()).toString() + ")";
 			}
 			return item.getSourceCode();
 		}).collect(Collectors.toList()));
 	}
 	
-	private static List<String> childSourceFragmentsToStrings(List<SourceFragment> csf) {
+	private static List<String> toCodeStrings(List<SourceFragment> csf) {
 		return csf.stream().map(SourceFragment::getSourceCode).collect(Collectors.toList());
 	}
 }
