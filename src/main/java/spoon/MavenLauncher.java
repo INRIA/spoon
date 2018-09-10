@@ -16,38 +16,18 @@
  */
 package spoon;
 
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import spoon.internal.mavenlauncher.InheritanceModel;
+import spoon.internal.mavenlauncher.SpoonPom;
 
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Date;
 
 /**
  * Create a Spoon launcher from a maven pom file
  */
 public class MavenLauncher extends Launcher {
-	static String mavenVersionParsing = "Maven home: ";
-	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
-	static String spoonClasspathTmpFileNameApp = "spoon.classpath-app.tmp";
-	static String spoonClasspathTmpFileNameTest = "spoon.classpath-test.tmp";
-	static long classpathTmpFilesTTL = 60 * 60 * 1000; // 1h in ms
 	private String mvnHome;
 	private SOURCE_TYPE sourceType;
-	private InheritanceModel model;
+	private SpoonPom model;
 	private boolean forceRefresh = false;
 
 	/**
@@ -155,12 +135,9 @@ public class MavenLauncher extends Launcher {
 		}
 
 		try {
-			model = InheritanceModel.readPOM(mavenProject, null, sourceType, getEnvironment());
+			model = new SpoonPom(mavenProject, sourceType, getEnvironment());
 		} catch (Exception e) {
 			throw new SpoonException("Unable to read the pom", e);
-		}
-		if (model == null) {
-			throw new SpoonException("Unable to create the model, pom not found?");
 		}
 
 		// app source
@@ -180,7 +157,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		if (classpath == null) {
-			classpath = buildClassPath(mvnHome, mavenProject, sourceType);
+			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, false);
 		}
 
 		// dependencies
@@ -188,144 +165,5 @@ public class MavenLauncher extends Launcher {
 
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
-	}
-
-	private static void generateClassPathFile(File pom, File mvnHome, SOURCE_TYPE sourceType, boolean forceRefresh) {
-		// Check if classpath file already exist and is recent enough (1h)
-		File classpathFile = new File(pom.getParentFile(), getSpoonClasspathTmpFileName(sourceType));
-		Date date = new Date();
-		long time = date.getTime();
-		if (forceRefresh || !classpathFile.exists() || ((time - classpathFile.lastModified()) > classpathTmpFilesTTL)) {
-			//Run mvn dependency:build-classpath -Dmdep.outputFile="spoon.classpath.tmp"
-			//This should write the classpath used by maven in spoon.classpath.tmp
-			InvocationRequest request = new DefaultInvocationRequest();
-			request.setBatchMode(true);
-			request.setPomFile(pom);
-			request.setGoals(Collections.singletonList("dependency:build-classpath"));
-			Properties properties = new Properties();
-			if (sourceType == SOURCE_TYPE.APP_SOURCE) {
-				properties.setProperty("includeScope", "runtime");
-			}
-			properties.setProperty("mdep.outputFile", getSpoonClasspathTmpFileName(sourceType));
-			request.setProperties(properties);
-
-			request.getOutputHandler(s -> LOGGER.debug(s));
-			request.getErrorHandler(s -> LOGGER.debug(s));
-
-			Invoker invoker = new DefaultInvoker();
-			invoker.setMavenHome(mvnHome);
-			invoker.setWorkingDirectory(pom.getParentFile());
-			invoker.setErrorHandler(s -> LOGGER.debug(s));
-			invoker.setOutputHandler(s -> LOGGER.debug(s));
-			try {
-				InvocationResult ir = invoker.execute(request);
-			} catch (MavenInvocationException e) {
-				throw new SpoonException("Maven invocation failed to build a classpath.");
-			}
-			classpathFile.setLastModified(time);
-		}
-	}
-
-	/**
-	 *
-	 * @param classPathFiles File[] containing the classpath elements separated with ':'
-	 *                       It can be an array of file instead of an unique one for multi module projects.
-	 */
-	static String[] readClassPath(File... classPathFiles) throws IOException {
-		List<String> classpathElements = new ArrayList<>();
-
-		//Read the content of spoon.classpath.tmp
-		for (File classPathFile: classPathFiles) {
-			try (BufferedReader br = new BufferedReader(new FileReader(classPathFile))) {
-				StringBuilder sb = new StringBuilder();
-				String line = br.readLine();
-				while (line != null) {
-					sb.append(line);
-					line = br.readLine();
-				}
-				if (!"".equals(sb.toString())) {
-					String[] classpath = sb.toString().split(File.pathSeparator);
-					for (String cpe : classpath) {
-						if (!classpathElements.contains(cpe)) {
-							classpathElements.add(cpe);
-						}
-					}
-				}
-			}
-		}
-
-		return classpathElements.toArray(new String[0]);
-	}
-
-	static String guessMavenHome() {
-		String mvnHome = null;
-		try {
-			String[] cmd = {"mvn", "-version"};
-			Process p = Runtime.getRuntime().exec(cmd);
-			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-				String line;
-
-				while ((line = output.readLine()) != null) {
-					if (line.contains(mavenVersionParsing)) {
-						return line.replace(mavenVersionParsing, "");
-					}
-				}
-			}
-
-			p.waitFor();
-		} catch (IOException e) {
-			throw new SpoonException("Maven home detection has failed.");
-		} catch (InterruptedException e) {
-			throw new SpoonException("Maven home detection was interrupted.");
-		}
-		return mvnHome;
-	}
-
-	/**
-	 * Call maven invoker to generate the classpath. Either M2_HOME must be
-	 * initialized, or the command mvn must be in PATH.
-	 *
-	 * @param mvnHome the path to the m2repository
-	 * @param mavenProject the path to the root of the project
-	 * @param sourceType the source type (App, test, or all)
-	 */
-	public String[] buildClassPath(String mvnHome, String mavenProject, SOURCE_TYPE sourceType) {
-		if (mvnHome == null) {
-			mvnHome = guessMavenHome();
-			if (mvnHome == null) {
-				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
-			}
-		}
-		String projectPath = mavenProject;
-		if (!projectPath.endsWith(".xml") && !projectPath.endsWith(".pom")) {
-			projectPath = Paths.get(projectPath, "pom.xml").toString();
-		}
-		File pom = new File(projectPath);
-		generateClassPathFile(pom, new File(mvnHome), sourceType, forceRefresh);
-
-		List<File> classPathPrints;
-		String[] classpath;
-		try {
-			classPathPrints = model.getClasspathTmpFiles(getSpoonClasspathTmpFileName(sourceType));
-			File[] classPathPrintFiles = new File[classPathPrints.size()];
-			classPathPrintFiles = classPathPrints.toArray(classPathPrintFiles);
-			classpath = readClassPath(classPathPrintFiles);
-		} catch (IOException e) {
-			throw new SpoonException("Failed to generate class path for " + pom.getAbsolutePath() + ".");
-		}
-		return classpath;
-	}
-
-	static String getSpoonClasspathTmpFileName(SOURCE_TYPE sourceType) {
-		// As the temporary file containing the classpath is re-generated only
-		// once per hour, we need a different file for different dependency
-		// resolution scopes.
-		if (SOURCE_TYPE.TEST_SOURCE == sourceType) {
-			return spoonClasspathTmpFileNameTest;
-		} else if (SOURCE_TYPE.APP_SOURCE == sourceType) {
-			return spoonClasspathTmpFileNameApp;
-		} else {
-			return spoonClasspathTmpFileName;
-		}
 	}
 }
