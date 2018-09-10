@@ -570,7 +570,7 @@ public class JavaReflectionTreeBuilderTest {
 		Factory factory = createFactory();
 		CtType<Object> type = factory.Type().get(ProjectableQuery.class);
 		assertEquals("ProjectableQuery", type.getSimpleName());
-		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
+		// because one of the parameter is not in the classpath therefore the reflection did not succeed to list the methods
 		assertEquals(0, type.getMethods().size());
 	}
 
