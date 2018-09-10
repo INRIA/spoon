@@ -211,6 +211,11 @@
       <name>Maven Repository for Spoon Snapshots</name>
       <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
     </repository>
+    <repository>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/libs</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -300,8 +305,8 @@
       <groupId>org.benf</groupId>
       <artifactId>cfr</artifactId>
       <version>${version.cfr}</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/libs/cfr_0_132.jar</systemPath>
+      <!--<scope>system</scope>
+      <systemPath>${project.basedir}/libs/cfr_0_132.jar</systemPath>-->
     </dependency>
   </dependencies>
 
