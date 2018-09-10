@@ -606,4 +606,3 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
 }
-
