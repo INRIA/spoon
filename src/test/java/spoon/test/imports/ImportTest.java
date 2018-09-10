@@ -1319,7 +1319,7 @@ public class ImportTest {
 
 	@Test
 	public void testBug2369_fqn() throws Exception {
-		// https://github.com/INRIA/spoon/issues/2369
+		// see https://github.com/INRIA/spoon/issues/2369
 		final Launcher launcher = new Launcher();
 launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
 		launcher.buildModel();
