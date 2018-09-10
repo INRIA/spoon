@@ -5,6 +5,6 @@
 # and to check documentation links
 
 source /opt/jdk_switcher/jdk_switcher.sh
-pip install --user CommonMark requests pygithub
+pip install --user commonmark requests pygithub
 
 jdk_switcher use oraclejdk9 && mvn -Djava.src.version=1.9 verify license:check site javadoc:jar install -DskipTests && python ./chore/check-links-in-doc.py
