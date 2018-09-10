@@ -620,7 +620,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		SourcePosition sp = this.getPosition();
 		CompilationUnit compilationUnit = sp.getCompilationUnit();
 		if (compilationUnit != null) {
-			ElementSourceFragment rootFragment = (ElementSourceFragment) compilationUnit.getOriginalSourceFragment();
+			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
 			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
 		} else {
 			return ElementSourceFragment.NO_SOURCE_FRAGMENT;

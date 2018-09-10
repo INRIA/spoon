@@ -21,12 +21,14 @@ import java.util.List;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.printer.SourceFragment;
+import spoon.support.Experimental;
 
 /**
- * {@link SourceFragment} of List or Set of {@link ElementSourceFragment}s which belongs to collection role.
+ * {@link SourceFragment} of List or Set of {@link ElementSourceFragment}s which belong to collection role.
  * For example list of Type members or list of parameters, etc.
  * Or set of modifiers and annotations
  */
+@Experimental
 public class CollectionSourceFragment implements SourceFragment {
 
 	private final List<SourceFragment> items;

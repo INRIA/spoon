@@ -17,10 +17,13 @@
 package spoon.reflect.visitor.printer.internal;
 
 import spoon.reflect.visitor.printer.SourceFragment;
+import spoon.support.Experimental;
 
 /**
- * a {@link SourceFragment} of some primitive String token.
+ * a {@link SourceFragment} of some primitive String token,
+ * like separator, operator, whitespace, ...
  */
+@Experimental
 public class TokenSourceFragment implements SourceFragment {
 
 	private final String source;

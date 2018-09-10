@@ -42,6 +42,7 @@ import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.printer.SourceFragment;
+import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 
@@ -50,6 +51,7 @@ import spoon.support.reflect.cu.position.SourcePositionImpl;
  * It is connected into a tree of {@link ElementSourceFragment}s.
  * Use {@link SourcePositionHolder#getOriginalSourceFragment()} to get it.
  */
+@Experimental
 public class ElementSourceFragment implements SourceFragment {
 
 	/**

@@ -16,9 +16,12 @@
  */
 package spoon.reflect.visitor.printer;
 
+import spoon.support.Experimental;
+
 /**
- *
+ * Represents a part of source code
  */
+@Experimental
 public interface SourceFragment  {
 	/**
 	 * @return origin source code of whole fragment represented by this instance
