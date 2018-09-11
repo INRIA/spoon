@@ -42,37 +42,33 @@ public class MavenLauncherTest {
 
 	@Test
 	public void spoonMavenLauncherTest() {
-		// without the tests
-		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+		// contract: MavenLauncher finds the right number of sources in all three modes
+		String testProject = "./src/test/resources/maven-launcher/pac4j";
 
-		assertEquals(26, launcher.getEnvironment().getSourceClasspath().length);
+		// without the tests
+		MavenLauncher launcher = new MavenLauncher(testProject, MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+
+		// only with APP_SOURCE
+		assertEquals(81, launcher.getEnvironment().getSourceClasspath().length);
 
 		// number of the sub folders of src/main/java
-		assertEquals(60, launcher.getModelBuilder().getInputSources().size());
+		assertEquals(0, launcher.getModelBuilder().getInputSources().size());
 
 		// with the tests
-		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		launcher = new MavenLauncher(testProject, MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 
-		assertEquals(33, launcher.getEnvironment().getSourceClasspath().length);
-
-		// number of the sub folders of src/main/java and src/test/java
-		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
+		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
+		assertEquals(0, launcher.getModelBuilder().getInputSources().size());
+		// more with ALL_SOURCE
+		assertEquals(100, launcher.getEnvironment().getSourceClasspath().length);
 
 		// specify the pom.xml
-		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+		launcher = new MavenLauncher(testProject, MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
 
 		// without calling maven to generate classpath
-		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{});
+		launcher = new MavenLauncher(testProject, MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{});
 		assertEquals(0, launcher.getEnvironment().getSourceClasspath().length);
-	}
-
-	@Test
-	public void multiModulesProjectTest() {
-		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
-		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
-		assertEquals(0, launcher.getModelBuilder().getInputSources().size());
-		assertEquals(166, launcher.getEnvironment().getSourceClasspath().length);
 	}
 
 	@Test(expected = SpoonException.class)
