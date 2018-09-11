@@ -17,10 +17,10 @@
 package spoon.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtImport;
 import spoon.support.Experimental;
 
 import java.io.File;

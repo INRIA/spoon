@@ -24,6 +24,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -52,6 +53,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
@@ -612,5 +614,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public Iterable<CtElement> asIterable() {
 		return this::descendantIterator;
+	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		SourcePosition sp = this.getPosition();
+		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		if (compilationUnit != null) {
+			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
+			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
+		} else {
+			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+		}
 	}
 }

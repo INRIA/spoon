@@ -365,6 +365,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.reflect.visitor.chain");
 		officialPackages.add("spoon.reflect.visitor.filter");
 		officialPackages.add("spoon.reflect.visitor.printer");
+		officialPackages.add("spoon.reflect.visitor.printer.internal");
 		officialPackages.add("spoon.reflect.visitor");
 		officialPackages.add("spoon.reflect");
 		officialPackages.add("spoon.support.comparator");
