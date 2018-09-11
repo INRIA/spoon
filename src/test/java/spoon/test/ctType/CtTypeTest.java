@@ -163,7 +163,7 @@ public class CtTypeTest {
 
 		assertTrue(count[0] > (9 * 8));
 
-		// contract: isSubTypeOf does not throw an exception
+		// contract: isSubTypeOf does not throw any exception
 		// #2288 cannot be reproduced, probably fixed by #2406
 		CtTypeReference<Object> typeReferenceWithNoDeclaration = launcher.getFactory().createTypeReference();
 		typeReferenceWithNoDeclaration.setSimpleName("DoesNotExist");
