@@ -306,7 +306,7 @@ public class JavaReflectionTreeBuilderTest {
 				return false;
 			}
 			if (element instanceof CtEnumValue && role == CtRole.VALUE) {
-				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't supports that
+				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't support that
 				this.isNotEqual = false;
 				return false;
 			}
@@ -375,12 +375,9 @@ public class JavaReflectionTreeBuilderTest {
 			if (role == CtRole.ANNOTATION) {
 				//remove all RetentionPolicy#SOURCE level annotations from elements
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
-					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
+					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
-					if (ac == Override.class || ac == SuppressWarnings.class || ac == Root.class) {
-						return false;
-					}
-					return true;
+					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;
@@ -573,7 +570,7 @@ public class JavaReflectionTreeBuilderTest {
 		Factory factory = createFactory();
 		CtType<Object> type = factory.Type().get(ProjectableQuery.class);
 		assertEquals("ProjectableQuery", type.getSimpleName());
-		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
+		// because one of the parameter is not in the classpath therefore the reflection did not succeed to list the methods
 		assertEquals(0, type.getMethods().size());
 	}
 
@@ -606,7 +603,6 @@ public class JavaReflectionTreeBuilderTest {
 				).getParameters().get(0));
 
 		//contract: the annotation is correctly read
-		assertEquals(annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName(),"Bidon");
-
+		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
 }
