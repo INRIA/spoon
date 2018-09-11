@@ -17,6 +17,7 @@
 package spoon.reflect.cu;
 
 import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
+import spoon.support.Experimental;
 
 /**
  * This interface represents an element which knows its position in a source file.
@@ -28,7 +29,11 @@ public interface SourcePositionHolder {
 	/**
 	 * Returns the original source code (maybe different from toString() if a transformation has been applied.
 	 * Or {@link ElementSourceFragment#NO_SOURCE_FRAGMENT} if this element has no original source fragment.
+	 *
+	 * Warning: this is a advanced method which cannot be considered as part of the stable API
+	 *
 	 */
+	@Experimental
 	default ElementSourceFragment getOriginalSourceFragment() {
 		return ElementSourceFragment.NO_SOURCE_FRAGMENT;
 	}

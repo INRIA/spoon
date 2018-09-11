@@ -16,18 +16,6 @@
  */
 package spoon.reflect.visitor.printer.internal;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
@@ -41,10 +29,21 @@ import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.printer.SourceFragment;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Represents a part of source code of an {@link CtElement}

@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor.printer.internal;
 
-import spoon.reflect.visitor.printer.SourceFragment;
 import spoon.support.Experimental;
 
 /**

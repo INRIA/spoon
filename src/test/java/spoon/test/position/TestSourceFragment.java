@@ -22,7 +22,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.printer.SourceFragment;
+import spoon.reflect.visitor.printer.internal.SourceFragment;
 import spoon.reflect.visitor.printer.internal.CollectionSourceFragment;
 import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.CompilationUnitImpl;

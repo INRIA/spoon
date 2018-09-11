@@ -20,7 +20,6 @@ import java.util.List;
 
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.printer.SourceFragment;
 import spoon.support.Experimental;
 
 /**
