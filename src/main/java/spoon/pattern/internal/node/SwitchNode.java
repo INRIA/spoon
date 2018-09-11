@@ -187,7 +187,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 				return true;
 			}
 			Boolean value = generator.generateSingleTarget(vrOfExpression, parameters, Boolean.class);
-			return value == null ? false : value.booleanValue();
+			return value != null && value;
 		}
 
 		@Override
