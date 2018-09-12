@@ -16,9 +16,11 @@
  */
 package spoon;
 
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import spoon.compiler.SpoonResource;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
-import spoon.internal.mavenlauncher.InheritanceModel;
+import spoon.internal.mavenlauncher.SpoonPom;
 import spoon.support.Experimental;
 
 import java.io.File;
@@ -93,7 +95,7 @@ public class JarLauncher extends Launcher {
 	private void init(String pomPath) {
 		//We call the decompiler only if jar has changed since last decompilation.
 		if (decompile) {
-			decompiler.decompile(jar);
+			decompiler.decompile(jar.getAbsolutePath());
 		}
 
 
@@ -109,19 +111,14 @@ public class JarLauncher extends Launcher {
 				throw new SpoonException("Unable to write " + pom.getPath());
 			}
 			try {
-				InheritanceModel model = InheritanceModel.readPOM(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
-				if (model == null) {
+				SpoonPom pomModel = new SpoonPom(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
+				if (pomModel == null) {
 					throw new SpoonException("Unable to create the model, pom not found?");
 				}
-			} catch (Exception e) {
-				throw new SpoonException("Unable to read the pom", e);
-			}
-			MavenLauncher.generateClassPathFile(pom, new File(MavenLauncher.guessMavenHome()), MavenLauncher.SOURCE_TYPE.APP_SOURCE, false);
-			try {
-				String[] classpath = MavenLauncher.readClassPath(new File(decompiledRoot, MavenLauncher.spoonClasspathTmpFileNameApp));
+				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE,LOGGER,false);
 				// dependencies
 				this.getModelBuilder().setSourceClasspath(classpath);
-			} catch (IOException e) {
+			} catch (IOException | XmlPullParserException e) {
 				throw new SpoonException("Failed to read classpath file.");
 			}
 			addInputResource(decompiledSrc.getAbsolutePath());

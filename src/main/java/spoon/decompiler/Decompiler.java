@@ -25,8 +25,8 @@ public interface Decompiler {
 	/**
 	 * Sets the output directory for source generated.
 	 *
-	 * @param jar
+	 * @param jarPath
 	 * 		Path to jar to be analyzed.
 	 */
-	void decompile(File jar);
+	void decompile(String jarPath);
 }

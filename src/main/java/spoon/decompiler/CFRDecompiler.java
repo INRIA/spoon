@@ -33,16 +33,7 @@ public class CFRDecompiler implements Decompiler {
 	}
 
 	@Override
-	public void decompile(File jar, File outputDir) {
-		Main.main(new String[]{jar.getAbsolutePath(), "--outputdir", outputDir.getAbsolutePath()});
-	}
-
-	@Override
-	public List<SpoonResource> decompile(String jarPath) {
+	public void decompile(String jarPath) {
 		Main.main(new String[]{jarPath, "--outputdir", outputDir.getAbsolutePath()});
-		SpoonResource output = new FileSystemFile(outputDir);
-		List<SpoonResource> result = new LinkedList<>();
-		result.add(output);
-		return result;
 	}
 }
