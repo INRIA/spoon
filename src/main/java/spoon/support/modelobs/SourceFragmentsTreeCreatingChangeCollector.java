@@ -14,18 +14,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.experimental.modelobs;
+package spoon.support.modelobs;
 
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
-import spoon.support.modelobs.ChangeCollector;
 
 /**
- * Listens on changes  on the spoon model and remembers them
- * It builds a tree of {@link ElementSourceFragment}s of {@link CompilationUnit} of the modified element
- * lazily before the element is changed
+ * A {@link ChangeCollector}, which builds a tree of {@link ElementSourceFragment}s of {@link CompilationUnit} of the modified element
+ * lazily just before the element is changed
  */
 public class SourceFragmentsTreeCreatingChangeCollector extends ChangeCollector {
 	@Override

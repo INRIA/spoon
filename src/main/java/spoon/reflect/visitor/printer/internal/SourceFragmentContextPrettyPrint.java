@@ -17,7 +17,7 @@
 package spoon.reflect.visitor.printer.internal;
 
 /**
- * Prints the element using standard pretty printing
+ * A {@link SourceFragmentContext}, which prints the element using standard pretty printing
  */
 class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
 	/**

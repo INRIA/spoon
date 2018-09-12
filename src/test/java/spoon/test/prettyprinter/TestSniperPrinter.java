@@ -112,7 +112,7 @@ public class TestSniperPrinter {
 	}
 	@Test
 	public void testPrintAfterAddOfLastTypeMember() {
-		//contract: sniper print after remove of last type member - check that suffix spaces are printed correctly
+		//contract: sniper print after add of last type member - check that suffix spaces are printed correctly
 		class Context {
 			CtField<?> newField;
 		}
@@ -137,6 +137,15 @@ public class TestSniperPrinter {
 			assertPrintedWithExpectedChanges(type, printed);
 		});
 	}
+	
+	/**
+	 * 1) Runs spoon using sniper mode,
+	 * 2) runs `typeChanger` to modify the code,
+	 * 3) runs `resultChecker` to check if sources printed by sniper printer are as expected
+	 * @param testClass a file system path to test class
+	 * @param typeChanger a code which changes the Spoon model
+	 * @param resultChecker a code which checks that printed sources are as expected
+	 */
 	private void checkSniper(String testClass, Consumer<CtType<?>> typeChanger, BiConsumer<CtType<?>, String> resultChecker) {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));

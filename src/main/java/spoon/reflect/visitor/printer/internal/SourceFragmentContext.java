@@ -30,7 +30,7 @@ interface SourceFragmentContext {
 	void onPrintEvent(PrinterEvent event);
 
 	/**
-	 * Called when this is child context and parent context is just going to finish it's printing
+	 * Called when printing using this context is going to finish
 	 */
 	void onFinished();
 

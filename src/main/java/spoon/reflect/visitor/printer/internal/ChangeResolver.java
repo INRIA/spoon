@@ -29,6 +29,7 @@ import spoon.support.modelobs.ChangeCollector;
 import spoon.support.reflect.CtExtendedModifier;
 
 /**
+ * Helper which provides details about changes on provided `element`
  */
 class ChangeResolver {
 	private final ChangeCollector changeCollector;
@@ -61,10 +62,14 @@ class ChangeResolver {
 				}
 			}
 		};
-		scanner.scan(element);
+		scanner.scan(this.element);
 		return scanner.getResult() == Boolean.TRUE;
 	}
 
+	/**
+	 * @param element to be checked element
+	 * @return Set of {@link CtRole}s, which are modified for `element`
+	 */
 	public Set<CtRole> getChanges(SourcePositionHolder element) {
 		if (element instanceof CtElement) {
 			return changeCollector.getChanges((CtElement) element);
@@ -72,6 +77,10 @@ class ChangeResolver {
 		return Collections.emptySet();
 	}
 
+	/**
+	 * @param ctRole to be checked {@link CtRole}
+	 * @return true if `ctRole` of scope `element` is modified
+	 */
 	public boolean isRoleModified(CtRole ctRole) {
 		if (changedRoles == null) {
 			throw new SpoonException("changedRoles are not initialized for this ChangeResolver. Use getChanges(...) instead");
@@ -79,18 +88,17 @@ class ChangeResolver {
 		return changedRoles.contains(ctRole);
 	}
 
+	/**
+	 * @return true if scope `element` is changed
+	 */
 	public boolean hasChangedRole() {
 		return changedRoles.size() > 0;
 	}
 
+	/**
+	 * @return {@link ChangeCollector}
+	 */
 	public ChangeCollector getChangeCollector() {
 		return changeCollector;
-	}
-
-	/**
-	 * @return element whose child role changes it detects. Can be null for root {@link ChangeResolver}
-	 */
-	public CtElement getElement() {
-		return element;
 	}
 }

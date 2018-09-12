@@ -38,7 +38,6 @@ import spoon.compiler.builder.ComplianceOptions;
 import spoon.compiler.builder.JDTBuilder;
 import spoon.compiler.builder.JDTBuilderImpl;
 import spoon.compiler.builder.SourceOptions;
-import spoon.experimental.modelobs.SourceFragmentsTreeCreatingChangeCollector;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
@@ -54,6 +53,7 @@ import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
+import spoon.support.modelobs.SourceFragmentsTreeCreatingChangeCollector;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

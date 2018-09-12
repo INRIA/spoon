@@ -195,7 +195,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Environment which Spoon is executed.
 	 */
-	private Environment env;
+	protected Environment env;
 
 	/**
 	 * Token detector, which delegates tokens to {@link TokenWriter}

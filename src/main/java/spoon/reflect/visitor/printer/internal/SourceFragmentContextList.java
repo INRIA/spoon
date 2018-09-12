@@ -25,13 +25,14 @@ import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.isSpa
 /**
  * Handles printing of changes of the ordered list of elements.
  * E.g. list of type members of type
- * Such lists must be printed in same order like they are in List.
+ * Such lists must be printed in same order like they are in defined in Spoon model.
  */
 class SourceFragmentContextList extends AbstractSourceFragmentContextCollection {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param element the {@link CtElement} whose list attribute is handled
-	 * @param collectionFragment the {@link CollectionSourceFragment}, which represents whole list of elements. E.g. body of method or all type members of type
+	 * @param fragments the List of fragments, which represents whole list of elements. E.g. body of method or all type members of type
+	 * @param changeResolver {@link ChangeResolver}, which can be used to detect changes of list items
 	 */
 	SourceFragmentContextList(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, fragments, changeResolver);
@@ -65,10 +66,4 @@ class SourceFragmentContextList extends AbstractSourceFragmentContextCollection 
 		}
 		return 0;
 	}
-
-//	@Override
-//	protected void setChildFragmentIdx(int idx) {
-//		//never move current index, so we search always since beginning
-//		//the order of items is defined by DJPP and not by sequence of items in origin sources
-//	}
 }

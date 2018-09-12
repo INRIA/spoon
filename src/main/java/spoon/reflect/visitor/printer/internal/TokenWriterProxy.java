@@ -20,6 +20,11 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 
+/**
+ * Wraps a `tokenWriter` by an implementation which intercepts all {@link TokenWriter} writeXxx(String) calls
+ * and calls {@link TokenWriterProxy.Listener#onTokenWriterWrite(TokenType, String, CtComment, Runnable)}
+ * where {@link Runnable} can be used to invoke same event on the wrapped {@link TokenWriter}
+ */
 class TokenWriterProxy implements TokenWriter {
 	/**
 	 * Listens for each call of {@link TokenWriter}

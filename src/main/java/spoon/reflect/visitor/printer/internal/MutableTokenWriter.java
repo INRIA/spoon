@@ -22,7 +22,7 @@ import spoon.reflect.visitor.DefaultTokenWriter;
 import spoon.reflect.visitor.TokenWriter;
 
 /**
- * {@link TokenWriter}, which simply delegates
+ * {@link TokenWriter} which simply delegates
  * all tokens to delegate, until {@link #setMuted(boolean)} is called with true
  * Then all tokens are ignored.
  */
@@ -116,7 +116,6 @@ class MutableTokenWriter implements TokenWriter {
 	public TokenWriter writeln() {
 		if (isMuted()) {
 			//if new line is muted, then direct printer helper already wrote EOL and indentation
-//			getPrinterHelper().setShouldWriteTabs(true);
 			getPrinterHelper().setShouldWriteTabs(false);
 			return this;
 		}

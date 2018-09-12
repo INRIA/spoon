@@ -82,21 +82,30 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 		}
 		//we have origin sources for this element
 		if (event.getRole() == CtRole.COMMENT) {
-			//else print comment at place where it belongs to - together with spaces
 			//note: DJPP sends comments in wrong order/wrong place.
 			//so skip printing of this comment
+			//comment will be printed at place where it belongs to - together with spaces
 			return;
 		}
 		onPrintFoundFragment(event, fragmentIndex);
 	}
 
-	protected void onPrintFoundFragment(PrinterEvent event, int fragmentIndex) {
+	/**
+	 * prints not modified or partially modified origin source fragment
+	 * @param event a pretty printer event
+	 * @param fragmentIndex a index of {@link SourceFragment} in scope of {@link #childFragments} of this context
+	 */
+	private void onPrintFoundFragment(PrinterEvent event, int fragmentIndex) {
 		printSpaces(fragmentIndex);
 		setChildFragmentIdx(fragmentIndex);
 		SourceFragment fragment = childFragments.get(fragmentIndex);
 		event.printSourceFragment(fragment, isFragmentModified(fragment));
 	}
 
+	/**
+	 * Prints spaces before fragment with index `fragmentIndex`
+	 * @param fragmentIndex index of fragment whose prefix spaces has to be printed or -1 if origin source fragment was not found
+	 */
 	protected void printSpaces(int fragmentIndex) {
 		if (fragmentIndex < 0) {
 			/*
@@ -109,6 +118,12 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 		}
 	}
 
+	/**
+	 * @param fragment
+	 * @return true if at least part of `fragment` is modified.
+	 * 	false if whole `fragment` is not modified.
+	 * 	null if it is not possible to detect it here. Then it will be detected later.
+	 */
 	protected Boolean isFragmentModified(SourceFragment fragment) {
 		if (fragment instanceof TokenSourceFragment) {
 			switch (((TokenSourceFragment) fragment).getType()) {
@@ -139,11 +154,19 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 
 	/**
 	 * Prints origin whitespaces including comments which prefixes the fragment on index `index`,
+	 * starting with not yet processed spaces
 	 * @param index of non white space fragment
 	 */
 	protected void printOriginSpacesUntilFragmentIndex(int index) {
 		printOriginSpacesUntilFragmentIndex(childFragmentIdx + 1, index);
 	}
+
+	/**
+	 * Prints origin whitespaces including comments which prefixes the fragment on index `index`,
+	 * starting with fragment on `fromIndex`
+	 * @param fromIndex index of first processed fragment
+	 * @param toIndex index of first not processed fragment.
+	 */
 	protected void printOriginSpacesUntilFragmentIndex(int fromIndex, int toIndex) {
 		//print all not yet printed comments which still exist in parent
 		boolean canPrintSpace = true;
@@ -180,44 +203,53 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 		separatorActions.clear();
 	}
 
+	/**
+	 * Remembers index of last processed fragment
+	 * @param idx index of last processed fragment
+	 */
 	protected void setChildFragmentIdx(int idx) {
 		childFragmentIdx = idx;
 	}
 
 	/**
-	 * looks next child token which contains exactly same token
-	 * @param token
-	 * @return index of same token or -1 if not found
+	 * looks for next child token which contains exactly same token
+	 * @param token String of searched token
+	 * @return index of first same token or -1 if not found
 	 */
 	protected int findIndexOfNextChildTokenByValue(String token) {
 		return findIndexOfNextFragment(childFragments, childFragmentIdx + 1, fragment -> Objects.equals(token, fragment.getSourceCode()));
 	}
 	/**
-	 * looks next child token which contains expected token type
-	 * @param token
-	 * @return index of same token or -1 if not found
+	 * looks for next child token which contains expected token type
+	 * @param type {@link TokenType} of search token
+	 * @return index of token with same type or -1 if not found
 	 */
 	protected int findIndexOfNextChildTokenByType(TokenType type) {
 		return findIndexOfNextFragment(childFragments, childFragmentIdx + 1, filter(TokenSourceFragment.class, fragment -> type == fragment.getType()));
 	}
 	/**
-	 * looks next child token which has role `role`
-	 * @param role
-	 * @return index of same token or -1 if not found
+	 * looks for next child token which has role `role`
+	 * @param role {@link CtRole} of searched token
+	 * @return index of first token with same role or -1 if not found
 	 */
 	protected int findIndexOfNextChildTokenOfRole(int start, CtRole role) {
 		return findIndexOfNextFragment(childFragments, start, checkCollectionItems(filter(ElementSourceFragment.class, elementFragment -> elementFragment.getRoleInParent() == role)));
 	}
 
 	/**
-	 * looks next child token which has element `element
-	 * @param element
-	 * @return index of same token or -1 if not found
+	 * looks for next child token, which has element `element
+	 * @param element element of searched token
+	 * @return index of first token with same element or -1 if not found
 	 */
 	protected int findIndexOfNextChildTokenOfElement(SourcePositionHolder element) {
 		return findIndexOfNextFragment(childFragments, childFragmentIdx + 1, checkCollectionItems(filter(ElementSourceFragment.class, elementFragment -> elementFragment.getElement() == element)));
 	}
 
+	/**
+	 * looks for next child token, which fits to {@link PrinterEvent} `event`
+	 * @param event {@link PrinterEvent} whose token it searches for
+	 * @return index of first token which fits to {@link PrinterEvent} or -1 if not found
+	 */
 	protected int findIndexOfNextChildTokenOfEvent(PrinterEvent event) {
 		CtRole role = event.getRole();
 		if (role != null) {

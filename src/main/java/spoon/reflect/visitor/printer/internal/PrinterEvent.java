@@ -21,18 +21,22 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
- * Represents an action of Printer
+ * Represents an action of PrettyPrinter
  */
 interface PrinterEvent  {
 
+	/**
+	 * @return role of printed source code of element in scope of it's parent
+	 */
 	CtRole getRole();
 
 	/**
-	 * Simply print by {@link DefaultJavaPrettyPrinter} ignoring source fragments
-	 * @param muted true if origin sources are already printed and we are just calling {@link DefaultJavaPrettyPrinter}
-	 * 		to keep it's state consistent.
-	 *  false if {@link DefaultJavaPrettyPrinter} will really print into output.
-	 *  null if muted status should be kept as it is
+	 * Prints source code by {@link DefaultJavaPrettyPrinter} ignoring origin {@link SourceFragment}s
+	 * @param muted
+	 * 		true if origin sources are already printed and we are just calling {@link DefaultJavaPrettyPrinter}
+	 * 			to keep it's state consistent.
+	 *  	false if {@link DefaultJavaPrettyPrinter} will really print into output.
+	 *  	null if `muted` status should be kept as it is
 	 */
 	void print(Boolean muted);
 
@@ -40,13 +44,23 @@ interface PrinterEvent  {
 	 * We have a source fragment of to be printed element.
 	 * Print unmodified parts of this source `fragment`
 	 * @param fragment
-	 * @param isModified true if at least a part of `fragment` is modified
+	 * @param isModified true if at least some part of `SourceFragment` is modified.
+	 * 	false if whole `SourceFragment` including all children is not modified.
 	 */
 	void printSourceFragment(SourceFragment fragment, Boolean isModified);
 
+	/**
+	 * @return printed element or null if printing a primitive token
+	 */
 	SourcePositionHolder getElement();
 
+	/**
+	 * @return printed token or null if printing complex element or comment
+	 */
 	String getToken();
 
+	/**
+	 * @return true if printing white space token. It means New line, space or TAB.
+	 */
 	boolean isWhitespace();
 }

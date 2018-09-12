@@ -39,10 +39,4 @@ class SourceFragmentContextSet extends AbstractSourceFragmentContextCollection {
 	SourceFragmentContextSet(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, fragments, changeResolver);
 	}
-
-	@Override
-	public void onPrintEvent(PrinterEvent event) {
-		// TODO Auto-generated method stub
-		super.onPrintEvent(event);
-	}
 }
