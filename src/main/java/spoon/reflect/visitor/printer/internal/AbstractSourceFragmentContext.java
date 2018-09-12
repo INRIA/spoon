@@ -25,7 +25,6 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.printer.internal.SourceFragment;
 
 import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.findIndexOfNextFragment;
 import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.filter;

@@ -21,7 +21,6 @@ import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.printer.internal.SourceFragment;
 
 import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.isSpaceFragment;
 

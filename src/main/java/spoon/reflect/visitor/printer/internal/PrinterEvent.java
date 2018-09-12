@@ -19,7 +19,6 @@ package spoon.reflect.visitor.printer.internal;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.printer.internal.SourceFragment;
 
 /**
  * Represents an action of Printer

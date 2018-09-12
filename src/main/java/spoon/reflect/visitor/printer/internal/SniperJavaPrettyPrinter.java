@@ -32,7 +32,6 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.TokenWriter;
-import spoon.reflect.visitor.printer.internal.SourceFragment;
 import spoon.support.modelobs.ChangeCollector;
 
 /**

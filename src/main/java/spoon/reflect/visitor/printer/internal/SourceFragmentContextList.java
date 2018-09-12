@@ -19,7 +19,6 @@ package spoon.reflect.visitor.printer.internal;
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.printer.internal.SourceFragment;
 
 import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.isSpaceFragment;
 

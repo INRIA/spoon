@@ -20,7 +20,6 @@ import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.printer.internal.SourceFragment;
 
 /**
  * Handles printing of changes of the unordered Set of elements.
