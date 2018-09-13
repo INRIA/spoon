@@ -55,7 +55,7 @@ public class ChangeCollector {
 	/**
 	 * Allows to run code in `run` using switched off change collector.
 	 * It means any change of spoon model is ignored by change collector.
-	 * Note: it is actually needed to wrap {@link CtElement#toString()} calls which sometime modifies spoon model
+	 * Note: it is actually needed to wrap CtElement#toString() calls which sometime modifies spoon model
 	 * See TestSniperPrinter#testPrintChangedReferenceBuilder()
 	 * @param env Spoon environment
 	 * @param run the code to be run
