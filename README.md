@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/INRIA/spoon/badge.png)](https://coveralls.io/r/INRIA/spoon)
 [![Jenkins Build Status](https://ci.inria.fr/sos/job/Spoon%20Install%20Commit%20Hook/badge/icon)](https://ci.inria.fr/sos/job/Spoon%20Install%20Commit%20Hook/)
 [![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/INRIA/spoon.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/INRIA/spoon/context:java)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/INRIA/spoon.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/INRIA/spoon/alerts)
+
 
 [SonarQube Dashboard](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
 
