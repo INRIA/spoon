@@ -34,7 +34,6 @@ public class SourceFragmentContextSet extends AbstractSourceFragmentContextColle
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param element the {@link CtElement} whose list attribute is handled
-	 * @param collectionFragment the {@link CollectionSourceFragment}, which represents whole list of elements. E.g. body of method or all type members of type
 	 */
 	public SourceFragmentContextSet(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, fragments, changeResolver);

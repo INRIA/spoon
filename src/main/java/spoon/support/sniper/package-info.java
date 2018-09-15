@@ -19,7 +19,7 @@
  *
  * Public class: {@link spoon.support.sniper.SniperJavaPrettyPrinter}, to use it:
  * <pre>
- *     	launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+ *     	launcher.getEnvironment().setPrettyPrinterCreator(() -&gt; {
  * 			return new SniperJavaPrettyPrinter(launcher.getEnvironment());}
  * 		);
  * </pre>

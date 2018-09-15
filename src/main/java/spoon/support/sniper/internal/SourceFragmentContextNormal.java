@@ -47,9 +47,8 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
-	 * @param element the {@link CtElement} which is printed
 	 * @param rootFragment the {@link ElementSourceFragment}, which represents whole elements. E.g. whole type or method
-	 * @param changedRoles the set of roles which are modified in the `element`
+	 * @param changeResolver
 	 */
 	public SourceFragmentContextNormal(MutableTokenWriter mutableTokenWriter, ElementSourceFragment rootFragment, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, changeResolver, rootFragment.getGroupedChildrenFragments());
