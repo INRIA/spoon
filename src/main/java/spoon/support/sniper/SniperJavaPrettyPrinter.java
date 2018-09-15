@@ -260,7 +260,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 */
 	private void scanInternal(CtRole role, CtElement element, SourceFragment fragment, Boolean isFragmentModified) {
 		if (mutableTokenWriter.isMuted()) {
-			throw new SpoonException("Unexepcted state of sniper pretty printer. TokenWriter is muted.");
+			throw new SpoonException("Unexpected state of sniper pretty printer. TokenWriter is muted.");
 		}
 		//it is not muted yet, so this element or any sibling is modified
 		if (fragment == null) {

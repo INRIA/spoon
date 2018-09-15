@@ -23,7 +23,7 @@ import spoon.reflect.visitor.TokenWriter;
 
 /**
  * {@link TokenWriter} which simply delegates
- * all tokens to delegate, until {@link #setMuted(boolean)} is called with true
+ * to {@link DefaultTokenWriter} with the decorator pattern, until {@link #setMuted(boolean)} is called with true
  * Then all tokens are ignored.
  */
 public class MutableTokenWriter implements TokenWriter {

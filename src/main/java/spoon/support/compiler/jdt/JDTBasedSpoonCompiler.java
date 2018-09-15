@@ -54,7 +54,7 @@ import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
-import spoon.support.modelobs.internal.SourceFragmentCreator;
+import spoon.support.modelobs.SourceFragmentCreator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
