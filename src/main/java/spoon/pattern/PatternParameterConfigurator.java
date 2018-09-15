@@ -684,7 +684,7 @@ public class PatternParameterConfigurator {
 						visitStringAttribute(roleHandler, element, (String) value);
 					} else if (value instanceof Map) {
 						for (Map.Entry<String, CtElement> e : ((Map<String, CtElement>) value).entrySet()) {
-							visitStringAttribute(roleHandler, element, (String) e.getKey(), e.getValue());
+							visitStringAttribute(roleHandler, element, e.getKey(), e.getValue());
 						}
 					}
 					//else it is a CtLiteral with non string value
