@@ -60,7 +60,7 @@ public class MavenLauncherTest {
 		assertEquals(8, launcher.getEnvironment().getComplianceLevel());
 		assertEquals(0, launcher.getModelBuilder().getInputSources().size());
 		// more with ALL_SOURCE
-		assertEquals(100, launcher.getEnvironment().getSourceClasspath().length);
+		assertEquals(166, launcher.getEnvironment().getSourceClasspath().length);
 
 		// specify the pom.xml
 		launcher = new MavenLauncher(testProject, MavenLauncher.SOURCE_TYPE.APP_SOURCE);
