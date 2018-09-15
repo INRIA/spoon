@@ -4,7 +4,7 @@ tags: [usage]
 keywords: usage, java
 ---
 
-## Basic Launcher
+## The Launcher class
 
 The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of a project. It can be as short as:
 
@@ -53,7 +53,7 @@ launcher.getEnvironment().setPrettyPrinterCreator(() -> {
 ```
 
 
-## Maven Launcher
+## The MavenLauncher class
 
 The Spoon `MavenLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of a Maven project.
 It automatically infers the list of source folders and the dependencies from the `pom.xml` file.
