@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
+import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
@@ -64,6 +65,10 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 */
 	public SniperJavaPrettyPrinter(Environment env) {
 		super(env);
+		// required for sniper mode
+		env.useTabulations(true);
+		env.setCommentEnabled(true);
+		env.setOutputType(OutputType.COMPILATION_UNITS);
 		//create a TokenWriter which can be configured to ignore tokens coming from DJPP
 		mutableTokenWriter = new MutableTokenWriter(env);
 		//wrap that TokenWriter to listen on all incoming events and set wrapped version to DJPP

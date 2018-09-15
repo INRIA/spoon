@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
- * Knows how to handle actually printed {@link CtElement} or it's part
+ * Knows how to handle actually printed {@link CtElement} or its part
  */
 public interface SourceFragmentContext {
 	/**

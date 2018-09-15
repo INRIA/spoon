@@ -26,7 +26,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 public interface PrinterEvent  {
 
 	/**
-	 * @return role of printed source code of element in scope of it's parent
+	 * @return role of printed source code of element in scope of its parent
 	 */
 	CtRole getRole();
 

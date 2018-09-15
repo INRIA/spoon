@@ -142,13 +142,9 @@ public class TestSniperPrinter {
 	private void testSniper(String testClass, Consumer<CtType<?>> transformation, BiConsumer<CtType<?>, String> resultChecker) {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
-		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().useTabulations(true);
-		launcher.getEnvironment().setOutputType(OutputType.COMPILATION_UNITS);
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
 			return new SniperJavaPrettyPrinter(launcher.getEnvironment());}
-			);
+		);
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 

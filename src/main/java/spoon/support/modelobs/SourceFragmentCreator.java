@@ -20,7 +20,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.sniper.internal.ElementSourceFragment;
-import spoon.support.modelobs.ChangeCollector;
 
 /**
  * A {@link ChangeCollector}, which builds a tree of {@link ElementSourceFragment}s of {@link CompilationUnit} of the modified element
