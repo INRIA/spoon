@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -44,14 +44,14 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
  * then Spaces1 belongs to E1 and Spaces2 belongs to element E2.
  * </ul>
  */
-class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
+public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param element the {@link CtElement} which is printed
 	 * @param rootFragment the {@link ElementSourceFragment}, which represents whole elements. E.g. whole type or method
 	 * @param changedRoles the set of roles which are modified in the `element`
 	 */
-	SourceFragmentContextNormal(MutableTokenWriter mutableTokenWriter, ElementSourceFragment rootFragment, ChangeResolver changeResolver) {
+	public SourceFragmentContextNormal(MutableTokenWriter mutableTokenWriter, ElementSourceFragment rootFragment, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, changeResolver, rootFragment.getGroupedChildrenFragments());
 	}
 

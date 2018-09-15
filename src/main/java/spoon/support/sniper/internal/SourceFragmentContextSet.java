@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import java.util.List;
 
@@ -30,13 +30,13 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
  * then collection is printed in the order defined by {@link DefaultJavaPrettyPrinter}.
  * The not modified items of collection are printed using origin sources
  */
-class SourceFragmentContextSet extends AbstractSourceFragmentContextCollection {
+public class SourceFragmentContextSet extends AbstractSourceFragmentContextCollection {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param element the {@link CtElement} whose list attribute is handled
 	 * @param collectionFragment the {@link CollectionSourceFragment}, which represents whole list of elements. E.g. body of method or all type members of type
 	 */
-	SourceFragmentContextSet(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
+	public SourceFragmentContextSet(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, fragments, changeResolver);
 	}
 }

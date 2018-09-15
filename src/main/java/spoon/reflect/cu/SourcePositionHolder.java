@@ -16,7 +16,7 @@
  */
 package spoon.reflect.cu;
 
-import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.Experimental;
 
 /**

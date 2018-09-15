@@ -30,6 +30,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.CompressionType;
 import spoon.support.compiler.SpoonProgress;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -416,22 +417,14 @@ public interface Environment {
 	void setCompressionType(CompressionType serializationType);
 
 	/**
-	 * @return true if sniper mode was enabled
-	 */
-	boolean isSniperMode();
-
-	/**
-	 * @param useSniperMode true if sniper mode has to be enabled
-	 */
-	void setSniperMode(boolean useSniperMode);
-
-	/**
 	 * @return new instance of {@link PrettyPrinter} which is configured for this environment
 	 */
 	PrettyPrinter createPrettyPrinter();
 
 	/**
-	 * @param creator a {@link Supplier}, which creates new instance of pretty printer
+	 * @param creator a {@link Supplier}, which creates new instance of pretty printer.
+	 * Can be used to create a {@link SniperJavaPrettyPrinter} for enabling the sniper mode.
+	 *
 	 */
 	void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator);
 }

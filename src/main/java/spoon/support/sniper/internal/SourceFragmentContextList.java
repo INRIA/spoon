@@ -14,27 +14,27 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import java.util.List;
 
 import spoon.reflect.declaration.CtElement;
 
-import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.isSpaceFragment;
+import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
 
 /**
  * Handles printing of changes of the ordered list of elements.
  * E.g. list of type members of type
  * Such lists must be printed in same order like they are in defined in Spoon model.
  */
-class SourceFragmentContextList extends AbstractSourceFragmentContextCollection {
+public class SourceFragmentContextList extends AbstractSourceFragmentContextCollection {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param element the {@link CtElement} whose list attribute is handled
 	 * @param fragments the List of fragments, which represents whole list of elements. E.g. body of method or all type members of type
 	 * @param changeResolver {@link ChangeResolver}, which can be used to detect changes of list items
 	 */
-	SourceFragmentContextList(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
+	public SourceFragmentContextList(MutableTokenWriter mutableTokenWriter, CtElement element, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, fragments, changeResolver);
 	}
 

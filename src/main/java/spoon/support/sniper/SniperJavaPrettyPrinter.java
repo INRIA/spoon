@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -33,10 +33,25 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.TokenWriter;
 import spoon.support.modelobs.ChangeCollector;
+import spoon.support.sniper.internal.ChangeResolver;
+import spoon.support.sniper.internal.CollectionSourceFragment;
+import spoon.support.sniper.internal.ElementPrinterEvent;
+import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.MutableTokenWriter;
+import spoon.support.sniper.internal.PrinterEvent;
+import spoon.support.sniper.internal.SourceFragment;
+import spoon.support.sniper.internal.SourceFragmentContext;
+import spoon.support.sniper.internal.SourceFragmentContextList;
+import spoon.support.sniper.internal.SourceFragmentContextNormal;
+import spoon.support.sniper.internal.SourceFragmentContextPrettyPrint;
+import spoon.support.sniper.internal.SourceFragmentContextSet;
+import spoon.support.sniper.internal.TokenPrinterEvent;
+import spoon.support.sniper.internal.TokenType;
+import spoon.support.sniper.internal.TokenWriterProxy;
 
 /**
- * {@link PrettyPrinter} implementation, which copies as much as possible from origin sources
- * and prints only changed elements
+ * {@link PrettyPrinter} implementation, which copies as much as possible from the origin sources
+ * and tries to only print the changed elements.
  */
 public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 

@@ -14,23 +14,26 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.modelobs;
+package spoon.support.modelobs.internal;
 
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.modelobs.ChangeCollector;
 
 /**
  * A {@link ChangeCollector}, which builds a tree of {@link ElementSourceFragment}s of {@link CompilationUnit} of the modified element
  * lazily just before the element is changed
  */
-public class SourceFragmentsTreeCreatingChangeCollector extends ChangeCollector {
+public class SourceFragmentCreator extends ChangeCollector {
 	@Override
 	protected void onChange(CtElement currentElement, CtRole role) {
 		CompilationUnit cu = currentElement.getPosition().getCompilationUnit();
 		if (cu != null) {
-			//build a tree of SourceFragments of compilation unit of the modified element before the first change
+
+			//getOriginalSourceFragment is not only a getter, it actually
+			//builds a tree of SourceFragments of compilation unit of the modified element
 			cu.getOriginalSourceFragment();
 		}
 		super.onChange(currentElement, role);

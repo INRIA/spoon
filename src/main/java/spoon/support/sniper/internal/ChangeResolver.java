@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,12 +31,12 @@ import spoon.support.reflect.CtExtendedModifier;
 /**
  * Helper which provides details about changes on provided `element`
  */
-class ChangeResolver {
+public class ChangeResolver {
 	private final ChangeCollector changeCollector;
 	private final CtElement element;
 	private final Set<CtRole> changedRoles;
 
-	ChangeResolver(ChangeCollector changeCollector, CtElement element) {
+	public ChangeResolver(ChangeCollector changeCollector, CtElement element) {
 		super();
 		this.changeCollector = changeCollector;
 		this.element = element;

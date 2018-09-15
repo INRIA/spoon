@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import spoon.compiler.Environment;
 import spoon.reflect.visitor.PrinterHelper;
@@ -22,7 +22,7 @@ import spoon.reflect.visitor.PrinterHelper;
 /**
  * Extension of {@link PrinterHelper}, which allows direct printing of source fragments
  */
-class DirectPrinterHelper extends PrinterHelper {
+public class DirectPrinterHelper extends PrinterHelper {
 
 	DirectPrinterHelper(Environment env) {
 		super(env);
@@ -32,7 +32,7 @@ class DirectPrinterHelper extends PrinterHelper {
 	 * Prints `text` directly into output buffer ignoring any Environment rules.
 	 * @param text to be printed string
 	 */
-	void directPrint(String text) {
+	public void directPrint(String text) {
 		autoWriteTabs();
 		int len = text.length();
 		for (int i = 0; i < len; i++) {

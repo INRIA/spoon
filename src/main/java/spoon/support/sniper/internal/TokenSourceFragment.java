@@ -14,31 +14,40 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
+
+import spoon.support.Experimental;
 
 /**
- * A {@link SourceFragmentContext}, which prints the element using standard pretty printing
+ * a {@link SourceFragment} of some primitive String token,
+ * like separator, operator, whitespace, ...
  */
-class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
+@Experimental
+public class TokenSourceFragment implements SourceFragment {
+
+	private final String source;
+	private final TokenType type;
+
+	public TokenSourceFragment(String source, TokenType type) {
+		super();
+		this.source = source;
+		this.type = type;
+	}
+
+	@Override
+	public String getSourceCode() {
+		return source;
+	}
+
 	/**
-	 * This context is used to force normal pretty printing of element
+	 * @return type of token of this fragment
 	 */
-	static final SourceFragmentContextPrettyPrint INSTANCE = new SourceFragmentContextPrettyPrint();
-
-	private SourceFragmentContextPrettyPrint() {
+	public TokenType getType() {
+		return type;
 	}
 
 	@Override
-	public void onPrintEvent(PrinterEvent event) {
-		event.print(null);
-	}
-
-	@Override
-	public void onFinished() {
-	}
-
-	@Override
-	public boolean matchesPrinterEvent(PrinterEvent event) {
-		return true;
+	public String toString() {
+		return "|" + getSourceCode() + "|";
 	}
 }

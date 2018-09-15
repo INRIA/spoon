@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
@@ -22,11 +22,11 @@ import spoon.reflect.path.CtRole;
 /**
  * Represents an action of Printer, which prints whole element
  */
-abstract class ElementPrinterEvent implements PrinterEvent {
+public abstract class ElementPrinterEvent implements PrinterEvent {
 	private final CtRole role;
 	private final SourcePositionHolder element;
 
-	ElementPrinterEvent(CtRole role, SourcePositionHolder element) {
+	public ElementPrinterEvent(CtRole role, SourcePositionHolder element) {
 		super();
 		this.role = role;
 		this.element = element;

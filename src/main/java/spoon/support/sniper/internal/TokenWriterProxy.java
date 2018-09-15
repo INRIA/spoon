@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import spoon.reflect.code.CtComment;
 import spoon.reflect.visitor.PrinterHelper;
@@ -25,11 +25,11 @@ import spoon.reflect.visitor.TokenWriter;
  * and calls {@link TokenWriterProxy.Listener#onTokenWriterWrite(TokenType, String, CtComment, Runnable)}
  * where {@link Runnable} can be used to invoke same event on the wrapped {@link TokenWriter}
  */
-class TokenWriterProxy implements TokenWriter {
+public class TokenWriterProxy implements TokenWriter {
 	/**
 	 * Listens for each call of {@link TokenWriter}
 	 */
-	interface Listener {
+	public interface Listener {
 		/**
 		 * Called once for each call of {@link TokenWriter} method
 		 * @param tokenType identifies the called method
@@ -43,7 +43,7 @@ class TokenWriterProxy implements TokenWriter {
 	private final Listener listener;
 	private final TokenWriter delegate;
 
-	TokenWriterProxy(Listener listener, TokenWriter delegate) {
+	public TokenWriterProxy(Listener listener, TokenWriter delegate) {
 		super();
 		this.listener = listener;
 		this.delegate = delegate;

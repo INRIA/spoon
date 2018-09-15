@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +26,10 @@ import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.findIndexOfNextFragment;
-import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.filter;
-import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.checkCollectionItems;
-import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.isSpaceFragment;
+import static spoon.support.sniper.internal.ElementSourceFragment.findIndexOfNextFragment;
+import static spoon.support.sniper.internal.ElementSourceFragment.filter;
+import static spoon.support.sniper.internal.ElementSourceFragment.checkCollectionItems;
+import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
 
 /**
  * Knows how to handle actually printed {@link CtElement} or it's part

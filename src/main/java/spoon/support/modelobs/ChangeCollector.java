@@ -53,19 +53,19 @@ public class ChangeCollector {
 	}
 
 	/**
-	 * Allows to run code in `run` using switched off change collector.
-	 * It means any change of spoon model is ignored by change collector.
-	 * Note: it is actually needed to wrap CtElement#toString() calls which sometime modifies spoon model
+	 * Allows to run code using change collector switched off.
+	 * It means that any change of spoon model done by the `runnable` is ignored by the change collector.
+	 * Note: it is actually needed to wrap CtElement#toString() calls which sometime modifies spoon model.
 	 * See TestSniperPrinter#testPrintChangedReferenceBuilder()
 	 * @param env Spoon environment
-	 * @param run the code to be run
+	 * @param runnable the code to be run
 	 */
-	public static void ignoreChanges(Environment env, Runnable run) {
+	public static void runWithoutChangeListener(Environment env, Runnable runnable) {
 		FineModelChangeListener mcl = env.getModelChangeListener();
 		if (mcl instanceof ChangeListener) {
 			env.setModelChangeListener(new EmptyModelChangeListener());
 			try {
-				run.run();
+				runnable.run();
 			} finally {
 				env.setModelChangeListener(mcl);
 			}

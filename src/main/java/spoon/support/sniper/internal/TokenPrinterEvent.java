@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,12 +27,12 @@ import spoon.reflect.path.CtRole;
 /**
  * Represents an action of Printer, which prints a token
  */
-abstract class TokenPrinterEvent implements PrinterEvent {
+public abstract class TokenPrinterEvent implements PrinterEvent {
 	private final TokenType type;
 	private final String token;
 	private final CtComment comment;
 
-	TokenPrinterEvent(TokenType type, String token, CtComment comment) {
+	public TokenPrinterEvent(TokenType type, String token, CtComment comment) {
 		super();
 		this.type = type;
 		this.token = token;

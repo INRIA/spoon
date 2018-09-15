@@ -14,14 +14,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import java.util.List;
 
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
 
-import static spoon.reflect.visitor.printer.internal.ElementSourceFragment.isSpaceFragment;
+import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
 
 /**
  * There are these types of collections: ordered or unordered and with separator and without separator

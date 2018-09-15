@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
@@ -26,11 +26,11 @@ import spoon.reflect.visitor.TokenWriter;
  * all tokens to delegate, until {@link #setMuted(boolean)} is called with true
  * Then all tokens are ignored.
  */
-class MutableTokenWriter implements TokenWriter {
+public class MutableTokenWriter implements TokenWriter {
 	private final TokenWriter delegate;
 	private boolean muted = false;
 
-	MutableTokenWriter(Environment env) {
+	public MutableTokenWriter(Environment env) {
 		super();
 		this.delegate = new DefaultTokenWriter(new DirectPrinterHelper(env));
 	}
@@ -38,14 +38,14 @@ class MutableTokenWriter implements TokenWriter {
 	/**
 	 * @return true if tokens are ignored. false if they are forwarded to `delegate`
 	 */
-	boolean isMuted() {
+	public boolean isMuted() {
 		return muted;
 	}
 
 	/**
 	 * @param muted true if tokens are ignored. false if they are forwarded to `delegate`
 	 */
-	void setMuted(boolean muted) {
+	public void setMuted(boolean muted) {
 		this.muted = muted;
 	}
 

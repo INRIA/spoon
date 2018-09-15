@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.prettyprinter;
+package spoon.test.prettyprinter.testclasses;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
@@ -101,7 +101,8 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
-public class ReferenceBuilder {
+// super complex test class
+public class ComplexClass {
 
 	@SuppressWarnings("unchecked")
 	<T> CtTypeReference<T> getTypeReference(TypeBinding binding) {

@@ -40,6 +40,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.modelobs.EmptyModelChangeListener;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
@@ -622,19 +623,11 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
-	public boolean isSniperMode() {
-		return sniperMode;
-	}
-
-	@Override
-	public void setSniperMode(boolean sniperMode) {
-		this.sniperMode = sniperMode;
-	}
-
-	@Override
 	public PrettyPrinter createPrettyPrinter() {
 		if (prettyPrinterCreator == null) {
-			throw new SpoonException("PrettyPrinterCreator is not configured");
+			// DJPP is the default mode
+			// fully backward compatible
+			return new DefaultJavaPrettyPrinter(this);
 		}
 		return prettyPrinterCreator.get();
 	}

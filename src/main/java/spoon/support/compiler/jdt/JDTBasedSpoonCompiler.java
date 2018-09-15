@@ -49,11 +49,12 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
-import spoon.support.modelobs.SourceFragmentsTreeCreatingChangeCollector;
+import spoon.support.modelobs.internal.SourceFragmentCreator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -130,9 +131,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		checkModel();
 		factory.getModel().setBuildModelIsFinished(true);
 
-		if (factory.getEnvironment().isSniperMode()) {
+		if (factory.getEnvironment().createPrettyPrinter() instanceof SniperJavaPrettyPrinter) {
 			//setup a model change collector
-			new SourceFragmentsTreeCreatingChangeCollector().attachTo(factory.getEnvironment());
+			new SourceFragmentCreator().attachTo(factory.getEnvironment());
 		}
 
 		return srcSuccess && templateSuccess;

@@ -14,7 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
@@ -23,7 +23,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 /**
  * Represents an action of PrettyPrinter
  */
-interface PrinterEvent  {
+public interface PrinterEvent  {
 
 	/**
 	 * @return role of printed source code of element in scope of it's parent

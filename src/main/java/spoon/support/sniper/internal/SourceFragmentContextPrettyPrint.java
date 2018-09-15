@@ -14,32 +14,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test.prettyprinter.testclasses;
-
-import org.eclipse.jdt.internal.compiler.ASTVisitor;
-import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
-import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+package spoon.support.sniper.internal;
 
 /**
- * A visitor for iterating through the parse tree.
+ * A {@link SourceFragmentContext}, which prints the element using standard pretty printing
  */
-public class JDTTreeBuilder extends ASTVisitor {
+public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
+	/**
+	 * This context is used to force normal pretty printing of element
+	 */
+	public static final SourceFragmentContextPrettyPrint INSTANCE = new SourceFragmentContextPrettyPrint();
 
-	ContextBuilder context;
-
-	boolean skipTypeInAnnotation = false;
+	private SourceFragmentContextPrettyPrint() {
+	}
 
 	@Override
-	public void endVisit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference, ClassScope scope) {
-		if (skipTypeInAnnotation) {
-			skipTypeInAnnotation = false;
-			return;
-		}
-		context.exit(parameterizedQualifiedTypeReference);
+	public void onPrintEvent(PrinterEvent event) {
+		event.print(null);
 	}
-}
 
-class ContextBuilder {
-	public void exit(ParameterizedQualifiedTypeReference parameterizedQualifiedTypeReference) {
+	@Override
+	public void onFinished() {
+	}
+
+	@Override
+	public boolean matchesPrinterEvent(PrinterEvent event) {
+		return true;
 	}
 }

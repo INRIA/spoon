@@ -14,40 +14,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
-import spoon.support.Experimental;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
- * a {@link SourceFragment} of some primitive String token,
- * like separator, operator, whitespace, ...
+ * Knows how to handle actually printed {@link CtElement} or it's part
  */
-@Experimental
-public class TokenSourceFragment implements SourceFragment {
-
-	private final String source;
-	private final TokenType type;
-
-	public TokenSourceFragment(String source, TokenType type) {
-		super();
-		this.source = source;
-		this.type = type;
-	}
-
-	@Override
-	public String getSourceCode() {
-		return source;
-	}
+public interface SourceFragmentContext {
+	/**
+	 * Called when {@link DefaultJavaPrettyPrinter} starts an operation
+	 * @param event the {@link DefaultJavaPrettyPrinter} event
+	 */
+	void onPrintEvent(PrinterEvent event);
 
 	/**
-	 * @return type of token of this fragment
+	 * Called when printing using this context is going to finish
 	 */
-	public TokenType getType() {
-		return type;
-	}
+	void onFinished();
 
-	@Override
-	public String toString() {
-		return "|" + getSourceCode() + "|";
-	}
+	/**
+	 * @return true if this context can handle `role`
+	 */
+	boolean matchesPrinterEvent(PrinterEvent event);
 }
