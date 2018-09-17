@@ -16,7 +16,7 @@
  */
 package spoon;
 
-import spoon.internal.mavenlauncher.SpoonPom;
+import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
 import java.util.List;
