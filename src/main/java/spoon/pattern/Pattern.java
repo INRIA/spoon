@@ -33,8 +33,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.support.Experimental;
-import spoon.support.util.ImmutableMap;
-import spoon.support.util.ImmutableMapImpl;
 
 /**
  * Represents a pattern for matching code. A pattern is composed of a list of AST models, where a model is an AST with some nodes being "pattern parameters".
