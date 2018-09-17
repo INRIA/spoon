@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
@@ -32,6 +33,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ImportScanner;
+import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
@@ -73,6 +76,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1442,4 +1446,20 @@ public class GenericsTest {
 
 		assertTrue(m6B.isOverriding(m6A));
 	}
+	
+	@Test
+	public void testMethodTypingContextInDifferentClassTypingContext() {
+		// contract: reproduce #2441
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses4/Test2.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses4/ParentForTest.java");
+		launcher.buildModel();
+
+		for (final CtType clazz : launcher.getModel().getAllTypes()) {
+			ImportScanner importScanner = new ImportScannerImpl();
+			importScanner.computeImports(clazz);
+			Set<CtImport> allImports = importScanner.getAllImports();
+		}
+	}
+	
 }
