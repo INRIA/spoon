@@ -103,7 +103,6 @@ public class Pattern {
 		}
 
 		MatchingScanner scanner = new MatchingScanner(modelValueResolver, consumer);
-		ImmutableMap parameters = new ImmutableMapImpl();
 		if (input instanceof Collection<?>) {
 			scanner.scan(null, (Collection<CtElement>) input);
 		} else if (input instanceof Map) {
