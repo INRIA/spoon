@@ -540,7 +540,7 @@ public class ElementSourceFragment implements SourceFragment {
 	}
 
 	private SourceFragment removeSuffixSpace(List<SourceFragment> list) {
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			SourceFragment lastChild = list.get(list.size() - 1);
 			if (isSpaceFragment(lastChild)) {
 				list.remove(list.size() - 1);

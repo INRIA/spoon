@@ -488,7 +488,7 @@ public class MainTest {
 		for (CtType type : types) {
 			SourcePosition sp = type.getPosition();
 			totalCount += assertSourcePositionTreeIsCorrectlyOrder(sp.getCompilationUnit().getOriginalSourceFragment(), 0, sp.getCompilationUnit().getOriginalSourceCode().length());
-			hasComment = hasComment || type.getComments().size() > 0; 
+			hasComment = hasComment || !type.getComments().isEmpty();
 		};
 		assertTrue(totalCount > 1000);
 		assertTrue(hasComment);
