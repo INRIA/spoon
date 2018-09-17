@@ -11,7 +11,10 @@
         "packages": {
           "regex": true,
           "include": ["spoon.*"],
-          "exclude": ["spoon\\..*\\.test(\\..*)?"]
+          "exclude": [
+            "spoon\\..*\\.test(\\..*)?",
+            "spoon\\..*\\.internal(\\..*)?"
+          ]
         },
 
         // Exclude all impl classes

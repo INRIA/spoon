@@ -16,9 +16,25 @@
  */
 package spoon.reflect.cu;
 
+import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
+import spoon.support.Experimental;
+
 /**
- * This interface represents an element which knows it's position in a source file.
+ * This interface represents an element which knows its position in a source file.
  */
 public interface SourcePositionHolder {
+	/** If the element comes from a Java source file (hence has not created during transformation), returns the position in the original source file */
 	SourcePosition getPosition();
+
+	/**
+	 * Returns the original source code (maybe different from toString() if a transformation has been applied.
+	 * Or {@link ElementSourceFragment#NO_SOURCE_FRAGMENT} if this element has no original source fragment.
+	 *
+	 * Warning: this is a advanced method which cannot be considered as part of the stable API
+	 *
+	 */
+	@Experimental
+	default ElementSourceFragment getOriginalSourceFragment() {
+		return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+	}
 }
