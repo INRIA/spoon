@@ -20,7 +20,6 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import spoon.internal.mavenlauncher.InheritanceModel;
 
@@ -218,7 +217,7 @@ public class MavenLauncher extends Launcher {
 			invoker.setErrorHandler(s -> LOGGER.debug(s));
 			invoker.setOutputHandler(s -> LOGGER.debug(s));
 			try {
-				InvocationResult ir = invoker.execute(request);
+				invoker.execute(request);
 			} catch (MavenInvocationException e) {
 				throw new SpoonException("Maven invocation failed to build a classpath.");
 			}
