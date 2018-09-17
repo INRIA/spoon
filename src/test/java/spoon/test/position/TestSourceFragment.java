@@ -30,7 +30,7 @@ import spoon.test.position.testclasses.FooSourceFragments;
 public class TestSourceFragment {
 
 	@Test
-	public void testSourcePositionFragment() throws Exception {
+	public void testSourcePositionFragment() {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, 10, 20, null);
 		ElementSourceFragment sf = new ElementSourceFragment(() -> sp, null);
 		assertEquals(10, sf.getStart());
@@ -38,11 +38,10 @@ public class TestSourceFragment {
 		assertSame(sp, sf.getSourcePosition());
 		assertNull(sf.getFirstChild());
 		assertNull(sf.getNextSibling());
-
 	}
 
 	@Test
-	public void testSourceFragmentAddChild() throws Exception {
+	public void testSourceFragmentAddChild() {
 		//contract: check build of the tree of SourceFragments
 		ElementSourceFragment rootFragment = createFragment(10, 20);
 		ElementSourceFragment f;
@@ -71,9 +70,9 @@ public class TestSourceFragment {
 		assertSame(f, rootFragment.add(f));
 		assertSame(f.getNextSibling(), rootFragment);
 	}
-	
+
 	@Test
-	public void testSourceFragmentAddChildBeforeOrAfter() throws Exception {
+	public void testSourceFragmentAddChildBeforeOrAfter() {
 		//contract: start / end of root fragment is moved when child is added
 		ElementSourceFragment rootFragment = createFragment(10, 20);
 		rootFragment.addChild(createFragment(5, 7));
@@ -83,9 +82,9 @@ public class TestSourceFragment {
 		assertEquals(5, rootFragment.getStart());
 		assertEquals(25, rootFragment.getEnd());
 	}
-	
+
 	@Test
-	public void testSourceFragmentWrapChild() throws Exception {
+	public void testSourceFragmentWrapChild() {
 		//contract: the existing child fragment can be wrapped by a new parent 
 		ElementSourceFragment rootFragment = createFragment(0, 100);
 		ElementSourceFragment child = createFragment(50, 60);
@@ -96,8 +95,9 @@ public class TestSourceFragment {
 		assertSame(rootFragment.getFirstChild(), childWrapper);
 		assertSame(rootFragment.getFirstChild().getFirstChild(), child);
 	}
+
 	@Test
-	public void testSourceFragmentWrapChildrenAndSiblings() throws Exception {
+	public void testSourceFragmentWrapChildrenAndSiblings() {
 		//contract: the two SourceFragment trees merge correctly together 
 		ElementSourceFragment rootFragment = createFragment(0, 100);
 		ElementSourceFragment child = createFragment(50, 60);
@@ -121,7 +121,7 @@ public class TestSourceFragment {
 	}
 
 	@Test
-	public void testElementSourceFragment_getSourceFragmentOf() throws Exception {
+	public void testElementSourceFragment_getSourceFragmentOf() {
 		//contract: ElementSourceFragment#getSourceFragmentOf returns expected results
 		ElementSourceFragment rootFragment = createFragment(0, 100);
 		ElementSourceFragment x;
@@ -134,14 +134,14 @@ public class TestSourceFragment {
 		assertSame(rootFragment.getFirstChild(), rootFragment.getSourceFragmentOf(null, 50, 60));
 		assertSame(rootFragment.getFirstChild().getNextSibling(), rootFragment.getSourceFragmentOf(null, 60, 70));
 	}
-	
+
 	private static final CompilationUnit DUMMY_COMPILATION_UNIT = new CompilationUnitImpl();
 	
 	private ElementSourceFragment createFragment(int start, int end) {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, start, end - 1, null);
 		return new ElementSourceFragment(() -> sp, null);
 	}
-	
+
 	@Test
 	public void testExactSourceFragments() throws Exception {
 		//contract: SourceFragments of some tricky sources are as expected
@@ -179,7 +179,7 @@ public class TestSourceFragment {
 		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getAssignment(),"7.2");
 				 
 	}
-	
+
 	private void checkElementFragments(CtElement ele, Object... expectedFragments) {
 		ElementSourceFragment fragment = ele.getOriginalSourceFragment();
 		List<SourceFragment> children = fragment.getChildrenFragments();
@@ -189,11 +189,11 @@ public class TestSourceFragment {
 
 		assertGroupsEqual(expectedFragments, fragment.getGroupedChildrenFragments());
 	}
-	
+
 	private String[] group(String ...str) {
 		return str;
 	}
-	
+
 	private List<String> expandGroup(List<String> result, Object[] items) {
 		for (Object object : items) {
 			if (object instanceof String[]) {
