@@ -2,7 +2,6 @@ package spoon.test.prettyprinter;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.OutputType;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
