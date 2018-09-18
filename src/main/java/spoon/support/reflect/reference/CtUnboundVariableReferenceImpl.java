@@ -48,7 +48,7 @@ public class CtUnboundVariableReferenceImpl<T> extends CtVariableReferenceImpl<T
 
 	@Override
 	@UnsettableProperty
-	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
-		return (E) this;
+	public CtUnboundVariableReferenceImpl<T> setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+		return this;
 	}
 }

@@ -157,7 +157,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNOTATION)
-	<E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation);
+	CtElement addAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
 	 * Remove an annotation for this element
@@ -185,7 +185,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * 		of this element in the input source files
 	 */
 	@PropertySetter(role = POSITION)
-	<E extends CtElement> E setPosition(SourcePosition position);
+	CtElement setPosition(SourcePosition position);
 
 	/**
 	 * Gets the child elements annotated with the given annotation type's
@@ -213,7 +213,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Sets this element to be implicit.
 	 */
 	@PropertySetter(role = IS_IMPLICIT)
-	<E extends CtElement> E setImplicit(boolean b);
+	CtElement setImplicit(boolean b);
 
 	/**
 	 * Calculates and returns the set of all the types referenced by this
@@ -236,13 +236,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element and all children in the input source file
 	 */
-	<E extends CtElement> E setPositions(SourcePosition position);
+	CtElement setPositions(SourcePosition position);
 
 	/**
 	 * Sets the annotations for this element.
 	 */
 	@PropertySetter(role = ANNOTATION)
-	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
+	CtElement setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
 	 * Gets the parent of current reference.
@@ -328,7 +328,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Set the comment list
 	 */
 	@PropertySetter(role = COMMENT)
-	<E extends CtElement> E setComments(List<CtComment> comments);
+	CtElement setComments(List<CtComment> comments);
 
 	/**
 	 * The list of comments
@@ -343,14 +343,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param comment the comment
 	 */
 	@PropertySetter(role = COMMENT)
-	<E extends CtElement> E addComment(CtComment comment);
+	CtElement addComment(CtComment comment);
 
 	/**
 	 * Remove a comment
 	 * @param comment the comment to remove
 	 */
 	@PropertySetter(role = COMMENT)
-	<E extends CtElement> E removeComment(CtComment comment);
+	CtElement removeComment(CtComment comment);
 
 	/**
 	 * Clone the element which calls this method in a new object.

@@ -303,6 +303,7 @@ public class MetamodelTest {
 		//detect unused CtRoles
 		Set<CtRole> unhandledRoles = new HashSet<>(Arrays.asList(CtRole.values()));
 
+		List problemsIssue1846 = new ArrayList();
 		mm.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 				unhandledRoles.remove(role);
@@ -328,7 +329,6 @@ public class MetamodelTest {
 
 			});
 
-			List problemsIssue1846 = new ArrayList();
 			mmConcept.getProperties().forEach((mmProp) -> {
 				for (MMMethod mmMethod : mmProp.getMethods()) {
 					for (CtTypeParameter typeParam : mmMethod.getActualCtMethod().getFormalCtTypeParameters()) {
@@ -358,8 +358,8 @@ public class MetamodelTest {
 					}
 				}
 			});
-			assertEquals(problemsIssue1846.toString(), 0, problemsIssue1846.size());
 		});
+		assertEquals(problemsIssue1846.toString(), 0, problemsIssue1846.size());
 
 		unhandledRoles.forEach(it -> problems.add("Unused CtRole." + it.name()));
 		/*

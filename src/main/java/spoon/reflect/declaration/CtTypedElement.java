@@ -36,5 +36,5 @@ public interface CtTypedElement<T> extends CtElement {
 	 * Sets this element's type.
 	 */
 	@PropertySetter(role = TYPE)
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	CtTypedElement setType(CtTypeReference<T> type);
 }

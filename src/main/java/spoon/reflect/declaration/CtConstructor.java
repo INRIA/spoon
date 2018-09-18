@@ -39,7 +39,7 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	CtConstructor setType(CtTypeReference<T> type);
 
 	@Override
 	@UnsettableProperty

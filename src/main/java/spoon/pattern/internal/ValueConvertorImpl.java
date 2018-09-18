@@ -64,14 +64,14 @@ public class ValueConvertorImpl implements ValueConvertor {
 			if (value.getClass().isArray()) {
 				Class<?> itemClass = value.getClass().getComponentType();
 				if (CtExpression.class.isAssignableFrom(itemClass)) {
-					CtNewArray<Object> arr = factory.Core().createNewArray().setType(factory.Type().objectType());
+					CtNewArray<Object> arr = (CtNewArray<Object>) factory.Core().createNewArray().setType(factory.Type().objectType());
 					for (CtExpression expr : (CtExpression[]) value) {
 						arr.addElement(expr);
 					}
 					return (T) arr;
 				}
 				@SuppressWarnings({ "unchecked", "rawtypes" })
-				CtNewArray<?> arr = factory.Core().createNewArray().setType(factory.Type().createArrayReference(itemClass.getName()));
+				CtNewArray<?> arr = (CtNewArray<?>) factory.Core().createNewArray().setType(factory.Type().createArrayReference(itemClass.getName()));
 				for (Object v : (Object[]) value) {
 					if (v == null || v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Character) {
 						//convert String to code element as Literal

@@ -85,9 +85,9 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtConstructorImpl setType(CtTypeReference<T> type) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override

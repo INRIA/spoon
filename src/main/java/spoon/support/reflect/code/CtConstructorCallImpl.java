@@ -199,14 +199,14 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	@DerivedProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtConstructorCallImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		if (getExecutable() != null) {
 			getExecutable().setType(type);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override

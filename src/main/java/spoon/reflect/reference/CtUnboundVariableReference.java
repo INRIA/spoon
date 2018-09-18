@@ -33,5 +33,5 @@ public interface CtUnboundVariableReference<T> extends CtVariableReference<T> {
 
 	@Override
 	@UnsettableProperty
-	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
+	CtUnboundVariableReference<T> setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 }
