@@ -30,8 +30,11 @@ import static spoon.testing.utils.Check.assertNotNull;
  * assertion objects. The purpose of this class is to make test code
  * more readable.
  */
-public class Assert {
-	private Assert() { }
+public final class Assert {
+
+	private Assert() {
+	}
+
 	/**
 	 * Create a new instance of <code>{@link FileAssert}</code>.
 	 *

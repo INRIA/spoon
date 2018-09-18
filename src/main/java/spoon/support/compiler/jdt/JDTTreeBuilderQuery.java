@@ -41,8 +41,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Helper class for JDTTreeBuilder. Package visible to reduce API surface. */
-class JDTTreeBuilderQuery {
-	private JDTTreeBuilderQuery() { }
+final class JDTTreeBuilderQuery {
+
+	private JDTTreeBuilderQuery() {
+	}
+
 	/**
 	 * Searches a type from an entry-point according to a simple name.
 	 *

@@ -23,7 +23,7 @@ import spoon.reflect.code.UnaryOperatorKind;
 /**
  * Computes source code representation of the operator
  */
-class OperatorHelper {
+final class OperatorHelper {
 
 	private OperatorHelper() {
 	}
