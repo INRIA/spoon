@@ -100,7 +100,7 @@ public class ImportScannerTest {
 			}
 
 			for (String computedImport : computedStaticImports) {
-				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf("."));
+				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf('.'));
 				if (!staticImports.contains(computedImport) && !typeImports.contains(typeOfStatic)) {
 					if (!unusedImports.containsKey(ctType)) {
 						unusedImports.put(ctType, new ArrayList<>());
@@ -119,7 +119,7 @@ public class ImportScannerTest {
 			}
 
 			for (String anImport : staticImports) {
-				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf("."));
+				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf('.'));
 				if (!computedStaticImports.contains(anImport) && !computedTypeImports.contains(typeOfStatic)) {
 					if (!missingImports.containsKey(ctType)) {
 						missingImports.put(ctType, new ArrayList<>());
@@ -142,11 +142,10 @@ public class ImportScannerTest {
 			Launcher.LOGGER.warn("ImportScannerTest: Import scanner imports " + countUnusedImports + " unused imports and misses " + countMissingImports + " imports");
 
 			// Uncomment for the complete list
-			/*
-			Set<CtType> keys = new HashSet<>(unusedImports.keySet());
-			keys.addAll(missingImports.keySet());
 
-			for (CtType type : keys) {
+			Set<CtType> missingKeys = new HashSet<>(missingImports.keySet());
+
+			for (CtType type : missingKeys) {
 				System.err.println(type.getQualifiedName());
 				if (missingImports.containsKey(type)) {
 					List<String> imports = missingImports.get(type);
@@ -154,6 +153,15 @@ public class ImportScannerTest {
 						System.err.println("\t" + anImport + " missing");
 					}
 				}
+			}
+
+			assertEquals("Import scanner missed " + countMissingImports + " imports",0, countMissingImports);
+
+			/*
+			Set<CtType> unusedKeys = new HashSet<>(unusedImports.keySet());
+
+			for (CtType type : unusedKeys) {
+				System.err.println(type.getQualifiedName());
 				if (unusedImports.containsKey(type)) {
 					List<String> imports = unusedImports.get(type);
 					for (String anImport : imports) {
@@ -162,9 +170,6 @@ public class ImportScannerTest {
 				}
 			}
 			*/
-
-			assertEquals("Import scanner missed " + countMissingImports + " imports",0, countMissingImports);
-
 			// FIXME: the unused imports should be resolved
 			//assertEquals("Import scanner imports " + countUnusedImports + " unused imports",
 			//	0, countUnusedImports);
@@ -183,8 +188,8 @@ public class ImportScannerTest {
 	private List<String> getStaticImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith("import static ")) {
 				line = line.substring(13, line.length() - 1);
 				imports.add(line.trim());
@@ -196,8 +201,8 @@ public class ImportScannerTest {
 	private List<String> getTypeImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith("import ") && !line.contains(" static ")) {
 				line = line.substring(7, line.length() - 1);
 				imports.add(line.trim());
@@ -235,12 +240,11 @@ public class ImportScannerTest {
 		importContext.computeImports(theClass);
 		Collection<CtImport> imports = importContext.getAllImports();
 
-		// java.lang are also computed
-		assertEquals(4, imports.size());
+		assertEquals(2, imports.size());
 	}
 
 	@Test
-	public void testComputeImportsInClassWithSameName() throws Exception {
+	public void testComputeImportsInClassWithSameName() {
 		String packageName = "spoon.test.imports.testclasses2";
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
@@ -281,7 +285,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testTargetTypeNull() throws Exception {
+	public void testTargetTypeNull() {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 		CtFieldReference fieldRef = factory.createFieldReference();

@@ -77,7 +77,6 @@ import static org.junit.Assert.fail;
 // main test of Spoon's patterns
 public class PatternTest {
 
-
 	@Test
 	public void testMatchForeach() throws Exception {
 		//contract: a foreach template can also match inlined lists of statements
@@ -217,7 +216,6 @@ public class PatternTest {
 			assertEquals(false, match.getParameters().getValue("option"));
 			assertEquals("3.14", match.getParameters().getValue("value").toString());
 		}
-
 	}
 
 	@Test
@@ -250,7 +248,7 @@ public class PatternTest {
 			assertEquals("java.lang.System.out.println(2.1)", statements.get(0).toString());
 		}
 	}
-	
+
 	@Test
 	public void testGenerateMultiValues() throws Exception {
 		// contract: the pattern parameter (in this case 'statements')
@@ -267,15 +265,15 @@ public class PatternTest {
 		Pattern pattern = MatchMultiple.createPattern(null, null, null);
 		ImmutableMap params = new ImmutableMapImpl();
 
-		// created in "MatchMultiple.createPattern",matching a literal "something"
-		// so "something" si replaced by "does it work?"
+		// created in "MatchMultiple.createPattern", matching a literal "something"
+		// so "something" is replaced by "does it work?"
 		params = params.putValue("printedValue", "does it work?");
 		List<CtStatement> statementsToBeAdded = null;
 
 		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the matching and the transformation
 		statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 
-		// created in "MatchMultiple.createPattern",matching a method "statements"
+		// created in "MatchMultiple.createPattern", matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
 
 		List<CtStatement> generated = pattern.generator().generate(CtStatement.class, params);
@@ -325,7 +323,7 @@ public class PatternTest {
 	@Test
 	public void testMatchGreedyMultiValueMaxCountLimit() throws Exception {
 		//contract: it is possible to stop matching after a specific number of times
-		// This is done with method parameterBuilder.setMaxOccurence(maxCount)
+		// This is done with method parameterBuilder.setMaxOccurrence(maxCount)
 
 		// explanation: greedy matching eats everything until max count = 3
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
@@ -368,7 +366,6 @@ public class PatternTest {
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
-
 
 	@Test
 	public void testMatchReluctantMultivalue() throws Exception {
@@ -423,6 +420,7 @@ public class PatternTest {
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
+
 	@Test
 	public void testMatchReluctantMultivalueMinCount1() throws Exception {
 		//contract: one can do reluctant matches with a minCount of 1 node
@@ -466,6 +464,7 @@ public class PatternTest {
 			assertEquals("\"last one\"", match.getParameters().getValue("printedValue").toString());
 		}
 	}
+
 	@Test
 	public void testMatchReluctantMultivalueExactly2() throws Exception {
 		//contract: one can do reluctant matches min 2 nodes and max 2 nodes
@@ -512,9 +511,10 @@ public class PatternTest {
 		// consequently, no match of the full template
 		assertEquals(0, matches.size());
 	}
+
 	@Test
 	public void testMatchPossesiveMultiValueMaxCount4() throws Exception {
-		//contract: maxCount (#setMaxOccurence) can be used to stop Quantifier.POSSESSIVE for matching too much
+		//contract: maxCount (#setMaxOccurrence) can be used to stop Quantifier.POSSESSIVE for matching too much
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 
 		// note that if we set maxCount = 3, it fails because there is one dangling statement before System.out.println("something")
@@ -554,7 +554,7 @@ public class PatternTest {
 		// pattern
 //		public void matcher1() {
 //			statements1.S(); // Quantifier.GREEDY
-//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurence and setMaxOccurence set
+//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurrence and setMaxOccurrence set
 //			System.out.println("something"); // "something" -> anything
 //		}
 
@@ -568,7 +568,7 @@ public class PatternTest {
 					.configurePatternParameters()
 					.configurePatternParameters(pb -> {
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
-						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurrence(countFinal);
 						pb.parameter("printedValue").byFilter((CtLiteral<?> literal) -> "something".equals(literal.getValue()));
 					})
 					.build();
@@ -590,7 +590,7 @@ public class PatternTest {
 		// pattern:
 //		public void matcher1(List<String> something) {
 //			statements1.S(); // Quantifier.GREEDY
-//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurence and setMaxOccurence set
+//			statements2.S(); // Quantifier.POSSESSIVE with setMinOccurrence and setMaxOccurrence set
 //			for (String v : something) {
 //				System.out.println(v); // can be inlined
 //			}
@@ -606,8 +606,8 @@ public class PatternTest {
 			.configurePatternParameters(pb -> {
 				pb.byTemplateParameter();
 				pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY);
-				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
-				pb.parameter("inlinedSysOut").byVariable("something").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2).matchInlinedStatements();
+				pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurrence(countFinal).setMaxOccurrence(countFinal);
+				pb.parameter("inlinedSysOut").byVariable("something").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurrence(2).matchInlinedStatements();
 			})
 			.build();
 
@@ -623,17 +623,11 @@ public class PatternTest {
 			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters().build();
-//				pb.parameter("statements1").setMatchingStrategy(Quantifier.GREEDY);
-//				pb.parameter("statements2").setMatchingStrategy(Quantifier.POSSESSIVE).setMinOccurence(countFinal).setMaxOccurence(countFinal);
-//				pb.parameter("inlinedSysOut").setMatchingStrategy(Quantifier.POSSESSIVE).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
-//			});
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
-			//the possessive matcher eat too much. There is no target element for last `printedValue` variable
+			//the possessive matcher eats too much. There is no target element for last `printedValue` variable
 			assertEquals("count="+countFinal, 0, matches.size());
-
 		}
-
 	}
 
 	@Test
@@ -647,9 +641,9 @@ public class PatternTest {
 					.configurePatternParameters(pb -> {
 						pb.byTemplateParameter();
 						pb.parameter("statements1").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.RELUCTANT);
-						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurence(count);
+						pb.parameter("statements2").setContainerKind(ContainerKind.LIST).setMatchingStrategy(Quantifier.GREEDY).setMaxOccurrence(count);
 						pb.parameter("printedValue").byVariable("something").matchInlinedStatements();
-						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurence(2);
+						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurrence(2);
 					})
 					.build();
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
@@ -662,7 +656,7 @@ public class PatternTest {
 				assertEquals("count=" + count, count - Math.max(0, count - 4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
 				assertEquals("count=" + count, Math.max(2, 3 - Math.max(0, count - 3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
 			} else {
-				//the possessive matcher eat too much. There is no target element for last `printedValue` variable
+				//the possessive matcher eats too much. There is no target element for last `printedValue` variable
 				assertEquals("count=" + count, 0, matches.size());
 			}
 		}
@@ -892,7 +886,6 @@ public class PatternTest {
 		}
 	}
 
-
 	@Test
 	public void testMatchOfMapAttribute() throws Exception {
 		//contract: there is support for matching annotations with different annotation values
@@ -997,7 +990,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchOfMapKeySubstring() throws Exception {
-		//contract: one can capture in parameters a key in an annotation key-> value map
+		//contract: one can capture in parameters a key in an annotation key -> value map
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMap.class);
 		{
 			// match all methods with arbitrary name, and Annotation Test modifiers, parameters, but with empty body and return type void
@@ -1041,7 +1034,7 @@ public class PatternTest {
 
 	@Test
 	public void testMatchInSet() throws Exception {
-		// contract: the container type "Set" is supported to match set-related AST nodes (eg the throws clause)
+		// contract: the container type "Set" is supported to match set-related AST nodes (e.g. the throws clause)
 		// tested method: setContainerKind(ContainerKind.SET)
 		CtType<?> ctClass = ModelUtils.buildClass(MatchThrowables.class);
 		Factory f = ctClass.getFactory();
@@ -1054,7 +1047,7 @@ public class PatternTest {
 							//add matcher for other arbitrary throwables
 							.setConflictResolutionMode(ConflictResolutionMode.APPEND)
 							.setContainerKind(ContainerKind.SET)
-							.setMinOccurence(0)
+							.setMinOccurrence(0)
 							.byRole(CtRole.THROWN, new TypeFilter(CtMethod.class));
 				})
 				.configurePatternParameters(pb -> {
@@ -1093,7 +1086,7 @@ public class PatternTest {
 							.stream().map(e->e.toString()).collect(Collectors.toSet()));
 		}
 		{
-			// now loooking at sample4
+			// now looking at sample4
 			Match match = matches.get(3);
 			assertEquals(1, match.getMatchingElements().size());
 			assertEquals("sample4", match.getMatchingElement(CtMethod.class).getSimpleName());
@@ -1125,7 +1118,6 @@ public class PatternTest {
 		}
 	}
 
-
 	@Test
 	public void testPatternParameters() {
 		//contract: all the parameters of Pattern are available through getParameterInfos
@@ -1152,87 +1144,87 @@ public class PatternTest {
 	@Test
 	public void testPatternToString() {
 		//contract: Pattern can be printed to String and each parameter is defined there
-		System.setProperty("line.separator", "\n");
+		String nl = System.getProperty("line.separator");
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
 			);
 		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
-		assertEquals("if (/* CtInvocation\n" +
-				"    / <= ${useStartKeyword}\n" +
-				" */\n" +
-				"useStartKeyword()) {\n" +
-				"    /* CtInvocation\n" +
-				"        /argument/ <= ${startKeyword}\n" +
-				"     */\n" +
-				"    /* CtInvocation\n" +
-				"        /target/ <= ${printer}\n" +
-				"     */\n" +
-				"    /* CtInvocation\n" +
-				"        / <= ${printer}\n" +
-				"     */\n" +
-				"    printer().writeSpace().writeKeyword(/* CtInvocation\n" +
-				"        / <= ${startKeyword}\n" +
-				"     */\n" +
-				"    startKeyword()).writeSpace();\n" +
-				"}\n" +
-				"try (final spoon.reflect.visitor.ListPrinter lp = /* CtInvocation\n" +
-				"    /argument/ <= ${end}\n" +
-				"    /target/ <= ${elementPrinterHelper}\n" +
-				" */\n" +
-				"/* CtInvocation\n" +
-				"    / <= ${elementPrinterHelper}\n" +
-				" */\n" +
-				"elementPrinterHelper().createListPrinter(/* CtInvocation\n" +
-				"    / <= ${startPrefixSpace}\n" +
-				" */\n" +
-				"startPrefixSpace(), /* CtInvocation\n" +
-				"    / <= ${start}\n" +
-				" */\n" +
-				"start(), /* CtInvocation\n" +
-				"    / <= ${startSuffixSpace}\n" +
-				" */\n" +
-				"startSuffixSpace(), /* CtInvocation\n" +
-				"    / <= ${nextPrefixSpace}\n" +
-				" */\n" +
-				"nextPrefixSpace(), /* CtInvocation\n" +
-				"    / <= ${next}\n" +
-				" */\n" +
-				"next(), /* CtInvocation\n" +
-				"    / <= ${nextSuffixSpace}\n" +
-				" */\n" +
-				"nextSuffixSpace(), /* CtInvocation\n" +
-				"    / <= ${endPrefixSpace}\n" +
-				" */\n" +
-				"endPrefixSpace(), /* CtInvocation\n" +
-				"    / <= ${end}\n" +
-				" */\n" +
-				"end())) {\n" +
-				"    /* CtForEach\n" +
-				"        /expression/ <= ${getIterable}\n" +
-				"        /foreachVariable/ <= ${item}\n" +
-				"     */\n" +
-				"    for (/* CtLocalVariable\n" +
-				"        / <= ${item}\n" +
-				"     */\n" +
-				"    java.lang.Object item : /* CtInvocation\n" +
-				"        / <= ${getIterable}\n" +
-				"     */\n" +
-				"    getIterable()) /* CtBlock\n" +
-				"        /statement/ <= ${statements}\n" +
-				"     */\n" +
-				"    {\n" +
-				"        lp.printSeparatorIfAppropriate();\n" +
-				"        /* CtInvocation\n" +
-				"            / <= ${statements}\n" +
-				"         */\n" +
-				"        statements();\n" +
-				"    }\n" +
-				"}\n", p.toString());
+		assertEquals("if (/* CtInvocation"+nl+"" +
+				"    / <= ${useStartKeyword}"+nl+"" +
+				" */"+nl+"" +
+				"useStartKeyword()) {"+nl+"" +
+				"    /* CtInvocation"+nl+"" +
+				"        /argument/ <= ${startKeyword}"+nl+"" +
+				"     */"+nl+"" +
+				"    /* CtInvocation"+nl+"" +
+				"        /target/ <= ${printer}"+nl+"" +
+				"     */"+nl+"" +
+				"    /* CtInvocation"+nl+"" +
+				"        / <= ${printer}"+nl+"" +
+				"     */"+nl+"" +
+				"    printer().writeSpace().writeKeyword(/* CtInvocation"+nl+"" +
+				"        / <= ${startKeyword}"+nl+"" +
+				"     */"+nl+"" +
+				"    startKeyword()).writeSpace();"+nl+"" +
+				"}"+nl+"" +
+				"try (final spoon.reflect.visitor.ListPrinter lp = /* CtInvocation"+nl+"" +
+				"    /argument/ <= ${end}"+nl+"" +
+				"    /target/ <= ${elementPrinterHelper}"+nl+"" +
+				" */"+nl+"" +
+				"/* CtInvocation"+nl+"" +
+				"    / <= ${elementPrinterHelper}"+nl+"" +
+				" */"+nl+"" +
+				"elementPrinterHelper().createListPrinter(/* CtInvocation"+nl+"" +
+				"    / <= ${startPrefixSpace}"+nl+"" +
+				" */"+nl+"" +
+				"startPrefixSpace(), /* CtInvocation"+nl+"" +
+				"    / <= ${start}"+nl+"" +
+				" */"+nl+"" +
+				"start(), /* CtInvocation"+nl+"" +
+				"    / <= ${startSuffixSpace}"+nl+"" +
+				" */"+nl+"" +
+				"startSuffixSpace(), /* CtInvocation"+nl+"" +
+				"    / <= ${nextPrefixSpace}"+nl+"" +
+				" */"+nl+"" +
+				"nextPrefixSpace(), /* CtInvocation"+nl+"" +
+				"    / <= ${next}"+nl+"" +
+				" */"+nl+"" +
+				"next(), /* CtInvocation"+nl+"" +
+				"    / <= ${nextSuffixSpace}"+nl+"" +
+				" */"+nl+"" +
+				"nextSuffixSpace(), /* CtInvocation"+nl+"" +
+				"    / <= ${endPrefixSpace}"+nl+"" +
+				" */"+nl+"" +
+				"endPrefixSpace(), /* CtInvocation"+nl+"" +
+				"    / <= ${end}"+nl+"" +
+				" */"+nl+"" +
+				"end())) {"+nl+"" +
+				"    /* CtForEach"+nl+"" +
+				"        /expression/ <= ${getIterable}"+nl+"" +
+				"        /foreachVariable/ <= ${item}"+nl+"" +
+				"     */"+nl+"" +
+				"    for (/* CtLocalVariable"+nl+"" +
+				"        / <= ${item}"+nl+"" +
+				"     */"+nl+"" +
+				"    java.lang.Object item : /* CtInvocation"+nl+"" +
+				"        / <= ${getIterable}"+nl+"" +
+				"     */"+nl+"" +
+				"    getIterable()) /* CtBlock"+nl+"" +
+				"        /statement/ <= ${statements}"+nl+"" +
+				"     */"+nl+"" +
+				"    {"+nl+"" +
+				"        lp.printSeparatorIfAppropriate();"+nl+"" +
+				"        /* CtInvocation"+nl+"" +
+				"            / <= ${statements}"+nl+"" +
+				"         */"+nl+"" +
+				"        statements();"+nl+"" +
+				"    }"+nl+"" +
+				"}"+nl, p.toString());
 	}
 
 	@Test
-	public void testMatchSample1() throws Exception {
+	public void testMatchSample1() {
 		// contract: a super complex pattern is well matched
 		Factory f = ModelUtils.build(
 				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
@@ -1255,7 +1247,7 @@ public class PatternTest {
 				.configureInlineStatements(ls -> ls.inlineIfOrForeachReferringTo("useStartKeyword"))
 				.build();
 
-		// so let's try to match this complex pattern  on DJPP
+		// so let's try to match this complex pattern on DJPP
 		List<Match> matches = p.getMatches(classDJPP);
 
 		// there are two results (the try-with-resource in each method)
@@ -1276,7 +1268,7 @@ public class PatternTest {
 
 		params = matches.get(1).getParameters();
 		// all method arguments to createListPrinter have been matched
-		assertEquals(null, params.getValue("startKeyword"));
+		assertNull(params.getValue("startKeyword"));
 		assertEquals(Boolean.FALSE, params.getValue("useStartKeyword"));
 		assertEquals("false", params.getValue("startPrefixSpace").toString());
 		assertEquals("null", params.getValue("start").toString());
@@ -1298,21 +1290,18 @@ public class PatternTest {
 		//contract: by default "generated by" comments are not generated
 		//contract: generated by comments can be switched ON/OFF later
 
-		// creating  a pattern from AClassWithMethodsAndRefs
+		// creating a pattern from AClassWithMethodsAndRefs
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
-
 	}
-
-
 
 	@Test
 	public void testGenerateClassWithSelfReferences() throws Exception {
 		// main contract: a class with methods and fields can be generated with method #createType
 		// in particular, all the references to the origin class are replace by reference to the new class cloned class
 
-		// creating  a pattern from AClassWithMethodsAndRefs
+		// creating a pattern from AClassWithMethodsAndRefs
 		CtType templateModel = ModelUtils.buildClass(AClassWithMethodsAndRefs.class);
 		Factory factory = templateModel.getFactory();
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
@@ -1339,7 +1328,7 @@ public class PatternTest {
 				usedTypeRefs);
 
 		//contract: all executable references points to the executables in cloned type
-		generatedType.filterChildren(new TypeFilter<>(CtExecutableReference.class)).forEach((CtExecutableReference execRef) ->{
+		generatedType.filterChildren(new TypeFilter<>(CtExecutableReference.class)).forEach((CtExecutableReference execRef) -> {
 			CtTypeReference declTypeRef = execRef.getDeclaringType();
 			if(declTypeRef.getQualifiedName().startsWith("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs")) {
 				//OK
@@ -1389,7 +1378,7 @@ public class PatternTest {
 				"java.lang.Object","spoon.test.generated.ACloneOfAClassWithMethodsAndRefs$Local")),
 				usedTypeRefs);
 		//contract: all executable references points to executables in cloned type
-		generatedType.filterChildren(new TypeFilter<>(CtExecutableReference.class)).forEach((CtExecutableReference execRef) ->{
+		generatedType.filterChildren(new TypeFilter<>(CtExecutableReference.class)).forEach((CtExecutableReference execRef) -> {
 			CtTypeReference declTypeRef = execRef.getDeclaringType();
 			if(declTypeRef.getQualifiedName().startsWith("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs")) {
 				//OK
@@ -1488,7 +1477,6 @@ public class PatternTest {
 		).build();
 	}
 
-
 	private void assertSequenceOn(List<? extends CtElement> source, int expectedOffset, int expectedSize, List<CtElement> matches) {
 		//check the number of matches
 		assertEquals(expectedSize, matches.size());
@@ -1512,7 +1500,7 @@ public class PatternTest {
 	}
 
 	@Test
-	public void testExtensionDecoupledSubstitutionVisitor() throws Exception {
+	public void testExtensionDecoupledSubstitutionVisitor() {
 		//contract: one can add type members with Generator
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -1552,13 +1540,9 @@ public class PatternTest {
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
 
-
 	private Map<String, Object> getMap(Match match, String name) {
 		Object v = match.getParametersMap().get(name);
 		assertNotNull(v);
 		return ((ImmutableMap) v).asMap();
 	}
-
-
-
 }

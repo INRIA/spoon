@@ -29,7 +29,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -60,17 +60,16 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.TYPE_ARGUMENT)
+	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
-	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
+	@MetamodelPropertyField(role = DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
+	@MetamodelPropertyField(role = PACKAGE_REF)
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -83,31 +82,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (!isPrimitive()) {
 			return this;
 		}
-		if (getSimpleName().equals("int")) {
+		if ("int".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Integer.class);
 		}
-		if (getSimpleName().equals("float")) {
+		if ("float".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Float.class);
 		}
-		if (getSimpleName().equals("long")) {
+		if ("long".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Long.class);
 		}
-		if (getSimpleName().equals("char")) {
+		if ("char".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Character.class);
 		}
-		if (getSimpleName().equals("double")) {
+		if ("double".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Double.class);
 		}
-		if (getSimpleName().equals("boolean")) {
+		if ("boolean".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Boolean.class);
 		}
-		if (getSimpleName().equals("short")) {
+		if ("short".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Short.class);
 		}
-		if (getSimpleName().equals("byte")) {
+		if ("byte".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Byte.class);
 		}
-		if (getSimpleName().equals("void")) {
+		if ("void".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Void.class);
 		}
 		return this;
@@ -352,7 +351,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getFactory().getEnvironment().getNoClasspath()) {
 			// should not be thrown in 'noClasspath' environment (#775)
 			Launcher.LOGGER.warn(msg);
-			return;
 		} else {
 			throw cnfe;
 		}
@@ -370,6 +368,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return null;
 	}
 
+	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
 		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
@@ -710,7 +709,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
-	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
+	@MetamodelPropertyField(role = IS_SHADOW)
 	boolean isShadow;
 
 	@Override

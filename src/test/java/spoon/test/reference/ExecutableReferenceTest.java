@@ -31,7 +31,7 @@ import static org.junit.Assert.fail;
 
 public class ExecutableReferenceTest {
 	@Test
-	public void testCallMethodOfClassNotPresent() throws Exception {
+	public void testCallMethodOfClassNotPresent() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput", "--noclasspath"
@@ -92,7 +92,7 @@ public class ExecutableReferenceTest {
 	}
 
 	@Test
-	public void testSuperClassInGetAllExecutables() throws Exception {
+	public void testSuperClassInGetAllExecutables() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/");
 		launcher.setSourceOutputDirectory("./target/spoon-test");
@@ -108,7 +108,7 @@ public class ExecutableReferenceTest {
 	}
 
 	@Test
-	public void testSpecifyGetAllExecutablesMethod() throws Exception {
+	public void testSpecifyGetAllExecutablesMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
@@ -162,7 +162,7 @@ public class ExecutableReferenceTest {
 			@Override
 			public boolean matches(CtInvocation element) {
 				return super.matches(element) 
-					&& element.getExecutable().getSimpleName().equals("valueOf");
+					&& "valueOf".equals(element.getExecutable().getSimpleName());
 			}
 		}).get(0);
 		assertNotNull(invocation.getExecutable().getExecutableDeclaration());

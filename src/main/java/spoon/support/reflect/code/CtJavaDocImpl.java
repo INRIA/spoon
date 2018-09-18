@@ -42,7 +42,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		protected int getDefaultCapacity() {
 			return 2;
 		}
-	};;
+	};
 
 	public CtJavaDocImpl() {
 		super(CommentType.JAVADOC);
@@ -85,9 +85,9 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 	@Override
 	public String getShortDescription() {
-		int indexEndSentence = this.getContent().indexOf(".");
+		int indexEndSentence = this.getContent().indexOf('.');
 		if (indexEndSentence == -1) {
-			indexEndSentence = this.getContent().indexOf("\n");
+			indexEndSentence = this.getContent().indexOf('\n');
 		}
 		if (indexEndSentence != -1) {
 			return this.getContent().substring(0, indexEndSentence + 1).trim();

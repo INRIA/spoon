@@ -18,7 +18,7 @@ import spoon.test.template.testclasses.SubstitutionByExpressionTemplate;
 public class TemplateInvocationSubstitutionTest {
 
 	@Test
-	public void testInvocationSubstitutionByStatement() throws Exception {
+	public void testInvocationSubstitutionByStatement() {
 		//contract: the template engine supports substitution of any method invocation
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InvocationSubstitutionByStatementTemplate.java"));
@@ -34,7 +34,7 @@ public class TemplateInvocationSubstitutionTest {
 	}
 
 	@Test
-	public void testInvocationSubstitutionByExpression() throws Exception {
+	public void testInvocationSubstitutionByExpression() {
 		//contract: the template engine supports substitution of any method invocation
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InvocationSubstitutionByExpressionTemplate.java"));
@@ -53,7 +53,7 @@ public class TemplateInvocationSubstitutionTest {
 	}
 
 	@Test
-	public void testSubstitutionByExpression() throws Exception {
+	public void testSubstitutionByExpression() {
 		//contract: the template engine understands fields whose type extends from TemplateParameter as template parameter automatically. No need for extra annotation
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstitutionByExpressionTemplate.java"));

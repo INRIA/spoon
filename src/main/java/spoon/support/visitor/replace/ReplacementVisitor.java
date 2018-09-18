@@ -1018,10 +1018,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeParameterReferenceBoundingTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtTypeParameterReference element;
+	class CtWildcardReferenceBoundingTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtWildcardReference element;
 
-		CtTypeParameterReferenceBoundingTypeReplaceListener(spoon.reflect.reference.CtTypeParameterReference element) {
+		CtWildcardReferenceBoundingTypeReplaceListener(spoon.reflect.reference.CtWildcardReference element) {
 			this.element = element;
 		}
 
@@ -1260,7 +1260,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
-		} catch (spoon.SpoonException ignore) {
 		}
 	}
 
@@ -1269,7 +1268,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
-		} catch (spoon.SpoonException ignore) {
 		}
 	}
 
@@ -1304,10 +1302,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 				if (val != null) {
 					map.put(key, val);
 					val.setParent(shouldBeDeleted.getParent());
-				} else {
+				}else {
 					map.remove(key);
 				}
-			} else {
+			}else {
 				map.remove(key);
 			}
 			listener.set(map);
@@ -1349,8 +1347,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		if (shouldBeDeleted != null) {
 			list.remove(index);
 			if ((replace.length) > 0) {
-				for (int i = 0; i < (replace.length); i++) {
-					T ele = ((T) (replace[i]));
+				for (spoon.reflect.declaration.CtElement aReplace : replace) {
+					T ele = ((T) (aReplace));
 					if (ele != null) {
 						list.add(index, ele);
 						ele.setParent(shouldBeDeleted.getParent());
@@ -1905,7 +1903,6 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(ref.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(ref));
 		replaceElementIfExist(ref.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(ref));
 		replaceInListIfExist(ref.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(ref));
-		replaceElementIfExist(ref.getBoundingType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeParameterReferenceBoundingTypeReplaceListener(ref));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
@@ -1914,7 +1911,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(wildcardReference.getPackage(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferencePackageReplaceListener(wildcardReference));
 		replaceElementIfExist(wildcardReference.getDeclaringType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeReferenceDeclaringTypeReplaceListener(wildcardReference));
 		replaceInListIfExist(wildcardReference.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(wildcardReference));
-		replaceElementIfExist(wildcardReference.getBoundingType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeParameterReferenceBoundingTypeReplaceListener(wildcardReference));
+		replaceElementIfExist(wildcardReference.getBoundingType(), new spoon.support.visitor.replace.ReplacementVisitor.CtWildcardReferenceBoundingTypeReplaceListener(wildcardReference));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator

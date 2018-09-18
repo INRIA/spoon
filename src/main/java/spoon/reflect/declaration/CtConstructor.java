@@ -30,6 +30,7 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	/**
 	 * Always returns "&lt;init&gt;".
 	 */
+	@Override
 	@PropertyGetter(role = NAME)
 	String getSimpleName();
 

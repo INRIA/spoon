@@ -63,7 +63,6 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.Iterator;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -332,9 +331,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	@Override
 	public <T extends GenericDeclaration> void visitTypeParameter(TypeVariable<T> parameter) {
 		GenericDeclaration genericDeclaration = parameter.getGenericDeclaration();
-		Iterator<RuntimeBuilderContext> contextIterator = contexts.iterator();
-		while (contextIterator.hasNext()) {
-			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(genericDeclaration, parameter.getName());
+		for (RuntimeBuilderContext context : contexts) {
+			CtTypeParameter typeParameter = context.getTypeParameter(genericDeclaration, parameter.getName());
 			if (typeParameter != null) {
 				contexts.peek().addFormalType(typeParameter.clone());
 				return;
@@ -380,9 +378,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		}
 
 		GenericDeclaration genericDeclaration = parameter.getGenericDeclaration();
-		Iterator<RuntimeBuilderContext> contextIterator = contexts.iterator();
-		while (contextIterator.hasNext()) {
-			CtTypeParameter typeParameter = contextIterator.next().getTypeParameter(genericDeclaration, parameter.getName());
+		for (RuntimeBuilderContext context : contexts) {
+			CtTypeParameter typeParameter = context.getTypeParameter(genericDeclaration, parameter.getName());
 			if (typeParameter != null) {
 				contexts.peek().addTypeReference(role, typeParameter.getReference());
 				return;
@@ -402,14 +399,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		ctTypeReference.setSimpleName(((Class) type.getRawType()).getSimpleName());
 
 		RuntimeBuilderContext context = new TypeReferenceRuntimeBuilderContext(type, ctTypeReference) {
-//			@Override
-//			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-//				ctTypeReference.setSimpleName(typeReference.getSimpleName());
-//				ctTypeReference.setPackage(typeReference.getPackage());
-//				ctTypeReference.setDeclaringType(typeReference.getDeclaringType());
-//				ctTypeReference.setActualTypeArguments(typeReference.getActualTypeArguments());
-//				ctTypeReference.setAnnotations(typeReference.getAnnotations());
-//			}
 
 			@Override
 			public void addType(CtType<?> aType) {

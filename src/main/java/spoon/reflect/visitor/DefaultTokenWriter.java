@@ -104,4 +104,9 @@ public class DefaultTokenWriter implements TokenWriter {
 	public PrinterHelper getPrinterHelper() {
 		return printerHelper;
 	}
+
+	@Override
+	public String toString() {
+		return printerHelper.toString();
+	}
 }

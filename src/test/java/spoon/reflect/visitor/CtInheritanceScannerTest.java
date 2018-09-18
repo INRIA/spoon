@@ -61,7 +61,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<Method> getMethodToInvoke(Class<?> entry) throws Exception {
+	private List<Method> getMethodToInvoke(Class<?> entry) {
 		Queue<Class<?>> tocheck = new LinkedList<>();
 		tocheck.add(entry);
 
@@ -73,7 +73,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			if (!intf.getSimpleName().startsWith("Ct")) {
 				continue;
 			}
-			Method mth=null;
+			Method mth = null;
 
 			// if a method visitX exists, it must be invoked
 			try {
@@ -85,7 +85,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			} catch (NoSuchMethodException ex) {
 				// no such method, nothing
 			}
-			if (mth!=null && !toInvoke.contains(mth)) {
+			if (mth != null && !toInvoke.contains(mth)) {
 				toInvoke.add(mth);
 			}
 
@@ -99,7 +99,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 			} catch (NoSuchMethodException ex) {
 				// no such method, nothing
 			}
-			if (mth!=null && !toInvoke.contains(mth)) {
+			if (mth != null && !toInvoke.contains(mth)) {
 				toInvoke.add(mth);
 			}
 
@@ -125,17 +125,16 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 		instance.accept(mocked);
 
 		// verify we call all methods
-		for (int i = 0; i < toInvoke.size(); i++) {
+		for (Method aToInvoke : toInvoke) {
 			try {
-				toInvoke.get(i).invoke(verify(mocked), instance);
+				aToInvoke.invoke(verify(mocked), instance);
 			} catch (InvocationTargetException e) {
 				if (e.getTargetException() instanceof AssertionError) {
-					fail("visit"+instance.getClass().getSimpleName().replaceAll("Impl$", "")+" does not call "+toInvoke.get(i).getName());
+					fail("visit" + instance.getClass().getSimpleName().replaceAll("Impl$", "") + " does not call " + aToInvoke.getName());
 				} else {
 					throw e.getTargetException();
 				}
 			}
 		}
 	}
-
 }

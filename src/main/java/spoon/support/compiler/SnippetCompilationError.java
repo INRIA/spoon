@@ -28,7 +28,6 @@ public class SnippetCompilationError extends SpoonException {
 	public List<String> problems;
 
 	public SnippetCompilationError(List<String> problems) {
-		super();
 		this.problems = problems;
 	}
 

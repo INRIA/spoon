@@ -25,13 +25,13 @@ public class ArraysTest {
 
 	@Test
 	public void testArrayReferences() throws Exception {
-		CtType<?> type = build("spoon.test.arrays", "ArrayClass");
+		CtType<?> type = build("spoon.test.arrays.testclasses", "ArrayClass");
 		assertEquals("ArrayClass", type.getSimpleName());
 		assertEquals("int[][][]", type.getField("i").getType().getSimpleName());
 		assertEquals(3, ((CtArrayTypeReference<?>) type.getField("i").getType()).getDimensionCount());
 		final CtArrayTypeReference<?> arrayTypeReference = (CtArrayTypeReference<?>) type.getField("i").getDefaultExpression().getType();
 		assertEquals(1, arrayTypeReference.getArrayType().getAnnotations().size());
-		assertEquals("@spoon.test.arrays.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
+		assertEquals("@spoon.test.arrays.testclasses.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
 
 		CtField<?> x = type.getField("x");
 		assertTrue(x.getType() instanceof CtArrayTypeReference);
@@ -42,7 +42,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testInitializeWithNewArray() throws Exception {
+	public void testInitializeWithNewArray() {
 		Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo.java");
@@ -68,7 +68,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testCtNewArrayInnerCtNewArray() throws Exception {
+	public void testCtNewArrayInnerCtNewArray() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/Foo.java");
 		launcher.setSourceOutputDirectory("target/foo");
@@ -82,7 +82,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testCtNewArrayWitComments() throws Exception {
+	public void testCtNewArrayWitComments() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/NewArrayWithComment.java");
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -95,7 +95,7 @@ public class ArraysTest {
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testParameterizedVarargReference() throws Exception {
 		//contract: check actual type arguments of parameter type: List<?>...
@@ -107,7 +107,7 @@ public class ArraysTest {
 		assertEquals(1, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
 		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
 	}
-	
+
 	@Test
 	public void testParameterizedArrayReference() throws Exception {
 		//contract: check actual type arguments of parameter type: List<?>[]
@@ -139,7 +139,7 @@ public class ArraysTest {
 		//contract: check actual type arguments of parameter type: List<?>
 		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
 		CtParameter<?> param1 = ctClass.getMethodsByName("m4").get(0).getParameters().get(0);
-		CtTypeReference<?> typeRef = (CtTypeReference<?>) param1.getType();
+		CtTypeReference<?> typeRef = param1.getType();
 		assertEquals("java.util.List<?>", typeRef.toString());
 		assertEquals(1, typeRef.getActualTypeArguments().size());
 	}

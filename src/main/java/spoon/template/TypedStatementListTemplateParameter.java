@@ -57,6 +57,7 @@ public abstract class TypedStatementListTemplateParameter<R> implements Template
 		return l;
 	}
 
+	@Override
 	public R S() {
 		return null;
 	}
@@ -64,5 +65,5 @@ public abstract class TypedStatementListTemplateParameter<R> implements Template
 	/**
 	 * This method must be implemented to define the template statement list.
 	 */
-	public abstract R statements() throws Throwable;
+	public abstract R statements();
 }

@@ -109,7 +109,6 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 									matchs.add(match);
 								}
 							} catch (CtPathException e) {
-								//System.err.println("[ERROR] Element not found for name: " + name);
 								//No element found for name.
 							}
 						} else {

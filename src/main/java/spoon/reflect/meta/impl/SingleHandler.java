@@ -25,9 +25,9 @@ import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.path.CtRole;
 
 /**
- * implementation of {@link RoleHandler}, which handles attributes of type &lt;V&gt;
+ * implementation of {@link RoleHandler}
  * @param <T> the type of node whose attribute has to be manipulated
- * @param <V> the type of value of the attribute
+ * @param <U> the type of value of the attribute
  */
 abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 
@@ -40,12 +40,13 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 		return ContainerKind.SINGLE;
 	}
 
+	@Override
 	public <W, X> java.util.Collection<X> asCollection(W element) {
 		return asList(element);
-	};
+	}
 
+	@Override
 	public <W, X> java.util.List<X> asList(W e) {
-//		return Collections.<X>singletonList(getValue(element));
 		return new AbstractList<X>() {
 			T element = castTarget(e);
 			boolean hasValue = SingleHandler.this.getValue(element) != null;
@@ -71,8 +72,9 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 				}
 				X oldValue = get(0);
 				SingleHandler.this.setValue(element, value);
-				return (X) oldValue;
+				return oldValue;
 			}
+
 			@Override
 			public boolean add(X value) {
 				if (hasValue) {
@@ -96,6 +98,7 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 				hasValue = false;
 				return oldValue;
 			}
+
 			@Override
 			public boolean remove(Object value) {
 				if (hasValue == false) {
@@ -111,6 +114,7 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 				}
 				return false;
 			}
+
 			private boolean equals(Object v1, Object v2) {
 				if (v1 == v2) {
 					return true;
@@ -121,9 +125,10 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 				return v1.equals(v2);
 			}
 		};
-	};
+	}
 
+	@Override
 	public <W, X> java.util.Set<X> asSet(W element) {
 		return Collections.<X>singleton(getValue(element));
-	};
+	}
 }

@@ -94,7 +94,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotationFactory() throws Exception {
+	public void testAnnotationFactory() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 
@@ -108,7 +108,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotateWithEnum() throws Exception {
+	public void testAnnotateWithEnum() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING, "field");
@@ -120,7 +120,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotationPrintAnnotation() throws Exception {
+	public void testAnnotationPrintAnnotation() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -133,10 +133,11 @@ public class AnnotationValuesTest {
 
 	private static final String nl = System.lineSeparator();
 
-	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9, 8, 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA" +
-			", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(\"bar\")" +
-			", r = { java.lang.Float.class, java.lang.Double.class })" + nl +
-			"public class IsAnnotated {}";
+	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9, 8, 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA"
+			+ ", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(\"bar\")"
+			+ ", r = { java.lang.Float.class, java.lang.Double.class })"
+			+ nl
+			+ "public class IsAnnotated {}";
 
 	static class Request {
 		private static Request myself = new Request();

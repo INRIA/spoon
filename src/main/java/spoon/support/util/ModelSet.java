@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import spoon.SpoonException;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
@@ -113,7 +113,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 		if (set.isEmpty()) {
 			return;
 		}
-		getModelChangeListener().onSetDeleteAll(getOwner(), getRole(), set, new LinkedHashSet<T>(set));
+		getModelChangeListener().onSetDeleteAll(getOwner(), getRole(), set, new LinkedHashSet<>(set));
 		set.clear();
 	}
 

@@ -17,21 +17,22 @@
 package spoon.reflect.cu;
 
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtImport;
+import spoon.support.Experimental;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
-public interface CompilationUnit extends FactoryAccessor, Serializable {
+public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, Serializable {
 
 	enum UNIT_TYPE {
 		TYPE_DECLARATION,
@@ -55,6 +56,16 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	 * Sets the file that corresponds to this compilation unit.
 	 */
 	void setFile(File file);
+
+	/**
+	 * @return array of offsets in the origin source file, where occurs line separator
+	 */
+	int[] getLineSeparatorPositions();
+
+	/**
+	 * @param lineSeparatorPositions array of offsets in the origin source file, where occurs line separator
+	 */
+	void setLineSeparatorPositions(int[] lineSeparatorPositions);
 
 	/**
 	 * Gets all binary (.class) files that corresponds to this compilation unit
@@ -139,15 +150,19 @@ public interface CompilationUnit extends FactoryAccessor, Serializable {
 	int getTabCount(int index);
 
 	/**
-	 * Get the imports computed for this CU
+	 * Get the imports computed for this CU.
+	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
 	 * @return All the imports from the original source code
 	 */
-	Collection<CtImport> getImports();
+	@Experimental
+	Set<CtImport> getImports();
 
 	/**
 	 * Set the imports of this CU
+	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
 	 * @param imports All the imports of the original source code
 	 */
-	void setImports(Collection<CtImport> imports);
+	@Experimental
+	void setImports(Set<CtImport> imports);
 
 }

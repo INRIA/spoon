@@ -73,15 +73,14 @@ class CommentHelper {
 				break;
 			default:
 				String[] lines = LINE_SEPARATORS_RE.split(content);
-				for (int i = 0; i < lines.length; i++) {
-					String com = lines[i];
+				for (String com : lines) {
 					if (commentType == CtComment.CommentType.BLOCK) {
 						printer.write(com);
 						if (lines.length > 1) {
 							printer.writeln();
 						}
 					} else {
-						if (com.length() > 0) {
+						if (!com.isEmpty()) {
 							printer.write(COMMENT_STAR + com).writeln();
 						} else {
 							printer.write(" *" /* no trailing space */ + com).writeln();

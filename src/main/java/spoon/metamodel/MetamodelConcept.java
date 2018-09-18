@@ -79,7 +79,6 @@ public class MetamodelConcept {
 	final List<CtMethod<?>> otherMethods = new ArrayList<>();
 
 	MetamodelConcept(String name) {
-		super();
 		this.name = name;
 	}
 

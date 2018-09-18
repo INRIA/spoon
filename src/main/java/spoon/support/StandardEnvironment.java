@@ -16,29 +16,6 @@
  */
 package spoon.support;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import spoon.Launcher;
-import spoon.OutputType;
-import spoon.SpoonException;
-import spoon.compiler.Environment;
-import spoon.compiler.InvalidClassPathException;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-import spoon.experimental.modelobs.EmptyModelChangeListener;
-import spoon.experimental.modelobs.FineModelChangeListener;
-import spoon.processing.FileGenerator;
-import spoon.processing.ProblemFixer;
-import spoon.processing.ProcessingManager;
-import spoon.processing.Processor;
-import spoon.processing.ProcessorProperties;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +29,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import spoon.Launcher;
+import spoon.OutputType;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+import spoon.support.modelobs.EmptyModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
+import spoon.processing.FileGenerator;
+import spoon.processing.ProblemFixer;
+import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
+import spoon.processing.ProcessorProperties;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
+
 
 /**
  * This class implements a simple Spoon environment that reports messages in the
@@ -63,11 +64,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
 
-	private FileGenerator<? extends CtElement> defaultFileGenerator;
+	private transient  FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
 
-	ProcessingManager manager;
+	transient ProcessingManager manager;
 
 	private boolean processingStopped = false;
 
@@ -83,7 +84,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean enableComments = true;
 
-	private Logger logger = Launcher.LOGGER;
+	private transient  Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.OFF;
 
@@ -91,19 +92,21 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks = false;
 
-	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+	private transient  FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
-	private Charset encoding = Charset.defaultCharset();
+	private transient  Charset encoding = Charset.defaultCharset();
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
-	private OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+	private transient  OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
 
 	private Boolean noclasspath = null;
 
-	private SpoonProgress spoonProgress = null;
+	private transient SpoonProgress spoonProgress = null;
+
+	private CompressionType compressionType = CompressionType.GZIP;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -181,10 +184,10 @@ public class StandardEnvironment implements Serializable, Environment {
 		return manager;
 	}
 
-	Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
+	transient Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
 
 	@Override
-	public ProcessorProperties getProcessorProperties(String processorName) throws Exception {
+	public ProcessorProperties getProcessorProperties(String processorName) {
 		if (processorProperties.containsKey(processorName)) {
 			return processorProperties.get(processorName);
 		}
@@ -272,6 +275,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	/**
 	 * This method should be called to report the end of the processing.
 	 */
+	@Override
 	public void reportEnd() {
 		logger.info("end of processing: ");
 		if (warningCount > 0) {
@@ -296,6 +300,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 	}
 
+	@Override
 	public void reportProgressMessage(String message) {
 		logger.info(message);
 	}
@@ -303,14 +308,17 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setDebug(boolean debug) {
 	}
 
+	@Override
 	public void setDefaultFileGenerator(FileGenerator<? extends CtElement> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
 	}
 
+	@Override
 	public void setManager(ProcessingManager manager) {
 		this.manager = manager;
 	}
 
+	@Override
 	public void setProcessingStopped(boolean processingStopped) {
 		this.processingStopped = processingStopped;
 	}
@@ -320,45 +328,52 @@ public class StandardEnvironment implements Serializable, Environment {
 
 
 
+	@Override
 	public int getComplianceLevel() {
 		return complianceLevel;
 	}
 
+	@Override
 	public void setComplianceLevel(int level) {
 		complianceLevel = level;
 	}
 
+	@Override
 	public void setProcessorProperties(String processorName, ProcessorProperties prop) {
 		processorProperties.put(processorName, prop);
 	}
 
 	boolean useTabulations = false;
 
+	@Override
 	public boolean isUsingTabulations() {
 		return useTabulations;
 	}
 
+	@Override
 	public void useTabulations(boolean tabulation) {
 		useTabulations = tabulation;
 	}
 
 	int tabulationSize = 4;
 
+	@Override
 	public int getTabulationSize() {
 		return tabulationSize;
 	}
 
+	@Override
 	public void setTabulationSize(int tabulationSize) {
 		this.tabulationSize = tabulationSize;
 	}
 
-	private ClassLoader classloader;
+	private transient  ClassLoader classloader;
 	/*
 	 * cache class loader which loads classes from source class path
 	 * we must cache it to make all the loaded classes compatible
 	 * The cache is reset when setSourceClasspath(...) is called
 	 */
-	private ClassLoader inputClassloader;
+private transient  ClassLoader inputClassloader;
 
 	@Override
 	public void setInputClassLoader(ClassLoader aClassLoader) {
@@ -368,7 +383,7 @@ public class StandardEnvironment implements Serializable, Environment {
 				// Check that the URLs are only file URLs
 				boolean onlyFileURLs = true;
 				for (URL url : urls) {
-					if (!url.getProtocol().equals("file")) {
+					if (!"file".equals(url.getProtocol())) {
 						onlyFileURLs = false;
 					}
 				}
@@ -439,7 +454,7 @@ public class StandardEnvironment implements Serializable, Environment {
 				// it should not contain a java file
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
-				if (javaFiles.size() > 0) {
+				if (!javaFiles.isEmpty()) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
 				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
@@ -587,5 +602,15 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setSpoonProgress(SpoonProgress spoonProgress) {
 		this.spoonProgress = spoonProgress;
+	}
+
+	@Override
+	public CompressionType getCompressionType() {
+		return compressionType;
+	}
+
+	@Override
+	public void setCompressionType(CompressionType serializationType) {
+		this.compressionType = serializationType;
 	}
 }

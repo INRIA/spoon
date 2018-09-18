@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtPackage;
 
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
@@ -67,7 +68,7 @@ class JDTImportBuilder {
 			String importName = importRef.toString();
 			if (!importRef.isStatic()) {
 				if (importName.endsWith("*")) {
-					int lastDot = importName.lastIndexOf(".");
+					int lastDot = importName.lastIndexOf('.');
 					String packageName = importName.substring(0, lastDot);
 
 					// only get package from the model by traversing from rootPackage the model
@@ -75,30 +76,30 @@ class JDTImportBuilder {
 					CtPackage ctPackage = this.factory.Package().get(packageName);
 
 					if (ctPackage != null) {
-						this.imports.add(factory.Type().createImport(ctPackage.getReference()));
+						this.imports.add(createImportWithPosition(ctPackage.getReference(), importRef));
 					}
 
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {
-						this.imports.add(factory.Type().createImport(klass.getReference()));
+						this.imports.add(createImportWithPosition(klass.getReference(), importRef));
 					}
 				}
 			} else {
-				int lastDot = importName.lastIndexOf(".");
+				int lastDot = importName.lastIndexOf('.');
 				String className = importName.substring(0, lastDot);
 				String methodOrFieldName = importName.substring(lastDot + 1);
 
 				CtType klass = this.getOrLoadClass(className);
 				if (klass != null) {
-					if (methodOrFieldName.equals("*")) {
-						this.imports.add(factory.Type().createImport(factory.Type().createWildcardStaticTypeMemberReference(klass.getReference())));
+					if ("*".equals(methodOrFieldName)) {
+						this.imports.add(createImportWithPosition(factory.Type().createWildcardStaticTypeMemberReference(klass.getReference()), importRef));
 					} else {
 						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
 
-						if (methodOrFields.size() > 0) {
+						if (!methodOrFields.isEmpty()) {
 							CtNamedElement methodOrField = methodOrFields.get(0);
-							this.imports.add(factory.Type().createImport(methodOrField.getReference()));
+							this.imports.add(createImportWithPosition(methodOrField.getReference(), importRef));
 						}
 					}
 				}
@@ -106,6 +107,13 @@ class JDTImportBuilder {
 		}
 
 		spoonUnit.setImports(this.imports);
+	}
+
+	private CtImport createImportWithPosition(CtReference ref, ImportReference importRef) {
+		CtImport imprt = factory.Type().createImport(ref);
+		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), importRef.declarationSourceStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
+		//TODO initialize source position of ref
+		return imprt;
 	}
 
 	private CtType getOrLoadClass(String className) {

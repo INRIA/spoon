@@ -1,5 +1,7 @@
 package spoon.test.processing;
 
+import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.junit.Test;
 import spoon.Launcher;
@@ -18,11 +20,15 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
-import spoon.test.processing.testclasses.CtClassProcessor;
-import spoon.test.processing.testclasses.CtInterfaceProcessor;
-import spoon.test.processing.testclasses.CtTypeProcessor;
+import spoon.test.processing.processors.RenameProcessor;
+import spoon.test.processing.processors.CtClassProcessor;
+import spoon.test.processing.processors.CtInterfaceProcessor;
+import spoon.test.processing.processors.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +38,7 @@ import java.util.Map;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -75,8 +82,8 @@ public class ProcessingTest {
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
 
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
 
 	}
 
@@ -114,13 +121,13 @@ public class ProcessingTest {
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
 
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
 
 	}
 
 	@Test
-	public void testProcessorNotFoundThrowAnException() throws Exception {
+	public void testProcessorNotFoundThrowAnException() {
 		try {
 			new Launcher().run(new String[]{
 					"-p", "fr.inria.gforge.spoon.MakeAnAwesomeTacosProcessor"
@@ -143,7 +150,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testProcessorWithNoArgumentsInConstructor() throws Exception {
+	public void testProcessorWithNoArgumentsInConstructor() {
 
 		/* throw correctly an exception when trying to use a processor with constructor with args */
 
@@ -161,7 +168,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitProperties() throws Exception {
+	public void testInitProperties() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -188,7 +195,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -200,11 +207,11 @@ public class ProcessingTest {
 		Object o = new Object();
 		props.set("anObject", o);
 
-		int[] arrayInt = new int[]{ 1, 2, 3};
+		int[] arrayInt = { 1, 2, 3};
 		props.set("arrayInt", arrayInt);
 		props.set("listString", Arrays.asList(new String[]{"42"}));
 
-		boolean[] arrayBoolean = new boolean[] {true};
+		boolean[] arrayBoolean = { true };
 		props.set("arrayBoolean", arrayBoolean);
 		HashMap<String,Double> mapTest = new HashMap<>();
 		mapTest.put("foobar",42.42);
@@ -222,7 +229,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitPropertiesWithWrongType() throws Exception {
+	public void testInitPropertiesWithWrongType() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -237,7 +244,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -262,7 +269,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitPropertiesWithStringType() throws Exception {
+	public void testInitPropertiesWithStringType() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -289,7 +296,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -382,5 +389,30 @@ public class ProcessingTest {
 				assertFalse(interfaceProcessor.elements.contains(type));
 			}
 		}
+	}
+
+	@Test
+	public void testProcessDontMessWithImports() throws IOException {
+		// contract: after processing the imports are properly computed
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		File tempDir = new File("target/testprocess"); //Files.createTempDir();
+		launcher.setSourceOutputDirectory(tempDir);
+		launcher.addProcessor(new RenameProcessor("A", "D"));
+		launcher.run();
+
+		File Dfile = new File(tempDir, "spoon/test/processing/testclasses/test/sub/D.java");
+		assertTrue(Dfile.exists());
+
+		File Bfile = new File(tempDir, "spoon/test/processing/testclasses/test/B.java");
+		assertTrue(Bfile.exists());
+
+		String fileContent = StringUtils.join(Files.readLines(Bfile, Charset.defaultCharset()), "\n");
+
+		assertFalse(fileContent.contains("import spoon.test.processing.testclasses.test.sub.A;"));
+		assertTrue(fileContent.contains("import spoon.test.processing.testclasses.test.sub.D;"));
+		assertTrue(fileContent.contains("private D a = new D();"));
 	}
 }

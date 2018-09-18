@@ -15,8 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class JavaDocTest {
+
 	@Test
-	public void testJavaDocReprint() throws Exception {
+	public void testJavaDocReprint() {
 		SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);
@@ -58,7 +59,7 @@ public class JavaDocTest {
 	}
 
 	@Test
-	public void testJavadocNotPresentInAST() throws Exception {
+	public void testJavadocNotPresentInAST() {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setCommentEnabled(false);
 		launcher.getEnvironment().setNoClasspath(true);

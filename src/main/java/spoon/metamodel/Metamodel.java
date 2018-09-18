@@ -400,9 +400,8 @@ public class Metamodel {
 				"spoon/reflect/reference",
 				"spoon/support/reflect/declaration",
 				"spoon/support/reflect/code",
-				"spoon/support/reflect/reference").forEach(path -> {
-			launcher.addInputResource(new FileSystemFolder(new File(spoonJavaSourcesDirectory, path)));
-		});
+				"spoon/support/reflect/reference").forEach(path ->
+			launcher.addInputResource(new FileSystemFolder(new File(spoonJavaSourcesDirectory, path))));
 		launcher.buildModel();
 		return launcher.getFactory();
 	}
@@ -477,6 +476,7 @@ public class Metamodel {
 			"java.lang.Cloneable",
 			"java.lang.Object",
 			"spoon.processing.FactoryAccessor",
+			"spoon.reflect.cu.SourcePositionHolder",
 			"spoon.reflect.visitor.CtVisitable",
 			"spoon.reflect.visitor.chain.CtQueryable",
 			"spoon.template.TemplateParameter",

@@ -15,7 +15,7 @@ import spoon.reflect.visitor.CtVisitable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
@@ -29,7 +29,7 @@ public class SetParentTest<T extends CtVisitable> {
 	private static Factory factory = createFactory();
 
 	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		return createReceiverList();
 	}
 
@@ -76,7 +76,7 @@ public class SetParentTest<T extends CtVisitable> {
 
 		// contract: the parent has not been changed by a call to setParent on an elemnt
 		assertTrue(argument.equals(argumentClone));
-		assertFalse(argument == argumentClone);
+		assertNotSame(argument, argumentClone);
 
 	}
 

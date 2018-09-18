@@ -40,6 +40,7 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@Override
 	@DerivedProperty
 	CtVariableReference<T> getReference();
 

@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
@@ -26,69 +27,141 @@ import java.util.Deque;
 
 public class PrintingContext {
 
-	private long NO_TYPE_DECL 			= 1 << 0;
-	private long IGNORE_GENERICS 		= 1 << 1;
-	private long SKIP_ARRAY 			= 1 << 2;
-	private long IGNORE_STATIC_ACCESS   = 1 << 3;
-	private long IGNORE_ENCLOSING_CLASS = 1 << 4;
+	private long NEXT_FOR_VARIABLE       = 1 << 0;
+	private long IGNORE_GENERICS         = 1 << 1;
+	private long SKIP_ARRAY              = 1 << 2;
+	private long IGNORE_STATIC_ACCESS    = 1 << 3;
+	private long IGNORE_ENCLOSING_CLASS  = 1 << 4;
 	private long FORCE_WILDCARD_GENERICS = 1 << 5;
+	private long FIRST_FOR_VARIABLE      = 1 << 6;
 
 	private long state;
+	private CtStatement statement;
 
-	public boolean noTypeDecl() {
-		return (state & NO_TYPE_DECL) != 0L;
+	/**
+	 * @return true if we are printing first variable declaration of CtFor statement
+	 */
+	public boolean isFirstForVariable() {
+		return (state & FIRST_FOR_VARIABLE) != 0L;
 	}
+
+	/**
+	 * {@link #isNextForVariable()}
+	 */
+	@Deprecated
+	public boolean noTypeDecl() {
+		return isNextForVariable();
+	}
+
+	/**
+	 * @return true if we are printing second or next variable declaration of CtFor statement
+	 */
+	public boolean isNextForVariable() {
+		return (state & NEXT_FOR_VARIABLE) != 0L;
+	}
+
 	public boolean ignoreGenerics() {
 		return (state & IGNORE_GENERICS) != 0L;
 	}
+
 	public boolean skipArray() {
 		return (state & SKIP_ARRAY) != 0L;
 	}
+
 	public boolean ignoreStaticAccess() {
 		return (state & IGNORE_STATIC_ACCESS) != 0L;
 	}
+
 	public boolean ignoreEnclosingClass() {
 		return (state & IGNORE_ENCLOSING_CLASS) != 0L;
 	}
+
 	public boolean forceWildcardGenerics() {
 		return (state & FORCE_WILDCARD_GENERICS) != 0L;
 	}
 
+	/**
+	 * @return true if `stmt` has to be handled as statement in current printing context
+	 */
+	public boolean isStatement(CtStatement stmt) {
+		return this.statement == stmt;
+	}
+
 	public class Writable implements AutoCloseable {
 		private long oldState;
+		private CtStatement oldStatement;
 
 		protected Writable() {
 			oldState = state;
+			oldStatement = statement;
 		}
+
 		@Override
 		public void close() {
 			state = oldState;
+			statement = oldStatement;
 		}
 
-		public <T extends Writable> T noTypeDecl(boolean v) {
-			setState(NO_TYPE_DECL, v);
+		/**
+		 * @param v use true if printing first variable declaration of CtFor statement
+		 */
+		public <T extends Writable> T isFirstForVariable(boolean v) {
+			setState(FIRST_FOR_VARIABLE, v);
 			return (T) this;
 		}
+
+		@Deprecated
+		public <T extends Writable> T noTypeDecl(boolean v) {
+			isFirstForVariable(v);
+			return (T) this;
+		}
+
+		/**
+		 * @param v use true if printing second or next variable declaration of CtFor statement
+		 */
+		public <T extends Writable> T isNextForVariable(boolean v) {
+			setState(NEXT_FOR_VARIABLE, v);
+			return (T) this;
+		}
+
 		public <T extends Writable> T ignoreGenerics(boolean v) {
 			setState(IGNORE_GENERICS, v);
 			return (T) this;
 		}
+
 		public <T extends Writable> T skipArray(boolean v) {
 			setState(SKIP_ARRAY, v);
 			return (T) this;
 		}
+
 		public <T extends Writable> T ignoreStaticAccess(boolean v) {
 			setState(IGNORE_STATIC_ACCESS, v);
 			return (T) this;
 		}
+
 		public <T extends Writable> T ignoreEnclosingClass(boolean v) {
 			setState(IGNORE_ENCLOSING_CLASS, v);
 			return (T) this;
 		}
+
 		public <T extends Writable> T forceWildcardGenerics(boolean v) {
 			setState(FORCE_WILDCARD_GENERICS, v);
 			return (T) this;
 		}
+
+		/**
+		 * There are statements (e.g. invocation), which may play role of expression too.
+		 * They have to be suffixed by semicolon depending on the printing context.
+		 * Call this method to inform printer that invocation is used as statement.
+		 *
+		 * @param stmt the instance of the actually printed statement.
+		 * Such statement will be finished by semicolon.
+		 */
+		public <T extends Writable> T setStatement(CtStatement stmt) {
+			statement = stmt;
+			return (T) this;
+		}
+
 		private void setState(long mask, boolean v) {
 			state = v ? state | mask : state & ~mask;
 		}
@@ -98,14 +171,14 @@ public class PrintingContext {
 		return new Writable();
 	}
 
-	Deque<TypeContext> currentThis = new ArrayDeque<>();
+	Deque<CacheBasedConflictFinder> currentThis = new ArrayDeque<>();
 
 	/**
 	 * @return top level type
 	 */
 	public CtTypeReference<?> getCurrentTypeReference() {
 		if (currentTopLevel != null) {
-			TypeContext tc = getCurrentTypeContext();
+			CacheBasedConflictFinder tc = getCurrentTypeContext();
 			if (tc != null) {
 				return tc.typeRef;
 			}
@@ -113,17 +186,18 @@ public class PrintingContext {
 		}
 		return null;
 	}
-	private TypeContext getCurrentTypeContext() {
-		if (currentThis != null && currentThis.size() > 0) {
-			TypeContext tc = currentThis.peek();
-			return tc;
+
+	private CacheBasedConflictFinder getCurrentTypeContext() {
+		if (currentThis != null && !currentThis.isEmpty()) {
+			return currentThis.peek();
 		}
 		return null;
 	}
 
 	public void pushCurrentThis(CtType<?> type) {
-		currentThis.push(new TypeContext(type));
+		currentThis.push(new CacheBasedConflictFinder(type));
 	}
+
 	public void popCurrentThis() {
 		currentThis.pop();
 	}
@@ -139,12 +213,13 @@ public class PrintingContext {
 	public String toString() {
 		return "context.ignoreGenerics: " + ignoreGenerics() + "\n";
 	}
+
 	/**
 	 * @param typeRef
 	 * @return true if typeRef is equal to current (actually printed) Type (currentThis)
 	 */
 	public boolean isInCurrentScope(CtTypeReference<?> typeRef) {
 		CtTypeReference<?> currentTypeRef = getCurrentTypeReference();
-		return currentTypeRef != null && typeRef.equals(currentTypeRef);
+		return typeRef.equals(currentTypeRef);
 	}
 }

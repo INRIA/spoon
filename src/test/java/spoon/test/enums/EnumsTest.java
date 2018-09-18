@@ -17,10 +17,12 @@ import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
 import spoon.test.enums.testclasses.NestedEnums;
+import spoon.test.enums.testclasses.Regular;
 import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -36,7 +38,7 @@ public class EnumsTest {
 
 	@Test
 	public void testModelBuildingEnum() throws Exception {
-		CtEnum<Regular> enumeration = build("spoon.test.enums", "Regular");
+		CtEnum<Regular> enumeration = build("spoon.test.enums.testclasses", "Regular");
 		assertEquals("Regular", enumeration.getSimpleName());
 		assertEquals(3, Regular.values().length);
 		assertEquals(3, enumeration.getEnumValues().size());
@@ -45,9 +47,9 @@ public class EnumsTest {
 	}
 
 	@Test
-	public void testAnnotationsOnEnum() throws Exception {
+	public void testAnnotationsOnEnum() {
 		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
+		launcher.run(new String[]{
 				"-i", "./src/test/java/spoon/test/enums/testclasses",
 				"-o", "./target/spooned"
 		});
@@ -55,7 +57,7 @@ public class EnumsTest {
 		final CtEnum<?> foo = (CtEnum) launcher.getFactory().Type().get(Foo.class);
 		assertEquals(1, foo.getFields().size());
 		assertEquals(1, foo.getFields().get(0).getAnnotations().size());
-		assertEquals(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
+		assertSame(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
 		assertEquals(
 				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR
@@ -112,7 +114,7 @@ public class EnumsTest {
 			assertEquals(asSet(ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 	}
-	
+
 	private <T> Set<T> asSet(T... values) {
 		return new HashSet<>(Arrays.asList(values));
 	}
@@ -134,15 +136,15 @@ public class EnumsTest {
 		assertTrue(content.contains("FAIL,"));
 		assertTrue(content.contains("KEEP_OLD_NODE(),"));
 
-		assertTrue(content.contains("/**\n" +
-				"     * Add new {@link RootNode} after existing nodes\n" +
-				"     */\n" +
-				"    APPEND"));
+		assertTrue(content.contains("/**\n"
+				+ "     * Add new {@link RootNode} after existing nodes\n"
+				+ "     */\n"
+				+ "    APPEND"));
 
-		assertTrue(content.contains("/**\n" +
-				"     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n" +
-				"     */\n" +
-				"    KEEP_OLD_NODE(),"));
+		assertTrue(content.contains("/**\n"
+				+ "     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n"
+				+ "     */\n"
+				+ "    KEEP_OLD_NODE(),"));
 	}
 
 	@Test

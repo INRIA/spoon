@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
-import spoon.experimental.modelobs.ActionBasedChangeListenerImpl;
-import spoon.experimental.modelobs.action.Action;
+import spoon.support.modelobs.ActionBasedChangeListenerImpl;
+import spoon.support.modelobs.action.Action;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
@@ -40,11 +40,11 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 	private static final List<CtType<? extends CtElement>> allInstantiableMetamodelInterfaces = SpoonTestHelpers.getAllInstantiableMetamodelInterfaces();
 
 	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
+	public static Collection<Object[]> data() {
 		return createReceiverList();
 	}
 
-	public static Collection<Object[]> createReceiverList() throws Exception {
+	public static Collection<Object[]> createReceiverList() {
 		List<Object[]> values = new ArrayList<>();
 		for (CtType t : allInstantiableMetamodelInterfaces) {
 			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
@@ -137,14 +137,14 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				// we check that setParent has been called
 
 				// directly the element
-				if (CtElement.class.isInstance(argument)
+				if (argument instanceof CtElement
 				  && setter.getAnnotation(UnsettableProperty.class) == null) {
 					nAssertsOnParent++;
 					assertTrue(((CtElement)argument).hasParent(receiver));
 				}
 
 				// the element is in a list
-				if (Collection.class.isInstance(argument)
+				if (argument instanceof Collection
 						&& setter.getAnnotation(UnsettableProperty.class) == null) {
 					nAssertsOnParentInList++;
 					assertTrue(((CtElement)((Collection)argument).iterator().next()).hasParent(receiver));

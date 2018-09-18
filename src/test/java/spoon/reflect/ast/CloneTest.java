@@ -27,11 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CloneTest {
+
 	@Test
-	public void testCloneMethodsDeclaredInAST() throws Exception {
+	public void testCloneMethodsDeclaredInAST() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
@@ -72,12 +78,12 @@ public class CloneTest {
 			}
 
 			private <T> boolean hasConcreteImpl(CtInterface<T> intrface) {
-				return Query.getElements(intrface.getFactory(), new TypeFilter<CtClass<?>>(CtClass.class) {
+				return !Query.getElements(intrface.getFactory(), new TypeFilter<CtClass<?>>(CtClass.class) {
 					@Override
 					public boolean matches(CtClass<?> element) {
 						return super.matches(element) && element.getSuperInterfaces().contains(intrface.getReference());
 					}
-				}).size() > 0;
+				}).isEmpty();
 			}
 
 			private <T> boolean isRootDeclaration(CtInterface<T> intrface) {
@@ -87,7 +93,7 @@ public class CloneTest {
 	}
 
 	@Test
-	public void testCloneCastConditional() throws Exception {
+	public void testCloneCastConditional() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.getEnvironment().setNoClasspath(true);
@@ -98,22 +104,22 @@ public class CloneTest {
 			@Override
 			public void process(CtConditional<?> conditional) {
 				CtConditional clone = conditional.clone();
-				Assert.assertEquals(0, conditional.getTypeCasts().size());
-				Assert.assertEquals(0, clone.getTypeCasts().size());
-				Assert.assertEquals(conditional, clone);
+				assertEquals(0, conditional.getTypeCasts().size());
+				assertEquals(0, clone.getTypeCasts().size());
+				assertEquals(conditional, clone);
 				conditional.addTypeCast(getFactory().Type().bytePrimitiveType());
-				Assert.assertEquals(1, conditional.getTypeCasts().size());
+				assertEquals(1, conditional.getTypeCasts().size());
 				Assert.assertNotEquals(conditional, clone);
 				clone = conditional.clone();
-				Assert.assertEquals(conditional, clone);
-				Assert.assertEquals(1, clone.getTypeCasts().size());
+				assertEquals(conditional, clone);
+				assertEquals(1, clone.getTypeCasts().size());
 			}
 		});
 		launcher.run();
 	}
 
 	@Test
-	public void testCloneListener() throws Exception {
+	public void testCloneListener() {
 		// contract: it is possible to extend the cloning behavior
 
 		// in this example extension, a listener of cloning process gets access to origin node and cloned node
@@ -136,23 +142,23 @@ public class CloneTest {
 				assertNull(previousTarget);
 			}
 		}
-		
+
 		CloneListener cl = new CloneListener();
 		CtType<?> cloneTarget = cl.clone(cloneSource);
-		
+
 		cloneSource.filterChildren(null).forEach(sourceElement -> {
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
 			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
 			assertEquals("Source and Target are not equal", sourceElement, targetElement);
 		});
-		//contract: each visitable elements was cloned exactly once.  No more no less.
+		//contract: each visitable elements was cloned exactly once. No more no less.
 		assertTrue(cl.sourceToTarget.isEmpty());
 	}
 
 	@Test
-	public void testCopyMethod() throws Exception {
-		// contract: the copied method is well-formed, lookup of executable references is preserved after copying, esp for recursive methods
+	public void testCopyMethod() {
+		// contract: the copied method is well-formed, lookup of executable references is preserved after copying, especially for recursive methods
 		Launcher l = new Launcher();
 		l.getEnvironment().setNoClasspath(true);
 		l.addInputResource("./src/test/resources/noclasspath/A2.java");
@@ -161,7 +167,7 @@ public class CloneTest {
 		CtMethod<?> method = klass.getMethodsByName("c").get(0);
 		List<CtExecutableReference> elements = method.getElements(new TypeFilter<>(CtExecutableReference.class));
 		CtExecutableReference methodRef = elements.get(0);
-		
+
 		// the lookup is OK in the original node
 		assertSame(method, methodRef.getDeclaration());
 
@@ -183,7 +189,7 @@ public class CloneTest {
 		// now we may want to rename the copied method
 		Refactoring.changeMethodName(methodClone, "foo");
 		assertEquals("foo", methodClone.getSimpleName()); // the method has been changed
-		assertEquals("foo", reference.getSimpleName());  // the reference has been changed
+		assertEquals("foo", reference.getSimpleName()); // the reference has been changed
 		assertSame(methodClone, reference.getDeclaration()); // the lookup still works
 		assertEquals("A2", methodClone.getDeclaringType().getQualifiedName());
 
@@ -194,10 +200,8 @@ public class CloneTest {
 		assertEquals("cCopyX", methodClone.getSimpleName());
 	}
 
-
-
 	@Test
-	public void testCopyType() throws Exception {
+	public void testCopyType() {
 		// contract: the copied type is well formed, it never points to the initial type
 		Factory factory = ModelUtils.build(new File("./src/main/java/spoon/reflect/visitor/DefaultJavaPrettyPrinter.java"));
 		CtType<?> intialElement = factory.Type().get(DefaultJavaPrettyPrinter.class);
@@ -216,5 +220,4 @@ public class CloneTest {
 			}
 		}
 	}
-
 }

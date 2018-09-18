@@ -42,7 +42,7 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 		return (C) this;
 	}
 
-	Collection<CtElement> getChilds(CtElement element) {
+	Collection<CtElement> getChildren(CtElement element) {
 		final Collection<CtElement> elements = new ArrayList<>();
 		if (element != null) {
 			element.accept(new CtScanner() {
@@ -53,6 +53,14 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 			});
 		}
 		return elements;
+	}
+
+	/**
+	 * @deprecated since Spoon 7.1.0, please use {@link #getChildren(CtElement)}
+	 */
+	@Deprecated
+	Collection<CtElement> getChilds(CtElement element) {
+		return getChildren(element);
 	}
 
 	protected String getParamString() {

@@ -65,7 +65,6 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtMethodImpl() {
-		super();
 	}
 
 	@Override

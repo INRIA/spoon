@@ -7,7 +7,7 @@ The integrators are the developers who have write access to the repository. Deve
 
 * Spoon integrators only merge atomic pull requests (single bug fix or single feature)
 * Spoon integrators only merge well tested and well documented pull requests, after thorough code review
-* Spoon integrators check the quality of the squashed merge commit message, and change it if required. The convention is that it starts with `fix:`, `feat:`, `test:`, `doc:`, `perf:`, `chore:`, `refactor:` ([source](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#type)). Optionally the impacted component can be specified, eg `fix(prettyprinter): ...`.
+* Spoon integrators check the quality of the squashed merge commit message, and change it if required. The convention is that it starts with `fix:`, `feat:`, `test:`, `doc:`, `perf:`, `chore:`, `refactor:`, `checkstyle:` ([source](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#type)). Optionally the impacted component can be specified, eg `fix(prettyprinter): ...`.
 * Spoon integrators never push directly to `master`
 * Spoon integrators  never merge their own pull request
 * Spoon integrators leave pull requests opened at least 1 day before merging, so that the community is aware and can comment on them

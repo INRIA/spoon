@@ -6,24 +6,26 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.test.trycatch.Main;
+import spoon.test.trycatch.testclasses.Main;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class VarArgsTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<Main> type = build("spoon.test.varargs", "VarArgsSample");
+		CtClass<Main> type = build("spoon.test.varargs.testclasses", "VarArgsSample");
 		assertEquals("VarArgsSample", type.getSimpleName());
 		CtMethod<?> m = type.getMethodsByName("foo").get(0);
 
 		CtParameter<?> param0 = m.getParameters().get(0);
-		assertEquals(false, param0.isVarArgs());
+		assertFalse(param0.isVarArgs());
 
 		CtParameter<?> param1 = m.getParameters().get(1);
-		assertEquals(true, param1.isVarArgs());
+		assertTrue(param1.isVarArgs());
 		assertEquals("java.lang.String[]", param1.getType().toString());
 		assertEquals("String[]", param1.getType().getSimpleName());
 		assertEquals("java.lang.String[]", param1.getType().getQualifiedName());

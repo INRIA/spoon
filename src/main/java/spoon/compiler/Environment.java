@@ -18,7 +18,7 @@ package spoon.compiler;
 
 import org.apache.log4j.Level;
 import spoon.OutputType;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -27,6 +27,7 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.support.OutputDestinationHandler;
+import spoon.support.CompressionType;
 import spoon.support.compiler.SpoonProgress;
 
 import java.io.File;
@@ -69,8 +70,7 @@ public interface Environment {
 	/**
 	 * Returns the properties for a given processor.
 	 */
-	ProcessorProperties getProcessorProperties(String processorName)
-			throws Exception;
+	ProcessorProperties getProcessorProperties(String processorName);
 
 	/**
 	 * Sets the properties for a given processor.
@@ -402,4 +402,14 @@ public interface Environment {
 	SpoonProgress getSpoonProgress();
 
 	void setSpoonProgress(SpoonProgress spoonProgress);
+
+	/**
+	 * Get the type of serialization to be used by default
+	 */
+	CompressionType getCompressionType();
+
+	/**
+	 * Set the type of serialization to be used by default
+	 */
+	void setCompressionType(CompressionType serializationType);
 }

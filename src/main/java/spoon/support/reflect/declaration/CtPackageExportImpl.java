@@ -38,7 +38,6 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 	private boolean isOpen;
 
 	public CtPackageExportImpl() {
-		super();
 	}
 
 	@Override

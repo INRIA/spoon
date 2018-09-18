@@ -9,6 +9,7 @@ import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -26,6 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -43,7 +45,7 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
-import spoon.test.generics.ComparableComparatorBug;
+import spoon.test.generics.testclasses3.ComparableComparatorBug;
 
 import java.io.File;
 import java.io.ObjectInputStream;
@@ -72,62 +74,59 @@ import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
+
 	@Test
-	public void testScannerClass() throws Exception {
+	public void testScannerClass() {
 		final CtClass<Class> aClass = new JavaReflectionTreeBuilder(createFactory()).scan(Class.class);
 		assertNotNull(aClass);
 		assertEquals("java.lang.Class", aClass.getQualifiedName());
 		//The Class extends Object, but CtElementImpl (made from sources) getSuperclass() returns null. See CtTypeInformation#getSuperclass() comment.
 		assertNull(aClass.getSuperclass());
-		assertTrue(aClass.getSuperInterfaces().size() > 0);
-		assertTrue(aClass.getFields().size() > 0);
-		assertTrue(aClass.getMethods().size() > 0);
-		assertTrue(aClass.getNestedTypes().size() > 0);
+		assertFalse(aClass.getSuperInterfaces().isEmpty());
+		assertFalse(aClass.getFields().isEmpty());
+		assertFalse(aClass.getMethods().isEmpty());
+		assertFalse(aClass.getNestedTypes().isEmpty());
 		assertTrue(aClass.isShadow());
 	}
 
 	@Test
-	public void testScannerEnum() throws Exception {
+	public void testScannerEnum() {
 		final CtEnum<TextStyle> anEnum = new JavaReflectionTreeBuilder(createFactory()).scan(TextStyle.class);
 		assertNotNull(anEnum);
 		assertEquals("java.time.format.TextStyle", anEnum.getQualifiedName());
 		assertNotNull(anEnum.getSuperclass());
-		assertTrue(anEnum.getFields().size() > 0);
-		assertTrue(anEnum.getEnumValues().size() > 0);
-		assertTrue(anEnum.getMethods().size() > 0);
+		assertFalse(anEnum.getFields().isEmpty());
+		assertFalse(anEnum.getEnumValues().isEmpty());
+		assertFalse(anEnum.getMethods().isEmpty());
 		assertTrue(anEnum.isShadow());
 	}
 
 	@Test
-	public void testScannerInterface() throws Exception {
+	public void testScannerInterface() {
 		final CtInterface<CtLambda> anInterface = new JavaReflectionTreeBuilder(createFactory()).scan(CtLambda.class);
 		assertNotNull(anInterface);
 		assertEquals("spoon.reflect.code.CtLambda", anInterface.getQualifiedName());
 		assertNull(anInterface.getSuperclass());
-		assertTrue(anInterface.getSuperInterfaces().size() > 0);
-		assertTrue(anInterface.getMethods().size() > 0);
+		assertFalse(anInterface.getSuperInterfaces().isEmpty());
+		assertFalse(anInterface.getMethods().isEmpty());
 		assertTrue(anInterface.isShadow());
 	}
 
 	@Test
-	public void testScannerAnnotation() throws Exception {
+	public void testScannerAnnotation() {
 		final CtAnnotationType<SuppressWarnings> suppressWarning = new JavaReflectionTreeBuilder(createFactory()).scan(SuppressWarnings.class);
 		assertNotNull(suppressWarning);
 		assertEquals("java.lang.SuppressWarnings", suppressWarning.getQualifiedName());
-		assertTrue(suppressWarning.getAnnotations().size() > 0);
-		assertTrue(suppressWarning.getTypeMembers().size() > 0);
+		assertFalse(suppressWarning.getAnnotations().isEmpty());
+		assertFalse(suppressWarning.getTypeMembers().isEmpty());
 		assertTrue(suppressWarning.getTypeMembers().get(0) instanceof CtAnnotationMethod);
-
 		assertTrue(suppressWarning.isShadow());
-
 		assertNotNull(suppressWarning.getAnnotation(Retention.class));
-
-		assertEquals("SOURCE",suppressWarning.getAnnotation(Retention.class).value().toString());
-
+		assertEquals("SOURCE", suppressWarning.getAnnotation(Retention.class).value().toString());
 	}
 
 	@Test
-	public void testScannerGenericsInClass() throws Exception {
+	public void testScannerGenericsInClass() {
 		final CtType<ComparableComparatorBug> aType = new JavaReflectionTreeBuilder(createFactory()).scan(ComparableComparatorBug.class);
 		assertNotNull(aType);
 
@@ -141,7 +140,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testScannerArrayReference() throws Exception {
+	public void testScannerArrayReference() {
 		final CtType<URLClassLoader> aType = new JavaReflectionTreeBuilder(createFactory()).scan(URLClassLoader.class);
 		assertNotNull(aType);
 		final CtMethod<Object> aMethod = aType.getMethod("getURLs");
@@ -153,7 +152,7 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testDeclaredMethods() throws Exception {
+	public void testDeclaredMethods() {
 		final CtType<StringBuilder> type = new JavaReflectionTreeBuilder(createFactory()).scan(StringBuilder.class);
 		assertNotNull(type);
 		// All methods overridden from AbstractStringBuilder and with a type changed have been removed.
@@ -165,21 +164,21 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testDeclaredField() throws Exception {
+	public void testDeclaredField() {
 		final CtType<CookieManager> aType = new JavaReflectionTreeBuilder(createFactory()).scan(CookieManager.class);
 		assertNotNull(aType);
-		// CookieManager have only 2 fields. Java reflection doesn't give us field of its superclass.
+		// CookieManager has only 2 fields. Java reflection doesn't give us field of its superclass.
 		assertEquals(2, aType.getFields().size());
 	}
 
 	@Test
-	public void testDeclaredConstructor() throws Exception {
+	public void testDeclaredConstructor() {
 		final CtType<JDTSnippetCompiler> aType = new JavaReflectionTreeBuilder(createFactory()).scan(JDTSnippetCompiler.class);
 		assertNotNull(aType);
-		// JDTSnippetCompiler have only 1 constructor with 2 arguments but its super class have 1 constructor with 1 argument.
+		// JDTSnippetCompiler has only 1 constructor with 2 arguments but its super class has 1 constructor with 1 argument.
 		assertEquals(1, ((CtClass<JDTSnippetCompiler>) aType).getConstructors().size());
 	}
-	
+
 	@Test
 	public void testShadowModelEqualsNormalModel() {
 		//contract: CtType made from sources is equal to CtType made by reflection
@@ -193,7 +192,7 @@ public class JavaReflectionTreeBuilderTest {
 		}
 		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
 	}
-	
+
 	private List<String> checkShadowTypeIsEqual(CtType<?> type) {
 		if (type == null) {
 			return Collections.emptyList();
@@ -201,10 +200,10 @@ public class JavaReflectionTreeBuilderTest {
 		Factory shadowFactory = createFactory();
 		CtTypeReference<?> shadowTypeRef = shadowFactory.Type().createReference(type.getActualClass());
 		CtType<?> shadowType = shadowTypeRef.getTypeDeclaration();
-		
+
 		assertFalse(type.isShadow());
 		assertTrue(shadowType.isShadow());
-		
+
 		ShadowEqualsVisitor sev = new ShadowEqualsVisitor(new HashSet<>(Arrays.asList(
 				//shadow classes has no body
 				CtRole.STATEMENT,
@@ -214,25 +213,24 @@ public class JavaReflectionTreeBuilderTest {
 
 				// shadow classes have no comments
 				CtRole.COMMENT)));
-		
+
 		return sev.checkDiffs(type, shadowType);
 	}
-	
+
 	private static class Diff {
 		CtElement element;
 		CtElement other;
 		Set<CtRole> roles = new HashSet<>();
 		Diff(CtElement element, CtElement other) {
-			super();
 			this.element = element;
 			this.other = other;
 		}
 	}
-	
+
 	private static class ShadowEqualsChecker extends EqualsChecker {
 		Diff currentDiff;
 		List<Diff> differences = new ArrayList<>();
-		
+
 		@Override
 		protected void setNotEqual(CtRole role) {
 			if (role == CtRole.MODIFIER) {
@@ -265,7 +263,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			currentDiff.roles.add(role);
 		}
-		
+
 		private Set<ModifierKind> removeModifiers(Set<ModifierKind> elementModifiers, ModifierKind... modifiers) {
 			Set<ModifierKind> copy = new HashSet<>(elementModifiers);
 			for (ModifierKind modifierKind : modifiers) {
@@ -278,18 +276,18 @@ public class JavaReflectionTreeBuilderTest {
 		public void scan(CtElement element) {
 			currentDiff = new Diff(element, other);
 			super.scan(element);
-			if (currentDiff.roles.size() > 0) {
+			if (!currentDiff.roles.isEmpty()) {
 				differences.add(currentDiff);
 			}
 		}
 	}
-	
+
 	private static class ShadowEqualsVisitor extends EqualsVisitor {
 		CtElement rootOfOther;
 		CtElementPathBuilder pathBuilder = new CtElementPathBuilder();
 		List<String> differences;
 		Set<CtRole> ignoredRoles;
-		
+
 		ShadowEqualsVisitor(Set<CtRole> ignoredRoles) {
 			super(new ShadowEqualsChecker());
 			this.ignoredRoles = ignoredRoles;
@@ -308,16 +306,16 @@ public class JavaReflectionTreeBuilderTest {
 				return false;
 			}
 			if (element instanceof CtEnumValue && role == CtRole.VALUE) {
-				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't supports that
+				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't support that
 				this.isNotEqual = false;
 				return false;
 			}
 
 			CtElement parentOfOther = stack.peek();
 			try {
-				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString()+"#"+role.getCamelCaseName()
-				+"\nShadow: " + String.valueOf(other)
-				+"\nNormal: " + String.valueOf(element)+"\n");
+				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString() + "#" + role.getCamelCaseName()
+				+ "\nShadow: " + String.valueOf(other)
+				+ "\nNormal: " + String.valueOf(element) + "\n");
 			} catch (CtPathException e) {
 				throw new SpoonException(e);
 			}
@@ -376,13 +374,10 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			if (role == CtRole.ANNOTATION) {
 				//remove all RetentionPolicy#SOURCE level annotations from elements
-				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>)elements).stream().filter(a->{
-					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
+				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
+					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
-					if (ac == Override.class || ac == SuppressWarnings.class || ac == Root.class) {
-						return false;
-					}
-					return true;
+					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;
@@ -404,19 +399,19 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString()+"#"
-					+diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
-					+"\nShadow: " + String.valueOf(diff.other)
-					+"\nNormal: " + String.valueOf(diff.element)+"\n");
+					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString() + "#"
+					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
+					+ "\nShadow: " + String.valueOf(diff.other)
+					+ "\nNormal: " + String.valueOf(diff.element) + "\n");
 				} catch (CtPathException e) {
 					throw new SpoonException(e);
 				}
-				
+
 			}
 			return differences;
 		}
 	}
-	
+
 	private static Map<String, CtTypeMember> groupTypeMembersBySignature(Collection<CtTypeMember> typeMembers) {
 		Map<String, CtTypeMember> typeMembersByName = new HashMap<>();
 		for (CtTypeMember tm : typeMembers) {
@@ -445,7 +440,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("T", typeArg.getSimpleName());
 		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
-	
+
 	@Test
 	public void testSuperInterfaceActualTypeArgumentsByCtTypeReferenceImpl() {
 		TypeFactory typeFactory = createFactory().Type();
@@ -457,7 +452,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals("T", typeArg.getSimpleName());
 		assertTrue(typeArg instanceof CtTypeParameterReference);
 	}
-	
+
 	@Test
 	public void testSuperInterfaceCorrectActualTypeArgumentsByCtTypeReferenceImpl() {
 		TypeFactory typeFactory = createFactory().Type();
@@ -475,7 +470,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testSuperInterfaceQName() {
 		//contract: the qualified names of super interfaces are correct
@@ -491,10 +486,10 @@ public class JavaReflectionTreeBuilderTest {
 			assertSame(aType, ifaceRef.getParent());
 		}
 	}
-	
+
 	@Test
 	public void testSuperClass() {
-		//contract: the super class have actual type arguments
+		//contract: the super class has actual type arguments
 		TypeFactory typeFactory = createFactory().Type();
 		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtEnumValueImpl.class);
 		CtType aType = aTypeRef.getTypeDeclaration();
@@ -505,10 +500,10 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeParameterReference paramRef = (CtTypeParameterReference) superClass.getActualTypeArguments().get(0);
 		assertSame(aType.getFormalCtTypeParameters().get(0), paramRef.getDeclaration());
 	}
-	
+
 	@Test
-	public void testSuperOfActualTypeArgumentsOfReturnTypeOfMethod() throws Exception {
-				
+	public void testSuperOfActualTypeArgumentsOfReturnTypeOfMethod() {
+
 		Consumer<CtType<?>> checker = type -> {
 			{
 				CtMethod method = type.getMethodsByName("setAssignment").get(0);
@@ -547,7 +542,7 @@ public class JavaReflectionTreeBuilderTest {
 		CtClass<?> classFromSources = launcher.getFactory().Class().get(CtAssignmentImpl.class.getName());
 		assertFalse(classFromSources.isShadow());
 		checker.accept(classFromSources);
-		
+
 		//try the same check using CtType build using reflection
 		CtType<?> classFromReflection = createFactory().Class().get(CtAssignmentImpl.class);
 		assertTrue(classFromReflection.isShadow());
@@ -566,10 +561,8 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeParameter typeParameter = shadowType.getFormalCtTypeParameters().get(0);
 
 		assertEquals("T", typeParameter.getSimpleName());
-		assertTrue(typeParameter.getSuperclass() == null);
+		assertNull(typeParameter.getSuperclass());
 	}
-
-
 
 	@Test
 	public void testPartialShadow() {
@@ -577,7 +570,39 @@ public class JavaReflectionTreeBuilderTest {
 		Factory factory = createFactory();
 		CtType<Object> type = factory.Type().get(ProjectableQuery.class);
 		assertEquals("ProjectableQuery", type.getSimpleName());
-		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
+		// because one of the parameter is not in the classpath therefore the reflection did not succeed to list the methods
 		assertEquals(0, type.getMethods().size());
+	}
+
+	@Test
+	public void testInnerClassWithConstructorParameterAnnotated() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(JavaReflectionTreeBuilderTest.class
+				.getClassLoader()
+				.getResource("annotated-parameter-on-nested-class-constructor/Caller.java")
+				.getPath());
+		launcher.getEnvironment().setSourceClasspath(
+				new String[]{
+						JavaReflectionTreeBuilderTest.class
+								.getClassLoader()
+								.getResource("annotated-parameter-on-nested-class-constructor/classes")
+								.getPath()
+				});
+		launcher.getEnvironment().setAutoImports(true);
+		//contract: No error due to runtime annotation of a parameter of a constructor of a shadow nested class
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType caller = factory.Type().get("Caller");
+		CtParameter annotatedParameter = ((CtParameter)
+				((CtConstructor)
+					((CtLocalVariable)
+						((CtConstructor)
+								caller.getTypeMembers().get(0)
+						).getBody().getStatement(2)
+					).getType().getTypeDeclaration().getTypeMembers().get(0)
+				).getParameters().get(0));
+
+		//contract: the annotation is correctly read
+		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
 }

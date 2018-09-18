@@ -69,7 +69,6 @@ public class LauncherTest {
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());
 		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
 		assertEquals("UTF-16", environment.getEncoding().displayName());
-
 	}
 
 	@Test
@@ -85,7 +84,7 @@ public class LauncherTest {
 		System.setProperty("user.dir", path.toFile().getAbsolutePath());
 
 		// path should exist, otherwise it would crash on a filenotfoundexception before showing the bug
-		launcher.addInputResource(oldUserDir+"/src/test/java/spoon/LauncherTest.java");
+		launcher.addInputResource(oldUserDir + "/src/test/java/spoon/LauncherTest.java");
 		try {
 			launcher.buildModel();
 		} finally {
@@ -93,9 +92,8 @@ public class LauncherTest {
 		}
 	}
 
-
 	@Test
-	public void testLLauncherBuildModelReturnAModel() throws Exception {
+	public void testLLauncherBuildModelReturnAModel() {
 		// contract: Launcher#buildModel should return a consistent CtModel
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/spoon/test/api/Foo.java");
@@ -105,5 +103,4 @@ public class LauncherTest {
 
 		assertEquals(2, model.getAllTypes().size());
 	}
-
 }

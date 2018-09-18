@@ -28,7 +28,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>6.3.0-SNAPSHOT</version>
+  <version>7.1.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -88,6 +88,12 @@
     </developer>
     <developer>
       <name>Christophe Dufour</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Harrand</name>
       <roles>
         <role>Contributor</role>
       </roles>
@@ -170,6 +176,7 @@
     <url>https://github.com/INRIA/spoon</url>
     <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
     <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
@@ -247,7 +254,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.3.9</version>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -282,6 +289,11 @@
           <artifactId>mysema-commons-lang</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+      <version>3.0.1</version>
     </dependency>
   </dependencies>
 

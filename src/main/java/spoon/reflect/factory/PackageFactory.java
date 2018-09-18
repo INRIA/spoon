@@ -16,21 +16,21 @@
  */
 package spoon.reflect.factory;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringTokenizer;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * The {@link CtPackage} sub-factory.
  */
-public class PackageFactory extends SubFactory implements Serializable {
+public class PackageFactory extends SubFactory {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -187,3 +187,4 @@ public class PackageFactory extends SubFactory implements Serializable {
 	}
 
 }
+

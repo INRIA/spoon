@@ -24,6 +24,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
@@ -52,6 +53,7 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
 import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
@@ -121,9 +123,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	Map<String, Object> metadata;
 
 	public CtElementImpl() {
-		super();
 	}
-
 
 	@Override
 	public String getShortRepresentation() {
@@ -132,6 +132,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public boolean equals(Object o) {
+		if (!(o instanceof CtElementImpl)) {
+			return false;
+		}
 		if (this == o) {
 			return true;
 		}
@@ -166,6 +169,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return false;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> CtAnnotation<A> getAnnotation(CtTypeReference<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
@@ -176,6 +180,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return null;
 	}
 
+	@Override
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
 		if (this instanceof CtShadowable) {
 			CtShadowable shadowable = (CtShadowable) this;
@@ -186,10 +191,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return unmodifiableList(annotations);
 	}
 
+	@Override
 	public String getDocComment() {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
-				StringBuffer result = new StringBuffer();
+				StringBuilder result = new StringBuilder();
 				result.append(ctComment.getContent() + System.lineSeparator());
 				for (CtJavaDocTag tag: ((CtJavaDoc) ctComment).getTags()) {
 					result.append(tag.toString()); // the tag already contains a new line
@@ -200,6 +206,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return "";
 	}
 
+	@Override
 	public SourcePosition getPosition() {
 		if (position != null) {
 			return position;
@@ -214,9 +221,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return pr.getHasCode();
 	}
 
+	@Override
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		if (annotations == null || annotations.isEmpty()) {
-			this.annotations = CtElementImpl.emptyList();
+			this.annotations = emptyList();
 			return (E) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
@@ -233,6 +241,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		replace(Collections.<CtElement>emptyList());
 	}
 
+	@Override
 	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if (annotation == null) {
 			return (E) this;
@@ -246,6 +255,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
+	@Override
 	public boolean removeAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if (this.annotations == CtElementImpl.<CtAnnotation<? extends Annotation>>emptyList()) {
 			return false;
@@ -254,6 +264,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return this.annotations.remove(annotation);
 	}
 
+	@Override
 	public <E extends CtElement> E setDocComment(String docComment) {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
@@ -265,6 +276,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
+	@Override
 	public <E extends CtElement> E setPosition(SourcePosition position) {
 		if (position == null) {
 			position = SourcePosition.NOPOSITION;
@@ -274,6 +286,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
+	@Override
 	public <E extends CtElement> E setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
 			@Override
@@ -289,8 +302,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
 		String errorMessage = "";
 		try {
-			// we do not want to compute imports of a CtImport as it may change the print of a reference
-			if (!(this instanceof CtImport)) {
+			// we do not want to compute imports of for CtImport and CtReference
+			// as it may change the print of a reference
+			if (!(this instanceof CtImport) && !(this instanceof CtReference)) {
 				printer.computeImports(this);
 			}
 			printer.scan(this);
@@ -303,6 +317,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return printer.toString().replaceFirst("^\\s+", "") + errorMessage;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <E extends CtElement> List<E> getAnnotatedChildren(Class<? extends Annotation> annotationType) {
 		return (List<E>) Query.getElements(this, new AnnotationFilter<>(CtElement.class, annotationType));
@@ -311,16 +326,19 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@MetamodelPropertyField(role = CtRole.IS_IMPLICIT)
 	boolean implicit = false;
 
+	@Override
 	public boolean isImplicit() {
 		return implicit;
 	}
 
+	@Override
 	public <E extends CtElement> E setImplicit(boolean implicit) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_IMPLICIT, implicit, this.implicit);
 		this.implicit = implicit;
 		return (E) this;
 	}
 
+	@Override
 	@DerivedProperty
 	public Set<CtTypeReference<?>> getReferencedTypes() {
 		TypeReferenceScanner s = new TypeReferenceScanner();
@@ -328,6 +346,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return s.getReferences();
 	}
 
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
 		return filterChildren(filter).list();
@@ -351,7 +370,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public CtElement getParent() throws ParentNotInitializedException {
 		if (parent == null) {
-			String exceptionMsg = "";
+			String exceptionMsg;
 			if (this instanceof CtReference) {
 				exceptionMsg = "parent not initialized for " + ((CtReference) this).getSimpleName() + "(" + this.getClass() + ")";
 			} else {
@@ -470,6 +489,21 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
+	public <E extends CtElement> E setAllMetadata(Map<String, Object> metadata) {
+		if (metadata == null || metadata.isEmpty()) {
+			this.metadata = null;
+			return (E) this;
+		}
+		if (this.metadata == null) {
+			this.metadata = new HashMap<>();
+		} else {
+			this.metadata.clear();
+		}
+		this.metadata.putAll(metadata);
+		return (E) this;
+	}
+
+	@Override
 	public <E extends CtElement> E putMetadata(String key, Object val) {
 		if (metadata == null) {
 			metadata = new HashMap<>();
@@ -484,6 +518,14 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			return null;
 		}
 		return metadata.get(key);
+	}
+
+	@Override
+	public Map<String, Object> getAllMetadata() {
+		if (this.metadata == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(this.metadata);
 	}
 
 	@Override
@@ -526,7 +568,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <E extends CtElement> E setComments(List<CtComment> comments) {
 		if (comments == null || comments.isEmpty()) {
-			this.comments = CtElementImpl.emptyList();
+			this.comments = emptyList();
 			return (E) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, COMMENT, this.comments, new ArrayList<>(this.comments));
@@ -555,6 +597,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return (E) this;
 	}
 
+	@Override
 	public CtPath getPath() {
 		try {
 			return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
@@ -571,5 +614,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public Iterable<CtElement> asIterable() {
 		return this::descendantIterator;
+	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		SourcePosition sp = this.getPosition();
+		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		if (compilationUnit != null) {
+			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
+			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
+		} else {
+			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+		}
 	}
 }

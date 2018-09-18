@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -73,7 +73,6 @@ public class Metamodel {
 		private final Map<CtRole, Field> fieldsByRole;
 
 		private Type(String name, Class<? extends CtElement> modelInterface, Class<? extends CtElement> modelClass, Consumer<FieldMaker> fieldsCreator) {
-			super();
 			this.name = name;
 			this.modelClass = modelClass;
 			this.modelInterface = modelInterface;
@@ -143,7 +142,6 @@ public class Metamodel {
 		private final boolean unsettable;
 
 		private Field(Type owner, CtRole role, boolean derived, boolean unsettable) {
-			super();
 			this.owner = owner;
 			this.role = role;
 			this.derived = derived;
@@ -738,7 +736,6 @@ public class Metamodel {
 			types.add(new Type("CtTypeParameterReference", spoon.reflect.reference.CtTypeParameterReference.class, spoon.support.reflect.reference.CtTypeParameterReferenceImpl.class, fm -> fm
 				.field(CtRole.NAME, false, false)
 				.field(CtRole.IS_SHADOW, false, false)
-				.field(CtRole.IS_UPPER, false, false)
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.MODIFIER, true, true)
 				.field(CtRole.COMMENT, true, true)
@@ -749,7 +746,6 @@ public class Metamodel {
 				.field(CtRole.PACKAGE_REF, false, false)
 				.field(CtRole.DECLARING_TYPE, false, false)
 				.field(CtRole.ANNOTATION, false, false)
-				.field(CtRole.BOUNDING_TYPE, false, false)
 
 			));
 
@@ -960,7 +956,7 @@ public class Metamodel {
 			));
 
 			types.add(new Type("CtArrayTypeReference", spoon.reflect.reference.CtArrayTypeReference.class, spoon.support.reflect.reference.CtArrayTypeReferenceImpl.class, fm -> fm
-				.field(CtRole.NAME, false, false)
+				.field(CtRole.NAME, true, true)
 				.field(CtRole.IS_SHADOW, false, false)
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.MODIFIER, true, true)

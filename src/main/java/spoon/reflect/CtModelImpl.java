@@ -41,6 +41,8 @@ public class CtModelImpl implements CtModel {
 
 	private static final long serialVersionUID = 1L;
 
+	private boolean buildModelFinished = false;
+
 	@Override
 	public <R extends CtElement> CtQuery filterChildren(Filter<R> filter) {
 		return getUnnamedModule().getFactory().Query().createQuery(this.getAllModules().toArray()).filterChildren(filter);
@@ -136,6 +138,18 @@ public class CtModelImpl implements CtModel {
 	@Override
 	public <E extends CtElement> List<E> getElements(Filter<E> filter) {
 		return filterChildren(filter).list();
+	}
+
+
+	@Override
+	public boolean isBuildModelFinished() {
+		return this.buildModelFinished;
+	}
+
+	@Override
+	public <T extends CtModel> T setBuildModelIsFinished(boolean buildModelFinished) {
+		this.buildModelFinished = buildModelFinished;
+		return (T) this;
 	}
 
 }

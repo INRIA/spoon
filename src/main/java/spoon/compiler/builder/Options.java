@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Options<T extends Options<T>> {
-	final String COMMA_DELIMITER = ",";
+	static final String COMMA_DELIMITER = ",";
 	final List<String> args = new ArrayList<>();
 	final T myself;
 
@@ -29,7 +29,7 @@ public abstract class Options<T extends Options<T>> {
 	}
 
 	public String[] build() {
-		return args.toArray(new String[args.size()]);
+		return args.toArray(new String[0]);
 	}
 
 	protected String join(String delimiter, String[] classpath) {

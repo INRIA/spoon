@@ -19,12 +19,15 @@ package spoon.reflect.visitor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
+import spoon.support.Experimental;
 
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Used to compute the imports required to write readable code with no fully qualified names.
+ * The import scanner API might still change in future release, that's why it is marked as experimental.
  */
+@Experimental
 public interface ImportScanner {
 
 	/**
@@ -37,10 +40,15 @@ public interface ImportScanner {
 	 *
 	 * @return the list of computed imports or an empty collection if not imports has been computed.
 	 */
-	Collection<CtImport> getAllImports();
+	Set<CtImport> getAllImports();
 
 	/**
 	 * Checks if the type is already imported.
 	 */
 	boolean isImported(CtReference ref);
+
+	/**
+	 * Specify the original imports to use before computing new imports.
+	 */
+	void initWithImports(Set<CtImport> importCollection);
 }

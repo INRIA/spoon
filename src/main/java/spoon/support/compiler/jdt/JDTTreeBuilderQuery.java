@@ -115,7 +115,7 @@ class JDTTreeBuilderQuery {
 		}
 		for (ImportReference anImport : imports) {
 			final String importType = CharOperation.charToString(anImport.getImportName()[anImport.getImportName().length - 1]);
-			if (importType != null && importType.equals(typeName)) {
+			if (typeName.equals(importType)) {
 				return CharOperation.toString(anImport.getImportName());
 			}
 		}

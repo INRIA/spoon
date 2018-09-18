@@ -15,10 +15,10 @@ public class AnonymousExecutableTest {
 
 	@Test
 	public void testStatements() throws Exception {
-		CtType<?> type = build("spoon.test.model", "AnonymousExecutableClass");
+		CtType<?> type = build("spoon.test.model.testclasses", "AnonymousExecutableClass");
 		CtAnonymousExecutable anonexec =
 			type.
-			getElements(new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class)).
+			getElements(new TypeFilter<>(CtAnonymousExecutable.class)).
 			get(0);
 		List<CtStatement> stats = anonexec.getBody().getStatements();
 		assertEquals(1, stats.size());

@@ -40,6 +40,7 @@ public abstract class StatementTemplate extends AbstractTemplate<CtStatement> {
 	public StatementTemplate() {
 	}
 
+	@Override
 	public CtStatement apply(CtType<?> targetType) {
 		CtClass<?> c = Substitution.getTemplateCtClass(targetType, this);
 		// we substitute the first statement of method statement

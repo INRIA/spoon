@@ -18,7 +18,8 @@
 package spoon.test.field;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -29,6 +30,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
@@ -36,6 +38,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
@@ -44,12 +47,13 @@ import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
 
 public class FieldTest {
+
 	@Test
-	public void testAddAFieldInAClassAtAPositionGiven() throws Exception {
+	public void testAddAFieldInAClassAtAPositionGiven() {
 		final Factory factory = createFactory();
 		final CtClass<Object> fieldClass = factory.Class().create("FieldClass");
 
-		final HashSet<ModifierKind> modifiers = new HashSet<ModifierKind>();
+		final HashSet<ModifierKind> modifiers = new HashSet<>();
 		modifiers.add(ModifierKind.STATIC);
 		final CtField<Integer> first = createField(factory, modifiers, "FIELD");
 		fieldClass.addField(first);
@@ -111,7 +115,7 @@ public class FieldTest {
 		assertEquals(1, fieldReads.size());
 		assertEquals("i", fieldReads.get(0).toString());
 		fieldReads.get(0).getTarget().setImplicit(false);
-		assertEquals(false, fieldReads.get(0).getTarget().isImplicit());
+		assertFalse(fieldReads.get(0).getTarget().isImplicit());
 		assertEquals("this.i", fieldReads.get(0).toString());
 	}
 
@@ -124,7 +128,7 @@ public class FieldTest {
 	}
 
 	@Test
-	public void testGetDefaultExpression() throws Exception {
+	public void testGetDefaultExpression() {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/field/testclasses/A.java");
 		spoon.addInputResource("./src/test/java/spoon/test/field/testclasses/BaseClass.java");
@@ -154,6 +158,21 @@ public class FieldTest {
 
 		Object retour = visitorPartial.evaluate(methods.get(0));
 
-		assertTrue(retour != null);
+		assertNotNull(retour);
+	}
+
+	@Test
+	public void getFQNofFieldReference() {
+		// contract: when a reference field origin cannot be determined a call to its qualified name returns an explicit value
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/fields/Toto.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel ctModel = launcher.buildModel();
+		List<CtFieldReference> elements = ctModel.getElements(new TypeFilter<>(CtFieldReference.class));
+		assertEquals(1, elements.size());
+
+		CtFieldReference fieldReference = elements.get(0);
+		assertEquals("field", fieldReference.getSimpleName());
+		assertEquals("<unknown>#field", fieldReference.getQualifiedName());
 	}
 }

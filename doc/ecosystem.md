@@ -25,6 +25,7 @@ Here are some active projects already using Spoon:
 - [syringe](https://github.com/DIVERSIFY-project/syringe) defines high-level transformation events
 - [InspectorGuidget](https://github.com/diverse-project/InspectorGuidget) finds and repairs code smells in Java SWING/AWT/JavaFX GUI code 
 - [AutoJMH](https://github.com/DIVERSIFY-project/autojmh-source-code) generates code for microbenchmarking with [JMH](http://openjdk.java.net/projects/code-tools/jmh/)
+- [Java Call Hierarchy Printer](https://github.com/pbadenski/call-hierarchy-printer) prints a method call hierarchy in text format
 - Yours?
 
 [SpoonLabs](https://github.com/SpoonLabs) is a Github group for centralizing all projects and experiments that use Spoon.

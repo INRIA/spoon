@@ -37,7 +37,10 @@ This article is a short summary of the [official documentation of sonatype](http
     - Updates main `README.md`
 - Add changelog on release page on GitHub
 - Update version information and date on [INRIA's BIL](http://bil.inria.fr/)
-- For major releases, announce on appropriate mailing lists (gdr-gpl, OW2)
+- For major releases, announce the release:
+  * mailing-lists (gdr-gpl, OW2)
+  * social media (twitter, reddit, linkedin)  
+  * news feed in https://projects.ow2.org/view/spoon/
 - If necessary, removes all methods deprecated after the release!
 
 

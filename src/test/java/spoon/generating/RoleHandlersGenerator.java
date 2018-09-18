@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -106,8 +106,6 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			params.put("$Role$", getFactory().Type().createReference(CtRole.class));
 			params.put("ROLE", rim.getRole().name());
 			params.put("$TargetType$", rim.getOwner().getMetamodelInterface().getReference());
-//			params.put("AbstractHandler", getFactory().Type().createReference("spoon.reflect.meta.impl.AbstractRoleHandler"));
-//			params.put("AbstractHandler", getRoleHandlerSuperTypeQName(rim));
 			CtTypeReference<?> nodeRef = rim.getOwner().getMetamodelInterface().getReference();
 			CtTypeReference<?> valueTypeRef = fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getTypeOfField() : rim.getTypeofItems());
 			CtTypeReference<?> handlerSuperClassRef = getFactory().Type().createReference(getRoleHandlerSuperTypeQName(rim));
@@ -140,9 +138,9 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 		valueType = valueType.clone();
 		if (valueType instanceof CtTypeParameterReference) {
 			if (valueType instanceof CtWildcardReference) {
-				CtTypeReference<?> boundingType = ((CtTypeParameterReference) valueType).getBoundingType();
+				CtTypeReference<?> boundingType = ((CtWildcardReference) valueType).getBoundingType();
 				if (boundingType instanceof CtTypeParameterReference) {
-					((CtTypeParameterReference) valueType).setBoundingType(null);
+					((CtWildcardReference) valueType).setBoundingType(null);
 				}
 				return valueType;
 			}
@@ -157,8 +155,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	}
 
 	private CtType<?> getTemplate(String templateQName) {
-		CtType<?> template = getFactory().Class().get(templateQName);
-		return template;
+		return getFactory().Class().get(templateQName);
 	}
 
 	private File file(String name) {

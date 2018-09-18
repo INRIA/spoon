@@ -39,12 +39,12 @@ public class ElasticsearchStackoverflowTest {
 		Scanner scanner = new Scanner();
 		scanner.scan(model.getRootPackage());
 
-		List<CtExecutableReference> executables = launcher.getModel().getElements(new TypeFilter<CtExecutableReference>(CtExecutableReference.class));
+		List<CtExecutableReference> executables = launcher.getModel().getElements(new TypeFilter<>(CtExecutableReference.class));
 		assertFalse(executables.isEmpty());
 
 		boolean result = false;
 		for (CtExecutableReference execRef : executables) {
-			if (execRef.getSimpleName().equals("setParentTask")) {
+			if ("setParentTask".equals(execRef.getSimpleName())) {
 				CtTypeReference typeRef = execRef.getDeclaringType();
 				assertTrue(typeRef instanceof CtTypeParameterReference);
 				assertEquals("ShardRequest", typeRef.getSimpleName());

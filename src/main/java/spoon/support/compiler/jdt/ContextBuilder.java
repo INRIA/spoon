@@ -23,12 +23,12 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -62,15 +62,20 @@ public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
 
-	List<CtTypeReference<?>> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+	public static class CastInfo {
+		int nrOfBrackets;
+		CtTypeReference<?> typeRef;
+	}
+
+	List<CastInfo> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 	CompilationUnitDeclaration compilationunitdeclaration;
 
 	CompilationUnit compilationUnitSpoon;
 
-	Deque<String> label = new ArrayDeque<>();
-
 	boolean isBuildLambda = false;
+
+	boolean isBuildTypeCast = false;
 
 	boolean ignoreComputeImports = false;
 
@@ -99,11 +104,8 @@ public class ContextBuilder {
 
 		if (current instanceof CtExpression) {
 			while (!casts.isEmpty()) {
-				((CtExpression<?>) current).addTypeCast(casts.remove(0));
+				((CtExpression<?>) current).addTypeCast(casts.remove(0).typeRef);
 			}
-		}
-		if (current instanceof CtStatement && !this.label.isEmpty()) {
-			((CtStatement) current).setLabel(this.label.pop());
 		}
 
 		try {
@@ -129,6 +131,34 @@ public class ContextBuilder {
 			this.jdtTreeBuilder.getExiter().setChild(pair.node);
 			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
 		}
+	}
+
+	CtElement getContextElementOnLevel(int level) {
+		for (ASTPair pair : stack) {
+			if (level == 0) {
+				return pair.element;
+			}
+			level--;
+		}
+		return null;
+	}
+
+	<T extends CtElement> T getParentElementOfType(Class<T> clazz) {
+		for (ASTPair pair : stack) {
+			if (clazz.isInstance(pair.element)) {
+				return (T) pair.element;
+			}
+		}
+		return null;
+	}
+
+	ASTPair getParentContextOfType(Class<? extends CtElement> clazz) {
+		for (ASTPair pair : stack) {
+			if (clazz.isInstance(pair.element)) {
+				return pair;
+			}
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -250,8 +280,7 @@ public class ContextBuilder {
 		if (lookingForFields) {
 			final CtReference potentialReferenceToField =
 					referenceBuilder.getDeclaringReferenceFromImports(name.toCharArray());
-			if (potentialReferenceToField != null
-					&& potentialReferenceToField instanceof CtTypeReference) {
+			if (potentialReferenceToField instanceof CtTypeReference) {
 				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
 				try {
 					final Class classOfType = typeReference.getActualClass();

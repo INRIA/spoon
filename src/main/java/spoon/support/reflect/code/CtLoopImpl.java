@@ -23,14 +23,13 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 
 import static spoon.reflect.path.CtRole.BODY;
 
 public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.BODY)
+	@MetamodelPropertyField(role = BODY)
 	CtStatement body;
 
 	@Override

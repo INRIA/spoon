@@ -30,7 +30,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
@@ -278,7 +277,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		return (T) this;
 	}
 
-	@MetamodelPropertyField(role = CtRole.LABEL)
+	@MetamodelPropertyField(role = LABEL)
 	String label;
 
 	@Override

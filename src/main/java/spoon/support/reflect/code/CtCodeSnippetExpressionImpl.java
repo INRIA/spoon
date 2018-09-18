@@ -30,6 +30,7 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCodeSnippetExpression(this);
 	}
@@ -49,6 +50,7 @@ public class CtCodeSnippetExpressionImpl<T> extends CtExpressionImpl<T> implemen
 		return (C) this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <E extends CtExpression<T>> E compile() throws SnippetCompilationError {
 		return (E) SnippetCompilationHelper.compileExpression(this);
