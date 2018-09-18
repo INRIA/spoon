@@ -39,7 +39,7 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 

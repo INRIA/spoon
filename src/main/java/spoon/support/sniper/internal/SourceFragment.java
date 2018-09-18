@@ -14,39 +14,19 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
+package spoon.support.sniper.internal;
 
-import spoon.reflect.visitor.TokenWriter;
+import spoon.support.Experimental;
 
 /**
- * Type of {@link TokenSourceFragment} token.
- * Note: These types mirrors the methods of {@link TokenWriter}
+ * Represents a part of source code.
+ *
+ * See https://github.com/INRIA/spoon/pull/2283
  */
-public enum TokenType {
-
-	SEPARATOR(false, false),
-	OPERATOR(false, false),
-	LITERAL(false, false),
-	KEYWORD(false, false),
-	IDENTIFIER(false, false),
-	CODE_SNIPPET(false, false),
-	COMMENT(false, false),
-	NEW_LINE(true, false),
-	INC_TAB(true, true),
-	DEC_TAB(true, true),
-	SPACE(true, false);
-
-	private final boolean whiteSpace;
-	private final boolean tab;
-
-	TokenType(boolean whiteSpace, boolean tab) {
-		this.whiteSpace = whiteSpace;
-		this.tab = tab;
-	}
-	boolean isWhiteSpace() {
-		return whiteSpace;
-	}
-	public boolean isTab() {
-		return tab;
-	}
+@Experimental
+public interface SourceFragment  {
+	/**
+	 * @return origin source code of whole fragment represented by this instance
+	 */
+	String getSourceCode();
 }

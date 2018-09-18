@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.reflect.visitor.printer.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;

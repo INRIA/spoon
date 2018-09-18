@@ -26,12 +26,15 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.CompressionType;
 import spoon.support.compiler.SpoonProgress;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.function.Supplier;
 
 /**
  * This interface represents the environment in which Spoon is launched -
@@ -412,4 +415,16 @@ public interface Environment {
 	 * Set the type of serialization to be used by default
 	 */
 	void setCompressionType(CompressionType serializationType);
+
+	/**
+	 * @return new instance of {@link PrettyPrinter} which is configured for this environment
+	 */
+	PrettyPrinter createPrettyPrinter();
+
+	/**
+	 * @param creator a {@link Supplier}, which creates new instance of pretty printer.
+	 * Can be used to create a {@link SniperJavaPrettyPrinter} for enabling the sniper mode.
+	 *
+	 */
+	void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator);
 }

@@ -14,27 +14,27 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.cu;
+package spoon.support.modelobs;
 
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.support.sniper.internal.ElementSourceFragment;
-import spoon.support.Experimental;
 
 /**
- * This interface represents an element which knows its position in a source file.
+ * A {@link ChangeCollector}, which builds a tree of {@link ElementSourceFragment}s of {@link CompilationUnit} of the modified element
+ * lazily just before the element is changed
  */
-public interface SourcePositionHolder {
-	/** If the element comes from a Java source file (hence has not created during transformation), returns the position in the original source file */
-	SourcePosition getPosition();
+public class SourceFragmentCreator extends ChangeCollector {
+	@Override
+	protected void onChange(CtElement currentElement, CtRole role) {
+		CompilationUnit cu = currentElement.getPosition().getCompilationUnit();
+		if (cu != null) {
 
-	/**
-	 * Returns the original source code (maybe different from toString() if a transformation has been applied.
-	 * Or {@link ElementSourceFragment#NO_SOURCE_FRAGMENT} if this element has no original source fragment.
-	 *
-	 * Warning: this is a advanced method which cannot be considered as part of the stable API
-	 *
-	 */
-	@Experimental
-	default ElementSourceFragment getOriginalSourceFragment() {
-		return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+			//getOriginalSourceFragment is not only a getter, it actually
+			//builds a tree of SourceFragments of compilation unit of the modified element
+			cu.getOriginalSourceFragment();
+		}
+		super.onChange(currentElement, role);
 	}
 }

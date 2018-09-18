@@ -14,19 +14,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.reflect.visitor.printer.internal;
-
-import spoon.support.Experimental;
+package spoon.support.sniper.internal;
 
 /**
- * Represents a part of source code.
- *
- * See https://github.com/INRIA/spoon/pull/2283
+ * A {@link SourceFragmentContext}, which prints the element using standard pretty printing
  */
-@Experimental
-public interface SourceFragment  {
+public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
 	/**
-	 * @return origin source code of whole fragment represented by this instance
+	 * This context is used to force normal pretty printing of element
 	 */
-	String getSourceCode();
+	public static final SourceFragmentContextPrettyPrint INSTANCE = new SourceFragmentContextPrettyPrint();
+
+	private SourceFragmentContextPrettyPrint() {
+	}
+
+	@Override
+	public void onPrintEvent(PrinterEvent event) {
+		event.print(null);
+	}
+
+	@Override
+	public void onFinished() {
+	}
+
+	@Override
+	public boolean matchesPrinterEvent(PrinterEvent event) {
+		return true;
+	}
 }

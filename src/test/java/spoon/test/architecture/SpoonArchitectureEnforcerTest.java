@@ -363,13 +363,14 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.reflect.visitor.chain");
 		officialPackages.add("spoon.reflect.visitor.filter");
 		officialPackages.add("spoon.reflect.visitor.printer");
-		officialPackages.add("spoon.reflect.visitor.printer.internal");
 		officialPackages.add("spoon.reflect.visitor");
 		officialPackages.add("spoon.reflect");
 		officialPackages.add("spoon.support.comparator");
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");
 		officialPackages.add("spoon.support.gui");
+		officialPackages.add("spoon.support.sniper");
+		officialPackages.add("spoon.support.sniper.internal");
 		officialPackages.add("spoon.support.reflect.code");
 		officialPackages.add("spoon.support.reflect.cu.position");
 		officialPackages.add("spoon.support.reflect.cu");

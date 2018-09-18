@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Supplier;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
@@ -38,6 +40,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.modelobs.EmptyModelChangeListener;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
@@ -50,6 +53,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.SpoonProgress;
 
@@ -107,6 +111,10 @@ public class StandardEnvironment implements Serializable, Environment {
 	private transient SpoonProgress spoonProgress = null;
 
 	private CompressionType compressionType = CompressionType.GZIP;
+
+	private boolean sniperMode = false;
+
+	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -612,5 +620,20 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setCompressionType(CompressionType serializationType) {
 		this.compressionType = serializationType;
+	}
+
+	@Override
+	public PrettyPrinter createPrettyPrinter() {
+		if (prettyPrinterCreator == null) {
+			// DJPP is the default mode
+			// fully backward compatible
+			return new DefaultJavaPrettyPrinter(this);
+		}
+		return prettyPrinterCreator.get();
+	}
+
+	@Override
+	public void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator) {
+		this.prettyPrinterCreator = creator;
 	}
 }
