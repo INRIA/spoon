@@ -166,7 +166,7 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	@DerivedProperty
-	public CtConstructorCall setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtConstructorCallImpl setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (getExecutable() != null) {
 			getExecutable().setActualTypeArguments(actualTypeArguments);
 		}

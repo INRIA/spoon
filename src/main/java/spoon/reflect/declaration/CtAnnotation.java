@@ -204,7 +204,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 
 	@Override
 	@UnsettableProperty
-	<C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> types);
+	CtExpression<A> setTypeCasts(List<CtTypeReference<?>> types);
 
 	static CtAnnotatedElementType getAnnotatedElementTypeForCtElement(CtElement element) {
 		if (element == null) {

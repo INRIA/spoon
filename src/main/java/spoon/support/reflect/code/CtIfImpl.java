@@ -63,34 +63,34 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 	}
 
 	@Override
-	public <T extends CtIf> T setCondition(CtExpression<Boolean> condition) {
+	public CtIfImpl setCondition(CtExpression<Boolean> condition) {
 		if (condition != null) {
 			condition.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtIf> T setElseStatement(CtStatement elseStatement) {
+	public CtIfImpl setElseStatement(CtStatement elseStatement) {
 		if (elseStatement != null) {
 			elseStatement.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseStatement, this.elseStatement);
 		this.elseStatement = elseStatement;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtIf> T setThenStatement(CtStatement thenStatement) {
+	public CtIfImpl setThenStatement(CtStatement thenStatement) {
 		// then branch might be null: `if (condition) ;`
 		if (thenStatement != null) {
 			thenStatement.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenStatement, this.thenStatement);
 		this.thenStatement = thenStatement;
-		return (T) this;
+		return this;
 	}
 
 	@Override

@@ -553,7 +553,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> casts) {
-		return (C) this;
+	public CtAnnotationImpl setTypeCasts(List<CtTypeReference<?>> casts) {
+		return this;
 	}
 }

@@ -59,10 +59,10 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 	}
 
 	@Override
-	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+	public CtExpression<T> setTypeCasts(List<CtTypeReference<?>> casts) {
 		if (casts == null || casts.isEmpty()) {
 			this.typeCasts = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
@@ -72,13 +72,13 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type) {
+	public CtExpression<T> addTypeCast(CtTypeReference<?> type) {
 		if (type == null) {
-			return (C) this;
+			return this;
 		}
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
@@ -86,7 +86,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		type.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CAST, this.typeCasts, type);
 		typeCasts.add(type);
-		return (C) this;
+		return this;
 	}
 
 	@Override

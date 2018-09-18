@@ -68,7 +68,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 	}
 
 	@Override
-	public CtConditional<T> setCondition(CtExpression<Boolean> condition) {
+	public CtConditionalImpl setCondition(CtExpression<Boolean> condition) {
 		if (condition != null) {
 			condition.setParent(this);
 		}
@@ -78,7 +78,7 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 	}
 
 	@Override
-	public CtConditional<T> setThenExpression(CtExpression<T> thenExpression) {
+	public CtConditionalImpl setThenExpression(CtExpression<T> thenExpression) {
 		if (thenExpression != null) {
 			thenExpression.setParent(this);
 		}
