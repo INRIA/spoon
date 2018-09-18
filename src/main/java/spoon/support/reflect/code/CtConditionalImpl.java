@@ -58,33 +58,33 @@ public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtCondi
 	}
 
 	@Override
-	public <C extends CtConditional<T>> C setElseExpression(CtExpression<T> elseExpression) {
+	public CtConditional<T> setElseExpression(CtExpression<T> elseExpression) {
 		if (elseExpression != null) {
 			elseExpression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseExpression, this.elseExpression);
 		this.elseExpression = elseExpression;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition) {
+	public CtConditional<T> setCondition(CtExpression<Boolean> condition) {
 		if (condition != null) {
 			condition.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtConditional<T>> C setThenExpression(CtExpression<T> thenExpression) {
+	public CtConditional<T> setThenExpression(CtExpression<T> thenExpression) {
 		if (thenExpression != null) {
 			thenExpression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenExpression, this.thenExpression);
 		this.thenExpression = thenExpression;
-		return (C) this;
+		return this;
 	}
 
 	@Override

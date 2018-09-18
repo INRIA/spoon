@@ -58,19 +58,19 @@ public interface CtConditional<T> extends CtExpression<T> {
 	 * Sets the "false" expression.
 	 */
 	@PropertySetter(role = ELSE)
-	<C extends CtConditional<T>> C setElseExpression(CtExpression<T> elseExpression);
+	CtConditional<T> setElseExpression(CtExpression<T> elseExpression);
 
 	/**
 	 * Sets the "true" expression.
 	 */
 	@PropertySetter(role = THEN)
-	<C extends CtConditional<T>> C setThenExpression(CtExpression<T> thenExpression);
+	CtConditional<T> setThenExpression(CtExpression<T> thenExpression);
 
 	/**
 	 * Sets the condition expression.
 	 */
 	@PropertySetter(role = CONDITION)
-	<C extends CtConditional<T>> C setCondition(CtExpression<Boolean> condition);
+	CtConditional<T> setCondition(CtExpression<Boolean> condition);
 
 	@Override
 	CtConditional<T> clone();
