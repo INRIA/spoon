@@ -303,7 +303,7 @@ public class MetamodelTest {
 		//detect unused CtRoles
 		Set<CtRole> unhandledRoles = new HashSet<>(Arrays.asList(CtRole.values()));
 
-		List problemsIssue1846 = new ArrayList();
+		Set problemsIssue1846 = new HashSet();
 		mm.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 				unhandledRoles.remove(role);
@@ -334,8 +334,15 @@ public class MetamodelTest {
 					for (CtTypeParameter typeParam : mmMethod.getActualCtMethod().getFormalCtTypeParameters()) {
 						// enumerating the usages of this formal type parameter
 						int n = 0;
-						for (CtParameter x : mmMethod.getActualCtMethod().getParameters()) {
-							if (x.filterChildren(new Filter<CtReference>() {
+						List parametersAndReturn = new ArrayList(mmMethod.getActualCtMethod().getParameters());
+
+						// addressing Pavel's comment https://github.com/INRIA/spoon/issues/1846#issuecomment-366047527
+						for (CtTypeReference ref : mmMethod.getReturnType().getActualTypeArguments()) {
+							parametersAndReturn.add(ref);
+						}
+
+						for (Object x : parametersAndReturn) {
+							if (((CtElement)x).filterChildren(new Filter<CtReference>() {
 								@Override
 								public boolean matches(CtReference element) {
 									boolean isMatching = typeParam.equals(element.getDeclaration());
