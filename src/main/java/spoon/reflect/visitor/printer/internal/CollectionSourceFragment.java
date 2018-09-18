@@ -63,13 +63,12 @@ public class CollectionSourceFragment implements SourceFragment {
 	 */
 	public boolean isOrdered() {
 		CtRole role = null;
-		ContainerKind kind = null;
 		for (SourceFragment childSourceFragment : items) {
 			if (childSourceFragment instanceof ElementSourceFragment) {
 				ElementSourceFragment esf = (ElementSourceFragment) childSourceFragment;
 				if (role == null) {
 					role = esf.getRoleInParent();
-					kind = esf.getContainerKindInParent();
+					final ContainerKind kind = esf.getContainerKindInParent();
 					if (kind != ContainerKind.LIST) {
 						return false;
 					}
