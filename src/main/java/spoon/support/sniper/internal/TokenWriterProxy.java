@@ -44,7 +44,6 @@ public class TokenWriterProxy implements TokenWriter {
 	private final TokenWriter delegate;
 
 	public TokenWriterProxy(Listener listener, TokenWriter delegate) {
-		super();
 		this.listener = listener;
 		this.delegate = delegate;
 	}

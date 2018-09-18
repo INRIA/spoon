@@ -27,7 +27,6 @@ public abstract class ElementPrinterEvent implements PrinterEvent {
 	private final SourcePositionHolder element;
 
 	public ElementPrinterEvent(CtRole role, SourcePositionHolder element) {
-		super();
 		this.role = role;
 		this.element = element;
 	}

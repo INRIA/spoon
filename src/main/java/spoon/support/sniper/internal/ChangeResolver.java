@@ -37,7 +37,6 @@ public class ChangeResolver {
 	private final Set<CtRole> changedRoles;
 
 	public ChangeResolver(ChangeCollector changeCollector, CtElement element) {
-		super();
 		this.changeCollector = changeCollector;
 		this.element = element;
 		changedRoles = element != null ? changeCollector.getChanges(element) : null;
