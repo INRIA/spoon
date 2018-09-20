@@ -2023,4 +2023,3 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return printer.getPrinterHelper();
 	}
 }
-// test
