@@ -53,6 +53,26 @@ public class ChangeCollector {
 	}
 
 	/**
+	 * Allows to run code using change collector switched off.
+	 * It means that any change of spoon model done by the `runnable` is ignored by the change collector.
+	 * Note: it is actually needed to wrap CtElement#toString() calls which sometime modifies spoon model.
+	 * See TestSniperPrinter#testPrintChangedReferenceBuilder()
+	 * @param env Spoon environment
+	 * @param runnable the code to be run
+	 */
+	public static void runWithoutChangeListener(Environment env, Runnable runnable) {
+		FineModelChangeListener mcl = env.getModelChangeListener();
+		if (mcl instanceof ChangeListener) {
+			env.setModelChangeListener(new EmptyModelChangeListener());
+			try {
+				runnable.run();
+			} finally {
+				env.setModelChangeListener(mcl);
+			}
+		}
+	}
+
+	/**
 	 * Attaches itself to {@link CtModel} to listen to all changes of it's child elements
 	 * TODO: it would be nicer if we might listen on changes on {@link CtElement}
 	 * @param env to be attached to {@link Environment}
@@ -96,7 +116,7 @@ public class ChangeCollector {
 					checkedRole = scanner.getScannedRole();
 				}
 				if (changes.contains(checkedRole)) {
-					//we already know that som echild of `checkedRole` attribute is modified. Skip others
+					//we already know that some child of `checkedRole` attribute is modified. Skip others
 					return ScanningMode.SKIP_ALL;
 				}
 				if (elementToChangeRole.containsKey(element)) {

@@ -23,7 +23,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -69,14 +68,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <E extends CtElement> E setComments(List<CtComment> comments) {
 		return (E) this;
-	}
-
-	@Override
-	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-				getFactory().getEnvironment());
-		printer.scan(this);
-		return printer.toString();
 	}
 
 	@Override

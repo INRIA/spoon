@@ -139,7 +139,7 @@ public class ArraysTest {
 		//contract: check actual type arguments of parameter type: List<?>
 		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
 		CtParameter<?> param1 = ctClass.getMethodsByName("m4").get(0).getParameters().get(0);
-		CtTypeReference<?> typeRef = (CtTypeReference<?>) param1.getType();
+		CtTypeReference<?> typeRef = param1.getType();
 		assertEquals("java.util.List<?>", typeRef.toString());
 		assertEquals(1, typeRef.getActualTypeArguments().size());
 	}

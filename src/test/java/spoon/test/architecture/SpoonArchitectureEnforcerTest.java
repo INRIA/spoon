@@ -342,8 +342,6 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.modelobs.context");
 		officialPackages.add("spoon.support.modelobs");
 		officialPackages.add("spoon.experimental");
-		officialPackages.add("spoon.internal");
-		officialPackages.add("spoon.internal.mavenlauncher");
 		officialPackages.add("spoon.legacy");
 		officialPackages.add("spoon.metamodel");
 		officialPackages.add("spoon.pattern");
@@ -372,6 +370,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");
 		officialPackages.add("spoon.support.gui");
+		officialPackages.add("spoon.support.sniper");
+		officialPackages.add("spoon.support.sniper.internal");
 		officialPackages.add("spoon.support.reflect.code");
 		officialPackages.add("spoon.support.reflect.cu.position");
 		officialPackages.add("spoon.support.reflect.cu");

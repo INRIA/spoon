@@ -397,7 +397,7 @@ public class CtQueryImpl implements CtQuery {
 				if (method == null) {
 					throw new SpoonException("The method " + callbackMethod + " with one parameter was not found on the class " + callbackClass.getName());
 				}
-				this.expectedClass = (Class<?>) method.getParameterTypes()[idxOfInputParam];
+				this.expectedClass = method.getParameterTypes()[idxOfInputParam];
 			}
 		}
 

@@ -237,7 +237,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
-		isClass = type == null ? false : (type instanceof CtClass);
+		isClass = type instanceof CtClass;
 		if (isClass == false && includingInterfaces == false) {
 			//the input is interface, but this scanner should visit only interfaces. Finish
 			return;

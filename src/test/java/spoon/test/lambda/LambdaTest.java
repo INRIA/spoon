@@ -149,7 +149,7 @@ public class LambdaTest {
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
-		final CtParameter<?> parameter = (CtParameter<?>) lambda.getParameters().get(0);
+		final CtParameter<?> parameter = lambda.getParameters().get(0);
 		assertParameterTypedBy(Foo.Person.class, parameter);
 		assertParameterIsNamedBy("p", parameter);
 		assertHasExpressionBody(lambda);
@@ -165,10 +165,10 @@ public class LambdaTest {
 
 		assertTypedBy(Foo.CheckPersons.class, lambda.getType());
 		assertParametersSizeIs(2, lambda.getParameters());
-		final CtParameter<?> parameter1 = (CtParameter<?>) lambda.getParameters().get(0);
+		final CtParameter<?> parameter1 = lambda.getParameters().get(0);
 		assertParameterTypedBy(Foo.Person.class, parameter1);
 		assertParameterIsNamedBy("p1", parameter1);
-		final CtParameter<?> parameter2 = (CtParameter<?>) lambda.getParameters().get(1);
+		final CtParameter<?> parameter2 = lambda.getParameters().get(1);
 		assertParameterTypedBy(Foo.Person.class, parameter2);
 		assertParameterIsNamedBy("p2", parameter2);
 		assertHasExpressionBody(lambda);
@@ -184,7 +184,7 @@ public class LambdaTest {
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
-		final CtParameter<?> parameter = (CtParameter<?>) lambda.getParameters().get(0);
+		final CtParameter<?> parameter = lambda.getParameters().get(0);
 		assertParameterTypedBy(Foo.Person.class, parameter);
 		assertParameterIsNamedBy("p", parameter);
 		assertHasExpressionBody(lambda);
@@ -200,10 +200,10 @@ public class LambdaTest {
 
 		assertTypedBy(Foo.CheckPersons.class, lambda.getType());
 		assertParametersSizeIs(2, lambda.getParameters());
-		final CtParameter<?> parameter1 = (CtParameter<?>) lambda.getParameters().get(0);
+		final CtParameter<?> parameter1 = lambda.getParameters().get(0);
 		assertParameterTypedBy(Foo.Person.class, parameter1);
 		assertParameterIsNamedBy("p1", parameter1);
-		final CtParameter<?> parameter2 = (CtParameter<?>) lambda.getParameters().get(1);
+		final CtParameter<?> parameter2 = lambda.getParameters().get(1);
 		assertParameterTypedBy(Foo.Person.class, parameter2);
 		assertParameterIsNamedBy("p2", parameter2);
 		assertHasExpressionBody(lambda);
@@ -233,7 +233,7 @@ public class LambdaTest {
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
-		final CtParameter<?> parameter = (CtParameter<?>) lambda.getParameters().get(0);
+		final CtParameter<?> parameter = lambda.getParameters().get(0);
 		assertParameterTypedBy(Foo.Person.class, parameter);
 		assertParameterIsNamedBy("p", parameter);
 		assertStatementBody(lambda);
@@ -252,7 +252,7 @@ public class LambdaTest {
 
 		assertTypedBy(Predicate.class, lambda.getType());
 		assertParametersSizeIs(1, lambda.getParameters());
-		final CtParameter<?> parameter = (CtParameter<?>) lambda.getParameters().get(0);
+		final CtParameter<?> parameter = lambda.getParameters().get(0);
 		assertParameterTypedBy(Foo.Person.class, parameter);
 		assertParameterIsNamedBy("p", parameter);
 		assertHasExpressionBody(lambda);
@@ -355,7 +355,7 @@ public class LambdaTest {
 	@Test
 	public void testEqualsLambdaParameterRef() {
 		CtLambda<?> lambda = getLambdaInFooByNumber(8);
-		CtParameter<?> param = (CtParameter<?>)lambda.getParameters().get(0);
+		CtParameter<?> param = lambda.getParameters().get(0);
 		CtParameterReference paramRef1 = param.getReference();
 		CtParameterReference paramRef2 = lambda.filterChildren(new TypeFilter<>(CtParameterReference.class)).first();
 		assertTrue(paramRef1.equals(paramRef2));

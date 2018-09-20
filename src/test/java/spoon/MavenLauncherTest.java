@@ -55,7 +55,7 @@ public class MavenLauncherTest {
 
 		assertEquals(34, launcher.getEnvironment().getSourceClasspath().length);
 
-		// 236 because of the sub folders of src/main/java and src/test/java
+		// number of the sub folders of src/main/java and src/test/java
 		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
 
 		// specify the pom.xml

@@ -296,7 +296,7 @@ public class MethodsRefactoringTest {
 	}
 	private boolean removeSame(Collection list, Object item) {
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
-			Object object = (Object) iter.next();
+			Object object = iter.next();
 			if(object==item) {
 				iter.remove();
 				return true;

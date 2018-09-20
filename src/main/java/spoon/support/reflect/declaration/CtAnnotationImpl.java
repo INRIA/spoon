@@ -169,7 +169,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	private <T extends CtAnnotation<A>> T addValueExpression(String elementName, CtExpression<?> expression) {
 		if (elementValues.containsKey(elementName)) {
 			// Update value of the existing one.
-			final CtExpression ctExpression = (CtExpression) elementValues.get(elementName);
+			final CtExpression ctExpression = elementValues.get(elementName);
 			if (ctExpression instanceof CtNewArray) {
 				// Already an array, add the value inside it.
 				if (expression instanceof CtNewArray) {
@@ -422,7 +422,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	}
 
 	public Map<String, Object> getElementValues() {
-		TreeMap<String, Object> res = new TreeMap<>();
+		Map<String, Object> res = new TreeMap<>();
 		for (Entry<String, CtExpression> elementValue : elementValues.entrySet()) {
 			res.put(elementValue.getKey(), elementValue.getValue());
 		}

@@ -934,7 +934,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Set<CtExecutableReference<?>> l = new SignatureBasedSortedSet();
 		for (CtMethod<?> m : getAllMethods()) {
-			l.add((CtExecutableReference<?>) m.getReference());
+			l.add(m.getReference());
 		}
 		return l;
 	}

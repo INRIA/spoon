@@ -93,7 +93,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			assertNotNull(argument);
 
 			// we create a fresh object
-			CtElement receiver = ((CtElement) o).clone();
+			CtElement receiver = o.clone();
 
 			RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getClass(), mmField.getRole());
 

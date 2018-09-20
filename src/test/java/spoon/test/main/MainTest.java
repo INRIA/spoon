@@ -31,7 +31,6 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -40,6 +39,7 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 
@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,7 +96,8 @@ public class MainTest {
 				"--source-classpath", systemClassPath,
 				"--compile", // compiling Spoon code itself on the fly
 				"--compliance", "8",
-				"--level", "OFF"
+				"--level", "OFF",
+				"--enable-comments"
 		});
 		
 		launcher.buildModel();
@@ -469,6 +471,49 @@ public class MainTest {
 				super.scan(role, element);
 			}
 		});
+	}
+
+	@Test
+	public void testSourcePositionTreeIsCorrectlyOrdered() {
+		/*
+		 * contract: the tree of ElementSourceFragments of all spoon types (= sample set of sources) can be built.
+		 * contract: the tree of ElementSourceFragments is correctly organized. It means:
+		 * - source positions of children elements are smaller or equal to their parents
+		 * - source positions of next siblings are after their previous siblings
+		 * - 
+		 */
+		List<CtType> types = rootPackage.filterChildren(new TypeFilter<>(CtType.class)).filterChildren((CtType t) -> t.isTopLevel()).list();
+		int totalCount = 0;
+		boolean hasComment = false;
+		for (CtType type : types) {
+			SourcePosition sp = type.getPosition();
+			totalCount += assertSourcePositionTreeIsCorrectlyOrder(sp.getCompilationUnit().getOriginalSourceFragment(), 0, sp.getCompilationUnit().getOriginalSourceCode().length());
+			hasComment = hasComment || type.getComments().size() > 0; 
+		};
+		assertTrue(totalCount > 1000);
+		assertTrue(hasComment);
+	}
+
+	/**
+	 * Asserts that all siblings and children of sp are well ordered
+	 * @param sourceFragment
+	 * @param minOffset TODO
+	 * @param maxOffset TODO
+	 * @return number of checked {@link SourcePosition} nodes
+	 */
+	private int assertSourcePositionTreeIsCorrectlyOrder(ElementSourceFragment sourceFragment, int minOffset, int maxOffset) {
+		int nr = 0;
+		int pos = minOffset;
+		while (sourceFragment != null) {
+			nr++;
+			assertTrue("min(" + pos + ") <= fragment.start(" + sourceFragment.getStart() + ")", pos <= sourceFragment.getStart());
+			assertTrue("fragment.start(" + sourceFragment.getStart() + ") <= fragment.end(" + sourceFragment.getEnd() + ")", sourceFragment.getStart() <= sourceFragment.getEnd());
+			pos = sourceFragment.getEnd();
+			nr += assertSourcePositionTreeIsCorrectlyOrder(sourceFragment.getFirstChild(), sourceFragment.getStart(), sourceFragment.getEnd());
+			sourceFragment = sourceFragment.getNextSibling();
+		}
+		assertTrue("lastFragment.end(" + pos + ") <= max(" + maxOffset + ")", pos <= maxOffset);
+		return nr;
 	}
 
 	@Test
