@@ -166,5 +166,4 @@ public class MavenLauncher extends Launcher {
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
 	}
-
 }

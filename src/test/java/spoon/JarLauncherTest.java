@@ -29,7 +29,6 @@ import static org.junit.Assert.*;
 
 public class JarLauncherTest {
 
-	@Ignore
 	@Test
 	public void testJarLauncher() {
 
@@ -47,7 +46,6 @@ public class JarLauncherTest {
 		assertNotNull(var.getType().getTypeDeclaration());
 	}
 
-	@Ignore
 	@Test
 	public void testJarLauncherNoPom() {
 		File baseDir = new File("src/test/resources/jarLauncher");

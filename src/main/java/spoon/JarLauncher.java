@@ -114,6 +114,7 @@ public class JarLauncher extends Launcher {
 				if (pomModel == null) {
 					throw new SpoonException("Unable to create the model, pom not found?");
 				}
+				getEnvironment().setComplianceLevel(pomModel.getSourceVersion());
 				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
 				// dependencies
 				this.getModelBuilder().setSourceClasspath(classpath);
@@ -123,10 +124,6 @@ public class JarLauncher extends Launcher {
 			addInputResource(decompiledSrc.getAbsolutePath());
 		} else {
 			addInputResource(decompiledSrc.getAbsolutePath());
-
-			//TODO
-			// compliance level
-			//this.getEnvironment().setComplianceLevel();
 		}
 	}
 

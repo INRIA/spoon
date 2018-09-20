@@ -23,7 +23,6 @@ public interface Decompiler {
 	 *
 	 * @param jarPath
 	 * 		Path to jar to be analyzed.
-	 * @return Folder containing decompiled
 	 */
 	void decompile(String jarPath);
 }
