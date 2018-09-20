@@ -65,8 +65,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(java.lang.RuntimeException e){}"
 								+ "}};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(
-				0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		assertEquals(1, tryStmt.getCatchers().size());
 	}
 
@@ -81,8 +80,7 @@ public class TryCatchTest {
 								+ " try{}catch(RuntimeException e){java.lang.System.exit(0);}"
 								+ "      catch(Exception e){}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(
-				0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 
 		// the first caught exception is RuntimeException
 		assertEquals(
@@ -104,7 +102,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(RuntimeException | Error e){System.exit(0);}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
 
@@ -217,7 +215,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(RuntimeException e){System.exit(0);}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
 
