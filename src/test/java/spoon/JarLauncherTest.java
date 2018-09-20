@@ -24,7 +24,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtConstructor;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 

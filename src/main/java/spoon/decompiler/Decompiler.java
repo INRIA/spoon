@@ -16,10 +16,6 @@
  */
 package spoon.decompiler;
 
-import spoon.compiler.SpoonResource;
-
-import java.io.File;
-
 public interface Decompiler {
 
 	/**
@@ -27,6 +23,7 @@ public interface Decompiler {
 	 *
 	 * @param jarPath
 	 * 		Path to jar to be analyzed.
+	 * @return Folder containing decompiled
 	 */
 	void decompile(String jarPath);
 }

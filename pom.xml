@@ -211,11 +211,6 @@
       <name>Maven Repository for Spoon Snapshots</name>
       <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
     </repository>
-    <repository>
-      <id>project.local</id>
-      <name>project</name>
-      <url>file:${project.basedir}/libs</url>
-    </repository>
   </repositories>
 
   <dependencies>
@@ -301,11 +296,11 @@
       <artifactId>maven-invoker</artifactId>
       <version>3.0.1</version>
     </dependency>
-    <dependency>
-      <groupId>org.benf</groupId>
-      <artifactId>cfr</artifactId>
-      <version>${version.cfr}</version>
-    </dependency>
+      <dependency>
+          <groupId>org.benf</groupId>
+          <artifactId>cfr</artifactId>
+          <version>0.132.0</version>
+      </dependency>
   </dependencies>
 
   <build>

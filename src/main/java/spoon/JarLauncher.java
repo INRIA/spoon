@@ -17,11 +17,10 @@
 package spoon;
 
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import spoon.compiler.SpoonResource;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
-import spoon.internal.mavenlauncher.SpoonPom;
 import spoon.support.Experimental;
+import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +114,7 @@ public class JarLauncher extends Launcher {
 				if (pomModel == null) {
 					throw new SpoonException("Unable to create the model, pom not found?");
 				}
-				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE,LOGGER,false);
+				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
 				// dependencies
 				this.getModelBuilder().setSourceClasspath(classpath);
 			} catch (IOException | XmlPullParserException e) {
