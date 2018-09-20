@@ -305,8 +305,6 @@
       <groupId>org.benf</groupId>
       <artifactId>cfr</artifactId>
       <version>${version.cfr}</version>
-      <!--<scope>system</scope>
-      <systemPath>${project.basedir}/libs/cfr_0_132.jar</systemPath>-->
     </dependency>
   </dependencies>
 
