@@ -33,7 +33,6 @@ public class CollectionSourceFragment implements SourceFragment {
 	private final List<SourceFragment> items;
 
 	public CollectionSourceFragment(List<SourceFragment> items) {
-		super();
 		this.items = items;
 	}
 
