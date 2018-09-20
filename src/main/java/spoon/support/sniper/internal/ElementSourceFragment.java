@@ -748,7 +748,6 @@ public class ElementSourceFragment implements SourceFragment {
 		private final char[] chars;
 
 		private StringMatcher(final String str, TokenType type) {
-			super();
 			this.type = type;
 			chars = str.toCharArray();
 		}
