@@ -307,9 +307,12 @@ public class ReferenceBuilder {
 	 */
 	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
 		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
+		if (cuDeclaration == null) {
+			return null;
+		}
 		LookupEnvironment environment = cuDeclaration.scope.environment;
 
-		if (cuDeclaration != null && cuDeclaration.imports != null) {
+		if (cuDeclaration.imports != null) {
 			for (ImportReference anImport : cuDeclaration.imports) {
 				if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
 					if (anImport.isStatic()) {
