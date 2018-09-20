@@ -153,7 +153,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 
 	@Override
 	protected void printTypes(List<CtType<?>> types) {
-		ElementSourceFragment rootFragment = (ElementSourceFragment) sourceCompilationUnit.getOriginalSourceFragment();
+		ElementSourceFragment rootFragment = sourceCompilationUnit.getOriginalSourceFragment();
 		runInContext(new SourceFragmentContextList(mutableTokenWriter, null, rootFragment.getChildrenFragments(), getChangeResolver()),
 				() -> {
 					for (CtType<?> t : types) {
