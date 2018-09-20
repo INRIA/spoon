@@ -33,7 +33,6 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 	private final CtComment comment;
 
 	public TokenPrinterEvent(TokenType type, String token, CtComment comment) {
-		super();
 		this.type = type;
 		this.token = token;
 		this.comment = comment;
