@@ -71,7 +71,6 @@ public class SpoonPom implements SpoonResource {
 	/**
 	 * Extract the information from the pom
 	 * @param path the path to the pom
-	 * @return the extracted model
 	 * @throws IOException when the file does not exist
 	 * @throws XmlPullParserException when the file is corrupted
 	 */
@@ -83,7 +82,6 @@ public class SpoonPom implements SpoonResource {
 	 * Extract the information from the pom
 	 * @param path the path to the pom
 	 * @param parent the parent pom
-	 * @return the extracted model
 	 * @throws IOException when the file does not exist
 	 * @throws XmlPullParserException when the file is corrupted
 	 */

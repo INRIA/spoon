@@ -37,22 +37,56 @@ public class JarLauncher extends Launcher {
 	Decompiler decompiler;
 	boolean decompile = false;
 
+	/**
+	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 *
+	 * @param jarPath path to the jar to be analyzed
+	 */
 	public JarLauncher(String jarPath) {
 		this(jarPath, null, (String) null);
 	}
 
+
+	/**
+	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 *
+	 * @param jarPath path to the jar to be analyzed
+	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath) {
 		this(jarPath, decompiledSrcPath, (String) null);
 	}
 
+	/**
+	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 *
+	 * @param jarPath path to the jar to be analyzed
+	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param pom path to pom associated with the jar to be analyzed
+	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, String pom) {
 		this(jarPath, decompiledSrcPath, pom, null);
 	}
 
+	/**
+	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 *
+	 * @param jarPath path to the jar to be analyzed
+	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiler Instance implementing {@link spoon.decompiler.Decompiler} to be used
+	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, Decompiler decompiler) {
 		this(jarPath, decompiledSrcPath, null, decompiler);
 	}
 
+	/**
+	 * JarLauncher constructor. Uses the defauld Decompiler (CFR)
+	 *
+	 * @param jarPath path to the jar to be analyzed
+	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param pom path to pom associated with the jar to be analyzed
+	 * @param decompiler Instance implementing {@link spoon.decompiler.Decompiler} to be used
+	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, String pom, Decompiler decompiler) {
 		this.decompiler = decompiler;
 		if (decompiledSrcPath == null) {
@@ -127,7 +161,7 @@ public class JarLauncher extends Launcher {
 		}
 	}
 
-	public Decompiler getDefaultDecompiler() {
+	protected Decompiler getDefaultDecompiler() {
 		return new CFRDecompiler(decompiledSrc);
 	}
 
