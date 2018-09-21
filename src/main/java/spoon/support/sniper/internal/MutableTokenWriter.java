@@ -31,7 +31,6 @@ public class MutableTokenWriter implements TokenWriter {
 	private boolean muted = false;
 
 	public MutableTokenWriter(Environment env) {
-		super();
 		this.delegate = new DefaultTokenWriter(new DirectPrinterHelper(env));
 	}
 

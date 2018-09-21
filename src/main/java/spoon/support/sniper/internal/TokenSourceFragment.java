@@ -29,7 +29,6 @@ public class TokenSourceFragment implements SourceFragment {
 	private final TokenType type;
 
 	public TokenSourceFragment(String source, TokenType type) {
-		super();
 		this.source = source;
 		this.type = type;
 	}
