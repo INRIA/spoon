@@ -241,8 +241,8 @@ public class JavaReflectionTreeBuilderTest {
 						Set<ModifierKind> elementModifiers = ((CtModifiable) currentDiff.element).getModifiers();
 						Set<ModifierKind> otherModifiers = ((CtModifiable) currentDiff.other).getModifiers();
 						if (type.isInterface()) {
-							if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT)
-									.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT))) {
+							if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT, ModifierKind.FINAL)
+									.equals(removeModifiers(otherModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT, ModifierKind.FINAL))) {
 								//it is OK, that type memebers of interface differs in public abstract modifiers
 								return;
 							}
@@ -250,8 +250,8 @@ public class JavaReflectionTreeBuilderTest {
 							CtType<?> type2 = type.getDeclaringType();
 							if (type2 != null) {
 								if (type2.isInterface()) {
-									if (removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/)
-											.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/))) {
+									if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.FINAL/*, ModifierKind.STATIC*/)
+											.equals(removeModifiers(otherModifiers, ModifierKind.PUBLIC, ModifierKind.FINAL/*, ModifierKind.STATIC*/))) {
 										//it is OK, that type memebers of interface differs in public abstract modifiers
 										return;
 									}
