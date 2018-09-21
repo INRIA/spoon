@@ -16,6 +16,9 @@
  */
 package spoon.decompiler;
 
+import spoon.support.Experimental;
+
+@Experimental
 public interface Decompiler {
 
 	/**

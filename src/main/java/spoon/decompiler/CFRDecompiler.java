@@ -19,7 +19,9 @@ package spoon.decompiler;
 import java.io.File;
 
 import org.benf.cfr.reader.Main;
+import spoon.support.Experimental;
 
+@Experimental
 public class CFRDecompiler implements Decompiler {
 
 	File outputDir;
