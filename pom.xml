@@ -306,6 +306,9 @@
           <groupId>org.benf</groupId>
           <artifactId>cfr</artifactId>
           <version>0.132.0</version>
+          <!-- since it is not on Maven central, we don't package it -->
+          <!-- if you need it, download it at http://www.benf.org/other/cfr/ and put the jar in the classpath yourself -->
+          <scope>provided</scope>
       </dependency>
   </dependencies>
 
