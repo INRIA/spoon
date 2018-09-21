@@ -29,12 +29,14 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -48,19 +50,40 @@ public class SnippetCompilationHelper {
 	private static final String WRAPPER_CLASS_NAME = "Wrapper";
 	private static final String WRAPPER_METHOD_NAME = "wrap";
 
-	public static void compileAndReplaceSnippetsIn(CtType<?> c) {
-		Factory f = c.getFactory();
-		CtType<?> workCopy = c;
+	public static void compileAndReplaceSnippetsIn(CtType<?> initialClass) {
+
+		Factory f = initialClass.getFactory();
+
+		// we need to slightly play with the modifiers
 		Set<ModifierKind> backup = EnumSet.noneOf(ModifierKind.class);
-		backup.addAll(workCopy.getModifiers());
-		workCopy.removeModifier(ModifierKind.PUBLIC);
+		backup.addAll(initialClass.getModifiers());
+		initialClass.removeModifier(ModifierKind.PUBLIC);
+
+		// we need to delete the current class from its package
+		// otherwsise the new type is not added because it has the same fully qualified name
+		initialClass.delete();
 
 		try {
-			build(f, workCopy.toString());
+			build(f, "package " + initialClass.getPackage().getQualifiedName() + ";" + initialClass.toString());
 		} finally {
 			// restore modifiers
-			c.setModifiers(backup);
+			initialClass.setModifiers(backup);
 		}
+
+		// now we get the new class
+		CtType<?> newClass = f.Type().get(initialClass.getQualifiedName());
+
+		// we put all the members of the new class in the old class
+		for (CtTypeMember m : new ArrayList<>(initialClass.getTypeMembers())) {
+			initialClass.removeTypeMember(m);
+		}
+		for (CtTypeMember m : newClass.getTypeMembers()) {
+			initialClass.addTypeMember(m);
+		}
+
+		// and we replace the new class in the factory by the previous one
+		newClass.replace(initialClass);
+
 	}
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st)
