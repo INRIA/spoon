@@ -25,39 +25,35 @@ public class SerializableTest {
 
 	@Test
 	public void testSerialCtStatement() throws Exception {
+		// contract: one can also serialize snippets
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 		CtStatement sta2 = (factory).Code()
 				.createCodeSnippetStatement("String hello =\"t1\"; System.out.println(hello)").compile();
 
 		byte[] ser = ByteSerialization.serialize(sta2);
-		CtStatement des = (CtStatement) ByteSerialization.deserialize(ser);
+		CtStatement deserializedSta2 = (CtStatement) ByteSerialization.deserialize(ser);
 
 		String sigBef = sta2.getShortRepresentation();
-		String sigAf = des.getShortRepresentation();
+		String sigAf = deserializedSta2.getShortRepresentation();
 
 		CtType<?> typeBef = sta2.getParent(CtType.class);
-		assertNotNull(typeBef);
+
+		// sta2 comes from a snippet, and snippets have no parent (#2318)
+		assertNull(typeBef);
 
 		assertEquals(sigBef, sigAf);
 
-		des.setFactory(factory);
+		deserializedSta2.setFactory(factory);
 		String toSBef = sta2.toString();
-		String toSgAf = des.toString();
+		String toSgAf = deserializedSta2.toString();
 
 		assertEquals(toSBef, toSgAf);
 
-		CtType<?> typeDes = des.getParent(CtType.class);
-		assertNotNull(typeDes);
-		//After deserialization, getDeclaringType throws an exception
-		CtType<?> decl =  typeDes.getDeclaringType();
-		assertNull(decl);
+		CtType<?> typeDes = deserializedSta2.getParent(CtType.class);
 
-		CtPackage parentOriginal = (CtPackage) typeBef.getParent();
-		CtPackage parentDeser = (CtPackage) typeDes.getParent();
-
-		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME,parentOriginal.getSimpleName());
-
-		assertEquals(CtPackage.TOP_LEVEL_PACKAGE_NAME,parentDeser.getSimpleName());
+		// typeDes comes from a serialized snippet, and snippets have no parent (#2318)
+		assertNull(typeDes);
+		assertFalse(deserializedSta2.isParentInitialized());
 
 	}
 

@@ -94,6 +94,7 @@ public class SnippetCompilationHelper {
 
 		//disconnect element from the parent, so it can be added to another model
 		ret.delete();
+		ret.setParent(null);
 
 		if (ret instanceof CtClass) {
 			CtClass klass = (CtClass) ret;
@@ -109,7 +110,13 @@ public class SnippetCompilationHelper {
 
 		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr, expr.getFactory().Type().OBJECT);
 
-		return ret.getReturnedExpression();
+		CtExpression<T> returnedExpression = ret.getReturnedExpression();
+
+		// this compiled expression is not in a parent, ready to be used
+		returnedExpression.delete();
+		returnedExpression.setParent(null);
+
+		return returnedExpression;
 	}
 
 	private static void build(Factory f, String contents) {
