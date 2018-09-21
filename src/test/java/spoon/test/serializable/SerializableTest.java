@@ -53,6 +53,7 @@ public class SerializableTest {
 
 		// typeDes comes from a serialized snippet, and snippets have no parent (#2318)
 		assertNull(typeDes);
+		assertFalse(deserializedSta2.isParentInitialized());
 
 	}
 
