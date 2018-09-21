@@ -691,7 +691,7 @@ public class PositionBuilder {
 					if (content[off] == '\r') {
 						//we have found end of this comment
 						//skip windows \n too if any
-						if (content[off] == '\n') {
+						if (off < maxOff && content[off + 1] == '\n') {
 							off++;
 						}
 						return off;

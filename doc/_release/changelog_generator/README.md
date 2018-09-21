@@ -1,11 +1,8 @@
 # Changelog Generator
 
-## Usage
+## Usage
 ```
-node node changelog.js <previous-spoon-version>
-```
-
-## Install
-```
+cd doc/_release/changelog_generator
 npm install
+node changelog.js <previous-spoon-version>
 ```
