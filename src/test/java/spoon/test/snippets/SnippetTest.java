@@ -7,6 +7,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -15,6 +16,8 @@ import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -55,6 +58,10 @@ public class SnippetTest {
 
 		// Compile a first time the snippet.
 		final CtExpression<Object> compile = snippet.compile();
+
+		// contract: the element is fready to be used, not in any statement (#2318)
+		assertFalse(compile.isParentInitialized());
+
 		// Compile a second time the same snippet.
 		final CtExpression<Object> secondCompile = snippet.compile();
 
@@ -73,14 +80,13 @@ public class SnippetTest {
 	@Test
 	public void testCompileSnippetWithContext() {
 		// contract: a snippet object can be compiled with a context in the factory.
-		try {
-			// Add a class in the context.
-			factory.Class().create("AClass");
-			// Try to compile a snippet with a context.
-			factory.Code().createCodeSnippetStatement("int i = 1;").compile();
-		} catch (ClassCastException e) {
-			fail();
-		}
+		// Add a class in the context.
+		factory.Class().create("AClass");
+		// Try to compile a snippet with a context.
+		CtStatement statement = factory.Code().createCodeSnippetStatement("int i = 1;").compile();
+
+		// contract: the element is fready to be used, not in any statement (#2318)
+		assertFalse(statement.isParentInitialized());
 	}
 
 	@Test
