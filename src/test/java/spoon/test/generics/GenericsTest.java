@@ -1314,7 +1314,7 @@ public class GenericsTest {
 		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
 
 		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature");
-		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+		CtMethod ifaceMethod = iface.getMethodsByName("visitCtConditional").get(0);
 
 		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
 		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
