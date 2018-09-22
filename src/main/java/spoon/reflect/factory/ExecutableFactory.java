@@ -130,9 +130,8 @@ public class ExecutableFactory extends SubFactory {
 			CtTypeReference<?> originCT = atr.getComponentType();
 			CtTypeReference<?> erasedCT = getMethodParameterType(originCT);
 			if (originCT != erasedCT) {
-				CtArrayTypeReference<?> erased = atr;
-				erased.setComponentType(erasedCT);
-				paramType = erased;
+				((CtArrayTypeReference<?>) atr).setComponentType(erasedCT);
+				paramType = (CtArrayTypeReference<?>) atr;
 			}
 		}
 		if (paramType == null) {
