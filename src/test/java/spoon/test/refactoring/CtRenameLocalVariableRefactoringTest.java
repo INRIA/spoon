@@ -94,8 +94,8 @@ public class CtRenameLocalVariableRefactoringTest
 				});
 		});
 	}
-	
-	protected void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
+
+	private void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
 		
 		String originName = targetVariable.getSimpleName();
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
