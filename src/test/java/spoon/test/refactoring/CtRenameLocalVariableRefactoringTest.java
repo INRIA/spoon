@@ -95,7 +95,7 @@ public class CtRenameLocalVariableRefactoringTest
 		});
 	}
 	
-	protected void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
+	private void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
 		
 		String originName = targetVariable.getSimpleName();
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
@@ -153,16 +153,16 @@ public class CtRenameLocalVariableRefactoringTest
 		
 //		 2) build it
 		try {
-//			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.CTTYPES);
 		} catch (Throwable e) {
 			new AssertionError("The compilation of java sources in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
 		}
 //		 3) create instance using that new model and test consistency
 		try {
-//			varRenameClass.newInstance();
-			TestClassloader classLoader = new TestClassloader(launcher);
-			Class testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
+			Class testModelClass;
+			try (TestClassloader classLoader = new TestClassloader(launcher)) {
+				testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
+			}
 			testModelClass.getMethod("checkModelConsistency").invoke(testModelClass.newInstance());
 		} catch (InvocationTargetException e) {
 			throw new AssertionError("The model validation of code in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e.getTargetException());
