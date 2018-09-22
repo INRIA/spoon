@@ -65,7 +65,7 @@ public class SnippetCompilationHelper {
 		Map<CtPath, CtElement> elements2before = new HashMap<>();
 		Map<CtPath, CtElement> elements2after = new HashMap<>();
 		for (Object o : initialClass.filterChildren(new TypeFilter<>(CtCodeSnippet.class)).list()) {
-			CtElement el = (CtElement)o;
+			CtElement el = (CtElement) o;
 			elements2before.put(el.getPath(), el);
 		}
 		Factory f = initialClass.getFactory();
