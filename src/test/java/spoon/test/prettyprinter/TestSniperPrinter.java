@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public class TestSniperPrinter {
 
 	@Test
-	public void testPrintUnchaged() throws Exception {
+	public void testPrintUnchaged() {
 		//contract: sniper printing of unchanged compilation unit returns origin sources
 		testSniper(ToBeChanged.class.getName(), type -> {
 			//do not change the model
@@ -38,7 +38,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	public void testPrintAfterRenameOfField() throws Exception {
+	public void testPrintAfterRenameOfField() {
 		//contract: sniper printing after rename of field 
 		testSniper(ToBeChanged.class.getName(), type -> {
 			//change the model
@@ -50,7 +50,7 @@ public class TestSniperPrinter {
 	}
 	
 	@Test
-	public void testPrintChangedComplex() throws Exception {
+	public void testPrintChangedComplex() {
 		//contract: sniper printing after remove of statement from nested complex `if else if ...`
 		testSniper("spoon.test.prettyprinter.testclasses.ComplexClass", type -> {
 			//find to be removed statement "bounds = false"
