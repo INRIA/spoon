@@ -2,7 +2,6 @@ package spoon.test.serializable;
 
 import org.junit.Test;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -16,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
