@@ -145,6 +145,7 @@ public class ElementSourceFragment implements SourceFragment {
 		//scan all children of `element` and build tree of SourceFragments
 		new CtScanner() {
 			CtRole scannedRole;
+			@Override
 			public void scan(CtRole role, CtElement element) {
 				scannedRole = role;
 				super.scan(role, element);
