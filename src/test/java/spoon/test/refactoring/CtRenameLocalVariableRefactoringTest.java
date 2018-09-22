@@ -159,8 +159,10 @@ public class CtRenameLocalVariableRefactoringTest
 		}
 //		 3) create instance using that new model and test consistency
 		try {
-			TestClassloader classLoader = new TestClassloader(launcher);
-			Class testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
+			Class testModelClass;
+			try (TestClassloader classLoader = new TestClassloader(launcher)) {
+				testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
+			}
 			testModelClass.getMethod("checkModelConsistency").invoke(testModelClass.newInstance());
 		} catch (InvocationTargetException e) {
 			throw new AssertionError("The model validation of code in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e.getTargetException());
