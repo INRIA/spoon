@@ -50,6 +50,13 @@ public class SnippetCompilationHelper {
 	private static final String WRAPPER_CLASS_NAME = "Wrapper";
 	private static final String WRAPPER_METHOD_NAME = "wrap";
 
+	/**
+	 * Takes the class given as parameter, pretty-prints it, get the JDT'ast and the corrspondong Spoon AST
+	 * and finally replace all children of initialClass by the the fresh ones.
+	 *
+	 * This results that all snippets are now full-fledged ASTs.
+	 *
+	 */
 	public static void compileAndReplaceSnippetsIn(CtType<?> initialClass) {
 
 		Factory f = initialClass.getFactory();
