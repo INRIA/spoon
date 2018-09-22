@@ -77,14 +77,12 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class PositionTest {
 
 	@Test
 	public void testPositionClass() {
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final Factory build = ModelUtils.build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
 
@@ -117,7 +115,7 @@ public class PositionTest {
 	public void testPositionClassWithComments() {
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
 		//and it produces correct `modifierEnd`
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final Factory build = ModelUtils.build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazzWithComments> foo = build.Type().get(FooClazzWithComments.class);
 		String classContent = getClassContent(foo);
 
@@ -156,7 +154,7 @@ public class PositionTest {
 	@Test
 	public void testPositionParameterTypeReference() throws Exception {
 		//contract: the parameterized type reference has a source position which includes parameter types, etc.
-		final CtType<?> foo = buildClass(PositionParameterTypeWithReference.class);
+		final CtType<?> foo = ModelUtils.buildClass(PositionParameterTypeWithReference.class);
 		String classContent = getClassContent(foo);
 
 		{
@@ -202,7 +200,7 @@ public class PositionTest {
 	
 	@Test
 	public void testPositionInterface() {
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final Factory build = ModelUtils.build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
 		String classContent = getClassContent(foo);
 
@@ -236,7 +234,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionAnnotation() {
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
+		final Factory build = ModelUtils.build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
 		String classContent = getClassContent(foo);
 
@@ -279,7 +277,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionField() throws Exception {
-		final Factory build = build(FooField.class);
+		final Factory build = ModelUtils.build(FooField.class);
 		final CtType<FooField> foo = build.Type().get(FooField.class);
 		String classContent = getClassContent(foo);
 
@@ -342,7 +340,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionGeneric() throws Exception {
-		final Factory build = build(FooGeneric.class);
+		final Factory build = ModelUtils.build(FooGeneric.class);
 		final CtClass<FooGeneric> foo = build.Class().get(FooGeneric.class);
 		String classContent = getClassContent(foo);
 
@@ -385,7 +383,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionMethod() throws Exception {
-		final Factory build = build(FooMethod.class);
+		final Factory build = ModelUtils.build(FooMethod.class);
 		final CtClass<FooMethod> foo = build.Class().get(FooMethod.class);
 		String classContent = getClassContent(foo);
 
@@ -455,7 +453,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionAbstractMethod() throws Exception {
-		final Factory build = build(FooAbstractMethod.class);
+		final Factory build = ModelUtils.build(FooAbstractMethod.class);
 		final CtClass<FooMethod> foo = build.Class().get(FooAbstractMethod.class);
 		String classContent = getClassContent(foo);
 
@@ -489,7 +487,7 @@ public class PositionTest {
 
 	@Test
 	public void testPositionStatement() throws Exception {
-		final Factory build = build(FooStatement.class);
+		final Factory build = ModelUtils.build(FooStatement.class);
 		final CtType<FooStatement> foo = build.Type().get(FooStatement.class);
 		String classContent = getClassContent(foo);
 
@@ -628,7 +626,7 @@ public class PositionTest {
 
 	@Test
 	public void defaultConstructorPositionTest() throws Exception {
-		CtClass<Foo> aClass = (CtClass<Foo>) buildClass(Foo.class);
+		CtClass<Foo> aClass = (CtClass<Foo>) ModelUtils.buildClass(Foo.class);
 		CtConstructor<Foo> defaultConstructor = aClass.getConstructor();
 		assertEquals(SourcePosition.NOPOSITION, defaultConstructor.getPosition());
 		CtStatement implicitSuperCall = defaultConstructor.getBody().getStatement(0);
@@ -811,7 +809,7 @@ public class PositionTest {
 				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceStart(),
 				((DeclarationSourcePosition) withMultipleCatch.getPosition()).getModifierSourceEnd()));
 
-		foo = buildClass(Comment1.class);
+		foo = ModelUtils.buildClass(Comment1.class);
 		classContent = getClassContent(foo);
 		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
 		withoutModifier = elements.get(0);
@@ -824,7 +822,7 @@ public class PositionTest {
 				((DeclarationSourcePosition) withoutModifier.getPosition()).getModifierSourceEnd()));
 
 
-		foo = buildClass(VariableReferencesModelTest.class);
+		foo = ModelUtils.buildClass(VariableReferencesModelTest.class);
 		classContent = getClassContent(foo);
 		elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
 		withoutModifier = elements.get(0);
@@ -1093,7 +1091,7 @@ public class PositionTest {
 	@Test
 	public void testEndColumn() throws Exception {
 		//contract: check end column
-		final Factory build = build(FooStatement.class);
+		final Factory build = ModelUtils.build(FooStatement.class);
 		final CtType<FooStatement> foo = build.Type().get(FooStatement.class);
 		CtMethod<?> m = foo.getMethodsByName("m").get(0);
 		SourcePosition pos = m.getPosition();
@@ -1106,7 +1104,7 @@ public class PositionTest {
 	@Test
 	public void testFirstLineColumn() throws Exception {
 		//contract: element, positioned before the first line separator in a file, should have correct column
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSimpleClass.java"));
+		final Factory build = ModelUtils.build(new File("src/test/java/spoon/test/position/testclasses/TestSimpleClass.java"));
 		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSimpleClass");
 		assertEquals(54, type.getPosition().getColumn());
 	}
@@ -1114,7 +1112,7 @@ public class PositionTest {
 	@Test
 	public void testSingleLineClassColumn() throws Exception {
 		//contract: element, positioned in a file without EOL, should have correct column
-		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
+		final Factory build = ModelUtils.build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
 		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSingleLineClass");
 		assertEquals(54, type.getPosition().getColumn());
 	}
@@ -1122,7 +1120,7 @@ public class PositionTest {
 	@Test
 	public void testLabel() throws Exception {
 		//contract: check position of labeled statement
-		final Factory build = build(FooLabel.class);
+		final Factory build = ModelUtils.build(FooLabel.class);
 		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
 		String classContent = getClassContent(foo);
 		List<CtStatement> stmts = foo.getMethodsByName("m").get(0).getBody().getStatements();
@@ -1140,7 +1138,7 @@ public class PositionTest {
 	@Test
 	public void testNestedLabels() throws Exception {
 		//contract: check position of nested labeled statements
-		final Factory build = build(FooLabel.class);
+		final Factory build = ModelUtils.build(FooLabel.class);
 		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
 		String classContent = getClassContent(foo);
 		{
