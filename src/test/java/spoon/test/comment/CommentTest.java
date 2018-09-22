@@ -427,7 +427,6 @@ public class CommentTest {
 				+ " + \"\")", ctLocalVariableString.getDefaultExpression().toString());
 
 		ctLocalVariable1 = m1.getBody().getStatement(13);
-		ctConditional = (CtConditional) ctLocalVariable1.getDefaultExpression();
 		assertEquals("boolean c = (i == 1) ? // comment before then boolean CtConditional" + newLine
 				+ "i == 1// comment after then boolean CtConditional" + newLine
 				+ " : i == 2", ctLocalVariable1.toString());
