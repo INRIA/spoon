@@ -220,7 +220,7 @@ public class TestSniperPrinter {
 		int lastImportEnd = 0;
 		while(m.find()) {
 			lastImportEnd = m.end();
-		};
+		}
 		//System.out.println(lastImportEnd);
 		return source.substring(lastImportEnd).trim();
 	}
