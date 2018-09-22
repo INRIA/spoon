@@ -22,6 +22,8 @@ import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
+import java.util.Objects;
+
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
 import static spoon.reflect.path.CtRole.TYPE;
 
@@ -85,9 +87,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 		CtCommentImpl ctComment = (CtCommentImpl) o;
 
-		if (content != null
-				? !content.equals(ctComment.content)
-				: ctComment.content != null) {
+		if (!Objects.equals(content, ctComment.content)) {
 			return false;
 		}
 		return type == ctComment.type;
