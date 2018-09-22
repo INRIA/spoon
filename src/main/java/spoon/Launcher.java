@@ -675,8 +675,7 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public Environment createEnvironment() {
-		Environment env = new StandardEnvironment();
-		return env;
+		return new StandardEnvironment();
 	}
 
 	public JavaOutputProcessor createOutputWriter() {
