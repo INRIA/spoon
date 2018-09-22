@@ -142,7 +142,6 @@ public class SnippetTest {
 
 		assertSame(snippetClass, factory.Type().get(snippetClass.getQualifiedName()));
 
-		staticMethod = factory.Type().get(snippetClass.getQualifiedName()).getMethod("staticMethod");
 		assertTrue(staticMethod.getBody().getLastStatement() instanceof CtInvocation<?>); // the last statement, i.e. the snippet, has been replaced by its real node: a CtInvocation
 		final CtInvocation<?> lastStatement = (CtInvocation<?>) staticMethod.getBody().getLastStatement();
 		final CtLocalVariableReference<?> reference = staticMethod.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).getReference();

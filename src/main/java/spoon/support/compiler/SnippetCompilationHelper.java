@@ -25,6 +25,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -32,14 +33,18 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Helper class for working with snippets */
@@ -59,6 +64,12 @@ public class SnippetCompilationHelper {
 	 */
 	public static void compileAndReplaceSnippetsIn(CtType<?> initialClass) {
 
+		Map<CtPath, CtElement> elements2before = new HashMap<>();
+		Map<CtPath, CtElement> elements2after = new HashMap<>();
+		for (Object o : initialClass.filterChildren(new TypeFilter<>(CtCodeSnippet.class)).list()) {
+			CtElement el = (CtElement)o;
+			elements2before.put(el.getPath(), el);
+		}
 		Factory f = initialClass.getFactory();
 
 		// we need to slightly play with the modifiers
@@ -77,19 +88,22 @@ public class SnippetCompilationHelper {
 			initialClass.setModifiers(backup);
 		}
 
-		// now we get the new class
+		// we get the newly created class
 		CtType<?> newClass = f.Type().get(initialClass.getQualifiedName());
 
-		// we put all the members of the new class in the old class
-		for (CtTypeMember m : new ArrayList<>(initialClass.getTypeMembers())) {
-			initialClass.removeTypeMember(m);
-		}
-		for (CtTypeMember m : newClass.getTypeMembers()) {
-			initialClass.addTypeMember(m);
+		// we find the snippets that are now ASTs
+		for (CtPath p : elements2before.keySet()) {
+			elements2after.put(p, p.evaluateOn(f.getModel().getRootPackage()).iterator().next());
 		}
 
-		// and we replace the new class in the factory by the previous one
+		// and we replace the new class in the factory by the initial one
 		newClass.replace(initialClass);
+
+		// and we replace the snippets
+		for (CtPath p : elements2before.keySet()) {
+			CtElement toReplace = elements2before.get(p);
+			toReplace.replace(elements2after.get(p));
+		}
 
 	}
 
