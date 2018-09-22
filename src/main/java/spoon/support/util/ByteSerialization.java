@@ -28,19 +28,17 @@ public class ByteSerialization {
 
 	public static byte[] serialize(Object obj) throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		ObjectOutputStream so = new ObjectOutputStream(bo);
-		so.writeObject(obj);
-		so.flush();
-		byte[] serializedObject = bo.toByteArray();
-		so.close();
-		return serializedObject;
+		try (ObjectOutputStream so = new ObjectOutputStream(bo)) {
+			so.writeObject(obj);
+			so.flush();
+			return bo.toByteArray();
+		}
 	}
 
 	public static Object deserialize(byte[] serializedObject) throws Exception {
 		ByteArrayInputStream bi = new ByteArrayInputStream(serializedObject);
-		ObjectInputStream si = new ObjectInputStream(bi);
-		Object objInput = si.readObject();
-		si.close();
-		return objInput;
+		try (ObjectInputStream si = new ObjectInputStream(bi)) {
+			return si.readObject();
+		}
 	}
 }
