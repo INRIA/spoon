@@ -620,13 +620,12 @@ public class PatternTest {
 		}
 
 		for (int count = 5; count < 7; count++) {
-			final int countFinal = count;
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters().build();
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 			//the possessive matcher eats too much. There is no target element for last `printedValue` variable
-			assertEquals("count="+countFinal, 0, matches.size());
+			assertEquals("count="+ count, 0, matches.size());
 		}
 	}
 
