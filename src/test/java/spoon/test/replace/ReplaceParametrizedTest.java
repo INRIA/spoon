@@ -129,13 +129,12 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			invokeSetter(rh, receiver, argument);
 				
 			// contract: a property setter sets properties that are visitable by a scanner
-			CtElement finalArgument = argument;
 			class Scanner extends CtScanner {
 				boolean found = false;
 				@Override
 				public void scan(CtRole role, CtElement e) {
 					super.scan(role, e);
-					if (e == finalArgument) {
+					if (e == argument) {
 						if (rh.getRole()==role || rh.getRole().getSuperRole()==role) {
 							found = true;
 							return;
