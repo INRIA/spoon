@@ -47,8 +47,8 @@ public class CtPathImpl implements CtPath {
 
 	@Override
 	public CtPath relativePath(CtElement parent) {
-		Collection<CtElement> roots = new ArrayList<>();
-		((ArrayList<CtElement>) roots).add(parent);
+		List<CtElement> roots = new ArrayList<>();
+		roots.add(parent);
 
 		int index = 0;
 		for (CtPathElement pathEl : getElements()) {
