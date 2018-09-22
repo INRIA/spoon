@@ -153,14 +153,12 @@ public class CtRenameLocalVariableRefactoringTest
 		
 //		 2) build it
 		try {
-//			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.CTTYPES);
 		} catch (Throwable e) {
 			new AssertionError("The compilation of java sources in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
 		}
 //		 3) create instance using that new model and test consistency
 		try {
-//			varRenameClass.newInstance();
 			TestClassloader classLoader = new TestClassloader(launcher);
 			Class testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
 			testModelClass.getMethod("checkModelConsistency").invoke(testModelClass.newInstance());
