@@ -79,8 +79,7 @@ public class ZipFolder implements SpoonFolder {
 				while ((entry = zipInput.getNextEntry()) != null) {
 					// deflate in buffer
 					final int buffer = 2048;
-					ByteArrayOutputStream output = new ByteArrayOutputStream(
-							buffer);
+					ByteArrayOutputStream output = new ByteArrayOutputStream(buffer);
 					int count;
 					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
@@ -180,7 +179,7 @@ public class ZipFolder implements SpoonFolder {
 			ZipEntry entry;
 			while ((entry = zipInput.getNextEntry()) != null) {
 				File f = new File(destDir + File.separator + entry.getName());
-				if (entry.isDirectory()) { // if its a directory, create it
+				if (entry.isDirectory()) { // if it's a directory, create it
 					f.mkdir();
 					continue;
 				}
