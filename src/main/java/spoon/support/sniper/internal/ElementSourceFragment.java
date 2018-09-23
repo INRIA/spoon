@@ -145,6 +145,7 @@ public class ElementSourceFragment implements SourceFragment {
 		//scan all children of `element` and build tree of SourceFragments
 		new CtScanner() {
 			CtRole scannedRole;
+			@Override
 			public void scan(CtRole role, CtElement element) {
 				scannedRole = role;
 				super.scan(role, element);
@@ -617,7 +618,7 @@ public class ElementSourceFragment implements SourceFragment {
 			*/
 	));
 
-	private static final String[] javaKeywordsJoined = new String[] {
+	private static final String[] javaKeywordsJoined = {
 			"abstract continue for new switch",
 			"assert default goto package synchronized",
 			"boolean do if private this",
@@ -627,7 +628,8 @@ public class ElementSourceFragment implements SourceFragment {
 			"catch extends int short try",
 			"char final interface static void",
 			"class finally long strictfp volatile",
-			"const float native super while"};
+			"const float native super while"
+	};
 
 	private static final Set<String> javaKeywords = new HashSet<>();
 	static {
