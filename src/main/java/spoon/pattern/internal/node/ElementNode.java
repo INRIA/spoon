@@ -26,6 +26,7 @@ import spoon.pattern.internal.ResultHolder;
 import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
@@ -43,12 +44,15 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
+
 import static spoon.pattern.internal.matcher.TobeMatched.getMatchedParameters;
 
 /**
  * Generates/Matches a copy of a single CtElement AST node with all it's children (whole AST tree of the root CtElement)
  */
 public class ElementNode extends AbstractPrimitiveMatcher {
+	private static final Logger LOGGER = Logger.getLogger(ElementNode.class);
 
 	/**
 	 * Creates an implicit {@link ElementNode}, which contains all non derived attributes of `element` and all it's children
@@ -322,6 +326,16 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		for (Map.Entry<MetamodelProperty, RootNode> e : roleToNode.entrySet()) {
 			parameters = matchesRole(parameters, (CtElement) target, e.getKey(), e.getValue());
 			if (parameters == null) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Field\n:" + e.getKey()
+							+ "\n-------------------------------"
+							+ "\ndoesn't match expected element:\n"	+ e.getKey().getValue(templateElement)
+							+ "\nwith real element:\n" + e.getKey().getValue(target)
+							+ "\n-------------------------------"
+							+ "\non template:\n" + templateElement
+							+ "\non target:\n" + target
+							+ "\n***********************************");
+				}
 				return null;
 			}
 		}
@@ -350,6 +364,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		roleToSkippedClass.put(CtRole.IS_IMPLICIT, new Class[]{Object.class});
 		roleToSkippedClass.put(CtRole.TYPE, new Class[]{CtExecutableReference.class});
 		roleToSkippedClass.put(CtRole.DECLARING_TYPE, new Class[]{CtExecutableReference.class});
+		roleToSkippedClass.put(CtRole.IS_IMPLICIT, new Class[]{CtThisAccess.class});
 	}
 
 	/**
