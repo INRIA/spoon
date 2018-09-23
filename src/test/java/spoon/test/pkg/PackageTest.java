@@ -190,10 +190,11 @@ public class PackageTest {
 		File f = new File(fileDir);
 		assertTrue(f.exists());
 
-		BufferedReader reader = new BufferedReader(new FileReader(f));
-		assertTrue(reader.lines().anyMatch((s) -> {
-			return "package newtest;".equals(s);
-		}));
+		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+			assertTrue(reader.lines().anyMatch((s) -> {
+				return "package newtest;".equals(s);
+			}));
+		}
 	}
 
 	@Test
