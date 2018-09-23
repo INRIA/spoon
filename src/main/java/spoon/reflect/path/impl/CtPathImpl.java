@@ -19,6 +19,7 @@ package spoon.reflect.path.impl;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtPath;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,12 +37,29 @@ public class CtPathImpl implements CtPath {
 	}
 
 	@Override
-	public <T extends CtElement> Collection<T> evaluateOn(CtElement... startNode) {
+	public <T extends CtElement> List<T> evaluateOn(CtElement... startNode) {
 		Collection<CtElement> filtered = Arrays.asList(startNode);
 		for (CtPathElement element : elements) {
 			filtered = element.getElements(filtered);
 		}
-		return (Collection<T>) filtered;
+		return (List<T>) filtered;
+	}
+
+	@Override
+	public CtPath relativePath(CtElement parent) {
+		List<CtElement> roots = new ArrayList<>();
+		roots.add(parent);
+
+		int index = 0;
+		for (CtPathElement pathEl : getElements()) {
+			if (pathEl.getElements(roots).size() > 0) {
+				break;
+			}
+			index++;
+		}
+		CtPathImpl result = new CtPathImpl();
+		result.elements = new LinkedList<>(elements.subList(index, elements.size()));
+		return result;
 	}
 
 	public CtPathImpl addFirst(CtPathElement element) {
