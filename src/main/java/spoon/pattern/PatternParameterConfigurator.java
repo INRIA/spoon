@@ -749,6 +749,19 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
+	 * Elements will be substituted by parameter value
+	 * @param elements to be substituted elements
+	 * @return {@link PatternParameterConfigurator} to support fluent API
+	 */
+	public PatternParameterConfigurator byElement(CtElement... elements) {
+		ParameterInfo pi = getCurrentParameter();
+		for (CtElement element : elements) {
+			addSubstitutionRequest(pi, element);
+		}
+		return this;
+	}
+
+	/**
 	 * Attribute defined by `role` of all elements matched by {@link Filter} will be substituted by parameter value
 	 * @param role {@link CtRole}, which defines to be substituted elements
 	 * @param filter {@link Filter}, which defines to be substituted elements
@@ -760,6 +773,20 @@ public class PatternParameterConfigurator {
 			.forEach((CtElement ele) -> {
 				addSubstitutionRequest(pi, ele, role);
 			});
+		return this;
+	}
+
+	/**
+	 * Attribute defined by `role` of `element`  will be substituted by parameter value
+	 * @param role {@link CtRole}, which defines to be substituted elements
+	 * @param element to be substituted element
+	 * @return {@link PatternParameterConfigurator} to support fluent API
+	 */
+	public PatternParameterConfigurator byRole(CtRole role, CtElement... elements) {
+		ParameterInfo pi = getCurrentParameter();
+		for (CtElement element : elements) {
+			addSubstitutionRequest(pi, element, role);
+		}
 		return this;
 	}
 
