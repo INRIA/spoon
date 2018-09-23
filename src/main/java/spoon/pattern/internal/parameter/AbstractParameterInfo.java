@@ -142,15 +142,23 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 			}
 			if (newValue != null && existingValue.getClass().equals(newValue.getClass())) {
 				if (newValue instanceof CtTypeReference) {
-					if (((CtTypeReference<?>) newValue).getTypeErasure().equals(((CtTypeReference<?>) existingValue).getTypeErasure())) {
-						//accept type references with different erasure
+					//accept type references with different erasure
+					CtTypeReference<?> erasedNewValue = ((CtTypeReference<?>) newValue).getTypeErasure();
+					CtTypeReference<?> erasedExistingValue = ((CtTypeReference<?>) existingValue).getTypeErasure();
+					if (erasedExistingValue.isSubtypeOf(erasedNewValue)) {
+						//keep existing value which is equal or subtype of new value
 						return existingValue;
+					}
+					if (erasedNewValue.isSubtypeOf(erasedExistingValue)) {
+						//keep new value which is equal or subtype of existing value
+						return erasedNewValue;
 					}
 				}
 			}
 			// another value would be inserted. TemplateMatcher does not support
 			// matching of different values for the same template parameter
-			Launcher.LOGGER.debug("incongruent match on parameter " + getName() + " with value " + newValue);
+			Launcher.LOGGER.debug("incongruent match on parameter " + getName() + "\nexisting value:\n" + existingValue
+					+ "\nnew value:\n" + newValue);
 			return NO_MERGE;
 		}
 		return newValue;
