@@ -48,64 +48,77 @@ public class TokenWriterProxy implements TokenWriter {
 		this.delegate = delegate;
 	}
 
+	@Override
 	public TokenWriter writeSeparator(String token) {
 		this.listener.onTokenWriterWrite(TokenType.SEPARATOR, token, null, () -> delegate.writeSeparator(token));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeOperator(String token) {
 		this.listener.onTokenWriterWrite(TokenType.OPERATOR, token, null, () -> delegate.writeOperator(token));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeLiteral(String token) {
 		this.listener.onTokenWriterWrite(TokenType.LITERAL, token, null, () -> delegate.writeLiteral(token));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeKeyword(String token) {
 		this.listener.onTokenWriterWrite(TokenType.KEYWORD, token, null, () -> delegate.writeKeyword(token));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeIdentifier(String token) {
 		this.listener.onTokenWriterWrite(TokenType.IDENTIFIER, token, null, () -> delegate.writeIdentifier(token));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeCodeSnippet(String token) {
 		this.listener.onTokenWriterWrite(TokenType.CODE_SNIPPET, token, null, () -> delegate.writeCodeSnippet(token));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeComment(CtComment comment) {
 		this.listener.onTokenWriterWrite(TokenType.COMMENT, null, comment, () -> delegate.writeComment(comment));
 		return this;
 	}
 
+	@Override
 	public TokenWriter writeln() {
 		this.listener.onTokenWriterWrite(TokenType.NEW_LINE, "\n", null, () -> delegate.writeln());
 		return this;
 	}
 
+	@Override
 	public TokenWriter incTab() {
 		this.listener.onTokenWriterWrite(TokenType.INC_TAB, null, null, () -> delegate.incTab());
 		return this;
 	}
 
+	@Override
 	public TokenWriter decTab() {
 		this.listener.onTokenWriterWrite(TokenType.DEC_TAB, null, null, () -> delegate.decTab());
 		return this;
 	}
 
+	@Override
 	public PrinterHelper getPrinterHelper() {
 		return delegate.getPrinterHelper();
 	}
 
+	@Override
 	public void reset() {
 		delegate.reset();
 	}
 
+	@Override
 	public TokenWriter writeSpace() {
 		this.listener.onTokenWriterWrite(TokenType.SPACE, " ", null, () -> delegate.writeSpace());
 		return this;
