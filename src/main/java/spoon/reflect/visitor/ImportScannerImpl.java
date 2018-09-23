@@ -212,12 +212,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	private boolean isTypeMatching(String typeName, CtTypeReference<?> typeRef) {
 		if (typeName != null) {
-			if (typeName.equals(typeRef.getQualifiedName())) {
-				return true;
-			}
-			if (typeName.equals(typeRef.getSimpleName())) {
-				return true;
-			}
+			return typeName.equals(typeRef.getQualifiedName()) || typeName.equals(typeRef.getSimpleName());
 		}
 		return false;
 	}
