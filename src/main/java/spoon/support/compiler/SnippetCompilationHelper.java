@@ -98,11 +98,10 @@ public class SnippetCompilationHelper {
 		newClass.replace(initialClass);
 
 		// and we replace the snippets
-		for (CtPath p : elements2before.keySet()) {
-			CtElement toReplace = elements2before.get(p);
-			toReplace.replace(elements2after.get(p));
+		for (Map.Entry<CtPath, CtElement> ctPath : elements2before.entrySet()) {
+			CtElement toReplace = ctPath.getValue();
+			toReplace.replace(elements2after.get(ctPath.getKey()));
 		}
-
 	}
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st)
