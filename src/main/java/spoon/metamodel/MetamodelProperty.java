@@ -83,6 +83,7 @@ public class MetamodelProperty {
 	private Boolean unsettable;
 
 	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new HashMap<>();
+	private Map<String, MMMethod> methodsBySignature;
 
 	/**
 	 * methods of this field defined directly on ownerType.
@@ -256,6 +257,22 @@ public class MetamodelProperty {
 	public MMMethod getMethod(MMMethodKind kind) {
 		List<MMMethod> ms = getMethods(kind);
 		return !ms.isEmpty() ? ms.get(0) : null;
+	}
+
+	/**
+	 * @return {@link MMMethod} accessing this property, which has signature `signature`
+	 */
+	public MMMethod getMethodBySignature(String signature) {
+		if (methodsBySignature == null) {
+			methodsBySignature = new HashMap<>();
+			for (List<MMMethod> mmMethods : methodsByKind.values()) {
+				for (MMMethod mmMethod : mmMethods) {
+					String sigature = mmMethod.getSignature();
+					methodsBySignature.put(sigature, mmMethod);
+				}
+			}
+		}
+		return methodsBySignature.get(signature);
 	}
 
 	public List<MMMethod> getMethods(MMMethodKind kind) {
@@ -632,4 +649,5 @@ public class MetamodelProperty {
 		}
 		getRoleHandler().setValue(element, value);
 	}
+
 }
