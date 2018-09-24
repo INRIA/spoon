@@ -16,7 +16,9 @@
  */
 package spoon.reflect.path;
 
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
@@ -25,8 +27,10 @@ import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.path.impl.CtRolePathElement;
 import spoon.reflect.reference.CtReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This builder allow to create some CtPath from CtElements
@@ -61,8 +65,44 @@ public class CtElementPathBuilder {
 				case SINGLE:
 					break;
 
-				case LIST:
+				case LIST: {
 					//Element needs to be differentiated from its brothers
+					String[] pair = getArg(cur);
+					String attrName = pair[0];
+					String name = pair[1];
+					if (name != null) {
+						//the path with name is more readable, so prefer name instead of index
+						if (role.getSubRoles().size() > 0) {
+							//there are subroles.
+							role = role.getSubRole(cur);
+							pathElement = new CtRolePathElement(role);
+						}
+						pathElement.addArgument(attrName, name);
+						//check list to check if argument is unique
+						List<CtElement> list = roleHandler.asList(parent);
+						//Assumes that List's order is deterministic.
+						List<CtElement> filteredList = new ArrayList<>();
+						int index = -1;
+						for (CtElement item : list) {
+							String[] pair2 = getArg(item);
+							String attrName2 = pair2[0];
+							String name2 = pair2[1];
+							if (Objects.equals(name, name2) && Objects.equals(attrName, attrName2)) {
+								//we found an element with same name
+								if (item == cur) {
+									//we found cur element. Remember it's index
+									index = filteredList.size();
+								}
+								filteredList.add(item);
+							}
+						}
+						if (filteredList.size() > 1 && index >= 0) {
+							//there is more then one element with that name. Use index too
+							pathElement.addArgument("index", String.valueOf(index));
+						}
+						break;
+					}
+
 					List list = roleHandler.asList(parent);
 					//Assumes that List's order is deterministic.
 					//Can't be replaced by list.indexOf(cur)
@@ -76,8 +116,8 @@ public class CtElementPathBuilder {
 					}
 					pathElement.addArgument("index", index + "");
 					break;
-
-				case SET:
+				}
+				case SET: {
 					String name;
 					if (cur instanceof CtNamedElement) {
 						name = ((CtNamedElement) cur).getSimpleName();
@@ -88,8 +128,8 @@ public class CtElementPathBuilder {
 					}
 					pathElement.addArgument("name", name);
 					break;
-
-				case MAP:
+				}
+				case MAP: {
 					Map map = roleHandler.asMap(parent);
 					String key = null;
 					for (Object o : map.keySet()) {
@@ -104,10 +144,34 @@ public class CtElementPathBuilder {
 						pathElement.addArgument("key", key);
 					}
 					break;
+				}
 			}
 			cur = parent;
 			path.addFirst(pathElement);
 		}
 		return path;
+	}
+
+	private String[] getArg(CtElement item) {
+		String name = null;
+		String attrName = "name";
+		if (item instanceof CtExecutable) {
+			name = getSignature((CtExecutable) item);
+			attrName = "signature";
+		} else if (item instanceof CtNamedElement) {
+			name = ((CtNamedElement) item).getSimpleName();
+		} else if (item instanceof CtReference) {
+			name = ((CtReference) item).getSimpleName();
+		}
+		return new String[]{attrName, name};
+	}
+
+	private static String getSignature(CtExecutable exec) {
+		String sign = exec.getSignature();
+		if (exec instanceof CtConstructor) {
+			int idx = sign.indexOf('(');
+			return sign.substring(idx);
+		}
+		return sign;
 	}
 }
