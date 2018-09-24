@@ -1,13 +1,20 @@
 package spoon.test.role;
 
 import org.junit.Test;
+
+import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
+import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
+import spoon.support.reflect.declaration.CtConstructorImpl;
+import spoon.support.reflect.declaration.CtFieldImpl;
+import spoon.support.reflect.declaration.CtMethodImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestCtRole {
     @Test
@@ -54,5 +61,39 @@ public class TestCtRole {
         	}
         }
         assertTrue(countOfSubRoles > 0);
+    }
+    @Test
+    public void testCtRoleGetSubRole() {
+    	assertSame(CtRole.METHOD, CtRole.TYPE_MEMBER.getSubRole(new CtMethodImpl<>()));
+    	assertSame(CtRole.CONSTRUCTOR, CtRole.TYPE_MEMBER.getSubRole(new CtConstructorImpl()));
+    	assertSame(CtRole.FIELD, CtRole.TYPE_MEMBER.getSubRole(new CtFieldImpl()));
+    	assertSame(CtRole.ANNONYMOUS_EXECUTABLE, CtRole.TYPE_MEMBER.getSubRole(new CtAnonymousExecutableImpl()));
+    }
+    @Test
+    public void testCtRoleGetSubRoleFailsOnNormalRoles() {
+    	try {
+    		CtRole.NAME.getSubRole("");
+    		fail();
+    	} catch (SpoonException e) {
+    		//OK
+    	}
+    }
+    @Test
+    public void testCtRoleGetSubRoleFailsOnOthers() {
+    	try {
+    		CtRole.TYPE_MEMBER.getSubRole("");
+    		fail();
+    	} catch (SpoonException e) {
+    		//OK
+    	}
+    }
+    @Test
+    public void testCtRoleGetSubRoleFailsOnNull() {
+    	try {
+    		CtRole.TYPE_MEMBER.getSubRole(null);
+    		fail();
+    	} catch (SpoonException e) {
+    		//OK
+    	}
     }
 }
