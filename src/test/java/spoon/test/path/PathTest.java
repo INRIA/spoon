@@ -138,7 +138,7 @@ public class PathTest {
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(0, results.size());
 		//match a non existing field of an annotation (Test non existing element of a map)
-		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value[key=misspelled]")
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar#annotation[index=0]#value[key=misspelled]")
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(0, results.size());
 	}
