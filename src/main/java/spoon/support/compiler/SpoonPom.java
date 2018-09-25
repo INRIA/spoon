@@ -479,6 +479,7 @@ public class SpoonPom implements SpoonResource {
 	 * Get the parent directory
 	 * @return the parent directory
 	 */
+	@Override
 	public SpoonFolder getParent() {
 		try {
 			return SpoonResourceHelper.createFolder(directory);
