@@ -109,7 +109,7 @@ public class MetamodelProperty {
 	}
 
 	void addMethod(CtMethod<?> method) {
-		MMMethod mmMethod = addMethod(method, true);
+		addMethod(method, true);
 	}
 
 	/**

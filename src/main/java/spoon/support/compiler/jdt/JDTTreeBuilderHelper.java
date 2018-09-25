@@ -185,9 +185,7 @@ public class JDTTreeBuilderHelper {
 	 * 		   visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
-		final TypeFactory typeFactory = jdtTreeBuilder.getFactory().Type();
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
-		final ExecutableFactory executableFactory = jdtTreeBuilder.getFactory().Executable();
 		final ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
 		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
 		final PositionBuilder positionBuilder = jdtTreeBuilder.getPositionBuilder();

@@ -144,7 +144,6 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 				}
 				return valueType;
 			}
-			CtTypeParameterReference tpr = (CtTypeParameterReference) valueType;
 			return getFactory().createWildcardReference();
 		}
 		for (int i = 0; i < valueType.getActualTypeArguments().size(); i++) {
