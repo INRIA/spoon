@@ -19,6 +19,7 @@ package spoon.support.visitor;
 import spoon.processing.Processor;
 import spoon.processing.TraversalStrategy;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 
@@ -30,6 +31,8 @@ public class ProcessingVisitor extends CtScanner {
 	Factory factory;
 
 	Processor<?> processor;
+
+	protected boolean skipShadow = true;
 
 	/**
 	 * The constructor.
@@ -65,6 +68,10 @@ public class ProcessingVisitor extends CtScanner {
 	@SuppressWarnings("unchecked")
 	public void scan(CtElement e) {
 		if (e == null) {
+			return;
+		}
+		if (skipShadow && e instanceof CtShadowable && ((CtShadowable) e).isShadow()) {
+			//do not process shadow elements
 			return;
 		}
 		Processor<CtElement> p = (Processor<CtElement>) processor;
