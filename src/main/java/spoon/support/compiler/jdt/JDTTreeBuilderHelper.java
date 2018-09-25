@@ -62,8 +62,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.factory.ExecutableFactory;
-import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -185,9 +183,7 @@ public class JDTTreeBuilderHelper {
 	 * 		   visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
-		final TypeFactory typeFactory = jdtTreeBuilder.getFactory().Type();
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
-		final ExecutableFactory executableFactory = jdtTreeBuilder.getFactory().Executable();
 		final ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
 		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
 		final PositionBuilder positionBuilder = jdtTreeBuilder.getPositionBuilder();

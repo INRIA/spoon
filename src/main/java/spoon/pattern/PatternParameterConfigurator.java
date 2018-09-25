@@ -599,7 +599,7 @@ public class PatternParameterConfigurator {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
 						if (oldAttrNode instanceof MapEntryNode) {
 							MapEntryNode mapEntryNode = (MapEntryNode) oldAttrNode;
-							return new MapEntryNode(new ParameterNode(pi), ((MapEntryNode) oldAttrNode).getValue());
+							return new MapEntryNode(new ParameterNode(pi), mapEntryNode.getValue());
 						}
 						return oldAttrNode;
 					});

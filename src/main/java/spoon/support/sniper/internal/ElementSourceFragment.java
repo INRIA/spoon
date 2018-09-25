@@ -139,7 +139,6 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @param element the root element of the tree
 	 */
 	public void addTreeOfSourceFragmentsOfElement(CtElement element) {
-		SourcePosition sp = element.getPosition();
 		Deque<ElementSourceFragment> parents = new ArrayDeque<>();
 		parents.push(this);
 		//scan all children of `element` and build tree of SourceFragments
@@ -182,7 +181,6 @@ public class ElementSourceFragment implements SourceFragment {
 	private ElementSourceFragment addChild(ElementSourceFragment parentFragment, CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && otherSourcePosition.getCompilationUnit() != null) {
-			SourcePositionImpl childSPI = (SourcePositionImpl) otherSourcePosition;
 			if (parentFragment.isFromSameSource(otherSourcePosition)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, parentFragment.getRoleHandler(roleInParent, otherElement));
 				//parent and child are from the same file. So we can connect their positions into one tree
