@@ -49,10 +49,10 @@ public class SerializationModelStreamer implements ModelStreamer {
 		if (f.getEnvironment().getCompressionType() == CompressionType.GZIP) {
 			out = new GZIPOutputStream(out);
 		}
-		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out));
-		oos.writeObject(f);
-		oos.flush();
-		oos.close();
+		try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out))) {
+			oos.writeObject(f);
+			oos.flush();
+		}
 	}
 
 	@Override
