@@ -47,6 +47,7 @@ import static spoon.reflect.path.CtRole.POSITION;
 /**
  * This interface is the root interface for the metamodel elements (any program
  * element).
+ * Just check if tests run on master
  */
 @Root
 public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable, Serializable, SourcePositionHolder {
