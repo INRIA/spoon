@@ -117,7 +117,7 @@ public class PathTest {
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(1, results.size());
 		// When role match a map but no key is provided, all of them must be returned
-		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value")
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar#annotation[index=0]#value")
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(1, results.size());
 
