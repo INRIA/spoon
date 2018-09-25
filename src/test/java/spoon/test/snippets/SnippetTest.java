@@ -117,7 +117,7 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testCompileAndReplaceSnippetsIn() throws Exception {
+	public void testCompileAndReplaceSnippetsIn() {
 
         /*
             contract:
