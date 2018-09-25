@@ -263,7 +263,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!e.getTypeCasts().isEmpty()) {
 			for (CtTypeReference<?> r : e.getTypeCasts()) {
 				printer.writeSeparator("(");
-				DefaultJavaPrettyPrinter.this.scan(r);
+				scan(r);
 				printer.writeSeparator(")").writeSpace();
 				printer.writeSeparator("(");
 				context.parenthesedExpression.push(e);
