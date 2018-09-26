@@ -27,15 +27,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.annotation.AnnotationValuesTest.Request.on;
-import static spoon.testing.utils.ModelUtils.buildClass;
-import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class AnnotationValuesTest {
 	static int i;
 
 	@Test
 	public void testValuesOnJava7Annotation() throws Exception {
-		CtType<AnnotationValues> aClass = buildClass(AnnotationValues.class);
+		CtType<AnnotationValues> aClass = ModelUtils.buildClass(AnnotationValues.class);
 
 		CtAnnotation<?> ctAnnotation = on(aClass).giveMeAnnotation(AnnotationValues.Annotation.class);
 		on(ctAnnotation).giveMeAnnotationValue("integer").isTypedBy(CtLiteral.class);
@@ -52,7 +50,7 @@ public class AnnotationValuesTest {
 
 	@Test
 	public void testValuesOnJava8Annotation() throws Exception {
-		CtType<AnnotationValues> aClass = buildClass(AnnotationValues.class);
+		CtType<AnnotationValues> aClass = ModelUtils.buildClass(AnnotationValues.class);
 		CtConstructorCall aConstructorCall = aClass.getMethod("method").getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 
 		CtAnnotation<?> ctAnnotation = on(aConstructorCall.getType()).giveMeAnnotation(AnnotationValues.Annotation.class);
@@ -95,7 +93,7 @@ public class AnnotationValuesTest {
 
 	@Test
 	public void testAnnotationFactory() {
-		final Factory factory = createFactory();
+		final Factory factory = ModelUtils.createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 
 		on(target).isNotAnnotated();
@@ -109,7 +107,7 @@ public class AnnotationValuesTest {
 
 	@Test
 	public void testAnnotateWithEnum() {
-		final Factory factory = createFactory();
+		final Factory factory = ModelUtils.createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING, "field");
 		target.addField(field);
