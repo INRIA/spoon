@@ -1104,7 +1104,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testFirstLineColumn() throws Exception {
+	public void testFirstLineColumn() {
 		//contract: element, positioned before the first line separator in a file, should have correct column
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSimpleClass.java"));
 		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSimpleClass");
@@ -1112,7 +1112,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testSingleLineClassColumn() throws Exception {
+	public void testSingleLineClassColumn() {
 		//contract: element, positioned in a file without EOL, should have correct column
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
 		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSingleLineClass");
