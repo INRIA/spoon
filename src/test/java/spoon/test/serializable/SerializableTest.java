@@ -2,7 +2,6 @@ package spoon.test.serializable;
 
 import org.junit.Test;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -16,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static spoon.testing.utils.ModelUtils.build;
@@ -54,7 +52,6 @@ public class SerializableTest {
 		// typeDes comes from a serialized snippet, and snippets have no parent (#2318)
 		assertNull(typeDes);
 		assertFalse(deserializedSta2.isParentInitialized());
-
 	}
 
 	@Test
@@ -67,12 +64,8 @@ public class SerializableTest {
 	@Test
 	public void testSerializationModelStreamer() throws Exception {
 		Factory factory = build("spoon.test.serializable.testclasses", "Dummy").getFactory();
-
 		ByteArrayOutputStream outstr = new ByteArrayOutputStream();
-
 		new SerializationModelStreamer().save(factory, outstr);
-
-
 		Factory loadedFactory = new SerializationModelStreamer().load(new ByteArrayInputStream(outstr.toByteArray()));
 
 		assertFalse(factory.Type().getAll().isEmpty());
