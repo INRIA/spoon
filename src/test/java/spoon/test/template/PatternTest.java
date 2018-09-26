@@ -1571,6 +1571,34 @@ public class PatternTest {
 		}
 	}
 
+	@Test
+	public void testSubstituteExactElements() {
+		//contract: one can substitute exactly defined element
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		CtMethod tobeSubstititedMethod = aTargetType.getMethodsByName("enter").get(0);
+		Pattern pattern = PatternBuilder.create(aTargetType)
+			.configurePatternParameters(pb -> {
+				//substitute NAME of method
+				pb.parameter("methodName").byRole(CtRole.NAME, tobeSubstititedMethod);
+				//substitute Body of method
+				pb.parameter("methodBody").byElement(tobeSubstititedMethod.getBody());
+			}).build();
+		
+		List<Match> matches = pattern.getMatches(aTargetType);
+		assertEquals(1, matches.size());
+		Match match = matches.get(0);
+		assertSame(aTargetType, match.getMatchingElement());
+		assertEquals("enter", match.getParameters().getValue("methodName"));
+		assertSame(tobeSubstititedMethod.getBody(), match.getParameters().getValue("methodBody"));
+	}
+
 	private Map<String, Object> getMap(Match match, String name) {
 		Object v = match.getParametersMap().get(name);
 		assertNotNull(v);
