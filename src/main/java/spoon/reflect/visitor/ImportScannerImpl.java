@@ -192,7 +192,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				}
 			}
 			String type = m.group(3);
-//			String methodName = m.group(4);
 			String params = m.group(5);
 
 			if (isTypeMatching(type, typeRef)) {
