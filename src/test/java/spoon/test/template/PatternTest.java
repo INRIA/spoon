@@ -1540,6 +1540,38 @@ public class PatternTest {
 		assertTrue(aTry.getBody().getStatements().size() > 1);
 	}
 
+	@Test
+	public void testMatchType() {
+		//contract: one can match a type
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		//create a template class
+		final CtClass<?> aTemplateType = launcher.getFactory().Class().create("a.template.Clazz");
+		//create a pattern which should match that class
+		Pattern pattern = PatternBuilder.create(aTemplateType)
+				.configurePatternParameters(pb -> {
+					pb.parameter("members").byRole(CtRole.TYPE_MEMBER, e -> e == aTemplateType);
+					pb.parameter("modifiers").byRole(CtRole.MODIFIER, e -> e == aTemplateType);
+				}).build();
+		
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		List<Match> matches = pattern.getMatches(aTargetType);
+		assertEquals(1, matches.size());
+		Match match = matches.get(0);
+		assertSame(aTargetType, match.getMatchingElement());
+		List<CtTypeMember> expectedTypeMembers = aTargetType.getTypeMembers();
+		List<CtTypeMember> typeMembers = (List<CtTypeMember>) match.getParameters().getValue("members");
+		assertEquals(expectedTypeMembers.size(), typeMembers.size());
+		for (int i = 0; i < expectedTypeMembers.size(); i++) {
+			assertSame(expectedTypeMembers.get(i), typeMembers.get(i));
+		}
+	}
+
 	private Map<String, Object> getMap(Match match, String name) {
 		Object v = match.getParametersMap().get(name);
 		assertNotNull(v);
