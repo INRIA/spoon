@@ -201,8 +201,9 @@ public class MethodReferenceTest {
 		assertNull(bMethod.getReference().getOverridingExecutable());
 
 		// get super method of a class available in classpath (Object)
-		final CtMethod toStringMethod = model.getElements(
-				new NamedElementFilter<>(CtMethod.class,"toString")).get(0);
+		final CtMethod toStringMethod = model.getElements((CtMethod m) ->
+			"toString".equals(m.getSimpleName()) 
+			&& "UnknownSuperClass".equals(m.getParent(CtType.class).getSimpleName())).get(0);
 		assertNotNull(toStringMethod.getAnnotation(overrideRef));
 		assertNotNull(toStringMethod.getReference().getOverridingExecutable());
 	}
