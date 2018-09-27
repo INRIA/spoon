@@ -16,16 +16,18 @@
  */
 package spoon.support.reflect.cu;
 
+import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;
@@ -64,6 +66,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	 * Used to compute line numbers afterwards.
 	 */
 	private int[] lineSeparatorPositions;
+
+	private ElementSourceFragment rootFragment;
 
 	@Override
 	public UNIT_TYPE getUnitType() {
@@ -299,6 +303,26 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 			myPartialSourcePosition = new PartialSourcePositionImpl(this);
 		}
 		return myPartialSourcePosition;
+	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		if (rootFragment == null) {
+			if (ctModule != null) {
+				throw new SpoonException("Root source fragment of compilation unit of module is not supported");
+			}
+			if (ctPackage != null && declaredTypes.isEmpty()) {
+				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
+			}
+			rootFragment = new ElementSourceFragment(this, null);
+			for (CtImport imprt : getImports()) {
+				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
+			}
+			for (CtType<?> ctType : declaredTypes) {
+				rootFragment.addTreeOfSourceFragmentsOfElement(ctType);
+			}
+		}
+		return rootFragment;
 	}
 
 	@Override

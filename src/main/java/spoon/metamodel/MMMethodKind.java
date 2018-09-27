@@ -111,8 +111,8 @@ public enum MMMethodKind {
 	public static MMMethodKind kindOf(CtMethod<?> method) {
 		MMMethodKind result = OTHER;
 		for (MMMethodKind k : values()) {
-			if (k.detector.test(method) && result.level < k.level) {
-				if (result.level == k.level) {
+			if (k.detector.test(method) && result.level <= k.level) {
+				if (result.level == k.level && k != OTHER) {
 					throw new SpoonException("Ambiguous method kinds " + result.name() + " X " + k.name() + " for method " + method.getSignature());
 				}
 				result = k;

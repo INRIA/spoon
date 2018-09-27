@@ -18,15 +18,16 @@ package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -37,11 +38,10 @@ import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtElementPathBuilder;
 import spoon.reflect.path.CtPath;
-import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtIterator;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
@@ -52,10 +52,10 @@ import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.reflect.visitor.CtIterator;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
 import spoon.support.visitor.HashcodeVisitor;
@@ -70,10 +70,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY;
@@ -300,8 +300,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
 		String errorMessage = "";
 		try {
-			// we do not want to compute imports of a CtImport as it may change the print of a reference
-			if (!(this instanceof CtImport)) {
+			// we do not want to compute imports of for CtImport and CtReference
+			// as it may change the print of a reference
+			if (!(this instanceof CtImport) && !(this instanceof CtReference)) {
 				printer.computeImports(this);
 			}
 			printer.scan(this);
@@ -596,11 +597,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public CtPath getPath() {
-		try {
-			return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
-		} catch (CtPathException e) {
-			throw new SpoonException(e);
-		}
+		return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
 	}
 
 	@Override
@@ -611,5 +608,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public Iterable<CtElement> asIterable() {
 		return this::descendantIterator;
+	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		SourcePosition sp = this.getPosition();
+		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		if (compilationUnit != null) {
+			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
+			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
+		} else {
+			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+		}
 	}
 }

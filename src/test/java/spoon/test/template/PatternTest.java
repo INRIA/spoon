@@ -268,10 +268,9 @@ public class PatternTest {
 		// created in "MatchMultiple.createPattern", matching a literal "something"
 		// so "something" is replaced by "does it work?"
 		params = params.putValue("printedValue", "does it work?");
-		List<CtStatement> statementsToBeAdded = null;
 
+		List<CtStatement> statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the matching and the transformation
-		statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 
 		// created in "MatchMultiple.createPattern", matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
@@ -1538,6 +1537,38 @@ public class PatternTest {
 		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
 		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
+	}
+
+	@Test
+	public void testMatchType() {
+		//contract: one can match a type
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		//create a template class
+		final CtClass<?> aTemplateType = launcher.getFactory().Class().create("a.template.Clazz");
+		//create a pattern which should match that class
+		Pattern pattern = PatternBuilder.create(aTemplateType)
+				.configurePatternParameters(pb -> {
+					pb.parameter("members").byRole(CtRole.TYPE_MEMBER, e -> e == aTemplateType);
+					pb.parameter("modifiers").byRole(CtRole.MODIFIER, e -> e == aTemplateType);
+				}).build();
+		
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		List<Match> matches = pattern.getMatches(aTargetType);
+		assertEquals(1, matches.size());
+		Match match = matches.get(0);
+		assertSame(aTargetType, match.getMatchingElement());
+		List<CtTypeMember> expectedTypeMembers = aTargetType.getTypeMembers();
+		List<CtTypeMember> typeMembers = (List<CtTypeMember>) match.getParameters().getValue("members");
+		assertEquals(expectedTypeMembers.size(), typeMembers.size());
+		for (int i = 0; i < expectedTypeMembers.size(); i++) {
+			assertSame(expectedTypeMembers.get(i), typeMembers.get(i));
+		}
 	}
 
 	private Map<String, Object> getMap(Match match, String name) {

@@ -2,19 +2,22 @@ package spoon;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import spoon.compiler.SpoonResource;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Ignore;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Ignore;
+import spoon.support.compiler.FileSystemFolder;
+
+import static org.junit.Assert.*;
 
 public class MavenLauncherTest {
 
@@ -45,18 +48,40 @@ public class MavenLauncherTest {
 		// without the tests
 		MavenLauncher launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
 
-		assertEquals(26, launcher.getEnvironment().getSourceClasspath().length);
+		//contract: classpath is not empty
+		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
+		//contract: classpath contains only valid elements
+		for(String cpe: launcher.getEnvironment().getSourceClasspath()) {
+			assertTrue(new File(cpe).exists());
+		}
 
-		// 56 because of the sub folders of src/main/java
-		assertEquals(59, launcher.getModelBuilder().getInputSources().size());
+		// contract: ModelBuilder contains all source folders
+		int numberOfJavaSrcFolder = new FileSystemFolder("src/main/java/spoon")
+				.getAllFiles()
+				.stream()
+				.map(SpoonResource::getParent)
+				.collect(Collectors.toSet())
+				.size();
+		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= (numberOfJavaSrcFolder));
 
-		// with the tests
+		// with the tests, and test that if mavenProject leads to a directory containing a pom.xml it works
 		launcher = new MavenLauncher("./", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 
-		assertEquals(33, launcher.getEnvironment().getSourceClasspath().length);
+		//contract: classpath is not empty
+		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
+		//contract: classpath contains only valid elements
+		for(String cpe: launcher.getEnvironment().getSourceClasspath()) {
+			assertTrue(new File(cpe).exists());
+		}
 
-		// 236 because of the sub folders of src/main/java and src/test/java
-		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= 220);
+		// number of the sub folders of src/main/java and src/test/java
+		int numberOfJavaTestFolder = new FileSystemFolder("src/test/java/spoon")
+				.getAllFiles()
+				.stream()
+				.map(SpoonResource::getParent)
+				.collect(Collectors.toSet())
+				.size();
+		assertTrue("size: " + launcher.getModelBuilder().getInputSources().size(), launcher.getModelBuilder().getInputSources().size() >= (numberOfJavaSrcFolder + numberOfJavaTestFolder));
 
 		// specify the pom.xml
 		launcher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);

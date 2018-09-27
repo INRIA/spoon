@@ -81,7 +81,7 @@ public class ParameterTest {
 						.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			CtTypeReference refType = param.getReference().getType();
 			assertEquals(launcher.getFactory().Type().STRING, refType);
 		}
 
@@ -92,7 +92,7 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			CtTypeReference refType = param.getReference().getType();
 			assertEquals(launcher.getFactory().Type().INTEGER, refType);
 		}
 
@@ -103,7 +103,7 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			CtTypeReference refType = param.getReference().getType();
 			// unknown parameters have no type
 			assertNull(refType);
 		}

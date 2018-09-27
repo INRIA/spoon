@@ -25,9 +25,11 @@ import spoon.pattern.internal.node.ParameterNode;
 import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.node.StringNode;
 import spoon.pattern.internal.parameter.AbstractParameterInfo;
+import spoon.pattern.internal.parameter.ComputedParameterInfo;
 import spoon.pattern.internal.parameter.ListParameterInfo;
 import spoon.pattern.internal.parameter.MapParameterInfo;
 import spoon.pattern.internal.parameter.ParameterInfo;
+import spoon.pattern.internal.parameter.SimpleNameOfTypeReferenceParameterComputer;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -232,7 +234,9 @@ public class PatternParameterConfigurator {
 		CtType<?> type2 = queryModel().filterChildren((CtType<?> t) -> t.getQualifiedName().equals(typeQName)).first();
 		if (type2 != null) {
 			//Substitute name of template too
-			addSubstitutionRequest(pi, type2, CtRole.NAME);
+			ComputedParameterInfo piName = new ComputedParameterInfo(SimpleNameOfTypeReferenceParameterComputer.INSTANCE, pi);
+			piName.setParameterValueType(String.class);
+			addSubstitutionRequest(piName, type2, CtRole.NAME);
 		}
 		return this;
 	}
@@ -599,7 +603,7 @@ public class PatternParameterConfigurator {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
 						if (oldAttrNode instanceof MapEntryNode) {
 							MapEntryNode mapEntryNode = (MapEntryNode) oldAttrNode;
-							return new MapEntryNode(new ParameterNode(pi), ((MapEntryNode) oldAttrNode).getValue());
+							return new MapEntryNode(new ParameterNode(pi), mapEntryNode.getValue());
 						}
 						return oldAttrNode;
 					});
@@ -684,7 +688,7 @@ public class PatternParameterConfigurator {
 						visitStringAttribute(roleHandler, element, (String) value);
 					} else if (value instanceof Map) {
 						for (Map.Entry<String, CtElement> e : ((Map<String, CtElement>) value).entrySet()) {
-							visitStringAttribute(roleHandler, element, (String) e.getKey(), e.getValue());
+							visitStringAttribute(roleHandler, element, e.getKey(), e.getValue());
 						}
 					}
 					//else it is a CtLiteral with non string value

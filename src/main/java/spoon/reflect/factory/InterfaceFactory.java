@@ -62,7 +62,7 @@ public class InterfaceFactory extends TypeFactory {
 	public <T> CtInterface<T> create(String qualifiedName) {
 		if (hasInnerType(qualifiedName) > 0) {
 			return create(
-					(CtInterface<T>) create(getDeclaringTypeName(qualifiedName)),
+					create(getDeclaringTypeName(qualifiedName)),
 					getSimpleName(qualifiedName));
 		}
 		return create(factory.Package().getOrCreate(

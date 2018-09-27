@@ -72,7 +72,7 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 				}
 				X oldValue = get(0);
 				SingleHandler.this.setValue(element, value);
-				return (X) oldValue;
+				return oldValue;
 			}
 
 			@Override

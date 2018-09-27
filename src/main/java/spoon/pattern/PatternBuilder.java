@@ -69,7 +69,7 @@ public class PatternBuilder {
 	 * @param patternModel a List of Spoon AST nodes, which represents a template of to be generated or to be matched code
 	 * @return new instance of {@link PatternBuilder}
 	 */
-	public static PatternBuilder create(List<CtElement> patternModel) {
+	public static PatternBuilder create(List<? extends CtElement> patternModel) {
 		return new PatternBuilder(patternModel);
 	}
 
@@ -111,12 +111,12 @@ public class PatternBuilder {
 		}
 	}
 
-	protected PatternBuilder(List<CtElement> template) {
-		this.templateTypeRef = getDeclaringTypeRef(template);
-		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
+	protected PatternBuilder(List<? extends CtElement> template) {
 		if (template == null) {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
+		this.templateTypeRef = getDeclaringTypeRef(template);
+		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
@@ -127,7 +127,7 @@ public class PatternBuilder {
 		}
 	}
 
-	private CtTypeReference<?> getDeclaringTypeRef(List<CtElement> template) {
+	private CtTypeReference<?> getDeclaringTypeRef(List<? extends CtElement> template) {
 		CtType<?> type = null;
 		for (CtElement ctElement : template) {
 			CtType t;

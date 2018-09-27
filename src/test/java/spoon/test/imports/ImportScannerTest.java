@@ -17,12 +17,15 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.test.imports.testclasses.ToBeModified;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -297,5 +301,31 @@ public class ImportScannerTest {
 		Collection<CtImport> imports = importScanner.getAllImports();
 
 		assertEquals(0, imports.size());
+	}
+
+	@Test
+	public void testImportByJavaDoc() throws Exception {
+		//contract imports are included only if type name is used in javadoc link, etc. Their occurrence in comment is not enough
+		CtType<?> type = ModelUtils.buildClass(launcher -> {
+			launcher.getEnvironment().setCommentEnabled(true);
+			launcher.getEnvironment().setAutoImports(true);
+		}, ToBeModified.class);
+
+		{
+			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
+			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
+			assertTrue(printer.getResult().contains("import java.util.List;"));
+		}
+			
+		//delete first statement of method m
+		type.getMethodsByName("m").get(0).getBody().getStatement(0).delete();
+		//check that there is still javadoc comment which contains "List"
+		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().indexOf("List")>=0);
+		
+		{
+			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
+			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
+			assertFalse(printer.getResult().contains("import java.util.List;"));
+		}
 	}
 }

@@ -6,6 +6,7 @@ import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.metamodel.ConceptKind;
+import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
@@ -668,6 +669,20 @@ public class MetamodelTest {
 		//contract: call of remove(Object) on RoleHandler collection removes the item in real collection
 		assertTrue(typeMembers.remove(field1));
 		Assert.assertThat(asList(), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+	}
+
+	@Test
+	public void testMethodBySignature() {
+		//contract: MetamodelProperty#getMethodBySignature(String) returns null for unknown signature
+		MMMethod method = Metamodel.getInstance().getConcept(CtClass.class).getProperty(CtRole.NAME).getMethodBySignature("getSimpleName()");
+		assertEquals("getSimpleName", method.getName());
+		assertEquals("getSimpleName()", method.getSignature());
+	}
+
+	@Test
+	public void testMethodBySignatureReturnsNullIfNotFound() {
+		//contract: MetamodelProperty#getMethodBySignature(String) returns method with same signature
+		assertNull(Metamodel.getInstance().getConcept(CtClass.class).getProperty(CtRole.NAME).getMethodBySignature("xyz()"));
 	}
 
 	private CtField<?> createField(Factory factory, String name) {

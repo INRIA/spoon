@@ -195,7 +195,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Environment which Spoon is executed.
 	 */
-	private Environment env;
+	protected Environment env;
 
 	/**
 	 * Token detector, which delegates tokens to {@link TokenWriter}
@@ -210,7 +210,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Compilation unit we are printing.
 	 */
-	private CompilationUnit sourceCompilationUnit;
+	protected CompilationUnit sourceCompilationUnit;
 
 	/**
 	 * Imports computed
@@ -263,7 +263,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!e.getTypeCasts().isEmpty()) {
 			for (CtTypeReference<?> r : e.getTypeCasts()) {
 				printer.writeSeparator("(");
-				DefaultJavaPrettyPrinter.this.scan(r);
+				scan(r);
 				printer.writeSeparator(")").writeSpace();
 				printer.writeSeparator("(");
 				context.parenthesedExpression.push(e);
@@ -1982,6 +1982,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			imports.addAll(computeImports(t));
 		}
 		this.writeHeader(types, imports);
+		printTypes(types);
+	}
+
+	protected void printTypes(List<CtType<?>> types) {
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {

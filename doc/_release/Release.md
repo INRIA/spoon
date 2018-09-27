@@ -29,7 +29,7 @@ This article is a short summary of the [official documentation of sonatype](http
 
 - Uploads archives on Maven Central (see above)
 - Uploads archives on INRIA's forge
-- Prepare changelog (see `doc/_release/changelog_generator/`)
+- Prepare changelog with [changelog_generator](https://github.com/INRIA/spoon/tree/master/doc/_release/changelog_generator)
 - Create Pull request on Github with
     - Update of Spoon's website
     	- News section in `doc/doc_homepage.md`

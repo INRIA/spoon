@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 
 /**
  * Tells that a field is a property of the metamodel
- * For instance {@link CtClassImpl#simpleName}  is the property name of {@link CtNamedElement}
+ * For instance {@link CtClassImpl#simpleName} is the property name of {@link CtNamedElement}
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

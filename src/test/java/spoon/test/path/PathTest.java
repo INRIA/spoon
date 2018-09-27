@@ -6,9 +6,11 @@ import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtElementPathBuilder;
 import spoon.reflect.path.CtPath;
@@ -24,6 +26,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -114,7 +117,7 @@ public class PathTest {
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(1, results.size());
 		// When role match a map but no key is provided, all of them must be returned
-		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value")
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar#annotation[index=0]#value")
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(1, results.size());
 
@@ -135,7 +138,7 @@ public class PathTest {
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(0, results.size());
 		//match a non existing field of an annotation (Test non existing element of a map)
-		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar##annotation[index=0]#value[key=misspelled]")
+		results = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar#annotation[index=0]#value[key=misspelled]")
 				.evaluateOn(factory.getModel().getRootPackage());
 		assertEquals(0, results.size());
 	}
@@ -143,9 +146,9 @@ public class PathTest {
 	@Test
 	public void testGetPathFromNonParent() {
 		CtMethod fooMethod = (CtMethod) new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo")
-				.evaluateOn(factory.getModel().getRootPackage()).iterator().next();
+				.evaluateOn(factory.getModel().getRootPackage()).get(0);
 		CtMethod barMethod = (CtMethod) new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar")
-				.evaluateOn(factory.getModel().getRootPackage()).iterator().next();
+				.evaluateOn(factory.getModel().getRootPackage()).get(0);
 		try {
 			new CtElementPathBuilder().fromElement(fooMethod,barMethod);
 			fail("No path should be found to .spoon.test.path.testclasses.Foo.foo from .spoon.test.path.testclasses.Foo.bar");
@@ -173,13 +176,30 @@ public class PathTest {
 	@Test
 	public void testRoles() {
 		// get the then statement
-		equals(new CtPathStringBuilder().fromString(".**/CtIf#else"),
-				((CtIf) factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getBody()
-						.getStatement(2)).getElseStatement()
+		CtType<?> fooClass = factory.Package().get("spoon.test.path.testclasses").getType("Foo");
+		CtPath path = new CtPathStringBuilder().fromString(".**/CtIf#else");
+		CtMethod<Object> method = fooClass.getMethod("foo");
+		CtStatement expected = ((CtIf) method.getBody()
+				.getStatement(2)).getElseStatement();
+		equals(path,
+				expected
 		);
+
+		// now we get the absolute path
+		CtPath absPath = path.evaluateOn(factory.getModel().getRootPackage()).get(0).getPath();
+		assertEquals("#subPackage[name=spoon]#subPackage[name=test]#subPackage[name=path]#subPackage[name=testclasses]#containedType[name=Foo]#typeMember[index=2]#body#statement[index=2]#else", absPath.toString());
+
+		// contract: subpath enables to have relative path
+		CtPath subPath = absPath.relativePath(fooClass);
+		assertEquals("#typeMember[index=2]#body#statement[index=2]#else", subPath.toString());
+		assertSame(expected, subPath.evaluateOn(fooClass).get(0));
+
+		CtPath subPath2 = absPath.relativePath(method);
+		assertEquals("#body#statement[index=2]#else", subPath2.toString());
+		assertSame(expected, subPath2.evaluateOn(method).get(0));
+
 		equals(new CtPathStringBuilder().fromString(".**#else"),
-				((CtIf) factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getBody()
-						.getStatement(2)).getElseStatement()
+				expected
 		);
 	}
 

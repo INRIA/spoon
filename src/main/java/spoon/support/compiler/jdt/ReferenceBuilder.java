@@ -307,9 +307,12 @@ public class ReferenceBuilder {
 	 */
 	CtReference getDeclaringReferenceFromImports(char[] expectedName) {
 		CompilationUnitDeclaration cuDeclaration = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration;
+		if (cuDeclaration == null) {
+			return null;
+		}
 		LookupEnvironment environment = cuDeclaration.scope.environment;
 
-		if (cuDeclaration != null && cuDeclaration.imports != null) {
+		if (cuDeclaration.imports != null) {
 			for (ImportReference anImport : cuDeclaration.imports) {
 				if (CharOperation.equals(anImport.getImportName()[anImport.getImportName().length - 1], expectedName)) {
 					if (anImport.isStatic()) {
@@ -625,7 +628,7 @@ public class ReferenceBuilder {
 				main.setSimpleName(m.group(1));
 				final String[] split = m.group(2).split(",");
 				for (String parameter : split) {
-					((CtTypeReference) main).addActualTypeArgument(getTypeParameterReference(parameter.trim()));
+					main.addActualTypeArgument(getTypeParameterReference(parameter.trim()));
 				}
 			}
 		} else if (Character.isUpperCase(name.charAt(0))) {
@@ -923,7 +926,7 @@ public class ReferenceBuilder {
 	<T> CtVariableReference<T> getVariableReference(MethodBinding methbin) {
 		CtFieldReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createFieldReference();
 		ref.setSimpleName(new String(methbin.selector));
-		ref.setType((CtTypeReference<T>) getTypeReference(methbin.returnType));
+		ref.setType(getTypeReference(methbin.returnType));
 
 		if (methbin.declaringClass != null) {
 			ref.setDeclaringType(getTypeReference(methbin.declaringClass));
@@ -970,7 +973,7 @@ public class ReferenceBuilder {
 			if (localVariableBinding.declaration instanceof Argument && localVariableBinding.declaringScope instanceof MethodScope) {
 				CtParameterReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createParameterReference();
 				ref.setSimpleName(new String(varbin.name));
-				ref.setType((CtTypeReference<T>) getTypeReference(varbin.type));
+				ref.setType(getTypeReference(varbin.type));
 				return ref;
 			} else if (localVariableBinding.declaration.binding instanceof CatchParameterBinding) {
 				CtCatchVariableReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createCatchVariableReference();
@@ -997,7 +1000,7 @@ public class ReferenceBuilder {
 			return ref;
 		}
 		ref.setSimpleName(new String(binding.name));
-		ref.setType((CtTypeReference<T>) getTypeReference(binding.searchType));
+		ref.setType(getTypeReference(binding.searchType));
 		return ref;
 	}
 

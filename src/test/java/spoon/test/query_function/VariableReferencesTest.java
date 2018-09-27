@@ -296,7 +296,7 @@ public class VariableReferencesTest {
 				Integer firstValue = getLiteralValue((CtExpression<?>)inv.getArguments().get(l_argIdx));
 				//check that all found method invocations are using same key
 				list.forEach(inv2->{
-					assertEquals(firstValue, getLiteralValue((CtExpression<?>)inv2.getArguments().get(l_argIdx)));
+					assertEquals(firstValue, getLiteralValue(inv2.getArguments().get(l_argIdx)));
 				});
 				return firstValue;
 			}

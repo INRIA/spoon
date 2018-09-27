@@ -39,7 +39,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -686,7 +685,7 @@ public class Launcher implements SpoonAPI {
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
-		return new DefaultJavaPrettyPrinter(getEnvironment());
+		return getEnvironment().createPrettyPrinter();
 	}
 
 	/**
