@@ -38,7 +38,7 @@ public class JarLauncher extends Launcher {
 	boolean decompile = false;
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 */
@@ -48,7 +48,7 @@ public class JarLauncher extends Launcher {
 
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
@@ -58,7 +58,7 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
@@ -69,7 +69,7 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
@@ -80,7 +80,7 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
