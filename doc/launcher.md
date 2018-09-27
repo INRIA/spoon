@@ -89,6 +89,30 @@ CtModel model = launcher.getModel();
 ```
 To avoid invoking maven over and over to build a classpath that has not changed, it is stored in a file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed is the file is deleted or if it has not been modified since 1h.
 
+## The JarLauncher class
+
+The Spoon `JarLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/JarLauncher.html)) is used to create the AST model from a jar.
+It automatically decompiles class files contained in the jar and analyzes them.
+If a pom file corresponding to the jar is provided, it will be used to build the classpath containing all dependencies.
+
+```java
+//More constructors are available, check the JavaDOc for more information.
+JarLauncher launcher = JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>");
+launcher.buildModel();
+CtModel model = launcher.getModel();
+```
+
+Note that the default decompiler [CFR](http://www.benf.org/other/cfr/) can be changed by providing an instance implementing `spoon.decompiler.Decompiler` as a parameter.
+
+```java
+JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new Decompiler() {
+    @Override
+    public void decompile(String jarPath) {
+        //Custom decompiler call
+    }
+});
+```
+
 ## About the classpath
 
 Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). There are two cases:

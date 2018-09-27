@@ -184,6 +184,7 @@
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.cfr>0.132.0</version.cfr>
   </properties>
 
   <distributionManagement>
@@ -203,12 +204,18 @@
     </site>
   </distributionManagement>
 
-  <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
   <repositories>
+    <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
     <repository>
       <id>maven.inria.fr-snapshot</id>
       <name>Maven Repository for Spoon Snapshots</name>
       <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
+    <!-- This repository is needed for cfr -->
+    <repository>
+      <id>inria</id>
+      <name>triskell-public-release</name>
+      <url>http://maven.inria.fr/artifactory/triskell-public-release</url>
     </repository>
   </repositories>
 
@@ -295,6 +302,13 @@
       <artifactId>maven-invoker</artifactId>
       <version>3.0.1</version>
     </dependency>
+      <dependency>
+	  <!-- released on maven.inria.fr -->
+          <groupId>org.benf</groupId>
+          <artifactId>cfr</artifactId>
+	  <!-- 0.132 is the version of July 2018 -->
+          <version>0.132.0</version>
+      </dependency>
   </dependencies>
 
   <build>
