@@ -59,7 +59,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 */
 	@Override
 	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
+	CtInvocation setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Delegate to the executable reference of the invocation.
@@ -68,7 +68,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 */
 	@Override
 	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+	CtInvocation addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Return the type returned by the invocation. If the invocation is to a

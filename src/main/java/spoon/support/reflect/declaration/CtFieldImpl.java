@@ -101,13 +101,13 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtFieldImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override

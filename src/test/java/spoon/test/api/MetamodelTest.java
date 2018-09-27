@@ -22,8 +22,10 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -34,6 +36,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
@@ -77,6 +80,8 @@ public class MetamodelTest {
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
 		interfaces.buildModel();
 		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x -> x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x -> x.getQualifiedName()).collect(Collectors.toSet())));
+
+
 	}
 
 	@Test
@@ -298,6 +303,7 @@ public class MetamodelTest {
 		//detect unused CtRoles
 		Set<CtRole> unhandledRoles = new HashSet<>(Arrays.asList(CtRole.values()));
 
+		Set problemsIssue1846 = new HashSet();
 		mm.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 				unhandledRoles.remove(role);
@@ -322,7 +328,45 @@ public class MetamodelTest {
 				);
 
 			});
+
+			mmConcept.getProperties().forEach((mmProp) -> {
+				for (MMMethod mmMethod : mmProp.getMethods()) {
+					for (CtTypeParameter typeParam : mmMethod.getActualCtMethod().getFormalCtTypeParameters()) {
+						// enumerating the usages of this formal type parameter
+						int n = 0;
+						List parametersAndReturn = new ArrayList(mmMethod.getActualCtMethod().getParameters());
+
+						// addressing Pavel's comment https://github.com/INRIA/spoon/issues/1846#issuecomment-366047527
+						for (CtTypeReference ref : mmMethod.getReturnType().getActualTypeArguments()) {
+							parametersAndReturn.add(ref);
+						}
+
+						for (Object x : parametersAndReturn) {
+							if (((CtElement)x).filterChildren(new Filter<CtReference>() {
+								@Override
+								public boolean matches(CtReference element) {
+									boolean isMatching = typeParam.equals(element.getDeclaration());
+									if (isMatching) {
+										//System.out.println(element + " " + element.getParent().getClass() + " " + element.getPosition());
+									}
+									return isMatching;
+								}
+							}).list().size() != 0) {
+								// we have one usage
+								n++;
+							}
+						}
+						if (n == 0) {
+							// if we have no usage
+							problemsIssue1846.add("============" + mmMethod.getSignature());
+						} else {
+							//System.out.println("xxxxxxxxxxxx"+mmMethod.getSignature());
+						}
+					}
+				}
+			});
 		});
+		assertEquals(problemsIssue1846.toString(), 0, problemsIssue1846.size());
 
 		unhandledRoles.forEach(it -> problems.add("Unused CtRole." + it.name()));
 		/*

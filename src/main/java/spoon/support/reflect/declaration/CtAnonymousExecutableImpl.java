@@ -178,9 +178,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
+	public CtAnonymousExecutableImpl setType(CtTypeReference<Void> type) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override

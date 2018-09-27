@@ -82,7 +82,7 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
+	CtTypeAccess setType(CtTypeReference<Void> type);
 
 	@Override
 	CtTypeAccess<A> clone();

@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -280,6 +281,13 @@ public class MetamodelProperty {
 		return ms == null ? Collections.emptyList() : Collections.unmodifiableList(ms);
 	}
 
+	public Set<MMMethod> getMethods() {
+		Set<MMMethod> res = new HashSet();
+		for (List<MMMethod> methods : methodsByKind.values()) {
+			res.addAll(methods);
+		}
+		return Collections.unmodifiableSet(res);
+	}
 
 	void sortByBestMatch() {
 		//resolve conflicts using value type. Move the most matching method to 0 index

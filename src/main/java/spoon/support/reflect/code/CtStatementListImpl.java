@@ -185,11 +185,11 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 	}
 
 	@Override
-	public <E extends CtElement> E setPosition(SourcePosition position) {
+	public CtStatementListImpl setPosition(SourcePosition position) {
 		for (CtStatement s : statements) {
 			s.setPosition(position);
 		}
-		return (E) this;
+		return this;
 	}
 
 	@Override

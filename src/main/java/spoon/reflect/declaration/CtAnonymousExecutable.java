@@ -45,7 +45,7 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
+	CtAnonymousExecutable setType(CtTypeReference<Void> type);
 
 	@Override
 	@UnsettableProperty

@@ -78,13 +78,13 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtMethodImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.returnType);
 		this.returnType = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override

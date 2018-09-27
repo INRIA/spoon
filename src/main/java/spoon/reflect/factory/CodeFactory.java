@@ -135,7 +135,7 @@ public class CodeFactory extends SubFactory {
 	 * @return a accessed type expression.
 	 */
 	public <T> CtTypeAccess<T> createTypeAccess(CtTypeReference<T> accessedType, boolean isImplicit) {
-		return createTypeAccess(accessedType).setImplicit(isImplicit);
+		return (CtTypeAccess<T>) createTypeAccess(accessedType).setImplicit(isImplicit);
 	}
 
 	/**
@@ -289,7 +289,8 @@ public class CodeFactory extends SubFactory {
 		}
 		final CtTypeReference<T> componentTypeRef = factory.Type().createReference((Class<T>) value.getClass().getComponentType());
 		final CtArrayTypeReference<T[]> arrayReference = factory.Type().createArrayReference(componentTypeRef);
-		CtNewArray<T[]> array = factory.Core().<T[]>createNewArray().setType(arrayReference);
+		CtNewArray<T[]> array = factory.Core().<T[]>createNewArray();
+		array.setType(arrayReference);
 		for (T e : value) {
 			CtLiteral<T> l = factory.Core().createLiteral();
 			l.setValue(e);
@@ -312,7 +313,10 @@ public class CodeFactory extends SubFactory {
 	 * @return a new local variable declaration
 	 */
 	public <T> CtLocalVariable<T> createLocalVariable(CtTypeReference<T> type, String name, CtExpression<T> defaultExpression) {
-		return factory.Core().<T>createLocalVariable().<CtLocalVariable<T>>setSimpleName(name).<CtLocalVariable<T>>setType(type).setDefaultExpression(defaultExpression);
+		CtLocalVariable<T> localVariable = factory.Core().<T>createLocalVariable();
+		localVariable.<CtLocalVariable<T>>setSimpleName(name).<CtLocalVariable<T>>setType(type);
+		localVariable.setDefaultExpression(defaultExpression);
+		return localVariable;
 	}
 
 	/**
@@ -491,8 +495,10 @@ public class CodeFactory extends SubFactory {
 	 * @return a field
 	 */
 	public <T> CtField<T> createCtField(String name, CtTypeReference<T> type, String exp, ModifierKind... visibilities) {
-		return factory.Core().createField().<CtField<T>>setModifiers(modifiers(visibilities)).<CtField<T>>setSimpleName(name).<CtField<T>>setType(type)
-				.setDefaultExpression(this.<T>createCodeSnippetExpression(exp));
+		CtField<T> field = factory.Core().createField();
+		field.<CtField<T>>setModifiers(modifiers(visibilities)).<CtField<T>>setSimpleName(name).<CtField<T>>setType(type);
+		field.setDefaultExpression(createCodeSnippetExpression(exp));
+		return field;
 	}
 
 	/**

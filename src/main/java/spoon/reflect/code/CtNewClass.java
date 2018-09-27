@@ -19,7 +19,6 @@ package spoon.reflect.code;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
@@ -55,24 +54,6 @@ public interface CtNewClass<T> extends CtConstructorCall<T> {
 	@DerivedProperty
 	@PropertyGetter(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> getActualTypeArguments();
-
-	/**
-	 * Delegate to the executable reference of the new class.
-	 *
-	 * @see CtExecutableReference#getActualTypeArguments()
-	 */
-	@Override
-	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
-
-	/**
-	 * Delegate to the executable reference of the new class.
-	 *
-	 * @see CtExecutableReference#getActualTypeArguments()
-	 */
-	@Override
-	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Gets the created class.

@@ -102,13 +102,13 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtLocalVariableImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override

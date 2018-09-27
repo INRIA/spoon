@@ -65,5 +65,5 @@ public interface CtReference extends CtElement {
 	/** comments are not possible for references */
 	@Override
 	@UnsettableProperty
-	<E extends CtElement> E setComments(List<CtComment> comments);
+	CtReference setComments(List<CtComment> comments);
 }

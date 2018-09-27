@@ -95,20 +95,20 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtAssignmentImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+	public CtAssignmentImpl setTypeCasts(List<CtTypeReference<?>> casts) {
 		if (casts == null || casts.isEmpty()) {
 			this.typeCasts = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
@@ -118,13 +118,13 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type) {
+	public CtExpression<T> addTypeCast(CtTypeReference<?> type) {
 		if (type == null) {
-			return (C) this;
+			return this;
 		}
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
@@ -132,7 +132,7 @@ public class CtAssignmentImpl<T, A extends T> extends CtStatementImpl implements
 		type.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CAST, typeCasts, type);
 		typeCasts.add(type);
-		return (C) this;
+		return this;
 	}
 
 	@Override

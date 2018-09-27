@@ -166,20 +166,20 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	@DerivedProperty
-	public <T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtConstructorCallImpl setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (getExecutable() != null) {
 			getExecutable().setActualTypeArguments(actualTypeArguments);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
 	@DerivedProperty
-	public <T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public CtConstructorCall addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (getExecutable() != null) {
 			getExecutable().addActualTypeArgument(actualTypeArgument);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -199,14 +199,14 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 
 	@Override
 	@DerivedProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtConstructorCallImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		if (getExecutable() != null) {
 			getExecutable().setType(type);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override

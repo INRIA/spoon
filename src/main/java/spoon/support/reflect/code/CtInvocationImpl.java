@@ -168,14 +168,14 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	@DerivedProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtInvocationImpl setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		if (getExecutable() != null) {
 			getExecutable().setType(type);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -184,19 +184,19 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public <T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtInvocation setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (getExecutable() != null) {
 			getExecutable().setActualTypeArguments(actualTypeArguments);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public CtInvocation addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (getExecutable() != null) {
 			getExecutable().addActualTypeArgument(actualTypeArgument);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override

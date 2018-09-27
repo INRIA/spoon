@@ -220,17 +220,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+	public CtElementImpl setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		if (annotations == null || annotations.isEmpty()) {
 			this.annotations = emptyList();
-			return (E) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
 		}
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -240,9 +240,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
+	public CtElement addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if (annotation == null) {
-			return (E) this;
+			return this;
 		}
 		if (this.annotations == CtElementImpl.<CtAnnotation<? extends Annotation>>emptyList()) {
 			this.annotations = new ArrayList<>(ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
@@ -250,7 +250,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		annotation.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ANNOTATION, this.annotations, annotation);
 		this.annotations.add(annotation);
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -275,24 +275,24 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setPosition(SourcePosition position) {
+	public CtElementImpl setPosition(SourcePosition position) {
 		if (position == null) {
 			position = SourcePosition.NOPOSITION;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, POSITION, position, this.position);
 		this.position = position;
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E setPositions(final SourcePosition position) {
+	public CtElementImpl  setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
 			@Override
 			public void enter(CtElement e) {
 				e.setPosition(position);
 			}
 		});
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -330,10 +330,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setImplicit(boolean implicit) {
+	public CtElementImpl setImplicit(boolean implicit) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_IMPLICIT, implicit, this.implicit);
 		this.implicit = implicit;
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -540,9 +540,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E addComment(CtComment comment) {
+	public CtElementImpl addComment(CtComment comment) {
 		if (comment == null) {
-			return (E) this;
+			return this;
 		}
 		if (this.comments == CtElementImpl.<CtComment>emptyList()) {
 			comments = new ArrayList<>(COMMENT_CONTAINER_DEFAULT_CAPACITY);
@@ -550,31 +550,31 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		comment.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, COMMENT, this.comments, comment);
 		comments.add(comment);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E removeComment(CtComment comment) {
+	public CtElementImpl removeComment(CtComment comment) {
 		if (this.comments == CtElementImpl.<CtComment>emptyList()) {
-			return (E) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, COMMENT, comments, comments.indexOf(comment), comment);
 		this.comments.remove(comment);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E setComments(List<CtComment> comments) {
+	public CtElementImpl setComments(List<CtComment> comments) {
 		if (comments == null || comments.isEmpty()) {
 			this.comments = emptyList();
-			return (E) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, COMMENT, this.comments, new ArrayList<>(this.comments));
 		this.comments.clear();
 		for (CtComment comment : comments) {
 			addComment(comment);
 		}
-		return (E) this;
+		return this;
 	}
 
 	@Override
