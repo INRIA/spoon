@@ -109,7 +109,11 @@ public class ImmutableMapImpl implements ImmutableMap {
 			if (sb.length() > 0) {
 				sb.append("\n");
 			}
-			sb.append(name).append('=').append(map.get(name));
+			Object value = map.get(name);
+			sb.append(name).append('=').append(value);
+			if (value != null) {
+				sb.append(" : ").append(value.getClass().getTypeName());
+			}
 		}
 	}
 

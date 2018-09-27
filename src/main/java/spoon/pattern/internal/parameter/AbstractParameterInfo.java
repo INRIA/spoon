@@ -142,6 +142,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 			}
 			if (newValue != null && existingValue.getClass().equals(newValue.getClass())) {
 				if (newValue instanceof CtTypeReference) {
+					/*
 					//accept type references with different erasure
 					CtTypeReference<?> erasedNewValue = ((CtTypeReference<?>) newValue).getTypeErasure();
 					CtTypeReference<?> erasedExistingValue = ((CtTypeReference<?>) existingValue).getTypeErasure();
@@ -152,6 +153,11 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 					if (erasedNewValue.isSubtypeOf(erasedExistingValue)) {
 						//keep new value which is equal or subtype of existing value
 						return erasedNewValue;
+					}
+					*/
+					if (((CtTypeReference<?>) newValue).getTypeErasure().equals(((CtTypeReference<?>) existingValue).getTypeErasure())) {
+						//accept type references with different erasure
+						return existingValue;
 					}
 				}
 			}

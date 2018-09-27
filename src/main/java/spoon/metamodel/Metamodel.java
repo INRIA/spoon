@@ -27,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -52,6 +50,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
@@ -423,7 +422,7 @@ public class Metamodel {
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
 		String conceptName = getConceptName(type);
-		return getOrCreate(nameToConcept, conceptName,
+		return MapUtils.getOrCreate(nameToConcept, conceptName,
 				() -> new MetamodelConcept(conceptName),
 				mmConcept -> initializeConcept(type, mmConcept));
 	}
@@ -519,23 +518,6 @@ public class Metamodel {
 		}
 	}
 
-	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
-		return getOrCreate(map, key, valueCreator, null);
-	}
-	/**
-	 * @param initializer is called immediately after the value is added to the map
-	 */
-	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
-		V value = map.get(key);
-		if (value == null) {
-			value = valueCreator.get();
-			map.put(key, value);
-			if (initializer != null) {
-				initializer.accept(value);
-			}
-		}
-		return value;
-	}
 	static <T> boolean addUniqueObject(Collection<T> col, T o) {
 		if (containsObject(col, o)) {
 			return false;
@@ -551,7 +533,6 @@ public class Metamodel {
 		}
 		return false;
 	}
-
 
 	/**
 	 * @param method a start method

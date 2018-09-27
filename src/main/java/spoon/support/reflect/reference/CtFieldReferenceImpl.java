@@ -158,7 +158,7 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		if (declaringType == null) {
 			return null;
 		}
-		CtType<?> type = declaringType.getDeclaration();
+		CtType<?> type = declaringType.getTypeDeclaration();
 		if (type != null) {
 			return (CtField<T>) type.getField(getSimpleName());
 		}

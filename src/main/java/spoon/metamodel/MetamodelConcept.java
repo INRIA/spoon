@@ -16,8 +16,6 @@
  */
 package spoon.metamodel;
 
-import static spoon.metamodel.Metamodel.addUniqueObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +29,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 /**
@@ -92,7 +91,7 @@ public class MetamodelConcept {
 
 
 	MetamodelProperty getOrCreateMMField(CtRole role) {
-		return Metamodel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
+		return MapUtils.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
 	}
 
 	/**
@@ -153,7 +152,7 @@ public class MetamodelConcept {
 		if (superType == this) {
 			throw new SpoonException("Cannot add supertype to itself");
 		}
-		if (addUniqueObject(superConcepts, superType)) {
+		if (Metamodel.addUniqueObject(superConcepts, superType)) {
 			superType.subConcepts.add(this);
 			superType.role2Property.forEach((role, superMMField) -> {
 				MetamodelProperty mmField = getOrCreateMMField(role);

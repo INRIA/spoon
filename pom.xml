@@ -135,6 +135,11 @@
       <artifactId>maven-invoker</artifactId>
       <version>3.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.gumtreediff</groupId>
+      <artifactId>core</artifactId>
+      <version>2.1.0</version>
+    </dependency>
   </dependencies>
 
   <build>

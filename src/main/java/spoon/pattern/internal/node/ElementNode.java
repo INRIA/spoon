@@ -354,7 +354,11 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 			//each item of attribute value (item of List/Set/Map) has to be matched individually
 			tobeMatched = TobeMatched.create(parameters, mmField.getContainerKind(), mmField.getValue(target));
 		}
-		return getMatchedParameters(attrNode.matchTargets(tobeMatched, RootNode.MATCH_ALL));
+		ImmutableMap match = getMatchedParameters(attrNode.matchTargets(tobeMatched, RootNode.MATCH_ALL));
+		if (match == null) {
+			this.getClass();
+		}
+		return match;
 	}
 
 	private static final Map<CtRole, Class[]> roleToSkippedClass = new HashMap<>();

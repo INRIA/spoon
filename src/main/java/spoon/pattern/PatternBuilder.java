@@ -70,11 +70,11 @@ public class PatternBuilder {
 	 * @return new instance of {@link PatternBuilder}
 	 */
 	public static PatternBuilder create(List<? extends CtElement> patternModel) {
-		return new PatternBuilder(patternModel);
+		return new PatternBuilder(patternModel).configureTargetType();
 	}
 
 	public static PatternBuilder create(CtElement... elems) {
-		return new PatternBuilder(Arrays.asList(elems));
+		return new PatternBuilder(Arrays.asList(elems)).configureTargetType();
 	}
 
 	private final List<CtElement> patternModel;
@@ -120,11 +120,15 @@ public class PatternBuilder {
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
+	}
+
+	protected PatternBuilder configureTargetType() {
 		if (this.templateTypeRef != null) {
 			configurePatternParameters(pb -> {
 				pb.parameter(TARGET_TYPE).byType(this.templateTypeRef).setValueType(CtTypeReference.class);
 			});
 		}
+		return this;
 	}
 
 	private CtTypeReference<?> getDeclaringTypeRef(List<? extends CtElement> template) {
@@ -503,7 +507,11 @@ public class PatternBuilder {
 		return this;
 	}
 
-	CtTypeReference<?> getTemplateTypeRef() {
+	/**
+	 * @return {@link CtTypeReference}, which refers the declaring type of template element.
+	 * In other words: reference to type which holds template
+	 */
+	public CtTypeReference<?> getTemplateTypeRef() {
 		return templateTypeRef;
 	}
 }
