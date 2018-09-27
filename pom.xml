@@ -303,12 +303,11 @@
       <version>3.0.1</version>
     </dependency>
       <dependency>
+	  <!-- released on maven.inria.fr -->
           <groupId>org.benf</groupId>
           <artifactId>cfr</artifactId>
+	  <!-- 0.132 is the version of July 2018 -->
           <version>0.132.0</version>
-          <!-- since it is not on Maven central, we don't package it -->
-          <!-- if you need it, download it at http://www.benf.org/other/cfr/ and put the jar in the classpath yourself -->
-          <scope>provided</scope>
       </dependency>
   </dependencies>
 
