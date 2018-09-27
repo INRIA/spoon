@@ -358,7 +358,7 @@ public class SpoonPom implements SpoonResource {
 			invoker.setErrorHandler(s -> LOGGER.debug(s));
 			invoker.setOutputHandler(s -> LOGGER.debug(s));
 			try {
-				InvocationResult ir = invoker.execute(request);
+				invoker.execute(request);
 			} catch (MavenInvocationException e) {
 				throw new SpoonException("Maven invocation failed to build a classpath.");
 			}
