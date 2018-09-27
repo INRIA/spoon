@@ -1,12 +1,13 @@
 package spoon;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.compiler.SpoonResource;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
-
+import spoon.support.compiler.FileSystemFolder;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -14,10 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
-import spoon.support.compiler.FileSystemFolder;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MavenLauncherTest {
 
@@ -51,7 +52,7 @@ public class MavenLauncherTest {
 		//contract: classpath is not empty
 		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
 		//contract: classpath contains only valid elements
-		for(String cpe: launcher.getEnvironment().getSourceClasspath()) {
+		for (String cpe: launcher.getEnvironment().getSourceClasspath()) {
 			assertTrue(new File(cpe).exists());
 		}
 
@@ -70,7 +71,7 @@ public class MavenLauncherTest {
 		//contract: classpath is not empty
 		assertNotEquals(0, launcher.getEnvironment().getSourceClasspath().length);
 		//contract: classpath contains only valid elements
-		for(String cpe: launcher.getEnvironment().getSourceClasspath()) {
+		for (String cpe: launcher.getEnvironment().getSourceClasspath()) {
 			assertTrue(new File(cpe).exists());
 		}
 
