@@ -268,10 +268,9 @@ public class PatternTest {
 		// created in "MatchMultiple.createPattern", matching a literal "something"
 		// so "something" is replaced by "does it work?"
 		params = params.putValue("printedValue", "does it work?");
-		List<CtStatement> statementsToBeAdded = null;
 
+		List<CtStatement> statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 		//statementsToBeAdded = ctClass.getMethodsByName("testMatch1").get(0).getBody().getStatements().subList(0, 3); // we don't use this in order not to mix the matching and the transformation
-		statementsToBeAdded = Arrays.asList(new CtStatement[] {factory.createCodeSnippetStatement("int foo = 0"), factory.createCodeSnippetStatement("foo++")});
 
 		// created in "MatchMultiple.createPattern", matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
