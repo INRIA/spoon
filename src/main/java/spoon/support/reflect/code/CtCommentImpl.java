@@ -14,6 +14,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
+
 package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -23,9 +24,6 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.Objects;
-
-import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
-import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	private static final long serialVersionUID = 1L;
@@ -50,7 +48,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setContent(String content) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, content, this.content);
 		this.content = content;
 		return (E) this;
 	}
@@ -62,7 +60,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setCommentType(CommentType commentType) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, commentType, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, commentType, this.type);
 		type = commentType;
 		return (E) this;
 	}
