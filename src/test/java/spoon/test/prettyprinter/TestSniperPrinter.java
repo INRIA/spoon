@@ -48,7 +48,7 @@ public class TestSniperPrinter {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\bstring\\b", "modified");
 		});
 	}
-	
+
 	@Test
 	public void testPrintChangedComplex() {
 		//contract: sniper printing after remove of statement from nested complex `if else if ...`
@@ -67,7 +67,7 @@ public class TestSniperPrinter {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\QNO_SUPERINTERFACES) {\n\\E\\s*bounds\\s*=\\s*false;\n", "NO_SUPERINTERFACES) {\n");
 		});
 	}
-	
+
 	@Test
 	public void testPrintAfterRemoveOfFirstParameter() {
 		//contract: sniper print after remove of first parameter
@@ -111,6 +111,7 @@ public class TestSniperPrinter {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\Q\tList<?>[][] twoDArrayOfLists = new List<?>[7][];\n\\E", "");
 		});
 	}
+
 	@Test
 	public void testPrintAfterAddOfLastTypeMember() {
 		//contract: sniper print after add of last type member - check that suffix spaces are printed correctly
@@ -158,7 +159,7 @@ public class TestSniperPrinter {
 		//check the printed file
 		resultChecker.accept(ctClass, getContentOfPrettyPrintedClassFromDisk(ctClass));
 	}
-	
+
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
 		Factory f = type.getFactory();
 		File outputDir = f.getEnvironment().getSourceOutputDirectory();
@@ -176,7 +177,7 @@ public class TestSniperPrinter {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private static String getResourcePath(String className) {
 		String r = "./src/test/java/"+className.replaceAll("\\.", "/")+".java";
 		if (new File(r).exists()) {
@@ -213,7 +214,6 @@ public class TestSniperPrinter {
 	}
 
 	Pattern importRE = Pattern.compile("^(?:import|package)\\s.*;\\s*$", Pattern.MULTILINE);
-
 
 	private String sourceWithoutImports(String source) {
 		Matcher m = importRE.matcher(source);
