@@ -46,7 +46,6 @@ public class JarLauncher extends Launcher {
 		this(jarPath, null, (String) null);
 	}
 
-
 	/**
 	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
@@ -131,7 +130,6 @@ public class JarLauncher extends Launcher {
 			decompiler.decompile(jar.getAbsolutePath());
 		}
 
-
 		if (pomPath != null) {
 			File srcPom =  new File(pomPath);
 			if (!srcPom.exists() || !srcPom.isFile()) {
@@ -164,5 +162,4 @@ public class JarLauncher extends Launcher {
 	protected Decompiler getDefaultDecompiler() {
 		return new CFRDecompiler(decompiledSrc);
 	}
-
 }
