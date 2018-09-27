@@ -8,8 +8,8 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.modelobs.ChangeCollector;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
 import java.io.File;
