@@ -22,7 +22,6 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -69,8 +68,6 @@ import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
-import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -148,18 +145,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		if (!this.typeMembers.stream().anyMatch(m -> m == member)) {
 			member.setParent(this);
-			CtRole role;
-			if (member instanceof CtMethod) {
-				role = METHOD;
-			} else if (member instanceof CtConstructor) {
-				role = CONSTRUCTOR;
-			} else if (member instanceof CtField) {
-				role = FIELD;
-			} else if (member instanceof CtAnonymousExecutable) {
-				role = ANNONYMOUS_EXECUTABLE;
-			} else {
-				role = NESTED_TYPE;
-			}
+			CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.typeMembers, position, member);
 			if (position < typeMembers.size()) {
 				this.typeMembers.add(position, member);
@@ -172,18 +158,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean removeTypeMember(CtTypeMember member) {
-		CtRole role;
-		if (member instanceof CtMethod) {
-			role = METHOD;
-		} else if (member instanceof CtConstructor) {
-			role = CONSTRUCTOR;
-		} else if (member instanceof CtField) {
-			role = FIELD;
-		} else if (member instanceof CtAnonymousExecutable) {
-			role = ANNONYMOUS_EXECUTABLE;
-		} else {
-			role = NESTED_TYPE;
-		}
+		CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 		if (typeMembers.size() == 1) {
 			if (typeMembers.contains(member)) {
 				getFactory().getEnvironment().getModelChangeListener().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
