@@ -89,7 +89,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		}
 		if (!this.moduleDirectives.contains(moduleDirective)) {
 			moduleDirective.setParent(this);
-			CtRole role = CtRole.MODULE_DIRECTIVE.getSubRole(moduleDirective);
+			CtRole role = CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective);
 
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.moduleDirectives, moduleDirective);
 			this.moduleDirectives.add(moduleDirective);
@@ -109,7 +109,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		}
 		if (!this.moduleDirectives.contains(moduleDirective)) {
 			moduleDirective.setParent(this);
-			CtRole role = CtRole.MODULE_DIRECTIVE.getSubRole(moduleDirective);
+			CtRole role = CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective);
 
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.moduleDirectives, position, moduleDirective);
 			this.moduleDirectives.add(position, moduleDirective);
@@ -129,7 +129,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			return (T) this;
 		}
 		if (this.moduleDirectives.contains(moduleDirective)) {
-			getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.MODULE_DIRECTIVE.getSubRole(moduleDirective), this.moduleDirectives, this.moduleDirectives.indexOf(moduleDirective), moduleDirective);
+			getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective), this.moduleDirectives, this.moduleDirectives.indexOf(moduleDirective), moduleDirective);
 			if (this.moduleDirectives.size() == 1) {
 				this.moduleDirectives = CtElementImpl.emptyList();
 			} else {

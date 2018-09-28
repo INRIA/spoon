@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import spoon.SpoonException;
 import spoon.reflect.path.CtRole;
+import spoon.support.reflect.code.CtAssertImpl;
 import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
 import spoon.support.reflect.declaration.CtConstructorImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
@@ -64,24 +65,17 @@ public class TestCtRole {
     }
     @Test
     public void testCtRoleGetSubRole() {
-    	assertSame(CtRole.METHOD, CtRole.TYPE_MEMBER.getSubRole(new CtMethodImpl<>()));
-    	assertSame(CtRole.CONSTRUCTOR, CtRole.TYPE_MEMBER.getSubRole(new CtConstructorImpl()));
-    	assertSame(CtRole.FIELD, CtRole.TYPE_MEMBER.getSubRole(new CtFieldImpl()));
-    	assertSame(CtRole.ANNONYMOUS_EXECUTABLE, CtRole.TYPE_MEMBER.getSubRole(new CtAnonymousExecutableImpl()));
-    }
-    @Test
-    public void testCtRoleGetSubRoleFailsOnNormalRoles() {
-    	try {
-    		CtRole.NAME.getSubRole("");
-    		fail();
-    	} catch (SpoonException e) {
-    		//OK
-    	}
+    	// contract: we can match the correct subrole for CtRole.METHOD, CtRole.CONSTRUCTOR, CtRole.FIELD and CtRole.ANNONYMOUS_EXECUTABLE
+    	assertSame(CtRole.METHOD, CtRole.TYPE_MEMBER.getMatchingSubRoleFor(new CtMethodImpl<>()));
+    	assertSame(CtRole.CONSTRUCTOR, CtRole.TYPE_MEMBER.getMatchingSubRoleFor(new CtConstructorImpl()));
+    	assertSame(CtRole.FIELD, CtRole.TYPE_MEMBER.getMatchingSubRoleFor(new CtFieldImpl()));
+    	assertSame(CtRole.ANNONYMOUS_EXECUTABLE, CtRole.TYPE_MEMBER.getMatchingSubRoleFor(new CtAnonymousExecutableImpl()));
     }
     @Test
     public void testCtRoleGetSubRoleFailsOnOthers() {
+    	// contract: an exception is thrown when no possible role can be found for this element
     	try {
-    		CtRole.TYPE_MEMBER.getSubRole("");
+    		CtRole.TYPE_MEMBER.getMatchingSubRoleFor(new CtAssertImpl<>());
     		fail();
     	} catch (SpoonException e) {
     		//OK
@@ -90,7 +84,7 @@ public class TestCtRole {
     @Test
     public void testCtRoleGetSubRoleFailsOnNull() {
     	try {
-    		CtRole.TYPE_MEMBER.getSubRole(null);
+    		CtRole.TYPE_MEMBER.getMatchingSubRoleFor(null);
     		fail();
     	} catch (SpoonException e) {
     		//OK

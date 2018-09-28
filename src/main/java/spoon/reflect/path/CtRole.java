@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModuleRequirement;
@@ -31,6 +32,7 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
+import spoon.support.Internal;
 
 /**
  * Identifies the roles of attributes of spoon model.
@@ -198,19 +200,19 @@ public enum CtRole {
 	}
 
 	/**
-	 * @param item the value whose sub role we are looking for
-	 * @return sub role of this super role, which holds `item`.
+	 * @return sub role of this role, which match `item`.
 	 *
 	 * <code><pre>
 	 * CtMethod method = ...
-	 * assertTrue(CtRole.METHOD, CtRole.TYPE_MEMBER.getSubRole(method))
+	 * CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(method);
 	 * <pre></code>
 	 */
-	public CtRole getSubRole(Object item) {
+	@Internal
+	public CtRole getMatchingSubRoleFor(CtElement item) {
 		if (item == null) {
 			throw new SpoonException("Cannot detect sub role for null.");
 		}
-		for (CtRole subRole : subRoles) {
+		for (CtRole subRole : this.subRoles) {
 			if (subRole.predicate.test(item)) {
 				return subRole;
 			}

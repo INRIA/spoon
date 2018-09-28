@@ -145,7 +145,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		if (!this.typeMembers.stream().anyMatch(m -> m == member)) {
 			member.setParent(this);
-			CtRole role = CtRole.TYPE_MEMBER.getSubRole(member);
+			CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.typeMembers, position, member);
 			if (position < typeMembers.size()) {
 				this.typeMembers.add(position, member);
@@ -158,7 +158,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean removeTypeMember(CtTypeMember member) {
-		CtRole role = CtRole.TYPE_MEMBER.getSubRole(member);
+		CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 		if (typeMembers.size() == 1) {
 			if (typeMembers.contains(member)) {
 				getFactory().getEnvironment().getModelChangeListener().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
