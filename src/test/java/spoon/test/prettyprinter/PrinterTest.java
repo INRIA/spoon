@@ -150,7 +150,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		//assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
 		canBeBuilt(output, 7);
 	}
 
