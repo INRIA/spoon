@@ -38,7 +38,7 @@ public class JarLauncher extends Launcher {
 	boolean decompile = false;
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 */
@@ -46,22 +46,21 @@ public class JarLauncher extends Launcher {
 		this(jarPath, null, (String) null);
 	}
 
-
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath) {
 		this(jarPath, decompiledSrcPath, (String) null);
 	}
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 * @param pom path to pom associated with the jar to be analyzed
 	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, String pom) {
@@ -69,10 +68,10 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 * @param decompiler Instance implementing {@link spoon.decompiler.Decompiler} to be used
 	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, Decompiler decompiler) {
@@ -80,10 +79,10 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 * @param pom path to pom associated with the jar to be analyzed
 	 * @param decompiler Instance implementing {@link spoon.decompiler.Decompiler} to be used
 	 */
@@ -131,7 +130,6 @@ public class JarLauncher extends Launcher {
 			decompiler.decompile(jar.getAbsolutePath());
 		}
 
-
 		if (pomPath != null) {
 			File srcPom =  new File(pomPath);
 			if (!srcPom.exists() || !srcPom.isFile()) {
@@ -164,5 +162,4 @@ public class JarLauncher extends Launcher {
 	protected Decompiler getDefaultDecompiler() {
 		return new CFRDecompiler(decompiledSrc);
 	}
-
 }
