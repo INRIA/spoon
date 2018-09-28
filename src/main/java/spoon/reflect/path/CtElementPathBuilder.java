@@ -74,7 +74,7 @@ public class CtElementPathBuilder {
 						//the path with name is more readable, so prefer name instead of index
 						if (role.getSubRoles().size() > 0) {
 							//there are subroles.
-							role = role.getSubRole(cur);
+							role = role.getMatchingSubRoleFor(cur);
 							pathElement = new CtRolePathElement(role);
 						}
 						pathElement.addArgument(attrName, name);
