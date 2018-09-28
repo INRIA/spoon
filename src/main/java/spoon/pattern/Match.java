@@ -21,6 +21,8 @@ import java.util.Map;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.visitor.PrinterHelper;
+import spoon.support.StandardEnvironment;
 import spoon.support.util.ImmutableMap;
 
 /**
@@ -107,13 +109,30 @@ public class Match {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{\n");
-		sb.append(parameters.toString());
-		sb.append("\n}\n----------");
+		PrinterHelper printer = new PrinterHelper(new StandardEnvironment());
+		printer.write("{").writeln();
+		printParameters(printer);
+		printer.write("}").writeln();
+		printer.write("----------").writeln();
+		printMatchingElements(printer);
+		return printer.toString();
+	}
+
+	/**
+	 * Prints matched parameter values
+	 * @param printer to be used {@link PrinterHelper}
+	 */
+	public void printParameters(PrinterHelper printer) {
+		printer.write(parameters.toString()).writeln();
+	}
+
+	/**
+	 * Prints matched elements
+	 * @param printer to be used {@link PrinterHelper}
+	 */
+	public void printMatchingElements(PrinterHelper printer) {
 		for (int i = 0; i < matchingElements.size(); i++) {
-			sb.append("\n").append(i + 1).append(") ").append(matchingElements.get(i));
+			printer.write("" + (i + 1) + ") " + matchingElements.get(i));
 		}
-		return sb.toString();
 	}
 }
