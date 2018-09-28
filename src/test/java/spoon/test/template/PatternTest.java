@@ -1219,7 +1219,27 @@ public class PatternTest {
 				"         */"+nl+"" +
 				"        statements();"+nl+"" +
 				"    }"+nl+"" +
-				"}"+nl, p.toString());
+				"}"+nl, p.print(true));
+	}
+
+	@Test
+	public void testPatternToStringNoComments() {
+		//contract: Pattern can be printed to String without parameters
+		String nl = System.getProperty("line.separator");
+		Factory f = ModelUtils.build(
+				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
+				new File("./src/test/java/spoon/test/template/testclasses/replace")
+			);
+		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
+		assertEquals("if (useStartKeyword()) {" + nl + 
+				"    printer().writeSpace().writeKeyword(startKeyword()).writeSpace();" + nl + 
+				"}" + nl + 
+				"try (final spoon.reflect.visitor.ListPrinter lp = elementPrinterHelper().createListPrinter(startPrefixSpace(), start(), startSuffixSpace(), nextPrefixSpace(), next(), nextSuffixSpace(), endPrefixSpace(), end())) {" + nl + 
+				"    for (java.lang.Object item : getIterable()) {" + nl + 
+				"        lp.printSeparatorIfAppropriate();" + nl + 
+				"        statements();" + nl + 
+				"    }" + nl + 
+				"}" + nl, p.print(false));
 	}
 
 	@Test

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import spoon.SpoonException;
 import spoon.pattern.internal.DefaultGenerator;
+import spoon.pattern.internal.PatternPrinter;
 import spoon.pattern.internal.matcher.MatchingScanner;
 import spoon.pattern.internal.node.ListOfNodes;
 import spoon.pattern.internal.parameter.ParameterInfo;
@@ -122,6 +123,14 @@ public class Pattern {
 			matches.add(match);
 		});
 		return matches;
+	}
+
+	/**
+	 * @param addParameterComments if true then it adds comments with parameter names
+	 * @return pattern printed as java sources
+	 */
+	public String print(boolean addParameterComments) {
+		return new PatternPrinter().setPrintParametersAsComments(addParameterComments).printNode(modelValueResolver);
 	}
 
 	@Override
