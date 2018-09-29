@@ -27,7 +27,6 @@ import java.util.List;
 public class MavenLauncher extends Launcher {
 	private String mvnHome;
 	private SOURCE_TYPE sourceType;
-	private SpoonPom model;
 	private boolean forceRefresh = false;
 
 	/**
@@ -134,6 +133,7 @@ public class MavenLauncher extends Launcher {
 			throw new SpoonException(mavenProject + " does not exist.");
 		}
 
+		SpoonPom model;
 		try {
 			model = new SpoonPom(mavenProject, sourceType, getEnvironment());
 		} catch (Exception e) {
