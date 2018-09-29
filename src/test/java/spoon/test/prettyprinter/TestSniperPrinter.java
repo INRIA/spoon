@@ -39,7 +39,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintAfterRenameOfField() {
-		//contract: sniper printing after rename of field 
+		//contract: sniper printing after rename of field
 		testSniper(ToBeChanged.class.getName(), type -> {
 			//change the model
 			type.getField("string").setSimpleName("modified");
@@ -119,7 +119,7 @@ public class TestSniperPrinter {
 			CtField<?> newField;
 		}
 		Context context = new Context();
-		
+
 		testSniper(ToBeChanged.class.getName(), type -> {
 			Factory f = type.getFactory();
 			//create new type member
@@ -127,7 +127,7 @@ public class TestSniperPrinter {
 			type.addTypeMember(context.newField);
 		}, (type, printed) -> {
 			String lastMemberString = "new List<?>[7][];";
-			assertIsPrintedWithExpectedChanges(type, printed, "\\Q"+lastMemberString+"\\E", lastMemberString + "\n\n\t" + context.newField.toString());
+			assertIsPrintedWithExpectedChanges(type, printed, "\\Q" + lastMemberString + "\\E", lastMemberString + "\n\n\t" + context.newField.toString());
 		});
 	}
 
@@ -143,7 +143,7 @@ public class TestSniperPrinter {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			return new SniperJavaPrettyPrinter(launcher.getEnvironment());}
+			return new SniperJavaPrettyPrinter(launcher.getEnvironment()); }
 		);
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
@@ -163,8 +163,8 @@ public class TestSniperPrinter {
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
 		Factory f = type.getFactory();
 		File outputDir = f.getEnvironment().getSourceOutputDirectory();
-		File outputFile = new File(outputDir, type.getQualifiedName().replace('.', '/')+".java");
-		
+		File outputFile = new File(outputDir, type.getQualifiedName().replace('.', '/') + ".java");
+
 		byte[] content = new byte[(int) outputFile.length()];
 		try (InputStream is = new FileInputStream(outputFile)) {
 			is.read(content);
@@ -179,11 +179,11 @@ public class TestSniperPrinter {
 	}
 
 	private static String getResourcePath(String className) {
-		String r = "./src/test/java/"+className.replaceAll("\\.", "/")+".java";
+		String r = "./src/test/java/" + className.replaceAll("\\.", "/") + ".java";
 		if (new File(r).exists()) {
 			return r;
 		}
-		r = "./src/test/resources/"+className.replaceAll("\\.", "/")+".java";
+		r = "./src/test/resources/" + className.replaceAll("\\.", "/") + ".java";
 		if (new File(r).exists()) {
 			return r;
 		}
@@ -218,7 +218,7 @@ public class TestSniperPrinter {
 	private String sourceWithoutImports(String source) {
 		Matcher m = importRE.matcher(source);
 		int lastImportEnd = 0;
-		while(m.find()) {
+		while (m.find()) {
 			lastImportEnd = m.end();
 		}
 		//System.out.println(lastImportEnd);
