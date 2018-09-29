@@ -143,9 +143,6 @@ public class JarLauncher extends Launcher {
 			}
 			try {
 				SpoonPom pomModel = new SpoonPom(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
-				if (pomModel == null) {
-					throw new SpoonException("Unable to create the model, pom not found?");
-				}
 				getEnvironment().setComplianceLevel(pomModel.getSourceVersion());
 				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
 				// dependencies
