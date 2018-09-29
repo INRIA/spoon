@@ -93,7 +93,7 @@ public class SignatureTest {
 		SpoonModelBuilder builder = new JDTSnippetCompiler(factory, content);
 		try {
 			builder.build();
-			Assert.fail();
+			fail();
 		} catch (Exception e) {
 			// Must fail due to the unbound element "Complex.I"
 		}
