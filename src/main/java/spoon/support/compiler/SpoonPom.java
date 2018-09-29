@@ -59,7 +59,7 @@ public class SpoonPom implements SpoonResource {
 	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
 	static String spoonClasspathTmpFileNameApp = "spoon.classpath-app.tmp";
 	static String spoonClasspathTmpFileNameTest = "spoon.classpath-test.tmp";
-	static long classpathTmpFilesTTL = 60 * 60 * 1000; // 1h in ms
+	static long classpathTmpFilesTTL = 60 * 60 * 1000L; // 1h in ms
 	List<SpoonPom> modules = new ArrayList<>();
 	Model model;
 	SpoonPom parent;
