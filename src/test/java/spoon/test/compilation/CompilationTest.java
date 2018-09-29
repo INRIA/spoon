@@ -1,26 +1,7 @@
 package spoon.test.compilation;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -46,6 +27,23 @@ import spoon.test.compilation.testclasses.Bar;
 import spoon.test.compilation.testclasses.IBar;
 import spoon.test.compilation.testclasses.Ifoo;
 import spoon.testing.utils.ModelUtils;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CompilationTest {
 
@@ -119,7 +117,7 @@ public class CompilationTest {
 
 		Class<?> aClass = urlClassLoader.loadClass("Simple");
 		Method m = aClass.getMethod("m");
-		Assert.assertEquals(42, m.invoke(aClass.newInstance()));
+		assertEquals(42, m.invoke(aClass.newInstance()));
 	}
 
 	@Test
