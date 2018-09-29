@@ -1,6 +1,5 @@
 package spoon;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.compiler.Environment;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -28,14 +28,14 @@ public class LauncherTest {
 
 		final Environment environment = launcher.getEnvironment();
 		// specify the default values
-		Assert.assertFalse(environment.isAutoImports());
-		Assert.assertFalse(environment.isUsingTabulations());
-		Assert.assertFalse(environment.isPreserveLineNumbers());
+		assertFalse(environment.isAutoImports());
+		assertFalse(environment.isUsingTabulations());
+		assertFalse(environment.isPreserveLineNumbers());
 		assertEquals(4, environment.getTabulationSize());
-		Assert.assertTrue(environment.isCopyResources());
+		assertTrue(environment.isCopyResources());
 
 		JavaOutputProcessor processor = (JavaOutputProcessor) environment.getDefaultFileGenerator();
-		Assert.assertTrue(processor.getPrinter() instanceof DefaultJavaPrettyPrinter);
+		assertTrue(processor.getPrinter() instanceof DefaultJavaPrettyPrinter);
 
 		// now assertions on the model builder
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
@@ -55,12 +55,12 @@ public class LauncherTest {
 		final Environment environment = launcher.getEnvironment();
 
 		// Verify if the environment is correct.
-		Assert.assertTrue(environment.isAutoImports());
-		Assert.assertTrue(environment.isUsingTabulations());
-		Assert.assertTrue(environment.isPreserveLineNumbers());
+		assertTrue(environment.isAutoImports());
+		assertTrue(environment.isUsingTabulations());
+		assertTrue(environment.isPreserveLineNumbers());
 		assertEquals(42, environment.getTabulationSize());
 		assertEquals(5, environment.getComplianceLevel());
-		Assert.assertFalse(environment.isCopyResources());
+		assertFalse(environment.isCopyResources());
 
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
 		assertEquals(new File("spooned2").getCanonicalFile(), builder.getSourceOutputDirectory());

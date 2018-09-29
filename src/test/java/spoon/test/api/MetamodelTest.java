@@ -1,6 +1,5 @@
 package spoon.test.api;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
@@ -55,7 +54,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
+import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -136,10 +135,10 @@ public class MetamodelTest {
 		Set<String> setterRoles = setters.stream().map(g -> ((CtFieldRead) g.getAnnotation(propertySetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
 		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
-		Assert.assertEquals(expectedRoles, getterRoles);
-		Assert.assertEquals(expectedRoles, setterRoles);
-		Assert.assertEquals(Collections.EMPTY_SET, isNotGetter);
-		Assert.assertEquals(Collections.EMPTY_SET, isNotSetter);
+		assertEquals(expectedRoles, getterRoles);
+		assertEquals(expectedRoles, setterRoles);
+		assertEquals(Collections.EMPTY_SET, isNotGetter);
+		assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}
 
 	@Test
@@ -185,7 +184,7 @@ public class MetamodelTest {
 		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)" + nl + "boolean isShadow;"));
 		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)" + nl + "spoon.reflect.reference.CtTypeReference<T> type;"));
 		assertTrue(result.size() > 100);
-		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
+		assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
 
 		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
 		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
@@ -649,26 +648,26 @@ public class MetamodelTest {
 		assertEquals(1, typeMembers.size());
 		assertEquals(1, ctClass.getTypeMembers().size());
 		assertSame(ctClass, field1.getDeclaringType());
-		Assert.assertThat(asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of add on RoleHandler collection adds the item into real collection too
 		typeMembers.add(field2);
 		assertSame(ctClass, field2.getDeclaringType());
-		Assert.assertThat(asList("field1", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList("field1", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of set on RoleHandler collection replaces the item in real collection
 		typeMembers.set(0, field3);
 		assertSame(ctClass, field3.getDeclaringType());
-		Assert.assertThat(asList("field3", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList("field3", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		typeMembers.set(1, field1);
-		Assert.assertThat(asList("field3", "field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList("field3", "field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of remove(int) on RoleHandler collection removes the item in real collection
 		assertSame(field3, typeMembers.remove(0));
-		Assert.assertThat(asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of remove(Object) which does not exist does nothing
 		assertFalse(typeMembers.remove(field2));
-		Assert.assertThat(asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of remove(Object) on RoleHandler collection removes the item in real collection
 		assertTrue(typeMembers.remove(field1));
-		Assert.assertThat(asList(), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+		assertThat(Arrays.asList(), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 	}
 
 	@Test

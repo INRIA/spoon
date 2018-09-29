@@ -2,7 +2,6 @@ package spoon.test.api;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -104,7 +103,7 @@ public class APITest {
 				"-i", "src/test/resources/spoon/test/api/",
 				"-o", "fancy/fake/apitest" // we shouldn't write anything anyway
 		});
-		Assert.assertEquals(3, l.size());
+		assertEquals(3, l.size());
 	}
 
 	@Test

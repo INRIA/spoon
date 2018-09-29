@@ -1,6 +1,5 @@
 package spoon.test.prettyprinter;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -11,12 +10,12 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -61,8 +60,8 @@ public class QualifiedThisRefTest {
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
-		Assert.assertTrue(printer.getResult().contains("Object o = this"));
-		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
+		assertTrue(printer.getResult().contains("Object o = this"));
+		assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
 	}
 
 	@Test
