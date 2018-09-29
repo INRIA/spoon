@@ -222,7 +222,6 @@ public class SpoonPom implements SpoonResource {
 			if (model.getVersion() != null) {
 				return model.getVersion();
 			} else if (model.getParent() != null) {
-				//System.out.println(lastImportEnd);
 				return model.getParent().getVersion();
 			}
 		} else if ("project.groupId".equals(key) || "pom.groupId".equals(key)) {
