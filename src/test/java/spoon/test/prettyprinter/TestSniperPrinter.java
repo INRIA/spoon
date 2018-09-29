@@ -221,6 +221,7 @@ public class TestSniperPrinter {
 		while(m.find()) {
 			lastImportEnd = m.end();
 		}
+		//System.out.println(lastImportEnd);
 		return source.substring(lastImportEnd).trim();
 	}
 }
