@@ -114,7 +114,7 @@ public class JarLauncher extends Launcher {
 
 		jar = new File(jarPath);
 		if (!jar.exists() || !jar.isFile()) {
-			throw new SpoonException("Jar " + jar.getPath() + "not found.");
+			throw new SpoonException("Jar " + jar.getPath() + " not found.");
 		}
 
 		//We call the decompiler only if jar has changed since last decompilation.
@@ -133,7 +133,7 @@ public class JarLauncher extends Launcher {
 		if (pomPath != null) {
 			File srcPom =  new File(pomPath);
 			if (!srcPom.exists() || !srcPom.isFile()) {
-				throw new SpoonException("Pom " + srcPom.getPath() + "not found.");
+				throw new SpoonException("Pom " + srcPom.getPath() + " not found.");
 			}
 			try {
 				pom = new File(decompiledRoot, "pom.xml");
