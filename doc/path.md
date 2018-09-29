@@ -27,6 +27,19 @@ path = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.fo
 List<CtElement> l = path.evaluateOn(root)
 ```
 
+## Path syntax
+
+There can be used following path elements:
+* `.<name>` which denotes a child elements with name `name`.
+* `#<role>` which denotes all children on `CtRole` `role`
+* `[<attr1Name>=<attr1Value>;...;<attrN_Name>=<attrN_Value>]`  which applies a extra filter on the children
+
+### Path filter attributes
+* `name=<somename>` - filter which accepts only elements with `somename`. E.g. `#field[name=abc]`
+* `signature=<somesignature>` - filter which accepts only methods and constructors with signature `somesignature`.
+	Example of method signature: `#method[signature=compare(java.lang.String,java.lang.String)]`
+	Example of constructor signature: `#constructor[signature=(int)]`
+* `index=<idx>` - fitler which accepts only idx-th element of the List. The first element has index 0. E.g. `#typeMember[index=4]`
 
 ## CtPathStringBuilder
 
