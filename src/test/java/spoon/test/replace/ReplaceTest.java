@@ -1,6 +1,5 @@
 package spoon.test.replace;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -40,7 +39,10 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -210,23 +212,23 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
+		assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
 
 		// replace with another type
 		CtField replacement = factory.Core().createField();
 		replacement.setSimpleName("i");
 		replacement.setType(factory.Type().createReference(double.class));
 		sample.getField("i").replace(replacement);
-		Assert.assertEquals(factory.Type().createReference(double.class), sample.getField("i").getType());
+		assertEquals(factory.Type().createReference(double.class), sample.getField("i").getType());
 
 		// replace with another name
 		replacement = factory.Core().createField();
 		replacement.setSimpleName("j");
 		replacement.setType(factory.Type().createReference(double.class));
 		sample.getField("i").replace(replacement);
-		Assert.assertNull(sample.getField("i"));
-		Assert.assertNotNull(sample.getField("j"));
-		Assert.assertEquals(factory.Type().createReference(double.class), sample.getField("j").getType());
+		assertNull(sample.getField("i"));
+		assertNotNull(sample.getField("j"));
+		assertEquals(factory.Type().createReference(double.class), sample.getField("j").getType());
 	}
 
 	@Test
@@ -234,16 +236,16 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertNotNull(sample.getMethod("foo"));
-		Assert.assertNull(sample.getMethod("notfoo"));
+		assertNotNull(sample.getMethod("foo"));
+		assertNull(sample.getMethod("notfoo"));
 
 		CtMethod bar = factory.Core().createMethod();
 		bar.setSimpleName("notfoo");
 		bar.setType(factory.Type().createReference(void.class));
 		sample.getMethod("foo").replace(bar);
 
-		Assert.assertNull(sample.getMethod("foo"));
-		Assert.assertNotNull(sample.getMethod("notfoo"));
+		assertNull(sample.getMethod("foo"));
+		assertNotNull(sample.getMethod("notfoo"));
 	}
 
 	@Test
@@ -251,8 +253,8 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertNotNull(sample.getMethod("foo"));
-		Assert.assertNull(sample.getMethod("notfoo"));
+		assertNotNull(sample.getMethod("foo"));
+		assertNull(sample.getMethod("notfoo"));
 
 		CtMethod bar = factory.Core().createMethod();
 		bar.setSimpleName("notfoo");
@@ -263,10 +265,10 @@ public class ReplaceTest {
 		int originCountOfMethods = sample.getTypeMembers().size();
 		sample.getMethod("foo").replace(Arrays.asList(bar, bar2));
 
-		Assert.assertNull(sample.getMethod("foo"));
-		Assert.assertNotNull(sample.getMethod("notfoo"));
-		Assert.assertNotNull(sample.getMethod("notfoo2"));
-		Assert.assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
+		assertNull(sample.getMethod("foo"));
+		assertNotNull(sample.getMethod("notfoo"));
+		assertNotNull(sample.getMethod("notfoo2"));
+		assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
 	}
 
 	@Test
@@ -276,14 +278,14 @@ public class ReplaceTest {
 
 		CtVariable<?> var = sample.getBody().getStatement(0);
 
-		Assert.assertTrue(var.getDefaultExpression() instanceof CtLiteral);
-		Assert.assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
+		assertTrue(var.getDefaultExpression() instanceof CtLiteral);
+		assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 		CtLiteral replacement = factory.Core().createLiteral();
 		replacement.setValue(42);
 		var.getDefaultExpression().replace(replacement);
 
-		Assert.assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
+		assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 	}
 
@@ -292,12 +294,12 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
-		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
+		assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
 
 		CtStatement replacement = factory.Core().createInvocation();
 		sample.getBody().getStatement(0).replace(replacement);
 
-		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
+		assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
 	}
 
 	@Test
