@@ -108,9 +108,7 @@ class JDTTreeBuilderQuery {
 	 * @return qualified name of the expected type.
 	 */
 	static String searchType(String typeName, ImportReference[] imports) {
-		if (typeName == null) {
-			return null;
-		} else if (imports == null) {
+		if (typeName == null || imports == null) {
 			return null;
 		}
 		for (ImportReference anImport : imports) {
