@@ -18,7 +18,6 @@ package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
 import spoon.Launcher;
-import spoon.reflect.CtModelImpl;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -591,7 +590,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public CtPath getPath() {
-		return new CtElementPathBuilder().fromElement(this, getParent(CtModelImpl.CtRootPackage.class));
+		return new CtElementPathBuilder().fromElement(this);
 	}
 
 	@Override

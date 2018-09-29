@@ -238,6 +238,19 @@ public class PathTest {
 	}
 
 	@Test
+	public void testFastPathWithIndex() {
+		// contract: the path can still use index
+		CtType<?> fooClass = factory.Package().get("spoon.test.path.testclasses").getType("Foo");
+		CtMethod<Object> method = fooClass.getMethod("foo");
+		CtStatement ifStmt = ((CtIf) method.getBody()
+				.getStatement(2)).getElseStatement();
+
+		//check that path with index 
+		CtPath absPath = new CtElementPathBuilder().setUseNamesInPath(false).fromElement(ifStmt);
+		assertEquals("#subPackage[name=spoon]#subPackage[name=test]#subPackage[name=path]#subPackage[name=testclasses]#containedType[name=Foo]#typeMember[index=3]#body#statement[index=2]#else", absPath.toString());
+	}
+
+	@Test
 	public void testRoles() {
 		// get the then statement
 		CtType<?> fooClass = factory.Package().get("spoon.test.path.testclasses").getType("Foo");
@@ -252,6 +265,7 @@ public class PathTest {
 		// now we get the absolute path
 		CtPath absPath = path.evaluateOn(factory.getModel().getRootPackage()).get(0).getPath();
 		assertEquals("#subPackage[name=spoon]#subPackage[name=test]#subPackage[name=path]#subPackage[name=testclasses]#containedType[name=Foo]#method[signature=foo()]#body#statement[index=2]#else", absPath.toString());
+		
 
 		// contract: subpath enables to have relative path
 		CtPath subPath = absPath.relativePath(fooClass);
