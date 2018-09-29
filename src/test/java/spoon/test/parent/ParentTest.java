@@ -1,12 +1,10 @@
 package spoon.test.parent;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.test.intercession.IntercessionScanner;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -40,6 +38,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.UnsettableProperty;
+import spoon.test.intercession.IntercessionScanner;
 import spoon.test.replace.testclasses.Tacos;
 
 import java.util.ArrayDeque;
@@ -82,7 +81,7 @@ public class ParentTest {
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
 		} catch (Exception e) {
-			Assert.fail();
+			fail();
 		}
 	}
 
@@ -214,7 +213,7 @@ public class ParentTest {
 	public static void checkParentContract(CtPackage pack) {
 		pack.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
-			Assert.assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
+			assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
 		});
 
 		// the scanner and the parent are in correspondence
