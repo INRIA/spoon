@@ -248,7 +248,7 @@ public class Metamodel {
 	/**
 	 * @param factory already loaded factory with all Spoon model types
 	 */
-	private Metamodel(Factory factory) {
+	protected Metamodel(Factory factory) {
 		for (String apiPackage : MODEL_IFACE_PACKAGES) {
 			if (factory.Package().get(apiPackage) == null) {
 				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
