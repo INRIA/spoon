@@ -119,7 +119,7 @@ public class VisibilityTest {
 	@Test
 	public void testName() {
 		final SpoonAPI launcher = new Launcher();
-		launcher.run(new String[]{
+		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/visibility/testclasses/Tacos.java",
 				"-o", "./target/spooned/visibility"
 		});
