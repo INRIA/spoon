@@ -399,7 +399,12 @@ public class SpoonPom implements SpoonResource {
 	private static String guessMavenHome() {
 		String mvnHome = null;
 		try {
-			String[] cmd = {"mvn", "-version"};
+			String[] cmd;
+			if (System.getProperty("os.name").contains("Windows")) {
+				cmd = new String[]{"mvn.cmd", "-version"};
+			} else {
+				cmd = new String[]{"mvn", "-version"};
+			}
 			Process p = Runtime.getRuntime().exec(cmd);
 			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
 				String line;
