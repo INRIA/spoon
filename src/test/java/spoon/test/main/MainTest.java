@@ -527,6 +527,7 @@ public class MainTest {
 					String pathStr = path.toString();
 					try {
 						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+						assertEquals(pathStr, pathRead.toString());
 						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
 						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
 						assertEquals(1, returnedElements.size());
@@ -534,7 +535,9 @@ public class MainTest {
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertSame(element, actualElement);
 					} catch (CtPathException e) {
-						fail("Path is either incorrectly generated or incorrectly read");
+						throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
+					} catch (AssertionError e) {
+						throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element.toString(), e);
 					}
 				}
 				super.scan(element);

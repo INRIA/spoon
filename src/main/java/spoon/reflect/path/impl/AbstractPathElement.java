@@ -29,6 +29,9 @@ import java.util.TreeMap;
  * Partial implementation for CtPathElement
  */
 public abstract class AbstractPathElement<P extends CtElement, T extends CtElement> implements CtPathElement<P, T> {
+	public static final String ARGUMENT_START = "[";
+	public static final String ARGUMENT_END = "]";
+	public static final String ARGUMENT_NAME_SEPARATOR = "=";
 
 	private Map<String, String> arguments = new TreeMap<>();
 
