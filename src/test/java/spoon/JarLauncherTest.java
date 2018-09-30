@@ -16,7 +16,6 @@
  */
 package spoon;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;
@@ -25,13 +24,13 @@ import spoon.reflect.declaration.CtConstructor;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class JarLauncherTest {
 
 	@Test
 	public void testJarLauncher() {
-
 		File baseDir = new File("src/test/resources/jarLauncher");
 		File pom = new File(baseDir, "pom.xml");
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
@@ -54,7 +53,6 @@ public class JarLauncherTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
-		assertEquals(model.getAllTypes().size(),5);
+		assertEquals(model.getAllTypes().size(), 5);
 	}
-
 }
