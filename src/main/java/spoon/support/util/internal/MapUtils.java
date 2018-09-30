@@ -27,7 +27,7 @@ public abstract class MapUtils {
 
 	/**
 	 * @return existing value of `key` from `map`. If value doesn't exist yet for `key` yet,
-	 * than `valueCreator` is used to create new value, which is than assigned to `key` and returned
+	 * then `valueCreator` is used to create new value, which is then assigned to `key` and returned
 	 */
 	public static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
 		return getOrCreate(map, key, valueCreator, null);
@@ -35,7 +35,7 @@ public abstract class MapUtils {
 	/**
 	 * @param initializer is called immediately after the value is added to the map
 	 * @return existing value of `key` from `map`. If value doesn't exist yet for `key` yet,
-	 * than `valueCreator` is used to create new value, which is than assigned to `key` and returned
+	 * then `valueCreator` is used to create new value, which is then assigned to `key` and returned
 	 */
 	public static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
 		V value = map.get(key);
