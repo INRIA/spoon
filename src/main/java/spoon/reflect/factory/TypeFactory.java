@@ -38,6 +38,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.StandardEnvironment;
+import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
@@ -49,11 +50,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -457,26 +460,54 @@ public class TypeFactory extends SubFactory {
 				}
 				return enclosingClasses.get(0);
 			}
-			try {
-				// If the class name can't be parsed in integer, the method throws an exception.
+			if (isNumber(className)) {
 				// If the class name is an integer, the class is an anonymous class, otherwise,
 				// it is a standard class.
-				Integer.parseInt(className);
-				final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
-					@Override
-					public boolean matches(CtNewClass element) {
-						return super.matches(element) && element.getAnonymousClass().getQualifiedName().equals(qualifiedName);
+				//TODO reset cache when type is modified
+				return getFromCache(t, className, () -> {
+					//the searching for declaration of anonymous class is expensive
+					//do that only once and store it in cache of CtType
+					Integer.parseInt(className);
+					final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
+						@Override
+						public boolean matches(CtNewClass element) {
+							return super.matches(element) && element.getAnonymousClass().getQualifiedName().equals(qualifiedName);
+						}
+					});
+					if (anonymousClasses.isEmpty()) {
+						return null;
 					}
+					return anonymousClasses.get(0).getAnonymousClass();
 				});
-				if (anonymousClasses.isEmpty()) {
-					return null;
-				}
-				return anonymousClasses.get(0).getAnonymousClass();
-			} catch (NumberFormatException e) {
+			} else {
 				return t.getNestedType(className);
 			}
 		}
 		return null;
+	}
+
+	private static final String CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
+
+	private <T, K> T getFromCache(CtElement element, K key, Supplier<T> valueResolver) {
+		Map<K, T> cache = (Map<K, T>) element.getMetadata(CACHE_KEY);
+		if (cache == null) {
+			cache = new HashMap<>();
+			element.putMetadata(CACHE_KEY, cache);
+		}
+		return MapUtils.getOrCreate(cache, key, valueResolver);
+	}
+
+	private boolean isNumber(String str) {
+		if (str == null || str.length() == 0) {
+			return false;
+		}
+		int len = str.length();
+		for (int i = 0; i < len; i++) {
+			if (!Character.isDigit(str.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
