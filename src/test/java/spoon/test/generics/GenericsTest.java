@@ -594,6 +594,15 @@ public class GenericsTest {
 	}
 
 	@Test
+	public void testGetDeclarationOnGenericReturnType() throws Exception {
+		//contract: generic return type reference can access parameter type.
+		CtMethod<?> method = buildClass(Paella.class).getMethodsByName("make").get(0);
+		CtTypeParameterReference paramTypeRef = (CtTypeParameterReference) method.getType();
+		assertEquals("T", paramTypeRef.getSimpleName());
+		assertSame(method.getFormalCtTypeParameters().get(0), paramTypeRef.getTypeParameterDeclaration());
+	}
+
+	@Test
 	public void testDeclarationOfTypeParameterReference() throws Exception {
 		CtType<Tacos> aTacos = buildNoClasspath(Tacos.class).Type().get(Tacos.class);
 		for (CtTypeParameterReference parameterReference : aTacos.getElements(new TypeFilter<CtTypeParameterReference>(CtTypeParameterReference.class) {
