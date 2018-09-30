@@ -989,6 +989,20 @@ public class CommentTest {
 		assertEquals("Keep old {@link RootNode} and ignore requests to add new {@link RootNode}", comments.get(0).getContent());
 	}
 
+
+	@Test
+	public void testBug2209() {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[]{
+				"-i", "src/test/resources/ConfigPlugin.java"
+		});
+		// no exception should be thrown
+		// and the comment is still available
+		assertEquals("prevent users from disabling", launcher.getFactory().Type().get("net.runelite.client.plugins.config.ConfigPlugin").getAnnotations().get(0).getComments().get(0).getContent());
+
+	}
+
+
 	@Test
 	public void testInlineCommentIfBlock() {
 		// contract: when creating an inline comment from a string with line separators, it throws an exception to create block comment

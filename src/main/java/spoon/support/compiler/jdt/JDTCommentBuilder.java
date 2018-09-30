@@ -489,10 +489,15 @@ class JDTCommentBuilder {
 			}
 		};
 		insertionVisitor.scan(commentParent);
+
+		// postcondition
 		try {
+			// now we make sure that there is a parent
+			// if there is no parent, this will throw a ParentNotInitializedException
 			comment.getParent();
 		} catch (ParentNotInitializedException e) {
-			LOGGER.error(comment + " is not added into the AST", e);
+ 			// as best effort the comment goes in the parent
+			commentParent.addComment(comment);
 		}
 	}
 
