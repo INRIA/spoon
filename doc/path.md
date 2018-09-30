@@ -40,7 +40,7 @@ syntax.
 * `signature=<somesignature>` - filter which accepts only methods and constructors with signature `somesignature`.
   * Example of method signature: `#method[signature=compare(java.lang.String,java.lang.String)]`
   * Example of constructor signature: `#constructor[signature=(int)]`
-* `index=<idx>` - fitler which accepts only idx-th element of the List. The first element has index 0. the fourth type memeber in a class `#typeMember[index=4]`
+* `index=<idx>` - fitler which accepts only idx-th element of the List. The first element has index 0. the fifth type memeber in a class `#typeMember[index=4]`
 
 ### From the API
 
