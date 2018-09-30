@@ -748,6 +748,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 		}
 
+		if (parent instanceof CtFormalTypeDeclarer) {
+			CtFormalTypeDeclarer exec = (CtFormalTypeDeclarer) parent;
+			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
+				for (CtTypeParameter typeParam : exec.getFormalCtTypeParameters()) {
+					if (typeParam.getSimpleName().equals(getSimpleName())) {
+						return typeParam;
+					}
+				}
+				return null;
+			}
+		}
 		return null;
 	}
 
