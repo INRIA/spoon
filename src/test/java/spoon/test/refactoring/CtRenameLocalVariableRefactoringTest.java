@@ -3,6 +3,7 @@ package spoon.test.refactoring;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -158,14 +159,13 @@ public class CtRenameLocalVariableRefactoringTest
 			new AssertionError("The compilation of java sources in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
 		}
 //		 3) create instance using that new model and test consistency
-		try {
-			TestClassloader classLoader = new TestClassloader(launcher);
+		try (TestClassloader classLoader = new TestClassloader(launcher)) {
 			Class testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
 			testModelClass.getMethod("checkModelConsistency").invoke(testModelClass.newInstance());
 		} catch (InvocationTargetException e) {
-			throw new AssertionError("The model validation of code in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e.getTargetException());
+			throw new AssertionError("The model validation of code in " + launcher.getEnvironment().getBinaryOutputDirectory() + " failed after: " + refactoringDescription, e.getTargetException());
 		} catch (Throwable e) {
-			throw new AssertionError("The model validation of code in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
+			throw new AssertionError("The model validation of code in " + launcher.getEnvironment().getBinaryOutputDirectory() + " failed after: " + refactoringDescription, e);
 		}
 	}
 	
