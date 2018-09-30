@@ -114,7 +114,7 @@ public class JarLauncher extends Launcher {
 
 		jar = new File(jarPath);
 		if (!jar.exists() || !jar.isFile()) {
-			throw new SpoonException("Jar " + jar.getPath() + "not found.");
+			throw new SpoonException("Jar " + jar.getPath() + " not found.");
 		}
 
 		//We call the decompiler only if jar has changed since last decompilation.
@@ -133,7 +133,7 @@ public class JarLauncher extends Launcher {
 		if (pomPath != null) {
 			File srcPom =  new File(pomPath);
 			if (!srcPom.exists() || !srcPom.isFile()) {
-				throw new SpoonException("Pom " + srcPom.getPath() + "not found.");
+				throw new SpoonException("Pom " + srcPom.getPath() + " not found.");
 			}
 			try {
 				pom = new File(decompiledRoot, "pom.xml");
@@ -143,9 +143,6 @@ public class JarLauncher extends Launcher {
 			}
 			try {
 				SpoonPom pomModel = new SpoonPom(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
-				if (pomModel == null) {
-					throw new SpoonException("Unable to create the model, pom not found?");
-				}
 				getEnvironment().setComplianceLevel(pomModel.getSourceVersion());
 				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
 				// dependencies
