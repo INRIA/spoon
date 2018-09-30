@@ -496,7 +496,7 @@ class JDTCommentBuilder {
 			// if there is no parent, this will throw a ParentNotInitializedException
 			comment.getParent();
 		} catch (ParentNotInitializedException e) {
- 			// as best effort the comment goes in the parent
+			// as best effort the comment goes in the parent
 			commentParent.addComment(comment);
 		}
 	}
