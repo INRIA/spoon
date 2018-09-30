@@ -63,12 +63,19 @@ public class RefactorSpoonCollections {
 		CtTypeReference<?> modelListRef = factory.Type().createReference(ModelList.class);
 		CtTypeReference<?> modelSetRef = factory.Type().createReference(ModelSet.class);
 		
-		Map<MMMethodKind, PatternDetector> detectorsByMethodKind = new HashMap<>();
+		Map<String, PatternDetector> detectorsByMethodKind = new HashMap<>();
+		
+		Set<CtField> processedFields = Collections.newSetFromMap(new IdentityHashMap<>());
 		
 		forEachMetamodelMethodAccessingField(mm, (field, method) -> {
 			if (field.getType().isSubtypeOf(modelListRef) || field.getType().isSubtypeOf(modelSetRef)) {
 				//this property is already refactored
 				return;
+			}
+			if (processedFields.add(field)) {
+				PatternDetector fieldDetector = MapUtils.getOrCreate(detectorsByMethodKind, "field",
+						() -> new PatternDetector().setIgnoreComments(true));
+				fieldDetector.matchCode(field);
 			}
 			MetamodelPropertyField fieldRole = field.getAnnotation(MetamodelPropertyField.class);
 			CtRole role = fieldRole.role()[0];
@@ -80,7 +87,7 @@ public class RefactorSpoonCollections {
 					System.out.println("Missing method for signature: " + concept.getName() + "#" + method.getSignature());
 					return;
 				}
-				PatternDetector detector = MapUtils.getOrCreate(detectorsByMethodKind, mmethod.getKind(),
+				PatternDetector detector = MapUtils.getOrCreate(detectorsByMethodKind, mmethod.getKind().name(),
 						() -> new PatternDetector().setIgnoreComments(true));
 				if (mmethod.getKind()==MMMethodKind.GET) {
 					if (mmethod.getName().equals("getModifiers")) {
@@ -95,11 +102,11 @@ public class RefactorSpoonCollections {
 		File targetDir = new File("target/patterns");
 		targetDir.mkdirs();
 		int i = 0;
-		for (Map.Entry<MMMethodKind, PatternDetector> entry : detectorsByMethodKind.entrySet()) {
-			MMMethodKind kind = entry.getKey();
+		for (Map.Entry<String, PatternDetector> entry : detectorsByMethodKind.entrySet()) {
+			String kind = entry.getKey();
 			PatternDetector detector = entry.getValue();
 			List<FoundPattern> patterns = detector.getPatterns();
-			File targetDir2 = new File(targetDir, "patterns_" + kind.name());
+			File targetDir2 = new File(targetDir, "patterns_" + kind);
 			targetDir2.mkdirs();
 			for (FoundPattern pattern : patterns) {
 				String className = "Pattern_" + String.valueOf(i++);
