@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -275,11 +276,25 @@ public class MetamodelProperty {
 		return methodsBySignature.get(signature);
 	}
 
+	/**
+	 * @param kind {@link MMMethodKind}
+	 * @return methods of required `kind`
+	 */
 	public List<MMMethod> getMethods(MMMethodKind kind) {
 		List<MMMethod> ms = methodsByKind.get(kind);
 		return ms == null ? Collections.emptyList() : Collections.unmodifiableList(ms);
 	}
 
+	/**
+	 * @return all methods which are accessing this property
+	 */
+	public Set<MMMethod> getMethods() {
+		Set<MMMethod> res = new HashSet<>();
+		for (List<MMMethod> methods : methodsByKind.values()) {
+			res.addAll(methods);
+		}
+		return Collections.unmodifiableSet(res);
+	}
 
 	void sortByBestMatch() {
 		//resolve conflicts using value type. Move the most matching method to 0 index
