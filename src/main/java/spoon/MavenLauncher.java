@@ -30,6 +30,10 @@ public class MavenLauncher extends Launcher {
 	private SpoonPom model;
 	private boolean forceRefresh = false;
 
+	public SpoonPom getPomModel() {
+		return model;
+	}
+
 	/**
 	 * The type of source to consider in the model
 	 */
