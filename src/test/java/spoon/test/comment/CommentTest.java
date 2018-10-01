@@ -996,9 +996,8 @@ public class CommentTest {
 		launcher.run(new String[]{
 				"-i", "src/test/resources/ConfigPlugin.java"
 		});
-		// no exception should be thrown
-		// and the comment is still available
-		assertEquals("prevent users from disabling", launcher.getFactory().Type().get("net.runelite.client.plugins.config.ConfigPlugin").getAnnotations().get(0).getComments().get(0).getContent());
+		// the comment should be associated to the expression in the annotation
+		assertEquals("prevent users from disabling", launcher.getFactory().Type().get("net.runelite.client.plugins.config.ConfigPlugin").getAnnotations().get(0).filterChildren(new TypeFilter<>(CtComment.class)).list().get(0).toString());
 
 	}
 

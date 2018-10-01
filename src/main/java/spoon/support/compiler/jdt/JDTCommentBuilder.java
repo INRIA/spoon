@@ -496,8 +496,9 @@ class JDTCommentBuilder {
 			// if there is no parent, this will throw a ParentNotInitializedException
 			comment.getParent();
 		} catch (ParentNotInitializedException e) {
-			// as best effort the comment goes in the parent
-			commentParent.addComment(comment);
+			// that's a serious error, there is something to debug
+			LOGGER.error("\"" + comment + "\" cannot be added into the AST, with parent "+ commentParent.getClass()
+					+ "please report the bug by posting on https://github.com/INRIA/spoon/issues/2482");
 		}
 	}
 
