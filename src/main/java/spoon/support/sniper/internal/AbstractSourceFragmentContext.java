@@ -170,6 +170,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 	protected void printOriginSpacesUntilFragmentIndex(int fromIndex, int toIndex) {
 		//print all not yet printed comments which still exist in parent
 		boolean canPrintSpace = true;
+		boolean skipSpaceAfterDeletedElement = false;
 		for (int i = fromIndex; i < toIndex; i++) {
 			SourceFragment fragment = childFragments.get(i);
 			if (fragment instanceof ElementSourceFragment) {
@@ -194,9 +195,17 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 					}
 				}
 			} else if (isSpaceFragment(fragment) && canPrintSpace) {
-				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+				if (!skipSpaceAfterDeletedElement) {
+					mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+				} else {
+					skipSpaceAfterDeletedElement = false;
+				}
 				//all whitespaces are in one fragment, so do not print next spaces without any comment in between
 				canPrintSpace = false;
+			} else {
+				//there are some non empty tokens, which were not printed (were removed from model)
+				//do not print next space, which represents the separator between removed tokens and next token
+				skipSpaceAfterDeletedElement = true;
 			}
 		}
 		setChildFragmentIdx(toIndex - 1);
