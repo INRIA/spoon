@@ -779,7 +779,7 @@ public class PatternParameterConfigurator {
 	/**
 	 * Attribute defined by `role` of `element`  will be substituted by parameter value
 	 * @param role {@link CtRole}, which defines to be substituted elements
-	 * @param element to be substituted element
+	 * @param elements to be substituted element
 	 * @return {@link PatternParameterConfigurator} to support fluent API
 	 */
 	public PatternParameterConfigurator byRole(CtRole role, CtElement... elements) {
