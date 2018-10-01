@@ -38,7 +38,7 @@ public class JarLauncher extends Launcher {
 	boolean decompile = false;
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 */
@@ -46,22 +46,21 @@ public class JarLauncher extends Launcher {
 		this(jarPath, null, (String) null);
 	}
 
-
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath) {
 		this(jarPath, decompiledSrcPath, (String) null);
 	}
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 * @param pom path to pom associated with the jar to be analyzed
 	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, String pom) {
@@ -69,10 +68,10 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher basic constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher basic constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 * @param decompiler Instance implementing {@link spoon.decompiler.Decompiler} to be used
 	 */
 	public JarLauncher(String jarPath, String decompiledSrcPath, Decompiler decompiler) {
@@ -80,10 +79,10 @@ public class JarLauncher extends Launcher {
 	}
 
 	/**
-	 * JarLauncher constructor. Uses the defauld Decompiler (CFR)
+	 * JarLauncher constructor. Uses the default Decompiler (CFR)
 	 *
 	 * @param jarPath path to the jar to be analyzed
-	 * @param decompiledSrcPath path to directory where decompiled source will be outputted
+	 * @param decompiledSrcPath path to directory where decompiled source will be output
 	 * @param pom path to pom associated with the jar to be analyzed
 	 * @param decompiler Instance implementing {@link spoon.decompiler.Decompiler} to be used
 	 */
@@ -115,7 +114,7 @@ public class JarLauncher extends Launcher {
 
 		jar = new File(jarPath);
 		if (!jar.exists() || !jar.isFile()) {
-			throw new SpoonException("Jar " + jar.getPath() + "not found.");
+			throw new SpoonException("Jar " + jar.getPath() + " not found.");
 		}
 
 		//We call the decompiler only if jar has changed since last decompilation.
@@ -131,11 +130,10 @@ public class JarLauncher extends Launcher {
 			decompiler.decompile(jar.getAbsolutePath());
 		}
 
-
 		if (pomPath != null) {
 			File srcPom =  new File(pomPath);
 			if (!srcPom.exists() || !srcPom.isFile()) {
-				throw new SpoonException("Pom " + srcPom.getPath() + "not found.");
+				throw new SpoonException("Pom " + srcPom.getPath() + " not found.");
 			}
 			try {
 				pom = new File(decompiledRoot, "pom.xml");
@@ -145,9 +143,6 @@ public class JarLauncher extends Launcher {
 			}
 			try {
 				SpoonPom pomModel = new SpoonPom(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
-				if (pomModel == null) {
-					throw new SpoonException("Unable to create the model, pom not found?");
-				}
 				getEnvironment().setComplianceLevel(pomModel.getSourceVersion());
 				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
 				// dependencies
@@ -164,5 +159,4 @@ public class JarLauncher extends Launcher {
 	protected Decompiler getDefaultDecompiler() {
 		return new CFRDecompiler(decompiledSrc);
 	}
-
 }

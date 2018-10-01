@@ -9,6 +9,8 @@ import spoon.reflect.visitor.CtScanner;
 
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Ignore;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonPom;
 
 import static org.junit.Assert.*;
 
@@ -132,5 +135,15 @@ public class MavenLauncherTest {
 		}
 
 		assertTrue("Content of classpath: " + StringUtils.join(classpath, ":"), findIt);
+	}
+
+	@Test
+	public void testGuessMavenHome() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = SpoonPom.class.getDeclaredMethod("guessMavenHome", new Class[]{});
+		method.setAccessible(true);
+		String mvnHome = (String) method.invoke(null, new Object[]{});
+		File mvnDir = new File(mvnHome);
+		assertTrue(mvnDir.exists());
+		assertTrue(mvnDir.isDirectory());
 	}
 }

@@ -39,6 +39,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -54,6 +55,7 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	private List<ParamOnElement> params = new ArrayList<>();
+	private boolean printParametersAsComments = true;
 
 	public PatternPrinter() {
 		super(DEFAULT_FACTORY, null);
@@ -142,7 +144,7 @@ public class PatternPrinter extends DefaultGenerator {
 				params.add(paramOnElement);
 			}
 		}
-		if (isCommentVisible(ele) && !params.isEmpty()) {
+		if (isPrintParametersAsComments() && isCommentVisible(ele) && !params.isEmpty()) {
 			ele.addComment(ele.getFactory().Code().createComment(getSubstitutionRequestsDescription(ele, params), CommentType.BLOCK));
 			params.clear();
 		}
@@ -174,6 +176,9 @@ public class PatternPrinter extends DefaultGenerator {
 			}
 			if (type.isAssignableFrom(String.class)) {
 				return (T) parameterInfo.getName();
+			}
+			if (type.isAssignableFrom(CtTypeReference.class)) {
+				return (T) factory.Type().createReference(parameterInfo.getName());
 			}
 		}
 		return null;
@@ -248,5 +253,14 @@ public class PatternPrinter extends DefaultGenerator {
 			return name.substring(0, name.length() - 4);
 		}
 		return name;
+	}
+
+	public PatternPrinter setPrintParametersAsComments(boolean printParametersAsComments) {
+		this.printParametersAsComments = printParametersAsComments;
+		return this;
+	}
+
+	public boolean isPrintParametersAsComments() {
+		return printParametersAsComments;
 	}
 }

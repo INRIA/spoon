@@ -17,17 +17,16 @@
 package spoon.support.compiler;
 
 import org.apache.log4j.Logger;
-import org.apache.maven.model.Model;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.BuildBase;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -39,17 +38,17 @@ import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +58,7 @@ public class SpoonPom implements SpoonResource {
 	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
 	static String spoonClasspathTmpFileNameApp = "spoon.classpath-app.tmp";
 	static String spoonClasspathTmpFileNameTest = "spoon.classpath-test.tmp";
-	static long classpathTmpFilesTTL = 60 * 60 * 1000; // 1h in ms
+	static long classpathTmpFilesTTL = 60 * 60 * 1000L; // 1h in ms
 	List<SpoonPom> modules = new ArrayList<>();
 	Model model;
 	SpoonPom parent;
@@ -358,7 +357,7 @@ public class SpoonPom implements SpoonResource {
 			invoker.setErrorHandler(s -> LOGGER.debug(s));
 			invoker.setOutputHandler(s -> LOGGER.debug(s));
 			try {
-				InvocationResult ir = invoker.execute(request);
+				invoker.execute(request);
 			} catch (MavenInvocationException e) {
 				throw new SpoonException("Maven invocation failed to build a classpath.");
 			}
@@ -400,7 +399,12 @@ public class SpoonPom implements SpoonResource {
 	private static String guessMavenHome() {
 		String mvnHome = null;
 		try {
-			String[] cmd = {"mvn", "-version"};
+			String[] cmd;
+			if (System.getProperty("os.name").contains("Windows")) {
+				cmd = new String[]{"mvn.cmd", "-version"};
+			} else {
+				cmd = new String[]{"mvn", "-version"};
+			}
 			Process p = Runtime.getRuntime().exec(cmd);
 			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
 				String line;

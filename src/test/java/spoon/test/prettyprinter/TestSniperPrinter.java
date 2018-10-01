@@ -8,8 +8,8 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.modelobs.ChangeCollector;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
 import java.io.File;
@@ -39,7 +39,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintAfterRenameOfField() {
-		//contract: sniper printing after rename of field 
+		//contract: sniper printing after rename of field
 		testSniper(ToBeChanged.class.getName(), type -> {
 			//change the model
 			type.getField("string").setSimpleName("modified");
@@ -48,7 +48,7 @@ public class TestSniperPrinter {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\bstring\\b", "modified");
 		});
 	}
-	
+
 	@Test
 	public void testPrintChangedComplex() {
 		//contract: sniper printing after remove of statement from nested complex `if else if ...`
@@ -67,7 +67,7 @@ public class TestSniperPrinter {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\QNO_SUPERINTERFACES) {\n\\E\\s*bounds\\s*=\\s*false;\n", "NO_SUPERINTERFACES) {\n");
 		});
 	}
-	
+
 	@Test
 	public void testPrintAfterRemoveOfFirstParameter() {
 		//contract: sniper print after remove of first parameter
@@ -111,6 +111,7 @@ public class TestSniperPrinter {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\Q\tList<?>[][] twoDArrayOfLists = new List<?>[7][];\n\\E", "");
 		});
 	}
+
 	@Test
 	public void testPrintAfterAddOfLastTypeMember() {
 		//contract: sniper print after add of last type member - check that suffix spaces are printed correctly
@@ -118,7 +119,7 @@ public class TestSniperPrinter {
 			CtField<?> newField;
 		}
 		Context context = new Context();
-		
+
 		testSniper(ToBeChanged.class.getName(), type -> {
 			Factory f = type.getFactory();
 			//create new type member
@@ -126,7 +127,7 @@ public class TestSniperPrinter {
 			type.addTypeMember(context.newField);
 		}, (type, printed) -> {
 			String lastMemberString = "new List<?>[7][];";
-			assertIsPrintedWithExpectedChanges(type, printed, "\\Q"+lastMemberString+"\\E", lastMemberString + "\n\n\t" + context.newField.toString());
+			assertIsPrintedWithExpectedChanges(type, printed, "\\Q" + lastMemberString + "\\E", lastMemberString + "\n\n\t" + context.newField.toString());
 		});
 	}
 
@@ -142,7 +143,7 @@ public class TestSniperPrinter {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			return new SniperJavaPrettyPrinter(launcher.getEnvironment());}
+			return new SniperJavaPrettyPrinter(launcher.getEnvironment()); }
 		);
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
@@ -158,12 +159,12 @@ public class TestSniperPrinter {
 		//check the printed file
 		resultChecker.accept(ctClass, getContentOfPrettyPrintedClassFromDisk(ctClass));
 	}
-	
+
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
 		Factory f = type.getFactory();
 		File outputDir = f.getEnvironment().getSourceOutputDirectory();
-		File outputFile = new File(outputDir, type.getQualifiedName().replace('.', '/')+".java");
-		
+		File outputFile = new File(outputDir, type.getQualifiedName().replace('.', '/') + ".java");
+
 		byte[] content = new byte[(int) outputFile.length()];
 		try (InputStream is = new FileInputStream(outputFile)) {
 			is.read(content);
@@ -176,13 +177,13 @@ public class TestSniperPrinter {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private static String getResourcePath(String className) {
-		String r = "./src/test/java/"+className.replaceAll("\\.", "/")+".java";
+		String r = "./src/test/java/" + className.replaceAll("\\.", "/") + ".java";
 		if (new File(r).exists()) {
 			return r;
 		}
-		r = "./src/test/resources/"+className.replaceAll("\\.", "/")+".java";
+		r = "./src/test/resources/" + className.replaceAll("\\.", "/") + ".java";
 		if (new File(r).exists()) {
 			return r;
 		}
@@ -214,13 +215,12 @@ public class TestSniperPrinter {
 
 	Pattern importRE = Pattern.compile("^(?:import|package)\\s.*;\\s*$", Pattern.MULTILINE);
 
-
 	private String sourceWithoutImports(String source) {
 		Matcher m = importRE.matcher(source);
 		int lastImportEnd = 0;
-		while(m.find()) {
+		while (m.find()) {
 			lastImportEnd = m.end();
-		};
+		}
 		//System.out.println(lastImportEnd);
 		return source.substring(lastImportEnd).trim();
 	}

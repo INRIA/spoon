@@ -1219,7 +1219,27 @@ public class PatternTest {
 				"         */"+nl+"" +
 				"        statements();"+nl+"" +
 				"    }"+nl+"" +
-				"}"+nl, p.toString());
+				"}"+nl, p.print(true));
+	}
+
+	@Test
+	public void testPatternToStringNoComments() {
+		//contract: Pattern can be printed to String without parameters
+		String nl = System.getProperty("line.separator");
+		Factory f = ModelUtils.build(
+				new File("./src/test/java/spoon/test/template/testclasses/replace/DPPSample1.java"),
+				new File("./src/test/java/spoon/test/template/testclasses/replace")
+			);
+		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
+		assertEquals("if (useStartKeyword()) {" + nl + 
+				"    printer().writeSpace().writeKeyword(startKeyword()).writeSpace();" + nl + 
+				"}" + nl + 
+				"try (final spoon.reflect.visitor.ListPrinter lp = elementPrinterHelper().createListPrinter(startPrefixSpace(), start(), startSuffixSpace(), nextPrefixSpace(), next(), nextSuffixSpace(), endPrefixSpace(), end())) {" + nl + 
+				"    for (java.lang.Object item : getIterable()) {" + nl + 
+				"        lp.printSeparatorIfAppropriate();" + nl + 
+				"        statements();" + nl + 
+				"    }" + nl + 
+				"}" + nl, p.print(false));
 	}
 
 	@Test
@@ -1569,6 +1589,34 @@ public class PatternTest {
 		for (int i = 0; i < expectedTypeMembers.size(); i++) {
 			assertSame(expectedTypeMembers.get(i), typeMembers.get(i));
 		}
+	}
+
+	@Test
+	public void testSubstituteExactElements() {
+		//contract: one can substitute exactly defined element
+		final Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.addInputResource("./src/test/java/spoon/test/template/testclasses/logger/Logger.java");
+
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+
+		final CtClass<?> aTargetType = launcher.getFactory().Class().get(Logger.class);
+		CtMethod tobeSubstititedMethod = aTargetType.getMethodsByName("enter").get(0);
+		Pattern pattern = PatternBuilder.create(aTargetType)
+			.configurePatternParameters(pb -> {
+				//substitute NAME of method
+				pb.parameter("methodName").byRole(CtRole.NAME, tobeSubstititedMethod);
+				//substitute Body of method
+				pb.parameter("methodBody").byElement(tobeSubstititedMethod.getBody());
+			}).build();
+		
+		List<Match> matches = pattern.getMatches(aTargetType);
+		assertEquals(1, matches.size());
+		Match match = matches.get(0);
+		assertSame(aTargetType, match.getMatchingElement());
+		assertEquals("enter", match.getParameters().getValue("methodName"));
+		assertSame(tobeSubstititedMethod.getBody(), match.getParameters().getValue("methodBody"));
 	}
 
 	private Map<String, Object> getMap(Match match, String name) {

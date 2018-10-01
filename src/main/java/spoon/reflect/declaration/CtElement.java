@@ -290,6 +290,8 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * @return the {@link CtRole} of the parent's attribute where this element is used.
+	 * It returns the primary role. For example ((CtMethod) method).getRoleInParent() returns {@link CtRole#TYPE_MEMBER}.
+	 * <br>
 	 * Returns null if parent doesn't contain this element as direct children or if this element has no parent.
 	 */
 	CtRole getRoleInParent();
