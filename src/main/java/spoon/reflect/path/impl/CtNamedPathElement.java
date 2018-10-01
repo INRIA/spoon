@@ -62,12 +62,9 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 	}
 
 	private boolean canBeRegExpPattern(String str) {
-		if (str.indexOf("()") >= 0) {
-			//this is acceptable by RegExp, but is in conflict with method signature
-			//and it makes no sense for regexp
-			return false;
-		}
-		return true;
+		//this is acceptable by RegExp, but is in conflict with method signature
+		//and it makes no sense for regexp
+		return !str.contains("()");
 	}
 
 	public String getPattern() {
