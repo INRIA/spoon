@@ -119,7 +119,7 @@ public class CompilationTest {
 
 		Class<?> aClass = urlClassLoader.loadClass("Simple");
 		Method m = aClass.getMethod("m");
-		Assert.assertEquals(42, m.invoke(aClass.newInstance()));
+		assertEquals(42, m.invoke(aClass.newInstance()));
 	}
 
 	@Test
