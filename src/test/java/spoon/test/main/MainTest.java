@@ -337,10 +337,10 @@ public class MainTest {
 				counterBiScan.scan++;
 				if (element == null) {
 					if (other != null) {
-						Assert.fail("element can't be null if other isn't null.");
+						fail("element can't be null if other isn't null.");
 					}
 				} else if (other == null) {
-					Assert.fail("other can't be null if element isn't null.");
+					fail("other can't be null if element isn't null.");
 				} else {
 					// contract: all elements have been cloned and are still equal
 					assertEquals(element, other);
@@ -433,7 +433,7 @@ public class MainTest {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if(firstStack == dummyException) {
-					Assert.fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily
@@ -449,7 +449,7 @@ public class MainTest {
 		
 		String report = problems.toString();
 		if (!report.isEmpty()) {
-			Assert.fail(report);
+			fail(report);
 		}
 	}
 
