@@ -61,8 +61,8 @@ public class QualifiedThisRefTest {
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
-		Assert.assertTrue(printer.getResult().contains("Object o = this"));
-		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
+		assertTrue(printer.getResult().contains("Object o = this"));
+		assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
 	}
 
 	@Test
