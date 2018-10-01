@@ -29,7 +29,7 @@ public class SourceFragmentCreator extends ChangeCollector {
 	@Override
 	protected void onChange(CtElement currentElement, CtRole role) {
 		if (!currentElement.isParentInitialized()) {
-			//parent is not initialized. It is just creation of an temporary element
+			//parent is not initialized. It is just creation of a temporary element
 			//ignore such "change"
 			return;
 		}
