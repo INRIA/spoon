@@ -82,7 +82,7 @@ public class ParentTest {
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
 		} catch (Exception e) {
-			Assert.fail();
+			fail();
 		}
 	}
 
