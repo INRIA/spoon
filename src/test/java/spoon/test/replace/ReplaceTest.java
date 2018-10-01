@@ -210,14 +210,14 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
+		assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
 
 		// replace with another type
 		CtField replacement = factory.Core().createField();
 		replacement.setSimpleName("i");
 		replacement.setType(factory.Type().createReference(double.class));
 		sample.getField("i").replace(replacement);
-		Assert.assertEquals(factory.Type().createReference(double.class), sample.getField("i").getType());
+		assertEquals(factory.Type().createReference(double.class), sample.getField("i").getType());
 
 		// replace with another name
 		replacement = factory.Core().createField();
@@ -226,7 +226,7 @@ public class ReplaceTest {
 		sample.getField("i").replace(replacement);
 		Assert.assertNull(sample.getField("i"));
 		Assert.assertNotNull(sample.getField("j"));
-		Assert.assertEquals(factory.Type().createReference(double.class), sample.getField("j").getType());
+		assertEquals(factory.Type().createReference(double.class), sample.getField("j").getType());
 	}
 
 	@Test
@@ -266,7 +266,7 @@ public class ReplaceTest {
 		Assert.assertNull(sample.getMethod("foo"));
 		Assert.assertNotNull(sample.getMethod("notfoo"));
 		Assert.assertNotNull(sample.getMethod("notfoo2"));
-		Assert.assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
+		assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
 	}
 
 	@Test
@@ -277,13 +277,13 @@ public class ReplaceTest {
 		CtVariable<?> var = sample.getBody().getStatement(0);
 
 		Assert.assertTrue(var.getDefaultExpression() instanceof CtLiteral);
-		Assert.assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
+		assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 		CtLiteral replacement = factory.Core().createLiteral();
 		replacement.setValue(42);
 		var.getDefaultExpression().replace(replacement);
 
-		Assert.assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
+		assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 	}
 
