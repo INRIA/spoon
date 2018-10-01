@@ -30,7 +30,10 @@ public class MavenLauncher extends Launcher {
 	private SpoonPom model;
 	private boolean forceRefresh = false;
 
-	public SpoonPom getPomModel() {
+	/**
+	 * @return SpoonPom corresponding to the pom file used by the launcher
+	 */
+	public SpoonPom getPomFile() {
 		return model;
 	}
 
