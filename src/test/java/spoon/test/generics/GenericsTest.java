@@ -67,7 +67,6 @@ import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
