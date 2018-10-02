@@ -25,7 +25,7 @@ public class LoopTest {
 
 	@Test
 	public void testAnnotationInForLoop() {
-		CtType<?> aFoo = ModelUtils.build(new File("./src/test/resources/spoon/test/loop/testclasses/")).Type().get("spoon.test.loop.testclasses.Foo");
+		CtType<?> aFoo = build(new File("./src/test/resources/spoon/test/loop/testclasses/")).Type().get("spoon.test.loop.testclasses.Foo");
 
 		CtFor aFor = aFoo.getMethod("m").getElements(new TypeFilter<>(CtFor.class)).get(0);
 		assertEquals(1, ((CtLocalVariable) aFor.getForInit().get(0)).getType().getAnnotations().size());
