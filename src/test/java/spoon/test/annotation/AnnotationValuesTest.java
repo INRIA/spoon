@@ -17,7 +17,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotationValues;
 import spoon.test.annotation.testclasses.BoundNumber;
-import spoon.testing.utils.ModelUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
