@@ -888,7 +888,7 @@ public class GenericsTest {
 	@Test
 	public void testTypeAdapted() throws Exception {
 		// contract: one can get the actual value of a generic type in a given context
-		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
+		CtClass<?> ctModel = (CtClass<?>) buildClass(ErasureModelA.class);
 		CtTypeParameter tpA = ctModel.getFormalCtTypeParameters().get(0);
 		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
 		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
@@ -1425,7 +1425,7 @@ public class GenericsTest {
 	@Test
 	public void testCannotAdaptTypeOfNonTypeScope() throws Exception {
 		//contract: ClassTypingContext doesn't fail on type parameters, which are defined out of the scope of ClassTypingContext
-		CtType<?> ctClass = ModelUtils.buildClass(OuterTypeParameter.class);
+		CtType<?> ctClass = buildClass(OuterTypeParameter.class);
 		//the method defines type parameter, which is used in super of local class
 		CtReturn<?> retStmt = (CtReturn<?>) ctClass.getMethodsByName("method").get(0).getBody().getStatements().get(0);
 		CtNewClass<?> newClassExpr = (CtNewClass<?>) retStmt.getReturnedExpression();
