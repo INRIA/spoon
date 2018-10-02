@@ -1,6 +1,5 @@
 package spoon.test.prettyprinter;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
