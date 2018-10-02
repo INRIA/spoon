@@ -104,7 +104,7 @@ public class APITest {
 				"-i", "src/test/resources/spoon/test/api/",
 				"-o", "fancy/fake/apitest" // we shouldn't write anything anyway
 		});
-		Assert.assertEquals(3, l.size());
+		assertEquals(3, l.size());
 	}
 
 	@Test

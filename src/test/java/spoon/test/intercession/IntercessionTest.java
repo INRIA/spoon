@@ -73,7 +73,7 @@ public class IntercessionTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtMethod<?> fooClone = foo.clone();
-		Assert.assertEquals(foo, fooClone);
+		assertEquals(foo, fooClone);
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
@@ -95,7 +95,7 @@ public class IntercessionTest {
 				.compile();
 		CtConstructor<?> foo = (CtConstructor<?>) clazz.getConstructors().toArray()[0];
 		CtConstructor<?> fooClone = foo.clone();
-		Assert.assertEquals(foo, fooClone);
+		assertEquals(foo, fooClone);
 
 		CtBlock<?> body = foo.getBody();
 

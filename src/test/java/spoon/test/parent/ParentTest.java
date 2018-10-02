@@ -82,7 +82,7 @@ public class ParentTest {
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
 		} catch (Exception e) {
-			Assert.fail();
+			fail();
 		}
 	}
 
@@ -214,7 +214,7 @@ public class ParentTest {
 	public static void checkParentContract(CtPackage pack) {
 		pack.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
-			Assert.assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
+			assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
 		});
 
 		// the scanner and the parent are in correspondence
