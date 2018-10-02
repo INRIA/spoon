@@ -35,7 +35,6 @@ import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.test.fieldaccesses.testclasses.MyClass;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 import java.util.logging.Logger;
