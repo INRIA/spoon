@@ -70,7 +70,7 @@ public class AnnotationValuesTest {
 
 	@Test
 	public void testCtAnnotationAPI() throws Exception {
-		Factory factory = ModelUtils.createFactory();
+		Factory factory = createFactory();
 		CtAnnotation<Annotation> annotation = factory.Core().createAnnotation();
 		annotation.addValue("integers", 7);
 
