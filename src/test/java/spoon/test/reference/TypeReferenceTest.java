@@ -35,7 +35,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
