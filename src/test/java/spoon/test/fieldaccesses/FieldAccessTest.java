@@ -338,7 +338,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testTypeOfFieldAccess() throws Exception {
-		CtType<Panini> aPanini = ModelUtils.buildClass(Panini.class);
+		CtType<Panini> aPanini = buildClass(Panini.class);
 		List<CtFieldAccess> fieldAccesses = aPanini.getMethod("prepare").getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, fieldAccesses.size());
 		assertNotNull(fieldAccesses.get(0).getType());
@@ -402,7 +402,7 @@ public class FieldAccessTest {
 	}
 	@Test
 	public void testFieldAccessAutoExplicit() throws Exception {
-		CtClass mouse = (CtClass)ModelUtils.buildClass(Mouse.class);
+		CtClass mouse = (CtClass) buildClass(Mouse.class);
 		CtMethod method = mouse.filterChildren((CtMethod m)->"meth1".equals(m.getSimpleName())).first();
 		
 		CtFieldReference ageFR = method.filterChildren((CtFieldReference fr)->"age".equals(fr.getSimpleName())).first();
