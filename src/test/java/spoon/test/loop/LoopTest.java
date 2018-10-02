@@ -12,7 +12,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.loop.testclasses.Condition;
 import spoon.test.loop.testclasses.Join;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 
