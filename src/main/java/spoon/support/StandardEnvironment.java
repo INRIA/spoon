@@ -96,13 +96,13 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks = false;
 
-	private transient  FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+	private transient FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
-	private transient  Charset encoding = Charset.defaultCharset();
+	private transient Charset encoding = Charset.defaultCharset();
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
-	private transient  OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+	private transient OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
 
