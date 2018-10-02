@@ -22,7 +22,6 @@ import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.test.reference.testclasses.Tortillas;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
