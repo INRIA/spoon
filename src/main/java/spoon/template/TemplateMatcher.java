@@ -44,11 +44,11 @@ public class TemplateMatcher implements Filter<CtElement> {
 	/**
 	 * Holds matches of template parameters name to matching values.
 	 * The values can be:
-	 * <li>
-	 * <ul>single CtElement
-	 * <ul>list or set of CtElements
-	 * <ul>any value of primitive attribute, like String, Enum value, number, ...
-	 * </li>
+	 * <ul>
+	 * <li>single CtElement</li>
+	 * <li>list or set of CtElements</li>
+	 * <li>any value of primitive attribute, like String, Enum value, number, ...</li>
+	 * </ul>
 	 */
 	private ImmutableMap matches;
 
