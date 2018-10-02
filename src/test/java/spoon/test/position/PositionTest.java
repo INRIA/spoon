@@ -63,7 +63,6 @@ import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
