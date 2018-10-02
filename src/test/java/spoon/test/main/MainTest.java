@@ -1,6 +1,5 @@
 package spoon.test.main;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
