@@ -212,7 +212,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		return processingStopped;
 	}
 
-	private void prefix(StringBuffer buffer, Level level) {
+	private void prefix(StringBuilder buffer, Level level) {
 		if (level == Level.ERROR) {
 			buffer.append("error: ");
 			errorCount++;
@@ -224,7 +224,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void report(Processor<?> processor, Level level, CtElement element, String message) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		prefix(buffer, level);
 
@@ -260,7 +260,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void report(Processor<?> processor, Level level, String message) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		prefix(buffer, level);
 		// Adding message
