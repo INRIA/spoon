@@ -17,6 +17,32 @@
 package spoon.support;
 
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import spoon.Launcher;
+import spoon.OutputType;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+import spoon.processing.FileGenerator;
+import spoon.processing.ProblemFixer;
+import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
+import spoon.processing.ProcessorProperties;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
+import spoon.support.modelobs.EmptyModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,32 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Supplier;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import spoon.Launcher;
-import spoon.OutputType;
-import spoon.SpoonException;
-import spoon.compiler.Environment;
-import spoon.compiler.InvalidClassPathException;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.modelobs.EmptyModelChangeListener;
-import spoon.support.modelobs.FineModelChangeListener;
-import spoon.processing.FileGenerator;
-import spoon.processing.ProblemFixer;
-import spoon.processing.ProcessingManager;
-import spoon.processing.Processor;
-import spoon.processing.ProcessorProperties;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.SpoonProgress;
 
 
 /**
