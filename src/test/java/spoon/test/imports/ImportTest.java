@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -1472,4 +1473,19 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
 
+	@Test
+	public void testImplicitEnumField() {
+		//contract: distinguish between `CtRole.NAME` and `NAME` enum field
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Vopice.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+
+		CtType element = launcher.getFactory().Class().getAll().get(0);
+		List<CtElement> statements = new CtPathStringBuilder().fromString("#typeMember#body#statement").evaluateOn(element);
+		assertEquals("NAME.toString()", statements.get(1).toString());
+		assertEquals("CtRole.NAME.toString()", statements.get(2).toString());
+	}
 }
