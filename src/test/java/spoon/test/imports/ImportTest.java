@@ -761,6 +761,7 @@ public class ImportTest {
 
 	@Test
 	public void testStaticImportOfEnumField() {
+		//contract: static import of enum field doesn't cause import of enum
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		String outputDir = "./target/spooned";
