@@ -57,8 +57,8 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	@Override
 	public Factory load(InputStream in) throws IOException {
-		try {
-			BufferedInputStream buffered = new BufferedInputStream(in, 2);
+		try (BufferedInputStream buffered = new BufferedInputStream(in, 2);
+			ObjectInputStream ois = new ObjectInputStream(in)) {
 
 			// Check if it is a GZIP
 			buffered.mark(2);
@@ -74,23 +74,20 @@ public class SerializationModelStreamer implements ModelStreamer {
 				in = buffered;
 			}
 
-			ObjectInputStream ois = new ObjectInputStream(in);
-			final Factory f = (Factory) ois.readObject();
+			final Factory factory = (Factory) ois.readObject();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory
-			f.createQuery(f.Module().getAllModules().toArray()).filterChildren(new Filter<CtElement>() {
+			factory.createQuery(factory.Module().getAllModules().toArray()).filterChildren(new Filter<CtElement>() {
 				@Override
 				public boolean matches(CtElement e) {
-					e.setFactory(f);
+					e.setFactory(factory);
 					return false;
 				}
 			}).list();
-			ois.close();
-			return f;
+			return factory;
 		} catch (ClassNotFoundException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 			throw new IOException(e.getMessage());
 		}
 	}
-
 }
