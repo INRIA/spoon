@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -47,6 +47,7 @@ public interface CtVariableReference<T> extends CtReference {
 	/**
 	 * Tries to get the declaration of the reference.
 	 */
+	@Override
 	@DerivedProperty
 	CtVariable<T> getDeclaration();
 

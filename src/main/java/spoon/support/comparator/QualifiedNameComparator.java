@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,6 +28,8 @@ import spoon.reflect.reference.CtReference;
 /** compares based on names (with a preference for qualified names if available) */
 public class QualifiedNameComparator implements Comparator<CtElement>, Serializable {
 	private static final long serialVersionUID = 1L;
+
+	public static final QualifiedNameComparator INSTANCE = new QualifiedNameComparator();
 
 	@Override
 	public int compare(CtElement o1, CtElement o2) {

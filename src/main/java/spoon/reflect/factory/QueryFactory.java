@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -47,6 +47,15 @@ public class QueryFactory extends SubFactory {
 	 */
 	public CtQuery createQuery(Object input) {
 		return new CtQueryImpl(input);
+	}
+
+	/**
+	 * Creates a bound query. Use directly
+	 * {@link CtQuery#forEach(spoon.reflect.visitor.chain.CtConsumer)}
+	 * or {@link CtQuery#list()} to evaluate the query
+	 */
+	public CtQuery createQuery(Iterable<?> inputs) {
+		return new CtQueryImpl().addInput(inputs);
 	}
 
 	/**

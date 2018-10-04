@@ -152,7 +152,7 @@ function parseCommitLog(version, callback) {
                 for (category in categories) {
                     var output = "";
                     if (category != "none") {
-                        output += "* **" + category + "**";
+                        output += "* " + category + "";
                     }
                     if (categories[category].length > 1) {
                         output += "\n";

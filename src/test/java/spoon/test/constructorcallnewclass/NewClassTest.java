@@ -20,6 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -41,7 +42,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassWithObjectClass() throws Exception {
+	public void testNewClassWithObjectClass() {
 		final CtNewClass<?> newClass = newClasses.get(0);
 		assertType(Object.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -51,7 +52,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassWithInterface() throws Exception {
+	public void testNewClassWithInterface() {
 		final CtNewClass<?> newClass = newClasses.get(1);
 		assertType(Foo.Bar.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -61,7 +62,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testNewClassWithInterfaceGeneric() throws Exception {
+	public void testNewClassWithInterfaceGeneric() {
 		final CtNewClass<?> newClass = newClasses.get(2);
 		assertType(Foo.Tacos.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -69,12 +70,12 @@ public class NewClassTest {
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperInterface(Foo.Tacos.class, newClass.getAnonymousClass());
 		CtTypeReference[] ctTypeReferences = newClass.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0]);
-		assertEquals("Super interface is typed by the class of the constructor", String.class,
+		assertSame("Super interface is typed by the class of the constructor", String.class,
 				ctTypeReferences[0].getActualTypeArguments().get(0).getActualClass());
 	}
 
 	@Test
-	public void testNewClassInterfaceWithParameters() throws Exception {
+	public void testNewClassInterfaceWithParameters() {
 		final CtNewClass<?> newClass = newClasses.get(3);
 		assertType(Foo.BarImpl.class, newClass);
 		assertIsConstructor(newClass.getExecutable());
@@ -102,12 +103,12 @@ public class NewClassTest {
 
 	private void assertSuperClass(Class<?> expected, CtClass<?> anonymousClass) {
 		assertEquals("There isn't a super interface if there is a super class", 0, anonymousClass.getSuperInterfaces().size());
-		assertEquals("There is a super class if there isn't a super interface", expected, anonymousClass.getSuperclass().getActualClass());
+		assertSame("There is a super class if there isn't a super interface", expected, anonymousClass.getSuperclass().getActualClass());
 	}
 
 	private void assertSuperInterface(Class<?> expected, CtClass<?> anonymousClass) {
 		assertNull("There isn't super class if there is a super interface", anonymousClass.getSuperclass());
-		assertEquals("There is a super interface if there isn't super class", expected, anonymousClass.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass());
+		assertSame("There is a super interface if there isn't super class", expected, anonymousClass.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass());
 	}
 
 	private void assertIsAnonymous(CtClass<?> anonymousClass) {
@@ -127,7 +128,7 @@ public class NewClassTest {
 	}
 
 	private void assertType(Class<?> typeExpected, CtNewClass<?> newClass) {
-		assertEquals("New class is typed by the class of the constructor", typeExpected, newClass.getType().getActualClass());
+		assertSame("New class is typed by the class of the constructor", typeExpected, newClass.getType().getActualClass());
 	}
 
 	@Test
@@ -146,7 +147,7 @@ public class NewClassTest {
 	}
 
 	@Test
-	public void testCtNewClassInNoClasspath() throws Exception {
+	public void testCtNewClassInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/new-class");
 		launcher.setSourceOutputDirectory("./target/new-class");

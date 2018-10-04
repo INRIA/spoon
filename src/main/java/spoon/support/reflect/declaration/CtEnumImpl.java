@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -25,7 +25,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
@@ -42,10 +41,10 @@ import static spoon.reflect.path.CtRole.VALUE;
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.VALUE)
+	@MetamodelPropertyField(role = VALUE)
 	private List<CtEnumValue<?>> enumValues = CtElementImpl.emptyList();
 
-	@MetamodelPropertyField(role = CtRole.VALUE)
+	@MetamodelPropertyField(role = VALUE)
 	private CtMethod<T[]> valuesMethod;
 
 	private CtMethod<T> valueOfMethod;
@@ -114,8 +113,12 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
+		if (enumValues == null) {
+			this.enumValues = emptyList();
+			return (C) this;
+		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
-		if (enumValues == null || enumValues.isEmpty()) {
+		if (enumValues.isEmpty()) {
 			this.enumValues = emptyList();
 			return (C) this;
 		}
@@ -132,7 +135,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		List<CtField<?>> result = new ArrayList<>();
 		result.addAll(getEnumValues());
 		result.addAll(super.getFields());
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -185,7 +188,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			valueOfMethod.addThrownType(
 				getFactory().Type().createReference(IllegalArgumentException.class));
 			valueOfMethod.setType(getReference());
-			factory.Method().createParameter(valuesMethod, factory.Type().STRING, "name");
+			factory.Method().createParameter(valueOfMethod, factory.Type().STRING, "name");
 		}
 		return valueOfMethod;
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -35,8 +35,7 @@ public class ListPrinter implements Closeable {
 	private final String end;
 	private boolean isFirst = true;
 
-	public ListPrinter(TokenWriter printerHelper, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
-		super();
+	public ListPrinter(TokenWriter printerHelper, boolean startPrefixSpace, String start, boolean startSuffixSpace, boolean nextPrefixSpace, String next, boolean nextSuffixSpace, boolean endPrefixSpace, String end) {
 		this.printerTokenWriter = printerHelper;
 		this.nextPrefixSpace = nextPrefixSpace;
 		this.separator = next;
@@ -44,7 +43,10 @@ public class ListPrinter implements Closeable {
 		this.endPrefixSpace = endPrefixSpace;
 		this.end = end;
 
-		if (start != null && start.length() > 0) {
+		if (startPrefixSpace) {
+			printerHelper.writeSpace();
+		}
+		if (start != null && !start.isEmpty()) {
 			printerTokenWriter.writeSeparator(start);
 		}
 		if (startSuffixSpace) {
@@ -68,7 +70,7 @@ public class ListPrinter implements Closeable {
 			if (nextPrefixSpace) {
 				printerTokenWriter.writeSpace();
 			}
-			if (separator != null && separator.length() > 0) {
+			if (separator != null && !separator.isEmpty()) {
 				printerTokenWriter.writeSeparator(separator);
 			}
 			if (nextSuffixSpace) {
@@ -82,7 +84,7 @@ public class ListPrinter implements Closeable {
 		if (endPrefixSpace) {
 			printerTokenWriter.writeSpace();
 		}
-		if (end != null && end.length() > 0) {
+		if (end != null && !end.isEmpty()) {
 			printerTokenWriter.writeSeparator(end);
 		}
 	}

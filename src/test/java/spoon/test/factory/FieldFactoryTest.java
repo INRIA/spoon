@@ -24,11 +24,11 @@ public class FieldFactoryTest {
 	@Test
 	public void testCreate() throws Exception {
 
-		CtClass<?> type = build("spoon.test", "SampleClass");
+		CtClass<?> type = build("spoon.test.testclasses", "SampleClass");
 		FieldFactory ff = type.getFactory().Field();
 		TypeFactory tf = type.getFactory().Type();
 
-		Set<ModifierKind> mods = new HashSet<ModifierKind>();
+		Set<ModifierKind> mods = new HashSet<>();
 		mods.add(ModifierKind.PRIVATE);
 		CtTypeReference<?> tref = tf.createReference(String.class);
 		ff.create(type,mods,tref,"name");
@@ -45,7 +45,7 @@ public class FieldFactoryTest {
 	@Test
 	public void testCreateFromSource() throws Exception {
 
-		CtClass<?> target = build("spoon.test", "SampleClass");
+		CtClass<?> target = build("spoon.test.testclasses", "SampleClass");
 		Factory factory = build(Foo.class, Bar.class, SuperClass.class);
 		final CtClass<Object> type = factory.Class().get(Foo.class);
 		CtField<?> source = type.getField("i");

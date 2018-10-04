@@ -17,7 +17,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotationValues;
 import spoon.test.annotation.testclasses.BoundNumber;
-import spoon.testing.utils.ModelUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -70,7 +69,7 @@ public class AnnotationValuesTest {
 
 	@Test
 	public void testCtAnnotationAPI() throws Exception {
-		Factory factory = ModelUtils.createFactory();
+		Factory factory = createFactory();
 		CtAnnotation<Annotation> annotation = factory.Core().createAnnotation();
 		annotation.addValue("integers", 7);
 
@@ -94,7 +93,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotationFactory() throws Exception {
+	public void testAnnotationFactory() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 
@@ -108,7 +107,7 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotateWithEnum() throws Exception {
+	public void testAnnotateWithEnum() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
 		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING, "field");
@@ -120,10 +119,11 @@ public class AnnotationValuesTest {
 	}
 
 	@Test
-	public void testAnnotationPrintAnnotation() throws Exception {
+	public void testAnnotationPrintAnnotation() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/printer-test/spoon/test/AnnotationSpecTest.java");
 		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(false); // avoid getting the comment for the equals
 		launcher.buildModel();
 
 		assertEquals(strCtClassOracle,
@@ -132,10 +132,11 @@ public class AnnotationValuesTest {
 
 	private static final String nl = System.lineSeparator();
 
-	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9, 8, 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA" +
-			", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(\"bar\")" +
-			", r = { java.lang.Float.class, java.lang.Double.class })" + nl +
-			"public class IsAnnotated {}";
+	private static final String strCtClassOracle = "@com.squareup.javapoet.AnnotationSpecTest.HasDefaultsAnnotation(o = com.squareup.javapoet.AnnotationSpecTest.Breakfast.PANCAKES, p = 1701, f = 11.1, m = { 9, 8, 1 }, l = java.lang.Override.class, j = @com.squareup.javapoet.AnnotationSpecTest.AnnotationA"
+			+ ", q = @com.squareup.javapoet.AnnotationSpecTest.AnnotationC(\"bar\")"
+			+ ", r = { java.lang.Float.class, java.lang.Double.class })"
+			+ nl
+			+ "public class IsAnnotated {}";
 
 	static class Request {
 		private static Request myself = new Request();

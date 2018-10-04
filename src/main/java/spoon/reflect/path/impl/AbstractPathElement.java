@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -29,6 +29,9 @@ import java.util.TreeMap;
  * Partial implementation for CtPathElement
  */
 public abstract class AbstractPathElement<P extends CtElement, T extends CtElement> implements CtPathElement<P, T> {
+	public static final String ARGUMENT_START = "[";
+	public static final String ARGUMENT_END = "]";
+	public static final String ARGUMENT_NAME_SEPARATOR = "=";
 
 	private Map<String, String> arguments = new TreeMap<>();
 
@@ -42,7 +45,7 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 		return (C) this;
 	}
 
-	Collection<CtElement> getChilds(CtElement element) {
+	Collection<CtElement> getChildren(CtElement element) {
 		final Collection<CtElement> elements = new ArrayList<>();
 		if (element != null) {
 			element.accept(new CtScanner() {
@@ -53,6 +56,14 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 			});
 		}
 		return elements;
+	}
+
+	/**
+	 * @deprecated since Spoon 7.1.0, please use {@link #getChildren(CtElement)}
+	 */
+	@Deprecated
+	Collection<CtElement> getChilds(CtElement element) {
+		return getChildren(element);
 	}
 
 	protected String getParamString() {

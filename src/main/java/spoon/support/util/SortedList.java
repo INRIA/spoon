@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,7 +28,6 @@ public class SortedList<E> extends LinkedList<E> {
 	Comparator<? super E> comparator;
 
 	public SortedList(Comparator<? super E> comparator) {
-		super();
 		this.comparator = comparator;
 	}
 
@@ -43,6 +42,11 @@ public class SortedList<E> extends LinkedList<E> {
 			}
 		}
 		return super.add(o);
+	}
+
+	@Override
+	public void add(int index, E element) {
+		throw new IllegalArgumentException("cannot force a position with a sorted list that has its own ordering");
 	}
 
 	@Override

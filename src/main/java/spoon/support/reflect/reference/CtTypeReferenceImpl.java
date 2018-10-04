@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -29,7 +29,6 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -41,13 +40,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.util.QualifiedNameBasedSortedSet;
-import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,17 +60,16 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.TYPE_ARGUMENT)
+	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
-	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
+	@MetamodelPropertyField(role = DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
+	@MetamodelPropertyField(role = PACKAGE_REF)
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -88,31 +82,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (!isPrimitive()) {
 			return this;
 		}
-		if (getSimpleName().equals("int")) {
+		if ("int".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Integer.class);
 		}
-		if (getSimpleName().equals("float")) {
+		if ("float".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Float.class);
 		}
-		if (getSimpleName().equals("long")) {
+		if ("long".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Long.class);
 		}
-		if (getSimpleName().equals("char")) {
+		if ("char".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Character.class);
 		}
-		if (getSimpleName().equals("double")) {
+		if ("double".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Double.class);
 		}
-		if (getSimpleName().equals("boolean")) {
+		if ("boolean".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Boolean.class);
 		}
-		if (getSimpleName().equals("short")) {
+		if ("short".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Short.class);
 		}
-		if (getSimpleName().equals("byte")) {
+		if ("byte".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Byte.class);
 		}
-		if (getSimpleName().equals("void")) {
+		if ("void".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Void.class);
 		}
 		return this;
@@ -157,7 +151,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			// creating a classloader on the fly is not the most efficient
 			// but it decreases the amount of state to maintain
 			// since getActualClass is only used in rare cases, that's OK.
-			return (Class<T>) getFactory().getEnvironment().getInputClassLoader().loadClass(getQualifiedName());
+			ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+			String qualifiedName = getQualifiedName();
+			return (Class<T>) classLoader.loadClass(qualifiedName);
 		} catch (Throwable e) {
 			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
 		}
@@ -185,7 +181,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (t != null) {
 			return t;
 		}
-		return getFactory().Type().get(getActualClass());
+		try {
+			return getFactory().Type().get(getActualClass());
+		} catch (SpoonClassNotFoundException e) {
+			// this only happens in noclasspath
+			return null;
+		}
 	}
 
 	@Override
@@ -337,45 +338,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getDeclaredFields() {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				return getDeclaredFieldReferences();
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return Collections.emptyList();
-			}
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredFields();
 		}
-	}
-
-	/**
-	 * Collects all field references of the declared class.
-	 *
-	 * @return collection of field references
-	 */
-	private Collection<CtFieldReference<?>> getDeclaredFieldReferences() {
-			Collection<CtFieldReference<?>> references = new ArrayList<>();
-			for (Field f : getDeclaredFields(getActualClass())) {
-				references.add(getFactory().Field().createReference(f));
-			}
-			if (getActualClass().isAnnotation()) {
-				for (Method m : getActualClass().getDeclaredMethods()) {
-					CtTypeReference<?> retRef = getFactory().Type().createReference(m.getReturnType());
-					CtFieldReference<?> fr = getFactory().Field().createReference(this, retRef, m.getName());
-					references.add(fr);
-				}
-			}
-			return references;
-	}
-
-	private Field[] getDeclaredFields(Class<?> cls) {
-		try {
-			return cls.getDeclaredFields();
-		} catch (Throwable e) {
-			throw new SpoonClassNotFoundException("cannot load fields of class: " + getQualifiedName(), e);
-		}
+		return Collections.emptyList();
 	}
 
 	private void handleParentNotFound(SpoonClassNotFoundException cnfe) {
@@ -384,7 +351,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getFactory().getEnvironment().getNoClasspath()) {
 			// should not be thrown in 'noClasspath' environment (#775)
 			Launcher.LOGGER.warn(msg);
-			return;
 		} else {
 			throw cnfe;
 		}
@@ -395,64 +361,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (name == null) {
 			return null;
 		}
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			try {
-				Collection<CtFieldReference<?>> fields = getDeclaredFieldReferences();
-				for (CtFieldReference<?> field : fields) {
-					if (name.equals(field.getSimpleName())) {
-						return field;
-					}
-				}
-			} catch (SpoonClassNotFoundException cnfe) {
-				handleParentNotFound(cnfe);
-				return null;
-			}
-			return null;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredField(name);
 		}
+		return null;
 	}
 
+	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
-		CtType<?> t = getDeclaration();
-		if (t == null) {
-			CtFieldReference<?> field = getDeclaredField(fieldName);
-			if (field != null) {
-				return field;
-			}
-			CtTypeReference<?> typeRef = getSuperclass();
-			if (typeRef != null) {
-				field = typeRef.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			Set<CtTypeReference<?>> ifaces = getSuperInterfaces();
-			for (CtTypeReference<?> iface : ifaces) {
-				field = iface.getDeclaredOrInheritedField(fieldName);
-				if (field != null) {
-					return field;
-				}
-			}
-			return field;
-		} else {
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getDeclaredOrInheritedField(fieldName);
 		}
+		return null;
 	}
 
 
 	@Override
 	public Collection<CtExecutableReference<?>> getDeclaredExecutables() {
-		CtType<T> t = getDeclaration();
+		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			try {
-				return RtHelper.getAllExecutables(getActualClass(), getFactory());
-			} catch (final SpoonClassNotFoundException e) {
-				if (getFactory().getEnvironment().getNoClasspath()) {
-					return Collections.emptyList();
-				}
-				throw e;
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return Collections.emptyList();
+			} else {
+				throw new SpoonException("Type not found " + getQualifiedName());
 			}
 		} else {
 			return t.getDeclaredExecutables();
@@ -461,11 +394,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Collection<CtFieldReference<?>> getAllFields() {
-		try {
-			CtType<?> t = getTypeDeclaration();
+		CtType<?> t = getTypeDeclaration();
+		if (t != null) {
 			return t.getAllFields();
-		} catch (SpoonClassNotFoundException cnfe) {
-			handleParentNotFound(cnfe);
+		} else {
 			return Collections.emptyList();
 		}
 	}
@@ -482,44 +414,36 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public Set<ModifierKind> getModifiers() {
-		CtType<T> t = getDeclaration();
+		CtType<T> t = getTypeDeclaration();
 		if (t != null) {
 			return t.getModifiers();
 		}
-		Class<T> c = getActualClass();
-		return RtHelper.getModifiers(c.getModifiers());
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			return Collections.emptySet();
+		}
+		throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 	}
 
 	@Override
 	public CtTypeReference<?> getSuperclass() {
-		try {
-			CtType<T> t = getTypeDeclaration();
-			if (t != null) {
-				return t.getSuperclass();
-			}
-		} catch (SpoonClassNotFoundException e) {
-			return null;
+		CtType<T> t = getTypeDeclaration();
+		if (t != null) {
+			return t.getSuperclass();
 		}
 		return null;
 	}
 
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
-		CtType<?> t = getDeclaration();
+		//we need a interface type references whose parent is connected to CtType, otherwise TypeParameterReferences cannot be resolved well
+		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
-			return t.getSuperInterfaces();
-		} else {
-			Class<?> c = getActualClass();
-			Class<?>[] sis = c.getInterfaces();
-			if ((sis != null) && (sis.length > 0)) {
-				Set<CtTypeReference<?>> set = new QualifiedNameBasedSortedSet<CtTypeReference<?>>();
-				for (Class<?> si : sis) {
-					set.add(getFactory().Type().createReference(si));
-				}
-				return set;
-			}
+			return Collections.unmodifiableSet(t.getSuperInterfaces());
 		}
-		return Collections.emptySet();
+		if (getFactory().getEnvironment().getNoClasspath()) {
+			return Collections.emptySet();
+		}
+		throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 	}
 
 	@Override
@@ -572,12 +496,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean isClass() {
 		CtType<T> t = getTypeDeclaration();
+
 		if (t == null) {
-			Class<?> clazz = getActualClass();
-			if (clazz.isEnum() || clazz.isInterface() || clazz.isAnnotation() || clazz.isArray() || clazz.isPrimitive()) {
+			if (getFactory().getEnvironment().getNoClasspath()) {
 				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
 			}
-			return true;
 		} else {
 			return t.isClass();
 		}
@@ -587,7 +512,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isInterface() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isInterface();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+			}
 		} else {
 			return t.isInterface();
 		}
@@ -597,7 +526,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isAnnotationType() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isAnnotation();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+			}
 		} else {
 			return t.isAnnotationType();
 		}
@@ -607,7 +540,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	public boolean isEnum() {
 		CtType<T> t = getTypeDeclaration();
 		if (t == null) {
-			return getActualClass().isEnum();
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				return false;
+			} else {
+				throw new SpoonClassNotFoundException(getQualifiedName() + " cannot be found");
+			}
 		} else {
 			return t.isEnum();
 		}
@@ -616,6 +553,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
 		try {
+			if (type.getTypeDeclaration() == null) {
+				return true;
+			}
 			Set<ModifierKind> modifiers = type.getModifiers();
 
 			if (modifiers.contains(ModifierKind.PUBLIC)) {
@@ -686,7 +626,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			return declType;
 		}
 		CtTypeReference<?> contextTypeRef = contextType.getReference();
-		if (contextType != null && contextTypeRef.canAccess(declType) == false) {
+		if (contextTypeRef != null && contextTypeRef.canAccess(declType) == false) {
 			//search for visible declaring type
 			CtTypeReference<?> visibleDeclType = null;
 			CtTypeReference<?> type = contextTypeRef;
@@ -769,7 +709,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 	}
 
-	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
+	@MetamodelPropertyField(role = IS_SHADOW)
 	boolean isShadow;
 
 	@Override
@@ -808,6 +748,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 		}
 
+		if (parent instanceof CtFormalTypeDeclarer) {
+			CtFormalTypeDeclarer exec = (CtFormalTypeDeclarer) parent;
+			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
+				for (CtTypeParameter typeParam : exec.getFormalCtTypeParameters()) {
+					if (typeParam.getSimpleName().equals(getSimpleName())) {
+						return typeParam;
+					}
+				}
+				return null;
+			}
+		}
 		return null;
 	}
 

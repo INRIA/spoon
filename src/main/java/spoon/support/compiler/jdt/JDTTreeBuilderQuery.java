@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -108,14 +108,12 @@ class JDTTreeBuilderQuery {
 	 * @return qualified name of the expected type.
 	 */
 	static String searchType(String typeName, ImportReference[] imports) {
-		if (typeName == null) {
-			return null;
-		} else if (imports == null) {
+		if (typeName == null || imports == null) {
 			return null;
 		}
 		for (ImportReference anImport : imports) {
 			final String importType = CharOperation.charToString(anImport.getImportName()[anImport.getImportName().length - 1]);
-			if (importType != null && importType.equals(typeName)) {
+			if (typeName.equals(importType)) {
 				return CharOperation.toString(anImport.getImportName());
 			}
 		}
@@ -169,22 +167,37 @@ class JDTTreeBuilderQuery {
 		if (a.resolvedType == null) {
 			return false;
 		}
+
+		// JLS says:
+		//  "If an annotation of type java.lang.annotation.Target is not present on the declaration of an annotation type T,
+		// then T is applicable in all declaration contexts except type parameter declarations, and in no type contexts."
+		boolean shouldTargetAnnotationExists = (elementType == CtAnnotatedElementType.TYPE_USE || elementType == CtAnnotatedElementType.TYPE_PARAMETER);
+		boolean targetAnnotationExists = false;
+
 		for (AnnotationBinding annotation : a.resolvedType.getAnnotations()) {
 			if (!"Target".equals(CharOperation.charToString(annotation.getAnnotationType().sourceName()))) {
 				continue;
 			}
+			targetAnnotationExists = true;
 			Object value = annotation.getElementValuePairs()[0].value;
-			if (value == null || !value.getClass().isArray()) {
+			if (value == null) {
 				continue;
 			}
-			Object[] fields = (Object[]) value;
-			for (Object field : fields) {
-				if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
-					return true;
+			if (value instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) value).name))) {
+				return true;
+			}
+			if (value.getClass().isArray()) {
+				Object[] fields = (Object[]) value;
+				for (Object field : fields) {
+					if (field instanceof FieldBinding && elementType.name().equals(CharOperation.charToString(((FieldBinding) field).name))) {
+						return true;
+					}
 				}
 			}
 		}
-		return false;
+
+		// true here means that the target annotation is not mandatory and we have not found it
+		return !shouldTargetAnnotationExists && !targetAnnotationExists;
 	}
 
 	/**

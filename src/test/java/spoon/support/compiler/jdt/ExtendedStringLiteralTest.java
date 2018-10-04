@@ -13,6 +13,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.support.compiler.jdt.testclasses.ExtendedStringLiteralTestClass;
 
 public class ExtendedStringLiteralTest {
 
@@ -44,9 +45,7 @@ public class ExtendedStringLiteralTest {
 										environment, getHandlingPolicy(), compilerOptions,
 										this.jdtCompiler.requestor, getProblemFactory(), this.out,
 										null);
-								CompilationUnitDeclaration[] units = treeBuilderCompiler
-										.buildUnits(getCompilationUnits());
-								return units;
+								return treeBuilderCompiler.buildUnits(getCompilationUnits());
 							}
 						};
 					}
@@ -55,11 +54,11 @@ public class ExtendedStringLiteralTest {
 		};
 		SpoonModelBuilder comp = launcher.createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources(
-				"./src/test/java/"+ExtendedStringLiteralTestClass.class.getCanonicalName().replace('.', '/')+".java"));
+				"./src/test/java/" + ExtendedStringLiteralTestClass.class.getCanonicalName().replace('.', '/') + ".java"));
 		comp.build();
 
 		CtClass<?> cl =
-			comp.getFactory().Package().get("spoon.support.compiler.jdt").
+			comp.getFactory().Package().get("spoon.support.compiler.jdt.testclasses").
 			getType("ExtendedStringLiteralTestClass");
 		CtField<?> f = cl.getField("extendedStringLiteral");
 		CtExpression<?> de = f.getDefaultExpression();

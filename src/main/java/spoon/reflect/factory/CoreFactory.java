@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -67,6 +67,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -80,9 +81,13 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -90,6 +95,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -205,6 +212,11 @@ public interface CoreFactory {
 	 * Creates a constructor.
 	 */
 	<T> CtConstructor<T> createConstructor();
+
+	/**
+	 * Creates an invisible array constructor.
+	 */
+	<T> CtConstructor<T> createInvisibleArrayConstructor();
 
 	/**
 	 * Creates a <code>continue</code> statement.
@@ -389,6 +401,18 @@ public interface CoreFactory {
 			CompilationUnit compilationUnit,
 			int startSource, int end, int[] lineSeparatorPositions);
 
+	/** Creates a source position that points to the given compilation unit */
+	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+
+	/**
+	 * Creates a compound source position.
+	 */
+	CompoundSourcePosition createCompoundSourcePosition(
+			CompilationUnit compilationUnit,
+			int startSource, int end,
+			int declarationStart, int declarationEnd,
+			int[] lineSeparatorPositions);
+
 	/**
 	 * Creates a declaration source position.
 	 */
@@ -552,4 +576,22 @@ public interface CoreFactory {
 	 * Create a wildcard reference to a type member, used in a static import
 	 */
 	CtTypeReference createWildcardStaticTypeMemberReference();
+
+	/** Creates a Java 9 module */
+	CtModule createModule();
+
+	/** Creates a reference to a Java 9 module */
+	CtModuleReference createModuleReference();
+
+	/** Creates a "requires" directive for a Java 9 module file */
+	CtModuleRequirement createModuleRequirement();
+
+	/** Creates a "export" directive for a Java 9 module file */
+	CtPackageExport createPackageExport();
+
+	/** Creates a "provides" directive for a Java 9 module file */
+	CtProvidedService createProvidedService();
+
+	/** Creates a "uses" directive for a Java 9 module file */
+	CtUsedService createUsedService();
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -57,7 +57,7 @@ public class FieldReferenceFunction implements CtConsumableFunction<CtElement> {
 			} else {
 				throw new SpoonException("The input of FieldReferenceFunction must be a CtField but is " + fieldOrScope.getClass().getSimpleName());
 			}
-			scope = field.getFactory().getModel().getRootPackage();
+			scope = field.getFactory().getModel().getUnnamedModule();
 		} else {
 			scope = fieldOrScope;
 		}

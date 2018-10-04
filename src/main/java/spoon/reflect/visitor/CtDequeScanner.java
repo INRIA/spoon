@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -35,11 +35,12 @@ public class CtDequeScanner extends CtScanner {
 	/**
 	 * The stack of elements.
 	 */
-	protected Deque<CtElement> elementsDeque = new ArrayDeque<CtElement>();
+	protected Deque<CtElement> elementsDeque = new ArrayDeque<>();
 
 	/**
 	 * Pops the element.
 	 */
+	@Override
 	protected void exit(CtElement e) {
 		CtElement ret = elementsDeque.pop();
 		if (ret != e) {
@@ -51,6 +52,7 @@ public class CtDequeScanner extends CtScanner {
 	/**
 	 * Pushes the element.
 	 */
+	@Override
 	protected void enter(CtElement e) {
 		elementsDeque.push(e);
 		super.enter(e);

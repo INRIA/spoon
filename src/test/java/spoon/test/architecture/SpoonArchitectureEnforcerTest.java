@@ -4,8 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -20,11 +22,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.metamodel.SpoonMetaModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,12 +33,12 @@ import java.util.TreeSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.metamodel.MMTypeKind.ABSTRACT;
+import static spoon.metamodel.ConceptKind.ABSTRACT;
 
 public class SpoonArchitectureEnforcerTest {
 
 	@Test
-	public void statelessFactory() throws Exception {
+	public void statelessFactory() {
 		// the factories must be stateless
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/main/java/spoon/reflect/factory");
@@ -49,26 +49,29 @@ public class SpoonArchitectureEnforcerTest {
 			public boolean matches(CtType element) {
 				return super.matches(element)
 						&& element.getSimpleName().contains("Factory");
-			};
+			}
 		})) {
 			for (Object o : t.getFields()) {
-				CtField f=(CtField)o;
-				if (f.getSimpleName().equals("factory")) { continue; }
-				if (f.hasModifier(ModifierKind.FINAL) || f.hasModifier(ModifierKind.TRANSIENT) ) { continue; }
+				CtField f = (CtField) o;
+				if ("factory".equals(f.getSimpleName())) {
+					continue;
+				}
+				if (f.hasModifier(ModifierKind.FINAL) || f.hasModifier(ModifierKind.TRANSIENT)) {
+					continue;
+				}
 
 				fail("architectural constraint: a factory must be stateless");
 			}
 		}
-
 	}
 
 	@Test
-	public void testFactorySubFactory() throws Exception {
+	public void testFactorySubFactory() {
 		// contract:: all subfactory methods must also be in the main factory
 		// this is very important for usability and discoverability
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/factory");
-		class SanityCheck { int val = 0; };
+		class SanityCheck { int val = 0; }
 		SanityCheck sanityCheck = new SanityCheck();
 		launcher.addProcessor(new AbstractManualProcessor() {
 			@Override
@@ -78,28 +81,38 @@ public class SpoonArchitectureEnforcerTest {
 				CtInterface itf = getFactory().Interface().create("MegaFactoryItf");
 				CtClass impl = getFactory().Class().create("MegaFactory");
 				for (CtType<?> t : factoryPackage.getTypes()) {
-					if (t.getSimpleName().startsWith("Mega")) continue; //
+					if (t.getSimpleName().startsWith("Mega")) {
+						continue;
+					}
+
 					for (CtMethod<?> m : t.getMethods()) {
 						// we check only public methods
-						if (m.hasModifier(ModifierKind.PUBLIC) == false) continue;
+						if (m.hasModifier(ModifierKind.PUBLIC) == false) {
+							continue;
+						}
 						// we only consider factory methods
-						if (!m.getSimpleName().startsWith("create")) continue;
+						if (!m.getSimpleName().startsWith("create")) {
+							continue;
+						}
 
 						// too generic, what should we create??
-						if (m.getSimpleName().equals("create")) {
+						if ("create".equals(m.getSimpleName())) {
 							String simpleNameType = m.getType().getSimpleName().replace("Ct", "");
 							CtMethod method = m.clone();
 
-							method.setSimpleName("create"+simpleNameType);
-							assertTrue(method.getSignature() + " (from "+t.getQualifiedName()+") is not present in the main factory", factoryImpl.hasMethod(method));
+							method.setSimpleName("create" + simpleNameType);
+							assertTrue(method.getSignature() + " (from " + t.getQualifiedName() + ") is not present in the main factory", factoryImpl.hasMethod(method));
 							continue;
 						}
 
 						// too generic, is it a fieldref? an execref? etc
-						if (m.getSimpleName().equals("createReference"))
+						if ("createReference".equals(m.getSimpleName())) {
 							continue;
+						}
 
-						if (m.getModifiers().contains(ModifierKind.ABSTRACT)) continue;
+						if (m.getModifiers().contains(ModifierKind.ABSTRACT)) {
+							continue;
+						}
 
 						sanityCheck.val++;
 
@@ -113,17 +126,60 @@ public class SpoonArchitectureEnforcerTest {
 		assertTrue(sanityCheck.val > 100);
 	}
 
+	// this test contains all the architectural rules that are valid for the whole src/main/java
+	// we put them in the same test in order to only build the full model once
 	@Test
-	public void noTreeSetInSpoon() throws Exception {
-		// we don't use TreeSet, because they implicitly depend on Comparable (no static check, only dynamic checks)
-		SpoonAPI spoon = new Launcher();
+	public void testSrcMainJava() {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.addInputResource("src/main/java/");
-		spoon.buildModel();
 
+		// contract: all non-trivial public methods should be documented with proper API Javadoc
+		spoon.buildModel();
+		List<String> notDocumented = new ArrayList<>();
+		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
+
+			// now we see whether this should be documented
+			if (method.hasModifier(ModifierKind.PUBLIC) // public methods should be documented
+					&& !method.getSimpleName().startsWith("get") // all kinds of setters can be undocumented
+					&& !method.getSimpleName().startsWith("set")
+					&& !method.getSimpleName().startsWith("is")
+					&& !method.getSimpleName().startsWith("add")
+					&& !method.getSimpleName().startsWith("remove")
+					&& method.getTopDefinitions().isEmpty() // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+					&& (
+							method.hasModifier(ModifierKind.ABSTRACT) // all interface methods and abstract class methods must be documented
+
+							// GOOD FIRST ISSUE
+							// ideally we want that **all** public methods are documented
+							// so far, we have this arbitrary limit in the condition below (35)
+							// because it's a huge task to document everything at once
+							// so to contribute to Spoon, what you can do is
+							// 1) you lower the threshold (eg 33)
+							// 2) you run test `documentedTest`, it will output a list on undocumented methods
+							// 3) you document those methods
+							// 4) you run the test again to check that it passes
+							// 4) you commit your changes and create the corresponding pull requests
+							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 35  // means that only large methods must be documented
+			)) {
+
+				// OK it should be properly documented
+
+				// is it really well documented?
+				if (method.getDocComment().length() <= 15) { // the Javadoc must be at least at least 15 characters (still pretty short...)
+					notDocumented.add(method.getParent(CtType.class).getQualifiedName() + "#" + method.getSignature());
+				}
+			}
+		}
+		if (!notDocumented.isEmpty()) {
+			fail(notDocumented.size() + " public methods should be documented with proper API documentation: \n" + StringUtils.join(notDocumented, "\n"));
+		}
+
+		// contract: Spoon's code never uses TreeSet constructor, because they implicitly depend on Comparable (no static check, only dynamic checks)
 		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
-				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().size() == 0;
+				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().isEmpty();
 			}
 		}).list();
 
@@ -131,9 +187,9 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void metamodelPackageRule() throws Exception {
+	public void metamodelPackageRule() {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
-		List<String> exceptions = Collections.singletonList("CtWildcardStaticTypeMemberReferenceImpl");
+		List<String> exceptions = Arrays.asList("CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructorImpl");
 
 		SpoonAPI implementations = new Launcher();
 		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
@@ -158,9 +214,8 @@ public class SpoonArchitectureEnforcerTest {
 		}
 	}
 
-
 	@Test
-	public void testGoodTestClassNames() throws Exception {
+	public void testGoodTestClassNames() {
 		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
 		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
 		// "**/Test*.java" and "**/*Test.java"
@@ -175,23 +230,45 @@ public class SpoonArchitectureEnforcerTest {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
 			}
 		})) {
-			assertTrue("naming contract violated for "+meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
+			assertTrue("naming contract violated for " + meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
 		}
 
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
 		// otherwise, intellij automatically selects the junit3 runner, finds nothing
 		// and crashes with a dirty exception
-		assertEquals(0, spoon.getModel().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class){
+		assertEquals(0, spoon.getModel().getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference element) {
 				CtMethod parent = element.getParent(CtMethod.class);
 				return "junit.framework.TestCase".equals(element.getQualifiedName());
 			}
 		}).size());
+
+		// contract: all public methods of those classes are properly tested in a JUnit test
+//		List<String> l = new ArrayList<>();
+//		l.add("spoon.pattern.PatternBuilder");
+//		l.add("spoon.pattern.Pattern");
+//		List<String> errorsMethods = new ArrayList<>();
+//		for (String klass : l) {
+//			CtType<?> ctType = spoon.getFactory().Type().get(Class.forName(klass));
+//			for (CtMethod m : ctType.getMethods()) {
+//				if (!m.hasModifier(ModifierKind.PUBLIC)) continue;
+//
+//				if (spoon.getModel().getElements(new Filter<CtExecutableReference>() {
+//					@Override
+//					public boolean matches(CtExecutableReference element) {
+//						return element.getExecutableDeclaration() == m;
+//					}
+//				}).size() == 0) {
+//					errorsMethods.add(klass+"#"+m.getSimpleName());
+//				}
+//			}
+//		}
+//		assertTrue("untested public methods: "+errorsMethods.toString(), errorsMethods.size()==0);
 	}
 
 	@Test
-	public void testStaticClasses() throws Exception {
+	public void testStaticClasses() {
 		// contract: helper classes only have static methods and a private constructor
 
 //		spoon.compiler.SpoonResourceHelper
@@ -213,11 +290,11 @@ public class SpoonArchitectureEnforcerTest {
 		for (CtClass<?> klass : spoon.getModel().getElements(new TypeFilter<CtClass>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass element) {
-				return element.getSuperclass() == null && super.matches(element) && element.getMethods().size()>0
-						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch( x -> x.hasModifier(ModifierKind.STATIC));
+				return element.getSuperclass() == null && super.matches(element) && !element.getMethods().isEmpty()
+						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.STATIC));
 			}
 		})) {
-			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
+			assertTrue("Utility class " + klass.getQualifiedName() + " is missing private constructor", klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
 		}
 	}
 
@@ -239,9 +316,9 @@ public class SpoonArchitectureEnforcerTest {
 
 		List<String> missingMethods = new ArrayList<>();
 
-		new SpoonMetaModel(interfaces.getFactory()).getMMTypes().forEach(mmType -> {
-			if (mmType.getKind() == ABSTRACT && mmType.getModelInterface() != null) {
-				CtInterface abstractIface = mmType.getModelInterface();
+		Metamodel.getInstance().getConcepts().forEach(mmConcept -> {
+			if (mmConcept.getKind() == ABSTRACT && mmConcept.getMetamodelInterface() != null) {
+				CtInterface abstractIface = mmConcept.getMetamodelInterface();
 				String methodName = "scan" + abstractIface.getSimpleName();
 				if (ctScanner.getMethodsByName(methodName).isEmpty()) {
 					missingMethods.add(methodName);
@@ -253,18 +330,25 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testSpecPackage() throws Exception {
+	public void testSpecPackage() {
 		// contract: when a pull-request introduces a new package, it is made explicit during code review
 		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
 
 		Set<String> officialPackages = new TreeSet<>();
 		officialPackages.add("spoon.compiler.builder");
 		officialPackages.add("spoon.compiler");
-		officialPackages.add("spoon.experimental.modelobs.action");
-		officialPackages.add("spoon.experimental.modelobs.context");
-		officialPackages.add("spoon.experimental.modelobs");
+		officialPackages.add("spoon.decompiler");
+		officialPackages.add("spoon.support.modelobs.action");
+		officialPackages.add("spoon.support.modelobs.context");
+		officialPackages.add("spoon.support.modelobs");
 		officialPackages.add("spoon.experimental");
 		officialPackages.add("spoon.legacy");
+		officialPackages.add("spoon.metamodel");
+		officialPackages.add("spoon.pattern");
+		officialPackages.add("spoon.pattern.internal");
+		officialPackages.add("spoon.pattern.internal.matcher");
+		officialPackages.add("spoon.pattern.internal.node");
+		officialPackages.add("spoon.pattern.internal.parameter");
 		officialPackages.add("spoon.processing");
 		officialPackages.add("spoon.refactoring");
 		officialPackages.add("spoon.reflect.annotations");
@@ -286,6 +370,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");
 		officialPackages.add("spoon.support.gui");
+		officialPackages.add("spoon.support.sniper");
+		officialPackages.add("spoon.support.sniper.internal");
 		officialPackages.add("spoon.support.reflect.code");
 		officialPackages.add("spoon.support.reflect.cu.position");
 		officialPackages.add("spoon.support.reflect.cu");
@@ -297,6 +383,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.reflect");
 		officialPackages.add("spoon.support.template");
 		officialPackages.add("spoon.support.util");
+		officialPackages.add("spoon.support.util.internal");
 		officialPackages.add("spoon.support.visitor.clone");
 		officialPackages.add("spoon.support.visitor.equals");
 		officialPackages.add("spoon.support.visitor.java.internal");
@@ -325,19 +412,18 @@ public class SpoonArchitectureEnforcerTest {
 		assertSetEquals("you have created a new package or removed an existing one, please declare it explicitly in SpoonArchitectureEnforcerTest#testSpecPackage", officialPackages, currentPackages);
 	}
 
-	private static void assertSetEquals(String msg, Set<?> set1, Set<?> set2){
-		if(set1 == null || set2 ==null){
+	private static void assertSetEquals(String msg, Set<?> set1, Set<?> set2) {
+		if (set1 == null || set2 == null) {
 			throw new IllegalArgumentException();
 		}
 
-		if(set1.size() != set2.size()){
-			throw new AssertionError(msg+"\n\nDetails: "+computeDifference(set1, set2));
+		if (set1.size() != set2.size()) {
+			throw new AssertionError(msg + "\n\nDetails: " + computeDifference(set1, set2));
 		}
 
 		if (!set1.containsAll(set2)) {
-			throw new AssertionError(msg+"\n\nDetails: "+computeDifference(set1, set2));
+			throw new AssertionError(msg + "\n\nDetails: " + computeDifference(set1, set2));
 		}
-
 	}
 
 	private static String computeDifference(Set<?> set1, Set<?> set2) {
@@ -345,14 +431,14 @@ public class SpoonArchitectureEnforcerTest {
 
 		for (Object o : set1) {
 			if (!set2.contains(o)) {
-				results.add("Missing package "+o+" in computed set");
+				results.add("Missing package " + o + " in computed set");
 			} else {
 				set2.remove(o);
 			}
 		}
 
 		for (Object o : set2) {
-			results.add("Package "+o+" presents in computed but not expected set.");
+			results.add("Package " + o + " presents in computed but not expected set.");
 		}
 		return StringUtils.join(results, "\n");
 	}

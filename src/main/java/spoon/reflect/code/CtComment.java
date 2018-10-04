@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -80,4 +80,7 @@ public interface CtComment extends CtStatement {
 
 	@Override
 	CtComment clone();
+
+	/** Utility method to for casting the object, throws an exception if not of the correct type */
+	CtJavaDoc asJavaDoc();
 }

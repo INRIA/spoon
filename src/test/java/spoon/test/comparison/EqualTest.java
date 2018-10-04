@@ -12,17 +12,20 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.visitor.equals.EqualsVisitor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 public class EqualTest {
 
 	@Test
-	public void testEqualsEmptyException() throws Exception {
+	public void testEqualsEmptyException() {
 
 		Factory factory = new Launcher().createFactory();
 
@@ -47,27 +50,24 @@ public class EqualTest {
 
 		CtLiteral<?> argument1 = (CtLiteral<?>) invo.getArguments().get(0);
 
-		assertEquals(realParam1 , argument1.toString());
+		assertEquals(realParam1, argument1.toString());
 
 
 		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
 
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 
-		assertEquals(realParam1 , returnExp.toString() );
+		assertEquals(realParam1, returnExp.toString());
 
-		try{
+		try {
 			assertEquals(argument1, returnExp);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
-
 	}
 
 	@Test
-	public void testEqualsComment() throws Exception {
+	public void testEqualsComment() {
 		Factory factory = new Launcher().createFactory();
 		CtLocalVariable<?> var = factory.Code().createCodeSnippetStatement("int i=0").compile();
 		CtLocalVariable<?> var2 = var.clone();
@@ -77,7 +77,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsMultitype() throws Exception {
+	public void testEqualsMultitype() {
 		Factory factory = new Launcher().createFactory();
 		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
 		CtTry var2 = var.clone();
@@ -89,11 +89,27 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsActualTypeRef() throws Exception {
+	public void testEqualsActualTypeRef() {
 		// contract: actual type refs are part of the identity
 		Factory factory = new Launcher().createFactory();
 		CtLocalVariable var = factory.Code().createCodeSnippetStatement("java.util.List<String> l ").compile();
 		CtLocalVariable var2 = factory.Code().createCodeSnippetStatement("java.util.List<Object> l ").compile();
 		assertNotEquals(var2, var);
+	}
+
+	@Test
+	public void testEqualsDetails() {
+		Factory factory = new Launcher().createFactory();
+		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
+		CtTry var2 = var.clone();
+		assertEquals(2, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
+		// removing a multitype
+		var2.getCatchers().get(0).getParameter().getMultiTypes().remove(0);
+		assertEquals(1, var2.getCatchers().get(0).getParameter().getMultiTypes().size());
+		EqualsVisitor ev = new EqualsVisitor();
+		assertFalse(ev.checkEquals(var2, var));
+		assertSame(var2.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualElement());
+		assertSame(var.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualOther());
+		assertSame(CtRole.MULTI_TYPE, ev.getNotEqualRole());
 	}
 }

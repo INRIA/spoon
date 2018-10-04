@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
+import spoon.metamodel.MMMethod;
+import spoon.metamodel.MMMethodKind;
+import spoon.metamodel.MetamodelProperty;
+import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.declaration.CtClass;
@@ -39,28 +43,24 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.template.Substitution;
-import spoon.test.metamodel.MMField;
-import spoon.test.metamodel.MMMethod;
-import spoon.test.metamodel.MMMethodKind;
-import spoon.test.metamodel.SpoonMetaModel;
 
 public class RoleHandlersGenerator extends AbstractManualProcessor {
 	public static final String TARGET_PACKAGE = "spoon.reflect.meta.impl";
 
 	// Class[] helperIfaces = new Class[]{CtBodyHolder.class,
 	// CtTypeInformation.class, CtNamedElement.class};
-	Map<String, MMField> methodsByTypeRoleHandler = new HashMap<>();
+	Map<String, MetamodelProperty> methodsByTypeRoleHandler = new HashMap<>();
 
 	@Override
 	public void process() {
-		SpoonMetaModel metaModel = new SpoonMetaModel(getFactory());
+		Metamodel metaModel = Metamodel.getInstance();
 
 		//all root super MMFields
-		List<MMField> superFields = new ArrayList<>();
+		List<MetamodelProperty> superFields = new ArrayList<>();
 
-		metaModel.getMMTypes().forEach(mmType -> {
-			mmType.getRole2field().forEach((role, rim) -> {
-				addUniqueObject(superFields, rim.getRootSuperField());
+		metaModel.getConcepts().forEach(mmConcept -> {
+			mmConcept.getRoleToProperty().forEach((role, rim) -> {
+				addUniqueObject(superFields, rim.getSuperProperty());
 			});
 		});
 
@@ -69,12 +69,12 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			if (d != 0) {
 				return d;
 			}
-			return a.getOwnerType().getName().compareTo(b.getOwnerType().getName());
+			return a.getOwner().getName().compareTo(b.getOwner().getName());
 		});
 		PrinterHelper concept = new PrinterHelper(getFactory().getEnvironment());
 		superFields.forEach(mmField -> {
-			concept.write(mmField.getOwnerType().getName() + " CtRole." + mmField.getRole().name()).writeln().incTab()
-			.write("ItemType: ").write(mmField.getValueType().toString()).writeln();
+			concept.write(mmField.getOwner().getName() + " CtRole." + mmField.getRole().name()).writeln().incTab()
+			.write("ItemType: ").write(mmField.getTypeOfField().toString()).writeln();
 			for (MMMethodKind mk : MMMethodKind.values()) {
 				MMMethod mmMethod = mmField.getMethod(mk);
 				if (mmMethod != null) {
@@ -105,11 +105,15 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 			}
 			params.put("$Role$", getFactory().Type().createReference(CtRole.class));
 			params.put("ROLE", rim.getRole().name());
-			params.put("$TargetType$", rim.getOwnerType().getModelInterface().getReference());
-//			params.put("AbstractHandler", getFactory().Type().createReference("spoon.reflect.meta.impl.AbstractRoleHandler"));
-			params.put("AbstractHandler", getRoleHandlerSuperTypeQName(rim));
-			params.put("Node", rim.getOwnerType().getModelInterface().getReference());
-			params.put("ValueType", fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getValueType() : rim.getItemValueType()));
+			params.put("$TargetType$", rim.getOwner().getMetamodelInterface().getReference());
+			CtTypeReference<?> nodeRef = rim.getOwner().getMetamodelInterface().getReference();
+			CtTypeReference<?> valueTypeRef = fixMainValueType(getRoleHandlerSuperTypeQName(rim).endsWith("SingleHandler") ? rim.getTypeOfField() : rim.getTypeofItems());
+			CtTypeReference<?> handlerSuperClassRef = getFactory().Type().createReference(getRoleHandlerSuperTypeQName(rim));
+			handlerSuperClassRef.addActualTypeArgument(nodeRef);
+			handlerSuperClassRef.addActualTypeArgument(valueTypeRef);
+			params.put("AbstractHandler", handlerSuperClassRef);
+			params.put("Node", nodeRef);
+			params.put("ValueType", valueTypeRef);
 			CtClass<?> modelRoleHandlerClass = Substitution.createTypeFromTemplate(
 					getHandlerName(rim),
 					getTemplate("spoon.generating.meta.RoleHandlerTemplate"),
@@ -134,13 +138,12 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 		valueType = valueType.clone();
 		if (valueType instanceof CtTypeParameterReference) {
 			if (valueType instanceof CtWildcardReference) {
-				CtTypeReference<?> boundingType = ((CtTypeParameterReference) valueType).getBoundingType();
+				CtTypeReference<?> boundingType = ((CtWildcardReference) valueType).getBoundingType();
 				if (boundingType instanceof CtTypeParameterReference) {
-					((CtTypeParameterReference) valueType).setBoundingType(null);
+					((CtWildcardReference) valueType).setBoundingType(null);
 				}
 				return valueType;
 			}
-			CtTypeParameterReference tpr = (CtTypeParameterReference) valueType;
 			return getFactory().createWildcardReference();
 		}
 		for (int i = 0; i < valueType.getActualTypeArguments().size(); i++) {
@@ -151,8 +154,7 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 	}
 
 	private CtType<?> getTemplate(String templateQName) {
-		CtType<?> template = getFactory().Class().get(templateQName);
-		return template;
+		return getFactory().Class().get(templateQName);
 	}
 
 	private File file(String name) {
@@ -184,22 +186,22 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 		return true;
 	}
 
-	String getHandlerName(MMField field) {
-		String typeName = field.getOwnerType().getName();
+	String getHandlerName(MetamodelProperty field) {
+		String typeName = field.getOwner().getName();
 		return typeName + "_" + field.getRole().name() + "_RoleHandler";
 	}
 
-	public String getRoleHandlerSuperTypeQName(MMField field) {
-		switch (field.getValueContainerType()) {
+	public String getRoleHandlerSuperTypeQName(MetamodelProperty field) {
+		switch (field.getContainerKind()) {
 			case LIST:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.ListHandler";
+				return "spoon.reflect.meta.impl.ListHandler";
 			case SET:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.SetHandler";
+				return "spoon.reflect.meta.impl.SetHandler";
 			case MAP:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.MapHandler";
+				return "spoon.reflect.meta.impl.MapHandler";
 			case SINGLE:
-				return "spoon.reflect.meta.impl.AbstractRoleHandler.SingleHandler";
+				return "spoon.reflect.meta.impl.SingleHandler";
 		}
-		throw new SpoonException("Unexpected value container type: " + field.getValueContainerType().name());
+		throw new SpoonException("Unexpected value container type: " + field.getContainerKind().name());
 	}
 }

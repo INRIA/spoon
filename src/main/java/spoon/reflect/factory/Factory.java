@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -87,10 +87,15 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
@@ -101,6 +106,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -128,37 +134,56 @@ public interface Factory {
 	/** returns the Spoon model that has been built with this factory or one of its subfactories */
 	CtModel getModel();
 
-	CoreFactory Core(); // used 238 times
+	/** Access to {@link CoreFactory} subfactory */
+	CoreFactory Core();
 
+	/** Access to {@link TypeFactory} subfactory */
 	TypeFactory Type(); // used 107 times
 
+	/** Access to {@link EnumFactory} subfactory */
 	EnumFactory Enum();
 
-	Environment getEnvironment(); // used 71 times
+	/** Access to the {@link Environment} */
+	Environment getEnvironment();
 
-	PackageFactory Package(); // used 30 times
+	/** Access to {@link PackageFactory} subfactory */
+	PackageFactory Package();
 
-	CodeFactory Code(); // used 28 times
+	/** Access to {@link CodeFactory} subfactory */
+	CodeFactory Code();
 
-	ClassFactory Class(); // used 27 times
+	/** Access to {@link ClassFactory} subfactory */
+	ClassFactory Class();
 
-	FieldFactory Field(); // used 9 times
+	/** Access to {@link FieldFactory} subfactory */
+	FieldFactory Field();
 
-	ExecutableFactory Executable(); // used 8 times
+	/** Access to {@link ExecutableFactory} subfactory */
+	ExecutableFactory Executable();
 
-	CompilationUnitFactory CompilationUnit(); // used 7 times
+	/** Access to {@link CompilationUnitFactory} subfactory */
+	CompilationUnitFactory CompilationUnit();
 
+	/** Access to {@link InterfaceFactory} subfactory */
 	InterfaceFactory Interface();
 
-	MethodFactory Method(); // used 5 times
+	/** Access to {@link MethodFactory} subfactory */
+	MethodFactory Method();
 
-	AnnotationFactory Annotation(); // used 4 times
+	/** Access to {@link AnnotationFactory} subfactory */
+	AnnotationFactory Annotation();
 
-	EvalFactory Eval(); // used 4 times
+	/** Access to {@link EvalFactory} subfactory */
+	EvalFactory Eval();
 
-	ConstructorFactory Constructor(); // used 3 times
+	/** Access to {@link ConstructorFactory} subfactory */
+	ConstructorFactory Constructor();
 
+	/** Access to {@link QueryFactory} subfactory */
 	QueryFactory Query();
+
+	/** Access to {@link ModuleFactory} subfactory for Java 9 modules */
+	ModuleFactory Module();
 
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)
@@ -528,6 +553,11 @@ public interface Factory {
 	<T> CtConstructor<T> createConstructor();
 
 	/**
+	 *  @see CoreFactory#createInvisibleArrayConstructor() ()
+	 */
+	<T> CtConstructor<T> createInvisibleArrayConstructor();
+
+	/**
 	 *  @see CoreFactory#createEnumValue()
 	 */
 	<T> CtEnumValue<T> createEnumValue();
@@ -788,6 +818,16 @@ public interface Factory {
 	CtQuery createQuery(Object input);
 
 	/**
+	 * @see QueryFactory#createQuery(Object...)
+	 */
+	CtQuery createQuery(Object... input);
+
+	/**
+	 * @see QueryFactory#createQuery(Iterable)
+	 */
+	CtQuery createQuery(Iterable<?> input);
+
+	/**
 	 *
 	 * @see AnnotationFactory#create(String)
 	 */
@@ -919,11 +959,6 @@ public interface Factory {
 	CtElement createElement(Class<? extends CtElement> klass);
 
 	/**
-	 * @see QueryFactory#createQuery(Object...)
-	 */
-	CtQuery createQuery(Object... input);
-
-	/**
 	 * @see TypeFactory#createImport(CtReference)
 	 */
 	CtImport createImport(CtReference reference);
@@ -932,4 +967,39 @@ public interface Factory {
 	 * @see TypeFactory#createWildcardStaticTypeMemberReference(CtTypeReference)
 	 */
 	CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference);
+
+	/**
+	 * @see ModuleFactory#createPackageExport(CtPackageReference)
+	 */
+	CtPackageExport createPackageExport(CtPackageReference ctPackageReference);
+
+	/**
+	 * @see ModuleFactory#createProvidedService(CtTypeReference)
+	 */
+	CtProvidedService createProvidedService(CtTypeReference ctTypeReference);
+
+	/**
+	 * @see ModuleFactory#createModuleRequirement(CtModuleReference)
+	 */
+	CtModuleRequirement createModuleRequirement(CtModuleReference ctModuleReference);
+
+	/**
+	 * @see ModuleFactory#getOrCreate(String)
+	 */
+	CtModule createModule(String moduleName);
+
+	/**
+	 * @see ModuleFactory#createReference(CtModule)
+	 */
+	CtModuleReference createModuleReference(CtModule ctModule);
+
+	/**
+	 * @see ModuleFactory#createUsedService(CtTypeReference)
+	 */
+	CtUsedService createUsedService(CtTypeReference typeReference);
+
+	/**
+	 * @see CoreFactory#createPartialSourcePosition(CompilationUnit)
+	 */
+	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
 }

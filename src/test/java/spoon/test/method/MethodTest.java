@@ -24,7 +24,9 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.delete.testclasses.Adobada;
+import spoon.test.method.testclasses.Methods;
 import spoon.test.method.testclasses.Tacos;
 
 import java.util.ArrayList;
@@ -33,12 +35,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class MethodTest {
+
 	@Test
 	public void testClone() throws Exception {
 		final Factory factory = build(Adobada.class);
@@ -63,7 +67,30 @@ public class MethodTest {
 	}
 
 	@Test
-	public void testAddSameMethodsTwoTimes() throws Exception {
+	public void testMethodSignature() throws Exception {
+		//contract: method signature contains type erasure of parameter types
+		CtType<?> aTacos = buildClass(Methods.class);
+		int methodCount = 0;
+		for (CtMethod<?> method : aTacos.getMethods()) {
+			String name = method.getSimpleName();
+			String signatureParams;
+			if (name.startsWith("object")) {
+				signatureParams = "(java.lang.Object)";
+			} else if (name.startsWith("string")) {
+				signatureParams = "(java.lang.String)";
+			} else if (name.startsWith("list")) {
+				signatureParams = "(java.util.List)";
+			} else {
+				throw new AssertionError("Unexpected method " + name);
+			}
+			assertEquals(name + signatureParams, method.getSignature());
+			methodCount++;
+		}
+		assertTrue(methodCount > 15);
+	}
+
+	@Test
+	public void testAddSameMethodsTwoTimes() {
 		final Factory factory = createFactory();
 		final CtClass<Object> tacos = factory.Class().create("Tacos");
 		final CtMethod<Void> method = factory.Method().create(tacos, new HashSet<>(), factory.Type().voidType(), "m", new ArrayList<>(), new HashSet<>());
@@ -75,7 +102,7 @@ public class MethodTest {
 	}
 
 	@Test
-	public void testGetAllMethods() throws Exception {
+	public void testGetAllMethods() {
 		/* getAllMethods must not throw Exception in no classpath mode */
 		Launcher l = new Launcher();
 		l.getEnvironment().setNoClasspath(true);
@@ -85,4 +112,26 @@ public class MethodTest {
 		assertEquals(1, methods.stream().filter(method -> "foo".equals(method.getSimpleName())).count());
 	}
 
+	@Test
+	public void testGetAllMethodsAdaptingType() {
+		// contract: AbstractTypingContext should not enter in recursive calls when resolving autoreferenced bounding type
+		// such as T extends Comparable<? super T>
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("src/test/resources/noclasspath/spring/PropertyComparator.java");
+		l.buildModel();
+
+		CtType<?> propertyComparator = l.getModel().getElements(new NamedElementFilter<>(CtType.class, "PropertyComparator")).get(0);
+		Set<CtMethod<?>> allMethods = propertyComparator.getAllMethods();
+
+		boolean compareFound = false;
+		for (CtMethod<?> method : allMethods) {
+			if ("compare".equals(method.getSimpleName())) {
+				assertEquals("compare(java.lang.Object,java.lang.Object)", method.getSignature());
+				compareFound = true;
+			}
+		}
+
+		assertTrue(compareFound);
+	}
 }

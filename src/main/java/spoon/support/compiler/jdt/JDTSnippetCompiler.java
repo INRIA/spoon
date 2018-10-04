@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -75,7 +75,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 
 	@Override
 	protected boolean buildSources(JDTBuilder jdtBuilder) {
-		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), "snippet ", false);
+		return buildUnitsAndModel(jdtBuilder, sources, getSourceClasspath(), "snippet ");
 	}
 
 	@Override

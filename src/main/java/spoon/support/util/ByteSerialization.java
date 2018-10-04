@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -27,25 +27,18 @@ public class ByteSerialization {
 	private ByteSerialization() { }
 
 	public static byte[] serialize(Object obj) throws IOException {
-
-		byte[] serializedObject = null;
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		ObjectOutputStream so = new ObjectOutputStream(bo);
-		so.writeObject(obj);
-		so.flush();
-		serializedObject = bo.toByteArray();
-		so.close();
-		return serializedObject;
+		try (ObjectOutputStream so = new ObjectOutputStream(bo)) {
+			so.writeObject(obj);
+			so.flush();
+			return bo.toByteArray();
+		}
 	}
 
 	public static Object deserialize(byte[] serializedObject) throws Exception {
-
-		Object objInput = null;
 		ByteArrayInputStream bi = new ByteArrayInputStream(serializedObject);
-		ObjectInputStream si = new ObjectInputStream(bi);
-		objInput = si.readObject();
-		si.close();
-		return objInput;
+		try (ObjectInputStream si = new ObjectInputStream(bi)) {
+			return si.readObject();
+		}
 	}
-
 }

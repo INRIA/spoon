@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,22 +23,32 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Executable;
+import java.lang.reflect.GenericDeclaration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 	private CtExecutable<?> ctExecutable;
+	private Executable executable;
+	private Map<String, CtTypeParameter> mapTypeParameters;
 
-	public ExecutableRuntimeBuilderContext(CtMethod<?> ctMethod) {
+	public ExecutableRuntimeBuilderContext(Executable executable, CtMethod<?> ctMethod) {
 		super(ctMethod);
 		this.ctExecutable = ctMethod;
+		this.executable = executable;
+		this.mapTypeParameters = new HashMap<>();
 	}
 
-	public ExecutableRuntimeBuilderContext(CtConstructor<?> ctConstructor) {
+	public ExecutableRuntimeBuilderContext(Executable executable, CtConstructor<?> ctConstructor) {
 		super(ctConstructor);
 		this.ctExecutable = ctConstructor;
+		this.executable = executable;
+		this.mapTypeParameters = new HashMap<>();
 	}
 
 	@Override
@@ -51,42 +61,32 @@ public class ExecutableRuntimeBuilderContext extends AbstractRuntimeBuilderConte
 		ctExecutable.addParameter(ctParameter);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addArrayReference(CtArrayTypeReference<?> arrayTypeReference) {
-		if (ctExecutable instanceof CtMethod) {
-			final CtArrayTypeReference ref = arrayTypeReference;
-			ctExecutable.setType(ref);
+	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+		switch (role) {
+		case THROWN:
+			ctExecutable.addThrownType((CtTypeReference) typeReference);
+			return;
+		case TYPE:
+			ctExecutable.setType((CtTypeReference) typeReference);
 			return;
 		}
-		super.addArrayReference(arrayTypeReference);
-	}
-
-	@Override
-	public void addClassReference(CtTypeReference<?> typeReference) {
-		if (ctExecutable instanceof CtMethod) {
-			final CtTypeReference ref = typeReference;
-			ctExecutable.setType(ref);
-			return;
-		}
-		super.addClassReference(typeReference);
-	}
-
-	@Override
-	public void addTypeName(CtTypeReference<?> typeReference) {
-		if (ctExecutable instanceof CtMethod) {
-			final CtTypeReference ref = typeReference;
-			ctExecutable.setType(ref);
-			return;
-		}
-		super.addClassReference(typeReference);
+		super.addTypeReference(role, typeReference);
 	}
 
 	@Override
 	public void addFormalType(CtTypeParameter parameterRef) {
 		if (ctExecutable instanceof CtFormalTypeDeclarer) {
 			((CtFormalTypeDeclarer) ctExecutable).addFormalCtTypeParameter(parameterRef);
+			this.mapTypeParameters.put(parameterRef.getSimpleName(), parameterRef);
 			return;
 		}
 		super.addFormalType(parameterRef);
+	}
+
+	@Override
+	public CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string) {
+		return executable == genericDeclaration ? this.mapTypeParameters.get(string) : null;
 	}
 }

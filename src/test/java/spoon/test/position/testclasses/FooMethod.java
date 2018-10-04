@@ -7,7 +7,7 @@ public class FooMethod {
 	}
 
 	/**
-	 * Mathod with javadoc
+	 * Method with javadoc
 	 * @param parm1 the parameter
 	 */
 	int mWithDoc(int parm1) {
@@ -26,4 +26,5 @@ public class FooMethod {
 	public FooMethod(int arg1) {
 
 	}
+	public void emptyMethod() {}
 }

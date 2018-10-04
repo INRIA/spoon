@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -46,6 +46,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@Override
 	@DerivedProperty
 	CtExecutableReference<R> getReference();
 

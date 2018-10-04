@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -42,7 +42,7 @@ public abstract class TypedBlockTemplateParameter<R> implements TemplateParamete
 	/**
 	 * This method must be implemented to define the template block.
 	 */
-	public abstract R block() throws Throwable;
+	public abstract R block();
 
 	@SuppressWarnings("unchecked")
 	public CtBlock<R> getSubstitution(CtType<?> targetType) {
@@ -58,6 +58,7 @@ public abstract class TypedBlockTemplateParameter<R> implements TemplateParamete
 		return m.getBody().clone();
 	}
 
+	@Override
 	public R S() {
 		return null;
 	}

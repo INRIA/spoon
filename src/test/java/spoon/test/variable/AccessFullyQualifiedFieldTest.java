@@ -40,7 +40,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQNWhenShadowedByField() throws Exception {
+	public void testNoFQNWhenShadowedByField() {
 		// contract: no fully qualified name if top package is shadowed by a field variable
 
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosFielded.java";
@@ -53,7 +53,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQNWhenShadowedByLocalVariable() throws Exception {
+	public void testNoFQNWhenShadowedByLocalVariable() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Local/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/Burritos.java";
@@ -68,7 +68,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQNWhenUsedInInnerClassAndShadowedByLocalVariable() throws Exception {
+	public void testNoFQNWhenUsedInInnerClassAndShadowedByLocalVariable() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-StaticMethod/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java";
@@ -79,7 +79,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQNWhenUsedInTryCatch() throws Exception {
+	public void testNoFQNWhenUsedInTryCatch() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-TryCatch/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosWithTryCatch.java";
@@ -90,7 +90,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQNWhenUsedInLoop() throws Exception {
+	public void testNoFQNWhenUsedInLoop() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Loop/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosWithLoop.java";
@@ -101,7 +101,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testStaticImportWithAutoImport() throws Exception {
+	public void testStaticImportWithAutoImport() {
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-MultiAutoImport/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
 
@@ -130,7 +130,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testNoFQNAndStaticImport() throws Exception {
+	public void testNoFQNAndStaticImport() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-MultiNoAutoImport/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
@@ -142,7 +142,7 @@ public class AccessFullyQualifiedFieldTest {
 	}
 
 	@Test
-	public void testPrivateStaticImportShouldNotBeImportedInSameClass() throws Exception {
+	public void testPrivateStaticImportShouldNotBeImportedInSameClass() {
 		String output = "target/spooned-" + this.getClass().getSimpleName()+"-privateStatic/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/digest/DigestUtil.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);

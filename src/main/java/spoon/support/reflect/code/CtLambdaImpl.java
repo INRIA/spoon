@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,22 +23,21 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,13 +49,13 @@ import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.THROWN;
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
-	@MetamodelPropertyField(role = CtRole.NAME)
+	@MetamodelPropertyField(role = NAME)
 	String simpleName = "";
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = EXPRESSION)
 	CtExpression<T> expression;
-	@MetamodelPropertyField(role = CtRole.BODY)
+	@MetamodelPropertyField(role = BODY)
 	CtBlock<?> body;
-	@MetamodelPropertyField(role = CtRole.PARAMETER)
+	@MetamodelPropertyField(role = PARAMETER)
 	List<CtParameter<?>> parameters = emptyList();
 	@MetamodelPropertyField(role = THROWN)
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
@@ -124,6 +123,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			lambdaExecutableMethod = lambdaTypeMethods.iterator().next();
 		} else {
 			for (CtMethod<?> method : lambdaTypeMethods) {
+				if (getFactory().Method().OBJECT_METHODS.stream().anyMatch(method::isOverriding)) {
+					continue;
+				}
 				if (method.isDefaultMethod() || method.hasModifier(ModifierKind.PRIVATE) || method.hasModifier(ModifierKind.STATIC)) {
 					continue;
 				}
@@ -190,19 +192,8 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
+	@UnsettableProperty
 	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
-		if (thrownTypes == null || thrownTypes.isEmpty()) {
-			this.thrownTypes = CtElementImpl.emptySet();
-			return (C) this;
-		}
-		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
-			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, THROWN, this.thrownTypes, new HashSet<>(this.thrownTypes));
-		this.thrownTypes.clear();
-		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
-			addThrownType(thrownType);
-		}
 		return (C) this;
 	}
 

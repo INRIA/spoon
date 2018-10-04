@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -82,9 +82,14 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -93,6 +98,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -114,7 +120,6 @@ public abstract class CtScanner implements CtVisitor {
 	 * Default constructor.
 	 */
 	public CtScanner() {
-		super();
 	}
 
 	/**
@@ -140,6 +145,16 @@ public abstract class CtScanner implements CtVisitor {
 			// otherwise one gets a ConcurrentModificationException
 			for (CtElement e : new ArrayList<>(elements)) {
 				scan(role, e);
+			}
+		}
+	}
+	/**
+	 * Generically scans a Map of meta-model elements.
+	 */
+	public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
+		if (elements != null) {
+			for (CtElement obj : elements.values()) {
+				scan(role, obj);
 			}
 		}
 	}
@@ -193,14 +208,10 @@ public abstract class CtScanner implements CtVisitor {
 			scan(role, ((CtElement) (o)));
 		}
 		if (o instanceof Collection<?>) {
-			for (Object obj : ((Collection<?>) (o))) {
-				scan(role, obj);
-			}
+			scan(role, (Collection<? extends CtElement>) o);
 		}
 		if (o instanceof Map<?, ?>) {
-			for (Object obj : ((Map) (o)).values()) {
-				scan(role, obj);
-			}
+			scan(role, (Map<String, ? extends CtElement>) o);
 		}
 	}
 
@@ -246,7 +257,6 @@ public abstract class CtScanner implements CtVisitor {
 
 	public <T> void visitCtArrayTypeReference(final CtArrayTypeReference<T> reference) {
 		enter(reference);
-		scan(CtRole.COMMENT, reference.getComments());
 		scan(CtRole.PACKAGE_REF, reference.getPackage());
 		scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
 		scan(CtRole.TYPE, reference.getComponentType());
@@ -528,13 +538,12 @@ public abstract class CtScanner implements CtVisitor {
 		enter(catchVariable);
 		scan(CtRole.COMMENT, catchVariable.getComments());
 		scan(CtRole.ANNOTATION, catchVariable.getAnnotations());
-		scan(CtRole.TYPE, catchVariable.getMultiTypes());
+		scan(CtRole.MULTI_TYPE, catchVariable.getMultiTypes());
 		exit(catchVariable);
 	}
 
 	public <T> void visitCtCatchVariableReference(final CtCatchVariableReference<T> reference) {
 		enter(reference);
-		scan(CtRole.COMMENT, reference.getComments());
 		scan(CtRole.TYPE, reference.getType());
 		scan(CtRole.ANNOTATION, reference.getAnnotations());
 		exit(reference);
@@ -604,7 +613,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE, lambda.getType());
 		scan(CtRole.CAST, lambda.getTypeCasts());
 		scan(CtRole.PARAMETER, lambda.getParameters());
-		scan(CtRole.THROWN, lambda.getThrownTypes());
 		scan(CtRole.BODY, lambda.getBody());
 		scan(CtRole.EXPRESSION, lambda.getExpression());
 		scan(CtRole.COMMENT, lambda.getComments());
@@ -661,7 +669,6 @@ public abstract class CtScanner implements CtVisitor {
 		enter(reference);
 		scan(CtRole.TYPE, reference.getType());
 		scan(CtRole.ANNOTATION, reference.getAnnotations());
-		scan(CtRole.EXECUTABLE_REF, reference.getDeclaringExecutable());
 		exit(reference);
 	}
 
@@ -734,7 +741,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.PACKAGE_REF, ref.getPackage());
 		scan(CtRole.DECLARING_TYPE, ref.getDeclaringType());
 		scan(CtRole.ANNOTATION, ref.getAnnotations());
-		scan(CtRole.BOUNDING_TYPE, ref.getBoundingType());
 		exit(ref);
 	}
 
@@ -904,7 +910,63 @@ public abstract class CtScanner implements CtVisitor {
 		enter(ctImport);
 		scan(CtRole.IMPORT_REFERENCE, ctImport.getReference());
 		scan(CtRole.ANNOTATION, ctImport.getAnnotations());
+		scan(CtRole.COMMENT, ctImport.getComments());
 		exit(ctImport);
+	}
+
+	@Override
+	public void visitCtModule(CtModule module) {
+		enter(module);
+		scan(CtRole.COMMENT, module.getComments());
+		scan(CtRole.ANNOTATION, module.getAnnotations());
+		scan(CtRole.MODULE_DIRECTIVE, module.getModuleDirectives());
+		scan(CtRole.SUB_PACKAGE, module.getRootPackage());
+		exit(module);
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+		enter(moduleReference);
+		scan(CtRole.ANNOTATION, moduleReference.getAnnotations());
+		exit(moduleReference);
+	}
+
+	@Override
+	public void visitCtPackageExport(CtPackageExport moduleExport) {
+		enter(moduleExport);
+		scan(CtRole.COMMENT, moduleExport.getComments());
+		scan(CtRole.PACKAGE_REF, moduleExport.getPackageReference());
+		scan(CtRole.MODULE_REF, moduleExport.getTargetExport());
+		scan(CtRole.ANNOTATION, moduleExport.getAnnotations());
+		exit(moduleExport);
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		enter(moduleRequirement);
+		scan(CtRole.COMMENT, moduleRequirement.getComments());
+		scan(CtRole.MODULE_REF, moduleRequirement.getModuleReference());
+		scan(CtRole.ANNOTATION, moduleRequirement.getAnnotations());
+		exit(moduleRequirement);
+	}
+
+	@Override
+	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
+		enter(moduleProvidedService);
+		scan(CtRole.COMMENT, moduleProvidedService.getComments());
+		scan(CtRole.SERVICE_TYPE, moduleProvidedService.getServiceType());
+		scan(CtRole.IMPLEMENTATION_TYPE, moduleProvidedService.getImplementationTypes());
+		scan(CtRole.ANNOTATION, moduleProvidedService.getAnnotations());
+		exit(moduleProvidedService);
+	}
+
+	@Override
+	public void visitCtUsedService(CtUsedService usedService) {
+		enter(usedService);
+		scan(CtRole.COMMENT, usedService.getComments());
+		scan(CtRole.SERVICE_TYPE, usedService.getServiceType());
+		scan(CtRole.ANNOTATION, usedService.getAnnotations());
+		exit(usedService);
 	}
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -52,7 +52,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 			result = t.getFactory().Type().createReference(t, true);
 			isCopy = true;
 		}
-		if (result.getActualTypeArguments().size() > 0) {
+		if (!result.getActualTypeArguments().isEmpty()) {
 			//we have to adapt actual type arguments recursive too
 			if (isCopy == false) {
 				CtElement parent = result.getParent();
@@ -60,7 +60,11 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 				result.setParent(parent);
 				List<CtTypeReference<?>> actTypeArgs = new ArrayList<>(result.getActualTypeArguments());
 				for (int i = 0; i < actTypeArgs.size(); i++) {
-					actTypeArgs.set(i, adaptType(actTypeArgs.get(i)).clone());
+					CtTypeReference adaptedTypeArgs = adaptType(actTypeArgs.get(i));
+					// for some type argument we might return null to avoid recursive calls
+					if (adaptedTypeArgs != null) {
+						actTypeArgs.set(i, adaptedTypeArgs.clone());
+					}
 				}
 				result.setActualTypeArguments(actTypeArgs);
 			}
@@ -70,16 +74,15 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 
 	private CtTypeReference<?> adaptTypeParameterReference(CtTypeParameterReference typeParamRef) {
 		if ((typeParamRef instanceof CtWildcardReference)) {
-			return adaptTypeParameterReferenceBoundingType(typeParamRef, typeParamRef.getBoundingType());
+			return adaptTypeParameterReferenceBoundingType((CtWildcardReference) typeParamRef, typeParamRef.getBoundingType());
 		}
-		CtTypeReference<?> typeRefAdapted = adaptTypeParameter(typeParamRef.getDeclaration());
-		return typeRefAdapted;
+		return adaptTypeParameter(typeParamRef.getDeclaration());
 	}
 
-	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtTypeParameterReference typeParamRef, CtTypeReference<?> boundingType) {
-		CtTypeParameterReference typeParamRefAdapted = typeParamRef.clone();
+	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtWildcardReference typeParamRef, CtTypeReference<?> boundingType) {
+		CtWildcardReference typeParamRefAdapted = typeParamRef.clone();
 		typeParamRefAdapted.setParent(typeParamRef.getParent());
-		typeParamRefAdapted.setBoundingType(boundingType.equals(boundingType.getFactory().Type().getDefaultBoundingType()) ? null : adaptType(boundingType));
+		typeParamRefAdapted.setBoundingType(boundingType.equals(boundingType.getFactory().Type().getDefaultBoundingType()) ? boundingType.getFactory().Type().getDefaultBoundingType() : adaptType(boundingType));
 		return typeParamRefAdapted;
 	}
 

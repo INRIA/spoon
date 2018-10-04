@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -15,11 +15,6 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.compiler.jdt;
-
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
-import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
@@ -73,6 +68,7 @@ import org.eclipse.jdt.internal.compiler.ast.MarkerAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.MemberValuePair;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
 import org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
@@ -114,17 +110,18 @@ import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
+import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
@@ -135,16 +132,20 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -154,10 +155,13 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
+import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
-import java.util.HashSet;
-import java.util.Set;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
+import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
 
 /**
  * A visitor for iterating through the parse tree.
@@ -209,7 +213,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	public JDTTreeBuilder(Factory factory) {
-		super();
 		this.factory = factory;
 		this.position = new PositionBuilder(this);
 		this.context = new ContextBuilder(this);
@@ -219,8 +222,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
-	interface OnAccessListener {
-		boolean onAccess(char[][] tokens, int index);
+	// an abstract class here is better because the method is actually package-protected, as the type, (and not public as in the case of interface methods in Java)
+	abstract static class OnAccessListener {
+		abstract boolean onAccess(char[][] tokens, int index);
 	}
 
 	class SpoonReferenceBinding extends ReferenceBinding {
@@ -427,6 +431,43 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(LabeledStatement labeledStatement, BlockScope scope) {
+		ASTPair pair = context.stack.peek();
+		CtBlock<?> block = (CtBlock<?>) pair.element;
+		if (block.getStatements().size() == 1) {
+			CtStatement childStmt = block.getStatement(0);
+			if (childStmt.getLabel() == null) {
+				//the child statement has no label, so we can move label from `block` to child statement and to remove this `block`
+				//example code:
+				//label: while(true);
+				childStmt.setLabel(block.getLabel());
+				SourcePosition oldPos = childStmt.getPosition();
+				int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
+				if (newSourceStart != oldPos.getSourceStart()) {
+					childStmt.setPosition(block.getFactory().Core().createSourcePosition(
+							oldPos.getCompilationUnit(),
+							newSourceStart, oldPos.getSourceEnd(),
+							oldPos.getCompilationUnit().getLineSeparatorPositions()));
+				}
+				//use childStmt instead of helper block
+				//1) disconnect childStmt from it's helper block
+				childStmt.setParent(null);
+				//2) inject childStmt instead of block into context.stack,
+				//so ParentExiter will use it instead of block
+				pair.element = childStmt;
+				pair.node = labeledStatement.statement;
+				context.exit(pair.node);
+				return;
+			}
+		}
+		//else example code:
+		//label:;
+		//label1: label2: while(true);
+		//needs to keep an implicit helper CtBlock as holder of `label1`
+		context.exit(labeledStatement);
+	}
+
+	@Override
 	public void endVisit(LocalDeclaration localDeclaration, BlockScope scope) {
 		context.exit(localDeclaration);
 	}
@@ -457,14 +498,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public void endVisit(MemberValuePair pair, ClassScope scope) {
 		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
-			throw new RuntimeException("Unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 	}
 
 	@Override
 	public void endVisit(MemberValuePair pair, BlockScope scope) {
 		if (!context.annotationValueName.pop().equals(new String(pair.name))) {
-			throw new RuntimeException("Unconsistant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 	}
 
@@ -579,8 +620,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(SingleMemberAnnotation annotation, BlockScope scope) {
-		if (!context.annotationValueName.pop().equals("value")) {
-			throw new RuntimeException("unconsistant Stack");
+		if (!"value".equals(context.annotationValueName.pop())) {
+			throw new RuntimeException("Inconsistent Stack");
 		}
 		context.exit(annotation);
 		skipTypeInAnnotation = false;
@@ -731,7 +772,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
 		context.compilationunitdeclaration = scope.referenceContext;
 		context.compilationUnitSpoon = getFactory().CompilationUnit().getOrCreate(new String(context.compilationunitdeclaration.getFileName()));
-		context.compilationUnitSpoon.setDeclaredPackage(getFactory().Package().getOrCreate(CharOperation.toString(scope.currentPackageName)));
+		ModuleBinding enclosingModule = scope.fPackage.enclosingModule;
+
+		CtModule module;
+		if (!enclosingModule.isUnnamed() && enclosingModule.shortReadableName() != null && enclosingModule.shortReadableName().length > 0) {
+			module = getFactory().Module().getOrCreate(String.valueOf(enclosingModule.shortReadableName()));
+		} else {
+			module = getFactory().Module().getUnnamedModule();
+		}
+
+		context.compilationUnitSpoon.setDeclaredPackage(getFactory().Package().getOrCreate(CharOperation.toString(scope.currentPackageName), module));
 		return true;
 	}
 
@@ -768,6 +818,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(AllocationExpression allocationExpression, BlockScope scope) {
 		CtConstructorCall constructorCall = factory.Core().createConstructorCall();
 		constructorCall.setExecutable(references.getExecutableReference(allocationExpression));
+		ASTPair first = this.context.stack.getFirst();
+
+		// in case of enum values the constructor call is often implicit
+		if (first.element instanceof CtEnumValue) {
+			if (allocationExpression.sourceEnd == first.node.sourceEnd) {
+				constructorCall.setImplicit(true);
+			}
+		}
 		context.enter(constructorCall, allocationExpression);
 		return true;
 	}
@@ -837,7 +895,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ArrayTypeReference arrayTypeReference, BlockScope scope) {
-		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(references.buildTypeReference(arrayTypeReference, scope));
+		CtTypeReference<Object> objectCtTypeReference = references.buildTypeReference(arrayTypeReference, scope);
+		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(objectCtTypeReference);
 		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
 			((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
 		}
@@ -914,7 +973,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(CastExpression castExpression, BlockScope scope) {
-		context.casts.add(this.references.buildTypeReference(castExpression.type, scope));
+		CastInfo ci = new CastInfo();
+		//the 8 bits from 21 to 28 represents number of enclosing brackets
+		ci.nrOfBrackets = ((castExpression.bits >>> 21) & 0xF);
+		ci.typeRef = this.references.buildTypeReference(castExpression.type, scope, true);
+		context.casts.add(ci);
 		castExpression.expression.traverse(this, scope);
 		return false;
 	}
@@ -972,11 +1035,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration constructorDeclaration, ClassScope scope) {
 		CtConstructor<Object> c = factory.Core().createConstructor();
+		// if the source start of the class is equals to the source start of the constructor
+		// it means that the constructor is implicit.
+		c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
 		}
-		for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
-			c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		// avoid to add explicit modifier to implicit constructor
+		if (!c.isImplicit()) {
+			for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
+				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+			}
 		}
 		context.enter(c, constructorDeclaration);
 
@@ -1070,10 +1139,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			}
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
-
-		Set<CtExtendedModifier> modifierSet = new HashSet<>();
 		if (fieldDeclaration.binding != null) {
-			field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
+			if (fieldDeclaration.binding.declaringClass != null && fieldDeclaration.binding.declaringClass.isEnum()) {
+				//enum values take over visibility from enum type
+				//JDT compiler has a bug that enum values are always public static final, even for private enum
+				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.declaringClass.modifiers, true, false));
+			} else {
+				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
+			}
 		}
 		for (CtExtendedModifier extendedModifier : getModifiers(fieldDeclaration.modifiers, false, false)) {
 			field.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
@@ -1142,13 +1215,26 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(LabeledStatement labeledStatement, BlockScope scope) {
-		context.label.push(new String(labeledStatement.label));
+		/*
+		 * Create helper implicit block which holds label until child statement node is available
+		 */
+		CtBlock<?> block = factory.Core().createBlock();
+		block.setLabel(new String(labeledStatement.label));
+		context.enter(block, labeledStatement);
+		//set implicit after position is build, so we know the position of the label
+		block.setImplicit(true);
 		return true;
 	}
 
 	@Override
 	public boolean visit(LocalDeclaration localDeclaration, BlockScope scope) {
 		CtLocalVariable<Object> v = factory.Core().createLocalVariable();
+
+		boolean isVar = localDeclaration.type.isTypeNameVar(scope);
+
+		if (isVar) {
+			v.setInferred(true);
+		}
 		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
 		if (localDeclaration.binding != null) {
 			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, false));
@@ -1544,15 +1630,22 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if (new String(typeDeclaration.name).equals("package-info")) {
+		if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {
+			CtModule module;
+			if (typeDeclaration.binding.module != null && !typeDeclaration.binding.module.isUnnamed() && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {
+				module = factory.Module().getOrCreate(String.valueOf(typeDeclaration.binding.module.shortReadableName()));
+			} else {
+				module = factory.Module().getUnnamedModule();
+			}
+
 			CtPackage pack;
 			if (typeDeclaration.binding.fPackage.shortReadableName() != null && typeDeclaration.binding.fPackage.shortReadableName().length > 0) {
-				pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.shortReadableName()));
+				pack = factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.shortReadableName()), module);
 			} else {
-				pack = factory.Package().getRootPackage();
+				pack = module.getRootPackage();
 			}
 			context.enter(pack, typeDeclaration);
 			pack.addType(helper.createType(typeDeclaration));
@@ -1571,6 +1664,13 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(WhileStatement whileStatement, BlockScope scope) {
 		context.enter(factory.Core().createWhile(), whileStatement);
+		return true;
+	}
+
+	@Override
+	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
+		CtModule module = getHelper().createModule(moduleDeclaration);
+		context.compilationUnitSpoon.setDeclaredModule(module);
 		return true;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -108,7 +108,10 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	boolean isOverriding(CtExecutableReference<?> executable);
 
 	/**
-	 * Returns the executable overridden by this one, if exists (null otherwise).
+	 * Returns the method overridden by this one, if exists (null otherwise).
+	 * The returned method is searched in the superclass hierarchy
+	 * (and not in the super-interfaces).
+	 * The returned method can be an abstract method from an abstract class, a super implementation, or even a method from Object.
 	 */
 	@DerivedProperty
 	CtExecutableReference<?> getOverridingExecutable();

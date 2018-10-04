@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -140,7 +140,7 @@ public class AllMethodsSameSignatureFunction implements CtConsumableFunction<CtE
 		final List<CtType<?>> toBeCheckedSubTypes = new ArrayList<>();
 		//add hierarchy of `targetMethod` as to be checked for super types of declaring type
 		toBeCheckedSubTypes.add(declaringType);
-		while (toBeCheckedSubTypes.size() > 0) {
+		while (!toBeCheckedSubTypes.isEmpty()) {
 			for (CtType<?> subType : toBeCheckedSubTypes) {
 				ClassTypingContext ctc = new ClassTypingContext(subType);
 				//search for first target method from the same type inheritance hierarchy

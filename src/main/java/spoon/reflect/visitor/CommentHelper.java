@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -44,7 +44,7 @@ class CommentHelper {
 	private CommentHelper() {
 	}
 
-	public static void printComment(PrinterHelper printer, CtComment comment) {
+	static void printComment(PrinterHelper printer, CtComment comment) {
 		List<CtJavaDocTag> tags = null;
 		if (comment instanceof CtJavaDoc) {
 			tags = ((CtJavaDoc) comment).getTags();
@@ -52,7 +52,7 @@ class CommentHelper {
 		printComment(printer, comment.getCommentType(), comment.getContent(), tags);
 	}
 
-	public static void printComment(PrinterHelper printer, CtComment.CommentType commentType, String content, Collection<CtJavaDocTag> javaDocTags) {
+	static void printComment(PrinterHelper printer, CtComment.CommentType commentType, String content, Collection<CtJavaDocTag> javaDocTags) {
 		switch (commentType) {
 		case FILE:
 			printer.write(JAVADOC_START).writeln();
@@ -73,15 +73,14 @@ class CommentHelper {
 				break;
 			default:
 				String[] lines = LINE_SEPARATORS_RE.split(content);
-				for (int i = 0; i < lines.length; i++) {
-					String com = lines[i];
+				for (String com : lines) {
 					if (commentType == CtComment.CommentType.BLOCK) {
 						printer.write(com);
 						if (lines.length > 1) {
 							printer.writeln();
 						}
 					} else {
-						if (com.length() > 0) {
+						if (!com.isEmpty()) {
 							printer.write(COMMENT_STAR + com).writeln();
 						} else {
 							printer.write(" *" /* no trailing space */ + com).writeln();
@@ -109,7 +108,7 @@ class CommentHelper {
 		}
 	}
 
-	public static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag) {
+	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag) {
 		printer.write(COMMENT_STAR);
 		printer.write(CtJavaDocTag.JAVADOC_TAG_PREFIX);
 		printer.write(docTag.getType().name().toLowerCase());

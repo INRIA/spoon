@@ -110,5 +110,6 @@ public class Foo {
 
 	public interface CheckPersons {
 		boolean test(Person p1, Person p2);
+		boolean equals(Object other);
 	}
 }

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import static java.nio.charset.Charset.forName;
 import java.lang.annotation.Annotation;
-import org.junit.Assert;
 import java.nio.charset.Charset;
 
 

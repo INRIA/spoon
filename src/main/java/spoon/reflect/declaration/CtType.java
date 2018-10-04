@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -67,9 +67,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	Set<CtTypeReference<?>> getUsedTypes(boolean includeSamePackage);
 
 	/**
-	 * Returns the actual runtime class if exists.
 	 *
-	 * @return the runtime class, null if is not accessible or does not exist
+	 * NEVER USE THIS.
+	 *
+	 * See {@link CtTypeReference#getActualClass()}.
+	 *
+	 * @deprecated (since Spoon 7.0.0) this will be removed from the public API
 	 */
 	@DerivedProperty
 	Class<T> getActualClass();
@@ -117,6 +120,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * Overrides the return type.
 	 */
+	@Override
 	@DerivedProperty
 	CtTypeReference<T> getReference();
 
@@ -194,7 +198,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes);
 
 	/**
-	 * Compiles and replace all the code snippets that are found in this type.
+	 * Replace all the code snippets that are found in this type by the corresponding Spoon AST.
 	 *
 	 * @see CtCodeSnippet
 	 * @see spoon.reflect.code.CtCodeSnippetExpression
@@ -203,15 +207,17 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	void compileAndReplaceSnippets();
 
 	/**
-	 * Return all the accessible methods (concrete and abstract) for this type.
-	 * It recursively collects all methods from super-classes and super-interfaces.
+	 * Return all the methods that can be called on an instance of this type.
+	 * It recursively collects all methods (both concrete and abstract) from all super-classes and all super-interfaces.
+	 * It deduplicates methods with the same signature, which are defined several times somewhere in the type hierarchy.
 	 *
-	 * It includes the methods of types whose source code is in the Spoon model,
+	 * Warning: this method can be really slow due to signature deduplication.
+	 *
+	 * It includes all methods: the methods of types whose source code is in the Spoon model,
 	 * the methods of types from the JDK and from libraries present in the classpath,
 	 * the methods of java.lang.Object (for all CtClass objects).
 	 * However, in noclasspath mode, it does not include methods from unknown types.
 	 * If methods are overridden somewhere in the type hierarchy, it returns only top methods (ie method definitions).
-	 * Each method signature is returned only once
 	 */
 	@DerivedProperty
 	Set<CtMethod<?>> getAllMethods();
@@ -343,4 +349,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 
 	@Override
 	CtType<T> clone();
+
+	/**
+	 * Copy the type, where copy means cloning + porting all the references in the clone from the old type to the new type.
+	 *
+	 * The copied type is added to the same package (and this to the factory as well).
+	 *
+	 * A new unique method name is given for each copy, and this method can be called several times.
+	 */
+	CtType<?> copyType();
 }

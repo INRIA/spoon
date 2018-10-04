@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,7 +19,6 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -32,7 +31,7 @@ import static spoon.reflect.path.CtRole.TRY_RESOURCE;
 public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResource {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.TRY_RESOURCE)
+	@MetamodelPropertyField(role = TRY_RESOURCE)
 	List<CtLocalVariable<?>> resources = emptyList();
 
 	@Override

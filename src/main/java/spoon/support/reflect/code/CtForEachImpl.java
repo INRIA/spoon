@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -20,7 +20,6 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
@@ -29,7 +28,7 @@ import static spoon.reflect.path.CtRole.FOREACH_VARIABLE;
 public class CtForEachImpl extends CtLoopImpl implements CtForEach {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	@MetamodelPropertyField(role = EXPRESSION)
 	CtExpression<?> expression;
 
 	@MetamodelPropertyField(role = FOREACH_VARIABLE)

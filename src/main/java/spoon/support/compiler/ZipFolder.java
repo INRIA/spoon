@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -42,17 +42,18 @@ public class ZipFolder implements SpoonFolder {
 	List<SpoonFile> files;
 
 	public ZipFolder(File file) throws IOException {
-		super();
 		if (!file.isFile()) {
 			throw new IOException(file.getName() + " is not a valid zip file");
 		}
 		this.file = file;
 	}
 
+	@Override
 	public List<SpoonFile> getAllFiles() {
 		return getFiles();
 	}
 
+	@Override
 	public List<SpoonFile> getAllJavaFiles() {
 		List<SpoonFile> files = new ArrayList<>();
 
@@ -68,23 +69,19 @@ public class ZipFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public List<SpoonFile> getFiles() {
 		// Indexing content
 		if (files == null) {
 			files = new ArrayList<>();
-			ZipInputStream zipInput = null;
-			try {
-				zipInput = new ZipInputStream(new BufferedInputStream(
-						new FileInputStream(file)));
-
+			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
 					// deflate in buffer
 					final int buffer = 2048;
-					ByteArrayOutputStream output = new ByteArrayOutputStream(
-							buffer);
+					ByteArrayOutputStream output = new ByteArrayOutputStream(buffer);
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
@@ -94,8 +91,6 @@ public class ZipFolder implements SpoonFolder {
 					files.add(new ZipFile(this, entry.getName(), output
 							.toByteArray()));
 				}
-				zipInput.close();
-
 			} catch (Exception e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
@@ -103,10 +98,12 @@ public class ZipFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public String getName() {
 		return file.getName();
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
@@ -116,10 +113,12 @@ public class ZipFolder implements SpoonFolder {
 		return null;
 	}
 
+	@Override
 	public List<SpoonFolder> getSubFolders() {
 		return new ArrayList<>(0);
 	}
 
+	@Override
 	public boolean isFile() {
 		return false;
 	}
@@ -129,6 +128,7 @@ public class ZipFolder implements SpoonFolder {
 		return getPath();
 	}
 
+	@Override
 	public String getPath() {
 		try {
 			return file.getCanonicalPath();
@@ -173,16 +173,13 @@ public class ZipFolder implements SpoonFolder {
 		throw new UnsupportedOperationException("not possible a real folder");
 	}
 
+	/** physically extracts on disk all files of this zip file in the destinationDir `destDir` */
 	public void extract(File destDir) {
-		ZipInputStream zipInput = null;
-		try {
-			zipInput = new ZipInputStream(new BufferedInputStream(
-					new FileInputStream(file)));
-
+		try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 			ZipEntry entry;
 			while ((entry = zipInput.getNextEntry()) != null) {
 				File f = new File(destDir + File.separator + entry.getName());
-				if (entry.isDirectory()) { // if its a directory, create it
+				if (entry.isDirectory()) { // if it's a directory, create it
 					f.mkdir();
 					continue;
 				}
@@ -191,16 +188,15 @@ public class ZipFolder implements SpoonFolder {
 				// Force parent directory creation, sometimes directory was not yet handled
 				f.getParentFile().mkdirs();
 				// in the zip entry iteration
-				OutputStream output = new BufferedOutputStream(new FileOutputStream(f));
-				int count;
-				byte data[] = new byte[buffer];
-				while ((count = zipInput.read(data, 0, buffer)) != -1) {
-					output.write(data, 0, count);
+				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f))) {
+					int count;
+					byte[] data = new byte[buffer];
+					while ((count = zipInput.read(data, 0, buffer)) != -1) {
+						output.write(data, 0, count);
+					}
+					output.flush();
 				}
-				output.flush();
-				output.close();
 			}
-			zipInput.close();
 		} catch (Exception e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -44,6 +44,7 @@ public class NamedElementFilter<T extends CtNamedElement> implements Filter<T> {
 		this.acceptedClass = acceptedClass;
 	}
 
+	@Override
 	public boolean matches(T element) {
 		try {
 			return acceptedClass.isAssignableFrom(element.getClass()) && name.equals(element.getSimpleName());

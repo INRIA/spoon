@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,7 +23,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -42,13 +41,13 @@ import static spoon.reflect.path.CtRole.LABEL;
 public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.LABEL)
+	@MetamodelPropertyField(role = LABEL)
 	String label;
 
-	@MetamodelPropertyField(role = CtRole.ARGUMENT)
+	@MetamodelPropertyField(role = ARGUMENT)
 	List<CtExpression<?>> arguments = emptyList();
 
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
+	@MetamodelPropertyField(role = EXECUTABLE_REF)
 	CtExecutableReference<T> executable;
 
 	@Override
@@ -93,6 +92,7 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		if (executable == null) {
 			// default reference
 			executable = getFactory().Core().createExecutableReference();
+			executable.setParent(this);
 		}
 		return executable;
 	}

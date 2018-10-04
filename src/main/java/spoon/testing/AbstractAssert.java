@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -63,7 +63,7 @@ public abstract class AbstractAssert<T extends AbstractAssert<T, A>, A> {
 		try {
 			withProcessor(processor.newInstance());
 		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("Can't instante class processor.", e);
+			throw new RuntimeException("Can't instantiate class processor.", e);
 		}
 		return myself;
 	}

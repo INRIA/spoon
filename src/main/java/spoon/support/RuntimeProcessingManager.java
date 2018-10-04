@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,7 +23,6 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
-import spoon.support.util.Timer;
 import spoon.support.visitor.ProcessingVisitor;
 
 import java.util.Collection;
@@ -53,10 +52,10 @@ public class RuntimeProcessingManager implements ProcessingManager {
 	 * 		meta-model)
 	 */
 	public RuntimeProcessingManager(Factory factory) {
-		super();
 		setFactory(factory);
 	}
 
+	@Override
 	public void addProcessor(Class<? extends Processor<?>> type) {
 		try {
 			Processor<?> p = type.newInstance();
@@ -68,11 +67,13 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@Override
 	public boolean addProcessor(Processor<?> p) {
 		p.setFactory(getFactory());
 		return getProcessors().add(p);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
@@ -86,10 +87,12 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return current;
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public List<Processor<?>> getProcessors() {
 		if (processors == null) {
 			processors = new LinkedList<>();
@@ -104,6 +107,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
+	@Override
 	public void process(Collection<? extends CtElement> elements) {
 		for (Processor<?> p : getProcessors()) {
 			current = p;
@@ -118,15 +122,14 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		try {
 			getFactory().getEnvironment().debugMessage("processing with '" + processor.getClass().getName() + "'...");
 			current = processor;
-			Timer.start(processor.getClass().getName());
 			for (CtElement e : elements) {
 				process(e, processor);
 			}
-			Timer.stop(processor.getClass().getName());
 		} catch (ProcessInterruption ignored) {
 		}
 	}
 
+	@Override
 	public void process(CtElement element) {
 		for (Processor<?> p : getProcessors()) {
 			current = p;
@@ -146,6 +149,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		processor.processingDone();
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 		factory.getEnvironment().setManager(this);

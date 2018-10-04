@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,20 +16,21 @@
  */
 package spoon.reflect.factory;
 
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtPackageReference;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtPackageReference;
+
 
 /**
  * The {@link CtPackage} sub-factory.
  */
-public class PackageFactory extends SubFactory implements Serializable {
+public class PackageFactory extends SubFactory {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -98,17 +99,31 @@ public class PackageFactory extends SubFactory implements Serializable {
 	}
 
 	/**
-	 * Gets or creates a package.
+	 * Gets or creates a package for the unnamed module
 	 *
 	 * @param qualifiedName
 	 * 		the full name of the package
+	 *
 	 */
 	public CtPackage getOrCreate(String qualifiedName) {
+		return this.getOrCreate(qualifiedName, factory.getModel().getUnnamedModule());
+	}
+
+	/**
+	 * Gets or creates a package and make its parent the given module
+	 *
+	 * @param qualifiedName
+	 * 		the full name of the package
+	 *
+	 * @param rootModule
+	 * 		The parent module of the package
+	 */
+	public CtPackage getOrCreate(String qualifiedName, CtModule rootModule) {
 		if (qualifiedName.isEmpty()) {
-			return factory.getModel().getRootPackage();
+			return rootModule.getRootPackage();
 		}
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage last = factory.getModel().getRootPackage();
+		CtPackage last = rootModule.getRootPackage();
 
 		while (token.hasMoreElements()) {
 			String name = token.nextToken();
@@ -172,3 +187,4 @@ public class PackageFactory extends SubFactory implements Serializable {
 	}
 
 }
+

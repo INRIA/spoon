@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -143,8 +143,8 @@ public class FieldFactory extends SubFactory {
 	 */
 	public <T> CtFieldReference<T> createReference(String signature) {
 		CtFieldReference<T> fieldRef = factory.Core().createFieldReference();
-		String type = signature.substring(0, signature.indexOf(" "));
-		String declaringType = signature.substring(signature.indexOf(" ") + 1, signature.indexOf(CtField.FIELD_SEPARATOR));
+		String type = signature.substring(0, signature.indexOf(' '));
+		String declaringType = signature.substring(signature.indexOf(' ') + 1, signature.indexOf(CtField.FIELD_SEPARATOR));
 		String fieldName = signature.substring(signature.indexOf(CtField.FIELD_SEPARATOR) + 1);
 		fieldRef.setSimpleName(fieldName);
 		fieldRef.setDeclaringType(factory.Type().createReference(declaringType));

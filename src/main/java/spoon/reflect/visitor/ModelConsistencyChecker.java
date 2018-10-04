@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -32,8 +32,8 @@ import java.util.Deque;
  */
 public class ModelConsistencyChecker extends CtScanner {
 
-	boolean fixInconsistencies = false;
-	boolean fixNullParents = false;
+	boolean fixInconsistencies;
+	boolean fixNullParents;
 
 	Environment environment;
 
@@ -89,7 +89,7 @@ public class ModelConsistencyChecker extends CtScanner {
 	private void dumpStack() {
 		environment.debugMessage("model consistency checker stack:");
 		for (CtElement e : stack) {
-			environment.debugMessage("    " + e.getClass().getSimpleName() + " " + (e.getPosition() == null ? "(?)" : "" + e.getPosition()));
+			environment.debugMessage("    " + e.getClass().getSimpleName() + " " + (e.getPosition().isValidPosition() ? String.valueOf(e.getPosition()) : "(?)"));
 		}
 	}
 

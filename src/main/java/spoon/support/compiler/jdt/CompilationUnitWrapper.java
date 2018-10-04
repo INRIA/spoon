@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -45,10 +45,6 @@ class CompilationUnitWrapper extends CompilationUnit {
 		types.add(type);
 		printer.calculate(type.getPosition().getCompilationUnit(), types);
 
-		String result = printer.getResult();
-		char[] content = result.toCharArray();
-		return content;
+		return printer.getResult().toCharArray();
 	}
-
-
 }

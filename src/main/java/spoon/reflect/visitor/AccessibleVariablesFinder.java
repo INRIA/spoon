@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -35,7 +35,6 @@ import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -68,12 +67,12 @@ public class AccessibleVariablesFinder {
 			public void visitCtStatementList(CtStatementList e) {
 				for (int i = 0; i < e.getStatements().size(); i++) {
 					CtStatement ctStatement = e.getStatements().get(i);
-					if (ctStatement.getPosition() == null) {
-					}
-					if (ctStatement.getPosition() != null
+
+					if (expression.getPosition().isValidPosition() && ctStatement.getPosition().isValidPosition()
 							&& ctStatement.getPosition().getSourceStart() > expression.getPosition().getSourceEnd()) {
 						break;
 					}
+
 					if (ctStatement instanceof CtVariable) {
 						variables.add((CtVariable) ctStatement);
 					}
@@ -84,8 +83,7 @@ public class AccessibleVariablesFinder {
 			@Override
 			public <T> void scanCtType(CtType<T> type) {
 				List<CtField<?>> fields = type.getFields();
-				for (int i = 0; i < fields.size(); i++) {
-					CtField<?> ctField = fields.get(i);
+				for (CtField<?> ctField : fields) {
 					if (ctField.hasModifier(ModifierKind.PUBLIC) || ctField.hasModifier(ModifierKind.PROTECTED)) {
 						variables.add(ctField);
 					} else if (ctField.hasModifier(ModifierKind.PRIVATE)) {
@@ -102,8 +100,7 @@ public class AccessibleVariablesFinder {
 					variables.addAll(getVariable(superclass.getTypeDeclaration()));
 				}
 				Set<CtTypeReference<?>> superInterfaces = type.getSuperInterfaces();
-				for (Iterator<CtTypeReference<?>> iterator = superInterfaces.iterator(); iterator.hasNext();) {
-					CtTypeReference<?> typeReference = iterator.next();
+				for (CtTypeReference<?> typeReference : superInterfaces) {
 					variables.addAll(getVariable(typeReference.getTypeDeclaration()));
 				}
 				super.scanCtType(type);

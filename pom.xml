@@ -1,3 +1,21 @@
+<!--
+
+    Copyright (C) 2006-2017 INRIA and contributors
+    Spoon - http://spoon.gforge.inria.fr/
+
+    This software is governed by the CeCILL-C License under French law and
+    abiding by the rules of distribution of free software. You can use, modify
+    and/or redistribute the software under the terms of the CeCILL-C license as
+    circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -10,7 +28,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>6.1.0-SNAPSHOT</version>
+  <version>7.1.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -70,6 +88,12 @@
     </developer>
     <developer>
       <name>Christophe Dufour</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Harrand</name>
       <roles>
         <role>Contributor</role>
       </roles>
@@ -149,9 +173,9 @@
   </developers>
 
   <scm>
-    <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
-    <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
-    <developerConnection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</developerConnection>
+    <url>https://github.com/INRIA/spoon</url>
+    <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
+    <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -160,20 +184,8 @@
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.cfr>0.132.0</version.cfr>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>gforge.inria.fr-release</id>
-      <name>Maven Repository for JDT Compiler release</name>
-      <url>http://spoon.gforge.inria.fr/repositories/releases</url>
-    </repository>
-    <repository>
-      <id>gforge.inria.fr-snapshot</id>
-      <name>Maven Repository for Spoon Snapshots</name>
-      <url>http://spoon.gforge.inria.fr/repositories/snapshots</url>
-    </repository>
-  </repositories>
 
   <distributionManagement>
     <repository>
@@ -181,9 +193,9 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>gforge.inria.fr-snapshot</id>
-      <name>inria-snapshots</name>
-      <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/snapshots</url>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
     </snapshotRepository>
     <site>
       <id>gforge.inria.fr-site</id>
@@ -192,11 +204,26 @@
     </site>
   </distributionManagement>
 
+  <repositories>
+    <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
+    <repository>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
+    <!-- This repository is needed for cfr -->
+    <repository>
+      <id>inria</id>
+      <name>triskell-public-release</name>
+      <url>http://maven.inria.fr/artifactory/triskell-public-release</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.tycho</groupId>
+      <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.13.50.v20171007-0855</version>
+      <version>3.13.102</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -246,6 +273,42 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.9.2</version>
     </dependency>
+    <dependency>
+      <!-- to reproduce JTD error with nullable annotation -->
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- to reproduce and fix a bug -->
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+      <version>3.6.9</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.mysema.commons</groupId>
+          <artifactId>mysema-commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+      <dependency>
+	  <!-- released on maven.inria.fr -->
+          <groupId>org.benf</groupId>
+          <artifactId>cfr</artifactId>
+	  <!-- 0.132 is the version of July 2018 -->
+          <version>0.132.0</version>
+      </dependency>
   </dependencies>
 
   <build>
@@ -272,7 +335,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20.1</version>
+        <version>2.21.0</version>
         <configuration>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
@@ -292,8 +355,14 @@
           <testTarget>${java.test.version}</testTarget>
           <showWarnings>true</showWarnings>
           <compilerArgs>
-              <arg>-Xlint:deprecation</arg>
+              <arg>-Xlint:deprecation,unchecked</arg>
+              <!-- always generate class files for package-info -->
+              <arg>-Xpkginfo:always</arg>
           </compilerArgs>
+          <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
+          <!-- useIncrementalCompilation=false actually means that we won't recompile everything each time -->
+          <!-- it's not a joka, test by yourself :-) -->
+          <useIncrementalCompilation>false</useIncrementalCompilation>
         </configuration>
       </plugin>
 
@@ -429,7 +498,7 @@
       <plugin>
 	<groupId>org.jacoco</groupId>
 	<artifactId>jacoco-maven-plugin</artifactId>
-	<version>0.7.9</version>
+	<version>0.8.1</version>
 	<executions>
 	  <execution>
 	    <goals>
@@ -472,6 +541,13 @@
             <file>${project.basedir}/revapi.json</file>
           </analysisConfigurationFiles>
         </configuration>
+      </plugin>
+
+      <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <!--           We use the latest, so we don't specify an actual version number       -->
+            <!--          <version></version>-->
       </plugin>
     </plugins>
 
@@ -517,6 +593,27 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.0.0-M1</version>
         </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <configuration>
+            <header>LICENSE-short.txt</header>
+            <basedir>src</basedir>
+            <includes>
+              <include>main/java/**</include>
+              <!-- We also want to check the license in templates to generate files with the proper header -->
+              <include>test/java/spoon/generating/clone/*</include>
+            </includes>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
       </plugins>
     </pluginManagement>
     <extensions>
@@ -541,7 +638,9 @@
         <configuration>
           <quiet>true</quiet>
           <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
+          <!--maven-javadoc-plugin version 2.9 onwards uses additionalJOption, see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin/48511911#48511911 -->
+          <additionalJOption>-Xdoclint:none</additionalJOption>
+      </configuration>
         <reportSets>
           <reportSet>
             <id>html</id>

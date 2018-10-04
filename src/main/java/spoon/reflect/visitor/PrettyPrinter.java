@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
@@ -35,6 +36,12 @@ public interface PrettyPrinter {
 	String printPackageInfo(CtPackage pack);
 
 	/**
+	 * Prints the module info.
+	 * It always resets the printing context at the beginning of this process.
+	 */
+	String printModuleInfo(CtModule module);
+
+	/**
 	 * Gets the contents of the compilation unit.
 	 */
 	String getResult();
@@ -51,5 +58,4 @@ public interface PrettyPrinter {
 	 * code.
 	 */
 	Map<Integer, Integer> getLineNumberMapping();
-
 }

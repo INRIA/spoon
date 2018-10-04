@@ -15,7 +15,7 @@ public class StringTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<?> type = build("spoon.test.strings", "Main");
+		CtClass<?> type = build("spoon.test.strings.testclasses", "Main");
 		assertEquals("Main", type.getSimpleName());
 
 		CtBinaryOperator<?> op = type.getElements(
@@ -25,6 +25,5 @@ public class StringTest {
 		assertEquals(BinaryOperatorKind.PLUS, op.getKind());
 		assertTrue(op.getLeftHandOperand() instanceof CtLiteral);
 		assertTrue(op.getRightHandOperand() instanceof CtLiteral);
-
 	}
 }

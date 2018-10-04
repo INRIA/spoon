@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtPath;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,12 +37,29 @@ public class CtPathImpl implements CtPath {
 	}
 
 	@Override
-	public <T extends CtElement> Collection<T> evaluateOn(Collection<? extends CtElement> startNode) {
-		Collection<CtElement> filtered = new ArrayList<>(startNode);
+	public <T extends CtElement> List<T> evaluateOn(CtElement... startNode) {
+		Collection<CtElement> filtered = Arrays.asList(startNode);
 		for (CtPathElement element : elements) {
 			filtered = element.getElements(filtered);
 		}
-		return (Collection<T>) filtered;
+		return (List<T>) filtered;
+	}
+
+	@Override
+	public CtPath relativePath(CtElement parent) {
+		List<CtElement> roots = new ArrayList<>();
+		roots.add(parent);
+
+		int index = 0;
+		for (CtPathElement pathEl : getElements()) {
+			if (pathEl.getElements(roots).size() > 0) {
+				break;
+			}
+			index++;
+		}
+		CtPathImpl result = new CtPathImpl();
+		result.elements = new LinkedList<>(elements.subList(index, elements.size()));
+		return result;
 	}
 
 	public CtPathImpl addFirst(CtPathElement element) {

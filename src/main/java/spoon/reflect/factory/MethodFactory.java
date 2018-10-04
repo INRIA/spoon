@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -27,16 +27,19 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.template.Substitution;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The {@link CtMethod} sub-factory.
  */
 public class MethodFactory extends ExecutableFactory {
+
+	public final Set<CtMethod<?>> OBJECT_METHODS = Collections.unmodifiableSet(factory.Class().get(Object.class).getMethods());
 
 	/**
 	 * Creates a new method sub-factory.

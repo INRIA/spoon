@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -133,9 +133,8 @@ public interface TokenWriter {
 	 */
 	void reset();
 
-	/** Writes a single space.
-	 *
-	 *  Note that this method is only there for low-level implementation reasons. A default implementation simply calls {@link PrinterHelper#writeSpace()} ()}. This method will be removed in a later refactoring.
-	 * */
+	/**
+	 * Writes a single space.
+	 */
 	TokenWriter writeSpace();
 }

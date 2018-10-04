@@ -21,7 +21,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.annotation.testclasses.GlobalAnnotation;
 import spoon.test.pkg.name.PackageTestClass;
-import spoon.test.pkg.testclasses.ElementProcessor;
+import spoon.test.pkg.processors.ElementProcessor;
 import spoon.test.pkg.testclasses.Foo;
 import spoon.testing.utils.ModelUtils;
 
@@ -40,6 +40,7 @@ import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class PackageTest {
+
 	@Test
 	public void testPackage() throws Exception {
 		final String classFilePath = "./src/test/java/spoon/test/pkg/name/PackageTestClass.java";
@@ -52,43 +53,44 @@ public class PackageTest {
 		spoon.createCompiler(factory, SpoonResourceHelper.resources(classFilePath, packageInfoFilePath)).build();
 
 		CtClass<?> clazz = factory.Class().get(PackageTestClass.class);
-		Assert.assertEquals(PackageTestClass.class, clazz.getActualClass());
+		Assert.assertSame(PackageTestClass.class, clazz.getActualClass());
 
 		CtPackage ctPackage = clazz.getPackage();
-		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
+		assertEquals("", ctPackage.getDocComment());
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
-		Assert.assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
+		assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
 		Assert.assertNotNull(ctPackage.getPosition());
-		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
-		Assert.assertEquals(1, ctPackage.getPosition().getLine());
-		Assert.assertEquals(1, ctPackage.getAnnotations().size());
-		Assert.assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
+		assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
+		assertEquals(1, ctPackage.getPosition().getLine());
+		assertEquals(0, ctPackage.getPosition().getSourceStart());
+		assertEquals(71, ctPackage.getPosition().getSourceEnd());
+		assertEquals(1, ctPackage.getAnnotations().size());
+		assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
-		Assert.assertEquals(Deprecated.class, annotation.getAnnotationType().getActualClass());
-		Assert.assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
-		Assert.assertEquals(5, annotation.getPosition().getLine());
+		Assert.assertSame(Deprecated.class, annotation.getAnnotationType().getActualClass());
+		assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
+		assertEquals(5, annotation.getPosition().getLine());
 
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
-		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
-		Assert.assertNull(ctPackage.getDocComment());
+		assertEquals("spoon.test", ctPackage.getQualifiedName());
+		assertEquals("", ctPackage.getDocComment());
 	}
 
 	@Test
-	public void testAnnotationOnPackage() throws Exception {
+	public void testAnnotationOnPackage() {
 		Launcher launcher = new Launcher();
-		Factory factory = launcher.createFactory();
+		Factory factory = launcher.getFactory();
 
-		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(new File("./target/spooned/"), factory.getEnvironment()));
 		factory.getEnvironment().setAutoImports(false);
 		SpoonModelBuilder compiler = launcher.createCompiler(factory);
+		launcher.setSourceOutputDirectory("./target/spooned/");
 		compiler.addInputSource(new File("./src/test/java/spoon/test/pkg/testclasses/"));
-		compiler.setSourceOutputDirectory(new File("./target/spooned/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
 
@@ -103,7 +105,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testPrintPackageInfoWhenNothingInPackage() throws Exception {
+	public void testPrintPackageInfoWhenNothingInPackage() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/pkg/testclasses/internal");
 		launcher.setSourceOutputDirectory("./target/spooned/package");
@@ -129,7 +131,6 @@ public class PackageTest {
 		environment.setCommentEnabled(true);
 		launcher.addInputResource("./src/test/java/spoon/test/pkg/package-info.java");
 		launcher.setSourceOutputDirectory("./target/spooned/packageAndTemplate");
-//		SpoonResourceHelper.resources("./src/test/java/spoon/test/pkg/test_templates").forEach(r->launcher.addTemplateResource(r));
 		launcher.addTemplateResource(SpoonResourceHelper.createResource(new File("./src/test/java/spoon/test/pkg/test_templates/FakeTemplate.java")));
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -137,15 +138,15 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenamePackageAndPrettyPrint() throws Exception {
+	public void testRenamePackageAndPrettyPrint() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
 		spoon.buildModel();
 
-		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<CtPackage>(CtPackage.class, "spoon")).get(0);
+		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<>(CtPackage.class, "spoon")).get(0);
 		ctPackage.setSimpleName("otherName");
 
-		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<CtClass>(CtClass.class, "Foo")).get(0);
+		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<>(CtClass.class, "Foo")).get(0);
 		assertEquals("otherName.test.pkg.testclasses.Foo", foo.getQualifiedName());
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
@@ -156,16 +157,16 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenamePackageAndPrettyPrintNoclasspath() throws Exception {
+	public void testRenamePackageAndPrettyPrintNoclasspath() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.buildModel();
 
-		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<CtPackage>(CtPackage.class, "app")).get(0);
+		CtPackage ctPackage = spoon.getModel().getElements(new NamedElementFilter<>(CtPackage.class, "app")).get(0);
 		ctPackage.setSimpleName("otherName");
 
-		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<CtClass>(CtClass.class, "Test")).get(0);
+		CtClass foo = spoon.getModel().getElements(new NamedElementFilter<>(CtClass.class, "Test")).get(0);
 		assertEquals("otherName.Test", foo.getQualifiedName());
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
@@ -189,14 +190,15 @@ public class PackageTest {
 		File f = new File(fileDir);
 		assertTrue(f.exists());
 
-		BufferedReader reader = new BufferedReader(new FileReader(f));
-		assertTrue(reader.lines().anyMatch((s) -> {
-			return s.equals("package newtest;");
-		}));
+		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+			assertTrue(reader.lines().anyMatch((s) -> {
+				return "package newtest;".equals(s);
+			}));
+		}
 	}
 
 	@Test
-	public void testRenameRootPackage() throws Exception {
+	public void testRenameRootPackage() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
@@ -209,7 +211,7 @@ public class PackageTest {
 	}
 
 	@Test
-	public void testRenameRootPackageWithNullOrEmpty() throws Exception {
+	public void testRenameRootPackageWithNullOrEmpty() {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/app/Test.java");
 		spoon.getEnvironment().setNoClasspath(true);
@@ -232,6 +234,8 @@ public class PackageTest {
 		final Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/pkg/testclasses/Foo.java");
 		spoon.getEnvironment().setAutoImports(true);
+		File outputDir = new File("./target/spoon-packageinfo");
+		spoon.getEnvironment().setSourceOutputDirectory(outputDir);
 
 		spoon.buildModel();
 
@@ -241,9 +245,8 @@ public class PackageTest {
 		CtPackage ctPackage = spoon.getFactory().Package().get("spoon.test.pkg.testclasses");
 		ctPackage.addAnnotation(annotation);
 
-		File outputDir = new File("./target/spoon-packageinfo");
 
-		JavaOutputProcessor outputProcessor = spoon.createOutputWriter(outputDir, spoon.getEnvironment());
+		JavaOutputProcessor outputProcessor = spoon.createOutputWriter();
 		outputProcessor.process(ctPackage);
 
 		File packageInfo = new File(outputDir, "spoon/test/pkg/testclasses/package-info.java");

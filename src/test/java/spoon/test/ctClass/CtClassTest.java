@@ -6,11 +6,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
-import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -24,7 +25,6 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -34,16 +34,15 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
 public class CtClassTest {
 
-    @Test
-    public void getConstructor() throws Exception {
-        final Factory build = build(Foo.class);
-        final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
+	@Test
+	public void getConstructor() throws Exception {
+		final Factory build = build(Foo.class);
+		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
 
 		assertEquals(3, foo.getConstructors().size());
 
@@ -60,10 +59,34 @@ public class CtClassTest {
 		typeStringArrayArray.setComponentType(typeStringArray);
 		constructor = foo.getConstructor(typeStringArrayArray);
 		assertEquals(typeStringArrayArray, constructor.getParameters().get(0).getType());
+
+		// contract: one could add a type member that already exists (equals but not same) and modify it afterwards
+		// this adds some flexibility for client code
+		// see https://github.com/INRIA/spoon/issues/1862
+		CtConstructor cons = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
+		foo.addConstructor(cons);
+		// as long as we have not changed the signature, getConstructors, which is based on signatures,
+		// thinks there is one single constructor (and that's OK)
+		assertEquals(3, foo.getConstructors().size());
+		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT));
+		// now that we have changed the signature we can call getConstructors safely
+		assertEquals(4, foo.getConstructors().size());
+		// we cloned the first constructor, so it has the same position, and comes before the 2nd and 3rd constructor
+		assertSame(cons, foo.getTypeMembers().get(1));
+		// the parent is set (the core problem described in the issue has been fixed)
+		assertSame(foo, cons.getParent());
+
+		// now we clone and reset the position
+		CtConstructor cons2 = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
+		cons2.setPosition(null);
+		// adding the constructor, this time, without a position
+		foo.addConstructor(cons2);
+		// without position, it has been addded at the end
+		assertSame(cons2, foo.getTypeMembers().get(4));
 	}
 
 	@Test
-	public void testParentOfTheEnclosingClassOfStaticClass() throws Exception {
+	public void testParentOfTheEnclosingClassOfStaticClass() {
 		// contract: When we have a static class which extends a superclass in the classpath,
 		// the enclosing class don't have a superclass. This is probably a bug in JDT but good
 		// luck to report a bug about noclasspath in their bugtracker. :)
@@ -89,7 +112,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testNoClasspathWithSuperClassOfAClassInAnInterface() throws Exception {
+	public void testNoClasspathWithSuperClassOfAClassInAnInterface() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -150,8 +173,8 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testSpoonShouldInferImplicitPackageInNoClasspath() throws Exception {
-    	// contract: in noClasspath, when a type is used and no import is specified, then Spoon
+	public void testSpoonShouldInferImplicitPackageInNoClasspath() {
+		// contract: in noClasspath, when a type is used and no import is specified, then Spoon
 		// should infer that this type is in the same package as the current class.
 		final Launcher launcher2 = new Launcher();
 		launcher2.addInputResource("./src/test/resources/noclasspath/issue1293/com/cristal/ircica/applicationcolis/userinterface/fragments/TransporteurFragment.java");
@@ -168,7 +191,7 @@ public class CtClassTest {
 	}
 
 	@Test
-	public void testDefaultConstructorAreOk() throws Exception {
+	public void testDefaultConstructorAreOk() {
 		// contract: When we specify a superclass which is declared in an interface and
 		// where the visibility is okay, we must use it.
 
@@ -188,7 +211,7 @@ public class CtClassTest {
 
 	@Test
 	public void testCloneAnonymousClassInvocation() {
-    	// contract: after cloning an anonymous class invocation, we still should be able to print it, when not using autoimport
+		// contract: after cloning an anonymous class invocation, we still should be able to print it, when not using autoimport
 
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctClass/testclasses/AnonymousClass.java");
@@ -196,7 +219,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -208,8 +231,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertFalse(newClassInvocation.toString().isEmpty());
+		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
@@ -224,7 +247,7 @@ public class CtClassTest {
 		launcher.buildModel();
 
 		CtModel model = launcher.getModel();
-		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<CtNewClass>(CtNewClass.class)).get(0);
+		CtNewClass newClassInvocation = launcher.getModel().getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		CtNewClass newClassInvocationCloned = newClassInvocation.clone();
 
 		CtClass anonymousClass = newClassInvocation.getAnonymousClass();
@@ -236,8 +259,8 @@ public class CtClassTest {
 		assertEquals(0, anonymousClass.getAllFields().size());
 		assertEquals(0, anonymousClassCloned.getAllFields().size());
 
-		assertTrue(newClassInvocation.toString().length() > 0);
-		assertTrue(newClassInvocationCloned.toString().length() > 0);
+		assertFalse(newClassInvocation.toString().isEmpty());
+		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}

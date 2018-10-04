@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,6 +17,7 @@
 package spoon.support.template;
 
 import spoon.SpoonException;
+import spoon.pattern.PatternBuilder;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
@@ -98,6 +99,7 @@ public abstract class Parameters {
 			if (Modifier.isFinal(rtField.getModifiers())) {
 				Map<String, Object> m = finals.get(template);
 				if (m == null) {
+					//BUG: parameters marked as final will always return null, even if they have a value!
 					return null;
 				}
 				return m.get(parameterName);
@@ -136,7 +138,6 @@ public abstract class Parameters {
 	 */
 	@SuppressWarnings("null")
 	public static void setValue(Template<?> template, String parameterName, Integer index, Object value) {
-		Object tparamValue = null;
 		try {
 			Field rtField = null;
 			for (Field f : RtHelper.getAllFields(template.getClass())) {
@@ -161,9 +162,7 @@ public abstract class Parameters {
 			rtField.setAccessible(true);
 			rtField.set(template, value);
 			if (rtField.getType().isArray()) {
-				// TODO: RP: THIS IS WRONG!!!! tparamValue is never used or
-				// set!!
-				tparamValue = ((Object[]) tparamValue)[index];
+				// TODO: RP: THIS IS WRONG!!!! tparamValue is never used or set!
 			}
 		} catch (Exception e) {
 			throw new UndefinedParameterException();
@@ -173,7 +172,7 @@ public abstract class Parameters {
 	private static String getParameterName(Field f) {
 		String name = f.getName();
 		Parameter p = f.getAnnotation(Parameter.class);
-		if ((p != null) && !p.value().equals("")) {
+		if ((p != null) && !p.value().isEmpty()) {
 			name = p.value();
 		}
 		return name;
@@ -182,7 +181,7 @@ public abstract class Parameters {
 	private static String getParameterName(CtFieldReference<?> f) {
 		String name = f.getSimpleName();
 		Parameter p = f.getDeclaration().getAnnotation(Parameter.class);
-		if ((p != null) && !p.value().equals("")) {
+		if ((p != null) && !p.value().isEmpty()) {
 			name = p.value();
 		}
 		return name;
@@ -236,13 +235,30 @@ public abstract class Parameters {
 	 * 		the template that holds the parameter values
 	 */
 	public static Map<String, Object> getTemplateParametersAsMap(Factory f, CtType<?> targetType, Template<?> template) {
-		Map<String, Object> params = new HashMap<>(Parameters.getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
-		if (targetType != null) {
-			/*
-			 * there is required to replace all template model references by target type reference.
-			 * Handle that request as template parameter too
-			 */
-			params.put(template.getClass().getSimpleName(), targetType.getReference());
+		Map<String, Object> params = new HashMap<>(getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
+		//detect reference to to be generated type
+		CtTypeReference<?> targetTypeRef = targetType == null ? null : targetType.getReference();
+		if (targetType == null) {
+			//legacy templates has target type stored under variable whose name was equal to simple name of template type
+			Object targetTypeObject = params.get(template.getClass().getSimpleName());
+			if (targetTypeObject != null) {
+				if (targetTypeObject instanceof CtTypeReference<?>) {
+					targetTypeRef = (CtTypeReference<?>) targetTypeObject;
+				} else if (targetTypeObject instanceof String) {
+					targetTypeRef = f.Type().createReference((String) targetTypeObject);
+				} else if (targetTypeObject instanceof Class) {
+					targetTypeRef = f.Type().createReference((Class<?>) targetTypeObject);
+				} else  {
+					throw new SpoonException("Unsupported definition of target type by value of class " + targetTypeObject.getClass());
+				}
+			}
+		}
+		/*
+		 * there is required to replace all template model references by target type reference.
+		 * Handle that request as template parameter too
+		 */
+		if (targetTypeRef != null) {
+			params.put(PatternBuilder.TARGET_TYPE, targetTypeRef);
 		}
 		return params;
 	}
@@ -264,15 +280,12 @@ public abstract class Parameters {
 			//the template fields, which are using generic type like <T>, are not template parameters
 			return false;
 		}
-		if (ref.getSimpleName().equals("this")) {
+		if ("this".equals(ref.getSimpleName())) {
 			//the reference to this is not template parameter
 			return false;
 		}
-		if (TemplateParameter.class.getName().equals(ref.getType().getQualifiedName())) {
-			//the type of template field is TemplateParameter.
-			return true;
-		}
-		return false;
+		//the type of template field is TemplateParameter.
+		return ref.getType().isSubtypeOf(getTemplateParameterType(ref.getFactory()));
 	}
 
 	/**
@@ -301,12 +314,14 @@ public abstract class Parameters {
 	public static <T> TemplateParameter<T> NIL(Class<? extends T> type) {
 		if (Number.class.isAssignableFrom(type)) {
 			return (TemplateParameter<T>) new TemplateParameter<Number>() {
+				@Override
 				public Number S() {
 					return 0;
 				}
 			};
 		}
 		return new TemplateParameter<T>() {
+			@Override
 			public T S() {
 				return null;
 			}

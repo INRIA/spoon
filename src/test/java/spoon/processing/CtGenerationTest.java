@@ -1,5 +1,7 @@
 package spoon.processing;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import spoon.Launcher;
@@ -7,6 +9,7 @@ import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.generating.RoleHandlersGenerator;
+import spoon.metamodel.MetamodelProperty;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtBiScannerDefault;
@@ -14,25 +17,36 @@ import spoon.reflect.visitor.Filter;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.List;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class CtGenerationTest {
+	private String oldLineSeparator;
+
+	@Before
+	public void setup() {
+		this.oldLineSeparator = System.getProperty("line.separator", "\n");
+		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that.
+		System.setProperty("line.separator", "\n");
+	}
+
+	@After
+	public void teardown() {
+		System.setProperty("line.separator", this.oldLineSeparator);
+	}
+
 	@Test
 	public void testGenerateReplacementVisitor() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(false);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -42,20 +56,21 @@ public class CtGenerationTest {
 		// Utils.
 		launcher.addInputResource("./src/main/java/spoon/reflect/visitor/CtScanner.java");
 
-		Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())
-				.forEach(path -> {
-					if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
-						launcher.addInputResource(path.toString());
-					}
-		});
+		try (Stream<Path> files = Files.list(new File("./src/main/java/spoon/support/visitor/replace/").toPath())) {
+			files.forEach(path -> {
+				if (!path.getFileName().toString().endsWith("ReplacementVisitor.java")) {
+					launcher.addInputResource(path.toString());
+				}
+			});
+		}
+
 		launcher.addInputResource("./src/test/java/spoon/generating/replace/ReplacementVisitor.java");
-		//launcher.addInputResource("./src/test/java/spoon/generating/replace/");
 		launcher.addProcessor(new ReplacementVisitorGenerator());
 		launcher.setOutputFilter(new RegexFilter("spoon.support.visitor.replace.*"));
 		launcher.run();
 
 		// cp ./target/generated/spoon/support/visitor/replace/ReplacementVisitor.java ./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java
-		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
+		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/replace/ReplacementVisitor.java")).Class().get("spoon.support.visitor.replace.ReplacementVisitor");
 		try {
 			assertThat(actual).isEqualTo(expected);
@@ -65,10 +80,8 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateCtBiScanner() throws Exception {
+	public void testGenerateCtBiScanner() {
 		// contract: generates the biscanner that is used for equality checking
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -96,15 +109,12 @@ public class CtGenerationTest {
 	}
 
 	@Test
-	public void testGenerateCloneVisitor() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
+	public void testGenerateCloneVisitor() {
 		// contract: generates CloneBuilder.java and CloneBuilder.java
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -125,7 +135,7 @@ public class CtGenerationTest {
 		launcher.run();
 
 		// cp ./target/generated/spoon/support/visitor/clone/CloneBuilder.java  ./src/main/java/spoon/support/visitor/clone/CloneBuilder.java
-		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/clone/CloneBuilder.java")).Class().get("spoon.support.visitor.clone.CloneBuilder");
+		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/support/visitor/clone/CloneBuilder.java")).Class().get("spoon.support.visitor.clone.CloneBuilder");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/support/visitor/clone/CloneBuilder.java")).Class().get("spoon.support.visitor.clone.CloneBuilder");
 		try {
 			assertThat(actual)
@@ -135,7 +145,7 @@ public class CtGenerationTest {
 		}
 
 		// cp ./target/generated/spoon/support/visitor/clone/CloneVisitor.java  ./src/main/java/spoon/support/visitor/clone/CloneVisitor.java
-		actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/support/visitor/clone/CloneVisitor.java")).Class().get("spoon.support.visitor.clone.CloneVisitor");
+		actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/support/visitor/clone/CloneVisitor.java")).Class().get("spoon.support.visitor.clone.CloneVisitor");
 		expected = build(new File("./src/main/java/spoon/support/visitor/clone/CloneVisitor.java")).Class().get("spoon.support.visitor.clone.CloneVisitor");
 		try {
 			assertThat(actual)
@@ -144,18 +154,15 @@ public class CtGenerationTest {
 			throw new ComparisonFailure("CloneVisitor different", expected.toString(), actual.toString());
 		}
 	}
-	
+
 	@Test
-	public void testGenerateRoleHandler() throws Exception {
-		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that. 
-		System.setProperty("line.separator", "\n");
+	public void testGenerateRoleHandler() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 		launcher.getEnvironment().setCopyResources(false);
 		launcher.getEnvironment().useTabulations(true);
-		//launcher.getEnvironment().setAutoImports(true);
 		launcher.setSourceOutputDirectory("./target/generated/");
 		// Spoon model interfaces
 		launcher.addInputResource("./src/main/java/spoon/reflect/code");
@@ -171,10 +178,15 @@ public class CtGenerationTest {
 		launcher.addInputResource("./src/main/java/spoon/reflect/meta/impl/AbstractRoleHandler.java");
 		launcher.addProcessor(new RoleHandlersGenerator());
 		launcher.setOutputFilter(new RegexFilter("\\Q" + RoleHandlersGenerator.TARGET_PACKAGE + ".ModelRoleHandlers\\E.*"));
-		launcher.run();
+		try {
+			System.setProperty(MetamodelProperty.class.getName() + "-noRoleHandler", "true");
+			launcher.run();
+		} finally {
+			System.setProperty(MetamodelProperty.class.getName() + "-noRoleHandler", "false");
+		}
 
 		// cp ./target/generated/spoon/reflect/meta/impl/ModelRoleHandlers.java ./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java
-		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory()+"/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
+		CtClass<Object> actual = build(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		CtClass<Object> expected = build(new File("./src/main/java/spoon/reflect/meta/impl/ModelRoleHandlers.java")).Class().get("spoon.reflect.meta.impl.ModelRoleHandlers");
 		try {
 			assertThat(actual).isEqualTo(expected);
@@ -182,7 +194,6 @@ public class CtGenerationTest {
 			throw new ComparisonFailure("ModelRoleHandlers different", expected.toString(), actual.toString());
 		}
 	}
-	
 
 	private class RegexFilter implements Filter<CtType<?>> {
 		private final Pattern regex;

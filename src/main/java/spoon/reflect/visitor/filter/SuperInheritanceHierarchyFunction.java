@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,8 +16,6 @@
  */
 package spoon.reflect.visitor.filter;
 
-import java.util.Set;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
@@ -33,9 +31,7 @@ import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.SpoonClassNotFoundException;
 
-import static spoon.reflect.visitor.chain.ScanningMode.NORMAL;
-import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
-import static spoon.reflect.visitor.chain.ScanningMode.SKIP_CHILDREN;
+import java.util.Set;
 
 /**
  * Expects a {@link CtTypeInformation} as input
@@ -55,6 +51,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 	private boolean failOnClassNotFound = false;
 	private CtScannerListener listener;
 	private boolean returnTypeReferences = false;
+	private boolean interfacesExtendObject = false;
 
 	/**
 	 * Super inheritance hierarchy scanning listener.
@@ -138,9 +135,9 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		@Override
 		public ScanningMode enter(CtElement element) {
 			if (visitedSet.add(((CtTypeInformation) element).getQualifiedName())) {
-				return NORMAL;
+				return ScanningMode.NORMAL;
 			}
-			return SKIP_ALL;
+			return ScanningMode.SKIP_ALL;
 		}
 		@Override
 		public void exit(CtElement element) {
@@ -173,6 +170,18 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		return this;
 	}
 
+	/**
+	 * configures whether it should visit {@link Object} at the end of interface extends interface hierarchy.
+	 * Note: interface cannot extend Object (only other interfaces),
+	 * but note that interface inherits all public type members of {@link Object},
+	 * so there are use cases where client wants to visit Object as last member of interface inheritance hierarchy
+	 * @param interfacesExtendObject if true then {@link Object} is visited at the end too
+	 * @return this to support fluent API
+	 */
+	public SuperInheritanceHierarchyFunction interfacesExtendObject(boolean interfacesExtendObject) {
+		this.interfacesExtendObject = interfacesExtendObject;
+		return this;
+	}
 	/**
 	 * The listener evens are called in this order:
 	 * <ol>
@@ -224,25 +233,29 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
-		isClass = type == null ? false : (type instanceof CtClass);
+		isClass = type instanceof CtClass;
 		if (isClass == false && includingInterfaces == false) {
 			//the input is interface, but this scanner should visit only interfaces. Finish
 			return;
 		}
 		ScanningMode mode = enter(typeRef, isClass);
-		if (mode == SKIP_ALL) {
+		if (mode == ScanningMode.SKIP_ALL) {
 			//listener decided to not visit that input. Finish
 			return;
 		}
 		if (includingSelf) {
 			sendResult(typeRef, outputConsumer);
 			if (query.isTerminated()) {
-				mode = SKIP_CHILDREN;
+				mode = ScanningMode.SKIP_CHILDREN;
 			}
 		}
-		if (mode == NORMAL) {
+		if (mode == ScanningMode.NORMAL) {
 			if (isClass == false) {
 				visitSuperInterfaces(typeRef, outputConsumer);
+				if (interfacesExtendObject) {
+					//last visit Object.class, because interface inherits all public type members of Object.class
+					sendResultWithListener(typeRef.getFactory().Type().OBJECT, isClass, outputConsumer, (ref) -> { });
+				}
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that
 				visitSuperClasses(typeRef, outputConsumer, includingInterfaces);
@@ -274,15 +287,8 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
 			superClassRef = superTypeRef.getFactory().Type().OBJECT;
 		}
-		ScanningMode mode = enter(superClassRef, true);
-		if (mode == SKIP_ALL) {
-			return;
-		}
-		sendResult(superClassRef, outputConsumer);
-		if (mode == NORMAL && query.isTerminated() == false) {
-			visitSuperClasses(superClassRef, outputConsumer, includingInterfaces);
-		}
-		exit(superClassRef, true);
+		sendResultWithListener(superClassRef, true,
+				outputConsumer, (classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));
 	}
 
 	/**
@@ -301,19 +307,24 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			return;
 		}
 		for (CtTypeReference<?> ifaceRef : superInterfaces) {
-			ScanningMode mode = enter(ifaceRef, false);
-			if (mode == SKIP_ALL) {
-				continue;
-			}
-			sendResult(ifaceRef, outputConsumer);
-			if (mode == NORMAL && query.isTerminated() == false) {
-				visitSuperInterfaces(ifaceRef, outputConsumer);
-			}
-			exit(ifaceRef, false);
+			sendResultWithListener(ifaceRef, false,
+					outputConsumer, (ref) -> visitSuperInterfaces(ref, outputConsumer));
 			if (query.isTerminated()) {
 				return;
 			}
 		}
+	}
+
+	private void sendResultWithListener(CtTypeReference<?> classRef, boolean isClass, CtConsumer<Object> outputConsumer, CtConsumer<CtTypeReference<?>> runNext) {
+		ScanningMode mode = enter(classRef, isClass);
+		if (mode == ScanningMode.SKIP_ALL) {
+			return;
+		}
+		sendResult(classRef, outputConsumer);
+		if (mode == ScanningMode.NORMAL && query.isTerminated() == false) {
+			runNext.accept(classRef);
+		}
+		exit(classRef, isClass);
 	}
 
 	@Override
@@ -323,7 +334,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 
 	private ScanningMode enter(CtTypeReference<?> type, boolean isClass) {
 		if (listener == null) {
-			return NORMAL;
+			return ScanningMode.NORMAL;
 		}
 		if (listener instanceof Listener) {
 			Listener typeListener = (Listener) listener;

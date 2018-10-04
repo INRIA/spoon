@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,7 +19,9 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
@@ -66,7 +68,14 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	CtTypeReference<A> getAnnotationType();
 
 	/**
-	 * Gets a value for a given key without any conversion.
+	 * Gets a value, as a CtExpression, for a given key without any conversion.
+	 *
+	 * If you need the actual value (eg an integer and not a literal, see {@link #getValueAsObject(String)} and similar methods.
+	 *
+	 * Note that this value type does not necessarily corresponds to the annotation
+	 * type member. For example, in case the annotation type expect an array of Object,
+	 * and a single value is given, Spoon will return only the object without the CtNewArray.
+	 * If you want to get a type closer to the annotation type one, see {@link #getWrappedValue(String)}.
 	 *
 	 * @param key
 	 * 		Name of searched value.
@@ -74,6 +83,33 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 */
 	@PropertyGetter(role = VALUE)
 	<T extends CtExpression> T getValue(String key);
+
+	/** Returns the actual value of an annotation property */
+	@DerivedProperty
+	Object getValueAsObject(String key);
+
+	/** Returns the actual value of an annotation property, as an integer (utility method) */
+	@DerivedProperty
+	int getValueAsInt(String key);
+
+	/** Returns the actual value of an annotation property, as a String (utility method) */
+	@DerivedProperty
+	String getValueAsString(String key);
+
+	/**
+	 * Gets a value for a given key and try to fix its type based on the
+	 * annotation type. For example, if the annotation type member expects an array of String,
+	 * and it can be resolved, this method will return a CtNewArray instead of a CtLiteral.
+	 *
+	 * Warning: the returned element might be detached from the model
+	 *
+	 * @param key
+	 * 		Name of searched value.
+	 * @return the value expression or null if not found.
+	 */
+	@DerivedProperty
+	@PropertyGetter(role = VALUE)
+	<T extends CtExpression> T getWrappedValue(String key);
 
 	/**
 	 * Returns this annotation's elements and their values. This is returned in
@@ -86,6 +122,10 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	 */
 	@PropertyGetter(role = VALUE)
 	Map<String, CtExpression> getValues();
+
+	/** Get all values of {@link #getValues()}, plus the default ones defined in the annotation type. */
+	@DerivedProperty
+	Map<String, CtExpression> getAllValues();
 
 	/**
 	 * Sets the annotation's type.
@@ -165,4 +205,42 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	@Override
 	@UnsettableProperty
 	<C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> types);
+
+	static CtAnnotatedElementType getAnnotatedElementTypeForCtElement(CtElement element) {
+		if (element == null) {
+			return null;
+		}
+
+		if (element instanceof CtMethod) {
+			return CtAnnotatedElementType.METHOD;
+		}
+		if (element instanceof CtAnnotation || element instanceof CtAnnotationType) {
+			return CtAnnotatedElementType.ANNOTATION_TYPE;
+		}
+		if (element instanceof CtType) {
+			return CtAnnotatedElementType.TYPE;
+		}
+		if (element instanceof CtField) {
+			return CtAnnotatedElementType.FIELD;
+		}
+		if (element instanceof CtConstructor) {
+			return CtAnnotatedElementType.CONSTRUCTOR;
+		}
+		if (element instanceof CtParameter) {
+			return CtAnnotatedElementType.PARAMETER;
+		}
+		if (element instanceof CtLocalVariable) {
+			return CtAnnotatedElementType.LOCAL_VARIABLE;
+		}
+		if (element instanceof CtPackage) {
+			return CtAnnotatedElementType.PACKAGE;
+		}
+		if (element instanceof CtTypeParameterReference) {
+			return CtAnnotatedElementType.TYPE_PARAMETER;
+		}
+		if (element instanceof CtTypeReference) {
+			return CtAnnotatedElementType.TYPE_USE;
+		}
+		return null;
+	}
 }

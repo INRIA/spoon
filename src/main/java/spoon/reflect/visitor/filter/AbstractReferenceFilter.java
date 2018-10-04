@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -41,6 +41,5 @@ public abstract class AbstractReferenceFilter<T extends CtReference> extends Abs
 	 * Creates a filter with the type computed by reflection from the matches method parameter
 	 */
 	public AbstractReferenceFilter() {
-		super();
 	}
 }

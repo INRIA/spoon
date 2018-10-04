@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,7 +23,6 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -41,17 +40,16 @@ import static spoon.reflect.path.CtRole.IS_STATIC;
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.DECLARING_TYPE)
+	@MetamodelPropertyField(role = DECLARING_TYPE)
 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = CtRole.IS_FINAL)
+	@MetamodelPropertyField(role = IS_FINAL)
 	boolean fina = false;
 
-	@MetamodelPropertyField(role = CtRole.IS_STATIC)
+	@MetamodelPropertyField(role = IS_STATIC)
 	boolean stat = false;
 
 	public CtFieldReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -174,7 +172,13 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public String getQualifiedName() {
-		return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
+		CtTypeReference<?> declaringType = getDeclaringType();
+
+		if (declaringType != null) {
+			return getDeclaringType().getQualifiedName() + "#" + getSimpleName();
+		} else {
+			return  "<unknown>#" + getSimpleName();
+		}
 	}
 
 	@Override

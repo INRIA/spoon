@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -75,9 +75,14 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -85,6 +90,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -400,6 +406,7 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
+	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 
 	}
@@ -469,6 +476,36 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtImport(CtImport ctImport) {
+
+	}
+
+	@Override
+	public void visitCtModule(CtModule module) {
+
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+
+	}
+
+	@Override
+	public void visitCtPackageExport(CtPackageExport moduleExport) {
+
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+
+	}
+
+	@Override
+	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
+
+	}
+
+	@Override
+	public void visitCtUsedService(CtUsedService usedService) {
 
 	}
 }

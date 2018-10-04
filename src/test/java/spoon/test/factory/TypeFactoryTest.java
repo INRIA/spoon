@@ -1,17 +1,23 @@
 package spoon.test.factory;
 
+import com.mysema.query.types.expr.ComparableExpressionBase;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.test.factory.testclasses3.Cooking;
 import spoon.test.factory.testclasses3.Prepare;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TypeFactoryTest {
 
@@ -27,7 +33,7 @@ public class TypeFactoryTest {
 		assertEquals("java.lang.Object", ctTypeReference.getQualifiedName());
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
-		assertEquals(null, ctTypeReference);
+		assertNull(ctTypeReference);
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(CtJavaDoc.CommentType.class);
 		assertEquals("CommentType", ctTypeReference.getSimpleName());
@@ -35,13 +41,22 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void reflectionAPI() throws Exception {
+	public void reflectionAPI() {
 		// Spoon can be used as reflection API
 		CtType s = new TypeFactory().get(String.class);
 		assertEquals("String", s.getSimpleName());
 		assertEquals("java.lang.String", s.getQualifiedName());
 		assertEquals(3, s.getSuperInterfaces().size());
 		assertEquals(2, s.getMethodsByName("toLowerCase").size());
+	}
+
+	@Test
+	public void reflectionAPIWithTypeParameter() {
+		// check the creation of the ComparableExpressionBase with the reflexion API
+		CtType<Object> ctType = new Launcher().getFactory().Type().get(ComparableExpressionBase.class);
+		assertEquals("ComparableExpressionBase", ctType.getSimpleName());
+		CtMethod<?> method = ctType.getMethodsByName("castToNum").get(0);
+		assertEquals("A extends java.lang.Number & java.lang.Comparable<? super A>", method.getFormalCtTypeParameters().get(0).toString());
 	}
 
 	@Test
@@ -59,5 +74,16 @@ public class TypeFactoryTest {
 		assertNotNull(prepare.getFactory().Interface().get("spoon.test.factory.testclasses3.Prepare$Tacos"));
 		assertNotNull(prepare.getFactory().Type().get(Prepare.Pozole.class));
 		assertNotNull(prepare.getFactory().Interface().get(Prepare.Pozole.class));
+	}
+
+	@Test
+	public void testGetClassWithDollarAndNestedClass() {
+		//Classes with name containing $ without being nested classes can contain nested classes
+		Factory factory = ModelUtils.build(new File("./src/test/resources/dollar-and-nested-classes"));
+		CtType<?> poorName = factory.Type().get("$Poor$Name");
+		CtType<?> poorNameChoice = factory.Type().get("$Poor$Name$Choice");
+		assertNotNull(poorName);
+		assertNotNull(poorNameChoice);
+		assertEquals(poorNameChoice,poorName.getMethodsByName("lookingForTroubles").get(0).getType().getTypeDeclaration());
 	}
 }

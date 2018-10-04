@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,6 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
@@ -82,15 +83,11 @@ public class CtScannerFunction implements CtConsumableFunction<CtElement>, CtQue
 		private CtQuery query;
 
 		@Override
-		protected void doScan(CtElement element, ScanningMode mode) {
-			//send input to output
-			if (mode.visitElement) {
-				next.accept(element);
-			}
-			if (mode.visitChildren) {
-				element.accept(this);
-			}
+		protected void onElement(CtRole role, CtElement element) {
+			next.accept(element);
+			super.onElement(role, element);
 		}
+
 		/*
 		 * override {@link EarlyTerminatingScanner#isTerminated()} and let it stop when query is terminated
 		 */

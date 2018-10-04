@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,7 +16,6 @@
  */
 package spoon.generating.replace;
 
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.visitor.replace.InvalidReplaceException;
@@ -44,7 +43,6 @@ class ReplacementVisitor extends CtScanner {
 			new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
 		} catch (InvalidReplaceException e) {
 			throw e;
-		} catch (SpoonException ignore) {
 		}
 	}
 	public static <E extends CtElement> void replace(CtElement original, Collection<E> replaces) {
@@ -52,7 +50,6 @@ class ReplacementVisitor extends CtScanner {
 			new ReplacementVisitor(original, replaces.toArray(new CtElement[replaces.size()])).scan(original.getParent());
 		} catch (InvalidReplaceException e) {
 			throw e;
-		} catch (SpoonException ignore) {
 		}
 	}
 
@@ -131,8 +128,8 @@ class ReplacementVisitor extends CtScanner {
 		if (shouldBeDeleted != null) {
 			list.remove(index);
 			if (replace.length > 0) {
-				for (int i = 0; i < replace.length; i++) {
-					T ele = (T) replace[i];
+				for (CtElement aReplace : replace) {
+					T ele = (T) aReplace;
 					if (ele != null) {
 						list.add(index, ele);
 						ele.setParent(shouldBeDeleted.getParent());

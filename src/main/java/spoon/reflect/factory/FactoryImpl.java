@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -88,10 +88,15 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
@@ -102,6 +107,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -354,6 +360,19 @@ public class FactoryImpl implements Factory, Serializable {
 			query = new QueryFactory(this);
 		}
 		return query;
+	}
+
+	private transient ModuleFactory module;
+
+	/**
+	 * The module sub-factory
+	 */
+	@Override
+	public ModuleFactory Module() {
+		if (module == null) {
+			module = new ModuleFactory(this);
+		}
+		return module;
 	}
 
 
@@ -801,6 +820,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public <T> CtConstructor<T> createInvisibleArrayConstructor() {
+		return Core().createInvisibleArrayConstructor();
+	}
+
+	@Override
 	public <T> CtEnumValue<T> createEnumValue() {
 		return Core().createEnumValue();
 	}
@@ -1061,6 +1085,16 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public CtQuery createQuery(Object[] input) {
+		return Query().createQuery(input);
+	}
+
+	@Override
+	public CtQuery createQuery(Iterable<?> input) {
+		return Query().createQuery(input);
+	}
+
+	@Override
 	public CtAnnotationType createAnnotationType(String qualifiedName) {
 		return Annotation().create(qualifiedName);
 	}
@@ -1171,11 +1205,6 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CtQuery createQuery(Object... input) {
-		return Query().createQuery(input);
-	}
-
-	@Override
 	public CtImport createImport(CtReference reference) {
 		return Type().createImport(reference);
 	}
@@ -1183,5 +1212,40 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtTypeReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
 		return Type().createWildcardStaticTypeMemberReference(typeReference);
+	}
+
+	@Override
+	public CtPackageExport createPackageExport(CtPackageReference ctPackageReference) {
+		return Module().createPackageExport(ctPackageReference);
+	}
+
+	@Override
+	public CtProvidedService createProvidedService(CtTypeReference ctTypeReference) {
+		return Module().createProvidedService(ctTypeReference);
+	}
+
+	@Override
+	public CtModuleRequirement createModuleRequirement(CtModuleReference ctModuleReference) {
+		return Module().createModuleRequirement(ctModuleReference);
+	}
+
+	@Override
+	public CtModule createModule(String moduleName) {
+		return Module().getOrCreate(moduleName);
+	}
+
+	@Override
+	public CtModuleReference createModuleReference(CtModule ctModule) {
+		return Module().createReference(ctModule);
+	}
+
+	@Override
+	public CtUsedService createUsedService(CtTypeReference typeReference) {
+		return Module().createUsedService(typeReference);
+	}
+
+	@Override
+	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
+		return Core().createPartialSourcePosition(compilationUnit);
 	}
 }

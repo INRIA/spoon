@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -15,14 +15,6 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.visitor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtConstructor;
@@ -42,6 +34,14 @@ import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.support.SpoonClassNotFoundException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper class created from type X or reference to X.
@@ -127,7 +127,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * assertTrue(new ClassTypingContext(listInteger).isSubtypeOf(listExtendsNumber))
 	 * </pre>
 	 * @param superTypeRef the reference
-	 * @return true if this type (including actual type arguments) is a sub type of superTypeRef
+	 * @return true if this type (including actual type arguments) is a subtype of superTypeRef
 	 */
 	public boolean isSubtypeOf(CtTypeReference<?> superTypeRef) {
 		List<CtTypeReference<?>> adaptedArgs = resolveActualTypeArgumentsOf(superTypeRef);
@@ -167,7 +167,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (enclosingClassTypingContext == null) {
 				return null;
 			}
-			//`type` is inner class. Resolve it's enclosing class arguments first
+			//`type` is inner class. Resolve its enclosing class arguments first
 			if (enclosingClassTypingContext.resolveActualTypeArgumentsOf(enclosingTypeRef) == null) {
 				return null;
 			}
@@ -190,13 +190,14 @@ public class ClassTypingContext extends AbstractTypingContext {
 		final HierarchyListener listener = new HierarchyListener(getVisitedSet());
 		/*
 		 * remove last resolved class from the list of visited,
-		 * because it would avoid visiting it's super hierarchy
+		 * because it would avoid visiting its super hierarchy
 		 */
 		getVisitedSet().remove(lastResolvedSuperclass.getQualifiedName());
 		/*
-		 * visit super inheritance class hierarchy of lastResolve type of level of `type` to found it's actual type arguments.
+		 * visit super inheritance class hierarchy of lastResolve type of level of `type` to found its actual type arguments.
 		 */
 		((CtElement) lastResolvedSuperclass).map(new SuperInheritanceHierarchyFunction()
+				.interfacesExtendObject(true)
 				.includingSelf(false)
 				.returnTypeReferences(true)
 				.setListener(listener))
@@ -204,26 +205,27 @@ public class ClassTypingContext extends AbstractTypingContext {
 			@Override
 			public void accept(CtTypeReference<?> typeRef) {
 				/*
-				 * typeRef is a reference from sub type to super type.
-				 * It contains actual type arguments in scope of sub type,
+				 * typeRef is a reference from subtype to super type.
+				 * It contains actual type arguments in scope of subtype,
 				 * which are going to be substituted as arguments to formal type parameters of super type
 				 */
 				String superTypeQualifiedName = typeRef.getQualifiedName();
 				List<CtTypeReference<?>> actualTypeArguments = typeRef.getActualTypeArguments();
 				if (actualTypeArguments.isEmpty()) {
-					//may be they are not set - check whether type declares some generic parameters
+					//maybe they are not set - check whether type declares some generic parameters
 					List<CtTypeParameter> typeParams;
-					try {
-						CtType<?> type = typeRef.getTypeDeclaration();
+					CtType<?> type = typeRef.getTypeDeclaration();
+					if (type != null) {
 						typeParams = type.getFormalCtTypeParameters();
-					} catch (final SpoonClassNotFoundException e) {
+					} else {
+						// not in classpath
 						if (typeRef.getFactory().getEnvironment().getNoClasspath()) {
 							typeParams = Collections.emptyList();
 						} else {
-							throw e;
+							throw new SpoonClassNotFoundException(typeRef.getQualifiedName() + " cannot be found in the sourcepath or classpath");
 						}
 					}
-					if (typeParams.size() > 0) {
+					if (!typeParams.isEmpty()) {
 						//yes, there are generic type parameters. Reference should use actualTypeArguments computed from their bounds
 						actualTypeArguments = new ArrayList<>(typeParams.size());
 						for (CtTypeParameter typeParam : typeParams) {
@@ -363,16 +365,18 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 */
 	private CtTypeReference<?> getEnclosingType(CtTypeReference<?> typeRef) {
 		CtType<?> type = typeRef.getTypeDeclaration();
-		if (type.hasModifier(ModifierKind.STATIC)) {
-			return null;
-		}
-		CtType<?> declType = type.getDeclaringType();
-		if (declType == null) {
-			return null;
-		}
-		if (declType.isInterface()) {
-			//nested types of interfaces are static
-			return null;
+		if (type != null) {
+			if (type.hasModifier(ModifierKind.STATIC)) {
+				return null;
+			}
+			CtType<?> declType = type.getDeclaringType();
+			if (declType == null) {
+				return null;
+			}
+			if (declType.isInterface()) {
+				//nested types of interfaces are static
+				return null;
+			}
 		}
 		return typeRef.getDeclaringType();
 	}
@@ -436,7 +440,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 				 */
 				if (foundArguments != null) {
 					//we have found result then we can finish before entering super class. All interfaces of found type should be still visited
-					//skip before super class (and it's interfaces) of found type is visited
+					//skip before super class (and its interfaces) of found type is visited
 					return ScanningMode.SKIP_ALL;
 				}
 				/*
@@ -468,35 +472,54 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (typeRef instanceof CtTypeParameterReference) {
 				CtTypeParameterReference typeParamRef = (CtTypeParameterReference) typeRef;
 				CtTypeParameter typeParam = typeParamRef.getDeclaration();
+				if (typeParam == null) {
+					throw new SpoonException("The typeParam " + typeRef.getQualifiedName() + " declaration cannot be resolved");
+				}
 				CtFormalTypeDeclarer declarer = typeParam.getTypeParameterDeclarer();
-				if ((declarer instanceof CtType<?>) == false) {
-					throw new SpoonException("Cannot adapt type parameters of non type scope");
-				}
-				CtType<?> typeDeclarer = (CtType<?>) declarer;
-				List<CtTypeReference<?>> actualTypeArguments = getActualTypeArguments(typeDeclarer.getQualifiedName());
-				if (actualTypeArguments == null) {
-					/*
-					 * the actualTypeArguments of this declarer cannot be resolved.
-					 * There is probably a model inconsistency
-					 */
-					throw new SpoonException("Cannot resolve " + (result.size() + 1) + ") type parameter <" + typeParamRef.getSimpleName() + ">  of declarer " + declarer);
-				}
-				if (actualTypeArguments.size() != typeDeclarer.getFormalCtTypeParameters().size()) {
-					if (actualTypeArguments.isEmpty() == false) {
-						throw new SpoonException("Unexpected actual type arguments " + actualTypeArguments + " on " + typeDeclarer);
-					}
-					/*
-					 * the scope type was delivered as type reference without appropriate type arguments.
-					 * Use references to formal type parameters
-					 */
-					actualTypeArguments = getTypeReferences(typeDeclarer.getFormalCtTypeParameters());
-					typeToArguments.put(typeDeclarer.getQualifiedName(), actualTypeArguments);
-				}
-				typeRef = getValue(actualTypeArguments, typeParam, declarer);
+				typeRef = resolveTypeParameter(declarer, typeParamRef, typeParam, typeRef);
 			}
 			result.add(typeRef);
 		}
 		return result;
+	}
+
+	private CtTypeReference<?> resolveTypeParameter(CtFormalTypeDeclarer declarer, CtTypeParameterReference typeParamRef, CtTypeParameter typeParam, CtTypeReference<?> typeRef) {
+		if ((declarer instanceof CtType<?>) == false) {
+			/*
+			 * The declarer is probably out of the scope of this ClassTypingContext.
+			 * For example outer class or method declares type parameter,
+			 * which is then used as argument in inner class, whose ClassTypingContext we have now
+			 * See GenericsTest#testCannotAdaptTypeOfNonTypeScope.
+			 *
+			 * Use that outer type parameter reference directly without adaptation
+			 */
+			return typeRef;
+		}
+		CtType<?> typeDeclarer = (CtType<?>) declarer;
+		List<CtTypeReference<?>> actualTypeArguments = getActualTypeArguments(typeDeclarer.getQualifiedName());
+		if (actualTypeArguments == null) {
+			/*
+			 * The declarer is probably out of the scope of this ClassTypingContext.
+			 * For example outer class or method declares type parameter,
+			 * which is then used as argument in inner class, whose ClassTypingContext we have now
+			 * See GenericsTest#testCannotAdaptTypeOfNonTypeScope.
+			 *
+			 * Use that outer type parameter reference directly without adaptation
+			 */
+			return typeRef;
+		}
+		if (actualTypeArguments.size() != typeDeclarer.getFormalCtTypeParameters().size()) {
+			if (actualTypeArguments.isEmpty() == false) {
+				throw new SpoonException("Unexpected actual type arguments " + actualTypeArguments + " on " + typeDeclarer);
+			}
+			/*
+			 * the scope type was delivered as type reference without appropriate type arguments.
+			 * Use references to formal type parameters
+			 */
+			actualTypeArguments = getTypeReferences(typeDeclarer.getFormalCtTypeParameters());
+			typeToArguments.put(typeDeclarer.getQualifiedName(), actualTypeArguments);
+		}
+		return getValue(actualTypeArguments, typeParam, declarer);
 	}
 
 	private List<CtTypeReference<?>> getActualTypeArguments(String qualifiedName) {
@@ -543,7 +566,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	private boolean isSubTypeByActualTypeArguments(CtTypeReference<?> superTypeRef, List<CtTypeReference<?>> expectedSuperTypeArguments) {
 		List<CtTypeReference<?>> superTypeArgs = superTypeRef.getActualTypeArguments();
 		if (superTypeArgs.isEmpty()) {
-			//the raw type or not a generic type. Arguments are ignored in sub type detection
+			//the raw type or not a generic type. Arguments are ignored in subtype detection
 			return true;
 		}
 		List<CtTypeReference<?>> subTypeArgs = expectedSuperTypeArguments;
@@ -640,27 +663,27 @@ public class ClassTypingContext extends AbstractTypingContext {
 				return false;
 			}
 			if (thisExecutable.getParameters().size() != thatExecutable.getParameters().size()) {
-				//the executables has different count of parameters they cannot have same signature
+				//the executables have different count of parameters they cannot have same signature
 				return false;
 			}
 			List<CtTypeParameter> thisTypeParameters = thisDeclarer.getFormalCtTypeParameters();
 			List<CtTypeParameter> thatTypeParameters = thatDeclarer.getFormalCtTypeParameters();
 			boolean useTypeErasure = false;
 			if (thisTypeParameters.size() == thatTypeParameters.size()) {
-				//the methods has same count of formal parameters
+				//the methods have same count of formal parameters
 				//check that formal type parameters are same
 				if (hasSameMethodFormalTypeParameters((CtFormalTypeDeclarer) thatExecutable) == false) {
 					return false;
 				}
 			} else {
-				//the methods has different count of formal type parameters.
+				//the methods have different count of formal type parameters.
 				if (canTypeErasure == false) {
 					//type erasure is not allowed. So non-generic methods cannot match with generic methods
 					return false;
 				}
 				//non-generic method can override a generic one if type erasure is allowed
 				if (thisTypeParameters.isEmpty() == false) {
-					//scope methods has some parameters. It is generic too, it is not a subsignature of that method
+					//scope method has some parameters. It is generic too, it is not a subsignature of that method
 					return false;
 				}
 				//scope method has zero formal type parameters. It is not generic.

@@ -17,7 +17,9 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -29,13 +31,14 @@ import spoon.test.api.testclasses.Bar;
 public class NoClasspathTest {
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		// do we still have a correct model when the complete classpath is not given as input?
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setNoClasspath(true);
 		spoon.getEnvironment().setLevel("OFF");
+		spoon.getEnvironment().setCommentEnabled(false); // avoid getting the comments for the equals
 		spoon.addInputResource("./src/test/resources/spoon/test/noclasspath/fields");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 		Factory factory = spoon.getFactory();
 		CtClass<Object> clazz = factory.Class().get("Foo");
@@ -66,7 +69,7 @@ public class NoClasspathTest {
 		{
 			CtMethod<?> method = clazz.getMethod("method", new CtTypeReference[0]);
 			assertNotNull(method);
-			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
 			assertEquals(1, invocations.size());
 			CtInvocation<?> c = invocations.get(0);
 			assertEquals("method", c.getExecutable().getSimpleName());
@@ -76,7 +79,7 @@ public class NoClasspathTest {
 		{
 			CtMethod<?> method = clazz.getMethod("m2", new CtTypeReference[0]);
 			assertNotNull(method);
-			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
 			assertEquals(3, invocations.size());
 			CtInvocation<?> c = invocations.get(1);
 			assertEquals("second", c.getExecutable().getSimpleName());
@@ -86,16 +89,16 @@ public class NoClasspathTest {
 		{
 			CtMethod<?> method = clazz.getMethod("m1", new CtTypeReference[0]);
 			assertNotNull(method);
-			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
 			assertEquals(1, invocations.size());
 			invocations.get(0);
 			assertEquals("x.y.z.method()", method.getBody().getStatement(0).toString());
 		}
 
 		{
-			CtMethod<?> method = clazz.getMethod("m3",new CtTypeReference[0]);
+			CtMethod<?> method = clazz.getMethod("m3", new CtTypeReference[0]);
 			assertNotNull(method);
-			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
 			assertEquals(1, invocations.size());
 			invocations.get(0);
 			CtLocalVariable<?> statement = method.getBody().getStatement(0);
@@ -104,7 +107,6 @@ public class NoClasspathTest {
 			assertEquals("field", fa.getVariable().getSimpleName());
 			assertEquals("int x = first().field", statement.toString());
 		}
-
 	}
 
 	@Test
@@ -129,7 +131,7 @@ public class NoClasspathTest {
 		final Factory factory = spoon.getFactory();
 		factory.getEnvironment().setAutoImports(false);
 		spoon.addInputResource("./src/test/java/spoon/test/api/testclasses/");
-		spoon.getEnvironment().getDefaultFileGenerator().setOutputDirectory(new File("target/spooned/apitest"));
+		spoon.getEnvironment().setSourceOutputDirectory(new File("target/spooned/apitest"));
 		spoon.run();
 
 		CtTypeReference<?> expectedType = factory.Type().createReference(javax.sound.sampled.AudioFormat.Encoding.class);
@@ -138,7 +140,7 @@ public class NoClasspathTest {
 		CtMethod<?> method = clazz.getMethodsByName("doSomething").get(0);
 		CtReturn<?> ctReturn = method.getElements(new TypeFilter<CtReturn<?>>(CtReturn.class)).get(0);
 
-		assertEquals(true, ctReturn.getReferencedTypes().contains(expectedType));
+		assertTrue(ctReturn.getReferencedTypes().contains(expectedType));
 	}
 
 	@Test
@@ -150,4 +152,36 @@ public class NoClasspathTest {
 		spoon.buildModel();
 	}
 
+	@Test
+	public void testInheritanceInNoClassPathWithClasses() {
+		// contract: when using noclasspath in combination with a source classpath
+		// spoon is able to resolve the inheritance between classes contained in source cp
+		String sourceInputDirPath = "./src/test/resources/spoon/test/inheritance";
+		String targetBinPath = "./target/spoon-nocp-bin";
+
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setShouldCompile(true);
+		spoon.addInputResource(sourceInputDirPath);
+		spoon.setBinaryOutputDirectory(targetBinPath);
+		spoon.run();
+
+		spoon = new Launcher();
+		spoon.getEnvironment().setNoClasspath(true);
+		spoon.getEnvironment().setSourceClasspath(new String[] { targetBinPath });
+		spoon.addInputResource(sourceInputDirPath + "/AnotherClass.java");
+		spoon.buildModel();
+
+		CtType anotherclass = spoon.getFactory().Type().get("org.acme.AnotherClass");
+		assertEquals(1, anotherclass.getFields().size());
+
+		CtField field = (CtField) anotherclass.getFields().get(0);
+
+		CtTypeReference myClassReference = spoon.getFactory().Type().createReference("fr.acme.MyClass");
+		assertEquals(myClassReference, field.getType());
+		assertNotNull(myClassReference.getActualClass());
+
+		CtTypeReference myInterfaceReference = spoon.getFactory().Type().createReference("org.myorganization.MyInterface");
+		assertTrue(myClassReference.isSubtypeOf(myInterfaceReference));
+		assertTrue(field.getType().isSubtypeOf(myInterfaceReference));
+	}
 }

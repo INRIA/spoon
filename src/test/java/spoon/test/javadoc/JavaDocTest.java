@@ -2,6 +2,7 @@ package spoon.test.javadoc;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
@@ -14,8 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class JavaDocTest {
+
 	@Test
-	public void testJavaDocReprint() throws Exception {
+	public void testJavaDocReprint() {
 		SpoonAPI launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setNoClasspath(true);
@@ -40,14 +42,28 @@ public class JavaDocTest {
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
 				+ "}", aClass.toString());
+
+		// contract: getDocComment never returns null, it returns an empty string if no comment
+		assertEquals("", aClass.getDocComment());
+
+		// contract: getDocComment returns the comment content together with the tag content
+		assertEquals("Creates an annotation type." + System.lineSeparator()
+				+ "@param owner" + System.lineSeparator()
+				+ "\t\tthe package of the annotation type" + System.lineSeparator()
+				+ "@param simpleName" + System.lineSeparator()
+				+ "\t\tthe name of annotation" + System.lineSeparator()
+				, aClass.getMethodsByName("create").get(0).getDocComment());
+
+		assertEquals(2, aClass.getMethodsByName("create").get(0).getComments().get(0).asJavaDoc().getTags().size());
+
 	}
 
 	@Test
-	public void testJavadocNotPresentInAST() throws Exception {
+	public void testJavadocNotPresentInAST() {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setCommentEnabled(false);
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/");
 		launcher.run();
 

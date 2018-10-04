@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -36,10 +36,6 @@ import spoon.support.reflect.CtModifierHandler;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
-import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.TYPE;
-
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;
 
@@ -54,6 +50,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
+
+	@MetamodelPropertyField(role = CtRole.IS_INFERRED)
+	private boolean inferred;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -85,14 +84,14 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.name);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.NAME, simpleName, this.name);
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -102,7 +101,7 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -177,6 +176,18 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
 		return (C) this;
+	}
+
+	@Override
+	public boolean isInferred() {
+		return this.inferred;
+	}
+
+	@Override
+	public <U extends CtLocalVariable<T>> U setInferred(boolean inferred) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_INFERRED, inferred, this.inferred);
+		this.inferred = inferred;
+		return (U) this;
 	}
 
 	@Override

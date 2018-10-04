@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -92,6 +92,11 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
@@ -102,6 +107,7 @@ import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -111,6 +117,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
@@ -201,6 +208,10 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void scanCtTypeMember(CtTypeMember e) {
+	}
+
+	public void scanCtModuleDirective(CtModuleDirective e) {
+
 	}
 
 	/**
@@ -942,8 +953,51 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
 	}
 
+	@Override
 	public void visitCtImport(CtImport ctImport) {
 		scanCtElement(ctImport);
 		scanCtVisitable(ctImport);
+	}
+
+	@Override
+	public void visitCtModule(CtModule module) {
+		scanCtNamedElement(module);
+		scanCtVisitable(module);
+		scanCtElement(module);
+	}
+
+	@Override
+	public void visitCtModuleReference(CtModuleReference moduleReference) {
+		scanCtReference(moduleReference);
+		scanCtElement(moduleReference);
+		scanCtVisitable(moduleReference);
+	}
+
+	@Override
+	public void visitCtPackageExport(CtPackageExport moduleExport) {
+		scanCtElement(moduleExport);
+		scanCtVisitable(moduleExport);
+		scanCtModuleDirective(moduleExport);
+	}
+
+	@Override
+	public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
+		scanCtElement(moduleRequirement);
+		scanCtVisitable(moduleRequirement);
+		scanCtModuleDirective(moduleRequirement);
+	}
+
+	@Override
+	public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
+		scanCtElement(moduleProvidedService);
+		scanCtVisitable(moduleProvidedService);
+		scanCtModuleDirective(moduleProvidedService);
+	}
+
+	@Override
+	public void visitCtUsedService(CtUsedService usedService) {
+		scanCtElement(usedService);
+		scanCtVisitable(usedService);
+		scanCtModuleDirective(usedService);
 	}
 }

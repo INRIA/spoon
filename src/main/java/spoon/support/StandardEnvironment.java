@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,16 +16,33 @@
  */
 package spoon.support;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Supplier;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
-import spoon.experimental.modelobs.EmptyModelChangeListener;
-import spoon.experimental.modelobs.FineModelChangeListener;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.modelobs.EmptyModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -36,18 +53,10 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
 
-import java.io.File;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * This class implements a simple Spoon environment that reports messages in the
@@ -59,11 +68,11 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	public static final int DEFAULT_CODE_COMPLIANCE_LEVEL = 8;
 
-	private FileGenerator<? extends CtElement> defaultFileGenerator;
+	private transient  FileGenerator<? extends CtElement> defaultFileGenerator;
 
 	private int errorCount = 0;
 
-	ProcessingManager manager;
+	transient ProcessingManager manager;
 
 	private boolean processingStopped = false;
 
@@ -77,21 +86,35 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean copyResources = true;
 
-	private boolean enableComments = false;
+	private boolean enableComments = true;
 
-	private Logger logger = Launcher.LOGGER;
+	private transient  Logger logger = Launcher.LOGGER;
 
 	private Level level = Level.OFF;
 
 	private boolean shouldCompile = false;
 
-	private boolean skipSelfChecks;
+	private boolean skipSelfChecks = false;
 
-	private FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+	private transient  FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
-	private Charset encoding = Charset.defaultCharset();
+	private transient  Charset encoding = Charset.defaultCharset();
 
-	int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
+	private transient  OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+
+	private OutputType outputType = OutputType.CLASSES;
+
+	private Boolean noclasspath = null;
+
+	private transient SpoonProgress spoonProgress = null;
+
+	private CompressionType compressionType = CompressionType.GZIP;
+
+	private boolean sniperMode = false;
+
+	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -152,6 +175,11 @@ public class StandardEnvironment implements Serializable, Environment {
 		skipSelfChecks = skip;
 	}
 
+	@Override
+	public void disableConsistencyChecks() {
+		skipSelfChecks = true;
+	}
+
 	private Level toLevel(String level) {
 		if (level == null || level.isEmpty()) {
 			throw new SpoonException("Wrong level given at Spoon.");
@@ -164,10 +192,10 @@ public class StandardEnvironment implements Serializable, Environment {
 		return manager;
 	}
 
-	Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
+	transient Map<String, ProcessorProperties> processorProperties = new TreeMap<>();
 
 	@Override
-	public ProcessorProperties getProcessorProperties(String processorName) throws Exception {
+	public ProcessorProperties getProcessorProperties(String processorName) {
 		if (processorProperties.containsKey(processorName)) {
 			return processorProperties.get(processorName);
 		}
@@ -255,6 +283,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	/**
 	 * This method should be called to report the end of the processing.
 	 */
+	@Override
 	public void reportEnd() {
 		logger.info("end of processing: ");
 		if (warningCount > 0) {
@@ -279,6 +308,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 	}
 
+	@Override
 	public void reportProgressMessage(String message) {
 		logger.info(message);
 	}
@@ -286,14 +316,17 @@ public class StandardEnvironment implements Serializable, Environment {
 	public void setDebug(boolean debug) {
 	}
 
+	@Override
 	public void setDefaultFileGenerator(FileGenerator<? extends CtElement> defaultFileGenerator) {
 		this.defaultFileGenerator = defaultFileGenerator;
 	}
 
+	@Override
 	public void setManager(ProcessingManager manager) {
 		this.manager = manager;
 	}
 
+	@Override
 	public void setProcessingStopped(boolean processingStopped) {
 		this.processingStopped = processingStopped;
 	}
@@ -303,45 +336,52 @@ public class StandardEnvironment implements Serializable, Environment {
 
 
 
+	@Override
 	public int getComplianceLevel() {
 		return complianceLevel;
 	}
 
+	@Override
 	public void setComplianceLevel(int level) {
 		complianceLevel = level;
 	}
 
+	@Override
 	public void setProcessorProperties(String processorName, ProcessorProperties prop) {
 		processorProperties.put(processorName, prop);
 	}
 
 	boolean useTabulations = false;
 
+	@Override
 	public boolean isUsingTabulations() {
 		return useTabulations;
 	}
 
+	@Override
 	public void useTabulations(boolean tabulation) {
 		useTabulations = tabulation;
 	}
 
 	int tabulationSize = 4;
 
+	@Override
 	public int getTabulationSize() {
 		return tabulationSize;
 	}
 
+	@Override
 	public void setTabulationSize(int tabulationSize) {
 		this.tabulationSize = tabulationSize;
 	}
 
-	private ClassLoader classloader;
+	private transient  ClassLoader classloader;
 	/*
 	 * cache class loader which loads classes from source class path
 	 * we must cache it to make all the loaded classes compatible
 	 * The cache is reset when setSourceClasspath(...) is called
 	 */
-	private ClassLoader inputClassloader;
+private transient  ClassLoader inputClassloader;
 
 	@Override
 	public void setInputClassLoader(ClassLoader aClassLoader) {
@@ -351,7 +391,7 @@ public class StandardEnvironment implements Serializable, Environment {
 				// Check that the URLs are only file URLs
 				boolean onlyFileURLs = true;
 				for (URL url : urls) {
-					if (!url.getProtocol().equals("file")) {
+					if (!"file".equals(url.getProtocol())) {
 						onlyFileURLs = false;
 					}
 				}
@@ -392,7 +432,7 @@ public class StandardEnvironment implements Serializable, Environment {
 			try {
 				urls[i] = new File(classpath[i]).toURI().toURL();
 			} catch (MalformedURLException e) {
-				throw new IllegalStateException("Invalid classpath: " + classpath, e);
+				throw new IllegalStateException("Invalid classpath: " + Arrays.toString(classpath), e);
 			}
 		}
 		return urls;
@@ -422,9 +462,12 @@ public class StandardEnvironment implements Serializable, Environment {
 				// it should not contain a java file
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
-				if (javaFiles.size() > 0) {
+				if (!javaFiles.isEmpty()) {
 					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
 				}
+				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
+			} else if (classOrJarFolder.getName().endsWith(".class")) {
+				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}
 		}
 	}
@@ -449,8 +492,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.preserveLineNumbers = preserveLineNumbers;
 	}
 
-	private boolean noclasspath = false;
-
 	@Override
 	public void setNoClasspath(boolean option) {
 		noclasspath = option;
@@ -458,6 +499,10 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean getNoClasspath() {
+		if (this.noclasspath == null) {
+			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
+			this.noclasspath = true;
+		}
 		return noclasspath;
 	}
 
@@ -495,6 +540,39 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
+	public void setSourceOutputDirectory(File directory) {
+		if (directory == null) {
+			throw new SpoonException("You must specify a directory.");
+		}
+		if (directory.isFile()) {
+			throw new SpoonException("Output must be a directory");
+		}
+
+		try {
+			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(),
+					this);
+		} catch (IOException e) {
+			Launcher.LOGGER.error(e.getMessage(), e);
+			throw new SpoonException(e);
+		}
+	}
+
+	@Override
+	public File getSourceOutputDirectory() {
+		return this.outputDestinationHandler.getDefaultOutputDirectory();
+	}
+
+	@Override
+	public void setOutputDestinationHandler(OutputDestinationHandler outputDestinationHandler) {
+		this.outputDestinationHandler = outputDestinationHandler;
+	}
+
+	@Override
+	public OutputDestinationHandler getOutputDestinationHandler() {
+		return outputDestinationHandler;
+	}
+
+	@Override
 	public FineModelChangeListener getModelChangeListener() {
 		return modelChangeListener;
 	}
@@ -512,5 +590,50 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public void setOutputType(OutputType outputType) {
+		this.outputType = outputType;
+	}
+
+	@Override
+	public OutputType getOutputType() {
+		return this.outputType;
+	}
+
+	@Override
+	public SpoonProgress getSpoonProgress() {
+		return this.spoonProgress;
+	}
+
+	@Override
+	public void setSpoonProgress(SpoonProgress spoonProgress) {
+		this.spoonProgress = spoonProgress;
+	}
+
+	@Override
+	public CompressionType getCompressionType() {
+		return compressionType;
+	}
+
+	@Override
+	public void setCompressionType(CompressionType serializationType) {
+		this.compressionType = serializationType;
+	}
+
+	@Override
+	public PrettyPrinter createPrettyPrinter() {
+		if (prettyPrinterCreator == null) {
+			// DJPP is the default mode
+			// fully backward compatible
+			return new DefaultJavaPrettyPrinter(this);
+		}
+		return prettyPrinterCreator.get();
+	}
+
+	@Override
+	public void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator) {
+		this.prettyPrinterCreator = creator;
 	}
 }

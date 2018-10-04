@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -62,7 +62,7 @@ public class InterfaceFactory extends TypeFactory {
 	public <T> CtInterface<T> create(String qualifiedName) {
 		if (hasInnerType(qualifiedName) > 0) {
 			return create(
-					(CtInterface<T>) create(getDeclaringTypeName(qualifiedName)),
+					create(getDeclaringTypeName(qualifiedName)),
 					getSimpleName(qualifiedName));
 		}
 		return create(factory.Package().getOrCreate(

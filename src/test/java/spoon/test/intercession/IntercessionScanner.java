@@ -67,5 +67,4 @@ public abstract class IntercessionScanner extends CtScanner {
 	protected boolean avoidInterfaces(CtMethod<?> candidate) {
 		return candidate.getBody() != null;
 	}
-
 }

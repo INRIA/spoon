@@ -1,14 +1,13 @@
 package spoon.test;
 
-import spoon.Launcher;
-import spoon.SpoonAPI;
+import spoon.metamodel.Metamodel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,27 +18,7 @@ public class SpoonTestHelpers {
 	}
 
 	public static List<CtType<? extends CtElement>> getAllInstantiableMetamodelInterfaces() {
-		List<CtType<? extends CtElement>> result = new ArrayList<>();
-		SpoonAPI interfaces = new Launcher();
-		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
-		interfaces.addInputResource("src/main/java/spoon/reflect/code");
-		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
-		interfaces.buildModel();
-
-		SpoonAPI implementations = new Launcher();
-		implementations.addInputResource("src/main/java/spoon/support/reflect/declaration");
-		implementations.addInputResource("src/main/java/spoon/support/reflect/code");
-		implementations.addInputResource("src/main/java/spoon/support/reflect/reference");
-		implementations.buildModel();
-
-		for(CtType<? > itf : interfaces.getModel().getAllTypes()) {
-			String impl = itf.getQualifiedName().replace("spoon.reflect", "spoon.support.reflect")+"Impl";
-			CtType implClass = implementations.getFactory().Type().get(impl);
-			if (implClass != null && !implClass.hasModifier(ModifierKind.ABSTRACT)) {
-				result.add((CtType<? extends CtElement>) itf);
-			}
-		}
-		return result;
+		return Metamodel.getInstance().getAllInstantiableMetamodelInterfaces();
 	}
 
 	/**
@@ -53,11 +32,11 @@ public class SpoonTestHelpers {
 			return true;
 		}
 		// limit case because of a bug to be fixed
-		if (typeReference.getActualTypeArguments().size()>0 && "?".equals(typeReference.getActualTypeArguments()
+		if (!typeReference.getActualTypeArguments().isEmpty() && "?".equals(typeReference.getActualTypeArguments()
 				.get(0).getQualifiedName())) {
 			return false;
 		}
-		return (typeReference.getActualTypeArguments().size()>0
+		return (!typeReference.getActualTypeArguments().isEmpty()
 				&& typeReference.getActualTypeArguments()
 				.get(0).getTypeDeclaration()
 				.isSubtypeOf(ctElRef))
@@ -96,7 +75,6 @@ public class SpoonTestHelpers {
 		return result;
 	}
 
-
 	/** returns all possible setters related to CtElement */
 	public static List<CtMethod<?>> getAllSetters(CtType<?> baseType) {
 		List<CtMethod<?>> result = new ArrayList<>();
@@ -105,7 +83,10 @@ public class SpoonTestHelpers {
 				//parent is a special kind of setter, which does not influence model properties of element, but link to parent element.
 				continue;
 			}
-			if (!m.getSimpleName().startsWith("set") && !m.getSimpleName().startsWith("set")) {
+			if (! (m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add"))) {
+				continue;
+			}
+			if (m.hasAnnotation(UnsettableProperty.class)) {
 				continue;
 			}
 			if (m.getParameters().size()!=1) {
@@ -119,7 +100,6 @@ public class SpoonTestHelpers {
 		return result;
 	}
 
-
 	/** returns the corresponding setter, if several are possible returns the lowest one in the hierarchy */
 	public static CtMethod<?> getSetterOf(CtType<?> baseType, CtMethod<?> getter) {
 		String setterName = getter.getSimpleName().replaceFirst("^get", "set");
@@ -130,12 +110,11 @@ public class SpoonTestHelpers {
 
 		// return one that is as low as possible in the hierarchy
 		for(Object o : tentativeSetters) {
-			if (baseType.getPackage().getElements(new OverridingMethodFilter((CtMethod<?>) o)).size() == 0) {
+			if (baseType.getPackage().getElements(new OverridingMethodFilter((CtMethod<?>) o)).isEmpty()) {
 				return (CtMethod<?>) o;
 			}
 		}
 
-		//System.out.println(setterName+" "+tentativeSetters.length);
 		return (CtMethod<?>) tentativeSetters[0];
 	}
 
@@ -143,11 +122,10 @@ public class SpoonTestHelpers {
 	public static boolean isMetamodelProperty(CtType<?> baseType, CtMethod<?> m) {
 		return
 				m.getSimpleName().startsWith("get")
-						&& m.getParameters().size() == 0 // a getter has no parameter
+						&& m.getParameters().isEmpty() // a getter has no parameter
 						&& !m.hasAnnotation(DerivedProperty.class)
 						&&
 						// return type
 						isMetamodelRelatedType(m.getType());
 	}
-
 }

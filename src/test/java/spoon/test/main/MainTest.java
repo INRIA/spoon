@@ -1,30 +1,35 @@
 package spoon.test.main;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import spoon.Launcher;
+import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathException;
+import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -33,6 +38,8 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 
 import java.io.ByteArrayOutputStream;
@@ -41,23 +48,27 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MainTest {
-	
+
 	static Launcher launcher;
 	static CtPackage rootPackage;
-	
+
 	/**
 	 * load model once into static variable and use it for more read-only tests
 	 */
@@ -77,24 +88,35 @@ public class MainTest {
 
 		launcher = new Launcher();
 
-		launcher.run(new String[] {
+		launcher.setArgs(new String[] {
 				"-i", "src/main/java",
 				"-o", "target/spooned",
 				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath,
 				"--compile", // compiling Spoon code itself on the fly
 				"--compliance", "8",
-				"--level", "OFF"
+				"--level", "OFF",
+				"--enable-comments"
 		});
 		
+		launcher.buildModel();
+
 		rootPackage = launcher.getFactory().Package().getRootPackage();
 	}
-	
+
+	@Test
+	public void testMain_ModelPrintAndCompile() {
+		//contract: check that spoon sources can be printed
+		launcher.prettyprint();
+		//contract: check that spoon sources can be compiled
+		launcher.getModelBuilder().compile(InputType.CTTYPES);
+	}
+
 	@Test
 	public void testMain_checkGenericContracts() {
 		checkGenericContracts(rootPackage);
 	}
-	
+
 	@Test
 	public void testMain_checkShadow() {
 		checkShadow(rootPackage);
@@ -105,10 +127,23 @@ public class MainTest {
 		checkParentConsistency(rootPackage);
 	}
 
-	public void checkGenericContracts(CtPackage pack) {
-		// clone
-		checkEqualityBetweenOriginalAndClone(pack);
+	@Test
+	public void testMain_checkModifiers() {
+		// the explicit modifier should be present in the original source code
+		for (CtModifiable modifiable: rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
+			for (CtExtendedModifier modifier: modifiable.getExtendedModifiers()) {
+				if (modifier.isImplicit()) {
+					continue;
+				}
+				SourcePosition position = modifier.getPosition();
+				CompilationUnit compilationUnit = position.getCompilationUnit();
+				String originalSourceCode = compilationUnit.getOriginalSourceCode();
+				assertEquals(modifier.getKind().toString(), originalSourceCode.substring(position.getSourceStart(), position.getSourceEnd() + 1));
+			}
+		}
+	}
 
+	public void checkGenericContracts(CtPackage pack) {
 		// parent
 		ParentTest.checkParentContract(pack);
 
@@ -135,28 +170,7 @@ public class MainTest {
 		}.scan(pack);
 	}
 
-	private void checkEqualityBetweenOriginalAndClone(CtPackage pack) {
-		class ActualCounterScanner extends CtBiScannerDefault {
-			@Override
-			public boolean biScan(CtElement element, CtElement other) {
-				if (element == null) {
-					if (other != null) {
-						Assert.fail("element can't be null if other isn't null.");
-					}
-				} else if (other == null) {
-					Assert.fail("other can't be null if element isn't null.");
-				} else {
-					assertEquals(element, other);
-					assertFalse(element == other);
-				}
-				return super.biScan(element, other);
-			}
-		}
-		final ActualCounterScanner actual = new ActualCounterScanner();
-		actual.biScan(pack, pack.clone());
-	}
-
-	private void checkShadow(CtPackage pack) {
+	public static void checkShadow(CtPackage pack) {
 		new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
@@ -197,31 +211,26 @@ public class MainTest {
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
 				for (int i = 0; i < reference.getParameters().size(); i++) {
-					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {
-						return;
-					}
-					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
-						return;
-					}
 					//TODO assertions which are checking lambdas. Till then ignore lambdas.
 					if (executableDeclaration instanceof CtLambda) {
 						return;
 					}
-					assertEquals(reference.getParameters().get(i).getQualifiedName(), executableDeclaration.getParameters().get(i).getType().getQualifiedName());
+					CtTypeReference<?> methodParamTypeRef = executableDeclaration.getParameters().get(i).getType();
+					assertEquals(reference.getParameters().get(i).getQualifiedName(), methodParamTypeRef.getTypeErasure().getQualifiedName());
 				}
 
 				// contract: the reference and method signature are the same
-				if (reference.getActualTypeArguments().size() == 0
+				if (reference.getActualTypeArguments().isEmpty()
 						&& executableDeclaration instanceof CtMethod
-						&& ((CtMethod)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						&& !((CtMethod) executableDeclaration).getFormalCtTypeParameters().isEmpty()
 						) {
 					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
 				}
 
 				// contract: the reference and constructor signature are the same
-				if (reference.getActualTypeArguments().size() == 0
+				if (reference.getActualTypeArguments().isEmpty()
 						&& executableDeclaration instanceof CtConstructor
-						&& ((CtConstructor)executableDeclaration).getFormalCtTypeParameters().size() != 0
+						&& !((CtConstructor) executableDeclaration).getFormalCtTypeParameters().isEmpty()
 						) {
 					assertEquals(reference.getSignature(), executableDeclaration.getSignature());
 				}
@@ -266,7 +275,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		final Launcher spoon = new Launcher();
 		spoon.setArgs(new String[] {"--output-type", "nooutput" });
 		spoon.addInputResource("./src/test/java/spoon/test/main/testclasses");
@@ -281,15 +290,19 @@ public class MainTest {
 
 	private void checkContractCtScanner(CtPackage pack) {
 		class Counter {
-			int scan, enter, exit = 0;
+			int scan;
+			int enter;
+			int exit;
 		}
 
 		final Counter counter = new Counter();
+		final Counter counterInclNull = new Counter();
 
 		new CtScanner() {
 
 			@Override
 			public void scan(CtElement element) {
+				counterInclNull.scan++;
 				if (element != null) {
 					counter.scan++;
 				}
@@ -308,23 +321,62 @@ public class MainTest {
 				super.exit(element);
 			}
 
-		}.visitCtPackage(pack);
+		}.scan(pack);
 
+		// contract: when enter is called, exit is also called
 		assertTrue(counter.enter == counter.exit);
-		// there is one scan less, because we start with visit
-		assertTrue(counter.enter == counter.scan + 1);
+
+		// contract: all scanned elements call enter
+		assertTrue(counter.enter == counter.scan);
+
+		Counter counterBiScan = new Counter();
+		class ActualCounterScanner extends CtBiScannerDefault {
+			@Override
+			public void biScan(CtElement element, CtElement other) {
+				counterBiScan.scan++;
+				if (element == null) {
+					if (other != null) {
+						fail("element can't be null if other isn't null.");
+					}
+				} else if (other == null) {
+					fail("other can't be null if element isn't null.");
+				} else {
+					// contract: all elements have been cloned and are still equal
+					assertEquals(element, other);
+					assertNotSame(element, other);
+				}
+				super.biScan(element, other);
+			}
+		}
+		final ActualCounterScanner actual = new ActualCounterScanner();
+		actual.biScan(pack, pack.clone());
+
+		// contract: scan and biscan are executed the same number of times
+		assertEquals(counterInclNull.scan, counterBiScan.scan);
+
+		// for pure beauty: parallel visit of the same tree!
+		Counter counterBiScan2 = new Counter();
+		new CtBiScannerDefault() {
+			@Override
+			public void biScan(CtElement element, CtElement other) {
+				counterBiScan2.scan++;
+				// we have the exact same element
+				assertSame(element, other);
+				super.biScan(element, other);
+			}
+		}.biScan(pack, pack);
+		// contract: scan and biscan are executed the same number of times
+		assertEquals(counterInclNull.scan, counterBiScan2.scan);
 	}
 
 	public static void checkAssignmentContracts(CtElement pack) {
-		for (CtAssignment assign : pack.getElements(new TypeFilter<CtAssignment>(
-				CtAssignment.class))) {
+		for (CtAssignment assign : pack.getElements(new TypeFilter<>(CtAssignment.class))) {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
 				throw new AssertionError("AssignmentContract error:" + assign.getPosition()+"\n"+assign.toString()+"\nAssigned is "+assigned.getClass());
 			}
 		}
-
 	}
 
 	public static void checkParentConsistency(CtElement ele) {
@@ -363,7 +415,7 @@ public class MainTest {
 		}.scan(ele);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
-	
+
 	/*
 	 * contract: each element is used only once
 	 * For example this is always true: field.getType() != field.getDeclaringType()
@@ -380,7 +432,7 @@ public class MainTest {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if(firstStack == dummyException) {
-					Assert.fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily
@@ -395,8 +447,8 @@ public class MainTest {
 		});
 		
 		String report = problems.toString();
-		if (report.length() > 0) {
-			Assert.fail(report);
+		if (!report.isEmpty()) {
+			fail(report);
 		}
 	}
 
@@ -421,13 +473,118 @@ public class MainTest {
 	}
 
 	@Test
-	public void testTest() throws Exception {
+	public void testSourcePositionTreeIsCorrectlyOrdered() {
+		/*
+		 * contract: the tree of ElementSourceFragments of all spoon types (= sample set of sources) can be built.
+		 * contract: the tree of ElementSourceFragments is correctly organized. It means:
+		 * - source positions of children elements are smaller or equal to their parents
+		 * - source positions of next siblings are after their previous siblings
+		 * - 
+		 */
+		List<CtType> types = rootPackage.filterChildren(new TypeFilter<>(CtType.class)).filterChildren((CtType t) -> t.isTopLevel()).list();
+		int totalCount = 0;
+		boolean hasComment = false;
+		for (CtType type : types) {
+			SourcePosition sp = type.getPosition();
+			totalCount += assertSourcePositionTreeIsCorrectlyOrder(sp.getCompilationUnit().getOriginalSourceFragment(), 0, sp.getCompilationUnit().getOriginalSourceCode().length());
+			hasComment = hasComment || type.getComments().size() > 0; 
+		};
+		assertTrue(totalCount > 1000);
+		assertTrue(hasComment);
+	}
+
+	/**
+	 * Asserts that all siblings and children of sp are well ordered
+	 * @param sourceFragment
+	 * @param minOffset TODO
+	 * @param maxOffset TODO
+	 * @return number of checked {@link SourcePosition} nodes
+	 */
+	private int assertSourcePositionTreeIsCorrectlyOrder(ElementSourceFragment sourceFragment, int minOffset, int maxOffset) {
+		int nr = 0;
+		int pos = minOffset;
+		while (sourceFragment != null) {
+			nr++;
+			assertTrue("min(" + pos + ") <= fragment.start(" + sourceFragment.getStart() + ")", pos <= sourceFragment.getStart());
+			assertTrue("fragment.start(" + sourceFragment.getStart() + ") <= fragment.end(" + sourceFragment.getEnd() + ")", sourceFragment.getStart() <= sourceFragment.getEnd());
+			pos = sourceFragment.getEnd();
+			nr += assertSourcePositionTreeIsCorrectlyOrder(sourceFragment.getFirstChild(), sourceFragment.getStart(), sourceFragment.getEnd());
+			sourceFragment = sourceFragment.getNextSibling();
+		}
+		assertTrue("lastFragment.end(" + pos + ") <= max(" + maxOffset + ")", pos <= maxOffset);
+		return nr;
+	}
+
+	@Test
+	public void testElementToPathToElementEquivalency() {
+
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					CtPath path = element.getPath();
+					String pathStr = path.toString();
+					try {
+						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+						assertEquals(pathStr, pathRead.toString());
+						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
+						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
+						assertEquals(1, returnedElements.size());
+						CtElement actualElement = (CtElement) returnedElements.toArray()[0];
+						//contract: Element -> Path -> String -> Path -> Element leads to the original element
+						assertSame(element, actualElement);
+					} catch (CtPathException e) {
+						throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
+					} catch (AssertionError e) {
+						throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element.toString(), e);
+					}
+				}
+				super.scan(element);
+			}
+		});
+	}
+
+	@Test
+	public void testElementIsContainedInAttributeOfItsParent() {
+		rootPackage.accept(new CtScanner() {
+			@Override
+			public void scan(CtRole role, CtElement element) {
+				if (element != null) {
+					//contract: element is contained in attribute of element's parent
+					CtElement parent = element.getParent();
+					Object attributeOfParent = parent.getValueByRole(role);
+					if(attributeOfParent instanceof CtElement) {
+						assertSame("Element of type " + element.getClass().getName()
+								+ " is not the value of attribute of role " + role.name()
+								+ " of parent type " + parent.getClass().getName(), element, attributeOfParent);
+					} else if (attributeOfParent instanceof Collection) {
+						assertTrue("Element of type " + element.getClass().getName()
+								+ " not found in Collection value of attribute of role " + role.name() 
+								+ " of parent type " + parent.getClass().getName(), 
+								((Collection<CtElement>) attributeOfParent).stream().anyMatch(e -> e == element));
+					} else if (attributeOfParent instanceof Map){
+						assertTrue("Element of type " + element.getClass().getName()
+								+ " not found in Map#values of attribute of role " + role.name() 
+								+ " of parent type " + parent.getClass().getName(), 
+								((Map<String, ?>) attributeOfParent).values().stream().anyMatch(e -> e == element));
+					} else {
+						fail("Attribute of Role " + role + " not checked");
+					}
+				}
+				super.scan(role, element);
+			}
+		});
+	}
+
+	@Test
+	public void testTest() {
 		// the tests should be spoonable
 		Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
 				"--noclasspath",
+				"--disable-comments",
 				"--compliance", "8",
 				"--level", "OFF"
 		});
@@ -438,7 +595,7 @@ public class MainTest {
 		// if one analyzes src/main/java and src/test/java at the same time
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
-			if (t.getPackage().getQualifiedName().equals("spoon.metamodel")
+			if ("spoon.metamodel".equals(t.getPackage().getQualifiedName())
 					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;
@@ -448,7 +605,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testResourcesCopiedInTargetDirectory() throws Exception {
+	public void testResourcesCopiedInTargetDirectory() {
 		StringBuilder classpath = new StringBuilder();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -473,7 +630,7 @@ public class MainTest {
 	}
 
 	@Test
-	public void testResourcesNotCopiedInTargetDirectory() throws Exception {
+	public void testResourcesNotCopiedInTargetDirectory() {
 		StringBuilder classpath = new StringBuilder();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -503,14 +660,14 @@ public class MainTest {
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
 	@Test
-	public void testLauncherWithoutArgumentsExitWithSystemExit() throws Exception {
+	public void testLauncherWithoutArgumentsExitWithSystemExit() {
 		exit.expectSystemExit();
 
 		final PrintStream oldErr = System.err;
 		System.setErr(new PrintStream(errContent));
 		exit.checkAssertionAfterwards(new Assertion() {
 			@Override
-			public void checkAssertion() throws Exception {
+			public void checkAssertion() {
 				assertTrue(errContent.toString().contains("Usage: java <launcher name> [option(s)]"));
 				System.setErr(oldErr);
 			}
@@ -518,5 +675,4 @@ public class MainTest {
 
 		new Launcher().run(new String[] { });
 	}
-
 }

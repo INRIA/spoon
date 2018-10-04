@@ -11,10 +11,12 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
 import spoon.test.reference.testclasses.Bar;
 import spoon.test.reference.testclasses.Burritos;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Kuu;
+import spoon.test.reference.testclasses.Stream;
 import spoon.test.reference.testclasses.SuperFoo;
 
 import java.util.List;
@@ -24,11 +26,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ExecutableReferenceTest {
 	@Test
-	public void testCallMethodOfClassNotPresent() throws Exception {
+	public void testCallMethodOfClassNotPresent() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput", "--noclasspath"
@@ -89,7 +92,7 @@ public class ExecutableReferenceTest {
 	}
 
 	@Test
-	public void testSuperClassInGetAllExecutables() throws Exception {
+	public void testSuperClassInGetAllExecutables() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/");
 		launcher.setSourceOutputDirectory("./target/spoon-test");
@@ -105,7 +108,7 @@ public class ExecutableReferenceTest {
 	}
 
 	@Test
-	public void testSpecifyGetAllExecutablesMethod() throws Exception {
+	public void testSpecifyGetAllExecutablesMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
@@ -159,7 +162,7 @@ public class ExecutableReferenceTest {
 			@Override
 			public boolean matches(CtInvocation element) {
 				return super.matches(element) 
-					&& element.getExecutable().getSimpleName().equals("valueOf");
+					&& "valueOf".equals(element.getExecutable().getSimpleName());
 			}
 		}).get(0);
 		assertNotNull(invocation.getExecutable().getExecutableDeclaration());
@@ -204,4 +207,24 @@ public class ExecutableReferenceTest {
 
 		assertNotEquals(hashCode1, hashCode2);
 	}
+
+	@Test
+	public void testPbWithStream() {
+		// contract: array constructor references are well represented
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses/Stream.java");
+		launcher.buildModel();
+
+		CtClass klass = launcher.getFactory().Class().get(Stream.class);
+		List<CtExecutableReference> executableReferenceList = klass.getElements(new TypeFilter<>(CtExecutableReference.class));
+		CtExecutableReference lastExecutableReference = executableReferenceList.get(executableReferenceList.size() - 1);
+		CtExecutable declaration = lastExecutableReference.getExecutableDeclaration();
+
+		assertNotNull(declaration);
+		assertTrue(declaration instanceof InvisibleArrayConstructorImpl);
+		String exepectedString = "spoon.test.reference.testclasses.Bar[]::new";
+		assertEquals(exepectedString, declaration.toString());
+	}
+
 }

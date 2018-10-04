@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,5 +23,6 @@ package spoon.reflect.visitor.chain;
  * @param <T> - the type of accepted elements
  */
 public interface CtConsumer<T> {
+	/** Implement this method to do something with object "t" passed as parameter */
 	void accept(T t);
 }

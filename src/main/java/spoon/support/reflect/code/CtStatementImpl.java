@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -30,7 +30,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
@@ -59,6 +58,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		new InsertVisitor(target, statements, InsertType.AFTER).scan(e);
 	}
 
+	/** insert `statement` just before target */
 	public static void insertBefore(CtStatement target, CtStatement statement)
 	throws ParentNotInitializedException {
 		CtStatementList sts = target.getFactory().Core().createStatementList();
@@ -66,6 +66,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		insertBefore(target, sts);
 	}
 
+	/** inserts all statements of `statementsToBeInserted` just before `target` */
 	public static void insertBefore(CtStatement target, CtStatementList statementsToBeInserted)
 	throws ParentNotInitializedException {
 		CtElement targetParent = target.getParent();
@@ -184,6 +185,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 				for (CtStatement ctStatement : statementsToBeInserted) {
 					copy.add(indexOfTargetElement++, ctStatement);
 				}
+				//remove statements from the `statementsToBeInserted` before they are added to spoon model
+				//note: one element MUST NOT be part of two models.
+				statementsToBeInserted.setStatements(null);
 				block.setStatements(copy);
 			}
 
@@ -194,6 +198,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 				for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
 					copy.add(indexOfTargetElement, (T) statementsToBeInserted.getStatements().get(j));
 				}
+				//remove statements from the `statementsToBeInserted` before they are added to spoon model
+				//note: one element MUST NOT be part of two models.
+				statementsToBeInserted.setStatements(null);
 				return copy;
 			}
 		},
@@ -210,6 +217,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 				for (CtStatement s : statementsToBeInserted) {
 					copy.add(++indexOfTargetElement, s);
 				}
+				//remove statements from the `statementsToBeInserted` before they are added to spoon model
+				//note: one element MUST NOT be part of two models.
+				statementsToBeInserted.setStatements(null);
 				block.setStatements(copy);
 			}
 
@@ -220,6 +230,9 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 				for (int j = statementsToBeInserted.getStatements().size() - 1; j >= 0; j--) {
 					copy.add(indexOfTargetElement, (T) statementsToBeInserted.getStatements().get(j));
 				}
+				//remove statements from the `statementsToBeInserted` before they are added to spoon model
+				//note: one element MUST NOT be part of two models.
+				statementsToBeInserted.setStatements(null);
 				return copy;
 			}
 		};
@@ -264,7 +277,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		return (T) this;
 	}
 
-	@MetamodelPropertyField(role = CtRole.LABEL)
+	@MetamodelPropertyField(role = LABEL)
 	String label;
 
 	@Override

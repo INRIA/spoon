@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -28,28 +28,7 @@ public abstract class SubFactory {
 	 * The sub-factory constructor takes an instance of the parent factory.
 	 */
 	public SubFactory(Factory factory) {
-		super();
 		this.factory = factory;
 	}
-
-	/**
-	 * Generically sets the parent of a set of elements or lists of elements.
-	 *
-	 * @param parent
-	 *            the parent
-	 * @param elements
-	 *            some {@link CtElement} or lists of {@link CtElement}
-	 */
-	//	protected void setParent(CtElement parent, Object... elements) {
-	//		for (Object o : elements) {
-	//			if (o instanceof CtElement) {
-	//				((CtElement) o).setParent(parent);
-	//			} else if (o instanceof Collection) {
-	//				for (Object o2 : (Collection<?>) o) {
-	//					((CtElement) o2).setParent(parent);
-	//				}
-	//			}
-	//		}
-	//	}
-
 }
+

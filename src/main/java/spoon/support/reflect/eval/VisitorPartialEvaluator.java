@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -20,6 +20,7 @@ import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
@@ -95,6 +96,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		result = null;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <R extends CtElement> R evaluate(R element) {
 		if (element == null) {
@@ -119,6 +121,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		result = element;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		CtExpression<?> left = evaluate(operator.getLeftHandOperand());
@@ -205,7 +208,6 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
 			setResult(res);
-			return;
 		} else if ((left instanceof CtLiteral) || (right instanceof CtLiteral)) {
 			CtLiteral<?> literal;
 			CtExpression<?> expr;
@@ -247,12 +249,18 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 	}
 
+	@Override
 	public <R> void visitCtBlock(CtBlock<R> block) {
 		CtBlock<?> b = block.getFactory().Core().createBlock();
 		for (CtStatement s : block.getStatements()) {
 			CtElement res = evaluate(s);
 			if (res != null) {
-				b.addStatement((CtStatement) res);
+				if (res instanceof CtStatement) {
+					b.addStatement((CtStatement) res);
+				} else {
+					//the context expects statement. We cannot simplify in this case
+					b.addStatement(s.clone());
+				}
 			}
 			// do not copy unreachable statements
 			if (flowEnded) {
@@ -262,6 +270,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		setResult(b);
 	}
 
+	@Override
 	public void visitCtDo(CtDo doLoop) {
 		CtDo w = doLoop.clone();
 		w.setLoopingExpression(evaluate(doLoop.getLoopingExpression()));
@@ -313,11 +322,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		setResult(fieldAccess.clone());
 	}
 
+	@Override
 	public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
 		CtField<?> f = annotationFieldAccess.getVariable().getDeclaration();
 		setResult(evaluate(f.getDefaultExpression()));
 	}
 
+	@Override
 	public void visitCtFor(CtFor forLoop) {
 
 		// Evaluate forInit
@@ -344,6 +355,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		setResult(forLoop.clone());
 	}
 
+	@Override
 	public void visitCtIf(CtIf ifElement) {
 		CtExpression<Boolean> r = evaluate(ifElement.getCondition());
 		if (r instanceof CtLiteral) {
@@ -360,7 +372,8 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		} else {
 			CtIf ifRes = ifElement.getFactory().Core().createIf();
 			ifRes.setCondition(r);
-			boolean thenEnded = false, elseEnded = false;
+			boolean thenEnded = false;
+			boolean elseEnded = false;
 			ifRes.setThenStatement((CtStatement) evaluate(ifElement.getThenStatement()));
 			if (flowEnded) {
 				thenEnded = true;
@@ -380,9 +393,11 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 	}
 
+	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		CtInvocation<T> i = invocation.getFactory().Core().createInvocation();
 		i.setExecutable(invocation.getExecutable());
+		i.setTypeCasts(invocation.getTypeCasts());
 		boolean constant = true;
 		i.setTarget(evaluate(invocation.getTarget()));
 		if ((i.getTarget() != null) && !(i.getTarget() instanceof CtLiteral)) {
@@ -405,13 +420,13 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			CtType<?> aType = invocation.getParent(CtType.class);
 			CtTypeReference<?> execDeclaringType = invocation.getExecutable().getDeclaringType();
 			// try to inline partial evaluation results for local calls
-			// (including to superclasses)
+			// (including superclasses)
 			if (executable != null && aType != null && invocation.getType() != null && execDeclaringType != null
 					&& execDeclaringType.isSubtypeOf(aType.getReference())) {
 				CtBlock<?> b = evaluate(executable.getBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
-				if ((last != null) && (last instanceof CtReturn)) {
+				if ((last instanceof CtReturn)) {
 					if (((CtReturn<?>) last).getReturnedExpression() instanceof CtLiteral) {
 						setResult(((CtReturn<?>) last).getReturnedExpression());
 						return;
@@ -419,19 +434,36 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				}
 			} else {
 				// try to completely evaluate
-				T r = null;
+				T r;
 				try {
-					// System.err.println("invocking "+i);
 					r = RtHelper.invoke(i);
-					CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
-					l.setValue(r);
-					setResult(l);
-					return;
+					if (isLiteralType(r)) {
+						CtLiteral<T> l = invocation.getFactory().Core().createLiteral();
+						l.setValue(r);
+						setResult(l);
+						return;
+					}
 				} catch (Exception e) {
 				}
 			}
 		}
 		setResult(i);
+	}
+
+	private boolean isLiteralType(Object object) {
+		if (object == null) {
+			return true;
+		}
+		if (object instanceof String) {
+			return true;
+		}
+		if (object instanceof Number) {
+			return true;
+		}
+		if (object instanceof Character) {
+			return true;
+		}
+		return object instanceof Class;
 	}
 
 	@Override
@@ -442,6 +474,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	}
 
 
+	@Override
 	public <T> void visitCtLocalVariable(final CtLocalVariable<T> localVariable) {
 		CtLocalVariable<T> r = localVariable.clone();
 		r.setDefaultExpression(evaluate(localVariable.getDefaultExpression()));
@@ -454,6 +487,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		r.setDefaultExpression(evaluate(catchVariable.getDefaultExpression()));
 		setResult(r);
 	}
+	@Override
 	public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 		CtReturn<R> r = returnStatement.getFactory().Core().createReturn();
 		r.setReturnedExpression(evaluate(returnStatement.getReturnedExpression()));
@@ -461,12 +495,14 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		flowEnded = true;
 	}
 
+	@Override
 	public void visitCtSynchronized(CtSynchronized synchro) {
 		CtSynchronized s = synchro.clone();
 		s.setBlock(evaluate(synchro.getBlock()));
 		setResult(s);
 	}
 
+	@Override
 	public void visitCtThrow(CtThrow throwStatement) {
 		CtThrow r = throwStatement.getFactory().Core().createThrow();
 		r.setThrownExpression(evaluate(throwStatement.getThrownExpression()));
@@ -474,6 +510,14 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		flowEnded = true;
 	}
 
+	@Override
+	public void visitCtCatch(CtCatch catchBlock) {
+		super.visitCtCatch(catchBlock);
+		//the flowEnded = true set by throw in catch block does not stops flow of parent
+		flowEnded = false;
+	}
+
+	@Override
 	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 		CtExpression<?> operand = evaluate(operator.getOperand());
 		if (operand instanceof CtLiteral) {
@@ -511,12 +555,14 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		}
 	}
 
+	@Override
 	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> variableAssignment) {
 		CtAssignment<T, A> a = variableAssignment.clone();
 		a.setAssignment(evaluate(a.getAssignment()));
 		setResult(a);
 	}
 
+	@Override
 	public void visitCtWhile(CtWhile whileLoop) {
 		CtWhile w = whileLoop.clone();
 		w.setLoopingExpression(evaluate(whileLoop.getLoopingExpression()));
@@ -530,6 +576,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 		setResult(w);
 	}
 
+	@Override
 	public <T> void visitCtConditional(CtConditional<T> conditional) {
 		CtExpression<Boolean> r = evaluate(conditional.getCondition());
 		if (r instanceof CtLiteral) {

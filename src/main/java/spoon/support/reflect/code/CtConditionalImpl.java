@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,7 +19,6 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.CONDITION;
@@ -29,13 +28,13 @@ import static spoon.reflect.path.CtRole.THEN;
 public class CtConditionalImpl<T> extends CtExpressionImpl<T> implements CtConditional<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.ELSE)
+	@MetamodelPropertyField(role = ELSE)
 	CtExpression<T> elseExpression;
 
-	@MetamodelPropertyField(role = CtRole.CONDITION)
+	@MetamodelPropertyField(role = CONDITION)
 	CtExpression<Boolean> condition;
 
-	@MetamodelPropertyField(role = CtRole.THEN)
+	@MetamodelPropertyField(role = THEN)
 	CtExpression<T> thenExpression;
 
 	@Override

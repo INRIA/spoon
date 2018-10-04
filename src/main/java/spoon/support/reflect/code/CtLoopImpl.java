@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,14 +23,13 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
 
 import static spoon.reflect.path.CtRole.BODY;
 
 public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.BODY)
+	@MetamodelPropertyField(role = BODY)
 	CtStatement body;
 
 	@Override

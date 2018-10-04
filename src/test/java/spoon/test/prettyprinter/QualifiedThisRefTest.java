@@ -1,6 +1,5 @@
 package spoon.test.prettyprinter;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -31,7 +30,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -62,8 +60,8 @@ public class QualifiedThisRefTest {
 		ctTypes.add(ctClass);
 		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
-		Assert.assertTrue(printer.getResult().contains("Object o = this"));
-		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
+		assertTrue(printer.getResult().contains("Object o = this"));
+		assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
 	}
 
 	@Test
@@ -74,11 +72,11 @@ public class QualifiedThisRefTest {
 		final CtMethod<?> m2 = adobada.getMethod("methodUsingjlObjectMethods");
 
 		CtThisAccess th = (CtThisAccess) m2.getElements(new TypeFilter(CtThisAccess.class)).get(0);
-		assertEquals(true,th.isImplicit());
+		assertTrue(th.isImplicit());
 		assertEquals("notify()",th.getParent().toString());
 		CtInvocation<?> clone = m2.clone().getBody().getStatement(0);
 		// clone preserves implicitness
-		assertEquals(true, clone.getTarget().isImplicit());
+		assertTrue(clone.getTarget().isImplicit());
 		assertEquals("notify()", clone.toString()); // the original bug
 
 		// note that this behavior means that you can only keep cloned "this" in the same class,
@@ -88,7 +86,7 @@ public class QualifiedThisRefTest {
 	}
 
 	@Test
-	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() throws Exception {
+	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() {
 		CtClass zeclass = factory.Class().get(QualifiedThisRef.class);
 
 		List<CtMethod> methods = zeclass.getMethodsByName("bla");
@@ -108,11 +106,10 @@ public class QualifiedThisRefTest {
 
 		CtTypeReference tmp = param.getType();
 
-		CtExpression arg = null;
 		CtFieldReference ctfe = factory.createFieldReference();
 		ctfe.setSimpleName("class");
 		ctfe.setDeclaringType(tmp.box());
-		arg = factory.Core().createFieldRead();
+		CtExpression arg = factory.Core().createFieldRead();
 		((CtFieldAccessImpl) arg).setVariable(ctfe);
 
 

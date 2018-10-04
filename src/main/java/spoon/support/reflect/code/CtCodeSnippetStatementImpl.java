@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -30,6 +30,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCodeSnippetStatement(this);
 	}
@@ -49,6 +50,7 @@ public class CtCodeSnippetStatementImpl extends CtStatementImpl implements CtCod
 		return (C) this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <S extends CtStatement> S compile() throws SnippetCompilationError {
 		return (S) SnippetCompilationHelper.compileStatement(this);

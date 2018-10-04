@@ -153,7 +153,7 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction()).list();
 			assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
-			assertTrue(executables.size()>0);
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				boolean found = removeSame(executables, m);
@@ -174,7 +174,7 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true)).list();
 			assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
-			assertTrue(executables.size()>0);
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
@@ -194,7 +194,7 @@ public class MethodsRefactoringTest {
 			}
 			
 			//check that some method was found
-			assertTrue(executables.size()>0);
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				if(m instanceof CtLambda) {
@@ -231,13 +231,13 @@ public class MethodsRefactoringTest {
 			if (exec instanceof CtLambda) {
 				//lambda is marked by annotation on the first statement of the lambda body.
 				List<CtStatement> stats = exec.getBody().getStatements();
-				if(stats.size()>0) {
+				if(!stats.isEmpty()) {
 					ele = stats.get(0);
 				}
 			}
 			TestHierarchy th = ele.getAnnotation(TestHierarchy.class);
 			if (th!=null) {
-				return Arrays.asList(th.value()).indexOf(hierarchyName)>=0;
+				return Arrays.asList(th.value()).contains(hierarchyName);
 			}
 			return false;
 		}).list();
@@ -269,7 +269,7 @@ public class MethodsRefactoringTest {
 	}
 
 	private int checkExecutableReferenceFilter(Factory factory, List<CtExecutable<?>> executables) {
-		assertTrue(executables.size()>0);
+		assertFalse(executables.isEmpty());
 		ExecutableReferenceFilter execRefFilter = new ExecutableReferenceFilter();
 		executables.forEach((CtExecutable<?> e)->execRefFilter.addExecutable(e));
 		final List<CtExecutableReference<?>> refs = new ArrayList<>(factory.getModel().filterChildren(execRefFilter).list());
@@ -296,7 +296,7 @@ public class MethodsRefactoringTest {
 	}
 	private boolean removeSame(Collection list, Object item) {
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
-			Object object = (Object) iter.next();
+			Object object = iter.next();
 			if(object==item) {
 				iter.remove();
 				return true;

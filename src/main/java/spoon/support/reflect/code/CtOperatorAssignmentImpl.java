@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,7 +19,6 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.OPERATOR_KIND;
@@ -27,7 +26,7 @@ import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 public class CtOperatorAssignmentImpl<T, A extends T> extends CtAssignmentImpl<T, A> implements CtOperatorAssignment<T, A> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.OPERATOR_KIND)
+	@MetamodelPropertyField(role = OPERATOR_KIND)
 	BinaryOperatorKind kind;
 
 	@Override

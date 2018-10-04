@@ -19,7 +19,6 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctType.testclasses.X;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class CtTypeTest {
 	}
 
 	@Test
-	public void testHasMethodInSuperClass() throws Exception {
+	public void testHasMethodInSuperClass() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
 		launcher.run();
@@ -70,7 +69,7 @@ public class CtTypeTest {
 	}
 
 	@Test
-	public void testHasMethodInDefaultMethod() throws Exception {
+	public void testHasMethodInDefaultMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/X.java");
 		launcher.getEnvironment().setComplianceLevel(8);
@@ -96,7 +95,7 @@ public class CtTypeTest {
 		//using CtType implementation
 		assertTrue(xCtType.isSubtypeOf(xCtType.getReference()));
 	}
-	
+
 	@Test
 	public void testIsSubTypeOfonTypeParameters() throws Exception {
 		CtType<X> xCtType = buildClass(X.class);
@@ -115,79 +114,87 @@ public class CtTypeTest {
 		CtType<?> P_D_CtType = pTypeParameters.get(0);
 		CtType<?> P_F_CtType = pTypeParameters.get(1);
 
-		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NamedElementFilter<>(CtMethod.class,"foo")).first();
-		CtMethod<?> P_FooMethod = pCtType.filterChildren(new NamedElementFilter<>(CtMethod.class,"foo")).first();
+		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NamedElementFilter<>(CtMethod.class, "foo")).first();
+		CtMethod<?> P_FooMethod = pCtType.filterChildren(new NamedElementFilter<>(CtMethod.class, "foo")).first();
 
 		CtType<?> O_B_CtType = O_FooMethod.getType().getDeclaration();
 		CtType<?> P_E_CtType = P_FooMethod.getType().getDeclaration();
 
 		assertTrue(O_B_CtType.isSubtypeOf(xCtType.getReference()));
 		assertTrue(O_B_CtType.isSubtypeOf(O_A_CtType.getReference()));
-		
+
 		assertTrue(P_E_CtType.isSubtypeOf(xCtType.getReference()));
 		assertTrue(P_E_CtType.isSubtypeOf(P_D_CtType.getReference()));
 		assertTrue(P_E_CtType.isSubtypeOf(O_A_CtType.getReference()));
-		
+
 		assertTrue(P_D_CtType.isSubtypeOf(O_A_CtType.getReference()));
 		assertTrue(P_E_CtType.isSubtypeOf(O_B_CtType.getReference()));
 
 		assertTrue(P_E_CtType.isSubtypeOf(objectCtTypeRef));
 		assertTrue(P_F_CtType.isSubtypeOf(objectCtTypeRef));
 	}
-	
+
 	@Test
-	public void testIsSubTypeOfonTypeReferences() throws Exception {
+	public void testIsSubTypeOfonTypeReferences() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[]{"-c"});
 		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/SubtypeModel.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
-		
+
 		CtType<?> oCtType = factory.Class().get("spoon.test.ctType.testclasses.SubtypeModel");
-		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NamedElementFilter<>(CtMethod.class,"foo")).first();
+		CtMethod<?> O_FooMethod = oCtType.filterChildren(new NamedElementFilter<>(CtMethod.class, "foo")).first();
 
 		Map<String, CtTypeReference<?>> nameToTypeRef = new HashMap<>();
-		O_FooMethod.filterChildren(new TypeFilter<>(CtLocalVariable.class)).forEach((CtLocalVariable var)->{
+		O_FooMethod.filterChildren(new TypeFilter<>(CtLocalVariable.class)).forEach((CtLocalVariable var) -> {
 			nameToTypeRef.put(var.getSimpleName(), var.getType());
 		});
-		
+
 		int[] count = new int[1];
 
-		O_FooMethod.filterChildren(new TypeFilter<>(CtAssignment.class)).forEach((CtAssignment ass)->{
+		O_FooMethod.filterChildren(new TypeFilter<>(CtAssignment.class)).forEach((CtAssignment ass) -> {
 			for (CtComment comment : ass.getComments()) {
 				checkIsNotSubtype(comment, nameToTypeRef);
 				count[0]++;
-			};
+			}
 			count[0]++;
 			checkIsSubtype(((CtVariableAccess) ass.getAssigned()).getVariable().getType(), ((CtVariableAccess) ass.getAssignment()).getVariable().getType(), nameToTypeRef);
 		});
-		
-		assertTrue(count[0]>(9*8));
+
+		assertTrue(count[0] > (9 * 8));
+
+		// contract: isSubTypeOf does not throw any exception
+		// #2288 cannot be reproduced, probably fixed by #2406
+		CtTypeReference<Object> typeReferenceWithNoDeclaration = launcher.getFactory().createTypeReference();
+		typeReferenceWithNoDeclaration.setSimpleName("DoesNotExist");
+		assertFalse(typeReferenceWithNoDeclaration.isSubtypeOf(oCtType.getReference()));
+		assertFalse(oCtType.isSubtypeOf(typeReferenceWithNoDeclaration));
 	}
 
 	private void checkIsSubtype(CtTypeReference superType, CtTypeReference subType, Map<String, CtTypeReference<?>> nameToTypeRef) {
-		String msg = getTypeName(subType)+" isSubTypeOf "+getTypeName(superType);
+		String msg = getTypeName(subType) + " isSubTypeOf " + getTypeName(superType);
 		assertTrue(msg, subType.isSubtypeOf(superType));
 	}
 
 	private static final Pattern assignment = Pattern.compile("\\s*(\\w+)\\s*=\\s*(\\w+);");
+
 	private void checkIsNotSubtype(CtComment comment, Map<String, CtTypeReference<?>> nameToTypeRef) {
 		Matcher m = assignment.matcher(comment.getContent());
 		assertTrue(m.matches());
 		CtTypeReference<?> superType = nameToTypeRef.get(m.group(1));
 		CtTypeReference<?> subType = nameToTypeRef.get(m.group(2));
-		String msg = getTypeName(subType)+" is NOT SubTypeOf "+getTypeName(superType);
+		String msg = getTypeName(subType) + " is NOT SubTypeOf " + getTypeName(superType);
 		assertFalse(msg, subType.isSubtypeOf(superType));
 	}
-	
+
 	private String getTypeName(CtTypeReference<?> ref) {
 		String name;
-		CtReference r= ref.getParent(CtReference.class);
-		if(r!=null) {
+		CtReference r = ref.getParent(CtReference.class);
+		if (r != null) {
 			name = r.getSimpleName();
 		} else {
 			name = ref.getParent(CtNamedElement.class).getSimpleName();
 		}
-		return ref.toString()+" "+name;
+		return ref.toString() + " " + name;
 	}
 }

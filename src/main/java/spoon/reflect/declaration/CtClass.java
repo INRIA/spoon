@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
@@ -112,6 +113,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	/**
 	 * Return {@code true} if the referenced type is a anonymous type
 	 */
+	@Override
 	boolean isAnonymous();
 
 	@Override
@@ -132,4 +134,8 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * will be garbage-collected with the instance.
 	 */
 	T newInstance();
+
+	@Override
+	@UnsettableProperty
+	<C extends CtStatement> C setLabel(String label);
 }

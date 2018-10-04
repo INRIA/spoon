@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -25,6 +25,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtScanner;
 
 /**
@@ -53,6 +54,7 @@ public class SignaturePrinter extends CtScanner {
 		writeNameAndParameters(reference);
 	}
 
+	/** writes only the name and parameters' types */
 	public <T> void writeNameAndParameters(CtExecutableReference<T> reference) {
 		if (reference.isConstructor()) {
 			write(reference.getDeclaringType().getQualifiedName());
@@ -60,7 +62,7 @@ public class SignaturePrinter extends CtScanner {
 			write(reference.getSimpleName());
 		}
 		write("(");
-		if (reference.getParameters().size() > 0) {
+		if (!reference.getParameters().isEmpty()) {
 			for (CtTypeReference<?> param : reference.getParameters()) {
 				if (param != null && !"null".equals(param.getSimpleName())) {
 					scan(param);
@@ -69,7 +71,7 @@ public class SignaturePrinter extends CtScanner {
 				}
 				write(",");
 			}
-			if (reference.getParameters().size() > 0) {
+			if (!reference.getParameters().isEmpty()) {
 				clearLast(); // ","
 			}
 		}
@@ -83,7 +85,20 @@ public class SignaturePrinter extends CtScanner {
 
 	@Override
 	public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-		write(ref.getQualifiedName());
+		/*
+		 * signature doesn't contain name of type parameter reference,
+		 * because these three methods declarations:
+		 * 	<T extends String> void m(T a);
+		 * 	<S extends String> void m(S b);
+		 * 	void m(String c)
+		 * Should have the same signature.
+		 */
+		scan(ref.getBoundingType());
+	}
+
+	@Override
+	public void visitCtWildcardReference(CtWildcardReference ref) {
+		write(ref.getSimpleName());
 		if (!ref.isDefaultBoundingType() || !ref.getBoundingType().isImplicit()) {
 			if (ref.isUpper()) {
 				write(" extends ");
@@ -113,7 +128,7 @@ public class SignaturePrinter extends CtScanner {
 			scan(p.getType());
 			write(",");
 		}
-		if (c.getParameters().size() > 0) {
+		if (!c.getParameters().isEmpty()) {
 			clearLast();
 		}
 		write(")");

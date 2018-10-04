@@ -12,7 +12,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.loop.testclasses.Condition;
 import spoon.test.loop.testclasses.Join;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 
@@ -24,8 +23,8 @@ public class LoopTest {
 	private static final String nl = System.lineSeparator();
 
 	@Test
-	public void testAnnotationInForLoop() throws Exception {
-		CtType<?> aFoo = ModelUtils.build(new File("./src/test/resources/spoon/test/loop/testclasses/")).Type().get("spoon.test.loop.testclasses.Foo");
+	public void testAnnotationInForLoop() {
+		CtType<?> aFoo = build(new File("./src/test/resources/spoon/test/loop/testclasses/")).Type().get("spoon.test.loop.testclasses.Foo");
 
 		CtFor aFor = aFoo.getMethod("m").getElements(new TypeFilter<>(CtFor.class)).get(0);
 		assertEquals(1, ((CtLocalVariable) aFor.getForInit().get(0)).getType().getAnnotations().size());

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,7 +16,14 @@
  */
 package spoon.generating.scanner;
 
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtAbstractBiScanner;
+
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Iterator;
 
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
@@ -28,5 +35,35 @@ import spoon.reflect.visitor.CtAbstractBiScanner;
  *
  * Is used by EqualsVisitor.
  */
-abstract class CtBiScannerTemplate extends CtAbstractBiScanner {
+class CtBiScannerTemplate extends CtAbstractBiScanner {
+	protected Deque<CtElement> stack = new ArrayDeque<>();
+
+	protected void enter(CtElement e) {
+	}
+
+	protected void exit(CtElement e) {
+	}
+
+	public void biScan(CtElement element, CtElement other) {
+		if (other == null) {
+			return;
+		}
+		stack.push(other);
+		try {
+			element.accept(this);
+		} finally {
+			stack.pop();
+		}
+	}
+
+	public void biScan(CtRole role, CtElement element, CtElement other) {
+		biScan(element, other);
+	}
+
+	protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
+		for (Iterator<? extends CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
+			biScan(role, firstIt.next(), secondIt.next());
+		}
+	}
+
 }

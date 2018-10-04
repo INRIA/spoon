@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -42,6 +42,7 @@ public final class ProcessorUtils {
 		compiler.process(processors);
 	}
 
+	/** sets the fields of processor "p" given as parameter according to the properties */
 	public static void initProperties(Processor<?> p, ProcessorProperties properties) {
 		if (properties != null) {
 			for (Field f : RtHelper.getAllFields(p.getClass())) {

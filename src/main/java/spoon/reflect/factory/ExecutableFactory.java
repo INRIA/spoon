@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -26,8 +26,10 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
@@ -85,9 +87,6 @@ public class ExecutableFactory extends SubFactory {
 	 */
 	public <T> CtParameterReference<T> createParameterReference(CtParameter<T> parameter) {
 		CtParameterReference<T> ref = factory.Core().createParameterReference();
-		if (parameter.getParent() != null) {
-			ref.setDeclaringExecutable(factory.Executable().createReference((CtExecutable<?>) parameter.getParent()));
-		}
 		ref.setSimpleName(parameter.getSimpleName());
 		ref.setType(parameter.getType());
 		return ref;
@@ -103,14 +102,10 @@ public class ExecutableFactory extends SubFactory {
 	}
 
 	private <T> CtExecutableReference<T> createReferenceInternal(CtExecutable<T> e) {
-		CtTypeReference<?> refs[] = new CtTypeReference[e.getParameters().size()];
+		CtTypeReference<?>[] refs = new CtTypeReference[e.getParameters().size()];
 		int i = 0;
 		for (CtParameter<?> param : e.getParameters()) {
-			refs[i++] = param.getType() != null
-					? param.getType().clone()
-					// With a lambda and in noclasspath (when the type of
-					// parameters isn't specified), we assume Object.
-					: factory.Type().OBJECT.clone();
+			refs[i++] = getMethodParameterType(param.getType());
 		}
 		String executableName = e.getSimpleName();
 		if (e instanceof CtMethod) {
@@ -124,6 +119,26 @@ public class ExecutableFactory extends SubFactory {
 		}
 		// constructor
 		return createReference(((CtConstructor<T>) e).getDeclaringType().getReference(), ((CtConstructor<T>) e).getType().clone(), CtExecutableReference.CONSTRUCTOR_NAME, refs);
+	}
+
+	private CtTypeReference<?> getMethodParameterType(CtTypeReference<?> paramType) {
+		if (paramType instanceof CtTypeParameterReference) {
+			paramType = ((CtTypeParameterReference) paramType).getBoundingType();
+		}
+		if (paramType instanceof CtArrayTypeReference) {
+			CtArrayTypeReference atr = (CtArrayTypeReference) paramType;
+			CtTypeReference<?> originCT = atr.getComponentType();
+			CtTypeReference<?> erasedCT = getMethodParameterType(originCT);
+			if (originCT != erasedCT) {
+				CtArrayTypeReference<?> erased = atr.clone();
+				erased.setComponentType(erasedCT);
+				return erased;
+			}
+		}
+		if (paramType == null) {
+			paramType = factory.Type().OBJECT;
+		}
+		return paramType.clone();
 	}
 
 	/**
@@ -213,14 +228,14 @@ public class ExecutableFactory extends SubFactory {
 	 */
 	public <T> CtExecutableReference<T> createReference(String signature) {
 		CtExecutableReference<T> executableRef = factory.Core().createExecutableReference();
-		String type = signature.substring(0, signature.indexOf(" "));
-		String declaringType = signature.substring(signature.indexOf(" ") + 1, signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR));
-		String executableName = signature.substring(signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR) + 1, signature.indexOf("("));
+		String type = signature.substring(0, signature.indexOf(' '));
+		String declaringType = signature.substring(signature.indexOf(' ') + 1, signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR));
+		String executableName = signature.substring(signature.indexOf(CtExecutable.EXECUTABLE_SEPARATOR) + 1, signature.indexOf('('));
 		executableRef.setSimpleName(executableName);
 		executableRef.setDeclaringType(factory.Type().createReference(declaringType));
 		CtTypeReference<T> typeRef = factory.Type().createReference(type);
 		executableRef.setType(typeRef);
-		String parameters = signature.substring(signature.indexOf("(") + 1, signature.indexOf(")"));
+		String parameters = signature.substring(signature.indexOf('(') + 1, signature.indexOf(')'));
 		List<CtTypeReference<?>> params = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		StringTokenizer t = new StringTokenizer(parameters, ",");
 		while (t.hasMoreTokens()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -45,7 +45,7 @@ public class CtTypedNameElement<P extends CtElement, T extends CtElement> extend
 	public Collection<T> getElements(Collection<P> roots) {
 		Collection<T> elements = new ArrayList<>();
 		for (CtElement root : roots) {
-			for (CtElement child : getChilds(root)) {
+			for (CtElement child : getChildren(root)) {
 				if (match(child)) {
 					elements.add((T) child);
 				}

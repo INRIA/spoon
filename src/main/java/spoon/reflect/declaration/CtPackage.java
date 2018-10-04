@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -20,7 +20,6 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
-import spoon.reflect.path.CtRole;
 
 import java.util.Set;
 
@@ -38,10 +37,18 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 */
 	String PACKAGE_SEPARATOR = ".";
 
+	char PACKAGE_SEPARATOR_CHAR = '.';
+
 	/**
 	 * The name for the top level package.
 	 */
 	String TOP_LEVEL_PACKAGE_NAME = "unnamed package";
+
+	/**
+	 * Gets the declaring module.
+	 */
+	@DerivedProperty
+	CtModule getDeclaringModule();
 
 	/**
 	 * Gets the declaring package of the current one. Returns null if the package is not yet in another one.
@@ -79,6 +86,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 *
 	 * @see spoon.reflect.declaration.CtNamedElement#getReference()
 	 */
+	@Override
 	@DerivedProperty
 	CtPackageReference getReference();
 
@@ -87,13 +95,13 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 *
 	 * @return the found type or null
 	 */
-	@PropertyGetter(role = CtRole.CONTAINED_TYPE)
+	@PropertyGetter(role = CONTAINED_TYPE)
 	<T extends CtType<?>> T getType(String simpleName);
 
 	/**
 	 * Returns the set of the top-level types in this package.
 	 */
-	@PropertyGetter(role = CtRole.CONTAINED_TYPE)
+	@PropertyGetter(role = CONTAINED_TYPE)
 	Set<CtType<?>> getTypes();
 
 	/**

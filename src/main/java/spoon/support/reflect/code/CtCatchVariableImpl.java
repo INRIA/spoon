@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
@@ -41,17 +42,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.TYPE;
-
 public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatchVariable<T> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.NAME)
 	String name = "";
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = CtRole.MULTI_TYPE)
 	List<CtTypeReference<?>> types = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
@@ -92,6 +89,9 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 				.includingInterfaces(false)
 				.includingSelf(true)
 				.returnTypeReferences(true)).list();
+		if (superTypesOfFirst.isEmpty()) {
+			return null;
+		}
 		int commonSuperTypeIdx = 0;
 		//index of Throwable. Last is Object
 		int throwableIdx = superTypesOfFirst.size() - 2;
@@ -118,7 +118,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.name);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.NAME, simpleName, this.name);
 		this.name = simpleName;
 		return (C) this;
 	}
@@ -135,10 +135,10 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 			return (T) this;
 		}
 		if (types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
-			types = new ArrayList<>(CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
+			types = new ArrayList<>(ModelElementContainerDefaultCapacities.CATCH_VARIABLE_MULTI_TYPES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		type.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE, this.types, type);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.MULTI_TYPE, this.types, type);
 		types.add(type);
 		return (T) this;
 	}
@@ -148,7 +148,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 		if (this.types == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			return false;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TYPE, types, types.indexOf(ref), ref);
+		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.MULTI_TYPE, types, types.indexOf(ref), ref);
 		return types.remove(ref);
 	}
 
@@ -159,7 +159,7 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 
 	@Override
 	public <T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types) {
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TYPE, this.types, new ArrayList<>(this.types));
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.MULTI_TYPE, this.types, new ArrayList<>(this.types));
 		if (types == null || types.isEmpty()) {
 			this.types = CtElementImpl.emptyList();
 			return (T) this;

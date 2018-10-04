@@ -2,7 +2,6 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.refactoring.Refactoring;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -14,12 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 public class CloneReferenceTest {
 
     @Test
-    public void testGetDeclarationAfterClone() throws Exception {
+    public void testGetDeclarationAfterClone() {
         // contract: all variable references of the clone (but fields) should point to the variable of the clone
         Launcher spoon = new Launcher();
 
@@ -35,7 +35,7 @@ public class CloneReferenceTest {
         for (String name : names) {
             CtVariable var1 = findVariable(a, name);
             CtVariable var2 = findReference(a, name).getDeclaration();
-            assertTrue(var1 == var2);
+            assertSame(var1, var2);
         }
 
         CtClass b = a.clone();
@@ -45,12 +45,12 @@ public class CloneReferenceTest {
             CtVariable var1 = findVariable(b, name);
             CtVariableReference refVar1 = findReference(b, name);
             CtVariable var2 = refVar1.getDeclaration();
-            assertTrue("Var1 and var2 are not the same element", var1 == var2);
+            assertSame("Var1 and var2 are not the same element", var1, var2);
         }
     }
 
     @Test
-    public void testGetDeclarationOfFieldAfterClone() throws Exception {
+    public void testGetDeclarationOfFieldAfterClone() {
         // contract: all field references of the clone point to the old class
         // behaviour changed on https://github.com/INRIA/spoon/pull/1215
         Launcher spoon = new Launcher();
@@ -66,7 +66,7 @@ public class CloneReferenceTest {
         // test before clone
         CtField oldVar1 = (CtField)findVariable(a, name);
         CtField oldVar2 = (CtField)findReference(a, name).getDeclaration();
-        assertTrue(oldVar1 == oldVar2);
+        assertSame(oldVar1, oldVar2);
 
         CtClass b = a.clone();
 
@@ -74,9 +74,9 @@ public class CloneReferenceTest {
         CtField var1 = (CtField)findVariable(b, name);
         CtVariableReference refVar1 = findReference(b, name);
         CtField var2 = (CtField)refVar1.getDeclaration();
-        assertTrue(var1 != var2);
-        assertTrue(var2 == oldVar1);
-        assertTrue(var1.getParent(CtClass.class) == b);
+        assertNotSame(var1, var2);
+        assertSame(var2, oldVar1);
+        assertSame(var1.getParent(CtClass.class), b);
     }
 
     class Finder<T> extends CtScanner {

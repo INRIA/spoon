@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
@@ -53,13 +54,12 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * Gets the Java runtime class of the referenced type.
 	 *
 	 * This is a low-level feature, it should never been used.
-	 * Use {@link #getTypeDeclaration()} instead,
-	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class
+	 * For CtTypeReference, use {@link #getTypeDeclaration()} instead,
+	 * in order to only stay in the Spoon world and manipulate CtType instead of java.lang.Class.
 	 *
-	 * @return the Java class or null if the class is not found (not in
-	 * classpath)
-	 * @throws SpoonClassNotFoundException
-	 * 		if the class is not in the classpath
+	 * @return the Java class or throws a {@link SpoonClassNotFoundException} if the class is not found.
+	 * @throws SpoonClassNotFoundException if the class is not in the classpath
+	 * @deprecated (Since Spoon 7.0.0) use {@link #getTypeDeclaration()} instead
 	 */
 	Class<T> getActualClass();
 
@@ -73,6 +73,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return the referenced element or <code>null</code> if the type
 	 * declaration is not the analyzed source files.
 	 */
+	@Override
 	@DerivedProperty
 	CtType<T> getDeclaration();
 
@@ -82,7 +83,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * built with runtime reflection, and the resulting CtType is called a "shadow" class,
 	 * see {@link CtShadowable#isShadow()}).
 	 *
-	 * @return the type declaration that corresponds to the reference.
+	 * @return the type declaration that corresponds to the reference or null if the reference points to a class that is not in the classpath.
 	 */
 	@DerivedProperty
 	CtType<T> getTypeDeclaration();
@@ -144,6 +145,10 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@Override
 	@DerivedProperty
 	CtTypeReference<?> getSuperclass();
+
+	@Override
+	@DerivedProperty
+	Set<ModifierKind> getModifiers();
 
 	/**
 	 * Checks visibility based on public, protected, package protected and private modifiers of type

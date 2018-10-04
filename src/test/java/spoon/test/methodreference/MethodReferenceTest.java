@@ -13,7 +13,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -38,10 +37,10 @@ import java.util.function.Supplier;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class MethodReferenceTest {
@@ -49,15 +48,13 @@ public class MethodReferenceTest {
 	private CtClass<?> foo;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		final Launcher launcher = new Launcher();
-		final Factory factory = launcher.createFactory();
-		factory.getEnvironment().setComplianceLevel(8);
-		final File sourceOutputDir = new File("./target/spooned/");
-		factory.getEnvironment().setDefaultFileGenerator(launcher.createOutputWriter(sourceOutputDir, factory.getEnvironment()));
-		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
+		final Factory factory = launcher.getFactory();
+		launcher.getEnvironment().setComplianceLevel(8);
 
-		compiler.setSourceOutputDirectory(sourceOutputDir);
+		final SpoonModelBuilder compiler = launcher.createCompiler(factory);
+		launcher.setSourceOutputDirectory("./target/spooned/");
 		compiler.addInputSource(new File("./src/test/java/spoon/test/methodreference/testclasses/"));
 		compiler.build();
 		compiler.generateProcessedSourceFiles(OutputType.CLASSES);
@@ -66,7 +63,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAStaticMethod() throws Exception {
+	public void testReferenceToAStaticMethod() {
 		final String methodReference = TEST_CLASS + "Person::compareByAge";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -79,7 +76,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAnInstanceMethodOfAParticularObject() throws Exception {
+	public void testReferenceToAnInstanceMethodOfAParticularObject() {
 		final String methodReference = "myComparisonProvider::compareByName";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -92,7 +89,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAnInstanceMethodOfMultiParticularObject() throws Exception {
+	public void testReferenceToAnInstanceMethodOfMultiParticularObject() {
 		final String methodReference = "tarzan.phone::compareByNumbers";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -105,7 +102,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAnInstanceMethodOfAnArbitraryObjectOfAParticularType() throws Exception {
+	public void testReferenceToAnInstanceMethodOfAnArbitraryObjectOfAParticularType() {
 		final String methodReference = "java.lang.String::compareToIgnoreCase";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -118,7 +115,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAConstructor() throws Exception {
+	public void testReferenceToAConstructor() {
 		final String methodReference = TEST_CLASS + "Person::new";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -131,7 +128,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAClassParametrizedConstructor() throws Exception {
+	public void testReferenceToAClassParametrizedConstructor() {
 		final String methodReference = TEST_CLASS + "Type<java.lang.String>::new";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -144,7 +141,7 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testReferenceToAJavaUtilClassConstructor() throws Exception {
+	public void testReferenceToAJavaUtilClassConstructor() {
 		final String methodReference = "java.util.HashSet<" + TEST_CLASS + "Person>::new";
 		final CtExecutableReferenceExpression<?,?> reference = getCtExecutableReferenceExpression(methodReference);
 
@@ -157,12 +154,12 @@ public class MethodReferenceTest {
 	}
 
 	@Test
-	public void testCompileMethodReferenceGeneratedBySpoon() throws Exception {
+	public void testCompileMethodReferenceGeneratedBySpoon() {
 		canBeBuilt(new File("./target/spooned/spoon/test/methodreference/testclasses/"), 8);
 	}
 
 	@Test
-	public void testNoClasspathExecutableReferenceExpression() throws Exception {
+	public void testNoClasspathExecutableReferenceExpression() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/executable-reference-expression/Bar.java", "-o", "./target/spooned", "--noclasspath"
@@ -220,9 +217,8 @@ public class MethodReferenceTest {
 		assertEquals("method", method.getName());
 
 		CtClass<?> classSun = classCloud.getFactory().Class().get("spoon.test.methodreference.testclasses.Sun");
-//		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtExecutableReference.class)).select(new NameFilter<>("method")).first();
 		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtInvocation.class))
-				.select(((CtInvocation i)->i.getExecutable().getSimpleName().equals("method")))
+				.select(((CtInvocation i)-> "method".equals(i.getExecutable().getSimpleName())))
 				.map((CtInvocation i)->i.getExecutable())
 				.first();
 		assertNotNull(execRef2);
@@ -270,7 +266,7 @@ public class MethodReferenceTest {
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
-		assertEquals("Method reference must be typed.", expected, type.getActualClass());
+		assertSame("Method reference must be typed.", expected, type.getActualClass());
 	}
 
 	private void assertTargetedBy(String expected, CtExpression<?> target) {

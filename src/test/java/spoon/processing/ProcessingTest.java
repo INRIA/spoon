@@ -28,8 +28,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ProcessingTest {
+
 	@Test
-	public void testInterruptAProcessor() throws Exception {
+	public void testInterruptAProcessor() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -45,7 +46,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testSpoonTagger() throws Exception {
+	public void testSpoonTagger() {
 		final Launcher launcher = new Launcher();
 		launcher.addProcessor("spoon.processing.SpoonTagger");
 		launcher.run();

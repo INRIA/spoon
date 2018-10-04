@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -20,6 +20,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
 
 
 /**
@@ -61,7 +62,16 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * Returns the simple name of the array type core component type (with no
 	 * []s). Use toString() to get the full array type including []s.
 	 */
+	@Override
+	@DerivedProperty
 	String getSimpleName();
+
+	/**
+	 * The simple name of an ArrayTypeReference is unsettable as it's retrieved from its component type.
+	 */
+	@UnsettableProperty
+	@Override
+	<T extends CtReference> T setSimpleName(String simpleName);
 
 	@Override
 	CtArrayTypeReference<T> clone();

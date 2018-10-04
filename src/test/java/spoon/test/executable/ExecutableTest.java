@@ -2,30 +2,36 @@ package spoon.test.executable;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.executable.testclasses.A;
 import spoon.test.executable.testclasses.Pozole;
+import spoon.test.executable.testclasses.WithEnum;
+import spoon.test.main.MainTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ExecutableTest {
 	@Test
-	public void testInfoInsideAnonymousExecutable() throws Exception {
+	public void testInfoInsideAnonymousExecutable() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/AnonymousExecutableSample.java");
 		launcher.run();
 
-		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class));
+		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<>(CtAnonymousExecutable.class));
 
 		assertEquals(2, anonymousExecutables.size());
 
@@ -49,30 +55,59 @@ public class ExecutableTest {
 
 		String methodName = "getInt1";
 		CtExecutableReference<?> methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(false, methodRef.isFinal());
-		assertEquals(true, methodRef.isStatic());
+		assertFalse(methodRef.isFinal());
+		assertTrue(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt2";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(true, methodRef.isFinal());
-		assertEquals(true, methodRef.isStatic());
+		assertTrue(methodRef.isFinal());
+		assertTrue(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt3";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(true, methodRef.isFinal());
-		assertEquals(false, methodRef.isStatic());
+		assertTrue(methodRef.isFinal());
+		assertFalse(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt4";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(false, methodRef.isFinal());
-		assertEquals(false, methodRef.isStatic());
+		assertFalse(methodRef.isFinal());
+		assertFalse(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
+	}
+
+	@Test
+	public void testShadowValueOf() {
+		// contract: the valueOf method should be correctly retrieved in shadow mode
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/WithEnum.java");
+		CtModel ctModel = launcher.buildModel();
+		List<CtExecutableReference> listValueOf = ctModel.
+				filterChildren(new TypeFilter<>(CtExecutableReference.class)).
+				filterChildren((Filter<CtExecutableReference>) element -> {
+					return "valueOf".equals(element.getSimpleName());
+				}).list();
+
+		assertEquals(1, listValueOf.size());
+		CtExecutableReference valueOf = listValueOf.get(0);
+
+		Launcher launcherShadow = new Launcher();
+		CtType<?> ctType = launcher.getFactory().Type().get(WithEnum.class);
+		List<CtExecutableReference> listShadowValueOf = ctType.filterChildren(new TypeFilter<>(CtExecutableReference.class))
+				.filterChildren((Filter<CtExecutableReference>) element -> {
+					return "valueOf".equals(element.getSimpleName());
+				}).list();
+		assertEquals(1, listShadowValueOf.size());
+		CtExecutableReference shadowValueOf = listShadowValueOf.get(0);
+
+		assertEquals(valueOf, shadowValueOf);
+		assertEquals(valueOf.getDeclaration(), shadowValueOf.getDeclaration());
+		MainTest.checkShadow(shadowValueOf.getParent(CtPackage.class));
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -32,20 +32,22 @@ public class ZipFile implements SpoonFile {
 	ZipFolder parent;
 
 	public ZipFile(ZipFolder parent, String name, byte[] buffer) {
-		super();
 		this.buffer = buffer;
 		this.name = name;
 		this.parent = parent;
 	}
 
+	@Override
 	public InputStream getContent() {
 		return new ByteArrayInputStream(buffer);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		return parent;
 	}
@@ -55,14 +57,17 @@ public class ZipFile implements SpoonFile {
 		return getParent().getFileSystemParent();
 	}
 
+	@Override
 	public boolean isFile() {
 		return true;
 	}
 
+	@Override
 	public boolean isJava() {
 		return getName().endsWith(".java");
 	}
 
+	@Override
 	public String getPath() {
 		return toString();
 	}

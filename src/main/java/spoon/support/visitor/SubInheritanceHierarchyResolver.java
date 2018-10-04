@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -44,7 +44,9 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
 
 /**
  * Expects a {@link CtPackage} as input
- * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces, which extends or implements super type(s) provided in constructor and stored as `targetSuperTypes`.<br>
+ * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces,
+ * which extends or implements super type(s) provided by call(s) of {@link #addSuperType(CtTypeInformation)}
+ * and stored as `targetSuperTypes`.<br>
  *
  * The repeated processing of this mapping function on the same input returns only newly found sub types.
  * The instance of {@link SubInheritanceHierarchyResolver} returns found sub types only once.
@@ -159,7 +161,7 @@ public class SubInheritanceHierarchyResolver {
 						 * FOUND! we are in super inheritance hierarchy, which extends from an searched super type(s).
 						 * All `currentSubTypes` are sub types of searched super type
 						 */
-						while (currentSubTypes.size() > 0) {
+						while (!currentSubTypes.isEmpty()) {
 							final CtTypeReference<?> currentTypeRef  = currentSubTypes.pop();
 							String currentQName = currentTypeRef.getQualifiedName();
 							/*
@@ -218,15 +220,12 @@ public class SubInheritanceHierarchyResolver {
 	private static final Filter<CtType<?>> typeFilter = new Filter<CtType<?>>() {
 		@Override
 		public boolean matches(CtType<?> type) {
-			if (type instanceof CtTypeParameter) {
-				return false;
-			}
-			return true;
+			return !(type instanceof CtTypeParameter);
 		}
 	};
 
 	/**
 	 * Accept all {@link CtClass}, {@link CtEnum}
 	 */
-	private static final Filter<CtClass<?>> classFilter = new TypeFilter<CtClass<?>>(CtClass.class);
+	private static final Filter<CtClass<?>> classFilter = new TypeFilter<>(CtClass.class);
 }

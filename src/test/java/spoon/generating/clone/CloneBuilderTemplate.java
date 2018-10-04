@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -23,11 +23,12 @@ import spoon.reflect.visitor.CtInheritanceScanner;
 /**
  * Used to set all data in the cloned element.
  *
- * This class is generated automatically by the processor {@link spoon.generating.CloneVisitorGenerator}.
+ * This class is generated automatically by the processor spoon.generating.CloneVisitorGenerator.
  */
 class CloneBuilderTemplate extends CtInheritanceScanner {
-	public static <T extends CtElement> T build(CtElement element, CtElement other) {
-		return build(new CloneBuilderTemplate(), element, other);
+	public void copy(spoon.reflect.declaration.CtElement element, spoon.reflect.declaration.CtElement other) {
+		this.setOther(other);
+		this.scan(element);
 	}
 
 	public static <T extends CtElement> T build(CloneBuilderTemplate builder, CtElement element, CtElement other) {

@@ -28,6 +28,8 @@ public class ErasureModelA<A, B extends Exception, C extends B, D extends List<B
 	// simple case
 	public void list(List<Object> x, List<List<Object>> y, List<String> z) {
 	}
+	
+	public <I, J extends C> void methodWithArray(I[] paramI, J... paramJ) {}
 
 	static class ModelB<A2,B2 extends Exception, C2 extends B2, D2 extends List<B2>> extends ErasureModelA<A2,B2,C2,D2> {
 		A2 paramA2;

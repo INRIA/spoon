@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,7 +17,7 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines a write to a field.
+ * This code element defines a write access to a field.
  *
  * In Java, it is a usage of a field inside an assignment.
  *

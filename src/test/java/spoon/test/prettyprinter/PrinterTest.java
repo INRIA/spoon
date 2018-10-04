@@ -1,19 +1,19 @@
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ElementPrinterHelper;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
@@ -40,7 +40,7 @@ public class PrinterTest {
 				SpoonResourceHelper
 						.resources(
 								"./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java",
-								"./src/test/java/spoon/test/prettyprinter/Validation.java"))
+								"./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		for (CtType<?> t : factory.Type().getAll()) {
 			t.toString();
@@ -51,7 +51,7 @@ public class PrinterTest {
 	}
 
 	@Test
-	public void testChangeAutoImportModeWorks() throws Exception {
+	public void testChangeAutoImportModeWorks() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setAutoImports(false);
 		PrettyPrinter printer = spoon.createPrettyPrinter();
@@ -150,7 +150,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		//assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
 		canBeBuilt(output, 7);
 	}
 
@@ -161,17 +161,7 @@ public class PrinterTest {
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
 		//contract: printer fails with descriptive exception and not with NPE
-		try {
-			type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString();
-			fail();
-		} catch (SpoonException e) {
-			//the name of the missing field declaration is part of exception
-			assertTrue(e.getMessage().indexOf("testedField")>=0);
-			//the name of the method where field declaration is missing is part of exception
-			assertTrue(e.getMessage().indexOf("failingMethod")>=0);
-			//the name of the class where field is missing is part of exception
-			assertTrue(e.getMessage().indexOf("MissingVariableDeclaration")>=0);
-		} //other exceptions are not OK
+		assertEquals("/* ERROR: Missing field \"testedField\", please check your model. The code may not compile. */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));
@@ -218,7 +208,7 @@ public class PrinterTest {
 			"instanceof"
 	));
 
-	private final String[] javaKeywordsJoined = new String[] {
+	private final String[] javaKeywordsJoined = {
 			"abstract continue for new switch",
 			"assert default goto package synchronized",
 			"boolean do if private this",
@@ -228,7 +218,8 @@ public class PrinterTest {
 			"catch extends int short try",
 			"char final interface static void",
 			"class finally long strictfp volatile",
-			"const float native super while"};
+			"const float native super while"
+	};
 
 	private final Set<String> javaKeywords = new HashSet<>();
 	{
@@ -244,6 +235,7 @@ public class PrinterTest {
 	public void testPrinterTokenListener() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
+		factory.getEnvironment().setCommentEnabled(false);
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
@@ -253,8 +245,8 @@ public class PrinterTest {
 //this case needs longer, but checks contract on all spoon java sources
 //				.resources("./src/main/java/"))
 				.build();
-		
-		assertTrue(factory.Type().getAll().size() > 0);
+
+		assertFalse(factory.Type().getAll().isEmpty());
 		for (CtType<?> t : factory.Type().getAll()) {
 			//create DefaultJavaPrettyPrinter with standard DefaultTokenWriter
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
@@ -293,7 +285,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
-					assertTrue(literal.length() > 0);
+					assertFalse(literal.isEmpty());
 					handleTabs();
 					allTokens.append(literal);
 					return this;
@@ -321,7 +313,7 @@ public class PrinterTest {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					assertEquals("Keyword found in Identifier: " + identifier, false, javaKeywords.contains(identifier));
 					handleTabs();
 					allTokens.append(identifier);
 					return this;
@@ -371,7 +363,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeCodeSnippet(String token) {
 					checkRepeatingOfTokens("writeCodeSnippet");
-					assertTrue(token.length() > 0);
+					assertFalse(token.isEmpty());
 					handleTabs();
 					allTokens.append(token);
 					return this;
@@ -415,7 +407,7 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
+						assertEquals("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), false, tokenType.equals(this.lastToken));
 					}
 					this.lastToken = tokenType;
 				}
@@ -435,17 +427,37 @@ public class PrinterTest {
 
 	private void checkTokenWhitespace(String stringToken, boolean isWhitespace) {
 		//contract: there is no empty token
-		assertTrue(stringToken.length() > 0);
+		assertFalse(stringToken.isEmpty());
 		//contract: only whitespace token contains whitespace
 		for (int i = 0; i < stringToken.length(); i++) {
 			char c = stringToken.charAt(i);
 			if (isWhitespace) {
 				//a whitespace
-				assertTrue(Character.isWhitespace(c)==true);
+				assertEquals(true, Character.isWhitespace(c));
 			} else {
 				//not a whitespace
-				assertTrue(Character.isWhitespace(c)==false);
+				assertEquals(false, Character.isWhitespace(c));
 			}
 		}
+	}
+
+	@Test
+	public void testListPrinter() {
+
+		Launcher spoon = new Launcher();
+		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) spoon.createPrettyPrinter();
+
+		PrinterHelper ph = new PrinterHelper(spoon.getEnvironment());
+		TokenWriter tw = new DefaultTokenWriter(ph);
+		pp.setPrinterTokenWriter(tw);
+
+		ElementPrinterHelper elementPrinterHelper = pp.getElementPrinterHelper();
+
+		String[] listString = {"un", "deux", "trois"};
+
+		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
+
+		String expectedResult = " start un next deux next trois end";
+		assertEquals(expectedResult, pp.toString());
 	}
 }

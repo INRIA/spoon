@@ -10,7 +10,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ClassFactoryTest {
 	@Test
-	public void testDeclaringClass() throws Exception {
+	public void testDeclaringClass() {
 		final Factory factory = createFactory();
 		final CtClass<Object> declaringClass = factory.Core().createClass();
 		declaringClass.setSimpleName("DeclaringClass");
@@ -22,7 +22,7 @@ public class ClassFactoryTest {
 	}
 
 	@Test
-	public void testTopLevelClass() throws Exception {
+	public void testTopLevelClass() {
 		final Factory factory = createFactory();
 		final CtPackage aPackage = factory.Core().createPackage();
 		aPackage.setSimpleName("spoon");

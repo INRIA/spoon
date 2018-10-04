@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,6 +16,7 @@
  */
 package spoon.legacy;
 
+
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -31,12 +32,10 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
  *
  * @deprecated Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
  */
-@Deprecated
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
 
 	/**
-	 *
 	 * @param name Name of the expected element
 	 */
 	public NameFilter(String name) {
@@ -46,6 +45,7 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		this.name = name;
 	}
 
+	@Override
 	public boolean matches(T element) {
 		try {
 			return name.equals(element.getSimpleName());

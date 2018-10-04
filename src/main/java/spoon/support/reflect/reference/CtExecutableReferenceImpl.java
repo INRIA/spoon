@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtClass;
@@ -26,10 +27,12 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -56,16 +59,16 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.IS_STATIC)
+	@MetamodelPropertyField(role = IS_STATIC)
 	boolean stat = false;
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = TYPE)
 	CtTypeReference<?> declaringType;
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = TYPE)
 	/**
 	 * For methods, stores the return type of the method. (not pretty-printed).
 	 * For constructors, stores the type of the target constructor (pretty-printed).
@@ -76,7 +79,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	List<CtTypeReference<?>> parameters = CtElementImpl.emptyList();
 
 	public CtExecutableReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -94,66 +96,6 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return getSimpleName().equals(CONSTRUCTOR_NAME);
 	}
 
-	//	@Override
-	//	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-	//		A annotation = super.getAnnotation(annotationType);
-	//		if (annotation != null) {
-	//			return annotation;
-	//		}
-	//		// use reflection
-	//		Class<?> c = getDeclaringType().getActualClass();
-	//		for (Method m : RtHelper.getAllMethods(c)) {
-	//			if (!getSimpleName().equals(m.getName())) {
-	//				continue;
-	//			}
-	//			if (getParameterTypes().size() != m.getParameterTypes().length) {
-	//				continue;
-	//			}
-	//			int i = 0;
-	//			for (Class<?> t : m.getParameterTypes()) {
-	//				if (t != getParameterTypes().get(i).getActualClass()) {
-	//					break;
-	//				}
-	//				i++;
-	//			}
-	//			if (i == getParameterTypes().size()) {
-	//				m.setAccessible(true);
-	//				return m.getAnnotation(annotationType);
-	//			}
-	//		}
-	//		return null;
-	//	}
-
-	//	@Override
-	//	public Annotation[] getAnnotations() {
-	//		Annotation[] annotations = super.getAnnotations();
-	//		if (annotations != null) {
-	//			return annotations;
-	//		}
-	//		// use reflection
-	//		Class<?> c = getDeclaringType().getActualClass();
-	//		for (Method m : RtHelper.getAllMethods(c)) {
-	//			if (!getSimpleName().equals(m.getName())) {
-	//				continue;
-	//			}
-	//			if (getParameterTypes().size() != m.getParameterTypes().length) {
-	//				continue;
-	//			}
-	//			int i = 0;
-	//			for (Class<?> t : m.getParameterTypes()) {
-	//				if (t != getParameterTypes().get(i).getActualClass()) {
-	//					break;
-	//				}
-	//				i++;
-	//			}
-	//			if (i == getParameterTypes().size()) {
-	//				m.setAccessible(true);
-	//				return m.getAnnotations();
-	//			}
-	//		}
-	//		return null;
-	//	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public CtExecutable<T> getDeclaration() {
@@ -166,23 +108,37 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutable<T> getExecutableDeclaration() {
-		return getCtExecutable(getDeclaringType().getTypeDeclaration());
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
+
+		if (declaringType instanceof CtArrayTypeReference && this.isConstructor()) {
+			CtConstructor constructor = this.getFactory().createInvisibleArrayConstructor();
+			constructor.setType(declaringType);
+			return constructor;
+		}
+
+		return getCtExecutable(declaringType.getTypeDeclaration());
 	}
 
 	private CtExecutable<T> getCtExecutable(CtType<?> typeDecl) {
 		if (typeDecl == null) {
 			return null;
 		}
-		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
-		if ((method == null) && (typeDecl instanceof CtClass) && (getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME))) {
+		CtTypeReference<?>[] arrayParameters = parameters.toArray(new CtTypeReferenceImpl<?>[0]);
+		CtExecutable<T> method = typeDecl.getMethod(getSimpleName(), arrayParameters);
+		if ((method == null) && (typeDecl instanceof CtClass) && this.isConstructor()) {
 			try {
-				return (CtExecutable<T>) ((CtClass<?>) typeDecl).getConstructor(parameters.toArray(new CtTypeReferenceImpl<?>[parameters.size()]));
+				CtClass<?> zeClass = (CtClass) typeDecl;
+				CtConstructor<?> constructor = zeClass.getConstructor(arrayParameters);
+				return (CtExecutable<T>) constructor;
 			} catch (ClassCastException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
 		} else if (method == null && getSimpleName().startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
-			final List<CtLambda> elements = (List<CtLambda>) typeDecl.getElements(new NamedElementFilter<>(CtLambda.class, getSimpleName()));
-			if (elements.size() == 0) {
+			final List<CtLambda> elements = typeDecl.getElements(new NamedElementFilter<>(CtLambda.class, getSimpleName()));
+			if (elements.isEmpty()) {
 				return null;
 			}
 			return elements.get(0);
@@ -226,9 +182,19 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		if (parameter == null) {
 			return false;
 		}
+		checkMethodParameterTypeRef(parameter);
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT_TYPE, this.parameters, parameter);
 		return this.parameters.add(parameter);
+	}
+
+	private void checkMethodParameterTypeRef(CtTypeReference<?> parameterType) {
+		if (parameterType instanceof CtTypeParameterReference && !(parameterType instanceof CtWildcardReference)) {
+			throw new SpoonException("CtExecutableReference cannot use CtTypeParameterReference. Use boundingType of CtTypeParameterReference instead.");
+		}
+		if (parameterType instanceof CtArrayTypeReference) {
+			checkMethodParameterTypeRef(((CtArrayTypeReference<?>) parameterType).getComponentType());
+		}
 	}
 
 	@Override
@@ -264,10 +230,8 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 			if (!isSame) {
 				return false;
 			}
-			if (!getDeclaringType().isSubtypeOf(executable.getDeclaringType())) {
-				return false;
-			}
-			return true;
+			CtTypeReference<?> declaringType = getDeclaringType();
+			return declaringType != null && declaringType.isSubtypeOf(executable.getDeclaringType());
 		}
 		if (exec instanceof CtMethod<?> && thisExec instanceof CtMethod<?>) {
 			return new ClassTypingContext(((CtTypeMember) thisExec).getDeclaringType()).isOverriding((CtMethod<?>) thisExec, (CtMethod<?>) exec);
@@ -326,8 +290,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	public Method getActualMethod() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
 		method_loop:
-		for (Method m : getDeclaringType().getActualClass().getDeclaredMethods()) {
+		for (Method m : declaringType.getActualClass().getDeclaredMethods()) {
 			if (!m.getDeclaringClass().isSynthetic() && m.isSynthetic()) {
 				continue;
 			}
@@ -350,11 +318,16 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return null;
 	}
 
+	@Override
 	public Constructor<?> getActualConstructor() {
 		List<CtTypeReference<?>> parameters = this.getParameters();
 
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return null;
+		}
 		constructor_loop:
-		for (Constructor<?> c : getDeclaringType().getActualClass().getDeclaredConstructors()) {
+		for (Constructor<?> c : declaringType.getActualClass().getDeclaredConstructors()) {
 			if (c.getParameterTypes().length != parameters.size()) {
 				continue;
 			}
@@ -368,6 +341,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		return null;
 	}
 
+	@Override
 	public boolean isStatic() {
 		return stat;
 	}
@@ -417,8 +391,12 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutableReference<?> getOverridingExecutable() {
-		CtTypeReference<?> st = getDeclaringType().getSuperclass();
 		CtTypeReference<Object> objectType = getFactory().Type().OBJECT;
+		CtTypeReference<?> declaringType = getDeclaringType();
+		if (declaringType == null) {
+			return getOverloadedExecutable(objectType, objectType);
+		}
+		CtTypeReference<?> st = declaringType.getSuperclass();
 		if (st == null) {
 			return getOverloadedExecutable(objectType, objectType);
 		}

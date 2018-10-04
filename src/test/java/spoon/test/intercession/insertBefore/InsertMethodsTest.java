@@ -14,7 +14,6 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
@@ -25,13 +24,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class InsertMethodsTest {
 
 	Factory factory;
-	;
 	private CtClass<?> assignmentClass;
 	private CtClass<?> insertExampleClass;
 
@@ -71,7 +70,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfter() throws Exception {
+	public void testInsertAfter() {
 		CtMethod<Void> foo = (CtMethod<Void>) assignmentClass.getMethods().toArray()[0];
 
 		CtBlock<?> body = foo.getBody();
@@ -90,7 +89,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithoutBrace() throws Exception {
+	public void testInsertBeforeWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -107,13 +106,13 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithBrace() throws Exception {
+	public void testInsertBeforeWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertBefore(s);
@@ -123,7 +122,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithoutBrace() throws Exception {
+	public void testInsertAfterWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -140,13 +139,13 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithBrace() throws Exception {
+	public void testInsertAfterWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertAfter(s);
@@ -156,7 +155,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeSwitchCase() throws Exception {
+	public void testInsertBeforeSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -192,7 +191,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterSwitchCase() throws Exception {
+	public void testInsertAfterSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -249,7 +248,7 @@ public class InsertMethodsTest {
 		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/intercession/insertBefore/InsertBeforeExample2.java")).build();
 
 		// Get the 'while'
-		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<CtWhile>(CtWhile.class));
+		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<>(CtWhile.class));
 		assertTrue(1 == elements.size());
 		CtWhile theWhile = elements.get(0);
 
@@ -267,7 +266,7 @@ public class InsertMethodsTest {
 
 		// We make sure the parent of the while is updated
 		CtElement newParent = theWhile.getParent();
-		assertTrue(newParent != ifParent);
+		assertNotSame(newParent, ifParent);
 		assertTrue(newParent instanceof CtBlock);
 		assertFalse(newParent.isImplicit());
 	}

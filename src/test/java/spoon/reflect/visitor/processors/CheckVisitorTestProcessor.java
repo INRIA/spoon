@@ -25,7 +25,6 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ import java.util.List;
  */
 public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProcessor<CtClass<?>> {
 	private Class<T> visitor;
-	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtWildcardStaticTypeMemberReferenceImpl");
+	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructorImpl");
 	private boolean hasScanners;
 	private boolean hasVisitors;
 
@@ -82,7 +81,7 @@ public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProc
 		int nbScanner = isAbstract ? 1 : 0;
 		final List<CtMethod<?>> scanners = visitorType.getMethodsByName("scan" + element.getSimpleName());
 		if (scanners.size() != nbScanner) {
-			if (!(scanners.size() > 0 && scanners.get(0).getAnnotation(Deprecated.class) != null)) {
+			if (!(!scanners.isEmpty() && scanners.get(0).getAnnotation(Deprecated.class) != null)) {
 				throw new AssertionError("You should have " + nbScanner + " scanner methods for the element " + element.getSimpleName() + " in the CtInheritanceScanner.");
 			}
 		}
@@ -92,7 +91,7 @@ public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProc
 		int nbVisit = isAbstract ? 0 : 1;
 		final List<CtMethod<?>> visits = visitorType.getMethodsByName("visit" + element.getSimpleName());
 		if (visits.size() != nbVisit) {
-			if (!(visits.size() > 0 && visits.get(0).getAnnotation(Deprecated.class) != null)) {
+			if (!(!visits.isEmpty() && visits.get(0).getAnnotation(Deprecated.class) != null)) {
 				throw new AssertionError("You should have " + nbVisit + " visit methods for the element " + element.getSimpleName() + " in the CtInheritanceScanner.");
 			}
 		}

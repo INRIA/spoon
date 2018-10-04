@@ -14,10 +14,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ParameterTest {
+
 	@Test
-	public void testParameterInNoClasspath() throws Exception {
+	public void testParameterInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/parameter");
 		launcher.setSourceOutputDirectory("./target/parameter");
@@ -34,7 +36,7 @@ public class ParameterTest {
 	}
 
 	@Test
-	public void testGetParameterReferenceInLambdaNoClasspath() throws Exception {
+	public void testGetParameterReferenceInLambdaNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Tacos.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -79,12 +81,8 @@ public class ParameterTest {
 						.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			for (final CtTypeReference refType :
-					(List<CtTypeReference>) param.getReference()
-							.getDeclaringExecutable()
-							.getParameters()) {
-				assertEquals(launcher.getFactory().Type().STRING, refType);
-			}
+			CtTypeReference refType = param.getReference().getType();
+			assertEquals(launcher.getFactory().Type().STRING, refType);
 		}
 
 		// test integer parameters
@@ -94,12 +92,8 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			for (final CtTypeReference refType :
-					(List<CtTypeReference>) param.getReference()
-					.getDeclaringExecutable()
-					.getParameters()) {
-				assertEquals(launcher.getFactory().Type().INTEGER, refType);
-			}
+			CtTypeReference refType = param.getReference().getType();
+			assertEquals(launcher.getFactory().Type().INTEGER, refType);
 		}
 
 		// test unknown parameters
@@ -109,12 +103,9 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			for (final CtTypeReference refType :
-					(List<CtTypeReference>) param.getReference()
-							.getDeclaringExecutable()
-							.getParameters()) {
-				assertEquals(launcher.getFactory().Type().OBJECT, refType);
-			}
+			CtTypeReference refType = param.getReference().getType();
+			// unknown parameters have no type
+			assertNull(refType);
 		}
 	}
 }

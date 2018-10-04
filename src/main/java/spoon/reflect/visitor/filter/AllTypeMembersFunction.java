@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -69,7 +69,7 @@ public class AllTypeMembersFunction implements CtConsumableFunction<CtTypeInform
 
 	@Override
 	public void apply(CtTypeInformation input, final CtConsumer<Object> outputConsumer) {
-		final CtQuery q = ((CtQueryable) input).map(new SuperInheritanceHierarchyFunction(distinctSet == null ? new HashSet<String>() : distinctSet).includingSelf(true));
+		final CtQuery q = ((CtQueryable) input).map(new SuperInheritanceHierarchyFunction(distinctSet == null ? new HashSet<>() : distinctSet).includingSelf(true));
 		q.forEach(new CtConsumer<CtType<?>>() {
 			@Override
 			public void accept(CtType<?> type) {

@@ -87,3 +87,6 @@ $ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_
 2. Specify your processors in fully qualified name (here `processors.CatchProcessor`).
 {{site.data.alerts.end}}
 
+## Bytecode analysis
+
+Note that spoon also supports the analysis of bytecode through decompilation. See [javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/JarLauncher.html).

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,11 +17,11 @@
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -39,9 +39,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtPackageReference;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
@@ -57,7 +55,6 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
-import spoon.support.util.SortedList;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
@@ -65,13 +62,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
-import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -99,7 +95,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	List<CtTypeMember> typeMembers = emptyList();
 
 	public CtTypeImpl() {
-		super();
 	}
 
 	@Override
@@ -107,12 +102,37 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		return Collections.unmodifiableList(typeMembers);
 	}
 
+	/** Adds a type member.
+	 * If it has a position, adds it at the right place according to the position (sourceStart).
+	 * If it is implicit, adds it at the beginning.
+	 * Otherwise, adds it at the end.
+	 */
 	@Override
 	public <C extends CtType<T>> C addTypeMember(CtTypeMember member) {
 		if (member == null) {
 			return (C) this;
 		}
-		return addTypeMemberAt(typeMembers.size(), member);
+		Comparator c = new CtLineElementComparator();
+
+		if (member.isImplicit()) {
+			return addTypeMemberAt(0, member);
+		}
+
+		// by default, inserting at the end
+		int insertionPosition = typeMembers.size();
+
+		// we search for an insertion position only if this one has one position
+		if (member.getPosition().isValidPosition()) {
+			for (int i = typeMembers.size() - 1; i >= 0; i--) {
+				CtTypeMember m = this.typeMembers.get(i);
+
+				if (m.isImplicit() || (m.getPosition().isValidPosition() && c.compare(member, m) > 0)) {
+					break;
+				}
+				insertionPosition--;
+			}
+		}
+		return addTypeMemberAt(insertionPosition, member);
 	}
 
 	@Override
@@ -121,42 +141,24 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return (C) this;
 		}
 		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
-			this.typeMembers = new SortedList<>(new CtLineElementComparator());
+			this.typeMembers = new ArrayList<>();
 		}
-		if (!this.typeMembers.contains(member)) {
+		if (!this.typeMembers.stream().anyMatch(m -> m == member)) {
 			member.setParent(this);
-			CtRole role;
-			if (member instanceof CtMethod) {
-				role = METHOD;
-			} else if (member instanceof CtConstructor) {
-				role = CONSTRUCTOR;
-			} else if (member instanceof CtField) {
-				role = FIELD;
-			} else if (member instanceof CtAnonymousExecutable) {
-				role = ANNONYMOUS_EXECUTABLE;
-			} else {
-				role = NESTED_TYPE;
-			}
+			CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.typeMembers, position, member);
-			this.typeMembers.add(position, member);
+			if (position < typeMembers.size()) {
+				this.typeMembers.add(position, member);
+			} else {
+				this.typeMembers.add(member);
+			}
 		}
 		return (C) this;
 	}
 
 	@Override
 	public boolean removeTypeMember(CtTypeMember member) {
-		CtRole role;
-		if (member instanceof CtMethod) {
-			role = METHOD;
-		} else if (member instanceof CtConstructor) {
-			role = CONSTRUCTOR;
-		} else if (member instanceof CtField) {
-			role = FIELD;
-		} else if (member instanceof CtAnonymousExecutable) {
-			role = ANNONYMOUS_EXECUTABLE;
-		} else {
-			role = NESTED_TYPE;
-		}
+		CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(member);
 		if (typeMembers.size() == 1) {
 			if (typeMembers.contains(member)) {
 				getFactory().getEnvironment().getModelChangeListener().onListDelete(this, role, this.typeMembers, this.typeMembers.indexOf(member), member);
@@ -255,7 +257,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				fields.add((CtField<?>) typeMember);
 			}
 		}
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	@Override
@@ -427,7 +429,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				nestedTypes.add((CtType<?>) typeMember);
 			}
 		}
-		return nestedTypes;
+		return Collections.unmodifiableSet(nestedTypes);
 	}
 
 	@Override
@@ -592,11 +594,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					// replace old method by new one (based on signature and not equality)
 					// we have to do it by hand
 					removeTypeMember(m);
-				} else {
-					// checking contract signature implies equal
-					if (!factory.getEnvironment().checksAreSkipped() && m.equals(method)) {
-						throw new AssertionError("violation of core contract! different signature but same equal");
-					}
 				}
 			}
 		}
@@ -719,72 +716,41 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 
 		for (CtMethod<?> candidate : getMethodsByName(name)) {
-			boolean cont = candidate.getParameters().size() == parameterTypes.length;
-			for (int i = 0; cont && (i < candidate.getParameters().size()) && (i < parameterTypes.length); i++) {
-				final CtTypeReference<?> ctParameterType = candidate.getParameters().get(i).getType();
-				final CtTypeReference<?> parameterType = parameterTypes[i];
-				if (parameterType instanceof CtArrayTypeReference) {
-					if (ctParameterType instanceof CtArrayTypeReference) {
-						if (!isSameParameter(candidate, ((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
-							cont = false;
-						} else {
-							if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
-								cont = false;
-							}
-						}
-					} else {
-						cont = false;
-					}
-				} else if (!isSameParameter(candidate, ctParameterType, parameterType)) {
-					cont = false;
-				}
-			}
-			if (cont) {
+			if (hasSameParameters(candidate, parameterTypes)) {
 				return (CtMethod<R>) candidate;
 			}
 		}
 		return null;
 	}
 
-	private boolean isSameParameter(CtMethod<?> method, CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
-		if (expectedType instanceof CtTypeParameterReference) {
-			/*
-			 * the expectedType is a generic parameter whose declaration should be searched in scope of method
-			 * (not in scope of it's parent, where it can found another/wrong type parameter declaration of same name.
-			 */
-			CtTypeParameterReference tpr = (CtTypeParameterReference) expectedType;
-			expectedType = tpr.clone();
-			expectedType.setParent(method);
-			if (expectedType.getDeclaration() == null) {
-				return false;
-			}
-		}
-		if (expectedType instanceof CtTypeParameterReference && ctParameterType instanceof CtTypeParameterReference) {
-			// Check if Object or extended.
-			if (!ctParameterType.equals(expectedType)) {
-				return false;
-			}
-		} else if (expectedType instanceof CtTypeParameterReference) {
-			if (!ctParameterType.isSubtypeOf(factory.Type().createReference(expectedType.getActualClass()))) {
-				return false;
-			}
-		} else if (ctParameterType instanceof CtTypeParameterReference) {
-			CtTypeParameter declaration = (CtTypeParameter) ctParameterType.getDeclaration();
-			if (declaration.getSuperclass() instanceof CtIntersectionTypeReference) {
-				for (CtTypeReference<?> ctTypeReference : declaration.getSuperclass().asCtIntersectionTypeReference().getBounds()) {
-					if (ctTypeReference.equals(expectedType)) {
-						return true;
-					}
-				}
-			} else if (declaration.getSuperclass() != null) {
-				return declaration.getSuperclass().equals(expectedType);
-			} else {
-				return getFactory().Type().objectType().equals(expectedType);
-			}
-		} else if (!expectedType.getQualifiedName().equals(ctParameterType.getQualifiedName())) {
+	protected boolean hasSameParameters(CtExecutable<?> candidate, CtTypeReference<?>... parameterTypes) {
+		if (candidate.getParameters().size() != parameterTypes.length) {
 			return false;
 		}
+		for (int i = 0; (i < candidate.getParameters().size()) && (i < parameterTypes.length); i++) {
+			final CtTypeReference<?> ctParameterType = candidate.getParameters().get(i).getType();
+			final CtTypeReference<?> parameterType = parameterTypes[i];
+			if (parameterType instanceof CtArrayTypeReference) {
+				if (ctParameterType instanceof CtArrayTypeReference) {
+					if (!isSameParameter(candidate, ((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
+						return false;
+					} else {
+						if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
+							return false;
+						}
+					}
+				} else {
+					return false;
+				}
+			} else if (!isSameParameter(candidate, ctParameterType, parameterType)) {
+				return false;
+			}
+		}
 		return true;
+	}
+
+	private boolean isSameParameter(CtExecutable<?> candidate, CtTypeReference<?> ctParameterType, CtTypeReference<?> expectedType) {
+		return ctParameterType.getTypeErasure().getQualifiedName().equals(expectedType.getTypeErasure().getQualifiedName());
 	}
 
 	@Override
@@ -795,7 +761,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				methods.add((CtMethod<?>) typeMember);
 			}
 		}
-		return methods;
+		return Collections.unmodifiableSet(methods);
 	}
 
 	@Override
@@ -943,7 +909,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Set<CtExecutableReference<?>> l = new SignatureBasedSortedSet();
 		for (CtMethod<?> m : getAllMethods()) {
-			l.add((CtExecutableReference<?>) m.getReference());
+			l.add(m.getReference());
 		}
 		return l;
 	}
@@ -1020,5 +986,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
+	}
+
+	@Override
+	public CtType<?> copyType() {
+		return Refactoring.copyType(this);
 	}
 }

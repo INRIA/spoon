@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -31,6 +31,7 @@ public class TreeBuilderRequestor implements ICompilerRequestor {
 		this.jdtCompiler = jdtCompiler;
 	}
 
+	@Override
 	public void acceptResult(CompilationResult result) {
 		if (result.hasErrors()) {
 			for (CategorizedProblem problem : result.problems) {

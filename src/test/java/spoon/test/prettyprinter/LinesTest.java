@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -32,37 +31,35 @@ public class LinesTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/prettyprinter/Validation.java"))
+						.resources("./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		factory.getEnvironment().setPreserveLineNumbers(true);
 		factory.getEnvironment().setAutoImports(false);
 	}
 
 	@Test
-	public void testPrettyPrinterWithLines() throws Exception {
+	public void testPrettyPrinterWithLines() {
 
 		for (CtType<?> t : factory.Type().getAll()) {
 			if (t.isTopLevel()) {
-				// System.out.println("calculate " + t.getSimpleName());
 				DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
 						factory.getEnvironment());
 				pp.calculate(t.getPosition().getCompilationUnit(), t
 						.getPosition().getCompilationUnit().getDeclaredTypes());
-				// System.out.println(pp.getResult().toString());
 			}
 		}
 		assertEquals(0, factory.getEnvironment().getWarningCount());
 		assertEquals(0, factory.getEnvironment().getErrorCount());
 
 		// contract: in line preserve mode, toString is not prefixed or suffixed by newlines
-		String meth = factory.Type().get("spoon.test.prettyprinter.Validation").getMethodsByName("isIdentifier").get(0).toString();
+		String meth = factory.Type().get("spoon.test.prettyprinter.testclasses.Validation").getMethodsByName("isIdentifier").get(0).toString();
 		// the added linebreaks due to line preservation are removed
-		assertFalse(Pattern.compile("^\\s", Pattern.DOTALL).asPredicate().test(meth.toString()));
+		assertFalse(Pattern.compile("^\\s", Pattern.DOTALL).asPredicate().test(meth));
 
 	}
 
 	@Test
-	public void testIdenticalPrettyPrinter() throws  Exception{
+	public void testIdenticalPrettyPrinter() {
 		// contract: the end line should also be preserved
 
 		// setup
@@ -74,12 +71,6 @@ public class LinesTest {
 		List<String> paths = new ArrayList<>();
 		paths.add("spoon/test/prettyprinter/testclasses/A.java");
 		paths.add("spoon/test/prettyprinter/testclasses/AClass.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/QualifiedThisRef.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/ImportStatic.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/QualifiedThisRef.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/Rule.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java");
-
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(options);
@@ -102,8 +93,12 @@ public class LinesTest {
 			CtElement e = elements.get(i);
 			CtElement el2 = launcher2.getModel().getElements(new TypeFilter<>(CtElement.class)).get(i);
 			assertNotSame(e, el2);
-			assertEquals(e.toString() + " not handled", e.getPosition().getLine(), el2.getPosition().getLine());
-			assertEquals(e.toString() + " not handled", e.getPosition().getEndLine(), el2.getPosition().getEndLine());
+			if (e.getPosition().isValidPosition()) {
+				assertEquals(e.toString() + " not handled", e.getPosition().getLine(), el2.getPosition().getLine());
+				assertEquals(e.toString() + " not handled", e.getPosition().getEndLine(), el2.getPosition().getEndLine());
+			} else {
+				assertFalse(el2.getPosition().isValidPosition());
+			}
 		}
 		assertTrue(n>20);
 	}

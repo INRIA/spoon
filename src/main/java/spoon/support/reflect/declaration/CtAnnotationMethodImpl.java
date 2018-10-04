@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -26,7 +26,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
@@ -41,7 +40,7 @@ import java.util.Set;
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationMethod}.
  */
 public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnnotationMethod<T> {
-	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
+	@MetamodelPropertyField(role = DEFAULT_EXPRESSION)
 	CtExpression<T> defaultExpression;
 
 	@Override

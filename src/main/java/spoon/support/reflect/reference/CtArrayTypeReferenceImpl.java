@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,10 +17,11 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.reflect.Array;
 
@@ -30,11 +31,10 @@ public class
 CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.TYPE)
+	@MetamodelPropertyField(role = TYPE)
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -46,7 +46,8 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	public CtTypeReference<?> getComponentType() {
 		if (componentType == null) {
 			// a sensible default component type to facilitate object creation and testing
-			componentType = getFactory().Type().OBJECT;
+			componentType = getFactory().Type().objectType();
+			componentType.setParent(this);
 		}
 		return componentType;
 	}
@@ -76,6 +77,11 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	}
 
 	@Override
+	public <T extends CtReference> T setSimpleName(String simplename) {
+		return (T) this;
+	}
+
+	@Override
 	public String getQualifiedName() {
 		return getComponentType().getQualifiedName() + "[]";
 	}
@@ -85,7 +91,7 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	public Class<T> getActualClass() {
 		Class<?> c = getComponentType().getActualClass();
 		if (c == null) {
-			return null;
+			throw new SpoonClassNotFoundException("you should never call getActualClass! (" + getComponentType().getQualifiedName() + " not found in the classpath)", null);
 		}
 		return (Class<T>) Array.newInstance(c, 0).getClass();
 	}
@@ -96,6 +102,18 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 			return ((CtArrayTypeReference<?>) getComponentType()).getDimensionCount() + 1;
 		}
 		return 1;
+	}
+
+	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		CtTypeReference<?> originCT = getComponentType();
+		CtTypeReference<?> erasedCT = originCT.getTypeErasure();
+		if (originCT == erasedCT) {
+			return this;
+		}
+		CtArrayTypeReference<?> erased = this.clone();
+		erased.setComponentType(erasedCT);
+		return erased;
 	}
 
 	@Override

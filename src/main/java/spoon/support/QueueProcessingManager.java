@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -22,6 +22,7 @@ import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.support.compiler.SpoonProgress;
 import spoon.support.visitor.ProcessingVisitor;
 
 import java.util.ArrayList;
@@ -54,10 +55,10 @@ public class QueueProcessingManager implements ProcessingManager {
 	 * 		meta-model)
 	 */
 	public QueueProcessingManager(Factory factory) {
-		super();
 		setFactory(factory);
 	}
 
+	@Override
 	public void addProcessor(Class<? extends Processor<?>> type) {
 		try {
 			Processor<?> p = type.newInstance();
@@ -67,11 +68,13 @@ public class QueueProcessingManager implements ProcessingManager {
 		}
 	}
 
+	@Override
 	public boolean addProcessor(Processor<?> p) {
 		p.setFactory(getFactory());
 		return getProcessors().add(p);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void addProcessor(String qualifiedName) {
 		try {
@@ -85,10 +88,12 @@ public class QueueProcessingManager implements ProcessingManager {
 		return current;
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public Queue<Processor<?>> getProcessors() {
 		if (processors == null) {
 			processors = new LinkedList<>();
@@ -103,11 +108,16 @@ public class QueueProcessingManager implements ProcessingManager {
 		return visitor;
 	}
 
+	@Override
 	public void process(Collection<? extends CtElement> elements) {
 		Processor<?> p;
 		// copy so that one can reuse the processing manager
 		// among different processing steps
 		Queue<Processor<?>> processors = new LinkedList<>(getProcessors());
+		if (factory.getEnvironment().getSpoonProgress() != null) {
+			factory.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PROCESS);
+		}
+		int i = 0;
 		while ((p = processors.poll()) != null) {
 			try {
 				getFactory().getEnvironment().reportProgressMessage(p.getClass().getName());
@@ -121,16 +131,24 @@ public class QueueProcessingManager implements ProcessingManager {
 			} catch (ProcessInterruption ignore) {
 			} finally {
 				p.processingDone();
+				if (factory.getEnvironment().getSpoonProgress() != null) {
+					factory.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PROCESS, p.getClass().getName(), ++i, getProcessors().size());
+				}
 			}
+		}
+		if (factory.getEnvironment().getSpoonProgress() != null) {
+			factory.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PROCESS);
 		}
 	}
 
+	@Override
 	public void process(CtElement element) {
 		List<CtElement> l = new ArrayList<>();
 		l.add(element);
 		process(l);
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 		factory.getEnvironment().setManager(this);

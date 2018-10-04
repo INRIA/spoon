@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -101,15 +101,6 @@ public class TypeReferenceScanner extends CtScanner {
 		scan(reference.getDeclaringType());
 		exit(reference);
 	}
-
-	//	public <T> boolean isImported(CtTypeReference<T> ref) {
-	//		if (imports.containsKey(ref.getSimpleName())) {
-	//			CtTypeReference<?> exist = imports.get(ref.getSimpleName());
-	//			if (exist.getQualifiedName().equals(ref.getQualifiedName()))
-	//				return true;
-	//		}
-	//		return false;
-	//	}
 
 	@Override
 	public <T> void visitCtExecutableReference(

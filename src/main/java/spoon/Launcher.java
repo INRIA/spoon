@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -21,13 +21,13 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Switch;
+import com.martiansoftware.jsap.stringparsers.EnumeratedStringParser;
 import com.martiansoftware.jsap.stringparsers.FileStringParser;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -39,7 +39,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -73,11 +72,15 @@ import static spoon.support.StandardEnvironment.DEFAULT_CODE_COMPLIANCE_LEVEL;
  */
 public class Launcher implements SpoonAPI {
 
+	enum CLASSPATH_MODE {
+		NOCLASSPATH, FULLCLASSPATH
+	}
+
 	public static final String SPOONED_CLASSES = "spooned-classes";
 
 	public static final String OUTPUTDIR = "spooned";
 
-	private final Factory factory;
+	protected Factory factory;
 
 	private SpoonModelBuilder modelBuilder;
 
@@ -96,10 +99,15 @@ public class Launcher implements SpoonAPI {
 	private List<Processor<? extends CtElement>> processors = new ArrayList<>();
 
 	/**
+	 * This field is used to ensure that {@link #setArgs(String[])} is only called once.
+ 	 */
+	private boolean processed = false;
+
+	/**
 	 * A default program entry point (instantiates a launcher with the given
 	 * arguments and calls {@link #run()}).
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new Launcher().run(args);
 	}
 
@@ -119,6 +127,11 @@ public class Launcher implements SpoonAPI {
 
 	public void setArgs(String[] args2) {
 		this.commandLineArgs = args2;
+		if (processed) {
+			throw new SpoonException("You cannot process twice the same launcher instance.");
+		}
+		processed = true;
+
 		processArguments();
 	}
 
@@ -320,17 +333,17 @@ public class Launcher implements SpoonAPI {
 			// Sets output type generation
 			opt2 = new FlaggedOption("output-type");
 			opt2.setLongFlag(opt2.getID());
-			String msg = "States how to print the processed source code: ";
+			StringBuilder msg = new StringBuilder("States how to print the processed source code: ");
 			int i = 0;
 			for (OutputType v : OutputType.values()) {
 				i++;
-				msg += v.toString();
+				msg.append(v.toString());
 				if (i != OutputType.values().length) {
-					msg += "|";
+					msg.append("|");
 				}
 			}
 			opt2.setStringParser(JSAP.STRING_PARSER);
-			opt2.setHelp(msg);
+			opt2.setHelp(msg.toString());
 			opt2.setDefault("classes");
 			jsap.registerParameter(opt2);
 
@@ -348,28 +361,28 @@ public class Launcher implements SpoonAPI {
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
-			// Enable building only outdated files
-			sw1 = new Switch("buildOnlyOutdatedFiles");
-			sw1.setLongFlag("buildOnlyOutdatedFiles");
-			sw1.setHelp(
-					"Set Spoon to build only the source files that " + "have been modified since the latest " + "source code generation, for performance " + "purpose. Note that this option requires "
-							+ "to have the --ouput-type option not set " + "to none. This option is not appropriate " + "to all kinds of processing. In particular "
-							+ "processings that implement or rely on a " + "global analysis should avoid this option " + "because the processor will only have access "
-							+ "to the outdated source code (the files " + "modified since the latest processing).");
-			sw1.setDefault("false");
-			jsap.registerParameter(sw1);
-
 			sw1 = new Switch("lines");
 			sw1.setLongFlag("lines");
 			sw1.setHelp("Set Spoon to try to preserve the original line " + "numbers when generating the source " + "code (may lead to human-unfriendly " + "formatting).");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
+
+			opt2 = new FlaggedOption("cpmode");
+			opt2.setLongFlag(opt2.getID());
+			String acceptedValues = StringUtils.join(CLASSPATH_MODE.values(), "; ");
+			opt2.setStringParser(EnumeratedStringParser.getParser(acceptedValues));
+			msg = new StringBuilder("Classpath mode to use in Spoon: " + acceptedValues);
+			opt2.setHelp(msg.toString());
+			opt2.setRequired(true);
+			opt2.setDefault(CLASSPATH_MODE.NOCLASSPATH.name());
+			jsap.registerParameter(opt2);
+
 			// nobinding
 			sw1 = new Switch("noclasspath");
 			sw1.setShortFlag('x');
 			sw1.setLongFlag("noclasspath");
-			sw1.setHelp("Does not assume a full classpath");
+			sw1.setHelp("[DEPRECATED] Does not assume a full classpath (Please use --cpmode now, as the default behaviour has changed.)");
 			jsap.registerParameter(sw1);
 
 			// show GUI
@@ -391,7 +404,14 @@ public class Launcher implements SpoonAPI {
 			sw1 = new Switch("enable-comments");
 			sw1.setShortFlag('c');
 			sw1.setLongFlag("enable-comments");
-			sw1.setHelp("Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing.");
+			sw1.setHelp("[DEPRECATED] Adds all code comments in the Spoon AST (Javadoc, line-based comments), rewrites them when pretty-printing. (deprecated: by default, the comments are enabled.)");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
+			// Disable generation of javadoc.
+			sw1 = new Switch("disable-comments");
+			sw1.setLongFlag("disable-comments");
+			sw1.setHelp("Disable the parsing of comments in Spoon.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -433,14 +453,54 @@ public class Launcher implements SpoonAPI {
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
 		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
-		environment.setNoClasspath(jsapActualArgs.getBoolean("noclasspath"));
+
+		if (jsapActualArgs.getBoolean("noclasspath")) {
+			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: noclasspath is now the default behaviour.");
+		} else {
+			Launcher.LOGGER.warn("Spoon is now using the 'no classpath mode' by default. If you want to ensure using Spoon in full classpath mode, please use the new flag: --cpmode fullclasspath.");
+		}
+
+		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
+		CLASSPATH_MODE classpath_mode = CLASSPATH_MODE.valueOf(cpmode);
+		switch (classpath_mode) {
+			case NOCLASSPATH:
+				environment.setNoClasspath(true);
+				break;
+
+			case FULLCLASSPATH:
+				environment.setNoClasspath(false);
+				break;
+		}
+
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));
 		environment.setCopyResources(!jsapActualArgs.getBoolean("no-copy-resources"));
-		environment.setCommentEnabled(jsapActualArgs.getBoolean("enable-comments"));
+
+		if (jsapActualArgs.getBoolean("enable-comments")) {
+			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
+		} else {
+			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+		}
+
+		if (jsapActualArgs.getBoolean("disable-comments")) {
+			environment.setCommentEnabled(false);
+		} else {
+			environment.setCommentEnabled(true);
+		}
+
 		environment.setShouldCompile(jsapActualArgs.getBoolean("compile"));
-		environment.setSelfChecks(jsapActualArgs.getBoolean("disable-model-self-checks"));
+		if (jsapActualArgs.getBoolean("disable-model-self-checks")) {
+			environment.disableConsistencyChecks();
+		}
+
+		String outputString = jsapActualArgs.getString("output-type");
+		OutputType outputType = OutputType.fromString(outputString);
+		if (outputType == null) {
+			throw  new SpoonException("Unknown output type: " + outputString);
+		} else {
+			environment.setOutputType(outputType);
+		}
 
 		try {
 			Charset charset = Charset.forName(jsapActualArgs.getString("encoding"));
@@ -556,9 +616,7 @@ public class Launcher implements SpoonAPI {
 		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
 		Environment env = getEnvironment();
 		// building
-		comp.setBuildOnlyOutdatedFiles(jsapActualArgs.getBoolean("buildOnlyOutdatedFiles"));
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
-		comp.setSourceOutputDirectory(jsapActualArgs.getFile("output"));
 
 		// backward compatibility
 		// we don't have to set the source classpath
@@ -566,7 +624,6 @@ public class Launcher implements SpoonAPI {
 			comp.setSourceClasspath(jsapActualArgs.getString("source-classpath").split(System.getProperty("path.separator")));
 		}
 
-		env.debugMessage("output: " + comp.getSourceOutputDirectory());
 		env.debugMessage("destination: " + comp.getBinaryOutputDirectory());
 		env.debugMessage("source classpath: " + Arrays.toString(comp.getSourceClasspath()));
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
@@ -621,12 +678,14 @@ public class Launcher implements SpoonAPI {
 		return new StandardEnvironment();
 	}
 
-	public JavaOutputProcessor createOutputWriter(File sourceOutputDir, Environment environment) {
-		return new JavaOutputProcessor(sourceOutputDir, createPrettyPrinter());
+	public JavaOutputProcessor createOutputWriter() {
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
+		outputProcessor.setFactory(this.getFactory());
+		return outputProcessor;
 	}
 
 	public PrettyPrinter createPrettyPrinter() {
-		return new DefaultJavaPrettyPrinter(getEnvironment());
+		return getEnvironment().createPrettyPrinter();
 	}
 
 	/**
@@ -654,7 +713,6 @@ public class Launcher implements SpoonAPI {
 
 		env.reportProgressMessage("start processing...");
 
-		long t = 0;
 		long tstart = System.currentTimeMillis();
 
 		buildModel();
@@ -668,7 +726,7 @@ public class Launcher implements SpoonAPI {
 			modelBuilder.compile(InputType.CTTYPES);
 		}
 
-		t = System.currentTimeMillis();
+		long t = System.currentTimeMillis();
 
 		env.debugMessage("program spooning done in " + (t - tstart) + " ms");
 		env.reportEnd();
@@ -721,22 +779,21 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void prettyprint() {
-		OutputType outputType = OutputType.fromString(jsapActualArgs.getString("output-type"));
 		long tstart = System.currentTimeMillis();
 		try {
-			modelBuilder.generateProcessedSourceFiles(outputType, typeFilter);
+			modelBuilder.generateProcessedSourceFiles(getEnvironment().getOutputType(), typeFilter);
 		} catch (Exception e) {
 			throw new SpoonException(e);
 		}
 
-		if (!outputType.equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
+		if (!getEnvironment().getOutputType().equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
 					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
 					for (Object resource : resources) {
 						final String resourceParentPath = ((File) resource).getParent();
 						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
-						final String targetDirectory = modelBuilder.getSourceOutputDirectory() + packageDir;
+						final String targetDirectory = getEnvironment().getDefaultFileGenerator().getOutputDirectory() + packageDir;
 						try {
 							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
 						} catch (IOException e) {
@@ -761,8 +818,8 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void setSourceOutputDirectory(File outputDirectory) {
-		modelBuilder.setSourceOutputDirectory(outputDirectory);
-		getEnvironment().setDefaultFileGenerator(createOutputWriter(outputDirectory, getEnvironment()));
+		getEnvironment().setSourceOutputDirectory(outputDirectory);
+		getEnvironment().setDefaultFileGenerator(createOutputWriter());
 	}
 
 	@Override

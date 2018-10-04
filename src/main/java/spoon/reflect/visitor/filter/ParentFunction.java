@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,7 +17,7 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtConsumer;
 import spoon.reflect.visitor.chain.CtQuery;
@@ -54,9 +54,9 @@ public class ParentFunction implements CtConsumableFunction<CtElement>, CtQueryA
 		if (includingSelf) {
 			outputConsumer.accept(input);
 		}
-		CtPackage rootPackage = input.getFactory().getModel().getRootPackage();
 		CtElement parent = input;
-		while (parent != null && parent != rootPackage && query.isTerminated() == false) {
+		CtModule topLevel = input.getFactory().getModel().getUnnamedModule();
+		while (parent != null && parent != topLevel && query.isTerminated() == false && parent.isParentInitialized()) {
 			parent = parent.getParent();
 			outputConsumer.accept(parent);
 		}

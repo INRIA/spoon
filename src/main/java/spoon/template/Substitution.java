@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -17,6 +17,7 @@
 package spoon.template;
 
 import spoon.SpoonException;
+import spoon.pattern.PatternBuilder;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -29,7 +30,6 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
@@ -38,10 +38,8 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.template.Parameters;
-import spoon.support.template.SubstitutionVisitor;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,18 +104,16 @@ public abstract class Substitution {
 	 * @param templateParameters
 	 * 		the substitution parameters
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends CtType<?>> T createTypeFromTemplate(String qualifiedTypeName, CtType<?> templateOfType, Map<String, Object> templateParameters) {
-		final Factory f = templateOfType.getFactory();
-		CtTypeReference<T> typeRef = f.Type().createReference(qualifiedTypeName);
-		CtPackage targetPackage = f.Package().getOrCreate(typeRef.getPackage().getSimpleName());
-		final Map<String, Object> extendedParams = new HashMap<String, Object>(templateParameters);
-		extendedParams.put(templateOfType.getSimpleName(), typeRef);
-		List<CtType<?>> generated = (List) new SubstitutionVisitor(f, extendedParams).substitute(templateOfType.clone());
-		for (CtType<?> ctType : generated) {
-			targetPackage.addType(ctType);
-		}
-		return (T) typeRef.getTypeDeclaration();
+		return PatternBuilder
+				.create(templateOfType)
+				.configurePatternParameters(pc -> {
+					pc.byTemplateParameter(templateParameters);
+					pc.byParameterValues(templateParameters);
+				})
+				.build()
+				.generator()
+				.generateType(qualifiedTypeName, templateParameters);
 	}
 
 	/**
@@ -388,7 +384,6 @@ public abstract class Substitution {
 		CtConstructor<T> newConstructor = targetClass.getFactory().Constructor().create(targetClass, sourceMethod);
 		newConstructor = substitute(targetClass, template, newConstructor);
 		targetClass.addConstructor(newConstructor);
-		// newConstructor.setParent(targetClass);
 		return newConstructor;
 	}
 
@@ -412,7 +407,6 @@ public abstract class Substitution {
 			newMethod.setBody(null);
 		}
 		targetType.addMethod(newMethod);
-		// newMethod.setParent(targetType);
 		return newMethod;
 	}
 
@@ -441,7 +435,6 @@ public abstract class Substitution {
 			}
 		}
 		targetClass.addConstructor(newConstrutor);
-		// newConstrutor.setParent(targetClass);
 		return newConstrutor;
 	}
 
@@ -525,6 +518,7 @@ public abstract class Substitution {
 	 * @return the code where all the template parameters has been substituted
 	 * by their values
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E extends CtElement> E substitute(CtType<?> targetType, Template<?> template, E code) {
 		if (code == null) {
 			return null;
@@ -532,42 +526,12 @@ public abstract class Substitution {
 		if (targetType == null) {
 			throw new RuntimeException("target is null in substitution");
 		}
-		E result = (E) code.clone();
-		List<E> results = new SubstitutionVisitor(targetType.getFactory(), targetType, template).substitute(result);
-		if (results.size() > 1) {
-			throw new SpoonException("StatementTemplate cannot return more then one statement");
+		TemplateBuilder tb = TemplateBuilder.createPattern(code, template);
+		if (template instanceof AbstractTemplate) {
+			tb.setAddGeneratedBy(((AbstractTemplate) template).isAddGeneratedBy());
 		}
-		return results.isEmpty() ? null : results.get(0);
+		return (E) tb.substituteSingle(targetType, CtElement.class);
 	}
-
-	/**
-	 * Substitutes all the template parameters in the first template element
-	 * annotated with an instance of the given annotation type.
-	 *
-	 * @param targetType
-	 *            the target type
-	 * @param template
-	 *            the template instance
-	 * @param annotationType
-	 *            the annotation type
-	 * @return the element where all the template parameters has be substituted
-	 *         by their values
-	 */
-	// public static <E extends CtElement> E substitute(
-	// CtSimpleType<?> targetType, Template template,
-	// Class<? extends Annotation> annotationType) {
-	// CtClass<? extends Template> c = targetType.getFactory().Class
-	// .get(template.getClass());
-	// E element = (E) c.getAnnotatedChildren(annotationType).get(0);
-	// if (element == null)
-	// return null;
-	// if (targetType == null)
-	// throw new RuntimeException("target is null in substitution");
-	// E result = CtCloner.clone(element);
-	// new SubstitutionVisitor(targetType.getFactory(), targetType, template)
-	// .scan(result);
-	// return result;
-	// }
 
 	/**
 	 * Substitutes all the template parameters in a given template type and
@@ -580,12 +544,13 @@ public abstract class Substitution {
 	 * @return a copy of the template type where all the parameters has been
 	 * substituted
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T extends CtType<?>> T substitute(Template<?> template, T templateType) {
-		T result = (T) templateType.clone();
-		result.setPositions(null);
 		// result.setParent(templateType.getParent());
-		new SubstitutionVisitor(templateType.getFactory(), result, template).substitute(result);
-		return result;
+		CtType<?> result = TemplateBuilder.createPattern(templateType, template).substituteSingle(null, CtType.class);
+		//TODO check if it is still needed
+		result.setPositions(null);
+		return (T) result;
 	}
 
 	/**
@@ -605,7 +570,6 @@ public abstract class Substitution {
 	public static <T> CtField<T> insertField(CtType<?> targetType, Template<?> template, CtField<T> sourceField) {
 		CtField<T> field = substitute(targetType, template, sourceField);
 		targetType.addField(field);
-		// field.setParent(targetType);
 		return field;
 	}
 
@@ -615,7 +579,7 @@ public abstract class Substitution {
 	 */
 	public static void redirectTypeReferences(CtElement element, CtTypeReference<?> source, CtTypeReference<?> target) {
 
-		List<CtTypeReference<?>> refs = Query.getReferences(element, new ReferenceTypeFilter<CtTypeReference<?>>(CtTypeReference.class));
+		List<CtTypeReference<?>> refs = Query.getReferences(element, new ReferenceTypeFilter<>(CtTypeReference.class));
 
 		String srcName = source.getQualifiedName();
 		String targetName = target.getSimpleName();
@@ -657,7 +621,7 @@ public abstract class Substitution {
 	 *
 	 * @return - CtClass from the already built spoon model, which represents the template
 	 */
-	static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
+	public static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
 		CtClass<T> c = factory.Class().get(template.getClass());
 		if (c.isShadow()) {
 			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
@@ -669,14 +633,14 @@ public abstract class Substitution {
 	private static <T> void checkTemplateContracts(CtClass<T> c) {
 		for (CtField f : c.getFields()) {
 			Parameter templateParamAnnotation = f.getAnnotation(Parameter.class);
-			if (templateParamAnnotation != null && !templateParamAnnotation.value().equals("")) {
+			if (templateParamAnnotation != null && !templateParamAnnotation.value().isEmpty()) {
 				String proxyName = templateParamAnnotation.value();
 				// contract: if value, then the field type must be String or CtTypeReference
 				String fieldTypeQName = f.getType().getQualifiedName();
 				if (fieldTypeQName.equals(String.class.getName())) {
 					// contract: the name of the template parameter must correspond to the name of the field
 					// as found, by Pavel, this is not good contract because it prevents easy refactoring of templates
-					// we remove it but keep th commented code in case somebody would come up with this bad idae
+					// we remove it but keep the commented code in case somebody would come up with this bad idea
 //					if (!f.getSimpleName().equals("_" + f.getAnnotation(Parameter.class).value())) {
 //						throw new TemplateException("the field name of a proxy template parameter must be called _" + f.getSimpleName());
 //					}

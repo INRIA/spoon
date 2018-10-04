@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -36,8 +36,7 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	 * Returns the block.
 	 */
 	public static CtBlock<?> getBlock(CtClass<? extends BlockTemplate> p) {
-		CtBlock<?> b = p.getMethod("block").getBody();
-		return b;
+		return p.getMethod("block").getBody();
 	}
 
 	/**
@@ -46,9 +45,10 @@ public abstract class BlockTemplate extends AbstractTemplate<CtBlock<?>> {
 	public BlockTemplate() {
 	}
 
+	@Override
 	public CtBlock<?> apply(CtType<?> targetType) {
 		CtClass<? extends BlockTemplate> c = Substitution.getTemplateCtClass(targetType, this);
-		return Substitution.substitute(targetType, this, getBlock(c));
+		return TemplateBuilder.createPattern(getBlock(c), this).setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtBlock.class);
 	}
 
 	public Void S() {

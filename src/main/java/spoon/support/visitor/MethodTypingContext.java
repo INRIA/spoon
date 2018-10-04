@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -19,7 +19,10 @@ package spoon.support.visitor;
 import static spoon.support.visitor.ClassTypingContext.getTypeReferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtExpression;
@@ -209,6 +212,8 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return actualTypeArguments.get(typeParamPosition);
 	}
 
+	private Set<CtFormalTypeDeclarer> checkingFormalTypeParamsOf = Collections.newSetFromMap(new IdentityHashMap<>(1));
+
 	/**
 	 * https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
 	 *
@@ -224,12 +229,21 @@ public class MethodTypingContext extends AbstractTypingContext {
 		if (thisTypeParameters.size() != thatTypeParameters.size()) {
 			return false;
 		}
-		//the methods has same count of formal parameters
-		//check that bounds of formal type parameters are same after adapting
-		for (int i = 0; i < thisTypeParameters.size(); i++) {
-			if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
-				return false;
+		if (checkingFormalTypeParamsOf.contains(typeParamDeclarer)) {
+			//do not check isSameMethodFormalTypeParameter recursively
+			return true;
+		}
+		try {
+			checkingFormalTypeParamsOf.add(typeParamDeclarer);
+			//the methods has same count of formal parameters
+			//check that bounds of formal type parameters are same after adapting
+			for (int i = 0; i < thisTypeParameters.size(); i++) {
+				if (isSameMethodFormalTypeParameter(thisTypeParameters.get(i), thatTypeParameters.get(i)) == false) {
+					return false;
+				}
 			}
+		} finally {
+			checkingFormalTypeParamsOf.remove(typeParamDeclarer);
 		}
 		return true;
 	}
@@ -237,18 +251,10 @@ public class MethodTypingContext extends AbstractTypingContext {
 	private boolean isSameMethodFormalTypeParameter(CtTypeParameter scopeParam, CtTypeParameter superParam) {
 		CtTypeReference<?> scopeBound = getBound(scopeParam);
 		CtTypeReference<?> superBound = getBound(superParam);
-		int idxOfScopeBoundTypeParam = getIndexOfTypeParam(scopeParam.getTypeParameterDeclarer(), scopeBound);
-		if (idxOfScopeBoundTypeParam >= 0) {
-			int idxOfSuperBoundTypeParam = getIndexOfTypeParam(superParam.getTypeParameterDeclarer(), superBound);
-			if (idxOfScopeBoundTypeParam >= 0) {
-				/*
-				 * Both type parameters have bound defined as sibling type parameter.
-				 * Do not try to adaptType, because it would end with StackOverflowError
-				 * They are same formal type parameters if index is same
-				 */
-				return idxOfScopeBoundTypeParam == idxOfSuperBoundTypeParam;
-			}
+		if (scopeBound.getActualTypeArguments().size() != superBound.getActualTypeArguments().size()) {
+			return false;
 		}
+
 		CtTypeReference<?> superBoundAdapted = adaptType(superBound);
 		if (superBoundAdapted == null) {
 			return false;

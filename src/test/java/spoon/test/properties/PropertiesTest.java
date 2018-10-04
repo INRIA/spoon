@@ -24,12 +24,12 @@ public class PropertiesTest {
 				factory,
 				SpoonResourceHelper
 						.resources(
-								"./src/test/java/spoon/test/properties/Sample.java"
+								"./src/test/java/spoon/test/properties/testclasses/Sample.java"
 						));
 		compiler.build();
 
 		compiler.instantiateAndProcess(Arrays.asList(SimpleProcessor.class.getName()));
-		assertEquals(factory.getEnvironment().getErrorCount(), 0);
+		assertEquals(0, factory.getEnvironment().getErrorCount());
 	}
 
 }

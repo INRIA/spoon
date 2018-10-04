@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -30,7 +30,7 @@ public class FactoryCompilerConfig implements SpoonModelBuilder.InputType {
 
 	//avoid direct instantiation. But somebody can inherit
 	protected FactoryCompilerConfig() {
-	};
+	}
 
 	/**
 	 * returns the compilation units corresponding to the types in the factory.
@@ -44,6 +44,6 @@ public class FactoryCompilerConfig implements SpoonModelBuilder.InputType {
 				unitList.add(new CompilationUnitWrapper(ctType));
 			}
 		}
-		compiler.setCompilationUnits(unitList.toArray(new CompilationUnit[unitList.size()]));
+		compiler.setCompilationUnits(unitList.toArray(new CompilationUnit[0]));
 	}
 }

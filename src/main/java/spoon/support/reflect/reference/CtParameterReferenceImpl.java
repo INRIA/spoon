@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,33 +16,34 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
-
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.EXECUTABLE_REF)
-	CtExecutableReference<?> executable;
-
 	public CtParameterReferenceImpl() {
-		super();
 	}
 
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtParameterReference(this);
+	}
+
+	@Override
+	public CtExecutableReference<?> getDeclaringExecutable() {
+		CtParameter<T> declaration = getDeclaration();
+		if (declaration == null) {
+			return null;
+		}
+		return declaration.getParent().getReference();
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 		if (ctParameter != null) {
 			return ctParameter;
 		}
-		return fromDeclaringExecutable();
+		return null;
 	}
 
 	private CtParameter<T> lookupDynamically() {
@@ -76,35 +77,6 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 			return null;
 		}
 		return optional;
-	}
-
-	private CtParameter<T> fromDeclaringExecutable() {
-		CtExecutable<?> exec = executable.getDeclaration();
-		if (exec == null) {
-			return null;
-		}
-		List<CtParameter<?>> params = exec.getParameters();
-		for (CtParameter<?> p : params) {
-			if (this.getSimpleName().equals(p.getSimpleName())) {
-				return (CtParameter<T>) p;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public CtExecutableReference<?> getDeclaringExecutable() {
-		return executable;
-	}
-
-	@Override
-	public <C extends CtParameterReference<T>> C setDeclaringExecutable(CtExecutableReference<?> executable) {
-		if (executable != null) {
-			executable.setParent(this);
-		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE_REF, executable, this.executable);
-		this.executable = executable;
-		return (C) this;
 	}
 
 	@Override

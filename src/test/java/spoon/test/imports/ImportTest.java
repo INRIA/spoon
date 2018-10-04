@@ -18,16 +18,15 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -80,7 +79,7 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 public class ImportTest {
 
 	@Test
-	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() throws Exception {
+	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
 		spoon.getEnvironment().setAutoImports(true);
@@ -111,7 +110,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() throws Exception {
+	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
 		spoon.getEnvironment().setAutoImports(false);
@@ -130,10 +129,9 @@ public class ImportTest {
 		
 		String expected = "spoon.test.imports.testclasses.ClientClass.InnerClass";
 		assertEquals(expected, innerClass.getReference().toString());
-		
 
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClass.getSuperclass().getQualifiedName());
-		
+
 		expected = "spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected";
 		assertEquals(expected, innerClass.getSuperclass().toString());
 
@@ -194,9 +192,14 @@ public class ImportTest {
 		final CtConstructorCall<?> ctConstructorCall = subClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
 		assertEquals("new spoon.test.imports.testclasses.SubClass.Item(\"\")", ctConstructorCall.toString());
-		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
-				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
-				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
+
+		// here the buggy behavior with type members was encoded
+		// so we fix it
+		final String expected = "public class SubClass extends spoon.test.imports.testclasses.SuperClass {" +
+		System.lineSeparator() + "    public void aMethod() {" + System.lineSeparator()
+				+ "        new spoon.test.imports.testclasses.SubClass.Item(\"\");"+   System.lineSeparator() + "    }"
+				+   System.lineSeparator() + System.lineSeparator() +   "    public static class Item extends spoon.test.imports.testclasses.SuperClass.Item {" + System.lineSeparator() + "        public Item(java.lang.String s) {" + System
+				.lineSeparator() + "            super(1, s);" + System.lineSeparator() + "        }" + System.lineSeparator() + "    }" + System.lineSeparator() + "}";
 		assertEquals(expected, subClass.toString());
 	}
 
@@ -249,7 +252,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testSpoonWithImports() throws Exception {
+	public void testSpoonWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses", "--output-type", "nooutput", "--with-imports"
@@ -265,18 +268,20 @@ public class ImportTest {
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(anotherClass);
 		//ClientClass needs 2 imports: ChildClass, PublicInterface2
-		assertEquals(2, importScanner.getAllImports().size());
+		Collection<CtImport> allImports = importScanner.getAllImports();
+		assertEquals(2, allImports.size());
 
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
 		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
-		assertEquals("Spoon ignores the arguments of CtInvocations", 3, importScanner.getAllImports().size());
+		allImports = importScanner.getAllImports();
+		assertEquals("Spoon ignores the arguments of CtInvocations", 1, allImports.size());
 	}
 
 	@Test
-	public void testStaticImportForInvocationInNoClasspath() throws Exception {
+	public void testStaticImportForInvocationInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/import-static", "--output-type", "nooutput", "--noclasspath"
@@ -340,7 +345,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportOfInvocationOfPrivateClass() throws Exception {
+	public void testImportOfInvocationOfPrivateClass() {
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
 				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
@@ -351,11 +356,11 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
-	public void testNotImportExecutableType() throws Exception {
+	public void testNotImportExecutableType() {
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal3/Foo.java",
 				"./src/test/java/spoon/test/imports/testclasses/internal3/Bar.java",
@@ -366,16 +371,15 @@ public class ImportTest {
 
 		Collection<CtImport> imports = importContext.getAllImports();
 
-				// java.lang.Object is considered as imported but it will never be output
-		assertEquals(3, imports.size());
+		assertEquals(2, imports.size());
 		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File", "java.lang.Object"));
+				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
 		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
 		assertEquals(expectedImports, actualImports);
 	}
 
 	@Test
-	public void testImportOfInvocationOfStaticMethod() throws Exception {
+	public void testImportOfInvocationOfStaticMethod() {
 		final Factory factory = getFactory(
 				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
 				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
@@ -386,11 +390,11 @@ public class ImportTest {
 		Collection<CtImport> imports = importContext.getAllImports();
 
 		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;\n", imports.toArray()[0].toString());
+		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test
-	public void testImportStaticAndFieldAccess() throws Exception {
+	public void testImportStaticAndFieldAccess() {
 		// contract: Qualified field access and an import static should rewrite in fully qualified mode.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -405,7 +409,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportStaticAndFieldAccessWithImport() throws Exception {
+	public void testImportStaticAndFieldAccessWithImport() {
 		// contract: Qualified field access and an import static with import should import the type first, and not use static import
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput", "--with-imports" });
@@ -431,9 +435,9 @@ public class ImportTest {
 				+ "    public class ArrayList extends java.util.ArrayList {}" + newLine
 				+ "}", aClass.toString());
 	}
-	
+
 	@Test
-	public void testAccessToNestedClass() throws Exception {
+	public void testAccessToNestedClass() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
@@ -447,9 +451,9 @@ public class ImportTest {
 		Class<?> actualClass = parentClass.getActualClass();
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", actualClass.getName()); 
 	}
-	
+
 	@Test
-	public void testAccessType() throws Exception {
+	public void testAccessType() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
@@ -472,9 +476,9 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
-	
+
 	@Test
-	public void testCanAccess() throws Exception {
+	public void testCanAccess() {
 		
 		class Checker {
 			final Launcher launcher;
@@ -528,7 +532,7 @@ public class ImportTest {
 						try {
 							accessType = target.getAccessType();
 						} catch (SpoonException e) {
-							if(e.getMessage().indexOf("Cannot compute access path to type: ")==-1) {
+							if(!e.getMessage().contains("Cannot compute access path to type: ")) {
 								throw e;
 							}//else OK, it should throw exception
 							accessType = null;
@@ -541,7 +545,7 @@ public class ImportTest {
 			}
 		}
 		Checker c = new Checker();
-		
+
 		c.checkCanAccess("spoon.test.imports.testclasses.ClientClass", false, true, true, null, null);
 		c.checkCanAccess("spoon.test.imports.testclasses.ClientClass$InnerClass", false, true, false, "spoon.test.imports.testclasses.ClientClass", "spoon.test.imports.testclasses.ClientClass");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.ChildClass", false, true, true, null, null);
@@ -559,7 +563,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNestedAccessPathWithTypedParameter() throws Exception {
+	public void testNestedAccessPathWithTypedParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
@@ -574,7 +578,7 @@ public class ImportTest {
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
@@ -582,7 +586,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testNestedAccessPathWithTypedParameterWithImports() throws Exception {
+	public void testNestedAccessPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
@@ -598,15 +602,14 @@ public class ImportTest {
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
-		assertTrue(mm.toString().indexOf("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator")>=0);
+		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
-
 	}
 
 	@Test
-	public void testNestedStaticPathWithTypedParameter() throws Exception {
+	public void testNestedStaticPathWithTypedParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java"
@@ -619,12 +622,11 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;")>=0);
-		 								  
+		assertTrue(mm.toString().contains("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;"));
 	}
 
 	@Test
-	public void testNestedStaticPathWithTypedParameterWithImports() throws Exception {
+	public void testNestedStaticPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
@@ -637,12 +639,11 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().indexOf("List<Interners.WeakInterner.Dummy> list;")>=0);
-		 								  
+		assertTrue(mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
 	}
 
 	@Test
-	public void testDeepNestedStaticPathWithTypedParameter() throws Exception {
+	public void testDeepNestedStaticPathWithTypedParameter() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/StaticWithNested.java"
@@ -655,11 +656,11 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
-		 								  
+		assertTrue("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().contains("new spoon.test.imports.testclasses2.StaticWithNested.StaticNested.StaticNested2<K>();"));
 	}
+
 	@Test
-	public void testDeepNestedStaticPathWithTypedParameterWithImports() throws Exception {
+	public void testDeepNestedStaticPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
 				"-i", "./src/test/resources/spoon/test/imports/testclasses2/StaticWithNested.java", "--with-imports"
@@ -672,8 +673,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().indexOf("new StaticWithNested.StaticNested.StaticNested2<K>();")>=0);
-		 								  
+		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().contains("new StaticWithNested.StaticNested.StaticNested2<K>();"));
 	}
 
 	private Factory getFactory(String...inputs) {
@@ -779,7 +779,7 @@ public class ImportTest {
 		assertTrue("The file should not contain a static import for NOFOLLOW_LINKS",!output.contains("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;"));
 		canBeBuilt(outputDir, 7);
 	}
-	
+
 	@Test
 	public void testAccessPath() {
 		final Launcher launcher = new Launcher();
@@ -788,7 +788,7 @@ public class ImportTest {
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 		CtType element = launcher.getFactory().Class().getAll().get(0);
-		
+
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
 
 		List<CtType<?>> toPrint = new ArrayList<>();
@@ -799,6 +799,7 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 	}
+
 	@Test
 	public void testSuperInheritanceHierarchyFunction() throws Exception {
 		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
@@ -824,7 +825,7 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertTrue(result.contains(Object.class.getName()));
-		
+
 		//contract: returnTypeReferences(true) returns CtTypeReferences
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
 			assertTrue(e instanceof CtTypeReference);
@@ -835,7 +836,7 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertTrue(result.contains(Object.class.getName()));
-		
+
 		//contract: the mapping can be started on type reference too
 		result = clientClass.getReference().map(new SuperInheritanceHierarchyFunction().includingSelf(true).returnTypeReferences(true)).map(e->{
 			assertTrue(e instanceof CtTypeReference);
@@ -854,7 +855,7 @@ public class ImportTest {
 		assertEquals(1, typeResult.size());
 		assertEquals(clientClass.getFactory().Type().OBJECT, typeResult.get(0));
 	}
-	
+
 	@Test
 	public void testSuperInheritanceHierarchyFunctionListener() throws Exception {
 		CtType<?> clientClass = (CtClass<?>) ModelUtils.buildClass(ClientClass.class);
@@ -903,7 +904,7 @@ public class ImportTest {
 		assertTrue(result.contains(childClass.getQualifiedName()));
 		assertFalse(result.contains(superClass.getQualifiedName()));
 		assertFalse(result.contains(Object.class.getName()));
-		
+
 		//contract: if listener skips CHIDLREN, then skipped element is returned but all super classes are not returned
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
 			@Override
@@ -927,7 +928,7 @@ public class ImportTest {
 		assertTrue(result.contains(superClass.getQualifiedName()));
 		assertFalse(result.contains(Object.class.getName()));
 	}
-	
+
 	@Test
 	public void testSuperInheritanceHierarchyFunctionNoClasspath() {
 		final Launcher launcher = new Launcher();
@@ -935,9 +936,9 @@ public class ImportTest {
 		launcher.addInputResource("src/test/resources/noclasspath/superclass/UnknownSuperClass.java");
 		launcher.buildModel();
 		final CtModel model = launcher.getModel();
-		
+
 		CtClass<?> classUSC = launcher.getFactory().Class().get("UnknownSuperClass");
-		
+
 		//contract: super inheritance scanner returns only Types on class path including final Object
 		List<CtType> types = classUSC.map(new SuperInheritanceHierarchyFunction().includingSelf(true)).list();
 		assertEquals(2, types.size());
@@ -1152,10 +1153,11 @@ public class ImportTest {
 		while(st.hasMoreTokens()) {
 			String line = st.nextToken();
 			if(line.startsWith("import")) {
+				line = line.substring(0, line.length() - 2); // we remove the last ';' to be able to compare x.y and x.y.z
 				countOfImports++;
 				if(lastImport!=null) {
 					//check that next import is alphabetically higher then last import
-					assertTrue(lastImport+" should be before "+line, lastImport.compareTo(line)<0);
+					assertTrue(lastImport+" should be before "+line, lastImport.compareTo(line) < 0);
 				}
 				lastImport = line;
 			} else {
@@ -1193,7 +1195,7 @@ public class ImportTest {
 		int countImports = 0;
 
 		int nbStaticImports = 2;
-		int nbStandardImports = 4;
+		int nbStandardImports = 3;
 
 		boolean startStatic = false;
 
@@ -1215,7 +1217,8 @@ public class ImportTest {
 			}
 		}
 
-		assertEquals("Exactly "+nbStandardImports+nbStaticImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
+		int totalImports = nbStandardImports + nbStaticImports;
+		assertEquals("Exactly "+totalImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
 	}
 
 	@Test
@@ -1240,7 +1243,7 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testImportWithGenerics() throws IOException {
+	public void testImportWithGenerics() {
 		// contract: in noclasspath autoimport, we should be able to use generic type
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
@@ -1302,4 +1305,57 @@ public class ImportTest {
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
 	}
+
+	@Test
+	public void testNullable() throws Exception {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/resources/noclasspath/TestNullable.java"));
+		comp.build();
+		// should build
+		assertNotNull(launcher.getFactory().Type().get("TestNullable"));
+	}
+
+	@Test
+	public void testBug2369_fqn() {
+		// see https://github.com/INRIA/spoon/issues/2369
+		final Launcher launcher = new Launcher();
+launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
+		launcher.buildModel();
+		final String nl = System.lineSeparator();
+		assertEquals("public class JavaLongUse {" + nl +
+				"    public class Long {}" + nl +
+				nl +
+				"    public static long method() {" + nl +
+				"        return java.lang.Long.parseLong(\"10000\");" + nl +
+				"    }" + nl +
+				nl +
+				"    public static void main(java.lang.String[] args) {" + nl +
+				"        java.lang.System.out.println(spoon.test.imports.testclasses.JavaLongUse.method());" + nl +
+				"    }" + nl +
+				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+	}
+
+	@Test
+	public void testBug2369_autoimports() {
+		// https://github.com/INRIA/spoon/issues/2369
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLongUse.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.buildModel();
+		final String nl = System.lineSeparator();
+		assertEquals("public class JavaLongUse {" + nl +
+				"    public class Long {}" + nl +
+				"" + nl +
+				"    public static long method() {" + nl +
+				"        return java.lang.Long.parseLong(\"10000\");" + nl +
+				"    }" + nl +
+				"" + nl +
+				"    public static void main(String[] args) {" + nl +
+				"        System.out.println(JavaLongUse.method());" + nl +
+				"    }" + nl +
+				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+	}
+
 }

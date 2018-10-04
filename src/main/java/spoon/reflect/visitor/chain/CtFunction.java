@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -25,5 +25,6 @@ package spoon.reflect.visitor.chain;
  * @param <R> the type of the result of the function
  */
 public interface CtFunction<T, R> {
+	/** Implement this method to transform the input typed by T into an object of type R */
 	R apply(T input);
 }
