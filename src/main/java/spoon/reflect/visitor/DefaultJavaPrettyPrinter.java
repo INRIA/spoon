@@ -939,7 +939,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				return;
 			}
 
-			// complex case of qualifed this
+			// complex case of qualified this
 			if (!context.currentThis.isEmpty()) {
 
 				CtType lastType = context.currentThis.peekFirst().type;
