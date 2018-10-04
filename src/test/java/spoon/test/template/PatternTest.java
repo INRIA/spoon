@@ -125,7 +125,7 @@ public class PatternTest {
 			Match match = matches.get(1);
 			assertEquals(Arrays.asList(
 					"java.lang.System.out.println(\"a\")",
-					"java.lang.System.out.println(\"Xxxx\")",
+					"out.println(\"Xxxx\")",
 					"java.lang.System.out.println(((java.lang.String) (null)))",
 					"java.lang.System.out.println(java.lang.Long.class.toString())"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(Arrays.asList(
@@ -164,7 +164,7 @@ public class PatternTest {
 			Match match = matches.get(1);
 			assertEquals(Arrays.asList(
 					"int cc = 0",
-					"java.lang.System.out.println(\"Xxxx\")",
+					"out.println(\"Xxxx\")",
 					"cc++",
 					"java.lang.System.out.println(((java.lang.String) (null)))",
 					"cc++"), toListOfStrings(match.getMatchingElements()));
@@ -216,7 +216,7 @@ public class PatternTest {
 		}
 		{
 			Match match = matches.get(1);
-			assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
+			assertEquals(Arrays.asList("out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 			assertEquals(true, match.getParameters().getValue("option"));
 			assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 		}
@@ -318,7 +318,7 @@ public class PatternTest {
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
-				"java.lang.System.out.println(\"Xxxx\")",
+				"out.println(\"Xxxx\")",
 				"java.lang.System.out.println(((java.lang.String) (null)))",
 				"java.lang.System.out.println(\"last one\")"), toListOfStrings(match.getMatchingElements()));
 
@@ -327,7 +327,7 @@ public class PatternTest {
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
-				"java.lang.System.out.println(\"Xxxx\")",
+				"out.println(\"Xxxx\")",
 				"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings((List) match.getParameters().getValue("statements")));
 
 		//last statement is matched by last template, which saves printed value
@@ -354,7 +354,7 @@ public class PatternTest {
 					"int i = 0",
 					"i++",
 					"java.lang.System.out.println(i)",
-					"java.lang.System.out.println(\"Xxxx\")"
+					"out.println(\"Xxxx\")"
 			), toListOfStrings(match.getMatchingElements()));
 
 			//check 3 statements are stored as value of "statements" parameter
@@ -399,7 +399,7 @@ public class PatternTest {
 					"int i = 0",
 					"i++",
 					"java.lang.System.out.println(i)",	//this is println(int), but last temple matches println(String) - it is question if it is wanted or not ...
-					"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
+					"out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
@@ -453,7 +453,7 @@ public class PatternTest {
 					"int i = 0",
 					"i++",
 					"java.lang.System.out.println(i)",	//this is println(int), but last temple matches println(String) - it is question if it is wanted or not ...
-					"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
+					"out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check all statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
@@ -496,7 +496,7 @@ public class PatternTest {
 			assertEquals(Arrays.asList(
 					"i++",
 					"java.lang.System.out.println(i)",	//this is println(int), but last temple matches println(String) - it is question if it is wanted or not ...
-					"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
+					"out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 
 			//check 2 statements excluding last are stored as value of "statements" parameter
 			assertEquals(Arrays.asList(
@@ -548,7 +548,7 @@ public class PatternTest {
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
-				"java.lang.System.out.println(\"Xxxx\")",
+				"out.println(\"Xxxx\")",
 				"java.lang.System.out.println(((java.lang.String) (null)))"), toListOfStrings(match.getMatchingElements()));
 
 		//check 4 statements excluding last are stored as value of "statements" parameter
@@ -556,7 +556,7 @@ public class PatternTest {
 				"int i = 0",
 				"i++",
 				"java.lang.System.out.println(i)",
-				"java.lang.System.out.println(\"Xxxx\")"), toListOfStrings((List) match.getParameters().getValue("statements")));
+				"out.println(\"Xxxx\")"), toListOfStrings((List) match.getParameters().getValue("statements")));
 		//last statement is matched by last template, which saves printed value
 		assertTrue(match.getParameters().getValue("printedValue") instanceof CtLiteral);
 		assertEquals("((java.lang.String) (null))", match.getParameters().getValue("printedValue").toString());
@@ -755,7 +755,7 @@ public class PatternTest {
 			}
 			{
 				Match match = matches.get(1);
-				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 			}
@@ -814,7 +814,7 @@ public class PatternTest {
 			}
 			{
 				Match match = matches.get(1);
-				assertEquals(Arrays.asList("java.lang.System.out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
+				assertEquals(Arrays.asList("out.println(\"Xxxx\")"), toListOfStrings(match.getMatchingElements()));
 				assertTrue(match.getParameters().getValue("value") instanceof CtLiteral);
 				assertEquals("\"Xxxx\"", match.getParameters().getValue("value").toString());
 			}

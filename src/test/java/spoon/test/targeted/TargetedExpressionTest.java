@@ -178,14 +178,14 @@ public class TargetedExpressionTest {
 		assertEquals(10, elements.size());
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedThisAccess).result("this.k"), elements.get(0));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(1));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(2));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedType).target(expectedTypeAccess).result("k"), elements.get(2));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedThisAccess).result("this.k"), elements.get(3));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(4));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("k"), elements.get(4));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.k"), elements.get(5));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(6));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(7));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldRead.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("FIELD"), elements.get(7));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(8));
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("spoon.test.targeted.testclasses.Bar.FIELD"), elements.get(9));
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedBarType).target(expectedBarTypeAccess).result("FIELD"), elements.get(9));
 
 		final CtAnonymousExecutable staticInit = type.getAnonymousExecutables().get(0);
 		final List<CtFieldAccess<?>> staticElements = staticInit.getElements(new TypeFilter<>(CtFieldAccess.class));
