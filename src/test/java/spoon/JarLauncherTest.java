@@ -16,7 +16,6 @@
  */
 package spoon;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;

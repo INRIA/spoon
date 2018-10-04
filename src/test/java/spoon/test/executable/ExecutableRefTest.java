@@ -1,6 +1,5 @@
 package spoon.test.executable;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtAbstractInvocation;
