@@ -86,7 +86,7 @@ public class CtPathStringBuilder {
 		String token = tokenizer.getNextToken(MAIN_DELIMITERS);
 		while (token != null) {
 			String kind = token;
-			CtPathElement pathElement = null;
+			CtPathElement pathElement;
 			token = tokenizer.getNextToken(PATH_DELIMITERS);
 			if (token != null && token.length() == 1 && PATH_DELIMITERS.contains(token)) {
 				//nextToken is again path delimiter. It means there is no token value in between
