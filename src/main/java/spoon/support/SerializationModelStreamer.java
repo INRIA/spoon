@@ -57,6 +57,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	@Override
 	public Factory load(InputStream in) throws IOException {
+		ObjectInputStream ois = null;
 		try {
 			BufferedInputStream buffered = new BufferedInputStream(in, 2);
 
@@ -74,7 +75,7 @@ public class SerializationModelStreamer implements ModelStreamer {
 				in = buffered;
 			}
 
-			ObjectInputStream ois = new ObjectInputStream(in);
+			ois = new ObjectInputStream(in);
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory
@@ -85,12 +86,14 @@ public class SerializationModelStreamer implements ModelStreamer {
 					return false;
 				}
 			}).list();
-			ois.close();
 			return f;
 		} catch (ClassNotFoundException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 			throw new IOException(e.getMessage());
+		} finally {
+			if (ois != null) {
+				ois.close();
+			}
 		}
 	}
-
 }
