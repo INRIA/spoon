@@ -116,6 +116,36 @@ public class GetBinaryFilesTest {
 	}
 
 	@Test
+	public void testDeepNestedClasses() throws IOException {
+		final String input = "./src/test/java/spoon/test/compilationunit/testclasses/DeepNestedClasses.java";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource(input);
+		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.buildModel();
+		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+
+		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		assertEquals(1, cus.size());
+
+		final List<File> binaries = cus.get(new File(input).getCanonicalFile().getAbsolutePath()).getBinaryFiles();
+		assertEquals(7, binaries.size());
+		assertEquals("DeepNestedClasses.class", binaries.get(0).getName());
+		assertEquals("DeepNestedClasses$A.class", binaries.get(1).getName());
+		assertEquals("DeepNestedClasses$A$B.class", binaries.get(2).getName());
+		assertEquals("DeepNestedClasses$A$B$C.class", binaries.get(3).getName());
+		assertEquals("DeepNestedClasses$X.class", binaries.get(4).getName());
+		assertEquals("DeepNestedClasses$X$Y.class", binaries.get(5).getName());
+		assertEquals("DeepNestedClasses$X$Y$Z.class", binaries.get(6).getName());
+		assertTrue(binaries.get(0).isFile());
+		assertTrue(binaries.get(1).isFile());
+		assertTrue(binaries.get(2).isFile());
+		assertTrue(binaries.get(3).isFile());
+		assertTrue(binaries.get(4).isFile());
+		assertTrue(binaries.get(5).isFile());
+		assertTrue(binaries.get(6).isFile());
+	}
+
+	@Test
 	public void testAnonymousClasses() throws IOException {
 		final String input = "./src/test/java/spoon/test/secondaryclasses/testclasses/AnonymousClass.java";
 		final Launcher launcher = new Launcher();

@@ -69,6 +69,13 @@ public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, 
 
 	/**
 	 * Gets all binary (.class) files that corresponds to this compilation unit
+	 * and should be available after calling
+	 * {@link spoon.SpoonModelBuilder#compile(spoon.SpoonModelBuilder.InputType...)}.
+	 */
+	List<File> getExpectedBinaryFiles();
+
+	/**
+	 * Gets all binary (.class) files that corresponds to this compilation unit
 	 * and have been created by calling
 	 * {@link spoon.SpoonModelBuilder#compile(spoon.SpoonModelBuilder.InputType...)}.
 	 */

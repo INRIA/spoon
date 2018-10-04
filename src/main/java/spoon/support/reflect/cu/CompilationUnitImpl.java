@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
@@ -162,49 +163,73 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	}
 
 	@Override
-	public List<File> getBinaryFiles() {
+	public List<File> getExpectedBinaryFiles() {
 		final List<File> binaries = new ArrayList<>();
 		final String output = getFactory()
 				.getEnvironment()
 				.getBinaryOutputDirectory();
-		if (output != null) {
+		if (output != null) { // just to be sure
 			final File base = Paths
-					.get(output, getDeclaredPackage()
-					.getQualifiedName()
-					.replace(".", File.separator))
+					.get(output,
+							getDeclaredPackage()
+							.getQualifiedName()
+							.replace(".", File.separator))
 					.toFile();
-			if (base.isDirectory()) {
-				for (final CtType type : getDeclaredTypes()) {
-					// Add main type, for instance, 'Foo.class'.
-					final String nameOfType = type.getSimpleName();
-					final File fileOfType = new File(
-							base, nameOfType + ".class");
-					if (fileOfType.isFile()) {
-						binaries.add(fileOfType);
-					}
-					// Add inner/anonymous types, for instance,
-					// 'Foo$Bar.class'. Use 'getElements()' rather than
-					// 'getNestedTypes()' to also fetch inner types of inner
-					// types of inner types ... and so on.
-					for (final CtType inner : type.getElements(
-							new TypeFilter<>(CtType.class))) {
-						// 'getElements' does not only return inner types but
-						// also returns 'type' itself. Thus, we need to ensure
-						// to not add 'type' twice.
-						if (!inner.equals(type)) {
-							final String nameOfInner =
-									nameOfType + "$" + inner.getSimpleName();
-							final File fileOfInnerType = new File(
-									base, nameOfInner + ".class");
-							if (fileOfInnerType.isFile()) {
-								binaries.add(fileOfInnerType);
-							}
-						}
-					}
-				}
-			}
+			getDeclaredTypes().forEach(type ->
+					getExpectedBinaryFiles(base, null, type)
+							.stream()
+							.filter(File::isFile)
+							.forEach(binaries::add));
 		}
 		return binaries;
+	}
+
+	/**
+	 * Recursively computes all expected binary (.class) files for {@code type}
+	 * and all its inner/anonymous types. This method is used as a utility
+	 * method by {@link #getExpectedBinaryFiles()}.
+	 *
+	 * @param baseDir
+	 * 		The base directory of {@code type}. That is, the directory where
+	 * 		the binary files of {@code type} are stored.
+	 * @param nameOfParent
+	 * 		The name of the binary file of the parent of {@code type} without
+	 * 		its extension (.class). For instance, Foo$Bar. Pass {@code null} or
+	 * 		an empty string if {@code type} has no parent.
+	 * @param type
+	 * 		The root type to start the computation from.
+	 * @return
+	 * 		All binary (.class) files that should be available for {@code type}
+	 * 		and	all its inner/anonymous types.
+	 */
+	private List<File> getExpectedBinaryFiles(
+			final File baseDir, final String nameOfParent,
+			final CtType<?> type) {
+		final List<File> binaries = new ArrayList<>();
+		final String name = nameOfParent == null || nameOfParent.isEmpty()
+				? type.getSimpleName()
+				: nameOfParent + "$" + type.getSimpleName();
+		binaries.add(new File(baseDir, name + ".class"));
+		// Use 'getElements()' rather than 'getNestedTypes()' to also fetch
+		// anonymous types.
+		type.getElements(new TypeFilter<>(CtType.class)).stream()
+				// Exclude 'type' itself.
+				.filter(inner -> !inner.equals(type))
+				// Include only direct inner types.
+				.filter(inner -> inner.getParent(CtType.class).equals(type))
+				.forEach(inner -> {
+					binaries.addAll(getExpectedBinaryFiles(
+							baseDir, name, inner));
+				});
+		return binaries;
+	}
+
+	@Override
+	public List<File> getBinaryFiles() {
+		return getExpectedBinaryFiles()
+				.stream()
+				.filter(File::isFile)
+				.collect(Collectors.toList());
 	}
 
 	String originalSourceCode;
