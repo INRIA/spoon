@@ -22,7 +22,6 @@ import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.test.reference.testclasses.Tortillas;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +57,7 @@ public class VariableAccessTest {
 
 	@Test
 	public void testDeclarationArray() throws Exception {
-		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
+		final CtType<Pozole> aPozole = buildClass(Pozole.class);
 		final CtMethod<Object> m2 = aPozole.getMethod("m2");
 		final CtArrayWrite<?> ctArrayWrite = m2.getElements(new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class)).get(0);
 		final CtLocalVariable expected = m2.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);

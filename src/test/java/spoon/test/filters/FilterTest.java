@@ -88,7 +88,7 @@ public class FilterTest {
 
 	@Before
 	public void setup() throws Exception {
-		factory = ModelUtils.build(Foo.class);
+		factory = build(Foo.class);
 	}
 
 	@Test

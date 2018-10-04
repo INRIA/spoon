@@ -17,7 +17,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.AnnotationValues;
 import spoon.test.annotation.testclasses.BoundNumber;
-import spoon.testing.utils.ModelUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -70,7 +69,7 @@ public class AnnotationValuesTest {
 
 	@Test
 	public void testCtAnnotationAPI() throws Exception {
-		Factory factory = ModelUtils.createFactory();
+		Factory factory = createFactory();
 		CtAnnotation<Annotation> annotation = factory.Core().createAnnotation();
 		annotation.addValue("integers", 7);
 

@@ -63,7 +63,6 @@ import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -672,7 +671,7 @@ public class PositionTest {
 	public void testPositionMethodTypeParameter() throws Exception {
 		//contract: the Method TypeParameter T extends List<?> has simple source position
 		//the previous used DeclarationSourcePosition had incorrect details
-		final CtType<?> foo = ModelUtils.buildClass(TypeParameter.class);
+		final CtType<?> foo = buildClass(TypeParameter.class);
 		String classContent = getClassContent(foo);
 
 		CtTypeParameter typeParam = foo.getMethodsByName("m").get(0).getFormalCtTypeParameters().get(0);
@@ -683,7 +682,7 @@ public class PositionTest {
 	@Test
 	public void testPositionOfAnnonymousType() throws Exception {
 		//contract: the annonymous type has consistent position
-		final CtEnum foo = (CtEnum) ModelUtils.buildClass(SomeEnum.class);
+		final CtEnum foo = (CtEnum) buildClass(SomeEnum.class);
 		String classContent = getClassContent(foo);
 
 		CtNewClass<?> newClass = (CtNewClass<?>) foo.getEnumValue("X").getDefaultExpression();
@@ -709,7 +708,7 @@ public class PositionTest {
 	@Test
 	public void testPositionOfAnnonymousTypeByNewInterface() throws Exception {
 		//contract: the annonymous type has consistent position
-		final CtType<?> foo = ModelUtils.buildClass(AnnonymousClassNewIface.class);
+		final CtType<?> foo = buildClass(AnnonymousClassNewIface.class);
 		String classContent = getClassContent(foo);
 
 		CtLocalVariable<?> localVar = (CtLocalVariable<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
@@ -741,7 +740,7 @@ public class PositionTest {
 	@Test
 	public void testPositionOfCtImport() throws Exception {
 		//contract: the CtImport has position
-		final CtType<?> foo = ModelUtils.buildClass(
+		final CtType<?> foo = buildClass(
 			launcher ->	launcher.getEnvironment().setAutoImports(true), 
 			AnnonymousClassNewIface.class);
 		String originSources = foo.getPosition().getCompilationUnit().getOriginalSourceCode();
@@ -762,7 +761,7 @@ public class PositionTest {
 	@Test
 	public void testEmptyModifiersOfMethod() throws Exception {
 		//contract: the modifiers of Method without modifiers are empty and have correct start
-		final CtType<?> foo = ModelUtils.buildClass(NoMethodModifiers.class);
+		final CtType<?> foo = buildClass(NoMethodModifiers.class);
 		String classContent = getClassContent(foo);
 
 		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) foo.getMethodsByName("m").get(0).getPosition();
@@ -779,7 +778,7 @@ public class PositionTest {
 	@Test
 	public void testPositionTryCatch() throws Exception {
 		//contract: check that the variable in the catch has a correct position
-		CtType<?> foo = ModelUtils.buildClass(PositionTry.class);
+		CtType<?> foo = buildClass(PositionTry.class);
 		String classContent = getClassContent(foo);
 
 		List<CtCatchVariable> elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
@@ -851,7 +850,7 @@ public class PositionTest {
 	@Test
 	public void testArrayArgParameter() throws Exception {
 		//contract: the parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
-		final CtType<?> foo = ModelUtils.buildClass(ArrayArgParameter.class);
+		final CtType<?> foo = buildClass(ArrayArgParameter.class);
 		String classContent = getClassContent(foo);
 
 		{
@@ -901,7 +900,7 @@ public class PositionTest {
 	@Test
 	public void testExpressions() throws Exception {
 		//contract: the expression including type casts has correct position which includes all brackets too
-		final CtType<?> foo = ModelUtils.buildClass(Expressions.class);
+		final CtType<?> foo = buildClass(Expressions.class);
 		String classContent = getClassContent(foo);
 		List<CtInvocation<?>> statements = (List) foo.getMethodsByName("method").get(0).getBody().getStatements();
 
@@ -947,7 +946,7 @@ public class PositionTest {
 	@Test
 	public void testCatchPosition() throws Exception {
 		//contract: check the catch position
-		final CtType<?> foo = ModelUtils.buildClass(CatchPosition.class);
+		final CtType<?> foo = buildClass(CatchPosition.class);
 		String classContent = getClassContent(foo);
 		CtTry tryStatement = (CtTry) foo.getMethodsByName("method").get(0).getBody().getStatement(0);
 		{
@@ -1009,7 +1008,7 @@ public class PositionTest {
 	@Test
 	public void testEnumConstructorCallComment() throws Exception {
 		//contract: check position the enum constructor call 
-		final CtType<?> foo = ModelUtils.buildClass(FooEnum.class);
+		final CtType<?> foo = buildClass(FooEnum.class);
 		
 		String classContent = getClassContent(foo);
 		CtField<?> field = foo.getField("GET");
@@ -1026,7 +1025,7 @@ public class PositionTest {
 	@Test
 	public void testSwitchCase() throws Exception {
 		//contract: check position of the statements of the case of switch
-		final CtType<?> foo = ModelUtils.buildClass(FooSwitch.class);
+		final CtType<?> foo = buildClass(FooSwitch.class);
 		
 		String classContent = getClassContent(foo);
 		CtSwitch<?> switchStatement = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
@@ -1063,7 +1062,7 @@ public class PositionTest {
 	@Test
 	public void testFooForEach() throws Exception {
 		//contract: check position of the for each position
-		final CtType<?> foo = ModelUtils.buildClass(FooForEach.class);
+		final CtType<?> foo = buildClass(FooForEach.class);
 		
 		String classContent = getClassContent(foo);
 		List<CtForEach> stmts = (List) foo.getMethodsByName("m").get(0).getBody().getStatements();

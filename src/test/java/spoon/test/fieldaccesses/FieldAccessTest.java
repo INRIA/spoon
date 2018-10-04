@@ -35,7 +35,6 @@ import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.test.fieldaccesses.testclasses.MyClass;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -338,7 +337,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testTypeOfFieldAccess() throws Exception {
-		CtType<Panini> aPanini = ModelUtils.buildClass(Panini.class);
+		CtType<Panini> aPanini = buildClass(Panini.class);
 		List<CtFieldAccess> fieldAccesses = aPanini.getMethod("prepare").getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, fieldAccesses.size());
 		assertNotNull(fieldAccesses.get(0).getType());
@@ -402,7 +401,7 @@ public class FieldAccessTest {
 	}
 	@Test
 	public void testFieldAccessAutoExplicit() throws Exception {
-		CtClass mouse = (CtClass)ModelUtils.buildClass(Mouse.class);
+		CtClass mouse = (CtClass) buildClass(Mouse.class);
 		CtMethod method = mouse.filterChildren((CtMethod m)->"meth1".equals(m.getSimpleName())).first();
 		
 		CtFieldReference ageFR = method.filterChildren((CtFieldReference fr)->"age".equals(fr.getSimpleName())).first();

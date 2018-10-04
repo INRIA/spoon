@@ -35,7 +35,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -491,8 +490,8 @@ public class TypeReferenceTest {
 	@Test
 	public void testShortTypeReference() {
 
-		CtTypeReference<Short> aShort = ModelUtils.createFactory().Type().SHORT;
-		CtTypeReference<Short> shortPrimitive = ModelUtils.createFactory().Type().SHORT_PRIMITIVE;
+		CtTypeReference<Short> aShort = createFactory().Type().SHORT;
+		CtTypeReference<Short> shortPrimitive = createFactory().Type().SHORT_PRIMITIVE;
 
 		assertSame(Short.class, aShort.getActualClass());
 		assertSame(short.class, shortPrimitive.getActualClass());
