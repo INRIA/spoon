@@ -31,20 +31,20 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class VisibilityTest {
-    @Test
-    public void testMethodeWithNonAccessibleTypeArgument() throws Exception {
-        Factory f = build(spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument.class,
-                spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf.class,
-                Class.forName("spoon.test.visibility.packageprotected.NonAccessibleInterf")
-                );
-        CtClass<?> type = f.Class().get(spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument.class);
-        assertEquals("MethodeWithNonAccessibleTypeArgument", type.getSimpleName());
-        CtMethod<?> m = type.getMethodsByName("method").get(0);
-        assertEquals(
+	@Test
+	public void testMethodeWithNonAccessibleTypeArgument() throws Exception {
+		Factory f = build(spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument.class,
+				spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf.class,
+				Class.forName("spoon.test.visibility.packageprotected.NonAccessibleInterf")
+		);
+		CtClass<?> type = f.Class().get(spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument.class);
+		assertEquals("MethodeWithNonAccessibleTypeArgument", type.getSimpleName());
+		CtMethod<?> m = type.getMethodsByName("method").get(0);
+		assertEquals(
 				"new spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf().method(new spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf())",
 				m.getBody().getStatement(0).toString()
 		);
-    }
+	}
 
 	@Test
 	public void testVisibilityOfClassesNamedByClassesInJavaLangPackage() {
