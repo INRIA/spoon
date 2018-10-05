@@ -118,10 +118,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 			if (str.equals(pattern)) {
 				return true;
 			}
-			if (rePattern != null && rePattern.matcher(str).matches()) {
-				return true;
-			}
-			return false;
+			return rePattern != null && rePattern.matcher(str).matches();
 		}
 
 		private void recurse(Collection<? extends CtElement> elements) {
