@@ -760,6 +760,29 @@ public class ImportTest {
 	}
 
 	@Test
+	public void testStaticImportOfEnumField() {
+		//contract: static import of enum field doesn't cause import of enum
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-enumField";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Kun.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should not contain the import of enum",!output.contains("import spoon.reflect.path.CtRole;"));
+		assertTrue("The file should contain the static import of enum field",!output.contains("import spoon.reflect.path.CtRole.NAME;"));
+		canBeBuilt(outputDir, 7);
+	}
+
+	@Test
 	public void testShouldNotCreateAutoreference() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setAutoImports(false);
