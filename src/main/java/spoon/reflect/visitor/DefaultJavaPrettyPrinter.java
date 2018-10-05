@@ -170,7 +170,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String JAVADOC_START = "/**";
 
 	/**
-	 * The beginning of a inline comment
+	 * The beginning of an inline comment
 	 */
 	public static final String INLINE_COMMENT_START = "// ";
 
@@ -864,7 +864,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 							final String fieldName = field.getSimpleName();
 							CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
 							if (var != field) {
-								//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
+								//another variable declaration was found which is hiding the field declaration for this field access. Make the field access explicit
 								target.setImplicit(false);
 							}
 						} else {
@@ -912,7 +912,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			// we only write qualified this when this is required
 			// this is good both in fully-qualified mode and in readable (with-imports) mode
-			// the implicit information is used for analysis (eg are visibility caused by implicit bugs?) but
+			// the implicit information is used for analysis (e.g. is visibility caused by implicit bugs?) but
 			// not for pretty-printing
 			CtTypeAccess target = (CtTypeAccess) thisAccess.getTarget();
 			CtTypeReference targetType = target.getAccessedType();
@@ -939,7 +939,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				return;
 			}
 
-			// complex case of qualifed this
+			// complex case of qualified this
 			if (!context.currentThis.isEmpty()) {
 
 				CtType lastType = context.currentThis.peekFirst().type;
