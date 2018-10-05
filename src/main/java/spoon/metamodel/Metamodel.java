@@ -190,12 +190,20 @@ public class Metamodel {
 
 	private static final String CLASS_SUFFIX = "Impl";
 	/**
-	 * qualified names of packages which contains interfaces of spoon model
+	 * qualified names of packages which contain interfaces of spoon model
 	 */
 	public static final Set<String> MODEL_IFACE_PACKAGES = new HashSet<>(Arrays.asList(
 			"spoon.reflect.code",
 			"spoon.reflect.declaration",
 			"spoon.reflect.reference"));
+
+	/**
+	 * qualified names of packages which contain classes (implementations) of spoon model
+	 */
+	public static final Set<String> MODEL_CLASS_PACKAGES = new HashSet<>(Arrays.asList(
+			"spoon.support.reflect.code",
+			"spoon.support.reflect.declaration",
+			"spoon.support.reflect.reference"));
 
 	/**
 	 * {@link MetamodelConcept}s by name
