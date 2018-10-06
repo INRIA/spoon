@@ -1034,4 +1034,18 @@ public class CommentTest {
 	private List<String> getCommentStrings(CtElement ele) {
 		return ele.getComments().stream().map(Object::toString).collect(Collectors.toList());
 	}
+
+	@Test
+	public void testCommentAssociationAndPrettyPrint() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/testClassWithComments.java");
+		launcher.setSourceOutputDirectory("./src/test/java/spoon/test/comment/testclasses/testClassWithComments_Printed.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		launcher.prettyprint();
+
+		Assert.assertThat(new File("./src/test/java/spoon/test/comment/testclasses/testClassWithComments.java")).isEqualTo(new File("./src/test/java/spoon/test/comment/testclasses/testClassWithComments_Printed.java"));
+	}
 }
