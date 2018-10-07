@@ -1,4 +1,6 @@
-public final class test{
+package spoon.test.comment.testclasses;
+
+public class TestClassWithComments {
 
     
 // ------------------------------------ //

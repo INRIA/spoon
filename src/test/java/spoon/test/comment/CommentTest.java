@@ -54,6 +54,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -71,6 +72,7 @@ import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
 import spoon.test.comment.testclasses.OtherJavaDoc;
+import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
 
@@ -1038,14 +1040,18 @@ public class CommentTest {
 	@Test
 	public void testCommentAssociationAndPrettyPrint() {
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/testClassWithComments.java");
-		launcher.setSourceOutputDirectory("./src/test/java/spoon/test/comment/testclasses/testClassWithComments_Printed.java");
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/TestClassWithComments.java");
 		launcher.getEnvironment().setCommentEnabled(true);
 
 		CtModel model = launcher.buildModel();
 
-		launcher.prettyprint();
-
-		Assert.assertThat(new File("./src/test/java/spoon/test/comment/testclasses/testClassWithComments.java")).isEqualTo(new File("./src/test/java/spoon/test/comment/testclasses/testClassWithComments_Printed.java"));
+		Factory factory = launcher.getFactory();
+		CtType<?> cls = factory.Type().get(TestClassWithComments.class);
+		
+		assertEquals(1, cls.getComments().size());
+		CtType<?> nestedIface = cls.getNestedType("testInterface");
+		assertEquals(4, nestedIface.getComments().size());
+		CtMethod<?> method = nestedIface.getMethodsByName("mytest").get(0);
+		assertEquals(1, method.getComments().size());
 	}
 }
