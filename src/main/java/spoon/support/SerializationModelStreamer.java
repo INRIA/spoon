@@ -18,7 +18,6 @@ package spoon.support;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -65,9 +64,6 @@ public class SerializationModelStreamer implements ModelStreamer {
 		in.mark(2);
 		int ch1 = in.read();
 		int ch2 = in.read();
-		if (ch1 < 0 || ch2 < 0) {
-			throw new EOFException();
-		}
 		int header = ((ch2 << 8) + (ch1 << 0));
 		in.reset();
 		if (header == GZIPInputStream.GZIP_MAGIC) {
