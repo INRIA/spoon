@@ -2,19 +2,67 @@ package spoon.test.jar;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.VirtualFile;
+import spoon.support.compiler.ZipFolder;
 
 public class JarTest {
+
+	@Test
+	public void testJarResources() throws Exception {
+		List<SpoonResource> resources = SpoonResourceHelper.resources("./src/test/resources/reference-test/EnumJar.jar");
+		assertEquals(1, resources.size());
+		ZipFolder folder = (ZipFolder) resources.get(0);
+		List<SpoonFile> files = folder.getAllFiles();
+		assertEquals(5, files.size());
+		assertEquals("Manifest-Version: 1.0\r\n\r\n", readFileString(files.stream().filter(f -> f.getName().equals("META-INF/MANIFEST.MF")).findFirst().get(), "ISO-8859-1"));
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<classpath>\n" + 
+				"	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8\"/>\n" + 
+				"	<classpathentry kind=\"src\" path=\"src\"/>\n" + 
+				"	<classpathentry kind=\"output\" path=\"bin\"/>\n" + 
+				"</classpath>\n" + 
+				"", readFileString(files.stream().filter(f -> f.getName().equals(".classpath")).findFirst().get(), "ISO-8859-1"));
+	}
+	
+	private byte[] readFileBytes(SpoonFile file) {
+		byte[] buff = new byte[1024];
+		try (InputStream is = file.getContent(); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			while(true) {
+				int count = is.read(buff);
+				if (count < 0) {
+					break; 
+				}
+				baos.write(buff, 0, count);
+			}
+			return baos.toByteArray();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	private String readFileString(SpoonFile file, String encoding) {
+		try {
+			return new String(readFileBytes(file), encoding);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Test
 	public void testJar() throws Exception {
