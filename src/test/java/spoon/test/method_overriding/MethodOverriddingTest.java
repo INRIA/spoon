@@ -16,16 +16,7 @@
  */
 package spoon.test.method_overriding;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -36,7 +27,16 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.method_overriding.testclasses2.ObjectInterface;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MethodOverriddingTest {
 
