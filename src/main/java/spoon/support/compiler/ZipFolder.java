@@ -85,8 +85,8 @@ public class ZipFolder implements SpoonFolder {
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
-					output.flush();
 					files.add(new ZipFile(this, entry.getName(), output.toByteArray()));
+					output.reset();
 				}
 			} catch (Exception e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
