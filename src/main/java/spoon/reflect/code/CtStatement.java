@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.ParentNotInitializedException;
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.ParentNotInitializedException;
 
 import static spoon.reflect.path.CtRole.LABEL;
+
+
+
 
 /**
  * This abstract code element represents all the statements, which can be part
@@ -33,23 +37,23 @@ public interface CtStatement extends CtCodeElement {
 	/**
 	 * Inserts a statement after the current statement.
 	 */
-	<T extends CtStatement> T insertAfter(CtStatement statement) throws ParentNotInitializedException;
+	CtStatement insertAfter(CtStatement statement) throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	<T extends CtStatement> T insertAfter(CtStatementList statements) throws ParentNotInitializedException;
+	CtStatement insertAfter(CtStatementList statements) throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement given as parameter before the current statement
 	 * (this).
 	 */
-	<T extends CtStatement> T insertBefore(CtStatement statement) throws ParentNotInitializedException;
+	CtStatement insertBefore(CtStatement statement) throws ParentNotInitializedException;
 
 	/**
 	 * Inserts a statement list before the current statement.
 	 */
-	<T extends CtStatement> T insertBefore(CtStatementList statements) throws ParentNotInitializedException;
+	CtStatement insertBefore(CtStatementList statements) throws ParentNotInitializedException;
 
 	/**
 	 * Gets the label of this statement if defined.
@@ -63,7 +67,7 @@ public interface CtStatement extends CtCodeElement {
 	 * Sets the label of this statement.
 	 */
 	@PropertySetter(role = LABEL)
-	<T extends CtStatement> T setLabel(String label);
+	CtStatement setLabel(String label);
 
 	@Override
 	CtStatement clone();

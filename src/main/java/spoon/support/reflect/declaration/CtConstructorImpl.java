@@ -16,15 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
@@ -35,11 +34,10 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+
+
+
 
 public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConstructor<T> {
 	private static final long serialVersionUID = 1L;
@@ -57,8 +55,8 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		return (C) this;
+	public CtConstructorImpl<T> setSimpleName(String simpleName) {
+		return this;
 	}
 
 	@Override
@@ -83,9 +81,9 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtConstructorImpl<T> setType(CtTypeReference<T> type) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -94,10 +92,10 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+	public CtConstructorImpl<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
 		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
 			this.formalCtTypeParameters = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			this.formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -107,13 +105,13 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		for (CtTypeParameter formalTypeParameter : formalTypeParameters) {
 			addFormalCtTypeParameter(formalTypeParameter);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+	public CtConstructorImpl<T> addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
 		if (formalTypeParameter == null) {
-			return (C) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
@@ -121,7 +119,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		}
 		formalTypeParameter.setParent(this);
 		formalCtTypeParameters.add(formalTypeParameter);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -144,27 +142,27 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
+	public CtConstructorImpl<T> setModifiers(Set<ModifierKind> modifiers) {
 		modifierHandler.setModifiers(modifiers);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
+	public CtConstructorImpl<T> addModifier(ModifierKind modifier) {
 		modifierHandler.addModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+	public CtConstructorImpl<T> removeModifier(ModifierKind modifier) {
 		modifierHandler.removeModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
+	public CtConstructorImpl<T> setVisibility(ModifierKind visibility) {
 		modifierHandler.setVisibility(visibility);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -178,9 +176,9 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+	public CtConstructorImpl<T> setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
-		return (T) this;
+		return this;
 	}
 
 
@@ -193,10 +191,10 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+	public CtConstructorImpl<T> setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
-		return (E) this;
+		return this;
 	}
 
 	@Override

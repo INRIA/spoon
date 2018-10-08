@@ -16,11 +16,15 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
+
 import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.NAME;
+
+
+
 
 /**
  * This element defines a constructor declaration.
@@ -39,9 +43,9 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	CtConstructor<T> setType(CtTypeReference<T> type);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtNamedElement> C setSimpleName(String simpleName);
+	CtConstructor<T> setSimpleName(String simpleName);
 }

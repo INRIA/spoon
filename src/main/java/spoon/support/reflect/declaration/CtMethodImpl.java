@@ -16,28 +16,28 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.refactoring.Refactoring;
-import spoon.reflect.ModelElementContainerDefaultCapacities;
-import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtShadowable;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.filter.AllTypeMembersFunction;
-import spoon.support.reflect.CtExtendedModifier;
-import spoon.support.reflect.CtModifierHandler;
-import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import spoon.refactoring.Refactoring;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.chain.CtConsumer;
+import spoon.reflect.visitor.filter.AllTypeMembersFunction;
+import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.CtModifierHandler;
+import spoon.support.visitor.ClassTypingContext;
+
+
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtMethod}.
@@ -73,13 +73,13 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtMethodImpl<T> setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.returnType);
 		this.returnType = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -88,10 +88,10 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod) {
+	public CtMethodImpl<T> setDefaultMethod(boolean defaultMethod) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_DEFAULT, defaultMethod, this.defaultMethod);
 		this.defaultMethod = defaultMethod;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -100,11 +100,11 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+	public CtMethodImpl<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, new ArrayList<>(this.formalCtTypeParameters));
 		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
 			this.formalCtTypeParameters = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			this.formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -113,13 +113,13 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		for (CtTypeParameter formalTypeParameter : formalTypeParameters) {
 			addFormalCtTypeParameter(formalTypeParameter);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+	public CtMethodImpl<T> addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
 		if (formalTypeParameter == null) {
-			return (C) this;
+			return this;
 		}
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -127,7 +127,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalTypeParameter.setParent(this);
 		formalCtTypeParameters.add(formalTypeParameter);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -150,27 +150,27 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
+	public CtMethodImpl<T> setModifiers(Set<ModifierKind> modifiers) {
 		modifierHandler.setModifiers(modifiers);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
+	public CtMethodImpl<T> addModifier(ModifierKind modifier) {
 		modifierHandler.addModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+	public CtMethodImpl<T> removeModifier(ModifierKind modifier) {
 		modifierHandler.removeModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
+	public CtMethodImpl<T> setVisibility(ModifierKind visibility) {
 		modifierHandler.setVisibility(visibility);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -184,9 +184,9 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtModifiable> C setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+	public CtMethodImpl<T> setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
-		return  (C) this;
+		return  this;
 	}
 
 	@Override
@@ -203,10 +203,10 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+	public CtMethodImpl<T> setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
-		return (E) this;
+		return this;
 	}
 
 	@Override

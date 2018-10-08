@@ -16,18 +16,22 @@
  */
 package spoon.support.reflect.declaration;
 
+
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
+
+
+
 
 public class CtImportImpl extends CtElementImpl implements CtImport {
 	@MetamodelPropertyField(role = CtRole.IMPORT_REFERENCE)
@@ -58,13 +62,13 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	}
 
 	@Override
-	public <T extends CtImport> T setReference(CtReference reference) {
+	public CtImportImpl setReference(CtReference reference) {
 		if (reference != null) {
 			reference.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_REFERENCE, reference, this.localReference);
 		this.localReference = reference;
-		return (T) this;
+		return this;
 	}
 
 	@Override

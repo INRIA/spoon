@@ -16,13 +16,16 @@
  */
 package spoon.reflect.reference;
 
+
+import java.lang.reflect.Member;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 
-import java.lang.reflect.Member;
+
+
 
 
 /**
@@ -78,19 +81,19 @@ public interface CtFieldReference<T> extends CtVariableReference<T> {
 	 * Sets the type in which the field is declared.
 	 */
 	@PropertySetter(role = CtRole.DECLARING_TYPE)
-	<C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType);
+	CtFieldReference<T> setDeclaringType(CtTypeReference<?> declaringType);
 
 	/**
 	 * Forces a reference to a final element.
 	 */
 	@PropertySetter(role = CtRole.IS_FINAL)
-	<C extends CtFieldReference<T>> C setFinal(boolean b);
+	CtFieldReference<T> setFinal(boolean b);
 
 	/**
 	 * Forces a reference to a static element.
 	 */
 	@PropertySetter(role = CtRole.IS_STATIC)
-	<C extends CtFieldReference<T>> C setStatic(boolean b);
+	CtFieldReference<T> setStatic(boolean b);
 
 	@Override
 	CtFieldReference<T> clone();

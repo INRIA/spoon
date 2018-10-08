@@ -16,26 +16,6 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.SpoonException;
-import spoon.SpoonModelBuilder.InputType;
-import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.UnsettableProperty;
-import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
-import spoon.support.reflect.code.CtStatementImpl;
-import spoon.support.reflect.eval.VisitorPartialEvaluator;
-import spoon.support.util.SignatureBasedSortedSet;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -46,10 +26,33 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import spoon.SpoonException;
+import spoon.SpoonModelBuilder;
+import spoon.SpoonModelBuilder.InputType;
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
+import spoon.support.UnsettableProperty;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.support.reflect.code.CtStatementImpl;
+import spoon.support.reflect.eval.VisitorPartialEvaluator;
+import spoon.support.util.SignatureBasedSortedSet;
 
-import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
+import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
+
+
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtClass}.
@@ -104,13 +107,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public <C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e) {
+	public CtClassImpl<T> addAnonymousExecutable(CtAnonymousExecutable e) {
 		if (e == null) {
-			return (C) this;
+			return this;
 		}
 		e.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ANNONYMOUS_EXECUTABLE, typeMembers, e);
-		return addTypeMember(e);
+		return ((CtClassImpl<T>) (addTypeMember(e)));
 	}
 
 	@Override
@@ -125,38 +128,38 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public <C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
+	public CtClassImpl<T> setAnonymousExecutables(List<CtAnonymousExecutable> anonymousExecutables) {
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, ANNONYMOUS_EXECUTABLE, typeMembers, new ArrayList<>(getAnonymousExecutables()));
 		if (anonymousExecutables == null || anonymousExecutables.isEmpty()) {
 			this.typeMembers.removeAll(getAnonymousExecutables());
-			return (C) this;
+			return this;
 		}
 		typeMembers.removeAll(getAnonymousExecutables());
 		for (CtAnonymousExecutable exec : anonymousExecutables) {
 			addAnonymousExecutable(exec);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors) {
+	public CtClassImpl<T> setConstructors(Set<CtConstructor<T>> constructors) {
 		Set<CtConstructor<T>> oldConstructor = getConstructors();
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CONSTRUCTOR, typeMembers, oldConstructor);
 		if (constructors == null || constructors.isEmpty()) {
 			this.typeMembers.removeAll(oldConstructor);
-			return (C) this;
+			return this;
 		}
 		typeMembers.removeAll(oldConstructor);
 		for (CtConstructor<T> constructor : constructors) {
 			addConstructor(constructor);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor) {
+	public CtClassImpl<T> addConstructor(CtConstructor<T> constructor) {
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CONSTRUCTOR, typeMembers, constructor);
-		return addTypeMember(constructor);
+		return ((CtClassImpl<T>) (addTypeMember(constructor)));
 	}
 
 	@Override
@@ -165,13 +168,13 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+	public CtClassImpl<T> setSuperclass(CtTypeReference<?> superClass) {
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -195,27 +198,27 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 	}
 
 	@Override
-	public <C extends CtStatement> C insertAfter(CtStatement statement) {
+	public CtClassImpl<T> insertAfter(CtStatement statement) {
 		CtStatementImpl.insertAfter(this, statement);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertAfter(CtStatementList statements) {
+	public CtClassImpl<T> insertAfter(CtStatementList statements) {
 		CtStatementImpl.insertAfter(this, statements);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertBefore(CtStatement statement) {
+	public CtClassImpl<T> insertBefore(CtStatement statement) {
 		CtStatementImpl.insertBefore(this, statement);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertBefore(CtStatementList statements) {
+	public CtClassImpl<T> insertBefore(CtStatementList statements) {
 		CtStatementImpl.insertBefore(this, statements);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -225,8 +228,8 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtStatement> C setLabel(String label) {
-		return (C) this;
+	public CtClassImpl<T> setLabel(String label) {
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")

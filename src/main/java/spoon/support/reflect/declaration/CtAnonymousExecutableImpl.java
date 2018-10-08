@@ -16,14 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -32,8 +32,8 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
-import java.util.List;
-import java.util.Set;
+
+
 
 public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements CtAnonymousExecutable {
 	private static final long serialVersionUID = 1L;
@@ -47,15 +47,15 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
-	public <T extends CtModifiable> T addModifier(ModifierKind modifier) {
+	public CtAnonymousExecutableImpl addModifier(ModifierKind modifier) {
 		modifierHandler.addModifier(modifier);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModifiable> T removeModifier(ModifierKind modifier) {
+	public CtAnonymousExecutableImpl removeModifier(ModifierKind modifier) {
 		modifierHandler.removeModifier(modifier);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -83,15 +83,15 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
-	public <T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers) {
+	public CtAnonymousExecutableImpl setModifiers(Set<ModifierKind> modifiers) {
 		modifierHandler.setModifiers(modifiers);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModifiable> T setVisibility(ModifierKind visibility) {
+	public CtAnonymousExecutableImpl setVisibility(ModifierKind visibility) {
 		modifierHandler.setVisibility(visibility);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -100,9 +100,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	}
 
 	@Override
-	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+	public CtAnonymousExecutableImpl setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -113,14 +113,14 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	@UnsettableProperty
-	public CtExecutable setParameters(List list) {
+	public CtAnonymousExecutableImpl setParameters(List list) {
 		// unsettable property
 		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtExecutable addParameter(CtParameter parameter) {
+	public CtAnonymousExecutableImpl addParameter(CtParameter parameter) {
 		// unsettable property
 		return this;
 	}
@@ -139,14 +139,14 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	@UnsettableProperty
-	public CtExecutable setThrownTypes(Set thrownTypes) {
+	public CtAnonymousExecutableImpl setThrownTypes(Set thrownTypes) {
 		// unsettable property
 		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtExecutable addThrownType(CtTypeReference throwType) {
+	public CtAnonymousExecutableImpl addThrownType(CtTypeReference throwType) {
 		// unsettable property
 		return this;
 	}
@@ -165,9 +165,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	@UnsettableProperty
-	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+	public CtAnonymousExecutableImpl setSimpleName(String simpleName) {
 		// unsettable property
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -178,9 +178,9 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
+	public CtAnonymousExecutableImpl setType(CtTypeReference<Void> type) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override

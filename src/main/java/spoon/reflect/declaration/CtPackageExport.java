@@ -16,15 +16,19 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 
-import java.util.List;
 
-/**
+
+
+
+public/**
  * Represents an exported or opened package in a Java module
  *
  * The exports directive specifies the name of a package to be exported by the current module.
@@ -49,10 +53,10 @@ import java.util.List;
  *     opens com.example.foo.quux;
  * </pre>
  */
-public interface CtPackageExport extends CtModuleDirective {
+interface CtPackageExport extends CtModuleDirective {
 
 	@PropertySetter(role = CtRole.OPENED_PACKAGE)
-	<T extends CtPackageExport> T setOpenedPackage(boolean openedPackage);
+	CtPackageExport setOpenedPackage(boolean openedPackage);
 
 	@PropertyGetter(role = CtRole.OPENED_PACKAGE)
 	boolean isOpenedPackage();
@@ -61,16 +65,16 @@ public interface CtPackageExport extends CtModuleDirective {
 	CtPackageReference getPackageReference();
 
 	@PropertySetter(role = CtRole.PACKAGE_REF)
-	<T extends CtPackageExport> T setPackageReference(CtPackageReference packageReference);
+	CtPackageExport setPackageReference(CtPackageReference packageReference);
 
 	@PropertyGetter(role = CtRole.MODULE_REF)
 	List<CtModuleReference> getTargetExport();
 
 	@PropertySetter(role = CtRole.MODULE_REF)
-	<T extends CtPackageExport> T setTargetExport(List<CtModuleReference> targetExport);
+	CtPackageExport setTargetExport(List<CtModuleReference> targetExport);
 
 	@PropertySetter(role = CtRole.MODULE_REF)
-	<T extends CtPackageExport> T addTargetExport(CtModuleReference targetExport);
+	CtPackageExport addTargetExport(CtModuleReference targetExport);
 
 	@Override
 	CtPackageExport clone();

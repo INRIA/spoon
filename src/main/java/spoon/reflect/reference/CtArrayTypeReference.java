@@ -16,11 +16,15 @@
  */
 package spoon.reflect.reference;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+
+
+
 
 
 /**
@@ -42,13 +46,13 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 * this method returns a type reference to "int".
 	 */
 	@DerivedProperty
-	CtTypeReference<?> getArrayType();
+	CtArrayTypeReference<?> getArrayType();
 
 	/**
 	 * Sets the type of the elements contained in this array.
 	 */
 	@PropertySetter(role = CtRole.TYPE)
-	<C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType);
+	CtArrayTypeReference<T> setComponentType(CtTypeReference<?> componentType);
 
 	/**
 	 * Returns the number of dimensions of this array type. This corresponds to
@@ -71,7 +75,7 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 */
 	@UnsettableProperty
 	@Override
-	<T extends CtReference> T setSimpleName(String simpleName);
+	CtArrayTypeReference<T> setSimpleName(String simpleName);
 
 	@Override
 	CtArrayTypeReference<T> clone();

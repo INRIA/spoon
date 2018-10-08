@@ -16,13 +16,16 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
-import java.util.List;
-import java.util.Set;
+
+
 
 /**
  * This element defines a declaration of a type parameter (aka generics).
@@ -46,45 +49,45 @@ public interface CtTypeParameter extends CtType<Object> {
 
 	@Override
 	@UnsettableProperty
-	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+	CtTypeParameter setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<Object>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
+	CtTypeParameter setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	@Override
 	@UnsettableProperty
-	<S, C extends CtType<Object>> C addSuperInterface(CtTypeReference<S> interfac);
+	<S> CtTypeParameter addSuperInterface(CtTypeReference<S> interfac);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members);
+	CtTypeParameter setTypeMembers(List<CtTypeMember> members);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<Object>> C setFields(List<CtField<?>> fields);
+	CtTypeParameter setFields(List<CtField<?>> fields);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<Object>> C setMethods(Set<CtMethod<?>> methods);
+	CtTypeParameter setMethods(Set<CtMethod<?>> methods);
 
 	@Override
 	@UnsettableProperty
-	<M, C extends CtType<Object>> C addMethod(CtMethod<M> method);
+	<M> CtTypeParameter addMethod(CtMethod<M> method);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<Object>> C setNestedTypes(Set<CtType<?>> nestedTypes);
+	CtTypeParameter setNestedTypes(Set<CtType<?>> nestedTypes);
 
 	@Override
 	@UnsettableProperty
-	<N, C extends CtType<Object>> C addNestedType(CtType<N> nestedType);
+	<N> CtTypeParameter addNestedType(CtType<N> nestedType);
 
 	@Override
 	@UnsettableProperty
-	<F, C extends CtType<Object>> C addFieldAtTop(CtField<F> field);
+	<F> CtTypeParameter addFieldAtTop(CtField<F> field);
 
 	@Override
 	@UnsettableProperty
-	<T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers);
+	CtTypeParameter setModifiers(Set<ModifierKind> modifiers);
 }

@@ -16,27 +16,27 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.ARGUMENT;
 import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
 import static spoon.reflect.path.CtRole.LABEL;
+
+
+
 
 public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpression<?>> implements CtInvocation<T> {
 	private static final long serialVersionUID = 1L;
@@ -60,9 +60,9 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		return arguments;
 	}
 
-	private <C extends CtAbstractInvocation<T>> C addArgument(int position, CtExpression<?> argument) {
+	private CtInvocationImpl<T> addArgument(int position, CtExpression<?> argument) {
 		if (argument == null) {
-			return (C) this;
+			return this;
 		}
 		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -70,12 +70,12 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		argument.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, ARGUMENT, this.arguments, position, argument);
 		arguments.add(position, argument);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument) {
-		return addArgument(arguments.size(), argument);
+	public CtInvocationImpl<T> addArgument(CtExpression<?> argument) {
+		return ((CtInvocationImpl<T>) (addArgument(arguments.size(), argument)));
 	}
 
 	@Override
@@ -98,34 +98,34 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public <C extends CtStatement> C insertAfter(CtStatement statement) {
+	public CtInvocationImpl<T> insertAfter(CtStatement statement) {
 		CtStatementImpl.insertAfter(this, statement);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertBefore(CtStatement statement) {
+	public CtInvocationImpl<T> insertBefore(CtStatement statement) {
 		CtStatementImpl.insertBefore(this, statement);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertAfter(CtStatementList statements) {
+	public CtInvocationImpl<T> insertAfter(CtStatementList statements) {
 		CtStatementImpl.insertAfter(this, statements);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertBefore(CtStatementList statements) {
+	public CtInvocationImpl<T> insertBefore(CtStatementList statements) {
 		CtStatementImpl.insertBefore(this, statements);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments) {
+	public CtInvocationImpl<T> setArguments(List<CtExpression<?>> arguments) {
 		if (arguments == null || arguments.isEmpty()) {
 			this.arguments = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			this.arguments = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -135,17 +135,17 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 		for (CtExpression<?> expr : arguments) {
 			addArgument(expr);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable) {
+	public CtInvocationImpl<T> setExecutable(CtExecutableReference<T> executable) {
 		if (executable != null) {
 			executable.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXECUTABLE_REF, executable, this.executable);
 		this.executable = executable;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -154,10 +154,10 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public <C extends CtStatement> C setLabel(String label) {
+	public CtInvocationImpl<T> setLabel(String label) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -168,14 +168,14 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 
 	@Override
 	@DerivedProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtInvocationImpl<T> setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		if (getExecutable() != null) {
 			getExecutable().setType(type);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -184,19 +184,19 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 	}
 
 	@Override
-	public <T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtInvocationImpl<T> setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (getExecutable() != null) {
 			getExecutable().setActualTypeArguments(actualTypeArguments);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public CtInvocationImpl<T> addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (getExecutable() != null) {
 			getExecutable().addActualTypeArgument(actualTypeArgument);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override

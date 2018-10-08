@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
@@ -23,12 +26,12 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.CASE;
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	private static final long serialVersionUID = 1L;
@@ -55,33 +58,33 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	@Override
-	public <T extends CtSwitch<S>> T setCases(List<CtCase<? super S>> cases) {
+	public CtSwitchImpl<S> setCases(List<CtCase<? super S>> cases) {
 		if (cases == null || cases.isEmpty()) {
 			this.cases = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CASE, this.cases, new ArrayList<>(this.cases));
 		this.cases.clear();
 		for (CtCase<? super S> aCase : cases) {
 			addCase(aCase);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtSwitch<S>> T setSelector(CtExpression<S> selector) {
+	public CtSwitchImpl<S> setSelector(CtExpression<S> selector) {
 		if (selector != null) {
 			selector.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, selector, this.expression);
 		this.expression = selector;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtSwitch<S>> T addCase(CtCase<? super S> c) {
+	public CtSwitchImpl<S> addCase(CtCase<? super S> c) {
 		if (c == null) {
-			return (T) this;
+			return this;
 		}
 		if (cases == CtElementImpl.<CtCase<? super S>>emptyList()) {
 			cases = new ArrayList<>(SWITCH_CASES_CONTAINER_DEFAULT_CAPACITY);
@@ -89,7 +92,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		c.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CASE, this.cases, c);
 		cases.add(c);
-		return (T) this;
+		return this;
 	}
 
 	@Override

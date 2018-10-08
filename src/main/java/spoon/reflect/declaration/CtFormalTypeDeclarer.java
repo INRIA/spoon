@@ -16,12 +16,15 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import java.util.List;
-
 import static spoon.reflect.path.CtRole.TYPE_PARAMETER;
+
+
+
 
 /**
  * This abstract element defines a declaration that accepts formal type
@@ -39,13 +42,13 @@ public interface CtFormalTypeDeclarer extends CtTypeMember {
 	 * Sets the type parameters of this generic element.
 	 */
 	@PropertySetter(role = TYPE_PARAMETER)
-	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+	CtFormalTypeDeclarer setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
 
 	/**
 	 * Add a type parameter to this generic element.
 	 */
 	@PropertySetter(role = TYPE_PARAMETER)
-	<T extends CtFormalTypeDeclarer> T addFormalCtTypeParameter(CtTypeParameter formalTypeParameter);
+	CtFormalTypeDeclarer addFormalCtTypeParameter(CtTypeParameter formalTypeParameter);
 
 	/**
 	 * Removes a type parameters from this generic element.

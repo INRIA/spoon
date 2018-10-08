@@ -16,13 +16,16 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtTypeReference;
 
 import static spoon.reflect.path.CtRole.MULTI_TYPE;
+
+
+
 
 /**
  * Defined an element with several types.
@@ -32,7 +35,7 @@ public interface CtMultiTypedElement extends CtElement {
 	 * Adds a type for the element.
 	 */
 	@PropertySetter(role = MULTI_TYPE)
-	<T extends CtMultiTypedElement> T addMultiType(CtTypeReference<?> ref);
+	CtMultiTypedElement addMultiType(CtTypeReference<?> ref);
 
 	/**
 	 * Removes a type for the element.
@@ -50,5 +53,5 @@ public interface CtMultiTypedElement extends CtElement {
 	 * Adds a type for the element.
 	 */
 	@PropertySetter(role = MULTI_TYPE)
-	<T extends CtMultiTypedElement> T setMultiTypes(List<CtTypeReference<?>> types);
+	CtMultiTypedElement setMultiTypes(List<CtTypeReference<?>> types);
 }

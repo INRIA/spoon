@@ -16,12 +16,12 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.support.DerivedProperty;
-
-import java.util.List;
 
 import static spoon.reflect.path.CtRole.EXPORTED_PACKAGE;
 import static spoon.reflect.path.CtRole.MODIFIER;
@@ -31,6 +31,9 @@ import static spoon.reflect.path.CtRole.PROVIDED_SERVICE;
 import static spoon.reflect.path.CtRole.REQUIRED_MODULE;
 import static spoon.reflect.path.CtRole.SERVICE_TYPE;
 import static spoon.reflect.path.CtRole.SUB_PACKAGE;
+
+
+
 
 /**
  * Represents a Java module as defined in Java 9.
@@ -69,22 +72,22 @@ public interface CtModule extends CtNamedElement {
 	boolean isOpenModule();
 
 	@PropertySetter(role = MODIFIER)
-	<T extends CtModule> T setIsOpenModule(boolean openModule);
+	CtModule setIsOpenModule(boolean openModule);
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
-	<T extends CtModule> T setModuleDirectives(List<CtModuleDirective> moduleDirectives);
+	CtModule setModuleDirectives(List<CtModuleDirective> moduleDirectives);
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
-	<T extends CtModule> T addModuleDirective(CtModuleDirective moduleDirective);
+	CtModule addModuleDirective(CtModuleDirective moduleDirective);
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
-	<T extends CtModule> T addModuleDirectiveAt(int position, CtModuleDirective moduleDirective);
+	CtModule addModuleDirectiveAt(int position, CtModuleDirective moduleDirective);
 
 	@PropertyGetter(role = MODULE_DIRECTIVE)
 	List<CtModuleDirective> getModuleDirectives();
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
-	<T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective);
+	CtModule removeModuleDirective(CtModuleDirective moduleDirective);
 
 	@PropertyGetter(role = SERVICE_TYPE)
 	@DerivedProperty
@@ -92,15 +95,15 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = SERVICE_TYPE)
 	@DerivedProperty
-	<T extends CtModule> T setUsedServices(List<CtUsedService> usedServices);
+	CtModule setUsedServices(List<CtUsedService> usedServices);
 
 	@PropertySetter(role = SERVICE_TYPE)
 	@DerivedProperty
-	<T extends CtModule> T addUsedService(CtUsedService usedService);
+	CtModule addUsedService(CtUsedService usedService);
 
 	@PropertySetter(role = SERVICE_TYPE)
 	@DerivedProperty
-	<T extends CtModule> T removeUsedService(CtUsedService usedService);
+	CtModule removeUsedService(CtUsedService usedService);
 
 	@PropertyGetter(role = EXPORTED_PACKAGE)
 	@DerivedProperty
@@ -108,15 +111,15 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = EXPORTED_PACKAGE)
 	@DerivedProperty
-	<T extends CtModule> T setExportedPackages(List<CtPackageExport> exportedPackages);
+	CtModule setExportedPackages(List<CtPackageExport> exportedPackages);
 
 	@PropertySetter(role = EXPORTED_PACKAGE)
 	@DerivedProperty
-	<T extends CtModule> T addExportedPackage(CtPackageExport exportedPackage);
+	CtModule addExportedPackage(CtPackageExport exportedPackage);
 
 	@PropertySetter(role = EXPORTED_PACKAGE)
 	@DerivedProperty
-	<T extends CtModule> T removeExportedPackage(CtPackageExport exportedPackage);
+	CtModule removeExportedPackage(CtPackageExport exportedPackage);
 
 	@PropertyGetter(role = OPENED_PACKAGE)
 	@DerivedProperty
@@ -124,15 +127,15 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = OPENED_PACKAGE)
 	@DerivedProperty
-	<T extends CtModule> T setOpenedPackages(List<CtPackageExport> openedPackages);
+	CtModule setOpenedPackages(List<CtPackageExport> openedPackages);
 
 	@PropertySetter(role = OPENED_PACKAGE)
 	@DerivedProperty
-	<T extends CtModule> T addOpenedPackage(CtPackageExport openedPackage);
+	CtModule addOpenedPackage(CtPackageExport openedPackage);
 
 	@PropertySetter(role = OPENED_PACKAGE)
 	@DerivedProperty
-	<T extends CtModule> T removeOpenedPackage(CtPackageExport openedPackage);
+	CtModule removeOpenedPackage(CtPackageExport openedPackage);
 
 	@PropertyGetter(role = REQUIRED_MODULE)
 	@DerivedProperty
@@ -140,15 +143,15 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = REQUIRED_MODULE)
 	@DerivedProperty
-	<T extends CtModule> T setRequiredModules(List<CtModuleRequirement> requiredModules);
+	CtModule setRequiredModules(List<CtModuleRequirement> requiredModules);
 
 	@PropertySetter(role = REQUIRED_MODULE)
 	@DerivedProperty
-	<T extends CtModule> T addRequiredModule(CtModuleRequirement requiredModule);
+	CtModule addRequiredModule(CtModuleRequirement requiredModule);
 
 	@PropertySetter(role = REQUIRED_MODULE)
 	@DerivedProperty
-	<T extends CtModule> T removeRequiredModule(CtModuleRequirement requiredModule);
+	CtModule removeRequiredModule(CtModuleRequirement requiredModule);
 
 	@PropertyGetter(role = PROVIDED_SERVICE)
 	@DerivedProperty
@@ -156,15 +159,15 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = PROVIDED_SERVICE)
 	@DerivedProperty
-	<T extends CtModule> T setProvidedServices(List<CtProvidedService> providedServices);
+	CtModule setProvidedServices(List<CtProvidedService> providedServices);
 
 	@PropertySetter(role = PROVIDED_SERVICE)
 	@DerivedProperty
-	<T extends CtModule> T addProvidedService(CtProvidedService providedService);
+	CtModule addProvidedService(CtProvidedService providedService);
 
 	@PropertySetter(role = PROVIDED_SERVICE)
 	@DerivedProperty
-	<T extends CtModule> T removeProvidedService(CtProvidedService providedService);
+	CtModule removeProvidedService(CtProvidedService providedService);
 
 	/**
 	 * returns the root package of the unnamed module
@@ -174,7 +177,7 @@ public interface CtModule extends CtNamedElement {
 	CtPackage getRootPackage();
 
 	@PropertySetter(role = SUB_PACKAGE)
-	<T extends CtModule> T setRootPackage(CtPackage rootPackage);
+	CtModule setRootPackage(CtPackage rootPackage);
 
 	@DerivedProperty
 	@Override

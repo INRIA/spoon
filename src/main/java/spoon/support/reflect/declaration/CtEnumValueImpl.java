@@ -16,10 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
+
+
+
 
 public class CtEnumValueImpl<T> extends CtFieldImpl<T> implements CtEnumValue<T> {
 	@Override

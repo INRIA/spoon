@@ -16,13 +16,16 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.Collection;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import java.util.Collection;
-
 import static spoon.reflect.path.CtRole.IS_DEFAULT;
+
+
+
 
 
 /**
@@ -49,7 +52,7 @@ public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalType
 	 * Sets the default value state of a method.
 	 */
 	@PropertySetter(role = IS_DEFAULT)
-	<C extends CtMethod<T>> C setDefaultMethod(boolean defaultMethod);
+	CtMethod<T> setDefaultMethod(boolean defaultMethod);
 
 	@Override
 	CtMethod<T> clone();

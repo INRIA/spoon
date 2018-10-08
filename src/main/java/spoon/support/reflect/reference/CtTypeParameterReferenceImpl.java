@@ -16,23 +16,26 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.List;
+import java.util.Objects;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.Objects;
+
+
 
 public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> implements CtTypeParameterReference {
 	private static final long serialVersionUID = 1L;
@@ -70,14 +73,14 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
-		return (C) this;
+	public CtTypeParameterReferenceImpl setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
-		return (C) this;
+	public CtTypeParameterReferenceImpl addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+		return this;
 	}
 
 	@Override

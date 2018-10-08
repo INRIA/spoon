@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.reference;
 
+
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ParentNotInitializedException;
@@ -23,6 +24,10 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
+import spoon.support.reflect.declaration.CtElementImpl;
+
+
+
 
 /**
  * An implementation for {@link CtLocalVariableReference}.

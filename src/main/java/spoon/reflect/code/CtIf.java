@@ -16,6 +16,7 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.template.TemplateParameter;
@@ -23,6 +24,9 @@ import spoon.template.TemplateParameter;
 import static spoon.reflect.path.CtRole.CONDITION;
 import static spoon.reflect.path.CtRole.ELSE;
 import static spoon.reflect.path.CtRole.THEN;
+
+
+
 
 /**
  * This code element represents an <code>if</code> statement.
@@ -61,19 +65,19 @@ public interface CtIf extends CtStatement, TemplateParameter<Void> {
 	 * condition.
 	 */
 	@PropertySetter(role = CONDITION)
-	<T extends CtIf> T setCondition(CtExpression<Boolean> expression);
+	CtIf setCondition(CtExpression<Boolean> expression);
 
 	/**
 	 * Sets the statement executed when the condition is false.
 	 */
 	@PropertySetter(role = ELSE)
-	<T extends CtIf> T setElseStatement(CtStatement elseStatement);
+	CtIf setElseStatement(CtStatement elseStatement);
 
 	/**
 	 * Sets the statement executed when the condition is true.
 	 */
 	@PropertySetter(role = THEN)
-	<T extends CtIf> T setThenStatement(CtStatement thenStatement);
+	CtIf setThenStatement(CtStatement thenStatement);
 
 	@Override
 	CtIf clone();

@@ -16,12 +16,16 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 import static spoon.reflect.path.CtRole.LEFT_OPERAND;
+import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 import static spoon.reflect.path.CtRole.RIGHT_OPERAND;
+
+
+
 
 /**
  * This interface defines a binary operator.
@@ -52,19 +56,19 @@ public interface CtBinaryOperator<T> extends CtExpression<T> {
 	 * Sets the left-hand operand.
 	 */
 	@PropertySetter(role = LEFT_OPERAND)
-	<C extends CtBinaryOperator<T>> C setLeftHandOperand(CtExpression<?> expression);
+	CtBinaryOperator<T> setLeftHandOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the right-hand operand.
 	 */
 	@PropertySetter(role = RIGHT_OPERAND)
-	<C extends CtBinaryOperator<T>> C setRightHandOperand(CtExpression<?> expression);
+	CtBinaryOperator<T> setRightHandOperand(CtExpression<?> expression);
 
 	/**
 	 * Sets the kind of this binary operator.
 	 */
 	@PropertySetter(role = OPERATOR_KIND)
-	<C extends CtBinaryOperator<T>> C setKind(BinaryOperatorKind kind);
+	CtBinaryOperator<T> setKind(BinaryOperatorKind kind);
 
 	/**
 	 * Gets the kind of this binary operator.

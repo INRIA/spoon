@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 
 /**
@@ -47,7 +51,7 @@ public interface CtSynchronized extends CtStatement {
 	 * Sets the expression that defines the monitored.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<T extends CtSynchronized> T setExpression(CtExpression<?> expression);
+	CtSynchronized setExpression(CtExpression<?> expression);
 
 	/**
 	 * Gets the synchronized block.
@@ -59,7 +63,7 @@ public interface CtSynchronized extends CtStatement {
 	 * Sets the synchronized block.
 	 */
 	@PropertySetter(role = BODY)
-	<T extends CtSynchronized> T setBlock(CtBlock<?> block);
+	CtSynchronized setBlock(CtBlock<?> block);
 
 	@Override
 	CtSynchronized clone();

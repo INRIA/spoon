@@ -16,6 +16,7 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtVariable;
@@ -24,6 +25,9 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.IS_INFERRED;
+
+
+
 
 /**
  * This code element defines a local variable definition (within an executable
@@ -68,7 +72,7 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 
 	@Override
 	@UnsettableProperty
-	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
+	CtLocalVariable<T> setAssignment(CtExpression<T> assignment);
 
 	/**
 	 * Return true if this variable's type is not explicitely defined in the source code, but was using the `var` keyword of Java 10.
@@ -81,6 +85,6 @@ public interface CtLocalVariable<T> extends CtStatement, CtVariable<T>, CtRHSRec
 	 * Warning: this method should only be used if compliance level is set to 10 or more.
 	 */
 	@PropertySetter(role = IS_INFERRED)
-	<U extends CtLocalVariable<T>> U setInferred(boolean inferred);
+	CtLocalVariable<T> setInferred(boolean inferred);
 
 }

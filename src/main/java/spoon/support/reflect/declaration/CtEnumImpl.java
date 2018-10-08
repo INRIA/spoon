@@ -16,27 +16,29 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.util.SignatureBasedSortedSet;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.path.CtRole.VALUE;
+
+
+
 
 public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtEnum<T> {
 	private static final long serialVersionUID = 1L;
@@ -70,9 +72,9 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
-	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
+	public CtEnumImpl<T> addEnumValue(CtEnumValue<?> enumValue) {
 		if (enumValue == null) {
-			return (C) this;
+			return this;
 		}
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
 			enumValues = new ArrayList<>();
@@ -84,7 +86,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		}
 
 		// enum value already exists.
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -112,21 +114,21 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
-	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
+	public CtEnumImpl<T> setEnumValues(List<CtEnumValue<?>> enumValues) {
 		if (enumValues == null) {
 			this.enumValues = emptyList();
-			return (C) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
 		if (enumValues.isEmpty()) {
 			this.enumValues = emptyList();
-			return (C) this;
+			return this;
 		}
 		this.enumValues.clear();
 		for (CtEnumValue<?> enumValue : enumValues) {
 			addEnumValue(enumValue);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -160,8 +162,8 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
-		return (C) this;
+	public CtEnumImpl<T> setSuperclass(CtTypeReference<?> superClass) {
+		return this;
 	}
 
 	private CtMethod valuesMethod() {
@@ -238,7 +240,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		return (C) this;
+	public CtEnumImpl<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		return this;
 	}
 }

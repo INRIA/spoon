@@ -16,6 +16,11 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.Collections;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
@@ -28,14 +33,12 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.RtHelper;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.util.Collections;
-import java.util.Set;
-
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_FINAL;
 import static spoon.reflect.path.CtRole.IS_STATIC;
+
+
+
 
 public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtFieldReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -195,27 +198,27 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 	}
 
 	@Override
-	public <C extends CtFieldReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+	public CtFieldReferenceImpl<T> setDeclaringType(CtTypeReference<?> declaringType) {
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtFieldReference<T>> C setFinal(boolean fina) {
+	public CtFieldReferenceImpl<T> setFinal(boolean fina) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_FINAL, fina, this.fina);
 		this.fina = fina;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtFieldReference<T>> C setStatic(boolean stat) {
+	public CtFieldReferenceImpl<T> setStatic(boolean stat) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_STATIC, stat, this.stat);
 		this.stat = stat;
-		return (C) this;
+		return this;
 	}
 
 	@Override

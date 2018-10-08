@@ -16,6 +16,9 @@
  */
 package spoon.reflect.declaration;
 
+
+
+
 public enum CtImportKind {
 	TYPE,
 	ALL_TYPES,

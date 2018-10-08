@@ -16,6 +16,17 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
@@ -64,16 +75,10 @@ import spoon.support.visitor.equals.CloneHelper;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.support.visitor.replace.ReplacementVisitor;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static spoon.reflect.code.CtComment.CommentType.JAVADOC;
+
+
+
 
 /**
  * Contains the default implementation of most CtElement methods.
@@ -213,17 +218,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
+	public CtElementImpl setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		if (annotations == null || annotations.isEmpty()) {
 			this.annotations = emptyList();
-			return (E) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
 		}
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -233,9 +238,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
+	public CtElementImpl addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if (annotation == null) {
-			return (E) this;
+			return this;
 		}
 		if (this.annotations == CtElementImpl.<CtAnnotation<? extends Annotation>>emptyList()) {
 			this.annotations = new ArrayList<>(ModelElementContainerDefaultCapacities.ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
@@ -243,7 +248,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		annotation.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.ANNOTATION, this.annotations, annotation);
 		this.annotations.add(annotation);
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -256,36 +261,36 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setDocComment(String docComment) {
+	public CtElementImpl setDocComment(String docComment) {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
 				ctComment.setContent(docComment);
-				return (E) this;
+				return this;
 			}
 		}
 		this.addComment(factory.Code().createComment(docComment, CtComment.CommentType.JAVADOC));
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E setPosition(SourcePosition position) {
+	public CtElementImpl setPosition(SourcePosition position) {
 		if (position == null) {
 			position = SourcePosition.NOPOSITION;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.POSITION, position, this.position);
 		this.position = position;
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E setPositions(final SourcePosition position) {
+	public CtElementImpl setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
 			@Override
 			public void enter(CtElement e) {
 				e.setPosition(position);
 			}
 		});
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -323,10 +328,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setImplicit(boolean implicit) {
+	public CtElementImpl setImplicit(boolean implicit) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_IMPLICIT, implicit, this.implicit);
 		this.implicit = implicit;
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -480,10 +485,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setAllMetadata(Map<String, Object> metadata) {
+	public CtElementImpl setAllMetadata(Map<String, Object> metadata) {
 		if (metadata == null || metadata.isEmpty()) {
 			this.metadata = null;
-			return (E) this;
+			return this;
 		}
 		if (this.metadata == null) {
 			this.metadata = new HashMap<>();
@@ -491,16 +496,16 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			this.metadata.clear();
 		}
 		this.metadata.putAll(metadata);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E putMetadata(String key, Object val) {
+	public CtElementImpl putMetadata(String key, Object val) {
 		if (metadata == null) {
 			metadata = new HashMap<>();
 		}
 		metadata.put(key, val);
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -533,9 +538,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E addComment(CtComment comment) {
+	public CtElementImpl addComment(CtComment comment) {
 		if (comment == null) {
-			return (E) this;
+			return this;
 		}
 		if (this.comments == CtElementImpl.<CtComment>emptyList()) {
 			comments = new ArrayList<>(ModelElementContainerDefaultCapacities.COMMENT_CONTAINER_DEFAULT_CAPACITY);
@@ -543,31 +548,31 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		comment.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.COMMENT, this.comments, comment);
 		comments.add(comment);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E removeComment(CtComment comment) {
+	public CtElementImpl removeComment(CtComment comment) {
 		if (this.comments == CtElementImpl.<CtComment>emptyList()) {
-			return (E) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.COMMENT, comments, comments.indexOf(comment), comment);
 		this.comments.remove(comment);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtElement> E setComments(List<CtComment> comments) {
+	public CtElementImpl setComments(List<CtComment> comments) {
 		if (comments == null || comments.isEmpty()) {
 			this.comments = emptyList();
-			return (E) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.COMMENT, this.comments, new ArrayList<>(this.comments));
 		this.comments.clear();
 		for (CtComment comment : comments) {
 			addComment(comment);
 		}
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -582,10 +587,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement, T> E setValueByRole(CtRole role, T value) {
+	public < T> CtElementImpl setValueByRole(CtRole role, T value) {
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(this.getClass(), role);
 		rh.setValue(this, value);
-		return (E) this;
+		return this;
 	}
 
 	@Override

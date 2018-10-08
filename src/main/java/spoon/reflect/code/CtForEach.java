@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.FOREACH_VARIABLE;
+
+
+
 
 
 /**
@@ -50,13 +54,13 @@ public interface CtForEach extends CtLoop {
 	 * Sets the iterated expression (an iterable of an array).
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<T extends CtForEach> T setExpression(CtExpression<?> expression);
+	CtForEach setExpression(CtExpression<?> expression);
 
 	/**
 	 * Sets the variable that references the currently iterated element.
 	 */
 	@PropertySetter(role = FOREACH_VARIABLE)
-	<T extends CtForEach> T setVariable(CtLocalVariable<?> variable);
+	CtForEach setVariable(CtLocalVariable<?> variable);
 
 	@Override
 	CtForEach clone();

@@ -16,18 +16,20 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.declaration.CtElementImpl;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.CAST;
 import static spoon.reflect.path.CtRole.TYPE;
+
+
+
 
 public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements CtExpression<T> {
 	private static final long serialVersionUID = 1L;
@@ -49,21 +51,21 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtExpressionImpl<T> setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+	public CtExpressionImpl<T> setTypeCasts(List<CtTypeReference<?>> casts) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
 		if (casts == null || casts.isEmpty()) {
 			this.typeCasts = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
@@ -72,13 +74,13 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExpression<T>> C addTypeCast(CtTypeReference<?> type) {
+	public CtExpressionImpl<T> addTypeCast(CtTypeReference<?> type) {
 		if (type == null) {
-			return (C) this;
+			return this;
 		}
 		if (typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
@@ -86,7 +88,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		type.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CAST, this.typeCasts, type);
 		typeCasts.add(type);
-		return (C) this;
+		return this;
 	}
 
 	@Override

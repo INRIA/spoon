@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import static spoon.reflect.path.CtRole.COMMENT_TYPE;
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
+import static spoon.reflect.path.CtRole.COMMENT_TYPE;
+
+
+
 
 /**
  * This code element defines a comment
@@ -66,7 +70,7 @@ public interface CtComment extends CtStatement {
 	String getContent();
 
 	@PropertySetter(role = COMMENT_CONTENT)
-	<E extends CtComment> E setContent(String content);
+	CtComment setContent(String content);
 
 	/**
 	 * Get the type of the comment
@@ -76,11 +80,11 @@ public interface CtComment extends CtStatement {
 	CommentType getCommentType();
 
 	@PropertySetter(role = COMMENT_TYPE)
-	<E extends CtComment> E setCommentType(CommentType commentType);
+	CtComment setCommentType(CommentType commentType);
 
 	@Override
 	CtComment clone();
 
 	/** Utility method to for casting the object, throws an exception if not of the correct type */
-	CtJavaDoc asJavaDoc();
+	CtComment asJavaDoc();
 }

@@ -16,13 +16,17 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtElement;
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtElement;
 
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
-import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
 import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
+import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
+
+
+
 
 /**
  * This code element defines a javadoc tag
@@ -97,14 +101,14 @@ public interface CtJavaDocTag extends CtElement {
 	 * @param type the type name
 	 */
 	@PropertySetter(role = DOCUMENTATION_TYPE)
-	<E extends CtJavaDocTag> E setType(String type);
+	CtJavaDocTag setType(String type);
 
 	/**
 	 * Define the type of the tag
 	 * @param type the new type
 	 */
 	@PropertySetter(role = DOCUMENTATION_TYPE)
-	<E extends CtJavaDocTag> E setType(TagType type);
+	CtJavaDocTag setType(TagType type);
 
 	/**
 	 * Get the content of the atg
@@ -118,7 +122,7 @@ public interface CtJavaDocTag extends CtElement {
 	 * @param content the new content of the tag
 	 */
 	@PropertySetter(role = COMMENT_CONTENT)
-	<E extends CtJavaDocTag> E setContent(String content);
+	CtJavaDocTag setContent(String content);
 
 	/**
 	 * Get the parameter of the tag return null when none is specified (only for @param and @throws)
@@ -132,7 +136,7 @@ public interface CtJavaDocTag extends CtElement {
 	 * @param param the parameter
 	 */
 	@PropertySetter(role = JAVADOC_TAG_VALUE)
-	<E extends CtJavaDocTag> E setParam(String param);
+	CtJavaDocTag setParam(String param);
 
 	@Override
 	CtJavaDocTag clone();

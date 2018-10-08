@@ -16,14 +16,19 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
+import static spoon.reflect.code.CtJavaDocTag.TagType.tagFromName;
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
-import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
 import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
+import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
+
+
+
 
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
@@ -40,16 +45,16 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setType(String type) {
+	public CtJavaDocTagImpl setType(String type) {
 		this.setType(CtJavaDocTag.TagType.tagFromName(type));
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setType(TagType type) {
+	public CtJavaDocTagImpl setType(TagType type) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DOCUMENTATION_TYPE, type, this.type);
 		this.type = type;
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -58,10 +63,10 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setContent(String content) {
+	public CtJavaDocTagImpl setContent(String content) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
 		this.content = content;
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -70,10 +75,10 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setParam(String param) {
+	public CtJavaDocTagImpl setParam(String param) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, JAVADOC_TAG_VALUE, param, this.param);
 		this.param = param;
-		return (E) this;
+		return this;
 	}
 
 	@Override

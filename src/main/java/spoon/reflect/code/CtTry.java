@@ -16,15 +16,18 @@
  */
 package spoon.reflect.code;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.template.TemplateParameter;
 
-import java.util.List;
-
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.CATCH;
 import static spoon.reflect.path.CtRole.FINALIZER;
+
+
+
 
 /**
  * This code element defines a <code>try</code> statement.
@@ -48,13 +51,13 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	 * Sets the <i>catchers</i> of this <code>try</code>.
 	 */
 	@PropertySetter(role = CATCH)
-	<T extends CtTry> T setCatchers(List<CtCatch> catchers);
+	CtTry setCatchers(List<CtCatch> catchers);
 
 	/**
 	 * Adds a catch block.
 	 */
 	@PropertySetter(role = CATCH)
-	<T extends CtTry> T addCatcher(CtCatch catcher);
+	CtTry addCatcher(CtCatch catcher);
 
 	/**
 	 * Removes a catch block.
@@ -81,7 +84,7 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	 * <code>finally</code> part).
 	 */
 	@PropertySetter(role = FINALIZER)
-	<T extends CtTry> T setFinalizer(CtBlock<?> finalizer);
+	CtTry setFinalizer(CtBlock<?> finalizer);
 
 	@Override
 	CtTry clone();

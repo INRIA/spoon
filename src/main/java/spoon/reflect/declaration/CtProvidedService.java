@@ -16,14 +16,18 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.List;
 
-/**
+
+
+
+public/**
  * Represents a provided service in a {@link CtModule}.
  * The provides directive specifies a service for which the with clause specifies one or more service providers to java.util.ServiceLoader.
  * The service must be a class type, an interface type, or an annotation type. It is a compile-time error if a provides directive specifies an enum type as the service.
@@ -40,22 +44,22 @@ import java.util.List;
  *     provides com.example.foo.spi.Itf with com.example.foo.Impl;
  * </pre>
  */
-public interface CtProvidedService extends CtModuleDirective {
+interface CtProvidedService extends CtModuleDirective {
 
 	@PropertyGetter(role = CtRole.SERVICE_TYPE)
 	CtTypeReference getServiceType();
 
 	@PropertySetter(role = CtRole.SERVICE_TYPE)
-	<T extends CtProvidedService> T setServiceType(CtTypeReference providingType);
+	CtProvidedService setServiceType(CtTypeReference providingType);
 
 	@PropertyGetter(role = CtRole.IMPLEMENTATION_TYPE)
 	List<CtTypeReference> getImplementationTypes();
 
 	@PropertySetter(role = CtRole.IMPLEMENTATION_TYPE)
-	<T extends CtProvidedService> T setImplementationTypes(List<CtTypeReference> usedTypes);
+	CtProvidedService setImplementationTypes(List<CtTypeReference> usedTypes);
 
 	@PropertySetter(role = CtRole.IMPLEMENTATION_TYPE)
-	<T extends CtProvidedService> T addImplementationType(CtTypeReference usedType);
+	CtProvidedService addImplementationType(CtTypeReference usedType);
 
 	@Override
 	CtProvidedService clone();

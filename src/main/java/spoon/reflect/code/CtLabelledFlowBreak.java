@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.support.DerivedProperty;
 
 import static spoon.reflect.path.CtRole.TARGET_LABEL;
+
+
+
 
 /**
  * This abstract code element represents all the statements that break the
@@ -39,7 +43,7 @@ public interface CtLabelledFlowBreak extends CtCFlowBreak {
 	 * defined).
 	 */
 	@PropertySetter(role = TARGET_LABEL)
-	<T extends CtLabelledFlowBreak> T setTargetLabel(String targetLabel);
+	CtLabelledFlowBreak setTargetLabel(String targetLabel);
 
 	@DerivedProperty
 	CtStatement getLabelledStatement();

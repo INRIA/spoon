@@ -16,11 +16,15 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtTypeReference;
 
 import static spoon.reflect.path.CtRole.TYPE;
+
+
+
 
 /**
  * This abstract element defines a typed element.
@@ -36,5 +40,5 @@ public interface CtTypedElement<T> extends CtElement {
 	 * Sets this element's type.
 	 */
 	@PropertySetter(role = TYPE)
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	CtTypedElement<T> setType(CtTypeReference<T> type);
 }

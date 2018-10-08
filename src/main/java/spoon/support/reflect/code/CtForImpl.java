@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
@@ -23,14 +26,14 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.FOR_INIT;
 import static spoon.reflect.path.CtRole.FOR_UPDATE;
+
+
+
 
 public class CtForImpl extends CtLoopImpl implements CtFor {
 	private static final long serialVersionUID = 1L;
@@ -55,13 +58,13 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	}
 
 	@Override
-	public <T extends CtFor> T setExpression(CtExpression<Boolean> expression) {
+	public CtForImpl setExpression(CtExpression<Boolean> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 		this.expression = expression;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -70,9 +73,9 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	}
 
 	@Override
-	public <T extends CtFor> T addForInit(CtStatement statement) {
+	public CtForImpl addForInit(CtStatement statement) {
 		if (statement == null) {
-			return (T) this;
+			return this;
 		}
 		if (forInit == CtElementImpl.<CtStatement>emptyList()) {
 			forInit = new ArrayList<>(FOR_INIT_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
@@ -80,21 +83,21 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		statement.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, FOR_INIT, this.forInit, statement);
 		forInit.add(statement);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtFor> T setForInit(List<CtStatement> statements) {
+	public CtForImpl setForInit(List<CtStatement> statements) {
 		if (statements == null || statements.isEmpty()) {
 			this.forInit = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -112,9 +115,9 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 	}
 
 	@Override
-	public <T extends CtFor> T addForUpdate(CtStatement statement) {
+	public CtForImpl addForUpdate(CtStatement statement) {
 		if (statement == null) {
-			return (T) this;
+			return this;
 		}
 		if (forUpdate == CtElementImpl.<CtStatement>emptyList()) {
 			forUpdate = new ArrayList<>(FOR_UPDATE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
@@ -122,21 +125,21 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 		statement.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, FOR_UPDATE, this.forUpdate, statement);
 		forUpdate.add(statement);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtFor> T setForUpdate(List<CtStatement> statements) {
+	public CtForImpl setForUpdate(List<CtStatement> statements) {
 		if (statements == null || statements.isEmpty()) {
 			this.forUpdate = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override

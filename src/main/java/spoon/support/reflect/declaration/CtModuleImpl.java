@@ -16,14 +16,18 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
@@ -32,9 +36,8 @@ import spoon.support.DerivedProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
+
 
 public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
@@ -60,11 +63,11 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setModuleDirectives(List<CtModuleDirective> moduleDirectives) {
+	public CtModuleImpl setModuleDirectives(List<CtModuleDirective> moduleDirectives) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.MODULE_DIRECTIVE, this.moduleDirectives, new ArrayList<>(this.moduleDirectives));
 		if (moduleDirectives == null || moduleDirectives.isEmpty()) {
 			this.moduleDirectives = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 		if (this.moduleDirectives == CtElementImpl.<CtModuleDirective>emptyList()) {
 			this.moduleDirectives = new SortedList<>(new CtLineElementComparator());
@@ -75,13 +78,13 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			this.addModuleDirective(moduleDirective);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addModuleDirective(CtModuleDirective moduleDirective) {
+	public CtModuleImpl addModuleDirective(CtModuleDirective moduleDirective) {
 		if (moduleDirective == null) {
-			return (T) this;
+			return this;
 		}
 
 		if (this.moduleDirectives == CtElementImpl.<CtModuleDirective>emptyList()) {
@@ -95,13 +98,13 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			this.moduleDirectives.add(moduleDirective);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addModuleDirectiveAt(int position, CtModuleDirective moduleDirective) {
+	public CtModuleImpl addModuleDirectiveAt(int position, CtModuleDirective moduleDirective) {
 		if (moduleDirective == null) {
-			return (T) this;
+			return this;
 		}
 
 		if (this.moduleDirectives == CtElementImpl.<CtModuleDirective>emptyList()) {
@@ -115,7 +118,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			this.moduleDirectives.add(position, moduleDirective);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -124,9 +127,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective) {
+	public CtModuleImpl removeModuleDirective(CtModuleDirective moduleDirective) {
 		if (moduleDirective == null || this.moduleDirectives.isEmpty()) {
-			return (T) this;
+			return this;
 		}
 		if (this.moduleDirectives.contains(moduleDirective)) {
 			getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective), this.moduleDirectives, this.moduleDirectives.indexOf(moduleDirective), moduleDirective);
@@ -137,14 +140,14 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			}
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T setIsOpenModule(boolean openModule) {
+	public CtModuleImpl setIsOpenModule(boolean openModule) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.MODIFIER, openModule, this.openModule);
 		this.openModule = openModule;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -163,9 +166,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setUsedServices(List<CtUsedService> consumedServices) {
+	public CtModuleImpl setUsedServices(List<CtUsedService> consumedServices) {
 		if (consumedServices == null || consumedServices.isEmpty()) {
-			return (T) this;
+			return this;
 		}
 		List<CtUsedService> usedServices = getUsedServices();
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.SERVICE_TYPE, this.moduleDirectives, new ArrayList<>(usedServices));
@@ -174,25 +177,25 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		for (CtUsedService consumedService : consumedServices) {
 			this.addModuleDirective(consumedService);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addUsedService(CtUsedService consumedService) {
+	public CtModuleImpl addUsedService(CtUsedService consumedService) {
 		if (consumedService == null) {
-			return (T) this;
+			return this;
 		}
 
 		this.addModuleDirective(consumedService);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T removeUsedService(CtUsedService usedService) {
+	public CtModuleImpl removeUsedService(CtUsedService usedService) {
 		if (usedService == null) {
-			return (T) this;
+			return this;
 		}
-		return this.removeModuleDirective(usedService);
+		return ((CtModuleImpl) (this.removeModuleDirective(usedService)));
 	}
 
 	@Override
@@ -214,9 +217,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setExportedPackages(List<CtPackageExport> exportedPackages) {
+	public CtModuleImpl setExportedPackages(List<CtPackageExport> exportedPackages) {
 		if (exportedPackages == null || exportedPackages.isEmpty()) {
-			return (T) this;
+			return this;
 		}
 
 		List<CtPackageExport> oldExportedPackages = getExportedPackages();
@@ -228,25 +231,25 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			this.addModuleDirective(exportedPackage);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addExportedPackage(CtPackageExport exportedPackage) {
+	public CtModuleImpl addExportedPackage(CtPackageExport exportedPackage) {
 		if (exportedPackage == null) {
-			return (T) this;
+			return this;
 		}
 		exportedPackage.setOpenedPackage(false);
 		this.addModuleDirective(exportedPackage);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T removeExportedPackage(CtPackageExport exportedPackage) {
+	public CtModuleImpl removeExportedPackage(CtPackageExport exportedPackage) {
 		if (exportedPackage == null) {
-			return (T) this;
+			return this;
 		}
-		return this.removeModuleDirective(exportedPackage);
+		return ((CtModuleImpl) (this.removeModuleDirective(exportedPackage)));
 	}
 
 	@Override
@@ -268,9 +271,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setOpenedPackages(List<CtPackageExport> openedPackages) {
+	public CtModuleImpl setOpenedPackages(List<CtPackageExport> openedPackages) {
 		if (openedPackages == null || openedPackages.isEmpty()) {
-			return (T) this;
+			return this;
 		}
 
 		List<CtPackageExport> oldOpenedPackages = getOpenedPackages();
@@ -282,25 +285,25 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			this.addModuleDirective(exportedPackage);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addOpenedPackage(CtPackageExport openedPackage) {
+	public CtModuleImpl addOpenedPackage(CtPackageExport openedPackage) {
 		if (openedPackage == null) {
-			return (T) this;
+			return this;
 		}
 		openedPackage.setOpenedPackage(true);
 		this.addModuleDirective(openedPackage);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T removeOpenedPackage(CtPackageExport openedPackage) {
+	public CtModuleImpl removeOpenedPackage(CtPackageExport openedPackage) {
 		if (openedPackage == null) {
-			return (T) this;
+			return this;
 		}
-		return this.removeModuleDirective(openedPackage);
+		return ((CtModuleImpl) (this.removeModuleDirective(openedPackage)));
 	}
 
 	@Override
@@ -319,9 +322,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setRequiredModules(List<CtModuleRequirement> requiredModules) {
+	public CtModuleImpl setRequiredModules(List<CtModuleRequirement> requiredModules) {
 		if (requiredModules == null || requiredModules.isEmpty()) {
-			return (T) this;
+			return this;
 		}
 
 		List<CtModuleRequirement> oldRequiredModules = getRequiredModules();
@@ -331,25 +334,25 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		for (CtModuleRequirement moduleRequirement : requiredModules) {
 			this.addModuleDirective(moduleRequirement);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addRequiredModule(CtModuleRequirement requiredModule) {
+	public CtModuleImpl addRequiredModule(CtModuleRequirement requiredModule) {
 		if (requiredModule == null) {
-			return (T) this;
+			return this;
 		}
 
 		this.addModuleDirective(requiredModule);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T removeRequiredModule(CtModuleRequirement requiredModule) {
+	public CtModuleImpl removeRequiredModule(CtModuleRequirement requiredModule) {
 		if (requiredModule == null) {
-			return (T) this;
+			return this;
 		}
-		return this.removeModuleDirective(requiredModule);
+		return ((CtModuleImpl) (this.removeModuleDirective(requiredModule)));
 	}
 
 	@Override
@@ -368,9 +371,9 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setProvidedServices(List<CtProvidedService> providedServices) {
+	public CtModuleImpl setProvidedServices(List<CtProvidedService> providedServices) {
 		if (providedServices == null || providedServices.isEmpty()) {
-			return (T) this;
+			return this;
 		}
 
 		List<CtProvidedService> oldProvidedServices = getProvidedServices();
@@ -381,25 +384,25 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 			this.addModuleDirective(providedService);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T addProvidedService(CtProvidedService providedService) {
+	public CtModuleImpl addProvidedService(CtProvidedService providedService) {
 		if (providedService == null) {
-			return (T) this;
+			return this;
 		}
 
 		this.addModuleDirective(providedService);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtModule> T removeProvidedService(CtProvidedService providedService) {
+	public CtModuleImpl removeProvidedService(CtProvidedService providedService) {
 		if (providedService == null) {
-			return (T) this;
+			return this;
 		}
-		return this.removeModuleDirective(providedService);
+		return ((CtModuleImpl) (this.removeModuleDirective(providedService)));
 	}
 
 	@Override
@@ -408,13 +411,13 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	}
 
 	@Override
-	public <T extends CtModule> T setRootPackage(CtPackage rootPackage) {
+	public CtModuleImpl setRootPackage(CtPackage rootPackage) {
 		if (rootPackage != null) {
 			rootPackage.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.SUB_PACKAGE, rootPackage, this.rootPackage);
 		this.rootPackage = rootPackage;
-		return (T) this;
+		return this;
 	}
 
 	@Override

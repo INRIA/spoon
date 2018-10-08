@@ -16,11 +16,13 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.Comparator;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
@@ -29,7 +31,8 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.comparator.QualifiedNameComparator;
 import spoon.support.util.ModelSet;
 
-import java.util.Set;
+
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
@@ -98,9 +101,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <T extends CtPackage> T addPackage(CtPackage pack) {
+	public CtPackageImpl addPackage(CtPackage pack) {
 		this.packs.add(pack);
-		return (T) this;
+		return this;
 	}
 
 	/** add all types of "from" in "to" */
@@ -186,15 +189,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
+	public CtPackageImpl setPackages(Set<CtPackage> packs) {
 		this.packs.set(packs);
-			return (T) this;
+			return this;
 		}
 
 	@Override
-	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
+	public CtPackageImpl setTypes(Set<CtType<?>> types) {
 		this.types.set(types);
-			return (T) this;
+			return this;
 		}
 
 	@Override
@@ -203,9 +206,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <T extends CtPackage> T addType(CtType<?> type) {
+	public CtPackageImpl addType(CtType<?> type) {
 		types.add(type);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -227,10 +230,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
-	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+	public CtPackageImpl setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
-		return (E) this;
+		return this;
 	}
 
 	@Override

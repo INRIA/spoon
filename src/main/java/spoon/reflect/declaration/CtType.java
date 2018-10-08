@@ -16,21 +16,24 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.DerivedProperty;
 
-import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.FIELD;
 import static spoon.reflect.path.CtRole.INTERFACE;
+import static spoon.reflect.path.CtRole.METHOD;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.NESTED_TYPE;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 import static spoon.reflect.path.CtRole.TYPE_MEMBER;
+
+
+
 
 /**
  * This abstract element defines a super-type for classes and interfaces, which
@@ -138,7 +141,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @return <tt>true</tt> if the field is added.
 	 */
 	@PropertySetter(role = FIELD)
-	<F, C extends CtType<T>> C addFieldAtTop(CtField<F> field);
+	<F> CtType<T> addFieldAtTop(CtField<F> field);
 
 	/**
 	 * add a field at the end of the field list.
@@ -147,7 +150,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = FIELD)
-	<F, C extends CtType<T>> C addField(CtField<F> field);
+	<F> CtType<T> addField(CtField<F> field);
 
 	/**
 	 * add a field at a given position.
@@ -156,13 +159,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = FIELD)
-	<F, C extends CtType<T>> C addField(int index, CtField<F> field);
+	<F> CtType<T> addField(int index, CtField<F> field);
 
 	/**
 	 * Sets all fields in the type.
 	 */
 	@PropertySetter(role = FIELD)
-	<C extends CtType<T>> C setFields(List<CtField<?>> fields);
+	CtType<T> setFields(List<CtField<?>> fields);
 
 	/**
 	 * remove a Field
@@ -180,7 +183,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = NESTED_TYPE)
-	<N, C extends CtType<T>> C addNestedType(CtType<N> nestedType);
+	<N> CtType<T> addNestedType(CtType<N> nestedType);
 
 	/**
 	 * Remove a nested type.
@@ -195,7 +198,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Sets all nested types.
 	 */
 	@PropertySetter(role = NESTED_TYPE)
-	<C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes);
+	CtType<T> setNestedTypes(Set<CtType<?>> nestedTypes);
 
 	/**
 	 * Replace all the code snippets that are found in this type by the corresponding Spoon AST.
@@ -276,13 +279,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Sets the methods of this type.
 	 */
 	@PropertySetter(role = METHOD)
-	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);
+	CtType<T> setMethods(Set<CtMethod<?>> methods);
 
 	/**
 	 * Adds a method to this type.
 	 */
 	@PropertySetter(role = METHOD)
-	<M, C extends CtType<T>> C addMethod(CtMethod<M> method);
+	<M> CtType<T> addMethod(CtMethod<M> method);
 
 	/**
 	 * Removes a method from this type.
@@ -294,20 +297,20 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Sets the superclass type.
 	 */
 	@PropertySetter(role = SUPER_TYPE)
-	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+	CtType<T> setSuperclass(CtTypeReference<?> superClass);
 
 	/**
 	 * Sets the super interfaces of this type.
 	 */
 	@PropertySetter(role = INTERFACE)
-	<C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
+	CtType<T> setSuperInterfaces(Set<CtTypeReference<?>> interfaces);
 
 	/**
 	 * @param interfac
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = INTERFACE)
-	<S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac);
+	<S> CtType<T> addSuperInterface(CtTypeReference<S> interfac);
 
 	/**
 	 * @param interfac
@@ -326,14 +329,14 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Adds a type member at the end of all type member of the type.
 	 */
 	@PropertySetter(role = TYPE_MEMBER)
-	<C extends CtType<T>> C addTypeMember(CtTypeMember member);
+	CtType<T> addTypeMember(CtTypeMember member);
 
 	/**
 	 * Adds a type member at a given position. Think to use this method if the order is
 	 * important for you.
 	 */
 	@PropertySetter(role = TYPE_MEMBER)
-	<C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member);
+	CtType<T> addTypeMemberAt(int position, CtTypeMember member);
 
 	/**
 	 * Removes the type member.
@@ -345,7 +348,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * Removes all types members with these new members.
 	 */
 	@PropertySetter(role = TYPE_MEMBER)
-	<C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members);
+	CtType<T> setTypeMembers(List<CtTypeMember> members);
 
 	@Override
 	CtType<T> clone();

@@ -16,12 +16,15 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.Set;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 
-import java.util.Set;
+
+
 
 /**
  * Represents a require module in a Java module definition
@@ -49,13 +52,13 @@ public interface CtModuleRequirement extends CtModuleDirective {
 	Set<RequiresModifier> getRequiresModifiers();
 
 	@PropertySetter(role = CtRole.MODIFIER)
-	<T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers);
+	CtModuleRequirement setRequiresModifiers(Set<RequiresModifier> requiresModifiers);
 
 	@PropertyGetter(role = CtRole.MODULE_REF)
 	CtModuleReference getModuleReference();
 
 	@PropertySetter(role = CtRole.MODULE_REF)
-	<T extends CtModuleRequirement> T setModuleReference(CtModuleReference moduleReference);
+	CtModuleRequirement setModuleReference(CtModuleReference moduleReference);
 
 	@Override
 	CtModuleRequirement clone();

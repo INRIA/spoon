@@ -16,10 +16,14 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 /**
  * This code element defines a <code>while</code> loop.
@@ -44,7 +48,7 @@ public interface CtWhile extends CtLoop {
 	 * Sets the looping boolean test expression.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<T extends CtWhile> T setLoopingExpression(CtExpression<Boolean> expression);
+	CtWhile setLoopingExpression(CtExpression<Boolean> expression);
 
 	@Override
 	CtWhile clone();

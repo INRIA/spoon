@@ -16,16 +16,18 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.Array;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.reference.CtArrayTypeReference;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 
-import java.lang.reflect.Array;
-
 import static spoon.reflect.path.CtRole.TYPE;
+
+
+
 
 public class
 CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
@@ -53,8 +55,8 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	}
 
 	@Override
-	public CtTypeReference<?> getArrayType() {
-		return getLastComponentTypeReference(componentType);
+	public CtArrayTypeReferenceImpl<?> getArrayType() {
+		return ((CtArrayTypeReferenceImpl<T>) (getLastComponentTypeReference(componentType)));
 	}
 
 	private CtTypeReference<?> getLastComponentTypeReference(CtTypeReference<?> component) {
@@ -62,13 +64,13 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	}
 
 	@Override
-	public <C extends CtArrayTypeReference<T>> C setComponentType(CtTypeReference<?> componentType) {
+	public CtArrayTypeReferenceImpl<T> setComponentType(CtTypeReference<?> componentType) {
 		if (componentType != null) {
 			componentType.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, componentType, this.componentType);
 		this.componentType = componentType;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -77,8 +79,8 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	}
 
 	@Override
-	public <T extends CtReference> T setSimpleName(String simplename) {
-		return (T) this;
+	public CtArrayTypeReferenceImpl<T> setSimpleName(String simplename) {
+		return this;
 	}
 
 	@Override

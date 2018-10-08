@@ -16,6 +16,10 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.path.CtRole;
@@ -23,9 +27,8 @@ import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
+
 
 public class CtPackageExportImpl extends CtElementImpl implements CtPackageExport {
 	@MetamodelPropertyField(role = CtRole.PACKAGE_REF)
@@ -41,10 +44,10 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 	}
 
 	@Override
-	public <T extends CtPackageExport> T setOpenedPackage(boolean openedPackage) {
+	public CtPackageExportImpl setOpenedPackage(boolean openedPackage) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.OPENED_PACKAGE, openedPackage, this.isOpen);
 		this.isOpen = openedPackage;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -58,13 +61,13 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 	}
 
 	@Override
-	public <T extends CtPackageExport> T setPackageReference(CtPackageReference packageReference) {
+	public CtPackageExportImpl setPackageReference(CtPackageReference packageReference) {
 		if (packageReference != null) {
 			packageReference.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.PACKAGE_REF, packageReference, this.packageReference);
 		this.packageReference = packageReference;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -73,11 +76,11 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 	}
 
 	@Override
-	public <T extends CtPackageExport> T setTargetExport(List<CtModuleReference> targetExports) {
+	public CtPackageExportImpl setTargetExport(List<CtModuleReference> targetExports) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.MODULE_REF, this.targets, new ArrayList<>(this.targets));
 		if (targetExports == null || targetExports.isEmpty()) {
 			this.targets = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 
 		if (this.targets == CtElementImpl.<CtModuleReference>emptyList()) {
@@ -88,13 +91,13 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 			this.addTargetExport(targetExport);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtPackageExport> T addTargetExport(CtModuleReference targetExport) {
+	public CtPackageExportImpl addTargetExport(CtModuleReference targetExport) {
 		if (targetExport == null) {
-			return (T) this;
+			return this;
 		}
 		if (this.targets == CtElementImpl.<CtModuleReference>emptyList()) {
 			this.targets = new ArrayList<>();
@@ -102,7 +105,7 @@ public class CtPackageExportImpl extends CtElementImpl implements CtPackageExpor
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.MODULE_REF, this.targets, targetExport);
 		targetExport.setParent(this);
 		this.targets.add(targetExport);
-		return (T) this;
+		return this;
 	}
 
 	@Override

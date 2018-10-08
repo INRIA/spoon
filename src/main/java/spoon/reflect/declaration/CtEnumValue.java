@@ -16,9 +16,12 @@
  */
 package spoon.reflect.declaration;
 
+
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtRHSReceiver;
 import spoon.support.UnsettableProperty;
+
+
+
 
 /**
  * Corresponds to one enum value specified in an enumeration.
@@ -40,5 +43,5 @@ public interface CtEnumValue<T> extends CtField<T> {
 
 	@Override
 	@UnsettableProperty
-	<U extends CtRHSReceiver<T>> U setAssignment(CtExpression<T> assignment);
+	CtEnumValue<T> setAssignment(CtExpression<T> assignment);
 }

@@ -16,10 +16,14 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 /**
  * This code element defines a case within a switch-case.
@@ -46,7 +50,7 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	 * Sets the case expression.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<T extends CtCase<S>> T setCaseExpression(CtExpression<S> caseExpression);
+	CtCase<S> setCaseExpression(CtExpression<S> caseExpression);
 
 	@Override
 	CtCase<S> clone();

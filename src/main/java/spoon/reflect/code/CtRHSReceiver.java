@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtField;
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtField;
 
 import static spoon.reflect.path.CtRole.ASSIGNMENT;
+
+
+
 
 /**
  * Represents the right hand side of an assignment
@@ -38,5 +42,5 @@ public interface CtRHSReceiver<A> {
 	 * Sets the right-hand side expression (RHS) of the "=" operator.
 	 */
 	@PropertySetter(role = ASSIGNMENT)
-	<T extends CtRHSReceiver<A>> T setAssignment(CtExpression<A> assignment);
+	CtRHSReceiver<A> setAssignment(CtExpression<A> assignment);
 }

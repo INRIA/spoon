@@ -16,14 +16,17 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-import spoon.support.UnsettableProperty;
 
 import java.util.List;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.VALUE;
+
+
+
 
 /**
  * This element represents an enumeration declaration.
@@ -43,7 +46,7 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = VALUE)
-	<C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue);
+	CtEnum<T> addEnumValue(CtEnumValue<?> enumValue);
 
 	/**
 	 * Removes en enum value.
@@ -77,16 +80,16 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	 *Sets all enum values of the enum.
 	 */
 	@PropertySetter(role = VALUE)
-	<C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues);
+	CtEnum<T> setEnumValues(List<CtEnumValue<?>> enumValues);
 
 	@Override
 	CtEnum<T> clone();
 
 	@Override
 	@UnsettableProperty
-	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+	CtEnum<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+	CtEnum<T> setSuperclass(CtTypeReference<?> superClass);
 }

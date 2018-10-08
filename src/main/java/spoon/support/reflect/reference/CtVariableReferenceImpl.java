@@ -16,6 +16,10 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collections;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -23,11 +27,10 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Collections;
-import java.util.Set;
-
 import static spoon.reflect.path.CtRole.TYPE;
+
+
+
 
 public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl implements CtVariableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -49,13 +52,13 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 	}
 
 	@Override
-	public <C extends CtVariableReference<T>> C setType(CtTypeReference<T> type) {
+	public CtVariableReferenceImpl<T> setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override

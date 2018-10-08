@@ -16,10 +16,14 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.ASSIGNED;
+
+
+
 
 
 /**
@@ -47,7 +51,7 @@ public interface CtAssignment<T, A extends T> extends CtStatement, CtExpression<
 	 * Sets the assigned expression (left hand side - LHS).
 	 */
 	@PropertySetter(role = ASSIGNED)
-	<C extends CtAssignment<T, A>> C setAssigned(CtExpression<T> assigned);
+	CtAssignment<T, A> setAssigned(CtExpression<T> assigned);
 
 	@Override
 	CtAssignment<T, A> clone();

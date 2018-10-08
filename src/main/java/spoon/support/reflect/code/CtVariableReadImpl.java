@@ -16,8 +16,12 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.visitor.CtVisitor;
+
+
+
 
 public class CtVariableReadImpl<T> extends CtVariableAccessImpl<T> implements CtVariableRead<T> {
 	private static final long serialVersionUID = 1L;

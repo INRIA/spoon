@@ -16,14 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
@@ -33,8 +33,8 @@ import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
 
-import java.util.List;
-import java.util.Set;
+
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationMethod}.
@@ -54,13 +54,13 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 	}
 
 	@Override
-	public <C extends CtAnnotationMethod<T>> C setDefaultExpression(CtExpression<T> assignedExpression) {
+	public CtAnnotationMethodImpl<T> setDefaultExpression(CtExpression<T> assignedExpression) {
 		if (assignedExpression != null) {
 			assignedExpression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DEFAULT_EXPRESSION, assignedExpression, this.defaultExpression);
 		this.defaultExpression = assignedExpression;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 
 	@Override
 	@UnsettableProperty
-	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
-		return (T) this;
+	public CtAnnotationMethodImpl<T> setBody(CtStatement statement) {
+		return this;
 	}
 
 	@Override
@@ -83,8 +83,8 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 
 	@Override
 	@UnsettableProperty
-	public <U extends CtExecutable<T>> U setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
-		return (U) this;
+	public CtAnnotationMethodImpl<T> setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+		return this;
 	}
 
 	@Override
@@ -95,8 +95,8 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		return (C) this;
+	public CtAnnotationMethodImpl<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		return this;
 	}
 
 	@Override
@@ -107,8 +107,8 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 
 	@Override
 	@UnsettableProperty
-	public <U extends CtExecutable<T>> U setParameters(List<CtParameter<?>> parameters) {
-		return (U) this;
+	public CtAnnotationMethodImpl<T> setParameters(List<CtParameter<?>> parameters) {
+		return this;
 	}
 
 	@Override

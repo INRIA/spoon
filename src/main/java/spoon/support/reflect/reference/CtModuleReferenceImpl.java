@@ -16,11 +16,14 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.lang.reflect.AnnotatedElement;
+
+
 
 public class CtModuleReferenceImpl extends CtReferenceImpl implements CtModuleReference {
 

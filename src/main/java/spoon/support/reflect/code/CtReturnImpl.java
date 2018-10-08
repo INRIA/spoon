@@ -16,14 +16,17 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 	private static final long serialVersionUID = 1L;
@@ -42,13 +45,13 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 	}
 
 	@Override
-	public <T extends CtReturn<R>> T setReturnedExpression(CtExpression<R> expression) {
+	public CtReturnImpl<R> setReturnedExpression(CtExpression<R> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.returnedExpression);
 		this.returnedExpression = expression;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -61,7 +64,7 @@ public class CtReturnImpl<R> extends CtStatementImpl implements CtReturn<R> {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return clone();
+	public CtReturnImpl<R> getSubstitution(CtType<?> targetType) {
+		return ((CtReturnImpl<R>) (clone()));
 	}
 }

@@ -16,7 +16,11 @@
  */
 package spoon.reflect.declaration;
 
+
 import spoon.SpoonException;
+
+
+
 
 /**
  * This exception is thrown when the parent of an element has not been correctly

@@ -16,6 +16,9 @@
  */
 package spoon.reflect.declaration;
 
+
+
+
 /**
  * This enum specifies the element type which is annotated by the annotation
  */

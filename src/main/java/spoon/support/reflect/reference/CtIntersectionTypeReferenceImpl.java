@@ -16,17 +16,21 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import static spoon.reflect.path.CtRole.BOUND;
+
+
+
 
 
 public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtIntersectionTypeReference<T> {
@@ -44,10 +48,10 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	}
 
 	@Override
-	public <C extends CtIntersectionTypeReference> C setBounds(List<CtTypeReference<?>> bounds) {
+	public CtIntersectionTypeReferenceImpl<T> setBounds(List<CtTypeReference<?>> bounds) {
 		if (bounds == null || bounds.isEmpty()) {
 			this.bounds = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.bounds = new ArrayList<>();
@@ -57,13 +61,13 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 		for (CtTypeReference<?> bound : bounds) {
 			addBound(bound);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtIntersectionTypeReference> C addBound(CtTypeReference<?> bound) {
+	public CtIntersectionTypeReferenceImpl<T> addBound(CtTypeReference<?> bound) {
 		if (bound == null) {
-			return (C) this;
+			return this;
 		}
 		if (bounds == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			bounds = new ArrayList<>();
@@ -73,7 +77,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, BOUND, this.bounds, bound);
 			bounds.add(bound);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override

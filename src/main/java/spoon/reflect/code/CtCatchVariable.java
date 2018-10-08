@@ -16,13 +16,16 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.declaration.CtMultiTypedElement;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+
+
+
 
 /**
  * This code element defines an exception variable in a catch.
@@ -46,7 +49,7 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 
 	@Override
 	@UnsettableProperty
-	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+	CtCatchVariable<T> setDefaultExpression(CtExpression<T> assignedExpression);
 
 	/**
 	 * Returns type reference of the exception variable in a catch.
@@ -58,5 +61,5 @@ public interface CtCatchVariable<T> extends CtVariable<T>, CtMultiTypedElement, 
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<T> type);
+	CtCatchVariable<T> setType(CtTypeReference<T> type);
 }

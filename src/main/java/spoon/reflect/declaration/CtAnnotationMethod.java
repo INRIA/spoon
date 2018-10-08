@@ -16,18 +16,20 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.code.CtBodyHolder;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-import spoon.support.UnsettableProperty;
 
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
+
+
+
 
 /**
  * This element defines an annotation method declared in an annotation type.
@@ -43,24 +45,24 @@ public interface CtAnnotationMethod<T> extends CtMethod<T> {
 	 * Sets the default expression assigned to the annotation method.
 	 */
 	@PropertySetter(role = DEFAULT_EXPRESSION)
-	<C extends CtAnnotationMethod<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+	CtAnnotationMethod<T> setDefaultExpression(CtExpression<T> assignedExpression);
 
 	@Override
 	CtAnnotationMethod<T> clone();
 
 	@Override
 	@UnsettableProperty
-	<T1 extends CtBodyHolder> T1 setBody(CtStatement body);
+	CtAnnotationMethod<T> setBody(CtStatement body);
 
 	@Override
 	@UnsettableProperty
-	<T1 extends CtExecutable<T>> T1 setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+	CtAnnotationMethod<T> setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	@Override
 	@UnsettableProperty
-	<T extends CtFormalTypeDeclarer> T setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
+	CtAnnotationMethod<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters);
 
 	@Override
 	@UnsettableProperty
-	<T1 extends CtExecutable<T>> T1 setParameters(List<CtParameter<?>> parameters);
+	CtAnnotationMethod<T> setParameters(List<CtParameter<?>> parameters);
 }

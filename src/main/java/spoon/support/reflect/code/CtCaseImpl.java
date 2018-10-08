@@ -16,6 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCase;
@@ -28,9 +32,8 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
+
 
 public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
@@ -57,32 +60,32 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	}
 
 	@Override
-	public <T extends CtCase<E>> T setCaseExpression(CtExpression<E> caseExpression) {
+	public CtCaseImpl<E> setCaseExpression(CtExpression<E> caseExpression) {
 		if (caseExpression != null) {
 			caseExpression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpression, this.caseExpression);
 		this.caseExpression = caseExpression;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T setStatements(List<CtStatement> statements) {
+	public CtCaseImpl<E> setStatements(List<CtStatement> statements) {
 		if (statements == null || statements.isEmpty()) {
 			this.statements = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.STATEMENT, this.statements, new ArrayList<>(this.statements));
 		this.statements.clear();
 		for (CtStatement stmt : statements) {
 			addStatement(stmt);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T addStatement(CtStatement statement) {
-		return this.addStatement(this.statements.size(), statement);
+	public CtCaseImpl<E> addStatement(CtStatement statement) {
+		return ((CtCaseImpl<E>) (this.addStatement(this.statements.size(), statement)));
 	}
 
 	private void ensureModifiableStatementsList() {
@@ -92,19 +95,19 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	}
 
 	@Override
-	public <T extends CtStatementList> T addStatement(int index, CtStatement statement) {
+	public CtCaseImpl<E> addStatement(int index, CtStatement statement) {
 		if (statement == null) {
-			return (T) this;
+			return this;
 		}
 		this.ensureModifiableStatementsList();
 		statement.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.STATEMENT, this.statements, index, statement);
 		statements.add(index, statement);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertBegin(CtStatement statement) {
+	public CtCaseImpl<E> insertBegin(CtStatement statement) {
 		ensureModifiableStatementsList();
 		statement.setParent(this);
 		this.addStatement(0, statement);
@@ -112,11 +115,11 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertBegin(CtStatementList statements) {
+	public CtCaseImpl<E> insertBegin(CtStatementList statements) {
 		this.ensureModifiableStatementsList();
 		for (CtStatement statement : statements.getStatements()) {
 			statement.setParent(this);
@@ -125,18 +128,18 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertEnd(CtStatement statement) {
+	public CtCaseImpl<E> insertEnd(CtStatement statement) {
 		ensureModifiableStatementsList();
 		addStatement(statement);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertEnd(CtStatementList statements) {
+	public CtCaseImpl<E> insertEnd(CtStatementList statements) {
 		List<CtStatement> tobeInserted = new ArrayList<>(statements.getStatements());
 		//remove statements from the `statementsToBeInserted` before they are added to spoon model
 		//note: one element MUST NOT be part of two models.
@@ -144,39 +147,39 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		for (CtStatement s : tobeInserted) {
 			insertEnd(s);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
+	public CtCaseImpl<E> insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statement);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
+	public CtCaseImpl<E> insertBefore(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertBefore(statements);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
+	public CtCaseImpl<E> insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatement statement) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statement);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatementList> T insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
+	public CtCaseImpl<E> insertAfter(Filter<? extends CtStatement> insertionPoints, CtStatementList statements) {
 		for (CtStatement e : Query.getElements(this, insertionPoints)) {
 			e.insertAfter(statements);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override

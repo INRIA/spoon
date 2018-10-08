@@ -16,7 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.reflect.reference.CtReference;
+
+
 
 /**
  * This class intends to be used only to represent the reference of a
@@ -30,11 +31,11 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtTypeReferenceImpl
 	}
 
 	@Override
-	public <T extends CtReference> T setSimpleName(String newName) {
+	public CtWildcardStaticTypeMemberReferenceImpl setSimpleName(String newName) {
 		if (!newName.endsWith(".*")) {
 			newName += ".*";
 		}
-		return super.setSimpleName(newName);
+		return ((CtWildcardStaticTypeMemberReferenceImpl) (super.setSimpleName(newName)));
 	}
 
 	@Override

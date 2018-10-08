@@ -16,16 +16,19 @@
  */
 package spoon.support.reflect.reference;
 
-import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
-import static spoon.reflect.path.CtRole.IS_UPPER;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
+
+import static spoon.reflect.path.CtRole.BOUNDING_TYPE;
+import static spoon.reflect.path.CtRole.IS_UPPER;
+
+
+
 
 public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implements CtWildcardReference {
 
@@ -51,14 +54,14 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 	}
 
 	@Override
-	public <T extends CtWildcardReference> T setUpper(boolean upper) {
+	public CtWildcardReferenceImpl setUpper(boolean upper) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_UPPER, upper, this.upper);
 		this.upper = upper;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtWildcardReference> T setBoundingType(CtTypeReference<?> superType) {
+	public CtWildcardReferenceImpl setBoundingType(CtTypeReference<?> superType) {
 		if (superType != null) {
 			superType.setParent(this);
 		}
@@ -72,7 +75,7 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BOUNDING_TYPE, superType, this.superType);
 		this.superType = superType;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -82,8 +85,8 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 
 	@Override
 	@UnsettableProperty
-	public <T extends CtReference> T setSimpleName(String simplename) {
-		return (T) this;
+	public CtWildcardReferenceImpl setSimpleName(String simplename) {
+		return this;
 	}
 
 	@Override

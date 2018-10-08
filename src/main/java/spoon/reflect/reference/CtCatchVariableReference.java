@@ -16,8 +16,12 @@
  */
 package spoon.reflect.reference;
 
+
 import spoon.reflect.code.CtCatchVariable;
 import spoon.support.DerivedProperty;
+
+
+
 
 /**
  * This interface defines a reference to {@link spoon.reflect.code.CtCatchVariable}.

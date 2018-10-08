@@ -16,13 +16,16 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.Objects;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.Objects;
+
+
 
 public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	private static final long serialVersionUID = 1L;
@@ -46,10 +49,10 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	}
 
 	@Override
-	public <E extends CtComment> E setContent(String content) {
+	public CtCommentImpl setContent(String content) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, content, this.content);
 		this.content = content;
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -58,10 +61,10 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	}
 
 	@Override
-	public <E extends CtComment> E setCommentType(CommentType commentType) {
+	public CtCommentImpl setCommentType(CommentType commentType) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, commentType, this.type);
 		type = commentType;
-		return (E) this;
+		return this;
 	}
 
 	@Override
@@ -105,9 +108,9 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	}
 
 	@Override
-	public CtJavaDoc asJavaDoc() {
+	public CtCommentImpl asJavaDoc() {
 		if (this instanceof CtJavaDoc) {
-			return (CtJavaDoc) this;
+			return this;
 		}
 		throw new IllegalStateException("not a javadoc comment");
 	}

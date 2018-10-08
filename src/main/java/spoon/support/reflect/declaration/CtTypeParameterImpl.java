@@ -16,17 +16,22 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -36,12 +41,10 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.visitor.GenericTypeAdapter;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
+
+
+
 
 public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypeParameter {
 	@MetamodelPropertyField(role = SUPER_TYPE)
@@ -58,13 +61,13 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 	}
 
 	@Override
-	public <C extends CtType<Object>> C setSuperclass(CtTypeReference<?> superClass) {
+	public CtTypeParameterImpl setSuperclass(CtTypeReference<?> superClass) {
 		if (superClass != null) {
 			superClass.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, SUPER_TYPE, superClass, this.superClass);
 		this.superClass = superClass;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -98,30 +101,30 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <F, C extends CtType<Object>> C addFieldAtTop(CtField<F> field) {
+	public <F> CtTypeParameterImpl addFieldAtTop(CtField<F> field) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <F, C extends CtType<Object>> C addField(CtField<F> field) {
+	public <F> CtTypeParameterImpl addField(CtField<F> field) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <F, C extends CtType<Object>> C addField(int index, CtField<F> field) {
+	public <F> CtTypeParameterImpl addField(int index, CtField<F> field) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<Object>> C setFields(List<CtField<?>> fields) {
+	public CtTypeParameterImpl setFields(List<CtField<?>> fields) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -144,9 +147,9 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <N, C extends CtType<Object>> C addNestedType(CtType<N> nestedType) {
+	public <N> CtTypeParameterImpl addNestedType(CtType<N> nestedType) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -158,9 +161,9 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<Object>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
+	public CtTypeParameterImpl setNestedTypes(Set<CtType<?>> nestedTypes) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -197,30 +200,30 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
+	public CtTypeParameterImpl setModifiers(Set<ModifierKind> modifiers) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
+	public CtTypeParameterImpl addModifier(ModifierKind modifier) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+	public CtTypeParameterImpl removeModifier(ModifierKind modifier) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
+	public CtTypeParameterImpl setVisibility(ModifierKind visibility) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -314,9 +317,9 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <M, C extends CtType<Object>> C addMethod(CtMethod<M> method) {
+	public <M> CtTypeParameterImpl addMethod(CtMethod<M> method) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -328,9 +331,9 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <S, C extends CtType<Object>> C addSuperInterface(CtTypeReference<S> interfac) {
+	public <S> CtTypeParameterImpl addSuperInterface(CtTypeReference<S> interfac) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -374,16 +377,16 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<Object>> C setMethods(Set<CtMethod<?>> methods) {
+	public CtTypeParameterImpl setMethods(Set<CtMethod<?>> methods) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<Object>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+	public CtTypeParameterImpl setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
 		// unsettable property
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -412,8 +415,8 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		return (C) this;
+	public CtTypeParameterImpl setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		return this;
 	}
 
 	@Override
@@ -424,7 +427,7 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members) {
-		return (C) this;
+	public CtTypeParameterImpl setTypeMembers(List<CtTypeMember> members) {
+		return this;
 	}
 }

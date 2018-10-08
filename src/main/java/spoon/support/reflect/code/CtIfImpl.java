@@ -16,8 +16,8 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -27,6 +27,9 @@ import spoon.reflect.visitor.CtVisitor;
 import static spoon.reflect.path.CtRole.CONDITION;
 import static spoon.reflect.path.CtRole.ELSE;
 import static spoon.reflect.path.CtRole.THEN;
+
+
+
 
 public class CtIfImpl extends CtStatementImpl implements CtIf {
 	private static final long serialVersionUID = 1L;
@@ -63,34 +66,34 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 	}
 
 	@Override
-	public <T extends CtIf> T setCondition(CtExpression<Boolean> condition) {
+	public CtIfImpl setCondition(CtExpression<Boolean> condition) {
 		if (condition != null) {
 			condition.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CONDITION, condition, this.condition);
 		this.condition = condition;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtIf> T setElseStatement(CtStatement elseStatement) {
+	public CtIfImpl setElseStatement(CtStatement elseStatement) {
 		if (elseStatement != null) {
 			elseStatement.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ELSE, elseStatement, this.elseStatement);
 		this.elseStatement = elseStatement;
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtIf> T setThenStatement(CtStatement thenStatement) {
+	public CtIfImpl setThenStatement(CtStatement thenStatement) {
 		// then branch might be null: `if (condition) ;`
 		if (thenStatement != null) {
 			thenStatement.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, THEN, thenStatement, this.thenStatement);
 		this.thenStatement = thenStatement;
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -103,7 +106,7 @@ public class CtIfImpl extends CtStatementImpl implements CtIf {
 		return null;
 	}
 
-	public CtCodeElement getSubstitution(CtType<?> targetType) {
-		return clone();
+	public CtIfImpl getSubstitution(CtType<?> targetType) {
+		return ((CtIfImpl) (clone()));
 	}
 }

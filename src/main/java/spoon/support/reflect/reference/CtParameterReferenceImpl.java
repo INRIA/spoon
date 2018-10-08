@@ -16,6 +16,8 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.util.List;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
@@ -24,7 +26,8 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.List;
+
+
 
 public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtParameterReference<T> {
 	private static final long serialVersionUID = 1L;

@@ -16,17 +16,20 @@
  */
 package spoon.reflect.code;
 
+
+import java.util.List;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-
-import java.util.List;
 
 import static spoon.reflect.path.CtRole.TYPE;
 import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
+
+
+
 
 /**
  * This code element defines a concrete invocation.
@@ -59,7 +62,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 */
 	@Override
 	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
+	CtInvocation<T> setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Delegate to the executable reference of the invocation.
@@ -68,7 +71,7 @@ public interface CtInvocation<T> extends CtAbstractInvocation<T>, CtStatement, C
 	 */
 	@Override
 	@PropertySetter(role = TYPE_ARGUMENT)
-	<T extends CtActualTypeContainer> T addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
+	CtInvocation<T> addActualTypeArgument(CtTypeReference<?> actualTypeArgument);
 
 	/**
 	 * Return the type returned by the invocation. If the invocation is to a

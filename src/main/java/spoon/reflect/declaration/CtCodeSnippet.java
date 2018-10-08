@@ -16,10 +16,14 @@
  */
 package spoon.reflect.declaration;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.SNIPPET;
+
+
+
 
 /**
  * This interface represents snippets of source code that can be used in the AST
@@ -37,7 +41,7 @@ public interface CtCodeSnippet {
 	 * Sets the textual value of the code.
 	 */
 	@PropertySetter(role = SNIPPET)
-	<C extends CtCodeSnippet> C setValue(String value);
+	CtCodeSnippet setValue(String value);
 
 	/**
 	 * Gets the textual value of the code.

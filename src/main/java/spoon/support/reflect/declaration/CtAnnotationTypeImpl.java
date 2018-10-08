@@ -16,22 +16,23 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
-import spoon.support.DerivedProperty;
-import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
+import spoon.support.UnsettableProperty;
+
+
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtAnnotationType}.
@@ -65,14 +66,14 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
-		return (C) this;
+	public CtAnnotationTypeImpl<T> setSuperclass(CtTypeReference<?> superClass) {
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
-		return (C) this;
+	public CtAnnotationTypeImpl<T> setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+		return this;
 	}
 
 	@Override
@@ -83,8 +84,8 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
-		return (C) this;
+	public CtAnnotationTypeImpl<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+		return this;
 	}
 
 	@Override
@@ -107,10 +108,10 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	}
 
 	@Override
-	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
+	public <M> CtAnnotationTypeImpl<T> addMethod(CtMethod<M> method) {
 		if (method != null && !(method instanceof CtAnnotationMethod)) {
 			throw new IllegalArgumentException("The method " + method.getSignature() + " should be a " + CtAnnotationMethod.class.getName());
 		}
-		return super.addMethod(method);
+		return ((CtAnnotationTypeImpl<T>) (super.addMethod(method)));
 	}
 }

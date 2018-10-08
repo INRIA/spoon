@@ -16,15 +16,18 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtExecutableReference;
 
 import static spoon.reflect.path.CtRole.ARGUMENT;
 import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
+
+
+
 
 /**
  * This code element defines an abstract invocation on a
@@ -46,7 +49,7 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	 * Adds an argument expression to the invocation.
 	 */
 	@PropertySetter(role = ARGUMENT)
-	<C extends CtAbstractInvocation<T>> C addArgument(CtExpression<?> argument);
+	CtAbstractInvocation<T> addArgument(CtExpression<?> argument);
 
 	/**
 	 * Removes an argument expression from the invocation.
@@ -58,7 +61,7 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	 * Sets the invocation's arguments.
 	 */
 	@PropertySetter(role = ARGUMENT)
-	<C extends CtAbstractInvocation<T>> C setArguments(List<CtExpression<?>> arguments);
+	CtAbstractInvocation<T> setArguments(List<CtExpression<?>> arguments);
 
 	/**
 	 * Returns the invoked executable.
@@ -70,5 +73,5 @@ public interface CtAbstractInvocation<T> extends CtElement {
 	 * Sets the invoked executable.
 	 */
 	@PropertySetter(role = EXECUTABLE_REF)
-	<C extends CtAbstractInvocation<T>> C setExecutable(CtExecutableReference<T> executable);
+	CtAbstractInvocation<T> setExecutable(CtExecutableReference<T> executable);
 }

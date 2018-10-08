@@ -16,19 +16,22 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.MethodFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -37,16 +40,15 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.NAME;
 import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.THROWN;
+
+
+
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
 	@MetamodelPropertyField(role = NAME)
@@ -71,10 +73,10 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
+	public CtLambdaImpl<T> setSimpleName(String simpleName) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
 		this.simpleName = simpleName;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -84,7 +86,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public <C extends CtBodyHolder> C setBody(CtStatement statement) {
+	public CtLambdaImpl<T> setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
@@ -100,7 +102,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			this.body = null;
 		}
 
-		return (C) this;
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -147,10 +149,10 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public <C extends CtExecutable<T>> C setParameters(List<CtParameter<?>> params) {
+	public CtLambdaImpl<T> setParameters(List<CtParameter<?>> params) {
 		if (params == null || params.isEmpty()) {
 			this.parameters = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -160,13 +162,13 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		for (CtParameter<?> p : params) {
 			addParameter(p);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExecutable<T>> C addParameter(CtParameter<?> parameter) {
+	public CtLambdaImpl<T> addParameter(CtParameter<?> parameter) {
 		if (parameter == null) {
-			return (C) this;
+			return this;
 		}
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -174,7 +176,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
 		parameters.add(parameter);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -193,14 +195,14 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtExecutable<T>> C setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
-		return (C) this;
+	public CtLambdaImpl<T> setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+		return this;
 	}
 
 	@Override
-	public <C extends CtExecutable<T>> C addThrownType(CtTypeReference<? extends Throwable> throwType) {
+	public CtLambdaImpl<T> addThrownType(CtTypeReference<? extends Throwable> throwType) {
 		if (throwType == null) {
-			return (C) this;
+			return this;
 		}
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
@@ -208,7 +210,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		throwType.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -238,7 +240,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	}
 
 	@Override
-	public <C extends CtLambda<T>> C setExpression(CtExpression<T> expression) {
+	public CtLambdaImpl<T> setExpression(CtExpression<T> expression) {
 		if (body != null && expression != null) {
 			throw new SpoonException("A lambda can't have two bodies.");
 		} else {
@@ -248,7 +250,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.expression);
 			this.expression = expression;
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override

@@ -16,20 +16,32 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtFormalTypeDeclarer;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -57,17 +69,8 @@ import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
 import spoon.support.visitor.ClassTypingContext;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import spoon.reflect.ModelElementContainerDefaultCapacities;
+
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -102,14 +105,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	 * Otherwise, adds it at the end.
 	 */
 	@Override
-	public <C extends CtType<T>> C addTypeMember(CtTypeMember member) {
+	public CtTypeImpl<T> addTypeMember(CtTypeMember member) {
 		if (member == null) {
-			return (C) this;
+			return this;
 		}
 		Comparator c = new CtLineElementComparator();
 
 		if (member.isImplicit()) {
-			return addTypeMemberAt(0, member);
+			return ((CtTypeImpl<T>) (addTypeMemberAt(0, member)));
 		}
 
 		// by default, inserting at the end
@@ -126,13 +129,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				insertionPosition--;
 			}
 		}
-		return addTypeMemberAt(insertionPosition, member);
+		return ((CtTypeImpl<T>) (addTypeMemberAt(insertionPosition, member)));
 	}
 
 	@Override
-	public <C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member) {
+	public CtTypeImpl<T> addTypeMemberAt(int position, CtTypeMember member) {
 		if (member == null) {
-			return (C) this;
+			return this;
 		}
 		if (this.typeMembers == CtElementImpl.<CtTypeMember>emptyList()) {
 			this.typeMembers = new ArrayList<>();
@@ -147,7 +150,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				this.typeMembers.add(member);
 			}
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -170,49 +173,49 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members) {
+	public CtTypeImpl<T> setTypeMembers(List<CtTypeMember> members) {
 		for (CtTypeMember typeMember : new ArrayList<>(typeMembers)) {
 			removeTypeMember(typeMember);
 		}
 		if (members == null || members.isEmpty()) {
 			this.typeMembers = emptyList();
-			return (C) this;
+			return this;
 		}
 		typeMembers.clear();
 		for (CtTypeMember typeMember : members) {
 			addTypeMember(typeMember);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <F, C extends CtType<T>> C addFieldAtTop(CtField<F> field) {
-		return addTypeMemberAt(0, field);
+	public <F> CtTypeImpl<T> addFieldAtTop(CtField<F> field) {
+		return ((CtTypeImpl<T>) (addTypeMemberAt(0, field)));
 	}
 
 	@Override
-	public <F, C extends CtType<T>> C addField(CtField<F> field) {
-		return addTypeMember(field);
+	public <F> CtTypeImpl<T> addField(CtField<F> field) {
+		return ((CtTypeImpl<T>) (addTypeMember(field)));
 	}
 
 	@Override
-	public <F, C extends CtType<T>> C addField(int index, CtField<F> field) {
-		return addTypeMemberAt(index, field);
+	public <F> CtTypeImpl<T> addField(int index, CtField<F> field) {
+		return ((CtTypeImpl<T>) (addTypeMemberAt(index, field)));
 	}
 
 	@Override
-	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
+	public CtTypeImpl<T> setFields(List<CtField<?>> fields) {
 		List<CtField<?>> oldFields = getFields();
 		if (fields == null || fields.isEmpty()) {
 			this.typeMembers.removeAll(oldFields);
-			return (C) this;
+			return this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.FIELD, this.typeMembers, new ArrayList<>(oldFields));
 		typeMembers.removeAll(oldFields);
 		for (CtField<?> field : fields) {
 			addField(field);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -255,8 +258,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <N, C extends CtType<T>> C addNestedType(CtType<N> nestedType) {
-		return addTypeMember(nestedType);
+	public <N> CtTypeImpl<T> addNestedType(CtType<N> nestedType) {
+		return ((CtTypeImpl<T>) (addTypeMember(nestedType)));
 	}
 
 	@Override
@@ -265,18 +268,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes) {
+	public CtTypeImpl<T> setNestedTypes(Set<CtType<?>> nestedTypes) {
 		Set<CtType<?>> oldNestedTypes = getNestedTypes();
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.NESTED_TYPE, typeMembers, oldNestedTypes);
 		if (nestedTypes == null || nestedTypes.isEmpty()) {
 			this.typeMembers.removeAll(oldNestedTypes);
-			return (C) this;
+			return this;
 		}
 		typeMembers.removeAll(oldNestedTypes);
 		for (CtType<?> nestedType : nestedTypes) {
 			addNestedType(nestedType);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -463,27 +466,27 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
+	public CtTypeImpl<T> setModifiers(Set<ModifierKind> modifiers) {
 		modifierHandler.setModifiers(modifiers);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
+	public CtTypeImpl<T> addModifier(ModifierKind modifier) {
 		modifierHandler.addModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+	public CtTypeImpl<T> removeModifier(ModifierKind modifier) {
 		modifierHandler.removeModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
+	public CtTypeImpl<T> setVisibility(ModifierKind visibility) {
 		modifierHandler.setVisibility(visibility);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -497,9 +500,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+	public CtTypeImpl<T> setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -576,7 +579,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
+	public <M> CtTypeImpl<T> addMethod(CtMethod<M> method) {
 		if (method != null) {
 			for (CtTypeMember typeMember : new ArrayList<>(typeMembers)) {
 				if (!(typeMember instanceof CtMethod)) {
@@ -590,7 +593,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 				}
 			}
 		}
-		return addTypeMember(method);
+		return ((CtTypeImpl<T>) (addTypeMember(method)));
 	}
 
 	@Override
@@ -599,9 +602,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <S, C extends CtType<T>> C addSuperInterface(CtTypeReference<S> interfac) {
+	public <S> CtTypeImpl<T> addSuperInterface(CtTypeReference<S> interfac) {
 		if (interfac == null) {
-			return (C) this;
+			return this;
 		}
 		if (interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			interfaces = new QualifiedNameBasedSortedSet<>();
@@ -609,7 +612,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		interfac.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.INTERFACE, this.interfaces, interfac);
 		interfaces.add(interfac);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -636,11 +639,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
+	public CtTypeImpl<T> setFormalCtTypeParameters(List<CtTypeParameter> formalTypeParameters) {
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.TYPE_PARAMETER, formalCtTypeParameters, new ArrayList<>(formalCtTypeParameters));
 		if (formalTypeParameters == null || formalTypeParameters.isEmpty()) {
 			this.formalCtTypeParameters = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			this.formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -649,13 +652,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		for (CtTypeParameter formalTypeParameter : formalTypeParameters) {
 			addFormalCtTypeParameter(formalTypeParameter);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+	public CtTypeImpl<T> addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
 		if (formalTypeParameter == null) {
-			return (C) this;
+			return this;
 		}
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -663,7 +666,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		formalTypeParameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalCtTypeParameters.add(formalTypeParameter);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -847,31 +850,31 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
+	public CtTypeImpl<T> setMethods(Set<CtMethod<?>> methods) {
 		Set<CtMethod<?>> allMethods = getMethods();
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.METHOD, this.typeMembers, new ArrayList(allMethods));
 		typeMembers.removeAll(allMethods);
 		if (methods == null || methods.isEmpty()) {
-			return (C) this;
+			return this;
 		}
 		for (CtMethod<?> meth : methods) {
 			addMethod(meth);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+	public CtTypeImpl<T> setSuperclass(CtTypeReference<?> superClass) {
 		// overridden in subclasses.
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtType<T>> C setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
+	public CtTypeImpl<T> setSuperInterfaces(Set<CtTypeReference<?>> interfaces) {
 		if (interfaces == null || interfaces.isEmpty()) {
 			this.interfaces = CtElementImpl.emptySet();
-			return (C) this;
+			return this;
 		}
 		if (this.interfaces == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			this.interfaces = new QualifiedNameBasedSortedSet<>();
@@ -881,7 +884,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		for (CtTypeReference<?> anInterface : interfaces) {
 			addSuperInterface(anInterface);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -938,10 +941,10 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+	public CtTypeImpl<T> setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
-		return (E) this;
+		return this;
 	}
 
 	@Override

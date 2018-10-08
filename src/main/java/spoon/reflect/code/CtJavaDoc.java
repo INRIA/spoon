@@ -16,13 +16,16 @@
  */
 package spoon.reflect.code;
 
-import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.support.DerivedProperty;
 
 import static spoon.reflect.path.CtRole.COMMENT_TAG;
+
+
+
 
 /**
  * This code element defines a javadoc comment
@@ -48,14 +51,14 @@ public interface CtJavaDoc extends CtComment {
 	 * @param tags the new list of tags
 	 */
 	@PropertySetter(role = COMMENT_TAG)
-	<E extends CtJavaDoc> E setTags(List<CtJavaDocTag> tags);
+	CtJavaDoc setTags(List<CtJavaDocTag> tags);
 
 	/**
 	 * Add a new tag at the end of the list
 	 * @param tag the new tag
 	 */
 	@PropertySetter(role = COMMENT_TAG)
-	<E extends CtJavaDoc> E addTag(CtJavaDocTag tag);
+	CtJavaDoc addTag(CtJavaDocTag tag);
 
 	/**
 	 * Add a new tag at the index position
@@ -63,21 +66,21 @@ public interface CtJavaDoc extends CtComment {
 	 * @param tag the new tag
 	 */
 	@PropertySetter(role = COMMENT_TAG)
-	<E extends CtJavaDoc> E addTag(int index, CtJavaDocTag tag);
+	CtJavaDoc addTag(int index, CtJavaDocTag tag);
 
 	/**
 	 * Remove a tag from the index
 	 * @param index the position of the tag to remove
 	 */
 	@PropertySetter(role = COMMENT_TAG)
-	<E extends CtJavaDoc> E removeTag(int index);
+	CtJavaDoc removeTag(int index);
 
 	/**
 	 * Remove a specific tag
 	 * @param tag the tag to remove
 	 */
 	@PropertySetter(role = COMMENT_TAG)
-	<E extends CtJavaDoc> E removeTag(CtJavaDocTag tag);
+	CtJavaDoc removeTag(CtJavaDocTag tag);
 
 	/**
 	 * Get the short summary of the javadoc (first sentence of the javadoc)

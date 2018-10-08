@@ -16,13 +16,16 @@
  */
 package spoon.reflect.code;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import java.util.List;
-
 import static spoon.reflect.path.CtRole.DIMENSION;
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 /**
  * This code element defines the inline creation of a new array.
@@ -47,13 +50,13 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	 * Sets the expressions that define the array's dimensions.
 	 */
 	@PropertySetter(role = DIMENSION)
-	<C extends CtNewArray<T>> C setDimensionExpressions(List<CtExpression<Integer>> dimensions);
+	CtNewArray<T> setDimensionExpressions(List<CtExpression<Integer>> dimensions);
 
 	/**
 	 * Adds a dimension expression.
 	 */
 	@PropertySetter(role = DIMENSION)
-	<C extends CtNewArray<T>> C addDimensionExpression(CtExpression<Integer> dimension);
+	CtNewArray<T> addDimensionExpression(CtExpression<Integer> dimension);
 
 	/**
 	 * Removes a dimension expression.
@@ -71,13 +74,13 @@ public interface CtNewArray<T> extends CtExpression<T> {
 	 * Sets the initialization expressions.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<C extends CtNewArray<T>> C setElements(List<CtExpression<?>> expression);
+	CtNewArray<T> setElements(List<CtExpression<?>> expression);
 
 	/**
 	 * Adds an element.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<C extends CtNewArray<T>> C addElement(CtExpression<?> expression);
+	CtNewArray<T> addElement(CtExpression<?> expression);
 
 	/**
 	 * Removes an element.

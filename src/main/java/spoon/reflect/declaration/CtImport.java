@@ -16,12 +16,16 @@
  */
 package spoon.reflect.declaration;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtReference;
 import spoon.support.DerivedProperty;
 
 import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
+
+
+
 
 /**
  * This element represents an import declaration.
@@ -58,7 +62,7 @@ public interface CtImport extends CtElement {
 	 * The import kind will be computed based on this reference.
 	 */
 	@PropertySetter(role = IMPORT_REFERENCE)
-	<T extends CtImport> T setReference(CtReference reference);
+	CtImport setReference(CtReference reference);
 
 	@Override
 	CtImport clone();

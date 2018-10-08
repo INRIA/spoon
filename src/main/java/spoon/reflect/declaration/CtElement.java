@@ -16,7 +16,17 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
@@ -28,21 +38,13 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.ANNOTATION;
-import static spoon.reflect.path.CtRole.COMMENT;
 import static spoon.reflect.path.CtRole.IS_IMPLICIT;
 import static spoon.reflect.path.CtRole.POSITION;
+
+
+
 
 /**
  * This interface is the root interface for the metamodel elements (any program
@@ -157,7 +159,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNOTATION)
-	<E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation);
+	CtElement addAnnotation(CtAnnotation<? extends Annotation> annotation);
 
 	/**
 	 * Remove an annotation for this element
@@ -174,7 +176,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * {@link CtComment} or create a new  javadoc {@link CtComment} if
 	 * no javadoc {@link CtComment} is available on this object.
 	 */
-	<E extends CtElement> E setDocComment(String docComment);
+	CtElement setDocComment(String docComment);
 
 	/**
 	 * Sets the position in the Java source file. Note that this information is
@@ -185,7 +187,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * 		of this element in the input source files
 	 */
 	@PropertySetter(role = POSITION)
-	<E extends CtElement> E setPosition(SourcePosition position);
+	CtElement setPosition(SourcePosition position);
 
 	/**
 	 * Gets the child elements annotated with the given annotation type's
@@ -213,7 +215,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Sets this element to be implicit.
 	 */
 	@PropertySetter(role = IS_IMPLICIT)
-	<E extends CtElement> E setImplicit(boolean b);
+	CtElement setImplicit(boolean b);
 
 	/**
 	 * Calculates and returns the set of all the types referenced by this
@@ -236,13 +238,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param position
 	 * 		of this element and all children in the input source file
 	 */
-	<E extends CtElement> E setPositions(SourcePosition position);
+	CtElement setPositions(SourcePosition position);
 
 	/**
 	 * Sets the annotations for this element.
 	 */
 	@PropertySetter(role = ANNOTATION)
-	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
+	CtElement setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 
 	/**
 	 * Gets the parent of current reference.
@@ -304,12 +306,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Saves a bunch of metadata inside an Element
 	 */
-	<E extends CtElement> E setAllMetadata(Map<String, Object> metadata);
+	CtElement setAllMetadata(Map<String, Object> metadata);
 
 	/**
 	 * Saves metadata inside an Element.
 	 */
-	<E extends CtElement> E putMetadata(String key, Object val);
+	CtElement putMetadata(String key, Object val);
 
 	/**
 	 * Retrieves metadata stored in an element. Returns null if it does not exist.
@@ -330,7 +332,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Set the comment list
 	 */
 	@PropertySetter(role = COMMENT)
-	<E extends CtElement> E setComments(List<CtComment> comments);
+	CtElement setComments(List<CtComment> comments);
 
 	/**
 	 * The list of comments
@@ -345,14 +347,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param comment the comment
 	 */
 	@PropertySetter(role = COMMENT)
-	<E extends CtElement> E addComment(CtComment comment);
+	CtElement addComment(CtComment comment);
 
 	/**
 	 * Remove a comment
 	 * @param comment the comment to remove
 	 */
 	@PropertySetter(role = COMMENT)
-	<E extends CtElement> E removeComment(CtComment comment);
+	CtElement removeComment(CtComment comment);
 
 	/**
 	 * Clone the element which calls this method in a new object.
@@ -378,7 +380,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param role the role of the field to be set
 	 * @param value to be assigned to this field.
 	 */
-	<E extends CtElement, T> E  setValueByRole(CtRole role, T value);
+	< T> CtElement  setValueByRole(CtRole role, T value);
 
 	/**
 	 * Return the path from the model root to this CtElement, eg `.spoon.test.path.Foo.foo#body#statement[index=0]`

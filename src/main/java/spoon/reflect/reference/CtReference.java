@@ -16,6 +16,8 @@
  */
 package spoon.reflect.reference;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtComment;
@@ -24,7 +26,8 @@ import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
-import java.util.List;
+
+
 
 
 /**
@@ -48,7 +51,7 @@ public interface CtReference extends CtElement {
 	 * Sets the name of referenced element.
 	 */
 	@PropertySetter(role = CtRole.NAME)
-	<T extends CtReference> T setSimpleName(String simpleName);
+	CtReference setSimpleName(String simpleName);
 
 	/**
 	 * Returns the declaration that corresponds to the referenced element only
@@ -65,5 +68,5 @@ public interface CtReference extends CtElement {
 	/** comments are not possible for references */
 	@Override
 	@UnsettableProperty
-	<E extends CtElement> E setComments(List<CtComment> comments);
+	CtReference setComments(List<CtComment> comments);
 }

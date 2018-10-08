@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -25,6 +26,9 @@ import spoon.reflect.visitor.CtVisitor;
 import static spoon.reflect.path.CtRole.LEFT_OPERAND;
 import static spoon.reflect.path.CtRole.OPERATOR_KIND;
 import static spoon.reflect.path.CtRole.RIGHT_OPERAND;
+
+
+
 
 public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBinaryOperator<T> {
 	private static final long serialVersionUID = 1L;
@@ -54,30 +58,30 @@ public class CtBinaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtBi
 	}
 
 	@Override
-	public <C extends CtBinaryOperator<T>> C setLeftHandOperand(CtExpression<?> expression) {
+	public CtBinaryOperatorImpl<T> setLeftHandOperand(CtExpression<?> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LEFT_OPERAND, expression, this.leftHandOperand);
 		leftHandOperand = expression;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtBinaryOperator<T>> C setRightHandOperand(CtExpression<?> expression) {
+	public CtBinaryOperatorImpl<T> setRightHandOperand(CtExpression<?> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, RIGHT_OPERAND, expression, this.rightHandOperand);
 		rightHandOperand = expression;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtBinaryOperator<T>> C setKind(BinaryOperatorKind kind) {
+	public CtBinaryOperatorImpl<T> setKind(BinaryOperatorKind kind) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
-		return (C) this;
+		return this;
 	}
 
 	@Override

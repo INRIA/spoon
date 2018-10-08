@@ -16,14 +16,17 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.List;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.FOR_INIT;
 import static spoon.reflect.path.CtRole.FOR_UPDATE;
+
+
+
 
 /**
  * This code element defines a for loop.
@@ -47,7 +50,7 @@ public interface CtFor extends CtLoop {
 	 * Sets the end-loop test expression.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<T extends CtFor> T setExpression(CtExpression<Boolean> expression);
+	CtFor setExpression(CtExpression<Boolean> expression);
 
 	/**
 	 * Gets the <i>init</i> statements.
@@ -59,13 +62,13 @@ public interface CtFor extends CtLoop {
 	 * Adds an <i>init</i> statement.
 	 */
 	@PropertySetter(role = FOR_INIT)
-	<T extends CtFor> T addForInit(CtStatement statement);
+	CtFor addForInit(CtStatement statement);
 
 	/**
 	 * Sets the <i>init</i> statements.
 	 */
 	@PropertySetter(role = FOR_INIT)
-	<T extends CtFor> T setForInit(List<CtStatement> forInit);
+	CtFor setForInit(List<CtStatement> forInit);
 
 	/**
 	 * Removes an <i>init</i> statement.
@@ -83,13 +86,13 @@ public interface CtFor extends CtLoop {
 	 * Adds an <i>update</i> statement.
 	 */
 	@PropertySetter(role = FOR_UPDATE)
-	<T extends CtFor> T addForUpdate(CtStatement statement);
+	CtFor addForUpdate(CtStatement statement);
 
 	/**
 	 * Sets the <i>update</i> statements.
 	 */
 	@PropertySetter(role = FOR_UPDATE)
-	<T extends CtFor> T setForUpdate(List<CtStatement> forUpdate);
+	CtFor setForUpdate(List<CtStatement> forUpdate);
 
 	/**
 	 * Removes an <i>update</i> statement.

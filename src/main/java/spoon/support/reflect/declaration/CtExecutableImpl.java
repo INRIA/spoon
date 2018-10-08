@@ -16,9 +16,13 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
@@ -28,15 +32,13 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.THROWN;
+
+
+
 
 
 /**
@@ -74,7 +76,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	@Override
-	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
+	public CtExecutableImpl<R> setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
@@ -86,7 +88,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 			getFactory().getEnvironment().getModelChangeListener().onObjectDelete(this, BODY, this.body);
 			this.body = null;
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -95,10 +97,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	@Override
-	public <T extends CtExecutable<R>> T setParameters(List<CtParameter<?>> parameters) {
+	public CtExecutableImpl<R> setParameters(List<CtParameter<?>> parameters) {
 		if (parameters == null || parameters.isEmpty()) {
 			this.parameters = CtElementImpl.emptyList();
-			return (T) this;
+			return this;
 		}
 		if (this.parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			this.parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -108,13 +110,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		for (CtParameter<?> p : parameters) {
 			addParameter(p);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter) {
+	public CtExecutableImpl<R> addParameter(CtParameter<?> parameter) {
 		if (parameter == null) {
-			return (T) this;
+			return this;
 		}
 		if (parameters == CtElementImpl.<CtParameter<?>>emptyList()) {
 			parameters = new ArrayList<>(PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -122,7 +124,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
 		parameters.add(parameter);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -140,10 +142,10 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	}
 
 	@Override
-	public <T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
+	public CtExecutableImpl<R> setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes) {
 		if (thrownTypes == null || thrownTypes.isEmpty()) {
 			this.thrownTypes = CtElementImpl.emptySet();
-			return (T) this;
+			return this;
 		}
 		if (this.thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			this.thrownTypes = new QualifiedNameBasedSortedSet<>();
@@ -153,13 +155,13 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		for (CtTypeReference<? extends Throwable> thrownType : thrownTypes) {
 			addThrownType(thrownType);
 		}
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtExecutable<R>> T addThrownType(CtTypeReference<? extends Throwable> throwType) {
+	public CtExecutableImpl<R> addThrownType(CtTypeReference<? extends Throwable> throwType) {
 		if (throwType == null) {
-			return (T) this;
+			return this;
 		}
 		if (thrownTypes == CtElementImpl.<CtTypeReference<? extends Throwable>>emptySet()) {
 			thrownTypes = new QualifiedNameBasedSortedSet<>();
@@ -167,7 +169,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		throwType.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, THROWN, this.thrownTypes, throwType);
 		thrownTypes.add(throwType);
-		return (T) this;
+		return this;
 	}
 
 	@Override

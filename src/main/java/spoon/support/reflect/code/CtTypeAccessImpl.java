@@ -16,14 +16,18 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.ACCESSED_TYPE;
+
+
+
 
 public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTypeAccess<A> {
 
@@ -41,13 +45,13 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 	}
 
 	@Override
-	public <C extends CtTypeAccess<A>> C setAccessedType(CtTypeReference<A> accessedType) {
+	public CtTypeAccessImpl<A> setAccessedType(CtTypeReference<A> accessedType) {
 		if (accessedType != null) {
 			accessedType.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, ACCESSED_TYPE, accessedType, this.type);
 		type = accessedType;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -57,9 +61,9 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
+	public CtTypeAccessImpl<A> setType(CtTypeReference<Void> type) {
 		// type is used in setAccessedType now.
-		return (C) this;
+		return this;
 	}
 
 	@Override

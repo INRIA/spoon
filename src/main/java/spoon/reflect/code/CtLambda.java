@@ -16,17 +16,20 @@
  */
 package spoon.reflect.code;
 
+
+import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
 
-import java.util.Set;
-
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 /**
  * This code element represents the creation of a lambda. A lambda
@@ -78,12 +81,12 @@ public interface CtLambda<T> extends CtExpression<T>, CtExecutable<T> {
 	 * if the lambda already has a value in the body attribute.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<C extends CtLambda<T>> C setExpression(CtExpression<T> expression);
+	CtLambda<T> setExpression(CtExpression<T> expression);
 
 	@Override
 	CtLambda<T> clone();
 
 	@Override
 	@UnsettableProperty
-	<T1 extends CtExecutable<T>> T1 setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+	CtLambda<T> setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 }

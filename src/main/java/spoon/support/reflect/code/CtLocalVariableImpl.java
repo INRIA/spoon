@@ -16,14 +16,11 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -34,7 +31,8 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
-import java.util.Set;
+
+
 
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;
@@ -80,30 +78,30 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
+	public CtLocalVariableImpl<T> setDefaultExpression(CtExpression<T> defaultExpression) {
 		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
 		this.defaultExpression = defaultExpression;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
+	public CtLocalVariableImpl<T> setSimpleName(String simpleName) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.NAME, simpleName, this.name);
 		this.name = simpleName;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public CtLocalVariableImpl<T> setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -117,27 +115,27 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
+	public CtLocalVariableImpl<T> setModifiers(Set<ModifierKind> modifiers) {
 		modifierHandler.setModifiers(modifiers);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
+	public CtLocalVariableImpl<T> addModifier(ModifierKind modifier) {
 		modifierHandler.addModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C removeModifier(ModifierKind modifier) {
+	public CtLocalVariableImpl<T> removeModifier(ModifierKind modifier) {
 		modifierHandler.removeModifier(modifier);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtModifiable> C setVisibility(ModifierKind visibility) {
+	public CtLocalVariableImpl<T> setVisibility(ModifierKind visibility) {
 		modifierHandler.setVisibility(visibility);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -160,9 +158,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public <T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
+	public CtLocalVariableImpl<T> setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
 		this.modifierHandler.setExtendedModifiers(extendedModifiers);
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -173,9 +171,9 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtRHSReceiver<T>> C setAssignment(CtExpression<T> assignment) {
+	public CtLocalVariableImpl<T> setAssignment(CtExpression<T> assignment) {
 		setDefaultExpression(assignment);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -184,10 +182,10 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
-	public <U extends CtLocalVariable<T>> U setInferred(boolean inferred) {
+	public CtLocalVariableImpl<T> setInferred(boolean inferred) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_INFERRED, inferred, this.inferred);
 		this.inferred = inferred;
-		return (U) this;
+		return this;
 	}
 
 	@Override

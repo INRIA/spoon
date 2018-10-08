@@ -16,6 +16,7 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -27,6 +28,9 @@ import spoon.reflect.visitor.CtVisitor;
 import static spoon.reflect.path.CtRole.EXPRESSION;
 import static spoon.reflect.path.CtRole.LABEL;
 import static spoon.reflect.path.CtRole.OPERATOR_KIND;
+
+
+
 
 public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUnaryOperator<T> {
 	private static final long serialVersionUID = 1L;
@@ -61,51 +65,51 @@ public class CtUnaryOperatorImpl<T> extends CtExpressionImpl<T> implements CtUna
 	}
 
 	@Override
-	public <C extends CtStatement> C insertAfter(CtStatement statement) {
+	public CtUnaryOperatorImpl<T> insertAfter(CtStatement statement) {
 		CtStatementImpl.insertAfter(this, statement);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertBefore(CtStatement statement) {
+	public CtUnaryOperatorImpl<T> insertBefore(CtStatement statement) {
 		CtStatementImpl.insertBefore(this, statement);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertAfter(CtStatementList statements) {
+	public CtUnaryOperatorImpl<T> insertAfter(CtStatementList statements) {
 		CtStatementImpl.insertAfter(this, statements);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C insertBefore(CtStatementList statements) {
+	public CtUnaryOperatorImpl<T> insertBefore(CtStatementList statements) {
 		CtStatementImpl.insertBefore(this, statements);
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtUnaryOperator> C setOperand(CtExpression<T> expression) {
+	public CtUnaryOperatorImpl<T> setOperand(CtExpression<T> expression) {
 		if (expression != null) {
 			expression.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, expression, this.operand);
 		this.operand = expression;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtUnaryOperator> C setKind(UnaryOperatorKind kind) {
+	public CtUnaryOperatorImpl<T> setKind(UnaryOperatorKind kind) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, OPERATOR_KIND, kind, this.kind);
 		this.kind = kind;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtStatement> C setLabel(String label) {
+	public CtUnaryOperatorImpl<T> setLabel(String label) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
-		return (C) this;
+		return this;
 	}
 
 	@Override

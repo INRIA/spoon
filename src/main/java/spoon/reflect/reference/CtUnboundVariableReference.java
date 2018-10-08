@@ -16,12 +16,14 @@
  */
 package spoon.reflect.reference;
 
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtElement;
-import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.support.UnsettableProperty;
+
+
+
 
 /**
  * This interface defines a reference to an unbound
@@ -33,5 +35,5 @@ public interface CtUnboundVariableReference<T> extends CtVariableReference<T> {
 
 	@Override
 	@UnsettableProperty
-	<E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
+	CtUnboundVariableReference<T> setAnnotations(List<CtAnnotation<? extends Annotation>> annotation);
 }

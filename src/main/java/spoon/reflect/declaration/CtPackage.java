@@ -16,15 +16,18 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtPackageReference;
-import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.support.DerivedProperty;
 
-import static spoon.reflect.path.CtRole.SUB_PACKAGE;
 import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
+import static spoon.reflect.path.CtRole.SUB_PACKAGE;
+
+
+
 
 /**
  * This element defines a package declaration. The packages are represented by a
@@ -108,7 +111,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * Adds a type to this package.
 	 */
 	@PropertySetter(role = CONTAINED_TYPE)
-	<T extends CtPackage> T addType(CtType<?> type);
+	CtPackage addType(CtType<?> type);
 
 	/**
 	 * Removes a type from this package.
@@ -123,7 +126,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * 		new set of child packages
 	 */
 	@PropertySetter(role = SUB_PACKAGE)
-	<T extends CtPackage> T setPackages(Set<CtPackage> pack);
+	CtPackage setPackages(Set<CtPackage> pack);
 
 	/**
 	 * add a subpackage
@@ -132,7 +135,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = SUB_PACKAGE)
-	<T extends CtPackage> T addPackage(CtPackage pack);
+	CtPackage addPackage(CtPackage pack);
 
 	/**
 	 * remove a subpackage
@@ -150,7 +153,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * 		new Set of types
 	 */
 	@PropertySetter(role = CONTAINED_TYPE)
-	<T extends CtPackage> T setTypes(Set<CtType<?>> types);
+	CtPackage setTypes(Set<CtType<?>> types);
 
 	@Override
 	CtPackage clone();

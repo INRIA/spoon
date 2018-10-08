@@ -16,13 +16,17 @@
  */
 package spoon.reflect.declaration;
 
+
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
+
+
+
 
 /**
  * This abstract element defines a variable declaration.
@@ -49,5 +53,5 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 * declared.
 	 */
 	@PropertySetter(role = DEFAULT_EXPRESSION)
-	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+	CtVariable<T> setDefaultExpression(CtExpression<T> assignedExpression);
 }

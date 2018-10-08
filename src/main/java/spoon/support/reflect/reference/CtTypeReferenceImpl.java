@@ -16,6 +16,15 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -25,11 +34,9 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -42,20 +49,14 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.visitor.ClassTypingContext;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
 import static spoon.reflect.path.CtRole.PACKAGE_REF;
 import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
+
+
+
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -254,10 +255,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtTypeReferenceImpl<T> setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
 			this.actualTypeArguments = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -267,27 +268,27 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtTypeReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+	public CtTypeReferenceImpl<T> setDeclaringType(CtTypeReference<?> declaringType) {
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtTypeReference<T>> C setPackage(CtPackageReference pack) {
+	public CtTypeReferenceImpl<T> setPackage(CtPackageReference pack) {
 		if (pack != null) {
 			pack.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, PACKAGE_REF, pack, this.pack);
 		this.pack = pack;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -471,9 +472,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public CtTypeReferenceImpl<T> addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArgument == null) {
-			return (C) this;
+			return this;
 		}
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -481,7 +482,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		actualTypeArgument.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_ARGUMENT, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -718,10 +719,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+	public CtTypeReferenceImpl<T> setShadow(boolean isShadow) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
-		return (E) this;
+		return this;
 	}
 
 	@Override

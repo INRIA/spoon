@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.CONDITION;
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 
 /**
@@ -38,7 +42,7 @@ public interface CtAssert<T> extends CtStatement {
 	 * Sets the assert expression.
 	 */
 	@PropertySetter(role = CONDITION)
-	<A extends CtAssert<T>> A setAssertExpression(CtExpression<Boolean> asserted);
+	CtAssert<T> setAssertExpression(CtExpression<Boolean> asserted);
 
 	/**
 	 * Gets the expression of the assertion if defined.
@@ -50,7 +54,7 @@ public interface CtAssert<T> extends CtStatement {
 	 * Sets the expression of the assertion.
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<A extends CtAssert<T>> A setExpression(CtExpression<T> expression);
+	CtAssert<T> setExpression(CtExpression<T> expression);
 
 	@Override
 	CtAssert<T> clone();

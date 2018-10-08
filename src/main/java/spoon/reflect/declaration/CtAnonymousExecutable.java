@@ -16,11 +16,14 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.UnsettableProperty;
 
 import java.util.List;
 import java.util.Set;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
+
+
+
 
 /**
  * This element defines an anonymous executable block declaration in a class.
@@ -33,26 +36,26 @@ public interface CtAnonymousExecutable extends CtExecutable<Void>, CtTypeMember 
 
 	@Override
 	@UnsettableProperty
-	<C extends CtNamedElement> C setSimpleName(String simpleName);
+	CtAnonymousExecutable setSimpleName(String simpleName);
 
 	@Override
 	@UnsettableProperty
-	<T extends CtExecutable<Void>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+	CtAnonymousExecutable setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	@Override
 	@UnsettableProperty
-	<T extends CtExecutable<Void>> T setParameters(List<CtParameter<?>> parameters);
+	CtAnonymousExecutable setParameters(List<CtParameter<?>> parameters);
 
 	@Override
 	@UnsettableProperty
-	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
+	CtAnonymousExecutable setType(CtTypeReference<Void> type);
 
 	@Override
 	@UnsettableProperty
-	<T extends CtExecutable<Void>> T addParameter(CtParameter<?> parameter);
+	CtAnonymousExecutable addParameter(CtParameter<?> parameter);
 
 	@Override
 	@UnsettableProperty
-	<T extends CtExecutable<Void>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
+	CtAnonymousExecutable addThrownType(CtTypeReference<? extends Throwable> throwType);
 
 }

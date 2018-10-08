@@ -16,9 +16,13 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.io.Serializable;
+import java.lang.reflect.AnnotatedElement;
+import java.util.List;
+import java.util.Objects;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
@@ -26,12 +30,10 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.io.Serializable;
-import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.Objects;
-
 import static spoon.reflect.path.CtRole.NAME;
+
+
+
 
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
@@ -51,24 +53,24 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 
 	@Override
-	public <T extends CtReference> T setSimpleName(String simplename) {
+	public CtReferenceImpl setSimpleName(String simplename) {
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simplename = simplename;
-			return (T) this;
+			return this;
 		}
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, this.simplename);
 		this.simplename = simplename;
-		return (T) this;
+		return this;
 	}
 
 	@UnsettableProperty
 	@Override
-	public <E extends CtElement> E setComments(List<CtComment> comments) {
-		return (E) this;
+	public CtReferenceImpl setComments(List<CtComment> comments) {
+		return this;
 	}
 
 	@Override

@@ -16,10 +16,14 @@
  */
 package spoon.reflect.reference;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.support.UnsettableProperty;
+
+
+
 
 /**
  * Represents a wildcard in generic type annotations, i.e. the "?" (e.g. the "?" in Collection&lt;?&gt; or Collection&lt;? extends List&gt;).
@@ -30,7 +34,7 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 
 	@Override
 	@UnsettableProperty
-	<C extends CtReference> C setSimpleName(String simpleName);
+	CtWildcardReference setSimpleName(String simpleName);
 
 	/**
 	 * Returns {@code true} if the bounds are in <code>extends</code> clause.
@@ -43,7 +47,7 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 	 * Set to {@code true} to write <code>extends</code> clause for bounds types.
 	 */
 	@PropertySetter(role = CtRole.IS_UPPER)
-	<T extends CtWildcardReference> T setUpper(boolean upper);
+	CtWildcardReference setUpper(boolean upper);
 
 	/**
 	 * A type parameter can have an <code>extends</code> clause which declare
@@ -63,5 +67,5 @@ public interface CtWildcardReference extends CtTypeParameterReference {
 	 * Sets the <code>extends</code> clause of the type parameter.
 	 */
 	@PropertySetter(role = CtRole.BOUNDING_TYPE)
-	<T extends CtWildcardReference> T setBoundingType(CtTypeReference<?> superType);
+	CtWildcardReference setBoundingType(CtTypeReference<?> superType);
 }

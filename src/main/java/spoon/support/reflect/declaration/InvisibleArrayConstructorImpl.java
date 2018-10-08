@@ -16,11 +16,14 @@
  */
 package spoon.support.reflect.declaration;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
+
+
+
 
 
 /**
@@ -43,13 +46,13 @@ public class InvisibleArrayConstructorImpl<T> extends CtConstructorImpl<T> {
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public InvisibleArrayConstructorImpl<T> setType(CtTypeReference<T> type) {
 		if (type == null) {
-			return (C) this;
+			return this;
 		}
 
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override

@@ -16,19 +16,22 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
+import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
-
-import java.util.List;
-import java.util.Set;
 
 import static spoon.reflect.path.CtRole.PARAMETER;
 import static spoon.reflect.path.CtRole.THROWN;
+
+
+
 
 /**
  * This element represents an executable element such as a method, a
@@ -66,7 +69,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * Sets the parameters.
 	 */
 	@PropertySetter(role = PARAMETER)
-	<T extends CtExecutable<R>> T setParameters(List<CtParameter<?>> parameters);
+	CtExecutable<R> setParameters(List<CtParameter<?>> parameters);
 
 	/**
 	 * Add a parameter for this executable
@@ -75,7 +78,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = PARAMETER)
-	<T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter);
+	CtExecutable<R> addParameter(CtParameter<?> parameter);
 
 	/**
 	 * Remove a parameter for this executable
@@ -96,7 +99,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * Sets the thrown types.
 	 */
 	@PropertySetter(role = THROWN)
-	<T extends CtExecutable<R>> T setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
+	CtExecutable<R> setThrownTypes(Set<CtTypeReference<? extends Throwable>> thrownTypes);
 
 	/**
 	 * add a thrown type.
@@ -105,7 +108,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = THROWN)
-	<T extends CtExecutable<R>> T addThrownType(CtTypeReference<? extends Throwable> throwType);
+	CtExecutable<R> addThrownType(CtTypeReference<? extends Throwable> throwType);
 
 	/**
 	 * remove a thrown type.

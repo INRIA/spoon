@@ -16,6 +16,15 @@
  */
 package spoon.support.reflect.reference;
 
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -27,7 +36,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.reference.CtActualTypeContainer;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -40,21 +49,15 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.SignaturePrinter;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.ARGUMENT_TYPE;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_STATIC;
-import static spoon.reflect.path.CtRole.ARGUMENT_TYPE;
 import static spoon.reflect.path.CtRole.TYPE;
 import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
+
+
+
 
 public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtExecutableReference<T> {
 	private static final long serialVersionUID = 1L;
@@ -162,10 +165,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setParameters(List<CtTypeReference<?>> parameters) {
+	public CtExecutableReferenceImpl<T> setParameters(List<CtTypeReference<?>> parameters) {
 		if (parameters == null || parameters.isEmpty()) {
 			this.parameters = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.parameters == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.parameters = new ArrayList<>();
@@ -175,7 +178,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		for (CtTypeReference<?> parameter : parameters) {
 			addParameter(parameter);
 		}
-		return (C) this;
+		return this;
 	}
 
 	private boolean addParameter(CtTypeReference<?> parameter) {
@@ -241,10 +244,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
+	public CtExecutableReferenceImpl<T> setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments) {
 		if (actualTypeArguments == null || actualTypeArguments.isEmpty()) {
 			this.actualTypeArguments = CtElementImpl.emptyList();
-			return (C) this;
+			return this;
 		}
 		if (this.actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.actualTypeArguments = new ArrayList<>();
@@ -254,27 +257,27 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		for (CtTypeReference<?> actualTypeArgument : actualTypeArguments) {
 			addActualTypeArgument(actualTypeArgument);
 		}
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setDeclaringType(CtTypeReference<?> declaringType) {
+	public CtExecutableReferenceImpl<T> setDeclaringType(CtTypeReference<?> declaringType) {
 		if (declaringType != null) {
 			declaringType.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DECLARING_TYPE, declaringType, this.declaringType);
 		this.declaringType = declaringType;
-		return (C) this;
+		return this;
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setType(CtTypeReference<T> type) {
+	public CtExecutableReferenceImpl<T> setType(CtTypeReference<T> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
 		this.type = type;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -347,10 +350,10 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtExecutableReference<T>> C setStatic(boolean stat) {
+	public CtExecutableReferenceImpl<T> setStatic(boolean stat) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_STATIC, stat, this.stat);
 		this.stat = stat;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -390,17 +393,17 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public CtExecutableReference<?> getOverridingExecutable() {
+	public CtExecutableReferenceImpl<?> getOverridingExecutable() {
 		CtTypeReference<Object> objectType = getFactory().Type().OBJECT;
 		CtTypeReference<?> declaringType = getDeclaringType();
 		if (declaringType == null) {
-			return getOverloadedExecutable(objectType, objectType);
+			return ((CtExecutableReferenceImpl<T>) (getOverloadedExecutable(objectType, objectType)));
 		}
 		CtTypeReference<?> st = declaringType.getSuperclass();
 		if (st == null) {
-			return getOverloadedExecutable(objectType, objectType);
+			return ((CtExecutableReferenceImpl<T>) (getOverloadedExecutable(objectType, objectType)));
 		}
-		return getOverloadedExecutable(st, objectType);
+		return ((CtExecutableReferenceImpl<T>) (getOverloadedExecutable(st, objectType)));
 	}
 
 	private CtExecutableReference<?> getOverloadedExecutable(CtTypeReference<?> t, CtTypeReference<Object> objectType) {
@@ -423,9 +426,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 	}
 
 	@Override
-	public <C extends CtActualTypeContainer> C addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
+	public CtExecutableReferenceImpl<T> addActualTypeArgument(CtTypeReference<?> actualTypeArgument) {
 		if (actualTypeArgument == null) {
-			return (C) this;
+			return this;
 		}
 		if (actualTypeArguments == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			actualTypeArguments = new ArrayList<>(METHOD_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
@@ -433,7 +436,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 		actualTypeArgument.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, TYPE_ARGUMENT, this.actualTypeArguments, actualTypeArgument);
 		actualTypeArguments.add(actualTypeArgument);
-		return (C) this;
+		return this;
 	}
 
 	@Override

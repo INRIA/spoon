@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
-import spoon.reflect.reference.CtExecutableReference;
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.reference.CtExecutableReference;
 
 import static spoon.reflect.path.CtRole.EXECUTABLE_REF;
+
+
+
 
 /**
  * This abstract code element defines an expression which represents an executable reference.
@@ -48,7 +52,7 @@ public interface CtExecutableReferenceExpression<T, E extends CtExpression<?>> e
 	 * Sets the executable will be referenced by the expression.
 	 */
 	@PropertySetter(role = EXECUTABLE_REF)
-	<C extends CtExecutableReferenceExpression<T, E>> C setExecutable(CtExecutableReference<T> executable);
+	CtExecutableReferenceExpression<T, E> setExecutable(CtExecutableReference<T> executable);
 
 	@Override
 	CtExecutableReferenceExpression<T, E> clone();

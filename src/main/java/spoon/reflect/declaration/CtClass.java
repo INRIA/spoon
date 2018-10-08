@@ -16,18 +16,21 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.List;
+import java.util.Set;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
-import java.util.List;
-import java.util.Set;
-
-import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
+import static spoon.reflect.path.CtRole.CONSTRUCTOR;
+
+
+
 
 /**
  * This element represents a class declaration.
@@ -72,7 +75,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Sets the anonymous blocks of this class.
 	 */
 	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)
-	<C extends CtClass<T>> C setAnonymousExecutables(List<CtAnonymousExecutable> e);
+	CtClass<T> setAnonymousExecutables(List<CtAnonymousExecutable> e);
 
 	/**
 	 * Add an anonymous block to this class.
@@ -81,7 +84,7 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * @return <tt>true</tt> if this element changed as a result of the call
 	 */
 	@PropertySetter(role = ANNONYMOUS_EXECUTABLE)
-	<C extends CtClass<T>> C addAnonymousExecutable(CtAnonymousExecutable e);
+	CtClass<T> addAnonymousExecutable(CtAnonymousExecutable e);
 
 	/**
 	 * Remove an anonymous block to this class.
@@ -96,13 +99,13 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 	 * Sets the constructors for this class.
 	 */
 	@PropertySetter(role = CONSTRUCTOR)
-	<C extends CtClass<T>> C setConstructors(Set<CtConstructor<T>> constructors);
+	CtClass<T> setConstructors(Set<CtConstructor<T>> constructors);
 
 	/**
 	 * Adds a constructor to this class.
 	 */
 	@PropertySetter(role = CONSTRUCTOR)
-	<C extends CtClass<T>> C addConstructor(CtConstructor<T> constructor);
+	CtClass<T> addConstructor(CtConstructor<T> constructor);
 
 	/**
 	 * Removes a constructor from this class.
@@ -137,5 +140,5 @@ public interface CtClass<T extends Object> extends CtType<T>, CtStatement {
 
 	@Override
 	@UnsettableProperty
-	<C extends CtStatement> C setLabel(String label);
+	CtClass<T> setLabel(String label);
 }

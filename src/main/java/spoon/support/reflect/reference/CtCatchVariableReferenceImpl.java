@@ -16,12 +16,16 @@
  */
 package spoon.support.reflect.reference;
 
+
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtVisitor;
+
+
+
 
 public class CtCatchVariableReferenceImpl<T> extends CtVariableReferenceImpl<T> implements CtCatchVariableReference<T> {
 	private static final long serialVersionUID = 1L;

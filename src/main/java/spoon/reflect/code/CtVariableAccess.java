@@ -16,13 +16,17 @@
  */
 package spoon.reflect.code;
 
+
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.DerivedProperty;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.VARIABLE;
+
+
+
 
 /**
  * This code element defines an access to a variable (read and write).
@@ -43,7 +47,7 @@ public interface CtVariableAccess<T> extends CtExpression<T> {
 	 * Sets the reference to the accessed variable.
 	 */
 	@PropertySetter(role = VARIABLE)
-	<C extends CtVariableAccess<T>> C setVariable(CtVariableReference<T> variable);
+	CtVariableAccess<T> setVariable(CtVariableReference<T> variable);
 
 	@Override
 	CtVariableAccess<T> clone();

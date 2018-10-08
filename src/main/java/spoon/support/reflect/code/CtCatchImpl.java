@@ -16,9 +16,9 @@
  */
 package spoon.support.reflect.code;
 
+
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtStatement;
@@ -26,6 +26,9 @@ import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.PARAMETER;
+
+
+
 
 public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	private static final long serialVersionUID = 1L;
@@ -52,7 +55,7 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	}
 
 	@Override
-	public <T extends CtBodyHolder> T setBody(CtStatement statement) {
+	public CtCatchImpl setBody(CtStatement statement) {
 		if (statement != null) {
 			CtBlock<?> body = getFactory().Code().getOrCreateCtBlock(statement);
 			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, BODY, body, this.body);
@@ -65,17 +68,17 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 			this.body = null;
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter) {
+	public CtCatchImpl setParameter(CtCatchVariable<? extends Throwable> parameter) {
 		if (parameter != null) {
 			parameter.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, PARAMETER, parameter, this.parameter);
 		this.parameter = parameter;
-		return (T) this;
+		return this;
 	}
 
 	@Override

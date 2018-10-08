@@ -16,6 +16,12 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.util.Locale;
+
+
+
+
 /**
  * Represents a modifier on the declaration of a program element such as a
  * class, method, or field.

@@ -16,11 +16,14 @@
  */
 package spoon.reflect.reference;
 
+
+import java.util.List;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
-import java.util.List;
+
+
 
 
 /**
@@ -56,7 +59,7 @@ public interface CtTypeParameterReference extends CtTypeReference<Object> {
 
 	@Override
 	@UnsettableProperty
-	<T extends CtActualTypeContainer> T setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
+	CtTypeParameterReference setActualTypeArguments(List<? extends CtTypeReference<?>> actualTypeArguments);
 
 	/**
 	 * Returns true if this has the default bounding type that is java.lang.Object (which basically means that there is no bound)

@@ -16,7 +16,11 @@
  */
 package spoon.reflect.declaration;
 
+
 import spoon.support.DerivedProperty;
+
+
+
 
 /**
  * This interface represents a member of a class (field, method,

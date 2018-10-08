@@ -16,8 +16,12 @@
  */
 package spoon.reflect.reference;
 
+
 import spoon.reflect.code.CtLocalVariable;
 import spoon.support.DerivedProperty;
+
+
+
 
 /**
  * This interface defines a reference to

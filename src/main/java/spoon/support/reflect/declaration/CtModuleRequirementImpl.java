@@ -16,14 +16,17 @@
  */
 package spoon.support.reflect.declaration;
 
+
+import java.util.HashSet;
+import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.visitor.CtVisitor;
 
-import java.util.HashSet;
-import java.util.Set;
+
+
 
 public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRequirement {
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
@@ -41,11 +44,11 @@ public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRe
 	}
 
 	@Override
-	public <T extends CtModuleRequirement> T setRequiresModifiers(Set<RequiresModifier> requiresModifiers) {
+	public CtModuleRequirementImpl setRequiresModifiers(Set<RequiresModifier> requiresModifiers) {
 		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.MODIFIER, this.requiresModifiers, new HashSet<>(requiresModifiers));
 		if (requiresModifiers == null || requiresModifiers.isEmpty()) {
 			this.requiresModifiers = CtElementImpl.emptySet();
-			return (T) this;
+			return this;
 		}
 
 		if (this.requiresModifiers == CtElementImpl.<RequiresModifier>emptySet()) {
@@ -57,7 +60,7 @@ public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRe
 			this.requiresModifiers.add(requiresModifier);
 		}
 
-		return (T) this;
+		return this;
 	}
 
 	@Override
@@ -66,13 +69,13 @@ public class CtModuleRequirementImpl extends CtElementImpl implements CtModuleRe
 	}
 
 	@Override
-	public <T extends CtModuleRequirement> T setModuleReference(CtModuleReference moduleReference) {
+	public CtModuleRequirementImpl setModuleReference(CtModuleReference moduleReference) {
 		if (moduleReference != null) {
 			moduleReference.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.MODULE_REF, moduleReference, this.moduleReference);
 		this.moduleReference = moduleReference;
-		return (T) this;
+		return this;
 	}
 
 	@Override

@@ -16,13 +16,16 @@
  */
 package spoon.reflect.code;
 
+
+import java.util.List;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import java.util.List;
-
 import static spoon.reflect.path.CtRole.CASE;
 import static spoon.reflect.path.CtRole.EXPRESSION;
+
+
+
 
 /**
  * This code element defines a switch statement.
@@ -57,7 +60,7 @@ public interface CtSwitch<S> extends CtStatement {
 	 * <code>Integer</code>, or an <code>enum</code> type
 	 */
 	@PropertySetter(role = EXPRESSION)
-	<T extends CtSwitch<S>> T setSelector(CtExpression<S> selector);
+	CtSwitch<S> setSelector(CtExpression<S> selector);
 
 	/**
 	 * Gets the list of cases defined for this switch.
@@ -69,13 +72,13 @@ public interface CtSwitch<S> extends CtStatement {
 	 * Sets the list of cases defined for this switch.
 	 */
 	@PropertySetter(role = CASE)
-	<T extends CtSwitch<S>> T setCases(List<CtCase<? super S>> cases);
+	CtSwitch<S> setCases(List<CtCase<? super S>> cases);
 
 	/**
 	 * Adds a case;
 	 */
 	@PropertySetter(role = CASE)
-	<T extends CtSwitch<S>> T addCase(CtCase<? super S> c);
+	CtSwitch<S> addCase(CtCase<? super S> c);
 
 	/**
 	 * Removes a case;

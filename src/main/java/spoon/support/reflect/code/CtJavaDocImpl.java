@@ -16,7 +16,10 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.List;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.declaration.CtElement;
@@ -24,7 +27,10 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.util.ModelList;
 
-import java.util.List;
+import static spoon.reflect.code.CtComment.CommentType.JAVADOC;
+
+
+
 
 public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
@@ -54,33 +60,33 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	}
 
 	@Override
-	public <E extends CtJavaDoc> E setTags(List<CtJavaDocTag> tags) {
+	public CtJavaDocImpl setTags(List<CtJavaDocTag> tags) {
 		this.tags.set(tags);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtJavaDoc> E addTag(CtJavaDocTag tag) {
+	public CtJavaDocImpl addTag(CtJavaDocTag tag) {
 		this.tags.add(tag);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtJavaDoc> E addTag(int index, CtJavaDocTag tag) {
+	public CtJavaDocImpl addTag(int index, CtJavaDocTag tag) {
 		this.tags.add(index, tag);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtJavaDoc> E removeTag(int index) {
+	public CtJavaDocImpl removeTag(int index) {
 		this.tags.remove(index);
-		return (E) this;
+		return this;
 	}
 
 	@Override
-	public <E extends CtJavaDoc> E removeTag(CtJavaDocTag tag) {
+	public CtJavaDocImpl removeTag(CtJavaDocTag tag) {
 		this.tags.remove(tag);
-		return (E) this;
+		return this;
 	}
 
 	@Override

@@ -16,11 +16,15 @@
  */
 package spoon.reflect.code;
 
+
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
 import static spoon.reflect.path.CtRole.BODY;
 import static spoon.reflect.path.CtRole.PARAMETER;
+
+
+
 
 
 /**
@@ -40,7 +44,7 @@ public interface CtCatch extends CtCodeElement, CtBodyHolder {
 	 * Sets the catch's parameter (a throwable).
 	 */
 	@PropertySetter(role = PARAMETER)
-	<T extends CtCatch> T setParameter(CtCatchVariable<? extends Throwable> parameter);
+	CtCatch setParameter(CtCatchVariable<? extends Throwable> parameter);
 
 	/**
 	 * Gets the catch's body.

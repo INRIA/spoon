@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.code;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
@@ -33,10 +36,10 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static spoon.reflect.path.CtRole.LABEL;
+
+
+
 
 public abstract class CtStatementImpl extends CtCodeElementImpl implements CtStatement {
 	private static final long serialVersionUID = 1L;
@@ -254,27 +257,27 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 	}
 
 	@Override
-	public <T extends CtStatement> T insertBefore(CtStatement statement) throws ParentNotInitializedException {
+	public CtStatementImpl insertBefore(CtStatement statement) throws ParentNotInitializedException {
 		insertBefore(this, statement);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatement> T insertBefore(CtStatementList statements) throws ParentNotInitializedException {
+	public CtStatementImpl insertBefore(CtStatementList statements) throws ParentNotInitializedException {
 		insertBefore(this, statements);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatement> T insertAfter(CtStatement statement) throws ParentNotInitializedException {
+	public CtStatementImpl insertAfter(CtStatement statement) throws ParentNotInitializedException {
 		insertAfter(this, statement);
-		return (T) this;
+		return this;
 	}
 
 	@Override
-	public <T extends CtStatement> T insertAfter(CtStatementList statements) throws ParentNotInitializedException {
+	public CtStatementImpl insertAfter(CtStatementList statements) throws ParentNotInitializedException {
 		insertAfter(this, statements);
-		return (T) this;
+		return this;
 	}
 
 	@MetamodelPropertyField(role = LABEL)
@@ -286,10 +289,10 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 	}
 
 	@Override
-	public <T extends CtStatement> T setLabel(String label) {
+	public CtStatementImpl setLabel(String label) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
-		return (T) this;
+		return this;
 	}
 
 	@Override
