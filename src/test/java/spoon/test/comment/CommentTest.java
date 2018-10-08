@@ -286,7 +286,7 @@ public class CommentTest {
 		// verify that the number of comment present in the AST is correct
 		assertEquals(69, comments.size());
 
-		// verify that all comments present in the AST is printed
+		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				// the header of the file is not printed with the toString
@@ -484,7 +484,7 @@ public class CommentTest {
 		// verify that the number of comment present in the AST is correct
 		assertEquals(52, comments.size());
 
-		// verify that all comments present in the AST is printed
+		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				// the header of the file is not printed with the toString
@@ -948,7 +948,7 @@ public class CommentTest {
 		List<CtLiteral<String>> literals = (List) ((CtNewArray<?>) type.getField("comments").getDefaultExpression()).getElements();
 		assertTrue(literals.size() > 10);
 		/*
-		 * each string literal has a comment and string value, which defines expected value of it's comment
+		 * each string literal has a comment and string value, which defines expected value of its comment
 		 */
 		for (CtLiteral<String> literal : literals) {
 			assertEquals(1, literal.getComments().size());
