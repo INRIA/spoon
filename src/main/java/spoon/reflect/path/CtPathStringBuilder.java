@@ -186,13 +186,4 @@ public class CtPathStringBuilder {
 			}
 		}
 	}
-
-	private String getNextToken(StringTokenizer tokenizer, String newDelimeters) {
-		try {
-			return tokenizer.nextToken(newDelimeters);
-		} catch (NoSuchElementException e) {
-			return null;
-		}
-	}
-
 }
