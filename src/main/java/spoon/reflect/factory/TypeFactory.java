@@ -58,8 +58,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import static spoon.testing.utils.ModelUtils.createFactory;
-
 /**
  * The {@link CtType} sub-factory.
  */
@@ -579,6 +577,11 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 		return aType;
+	}
+
+	private Factory createFactory() {
+		//use existing environment to use correct class loader
+		return new FactoryImpl(new DefaultCoreFactory(), factory.getEnvironment());
 	}
 
 	/**
