@@ -32,14 +32,20 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewArray;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtSuperAccess;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -49,14 +55,18 @@ import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
+import spoon.support.visitor.SubInheritanceHierarchyResolver;
 import spoon.template.Parameter;
 
 import java.io.File;
@@ -66,9 +76,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -313,6 +325,7 @@ public class MetamodelTest {
 		//detect unused CtRoles
 		Set<CtRole> unhandledRoles = new HashSet<>(Arrays.asList(CtRole.values()));
 
+		Set problemsIssue1846 = new HashSet();
 		mm.getConcepts().forEach(mmConcept -> {
 			mmConcept.getRoleToProperty().forEach((role, mmField) -> {
 				unhandledRoles.remove(role);
@@ -337,7 +350,13 @@ public class MetamodelTest {
 				);
 
 			});
+			
 		});
+		forEachMethodWithInvalidReturnType(factory, method -> {
+			problemsIssue1846.add(method.getType() + " " + method.getDeclaringType().getSimpleName() + "#" + method.getSignature());
+		});
+		System.out.println(String.join("\n", problemsIssue1846));
+		assertEquals(String.join("============", problemsIssue1846), 0, problemsIssue1846.size());
 
 		unhandledRoles.forEach(it -> problems.add("Unused CtRole." + it.name()));
 		/*
@@ -345,6 +364,119 @@ public class MetamodelTest {
 		 * It is not a bug. It is useful to see how much is SpoonMetaModel covering real Spoon model.
 		 */
 //		assertTrue(String.join("\n", problems), problems.isEmpty());
+	}
+	
+	static void forEachMethodWithInvalidReturnType(Factory factory, Consumer<CtMethod> consumer) {
+		Set<CtType<?>> allTypes = Collections.newSetFromMap(new IdentityHashMap<>());
+		SubInheritanceHierarchyResolver subHierarchyResolver = new SubInheritanceHierarchyResolver(factory.Package().getRootPackage());
+		factory.getModel()
+		.filterChildren((CtInterface<?> iface) -> Metamodel.MODEL_IFACE_PACKAGES.contains(iface.getPackage().getQualifiedName()))
+		.forEach((CtInterface<?> iface) -> {
+			subHierarchyResolver.addSuperType(iface);
+			allTypes.add(iface);
+		});
+		//callect all implementations of the model interfaces
+		subHierarchyResolver.forEachSubTypeInPackage(t -> {
+			if (!t.isAnonymous()) {
+				allTypes.add(t);
+			}
+		});
+		
+		Map<String, List<CtMethod>> methodsBySignature = new HashMap<>();
+		for (CtType<?> ctType : allTypes) {
+			for (CtMethod<?> method : ctType.getMethods()) {
+				if (mightHaveInvalidReturnType(method)) {
+					MapUtils.getOrCreate(methodsBySignature, method.getSignature(), () -> new ArrayList<>()).add(method);
+				}
+			}
+		}
+		for (Map.Entry<String, List<CtMethod>> e : methodsBySignature.entrySet()) {
+			if (e.getKey().startsWith("addMethod")) {
+				MetamodelTest.class.getName();
+			}
+			class Context {
+				Boolean allMethodsReturnThis;
+				void and(boolean v) {
+					if (allMethodsReturnThis == null) {
+						allMethodsReturnThis = v;
+					} else {
+						allMethodsReturnThis = allMethodsReturnThis && v;
+					}
+				}
+			}
+			Context c = new Context();
+			for (CtMethod method : e.getValue()) {
+				if (method.getBody() != null) {
+					method.getBody().filterChildren((CtReturn r) -> {
+						CtExpression<?> expr = r.getReturnedExpression();
+						if (expr instanceof CtThisAccess) {
+							c.and(true);
+							return false;
+						}
+						if (expr instanceof CtInvocation) {
+							CtInvocation inv = (CtInvocation) expr;
+							if (inv.getTarget() instanceof CtThisAccess || inv.getTarget() instanceof CtSuperAccess) {
+								//it delegates to another call, which then returns this
+								c.and(true);
+								return false;
+							}
+						}
+						c.and(false);
+						return true;
+					}).first();
+				}
+			}
+			if (c.allMethodsReturnThis != null && c.allMethodsReturnThis) {
+				e.getValue().stream().forEach(consumer);
+			}
+		}
+	}
+	
+	private static Set<String> correctMethods = new HashSet<>(Arrays.asList("asCtIntersectionTypeReference"));
+	
+	private static boolean mightHaveInvalidReturnType(CtMethod<?> method) {
+		if (correctMethods.contains(method.getSimpleName())) {
+			return false;
+		}
+		for (CtTypeParameter typeParam : new ArrayList<>(method.getFormalCtTypeParameters())) {
+			// enumerating the usages of this formal type parameter
+			int n = 0;
+			List parametersAndReturn = new ArrayList(method.getParameters());
+
+			// addressing Pavel's comment https://github.com/INRIA/spoon/issues/1846#issuecomment-366047527
+			for (CtTypeReference ref : method.getType().getActualTypeArguments()) {
+				parametersAndReturn.add(ref);
+			}
+
+			for (Object x : parametersAndReturn) {
+				if (((CtElement)x).filterChildren(new Filter<CtReference>() {
+					@Override
+					public boolean matches(CtReference element) {
+						boolean isMatching = typeParam.equals(element.getDeclaration());
+						if (isMatching) {
+							//System.out.println(element + " " + element.getParent().getClass() + " " + element.getPosition());
+						}
+						return isMatching;
+					}
+				}).list().size() != 0) {
+					// we have one usage
+					n++;
+				}
+			}
+			if (n == 0) {
+				// if we have no usage
+				return true;
+			} else {
+				//System.out.println("xxxxxxxxxxxx"+mmMethod.getSignature());
+			}
+		}
+		if (!(method.getType() instanceof CtTypeParameterReference)) {
+			//if is concrete type
+			if (CtElement.class.isAssignableFrom(method.getType().getActualClass())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Test
