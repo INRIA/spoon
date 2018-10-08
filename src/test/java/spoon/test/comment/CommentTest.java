@@ -90,7 +90,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.io.IOUtils.write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -287,7 +286,7 @@ public class CommentTest {
 		// verify that the number of comment present in the AST is correct
 		assertEquals(69, comments.size());
 
-		// verify that all comments present in the AST is printed
+		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				// the header of the file is not printed with the toString
@@ -485,7 +484,7 @@ public class CommentTest {
 		// verify that the number of comment present in the AST is correct
 		assertEquals(52, comments.size());
 
-		// verify that all comments present in the AST is printed
+		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				// the header of the file is not printed with the toString
@@ -867,7 +866,7 @@ public class CommentTest {
 		try {
 			assertEquals("doc outdated, please commit doc/code_elements.md", IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString());
 		} finally {
-			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
+			IOUtils.write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
 	}
 
@@ -949,7 +948,7 @@ public class CommentTest {
 		List<CtLiteral<String>> literals = (List) ((CtNewArray<?>) type.getField("comments").getDefaultExpression()).getElements();
 		assertTrue(literals.size() > 10);
 		/*
-		 * each string literal has a comment and string value, which defines expected value of it's comment
+		 * each string literal has a comment and string value, which defines expected value of its comment
 		 */
 		for (CtLiteral<String> literal : literals) {
 			assertEquals(1, literal.getComments().size());
