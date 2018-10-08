@@ -1039,6 +1039,7 @@ public class CommentTest {
 
 	@Test
 	public void testCommentAssociationAndPrettyPrint() {
+		//contract: all comments, which are before an element are assigned to that element
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/TestClassWithComments.java");
 		launcher.getEnvironment().setCommentEnabled(true);
