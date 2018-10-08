@@ -90,7 +90,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.io.IOUtils.write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -867,7 +866,7 @@ public class CommentTest {
 		try {
 			assertEquals("doc outdated, please commit doc/code_elements.md", IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString());
 		} finally {
-			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
+			IOUtils.write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
 	}
 
