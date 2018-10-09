@@ -17,5 +17,5 @@
     <property name="message" value="Do not use Windows line endings"/>
   </module>-->
 
-<!-- our new rules, only for src/test/jaav   -->
+<!-- our new rules, only for src/test/java   -->
 </module>
