@@ -423,6 +423,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 										}
 									}
 								}
+								return false;
 							}
 						}
 					}

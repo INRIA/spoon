@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.comment;
 
 import org.apache.commons.io.IOUtils;
@@ -38,6 +54,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -55,6 +72,7 @@ import spoon.test.comment.testclasses.InlineComment;
 import spoon.test.comment.testclasses.JavaDocComment;
 import spoon.test.comment.testclasses.JavaDocEmptyCommentAndTags;
 import spoon.test.comment.testclasses.OtherJavaDoc;
+import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
 
@@ -72,7 +90,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.io.IOUtils.write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -269,7 +286,7 @@ public class CommentTest {
 		// verify that the number of comment present in the AST is correct
 		assertEquals(69, comments.size());
 
-		// verify that all comments present in the AST is printed
+		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				// the header of the file is not printed with the toString
@@ -467,7 +484,7 @@ public class CommentTest {
 		// verify that the number of comment present in the AST is correct
 		assertEquals(52, comments.size());
 
-		// verify that all comments present in the AST is printed
+		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			if (comment.getCommentType() == CtComment.CommentType.FILE) {
 				// the header of the file is not printed with the toString
@@ -849,7 +866,7 @@ public class CommentTest {
 		try {
 			assertEquals("doc outdated, please commit doc/code_elements.md", IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString());
 		} finally {
-			write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
+			IOUtils.write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
 	}
 
@@ -931,7 +948,7 @@ public class CommentTest {
 		List<CtLiteral<String>> literals = (List) ((CtNewArray<?>) type.getField("comments").getDefaultExpression()).getElements();
 		assertTrue(literals.size() > 10);
 		/*
-		 * each string literal has a comment and string value, which defines expected value of it's comment
+		 * each string literal has a comment and string value, which defines expected value of its comment
 		 */
 		for (CtLiteral<String> literal : literals) {
 			assertEquals(1, literal.getComments().size());
@@ -1017,5 +1034,24 @@ public class CommentTest {
 
 	private List<String> getCommentStrings(CtElement ele) {
 		return ele.getComments().stream().map(Object::toString).collect(Collectors.toList());
+	}
+
+	@Test
+	public void testCommentAssociationAndPrettyPrint() {
+		//contract: all comments, which are before an element are assigned to that element
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/TestClassWithComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		Factory factory = launcher.getFactory();
+		CtType<?> cls = factory.Type().get(TestClassWithComments.class);
+		
+		assertEquals(1, cls.getComments().size());
+		CtType<?> nestedIface = cls.getNestedType("testInterface");
+		assertEquals(4, nestedIface.getComments().size());
+		CtMethod<?> method = nestedIface.getMethodsByName("mytest").get(0);
+		assertEquals(1, method.getComments().size());
 	}
 }

@@ -656,7 +656,7 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		CharType lastType = null;
 		int off = start;
 		while (off < end) {
@@ -675,7 +675,7 @@ public class ElementSourceFragment implements SourceFragment {
 		onCharSequence(lastType, buff, consumer);
 	}
 
-	private void onCharSequence(CharType type, StringBuffer buff, Consumer<SourceFragment> consumer) {
+	private void onCharSequence(CharType type, StringBuilder buff, Consumer<SourceFragment> consumer) {
 		if (type == CharType.SPACE) {
 			consumer.accept(new TokenSourceFragment(buff.toString(), TokenType.SPACE));
 			return;

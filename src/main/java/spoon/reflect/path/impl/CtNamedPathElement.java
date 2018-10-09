@@ -62,12 +62,9 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 	}
 
 	private boolean canBeRegExpPattern(String str) {
-		if (str.indexOf("()") >= 0) {
-			//this is acceptable by RegExp, but is in conflict with method signature
-			//and it makes no sense for regexp
-			return false;
-		}
-		return true;
+		// if there is "()", it refers to a method signature
+		// so it cannot be a RegExp
+		return !str.contains("()");
 	}
 
 	public String getPattern() {
@@ -121,10 +118,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 			if (str.equals(pattern)) {
 				return true;
 			}
-			if (rePattern != null && rePattern.matcher(str).matches()) {
-				return true;
-			}
-			return false;
+			return rePattern != null && rePattern.matcher(str).matches();
 		}
 
 		private void recurse(Collection<? extends CtElement> elements) {

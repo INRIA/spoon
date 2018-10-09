@@ -31,6 +31,13 @@ public class MavenLauncher extends Launcher {
 	private boolean forceRefresh = false;
 
 	/**
+	 * @return SpoonPom corresponding to the pom file used by the launcher
+	 */
+	public SpoonPom getPomFile() {
+		return model;
+	}
+
+	/**
 	 * The type of source to consider in the model
 	 */
 	public enum SOURCE_TYPE {
@@ -44,7 +51,7 @@ public class MavenLauncher extends Launcher {
 
 	/**
 	 * MavenLauncher constructor assuming either an environment
-	 * variable M2_HOME, or that mvn command exist in PATH.
+	 * variable M2_HOME, or that mvn command exists in PATH.
 	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
@@ -55,7 +62,7 @@ public class MavenLauncher extends Launcher {
 
 	/**
 	 * MavenLauncher constructor assuming either an environment
-	 * variable M2_HOME, or that mvn command exist in PATH.
+	 * variable M2_HOME, or that mvn command exists in PATH.
 	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
@@ -68,7 +75,7 @@ public class MavenLauncher extends Launcher {
 
 	/**
 	 * MavenLauncher constructor assuming either an environment
-	 * variable M2_HOME, or that mvn command exist in PATH.
+	 * variable M2_HOME, or that mvn command exists in PATH.
 	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param m2RepositoryPath unused
@@ -80,7 +87,6 @@ public class MavenLauncher extends Launcher {
 	}
 
 	/**
-	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param m2RepositoryPath unused
 	 * @param sourceType the source type (App, test, or all)
@@ -92,7 +98,6 @@ public class MavenLauncher extends Launcher {
 	}
 
 	/**
-	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
 	 * @param mvnHome Path to maven install
@@ -102,7 +107,6 @@ public class MavenLauncher extends Launcher {
 	}
 
 	/**
-	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
 	 * @param mvnHome Path to maven install

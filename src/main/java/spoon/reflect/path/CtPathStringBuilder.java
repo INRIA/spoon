@@ -86,9 +86,9 @@ public class CtPathStringBuilder {
 		String token = tokenizer.getNextToken(MAIN_DELIMITERS);
 		while (token != null) {
 			String kind = token;
-			CtPathElement pathElement = null;
+			CtPathElement pathElement;
 			token = tokenizer.getNextToken(PATH_DELIMITERS);
-			if (token != null && token.length() == 1 && PATH_DELIMITERS.indexOf(token) >= 0) {
+			if (token != null && token.length() == 1 && PATH_DELIMITERS.contains(token)) {
 				//nextToken is again path delimiter. It means there is no token value in between
 				throw new CtPathException("Path value is missing");
 			}
@@ -186,13 +186,4 @@ public class CtPathStringBuilder {
 			}
 		}
 	}
-
-	private String getNextToken(StringTokenizer tokenizer, String newDelimeters) {
-		try {
-			return tokenizer.nextToken(newDelimeters);
-		} catch (NoSuchElementException e) {
-			return null;
-		}
-	}
-
 }

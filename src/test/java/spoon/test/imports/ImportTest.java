@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
@@ -756,6 +772,29 @@ public class ImportTest {
 		assertTrue("The file should not contain a static import to the inner enum method values",!output.contains("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"));
 		assertTrue("The file should not contain a static import to the inner enum method values of a distinct interface",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"));
 		assertTrue("The file should not contain a static import to the inner enum value",!output.contains("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"));
+		canBeBuilt(outputDir, 7);
+	}
+
+	@Test
+	public void testStaticImportOfEnumField() {
+		//contract: static import of enum field doesn't cause import of enum
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		String outputDir = "./target/spooned-enumField";
+		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/Kun.java");
+		launcher.setSourceOutputDirectory(outputDir);
+		launcher.run();
+		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
+
+		CtType element = launcher.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+
+		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String output = prettyPrinter.getResult();
+
+		assertTrue("The file should not contain the import of enum",!output.contains("import spoon.reflect.path.CtRole;"));
+		assertTrue("The file should contain the static import of enum field",!output.contains("import spoon.reflect.path.CtRole.NAME;"));
 		canBeBuilt(outputDir, 7);
 	}
 

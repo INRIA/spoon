@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.main;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -337,10 +352,10 @@ public class MainTest {
 				counterBiScan.scan++;
 				if (element == null) {
 					if (other != null) {
-						Assert.fail("element can't be null if other isn't null.");
+						fail("element can't be null if other isn't null.");
 					}
 				} else if (other == null) {
-					Assert.fail("other can't be null if element isn't null.");
+					fail("other can't be null if element isn't null.");
 				} else {
 					// contract: all elements have been cloned and are still equal
 					assertEquals(element, other);
@@ -433,7 +448,7 @@ public class MainTest {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if(firstStack == dummyException) {
-					Assert.fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily
@@ -449,7 +464,7 @@ public class MainTest {
 		
 		String report = problems.toString();
 		if (!report.isEmpty()) {
-			Assert.fail(report);
+			fail(report);
 		}
 	}
 

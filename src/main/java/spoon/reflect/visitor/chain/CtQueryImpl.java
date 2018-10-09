@@ -370,7 +370,9 @@ public class CtQueryImpl implements CtQuery {
 				return true;
 			}
 			if (expectedClass != null && expectedClass.isAssignableFrom(input.getClass()) == false) {
-				log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
+				if (isLogging()) {
+					log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
+				}
 				return false;
 			}
 			return true;
