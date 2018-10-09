@@ -235,9 +235,6 @@ public class InlinedStatementConfigurator {
 				}
 			}
 		}
-		if (elseStmt instanceof CtIf) {
-			return (CtIf) elseStmt;
-		}
 		return elseStmt;
 	}
 
