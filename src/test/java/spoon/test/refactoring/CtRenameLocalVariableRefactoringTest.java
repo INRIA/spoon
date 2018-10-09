@@ -16,16 +16,7 @@
  */
 package spoon.test.refactoring;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -41,9 +32,18 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.test.refactoring.testclasses.TestTryRename;
 import spoon.test.refactoring.testclasses.CtRenameLocalVariableRefactoringTestSubject;
+import spoon.test.refactoring.testclasses.TestTryRename;
 import spoon.testing.utils.ModelUtils;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class CtRenameLocalVariableRefactoringTest
 {
