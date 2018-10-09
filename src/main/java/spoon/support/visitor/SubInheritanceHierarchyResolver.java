@@ -16,11 +16,6 @@
  */
 package spoon.support.visitor;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -39,8 +34,10 @@ import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import static spoon.reflect.visitor.chain.ScanningMode.NORMAL;
-import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Expects a {@link CtPackage} as input
@@ -174,14 +171,14 @@ public class SubInheritanceHierarchyResolver {
 						}
 						//we do not have to go deeper into super inheritance hierarchy. Skip visiting of further super types
 						//but continue visiting of siblings (do not terminate query)
-						return SKIP_ALL;
+						return ScanningMode.SKIP_ALL;
 					}
 					if (allVisitedTypeNames.add(qName) == false) {
 						/*
 						 * this type was already visited, by another way. So it is not sub type of `targetSuperTypes`.
 						 * Stop visiting it's inheritance hierarchy.
 						 */
-						return SKIP_ALL;
+						return ScanningMode.SKIP_ALL;
 					}
 					/*
 					 * This type was not visited yet.
@@ -189,7 +186,7 @@ public class SubInheritanceHierarchyResolver {
 					 * continue searching in super inheritance hierarchy
 					 */
 					currentSubTypes.push(typeRef);
-					return NORMAL;
+					return ScanningMode.NORMAL;
 				}
 				@Override
 				public void exit(CtElement element) {
