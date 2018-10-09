@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -175,11 +176,8 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 							.getQualifiedName()
 							.replace(".", File.separator))
 					.toFile();
-			getDeclaredTypes().forEach(type ->
-					getExpectedBinaryFiles(base, null, type)
-							.stream()
-							.filter(File::isFile)
-							.forEach(binaries::add));
+			getDeclaredTypes().forEach(type -> binaries.addAll(
+					getExpectedBinaryFiles(base, null, type)));
 		}
 		return binaries;
 	}
@@ -215,6 +213,9 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		type.getElements(new TypeFilter<>(CtType.class)).stream()
 				// Exclude 'type' itself.
 				.filter(inner -> !inner.equals(type))
+				// Exclude types that do not generate a binary file.
+				.filter(inner -> !(inner instanceof CtPackage)
+						&& !(inner instanceof CtTypeParameter))
 				// Include only direct inner types.
 				.filter(inner -> inner.getParent(CtType.class).equals(type))
 				.forEach(inner -> {

@@ -168,4 +168,23 @@ public class GetBinaryFilesTest {
 		assertTrue(binaries.get(2).isFile());
 		assertTrue(binaries.get(3).isFile());
 	}
+
+	@Test
+	public void testClassWithUnresolvedDependencies() throws IOException {
+		final String input = "./src/test/resources/noclasspath/elasticsearch1753/TaskManager.java";
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource(input);
+		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.buildModel();
+		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+
+		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		assertEquals(1, cus.size());
+
+		final List<File> expected = cus.get(new File(input).getCanonicalFile().getAbsolutePath()).getExpectedBinaryFiles();
+		assertEquals(4, expected.size());
+
+		final List<File> actual = cus.get(new File(input).getCanonicalFile().getAbsolutePath()).getBinaryFiles();
+		assertEquals(0, actual.size());
+	}
 }
