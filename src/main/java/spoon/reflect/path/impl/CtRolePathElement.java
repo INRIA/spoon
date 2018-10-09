@@ -103,7 +103,7 @@ public class CtRolePathElement extends AbstractPathElement<CtElement, CtElement>
 						if (getArguments().containsKey("index")) {
 							int index = Integer.parseInt(getArguments().get("index"));
 							if (index < subMatches.size()) {
-								matchs.add((CtElement) new ArrayList<>(subMatches).get(index));
+								matchs.add(new ArrayList<>(subMatches).get(index));
 							}
 						} else {
 							matchs.addAll(subMatches);
