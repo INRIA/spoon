@@ -24,26 +24,29 @@ Current integrators (alphabetical order):
 Guidelines for pull requests
 ----------------------------
 
-**G0**: The pull request contains a single bug fix or a single feature. 
+There are different kinds of pull-requests, in particular bug-fix, new features, refactoring and performance pull-requests.
 
-**G1**: The pull request must contain a test case specifying the new feature or highlighting the bug. 
+Guidelines for all pull-requests:
 
-**G2**: The pull request must comply with Spoon's formatting rules.
+* The pull request does a single thing (eg a single bug fix or a single feature). 
+* The pull request must pass all continuous integration checks (incl. formatting rules).
+* The pull request must have an explicit and clear explanation.
+* The pull-request title starts with a prefix stating its kind: "fix:", "feature:", "refactor:", "perf:", "checkstyle:"
 
-**G3**: The pull request's commit must have an explicit and clear commit message.
+Guidelines for bug-fix pull-requests:
 
-**G4**: To achieve a clean commit history after a pull request discussion, commits should be squashed as much as possible.
+* The pull request must contain a test case highlighting the bug. 
 
-**G5**: If your pull request contains a critical bug fix of the current release, you must create a pull request to the stable branch.
+Guidelines for feature pull-requests:
 
+* The pull request must contain a set of test case to specify the expected behavior of the new feature. 
+* The pull request must contain an update in the documentation folder (`doc`) to explain the new feature.
 
-Notes:
+Other kinds of pull-requests:
 
-1. Refactoring and documentation PRs are exceptions to G1.
-1. Pull requests with test cases only are welcome.
-1. Commit messages start with a verb: "adds support", "fixes bug", ...
-1. We encourage long commit messages.
-1. G2 is specified in the checkstyle rules.
+1. Pull requests with passing test cases only are welcome, they specify previously unspecified behavior and are prefixed by "test:".
+1. Pull requests with failing test cases only are welcome, they reproduce bugs and are very useful for maintainers to fix them.
+1. "Chore" pull-requests modify the CI setup.
 1. If there is no activity on an issue or on a pull request for 3 months it's closed.
 
 Public API
