@@ -313,9 +313,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			if (changeResolver == null) {
 				changeResolver = new ChangeResolver(getChangeCollector(), element);
 			}
-			if (changeResolver.hasChangedRole() == false) {
-				throw new SpoonException("The modified fragment has no changed roles?");
-			}
+			//changeResolver.hasChangedRole() is false when element is added
 			//something is changed in this element
 			superScanInContext(element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, changeResolver), false);
 		} else {

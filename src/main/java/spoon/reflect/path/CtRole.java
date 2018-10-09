@@ -202,10 +202,10 @@ public enum CtRole {
 	/**
 	 * @return sub role of this role, which match `item`.
 	 *
-	 * <code><pre>
+	 * <pre><code>
 	 * CtMethod method = ...
 	 * CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(method);
-	 * <pre></code>
+	 * </code></pre>
 	 */
 	@Internal
 	public CtRole getMatchingSubRoleFor(CtElement item) {

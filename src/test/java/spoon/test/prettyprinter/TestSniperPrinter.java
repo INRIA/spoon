@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.prettyprinter;
 
 import org.junit.Test;
@@ -5,9 +21,11 @@ import spoon.Launcher;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
@@ -131,6 +149,20 @@ public class TestSniperPrinter {
 		});
 	}
 
+	@Test
+	public void testPrintAfterRemoveOfFormalTypeParamsAndChangeOfReturnType() {
+		//contract: sniper printing after remove of formal type parameters and change of return type
+		testSniper(ToBeChanged.class.getName(), type -> {
+			//change the model
+			CtMethod<?> m = type.getMethodsByName("andSomeOtherMethod").get(0);
+			m.setFormalCtTypeParameters(Collections.emptyList());
+			m.setType((CtTypeReference) m.getFactory().Type().stringType());
+		}, (type, printed) -> {
+			// everything is the same but method formal type params and return type
+			assertIsPrintedWithExpectedChanges(type, printed, "\\Qpublic <T, K> void andSomeOtherMethod\\E", "public java.lang.String andSomeOtherMethod");
+		});
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
@@ -221,7 +253,6 @@ public class TestSniperPrinter {
 		while (m.find()) {
 			lastImportEnd = m.end();
 		}
-		//System.out.println(lastImportEnd);
 		return source.substring(lastImportEnd).trim();
 	}
 }

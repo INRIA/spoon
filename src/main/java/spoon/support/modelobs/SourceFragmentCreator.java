@@ -28,9 +28,13 @@ import spoon.support.sniper.internal.ElementSourceFragment;
 public class SourceFragmentCreator extends ChangeCollector {
 	@Override
 	protected void onChange(CtElement currentElement, CtRole role) {
+		if (!currentElement.isParentInitialized()) {
+			//parent is not initialized. It is just creation of a temporary element
+			//ignore such "change"
+			return;
+		}
 		CompilationUnit cu = currentElement.getPosition().getCompilationUnit();
 		if (cu != null) {
-
 			//getOriginalSourceFragment is not only a getter, it actually
 			//builds a tree of SourceFragments of compilation unit of the modified element
 			cu.getOriginalSourceFragment();

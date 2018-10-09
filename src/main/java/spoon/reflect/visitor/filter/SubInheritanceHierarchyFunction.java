@@ -40,11 +40,8 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 
 	/**
 	 * The mapping function created using this constructor
-	 * will visit each super class and super interface
-	 * following super hierarchy. It can happen
-	 * that some interfaces will be visited more then once
-	 * if they are in super inheritance hierarchy more then once.<br>
-	 * Use second constructor if you want to visit each interface only once.
+	 * will visit each sub class and sub interface
+	 * following sub hierarchy.
 	 */
 	public SubInheritanceHierarchyFunction() {
 	}

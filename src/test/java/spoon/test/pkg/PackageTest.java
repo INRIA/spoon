@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.pkg;
 
 import org.junit.Assert;
@@ -56,30 +72,30 @@ public class PackageTest {
 		Assert.assertSame(PackageTestClass.class, clazz.getActualClass());
 
 		CtPackage ctPackage = clazz.getPackage();
-		Assert.assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
-		Assert.assertEquals("", ctPackage.getDocComment());
+		assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
+		assertEquals("", ctPackage.getDocComment());
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
-		Assert.assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
+		assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
 		Assert.assertNotNull(ctPackage.getPosition());
-		Assert.assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
-		Assert.assertEquals(1, ctPackage.getPosition().getLine());
-		Assert.assertEquals(0, ctPackage.getPosition().getSourceStart());
-		Assert.assertEquals(71, ctPackage.getPosition().getSourceEnd());
-		Assert.assertEquals(1, ctPackage.getAnnotations().size());
-		Assert.assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
+		assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
+		assertEquals(1, ctPackage.getPosition().getLine());
+		assertEquals(0, ctPackage.getPosition().getSourceStart());
+		assertEquals(71, ctPackage.getPosition().getSourceEnd());
+		assertEquals(1, ctPackage.getAnnotations().size());
+		assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
 		Assert.assertSame(Deprecated.class, annotation.getAnnotationType().getActualClass());
-		Assert.assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
-		Assert.assertEquals(5, annotation.getPosition().getLine());
+		assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
+		assertEquals(5, annotation.getPosition().getLine());
 
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
 
 		ctPackage = (CtPackage) ctPackage.getParent();
-		Assert.assertEquals("spoon.test", ctPackage.getQualifiedName());
-		Assert.assertEquals("", ctPackage.getDocComment());
+		assertEquals("spoon.test", ctPackage.getQualifiedName());
+		assertEquals("", ctPackage.getDocComment());
 	}
 
 	@Test

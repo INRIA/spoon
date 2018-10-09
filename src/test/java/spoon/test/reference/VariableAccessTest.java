@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.reference;
 
 import org.junit.Test;
@@ -22,7 +38,6 @@ import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.test.reference.testclasses.Tortillas;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +73,7 @@ public class VariableAccessTest {
 
 	@Test
 	public void testDeclarationArray() throws Exception {
-		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
+		final CtType<Pozole> aPozole = buildClass(Pozole.class);
 		final CtMethod<Object> m2 = aPozole.getMethod("m2");
 		final CtArrayWrite<?> ctArrayWrite = m2.getElements(new TypeFilter<CtArrayWrite<?>>(CtArrayWrite.class)).get(0);
 		final CtLocalVariable expected = m2.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);

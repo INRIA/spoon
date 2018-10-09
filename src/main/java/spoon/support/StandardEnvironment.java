@@ -17,6 +17,32 @@
 package spoon.support;
 
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import spoon.Launcher;
+import spoon.OutputType;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
+import spoon.compiler.InvalidClassPathException;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonFolder;
+import spoon.processing.FileGenerator;
+import spoon.processing.ProblemFixer;
+import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
+import spoon.processing.ProcessorProperties;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.PrettyPrinter;
+import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.SpoonProgress;
+import spoon.support.modelobs.EmptyModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,32 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Supplier;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import spoon.Launcher;
-import spoon.OutputType;
-import spoon.SpoonException;
-import spoon.compiler.Environment;
-import spoon.compiler.InvalidClassPathException;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.modelobs.EmptyModelChangeListener;
-import spoon.support.modelobs.FineModelChangeListener;
-import spoon.processing.FileGenerator;
-import spoon.processing.ProblemFixer;
-import spoon.processing.ProcessingManager;
-import spoon.processing.Processor;
-import spoon.processing.ProcessorProperties;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.compiler.FileSystemFolder;
-import spoon.support.compiler.SpoonProgress;
 
 
 /**
@@ -96,13 +96,13 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean skipSelfChecks = false;
 
-	private transient  FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
+	private transient FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
-	private transient  Charset encoding = Charset.defaultCharset();
+	private transient Charset encoding = Charset.defaultCharset();
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
-	private transient  OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
+	private transient OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
 
@@ -212,7 +212,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		return processingStopped;
 	}
 
-	private void prefix(StringBuffer buffer, Level level) {
+	private void prefix(StringBuilder buffer, Level level) {
 		if (level == Level.ERROR) {
 			buffer.append("error: ");
 			errorCount++;
@@ -224,7 +224,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void report(Processor<?> processor, Level level, CtElement element, String message) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		prefix(buffer, level);
 
@@ -260,7 +260,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void report(Processor<?> processor, Level level, String message) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		prefix(buffer, level);
 		// Adding message

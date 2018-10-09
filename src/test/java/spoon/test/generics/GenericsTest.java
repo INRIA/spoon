@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.generics;
 
 import org.junit.Test;
@@ -67,7 +83,6 @@ import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -888,7 +903,7 @@ public class GenericsTest {
 	@Test
 	public void testTypeAdapted() throws Exception {
 		// contract: one can get the actual value of a generic type in a given context
-		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
+		CtClass<?> ctModel = (CtClass<?>) buildClass(ErasureModelA.class);
 		CtTypeParameter tpA = ctModel.getFormalCtTypeParameters().get(0);
 		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
 		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
@@ -1425,7 +1440,7 @@ public class GenericsTest {
 	@Test
 	public void testCannotAdaptTypeOfNonTypeScope() throws Exception {
 		//contract: ClassTypingContext doesn't fail on type parameters, which are defined out of the scope of ClassTypingContext
-		CtType<?> ctClass = ModelUtils.buildClass(OuterTypeParameter.class);
+		CtType<?> ctClass = buildClass(OuterTypeParameter.class);
 		//the method defines type parameter, which is used in super of local class
 		CtReturn<?> retStmt = (CtReturn<?>) ctClass.getMethodsByName("method").get(0).getBody().getStatements().get(0);
 		CtNewClass<?> newClassExpr = (CtNewClass<?>) retStmt.getReturnedExpression();

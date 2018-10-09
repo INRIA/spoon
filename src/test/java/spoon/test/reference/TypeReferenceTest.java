@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.reference;
 
 import org.junit.Test;
@@ -35,7 +51,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -491,8 +506,8 @@ public class TypeReferenceTest {
 	@Test
 	public void testShortTypeReference() {
 
-		CtTypeReference<Short> aShort = ModelUtils.createFactory().Type().SHORT;
-		CtTypeReference<Short> shortPrimitive = ModelUtils.createFactory().Type().SHORT_PRIMITIVE;
+		CtTypeReference<Short> aShort = createFactory().Type().SHORT;
+		CtTypeReference<Short> shortPrimitive = createFactory().Type().SHORT_PRIMITIVE;
 
 		assertSame(Short.class, aShort.getActualClass());
 		assertSame(short.class, shortPrimitive.getActualClass());

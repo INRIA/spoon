@@ -44,7 +44,9 @@ import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
 
 /**
  * Expects a {@link CtPackage} as input
- * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces, which extends or implements super type(s) provided in constructor and stored as `targetSuperTypes`.<br>
+ * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces,
+ * which extends or implements super type(s) provided by call(s) of {@link #addSuperType(CtTypeInformation)}
+ * and stored as `targetSuperTypes`.<br>
  *
  * The repeated processing of this mapping function on the same input returns only newly found sub types.
  * The instance of {@link SubInheritanceHierarchyResolver} returns found sub types only once.

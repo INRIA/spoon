@@ -29,6 +29,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
+import java.util.Objects;
 
 import static spoon.reflect.path.CtRole.NAME;
 
@@ -76,5 +77,19 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public CtReference clone() {
 		return (CtReference) super.clone();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof CtReference) {
+			CtReference ref = (CtReference) o;
+			if (!Objects.equals(getSimpleName(), ref.getSimpleName())) {
+				//fast fallback when simple names are not equal
+				//it is much faster then EqualsVisitor
+				return false;
+			}
+			return super.equals(o);
+		}
+		return false;
 	}
 }
