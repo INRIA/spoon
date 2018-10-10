@@ -44,7 +44,7 @@ This article is a short summary of the [official documentation of sonatype](http
 
 **After release**
 
-- Create Pull request on Github with
+- Create Pull request on Github with (example #1732)
     - News section in `doc/doc_homepage.md`
     - Maven version in `doc/_config.yml`
     - Updates main `README.md`
