@@ -171,11 +171,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public void setSelfChecks(boolean skip) {
-		skipSelfChecks = skip;
-	}
-
-	@Override
 	public void disableConsistencyChecks() {
 		skipSelfChecks = true;
 	}

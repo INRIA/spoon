@@ -296,7 +296,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			// we do not want to compute imports of for CtImport and CtReference
 			// as it may change the print of a reference
 			if (!(this instanceof CtImport) && !(this instanceof CtReference)) {
-				printer.computeImports(this);
+				printer.getImportsContext().computeImports(this);
 			}
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {

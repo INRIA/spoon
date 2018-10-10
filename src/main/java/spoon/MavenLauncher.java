@@ -72,31 +72,6 @@ public class MavenLauncher extends Launcher {
 		this(mavenProject, sourceType, System.getenv().get("M2_HOME"), forceRefresh);
 	}
 
-
-	/**
-	 * MavenLauncher constructor assuming either an environment
-	 * variable M2_HOME, or that mvn command exists in PATH.
-	 *
-	 * @param mavenProject the path to the root of the project
-	 * @param m2RepositoryPath unused
-	 * @param sourceType the source type (App, test, or all)
-	 */
-	@Deprecated
-	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType) {
-		this(mavenProject, sourceType);
-	}
-
-	/**
-	 * @param mavenProject the path to the root of the project
-	 * @param m2RepositoryPath unused
-	 * @param sourceType the source type (App, test, or all)
-	 * @param mvnHome Path to maven install
-	 */
-	@Deprecated
-	public MavenLauncher(String mavenProject, String m2RepositoryPath, SOURCE_TYPE sourceType, String mvnHome) {
-		this(mavenProject, sourceType, mvnHome);
-	}
-
 	/**
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)

@@ -361,22 +361,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	/**
 	 * Get the units from the given source folder and build the Spoon Model.
-	 * @param jdtBuilder The instance of JDTBuilder to use to prepare the right arguments
-	 * @param sourcesFolder The source folder
-	 * @param classpath The complete classpath
-	 * @param debugMessagePrefix Useful to help debugging
-	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
-	 * @return true if the model has been built without errors
-	 *
-	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
-	 */
-	@Deprecated
-	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		return buildUnitsAndModel(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
-	}
-
-	/**
-	 * Get the units from the given source folder and build the Spoon Model.
 	 * @param jdtBuilder The instance of JDTBuilder to prepare the right JDT arguments
 	 * @param sourcesFolder The source folder
 	 * @param classpath The complete classpath
@@ -393,21 +377,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
-
-	/**
-	 * Build the CompilationUnit found in the source folder
-	 * @param jdtBuilder The instance of JDTBuilder to prepare the right JDT arguments
-	 * @param sourcesFolder The source folder
-	 * @param classpath The complete classpath
-	 * @param debugMessagePrefix Useful to help debugging
-	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
-	 * @return All compilationUnitDeclaration from JDT found in source folder
-	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
-	 */
-	@Deprecated
-	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		return this.buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
-	}
 
 	/**
 	 * Build the CompilationUnit found in the source folder

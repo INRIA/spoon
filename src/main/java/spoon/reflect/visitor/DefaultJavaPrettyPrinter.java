@@ -182,10 +182,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * The printing context.
 	 *
-	 * @deprecated since Spoon 7.1.0, please use {{@link #getContext()}}
+	 * since Spoon 7.1.0, use {{@link #getContext()}}
 	 */
-	@Deprecated
-	public PrintingContext context = new PrintingContext();
+	private PrintingContext context = new PrintingContext();
+
+	/** get the import scanner of this pretty printer */
+	public ImportScanner getImportsContext() {
+		return importsContext;
+	}
 
 	/**
 	 * Handle imports of classes.
@@ -318,25 +322,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
      *
-     * @deprecated We intend to remove those method from the DJPP and to compute imports directly in CompilationUnit in the future.
 	 */
-	@Deprecated
-	public Collection<CtImport> computeImports(CtType<?> type) {
+	private Collection<CtImport> computeImports(CtType<?> type) {
 		context.currentTopLevel = type;
 		importsContext.computeImports(context.currentTopLevel);
 		return importsContext.getAllImports();
-	}
-
-	/**
-	 * Make the imports for all elements.
-     *
-     * @deprecated We intend to remove those method from the DJPP and to compute imports directly in CompilationUnit in the future.
-	 */
-	@Deprecated
-	public void computeImports(CtElement element) {
-		if (env.isAutoImports()) {
-			importsContext.computeImports(element);
-		}
 	}
 
 	/**
