@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -85,7 +85,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 		while (!tocheck.isEmpty()) {
 			Class<?> intf = tocheck.poll();
 
-			Assert.assertTrue(intf.isInterface());
+			assertTrue(intf.isInterface());
 			if (!intf.getSimpleName().startsWith("Ct")) {
 				continue;
 			}
