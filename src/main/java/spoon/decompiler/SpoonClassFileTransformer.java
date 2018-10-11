@@ -39,16 +39,17 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 	String pathToDecompiled;
 	String pathToRecompile;
 	String pathToCache;
+	File cache;
+	Set<String> classPath;
 	public Decompiler decompiler;
-	SpoonModelBuilder compiler;
-	IncrementalLauncher launcher;
 	Set<File> inputSources;
 
 	//Exclude jvm classes
 	public static final Predicate<String> defaultFilter = s -> !(s.startsWith("java") || s.startsWith("sun"));
 
+
 	/**
-	 * Default Constructor for SpooClassFileTransformer
+	 * Default Constructor for SpoonClassFileTransformer
 	 *
 	 * @param classNameFilter Filter for classname. If classeNameFilter.test(className) returns false,
 	 *                        the class will be loaded without decompilation nor transformation.
@@ -57,31 +58,41 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 	 *                        with `defaultFilter.and(classNameFilter)`.
 	 */
 	public SpoonClassFileTransformer(Predicate<String> classNameFilter) {
+		this(classNameFilter, "spoon-decompiled", "spoon-cache", "spoon-recompiled");
+	}
+
+	/**
+	 * Default Constructor for SpoonClassFileTransformer
+	 *
+	 * @param classNameFilter Filter for classname. If classeNameFilter.test(className) returns false,
+	 *                        the class will be loaded without decompilation nor transformation.
+	 *                        If null, a default filter will filter out typical jvm classes (starting with java* or sun*)
+	 *                        Note @{SpoonClassFileTransformer.defaultFilter} may be used in conjunction of custom filter
+	 *                        with `defaultFilter.and(classNameFilter)`.
+	 * @param pathToDecompiled path to directory in which to put decompiled sources.
+	 * @param pathToCache path to cache directory for IncrementalLauncher
+	 * @param pathToRecompile path to recompiled classes
+	 */
+	public SpoonClassFileTransformer(Predicate<String> classNameFilter, String pathToDecompiled, String pathToCache, String pathToRecompile) {
 		if (classNameFilter == null) {
 			this.classNameFilter = defaultFilter;
 		} else {
 			this.classNameFilter = classNameFilter;
 		}
 		String classPathAr[] = System.getProperty("java.class.path").split(":");
-		Set<String> classPath = new HashSet<>(Arrays.asList(classPathAr));
-		pathToDecompiled = "spoon-decompiled";
-		pathToRecompile = "spoon-recompiled";
-		pathToCache = "spoon-cache";
+		classPath = new HashSet<>(Arrays.asList(classPathAr));
+		this.pathToDecompiled = pathToDecompiled;
+		this.pathToRecompile = pathToRecompile;
+		this.pathToCache = pathToCache;
+
+		cache = new File(pathToCache);
 
 
 		//inputSources = Collections.singleton(new File(pathToDecompiled));
 		inputSources = new HashSet<>();
 		inputSources.add(new File(pathToDecompiled));
-		launcher = new IncrementalLauncher(inputSources, classPath, new File(pathToCache));
-		launcher.addInputResource(pathToDecompiled);
 
 		decompiler = s -> Main.main(new String[]{s, "--outputdir", pathToDecompiled});
-
-
-		//Should we wait for directory creation?
-
-		compiler = launcher.createCompiler();
-		launcher.buildModel();
 	}
 
 	@Override
@@ -93,7 +104,6 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 			byte[] classfileBuffer
 	) throws IllegalClassFormatException {
 		try {
-			launcher.getEnvironment().debugMessage("[Agent] loading " + className);
 
 			//If the class is not matched by user's filter, resume unmodified loading
 			if (!classNameFilter.test(className)) {
@@ -101,12 +111,15 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 			}
 
 			//Decompile classfile
-			launcher.getEnvironment().debugMessage("[Agent] decompiling " + className);
 			String pathToClassFile = loader.getResource(className + ".class").getPath();
 			decompiler.decompile(pathToClassFile);
 
+			IncrementalLauncher launcher = new IncrementalLauncher(inputSources, classPath, cache);
+			launcher.addInputResource(pathToDecompiled);
+
 			//Get updated model
-			CtModel model = launcher.getModel();
+			CtModel model = launcher.buildModel();
+			launcher.saveCache();
 
 			//Get class model
 			CtType toBeTransformed =  model.getAllTypes().stream().filter(t -> t.getQualifiedName().equals(className.replace("/", "."))).findAny().get();
@@ -119,7 +132,10 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 			transform(toBeTransformed);
 
 			//Compile new class model
+			SpoonModelBuilder compiler = launcher.createCompiler();
 			compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
+
+
 			File transformedClass = new File(compiler.getBinaryOutputDirectory(), className + ".class");
 			try {
 				//Load Modified classFIle
@@ -131,7 +147,6 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 				e.printStackTrace();
 			}
 		} catch (Exception e) {
-			launcher.getEnvironment().debugMessage("[ERROR][Agent] while processing " + className);
 			e.printStackTrace();
 		}
 		return classfileBuffer;
