@@ -16,7 +16,6 @@
  */
 package spoon.support.compiler.classpath;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -26,6 +25,8 @@ import spoon.reflect.factory.Factory;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 public class ComputeClasspathTest {
 
@@ -64,6 +65,6 @@ public class ComputeClasspathTest {
 	@Test
 	public void testSourceClasspath() {
 		final ClasspathOptions options = new ClasspathOptions().classpath(systemClasspath);
-		Assert.assertEquals("-cp " + TEST_CLASSPATH, String.join(" ", options.build()));
+		assertEquals("-cp " + TEST_CLASSPATH, String.join(" ", options.build()));
 	}
 }
