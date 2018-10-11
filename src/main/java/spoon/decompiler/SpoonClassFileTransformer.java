@@ -21,6 +21,7 @@ import spoon.IncrementalLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtType;
+import spoon.support.Experimental;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
+@Experimental
 public abstract class SpoonClassFileTransformer implements ClassFileTransformer {
 
 	Predicate<String> classNameFilter;
