@@ -145,3 +145,27 @@ When you're consider a reference object (say, a TypeReference), there are three 
 ```groovy
 compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
 ```
+
+
+## Incremental Launcher
+
+`IncrementalLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/IncrementalLauncher.html)) allows cache AST and compiled classes. Any spoon analysis can then be restarted from where it stopped instead of restarting from scratch.
+
+```java
+final File cache = new File("<path_to_cache>");
+Set<File> inputResources = Collections.singleton(new File("<path_to_sources>"));
+Set<String> sourceClasspath = Collections.emptySet(); // Empty classpath
+
+//Start build from cache
+IncrementalLauncher launcher = new IncrementalLauncher(inputResources, sourceClasspath, cache);
+
+if (launcher.changesPresent()) {
+    System.out.println("There are changes since last save to cache.");
+}
+
+CtModel newModel = launcher.buildModel();
+//Model is now up to date
+
+launcher.saveCache();
+//Cache is now up to date
+```
