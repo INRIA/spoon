@@ -41,7 +41,7 @@ public class CompilationUnitFactory extends SubFactory {
 		super(factory);
 	}
 
-	private transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<>();
+	private Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<>();
 
 	/**
 	 * Gets the compilation unit map.
@@ -166,5 +166,4 @@ public class CompilationUnitFactory extends SubFactory {
 	public CompilationUnit removeFromCache(String filePath) {
 		return cachedCompilationUnits.remove(filePath);
 	}
-
 }
