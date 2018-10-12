@@ -1,3 +1,9 @@
+---
+title: Agent
+tags: [usage]
+keywords: agent, usage, java, loadtime
+---
+
 # Spoon Agent
 
 Spoon can also be used at load time to transform classes. `SpoonClassFileTransformer` provide an abstraction of `ClassFileTransformer`
