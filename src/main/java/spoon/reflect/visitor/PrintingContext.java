@@ -46,14 +46,6 @@ public class PrintingContext {
 	}
 
 	/**
-	 * {@link #isNextForVariable()}
-	 */
-	@Deprecated
-	public boolean noTypeDecl() {
-		return isNextForVariable();
-	}
-
-	/**
 	 * @return true if we are printing second or next variable declaration of CtFor statement
 	 */
 	public boolean isNextForVariable() {
@@ -107,12 +99,6 @@ public class PrintingContext {
 		 */
 		public <T extends Writable> T isFirstForVariable(boolean v) {
 			setState(FIRST_FOR_VARIABLE, v);
-			return (T) this;
-		}
-
-		@Deprecated
-		public <T extends Writable> T noTypeDecl(boolean v) {
-			isFirstForVariable(v);
 			return (T) this;
 		}
 

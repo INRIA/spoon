@@ -331,15 +331,6 @@ public interface Environment {
 	boolean checksAreSkipped();
 
 	/**
-	 * Enable or not consistency checks on the AST. See {@link #checksAreSkipped()} for a list of all checks.
-	 * @param skip false means that all checks are made (default), true means that no checks are made.
-	 *
-	 * Use {@link #disableConsistencyChecks()} instead.
-	 */
-	@Deprecated // method name is super confusing "skip" is missing
-	void setSelfChecks(boolean skip);
-
-	/**
 	 * Disable all consistency checks on the AST. Dangerous! The only valid usage of this is to keep
 	 * full backward-compatibility.
 	 */

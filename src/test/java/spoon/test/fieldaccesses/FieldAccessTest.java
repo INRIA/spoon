@@ -370,7 +370,6 @@ public class FieldAccessTest {
 
 		final CtType<Kuu> aType = launcher.getFactory().Type().get(Kuu.class);
 		final DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(aType.getFactory().getEnvironment());
-		assertEquals(0, printer.computeImports(aType).size());
 		assertEquals("spoon.test.fieldaccesses.testclasses.Mole.Delicious delicious", aType.getMethodsByName("m").get(0).getParameters().get(0).toString());
 	}
 
