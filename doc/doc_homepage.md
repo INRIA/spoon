@@ -35,6 +35,7 @@ You have different options:
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon). :-)
 
 <!-- .* Marker comment. -->
+- October 10, 2018: Spoon 7.1.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.1.0) 
 - July 4, 2018: Spoon 7.0.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.0.0) 
 - March 8, 2018: Spoon 6.2.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.2.0)
 - December 20, 2017: Spoon 6.1.0 is released, merry christmas! :christmas_tree: [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-6.1.0)
