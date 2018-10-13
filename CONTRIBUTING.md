@@ -31,8 +31,12 @@ Guidelines for all pull-requests:
 * The pull request does a single thing (eg a single bug fix or a single feature). 
 * The pull request must pass all continuous integration checks (incl. formatting rules).
 * The pull request must have an explicit and clear explanation.
-* The pull-request title starts with a prefix stating its kind: "fix:", "feature:", "refactor:", "perf:", "checkstyle:"
-
+* Pull-request title:
+  * The pull-request title starts with a prefix stating its kind: "fix:", "feature:", "refactor:", "perf:", "checkstyle:"
+  * Pull-requests that are in progress are prefixed by "WIP".
+  * Pull-requests that are ready for review are prefixed by "review", or labeled as "[review](https://github.com/INRIA/spoon/labels/review)".
+* **Your contribution is highly welcome**! If you have anything interesting, then we welcome your PR even if it is not perfect at the beginning. The Spoon community will help you to fix the remaining problems, if any.;-)
+  
 Guidelines for bug-fix pull-requests:
 
 * The pull request must contain a test case highlighting the bug. 
