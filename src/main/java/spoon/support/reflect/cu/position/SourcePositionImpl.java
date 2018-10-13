@@ -21,6 +21,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 
 import java.io.File;
 import java.io.Serializable;
@@ -186,8 +187,11 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 		if (!(obj instanceof SourcePosition)) {
 			return false;
 		}
+		if (obj instanceof NoSourcePosition) {
+			return false;
+		}
 		SourcePosition s = (SourcePosition) obj;
-		return (getFile() == null ? s.getFile() == null : getFile().equals(s.getFile())) && getLine() == s.getLine() && getColumn() == s.getColumn();
+		return (getFile() == null ? s.getFile() == null : getFile().equals(s.getFile())) && getSourceEnd() == s.getSourceEnd() && getSourceStart() == s.getSourceStart();
 	}
 
 	@Override
