@@ -32,6 +32,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
  *
  * @deprecated Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
  */
+@Deprecated
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
 
