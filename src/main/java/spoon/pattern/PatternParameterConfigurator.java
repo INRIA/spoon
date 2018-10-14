@@ -66,6 +66,7 @@ import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
 import spoon.support.Experimental;
 import spoon.template.Parameter;
+import spoon.template.Template;
 import spoon.template.TemplateParameter;
 
 import java.util.ArrayList;
@@ -383,14 +384,15 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
-	 * Creates pattern parameter for each field of type {@link TemplateParameter}
+	 * Creates pattern parameter for each field of type {@link TemplateParameter}.<br>
+	 * Note: This method is here for compatibility with obsolete legacy {@link Template} based concept.
+	 * We suggest to define each parameter individually using `byXxxx(...)` methods of this class instead.
+	 *
 	 * @param parameterValues pattern parameter values.
 	 * 		Note these values may influence the way how pattern parameters are created.
 	 * 		This unclear and ambiguous technique was used in legacy templates
 	 * @return this to support fluent API
-	 * @deprecated since Spoon 7.0.0
 	 */
-	@Deprecated
 	public PatternParameterConfigurator byTemplateParameter(Map<String, Object> parameterValues) {
 		CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
 		templateType.map(new AllTypeMembersFunction()).forEach((CtTypeMember typeMember) -> {
@@ -530,12 +532,11 @@ public class PatternParameterConfigurator {
 	 * Then any name in source code which contains a parameter name will be converted to parameter
 	 *
 	 * Note: This unclear and ambiguous technique was used in legacy templates
+	 * We suggest to define each parameter individually using `byXxxx(...)` methods of this class instead.
 	 *
 	 * @param parameterValues pattern parameter values or null if not known
 	 * @return this to support fluent API
-	 * @deprecated Since Spoon 7.0.0
 	 */
-	@Deprecated
 	public PatternParameterConfigurator byParameterValues(Map<String, Object> parameterValues) {
 		if (parameterValues != null) {
 			CtType<?> templateType = patternBuilder.getTemplateTypeRef().getTypeDeclaration();
