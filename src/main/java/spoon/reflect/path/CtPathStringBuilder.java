@@ -65,7 +65,7 @@ public class CtPathStringBuilder {
 	private static final String PATH_DELIMITERS = ".#/[";
 	private static final String ARG_NAME_DELIMITERS = "=";
 
-	private static Pattern NAME_MATCHER = Pattern.compile("\\w+");
+	private static final Pattern NAME_MATCHER = Pattern.compile("\\w+");
 
 	/**
 	 * Build path from a string representation.
