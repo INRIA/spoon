@@ -55,9 +55,6 @@ import java.util.Deque;
 import java.util.EnumSet;
 import java.util.List;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
-import static java.lang.String.format;
-
 public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
@@ -67,7 +64,7 @@ public class ContextBuilder {
 		CtTypeReference<?> typeRef;
 	}
 
-	List<CastInfo> casts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
+	List<CastInfo> casts = new ArrayList<>(spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY);
 
 	CompilationUnitDeclaration compilationunitdeclaration;
 
@@ -170,7 +167,7 @@ public class ContextBuilder {
 		if (localVariable == null) {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
-					format("Could not find declaration for local variable %s at %s",
+					String.format("Could not find declaration for local variable %s at %s",
 							name, stack.peek().element.getPosition()));
 		}
 		return localVariable;
@@ -185,7 +182,7 @@ public class ContextBuilder {
 		if (catchVariable == null) {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
-					format("Could not find declaration for catch variable %s at %s",
+					String.format("Could not find declaration for catch variable %s at %s",
 							name, stack.peek().element.getPosition()));
 		}
 		return catchVariable;
@@ -196,7 +193,7 @@ public class ContextBuilder {
 		if (variable == null) {
 			// note: this happens when using the new try(vardelc) structure
 			this.jdtTreeBuilder.getLogger().error(
-					format("Could not find declaration for variable %s at %s",
+					String.format("Could not find declaration for variable %s at %s",
 							name, stack.peek().element.getPosition()));
 		}
 		return variable;

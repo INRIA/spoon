@@ -39,8 +39,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
-
 /**
  * Implements a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
@@ -50,7 +48,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	Factory factory;
 
-	List<CtType<?>> declaredTypes = new ArrayList<>(COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
+	List<CtType<?>> declaredTypes = new ArrayList<>(spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY);
 
 	CtPackage ctPackage;
 
