@@ -59,34 +59,34 @@ public class AccessTest {
 
 		final List<CtVariableRead<?>> variablesRead =
 				Query.getElements(factory,
-								  new AbstractFilter<CtVariableRead<?>>(CtVariableRead.class) {
-									  @Override
-									  public boolean matches(CtVariableRead<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtVariableRead<?>>(CtVariableRead.class) {
+									@Override
+									public boolean matches(CtVariableRead<?> element) {
+										return super.matches(element);
+									}
+								});
 
-		assertEquals(2, variablesRead.size());// System.out and s
+		assertEquals(2, variablesRead.size()); // System.out and s
 
 		final List<CtVariableWrite<?>> variablesWrite =
 				Query.getElements(factory,
-								  new AbstractFilter<CtVariableWrite<?>>(CtVariableWrite.class) {
-									  @Override
-									  public boolean matches(CtVariableWrite<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtVariableWrite<?>>(CtVariableWrite.class) {
+									@Override
+									public boolean matches(CtVariableWrite<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(1, variablesWrite.size());
 
 		final List<CtVariableAccess<?>> variablesAccess =
 				Query.getElements(factory,
-								  new AbstractFilter<CtVariableAccess<?>>(CtVariableAccess.class) {
-									  @Override
-									  public boolean matches(CtVariableAccess<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtVariableAccess<?>>(CtVariableAccess.class) {
+									@Override
+									public boolean matches(CtVariableAccess<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(3, variablesAccess.size());
 	}
@@ -97,34 +97,34 @@ public class AccessTest {
 
 		final List<CtFieldRead<?>> fieldsRead =
 				Query.getElements(factory,
-								  new AbstractFilter<CtFieldRead<?>>(CtFieldRead.class) {
-									  @Override
-									  public boolean matches(CtFieldRead<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtFieldRead<?>>(CtFieldRead.class) {
+									@Override
+									public boolean matches(CtFieldRead<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(2, fieldsRead.size());
 
 		final List<CtFieldWrite<?>> fieldsWrite =
 				Query.getElements(factory,
-								  new AbstractFilter<CtFieldWrite<?>>(CtFieldWrite.class) {
-									  @Override
-									  public boolean matches(CtFieldWrite<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtFieldWrite<?>>(CtFieldWrite.class) {
+									@Override
+									public boolean matches(CtFieldWrite<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(3, fieldsWrite.size());
 
 		final List<CtFieldAccess<?>> fieldsAccess =
 				Query.getElements(factory,
-								  new AbstractFilter<CtFieldAccess<?>>(CtFieldAccess.class) {
-									  @Override
-									  public boolean matches(CtFieldAccess<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtFieldAccess<?>>(CtFieldAccess.class) {
+									@Override
+									public boolean matches(CtFieldAccess<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(5, fieldsAccess.size());
 	}
@@ -135,36 +135,36 @@ public class AccessTest {
 
 		final List<CtArrayRead<?>> arraysRead =
 				Query.getElements(factory,
-								  new AbstractFilter<CtArrayRead<?>>(CtArrayRead.class) {
-									  @Override
-									  public boolean matches(CtArrayRead<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtArrayRead<?>>(CtArrayRead.class) {
+									@Override
+									public boolean matches(CtArrayRead<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(2, arraysRead.size());
 
 		final List<CtArrayWrite<?>> arraysWrite =
 				Query.getElements(factory,
-								  new AbstractFilter<CtArrayWrite<?>>(CtArrayWrite.class) {
-									  @Override
-									  public boolean matches(CtArrayWrite<?> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtArrayWrite<?>>(CtArrayWrite.class) {
+									@Override
+									public boolean matches(CtArrayWrite<?> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(1, arraysWrite.size());
 
 		final List<CtArrayAccess<?, CtExpression<?>>> arraysAccess =
 				Query.getElements(factory,
-								  new AbstractFilter<CtArrayAccess<?, CtExpression<?>>>(
-										  CtArrayAccess.class) {
-									  @Override
-									  public boolean matches(
-											  CtArrayAccess<?, CtExpression<?>> element) {
-										  return super.matches(element);
-									  }
-								  });
+								new AbstractFilter<CtArrayAccess<?, CtExpression<?>>>(
+										CtArrayAccess.class) {
+									@Override
+									public boolean matches(
+											CtArrayAccess<?, CtExpression<?>> element) {
+										return super.matches(element);
+									}
+								});
 
 		assertEquals(3, arraysAccess.size());
 	}
@@ -179,7 +179,7 @@ public class AccessTest {
 	@Test
 	public void testRHS() throws Exception {
 		CtType<RHSSample> type = buildClass(RHSSample.class);
-		assertEquals(4,  type.getElements(new TypeFilter<>(CtRHSReceiver.class)).size());
+		assertEquals(4, type.getElements(new TypeFilter<>(CtRHSReceiver.class)).size());
 	}
 
 	@Test
@@ -219,13 +219,13 @@ public class AccessTest {
 	public void testAccessToStringOnPostIncrement() {
 		// contract: a target to a post increment on a variable access write brackets.
 		Factory factory = createFactory();
-		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //
-				"class X {" //
-						+ "public void foo() {" //
-						+ " Integer i = 1;" //
-						+ " (i++).toString();" //
-						+ " int k = 0;" //
-						+ " k++;" //
+		CtClass<?> clazz = factory.Code().createCodeSnippetStatement(
+				"class X {"
+						+ "public void foo() {"
+						+ " Integer i = 1;"
+						+ " (i++).toString();"
+						+ " int k = 0;"
+						+ " k++;"
 						+ "}};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		assertEquals("(i++).toString()", foo.getBody().getStatement(1).toString());
