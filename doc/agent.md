@@ -20,7 +20,7 @@ public class Agent {
 
 		//Create a SpoonClassFileTransformer, that
 		// * excludes any classes not in our package from decompilation
-		// * adds the statement System.out.println("Hello <className>"); to the (first) method main of every classes
+		// * adds the statement System.out.println("Hello <className>"); to the (first) method named "foo" of every classes
         SpoonClassFileTransformer transformer = new SpoonClassFileTransformer(
                 cl -> cl.startsWith("org/my/package"),
                 new InsertPrintTransformer()
@@ -48,7 +48,7 @@ public class InsertPrintTransformer implements TypeTransformer {
 	@Override
 	public void transform(CtType type) {
 		System.err.println("Transforming " + type.getQualifiedName());
-		CtMethod main = (CtMethod) type.getMethodsByName("main").get(0);
+		CtMethod main = (CtMethod) type.getMethodsByName("foo").get(0);
 		main.getBody().addStatement(type.getFactory().createCodeSnippetStatement("System.out.println(\"Hello " + type.getQualifiedName() + "\");"));
 		System.err.println("Done transforming " + type.getQualifiedName());
 	}
