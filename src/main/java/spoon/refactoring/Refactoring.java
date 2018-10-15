@@ -84,12 +84,12 @@ public final class Refactoring {
 	/** See doc in {@link CtMethod#copyMethod()} */
 	public static CtMethod<?> copyMethod(final CtMethod<?> method) {
 		CtMethod<?> clone = method.clone();
-		String tentativeTypeName = method.getSimpleName() + "Copy";
+		StringBuilder tentativeTypeName = new StringBuilder(method.getSimpleName() + "Copy");
 		CtType parent = method.getParent(CtType.class);
-		while (!parent.getMethodsByName(tentativeTypeName).isEmpty()) {
-			tentativeTypeName += "X";
+		while (!parent.getMethodsByName(tentativeTypeName.toString()).isEmpty()) {
+			tentativeTypeName.append("X");
 		}
-		final String cloneMethodName = tentativeTypeName;
+		final String cloneMethodName = tentativeTypeName.toString();
 		clone.setSimpleName(cloneMethodName);
 		parent.addMethod(clone);
 		new CtScanner() {

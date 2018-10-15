@@ -32,7 +32,7 @@ import spoon.support.util.ImmutableMap;
  * Describes what next has to be matched.
  * It consists of current `parameters` represented by {@link ImmutableMap}
  * and by a to be matched target elements.
- * See children of {@link TobeMatched} for supported collections of targer elements.
+ * See children of {@link TobeMatched} for supported collections of target elements.
  */
 public class TobeMatched {
 	//TODO remove parameters. Send them individually into matching methods and return MatchResult

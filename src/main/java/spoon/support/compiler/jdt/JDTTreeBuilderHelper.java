@@ -62,8 +62,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.CoreFactory;
-import spoon.reflect.factory.ExecutableFactory;
-import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -99,7 +97,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	static String computeAnonymousName(char[] anonymousQualifiedName) {
 		final String poolName = CharOperation.charToString(anonymousQualifiedName);
-		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1, poolName.length());
+		return poolName.substring(poolName.lastIndexOf(CtType.INNERTTYPE_SEPARATOR) + 1);
 	}
 
 	/**
@@ -185,9 +183,7 @@ public class JDTTreeBuilderHelper {
 	 * 		   visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
-		final TypeFactory typeFactory = jdtTreeBuilder.getFactory().Type();
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
-		final ExecutableFactory executableFactory = jdtTreeBuilder.getFactory().Executable();
 		final ContextBuilder contextBuilder = jdtTreeBuilder.getContextBuilder();
 		final ReferenceBuilder referenceBuilder = jdtTreeBuilder.getReferencesBuilder();
 		final PositionBuilder positionBuilder = jdtTreeBuilder.getPositionBuilder();
@@ -214,18 +210,6 @@ public class JDTTreeBuilderHelper {
 				// Since the given parameter has not been declared in a lambda expression it must
 				// have been declared by a method/constructor.
 				final CtExecutable executable = (CtExecutable) variable.getParent();
-
-				// create list of executable's parameter types
-				final List<CtTypeReference<?>> parameterTypesOfExecutable = new ArrayList<>();
-				@SuppressWarnings("unchecked")
-				final List<CtParameter<?>> parametersOfExecutable = executable.getParameters();
-				for (CtParameter<?> parameter : parametersOfExecutable) {
-					parameterTypesOfExecutable.add(parameter.getType() != null
-							? parameter.getType().clone()
-							// it's the best match :(
-							: typeFactory.OBJECT.clone()
-					);
-				}
 
 				// find executable's corresponding jdt element
 				AbstractMethodDeclaration executableJDT = null;
@@ -465,7 +449,7 @@ public class JDTTreeBuilderHelper {
 	CtTypeAccess<?> createTypeAccess(QualifiedNameReference qualifiedNameReference, CtFieldReference<?> fieldReference) {
 		final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
 		if (receiverType != null) {
-			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(//
+			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(
 					qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
 						@Override
 						public boolean onAccess(char[][] tokens, int index) {

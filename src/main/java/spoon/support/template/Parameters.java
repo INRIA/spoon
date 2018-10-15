@@ -280,15 +280,12 @@ public abstract class Parameters {
 			//the template fields, which are using generic type like <T>, are not template parameters
 			return false;
 		}
-		if (ref.getSimpleName().equals("this")) {
+		if ("this".equals(ref.getSimpleName())) {
 			//the reference to this is not template parameter
 			return false;
 		}
-		if (ref.getType().isSubtypeOf(getTemplateParameterType(ref.getFactory()))) {
-			//the type of template field is TemplateParameter.
-			return true;
-		}
-		return false;
+		//the type of template field is TemplateParameter.
+		return ref.getType().isSubtypeOf(getTemplateParameterType(ref.getFactory()));
 	}
 
 	/**

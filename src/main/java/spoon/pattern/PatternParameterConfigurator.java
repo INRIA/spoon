@@ -25,9 +25,11 @@ import spoon.pattern.internal.node.ParameterNode;
 import spoon.pattern.internal.node.RootNode;
 import spoon.pattern.internal.node.StringNode;
 import spoon.pattern.internal.parameter.AbstractParameterInfo;
+import spoon.pattern.internal.parameter.ComputedParameterInfo;
 import spoon.pattern.internal.parameter.ListParameterInfo;
 import spoon.pattern.internal.parameter.MapParameterInfo;
 import spoon.pattern.internal.parameter.ParameterInfo;
+import spoon.pattern.internal.parameter.SimpleNameOfTypeReferenceParameterComputer;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -232,7 +234,9 @@ public class PatternParameterConfigurator {
 		CtType<?> type2 = queryModel().filterChildren((CtType<?> t) -> t.getQualifiedName().equals(typeQName)).first();
 		if (type2 != null) {
 			//Substitute name of template too
-			addSubstitutionRequest(pi, type2, CtRole.NAME);
+			ComputedParameterInfo piName = new ComputedParameterInfo(SimpleNameOfTypeReferenceParameterComputer.INSTANCE, pi);
+			piName.setParameterValueType(String.class);
+			addSubstitutionRequest(piName, type2, CtRole.NAME);
 		}
 		return this;
 	}
@@ -599,7 +603,7 @@ public class PatternParameterConfigurator {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
 						if (oldAttrNode instanceof MapEntryNode) {
 							MapEntryNode mapEntryNode = (MapEntryNode) oldAttrNode;
-							return new MapEntryNode(new ParameterNode(pi), ((MapEntryNode) oldAttrNode).getValue());
+							return new MapEntryNode(new ParameterNode(pi), mapEntryNode.getValue());
 						}
 						return oldAttrNode;
 					});
@@ -621,13 +625,13 @@ public class PatternParameterConfigurator {
 		new StringAttributeScanner() {
 			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String value) {
-				if (value != null && value.indexOf(stringMarker) >= 0) {
+				if (value != null && value.contains(stringMarker)) {
 					addSubstitutionRequest(pi, element, roleHandler.getRole(), stringMarker);
 				}
 			}
 			@Override
 			protected void visitStringAttribute(RoleHandler roleHandler, CtElement element, String mapEntryKey, CtElement mapEntryValue) {
-				if (mapEntryKey != null && mapEntryKey.indexOf(stringMarker) >= 0) {
+				if (mapEntryKey != null && mapEntryKey.contains(stringMarker)) {
 					patternBuilder.modifyNodeOfAttributeOfElement(element, roleHandler.getRole(), conflictResolutionMode, oldAttrNode -> {
 						List<RootNode> nodes = ((ListOfNodes) oldAttrNode).getNodes();
 						for (int i = 0; i < nodes.size(); i++) {
@@ -684,7 +688,7 @@ public class PatternParameterConfigurator {
 						visitStringAttribute(roleHandler, element, (String) value);
 					} else if (value instanceof Map) {
 						for (Map.Entry<String, CtElement> e : ((Map<String, CtElement>) value).entrySet()) {
-							visitStringAttribute(roleHandler, element, (String) e.getKey(), e.getValue());
+							visitStringAttribute(roleHandler, element, e.getKey(), e.getValue());
 						}
 					}
 					//else it is a CtLiteral with non string value
@@ -745,6 +749,19 @@ public class PatternParameterConfigurator {
 	}
 
 	/**
+	 * Elements will be substituted by parameter value
+	 * @param elements to be substituted elements
+	 * @return {@link PatternParameterConfigurator} to support fluent API
+	 */
+	public PatternParameterConfigurator byElement(CtElement... elements) {
+		ParameterInfo pi = getCurrentParameter();
+		for (CtElement element : elements) {
+			addSubstitutionRequest(pi, element);
+		}
+		return this;
+	}
+
+	/**
 	 * Attribute defined by `role` of all elements matched by {@link Filter} will be substituted by parameter value
 	 * @param role {@link CtRole}, which defines to be substituted elements
 	 * @param filter {@link Filter}, which defines to be substituted elements
@@ -756,6 +773,20 @@ public class PatternParameterConfigurator {
 			.forEach((CtElement ele) -> {
 				addSubstitutionRequest(pi, ele, role);
 			});
+		return this;
+	}
+
+	/**
+	 * Attribute defined by `role` of `element`  will be substituted by parameter value
+	 * @param role {@link CtRole}, which defines to be substituted elements
+	 * @param elements to be substituted element
+	 * @return {@link PatternParameterConfigurator} to support fluent API
+	 */
+	public PatternParameterConfigurator byRole(CtRole role, CtElement... elements) {
+		ParameterInfo pi = getCurrentParameter();
+		for (CtElement element : elements) {
+			addSubstitutionRequest(pi, element, role);
+		}
 		return this;
 	}
 
@@ -863,9 +894,7 @@ public class PatternParameterConfigurator {
 	/**
 	 * for input `element` expression `X` in expression `X[Y]` it returns expression `X[Y]`
 	 * and registers extra {@link ListParameterInfo} to the parameter assigned to `X`
-	 * @param parameter TODO
-	 * @param valueResolver
-	 * @param element
+	 * @param pep pair of parameter and element which has to be transformed
 	 * @return
 	 */
 	private ParameterElementPair transformArrayAccess(ParameterElementPair pep) {
@@ -914,7 +943,7 @@ public class PatternParameterConfigurator {
 			if (parent instanceof CtInvocation<?>) {
 				CtInvocation<?> invocation = (CtInvocation<?>) parent;
 				CtExecutableReference<?> executableRef = invocation.getExecutable();
-				if (executableRef.getSimpleName().equals("S")) {
+				if ("S".equals(executableRef.getSimpleName())) {
 					if (TemplateParameter.class.getName().equals(executableRef.getDeclaringType().getQualifiedName())) {
 						/*
 						 * the invocation of TemplateParameter#S() has to be substituted

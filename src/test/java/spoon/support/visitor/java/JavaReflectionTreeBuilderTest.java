@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.support.visitor.java;
 
 import com.mysema.query.support.ProjectableQuery;
@@ -9,6 +25,7 @@ import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -26,6 +43,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -220,7 +238,6 @@ public class JavaReflectionTreeBuilderTest {
 		CtElement other;
 		Set<CtRole> roles = new HashSet<>();
 		Diff(CtElement element, CtElement other) {
-			super();
 			this.element = element;
 			this.other = other;
 		}
@@ -240,8 +257,8 @@ public class JavaReflectionTreeBuilderTest {
 						Set<ModifierKind> elementModifiers = ((CtModifiable) currentDiff.element).getModifiers();
 						Set<ModifierKind> otherModifiers = ((CtModifiable) currentDiff.other).getModifiers();
 						if (type.isInterface()) {
-							if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT)
-									.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT))) {
+							if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT, ModifierKind.FINAL)
+									.equals(removeModifiers(otherModifiers, ModifierKind.PUBLIC, ModifierKind.ABSTRACT, ModifierKind.FINAL))) {
 								//it is OK, that type memebers of interface differs in public abstract modifiers
 								return;
 							}
@@ -249,8 +266,8 @@ public class JavaReflectionTreeBuilderTest {
 							CtType<?> type2 = type.getDeclaringType();
 							if (type2 != null) {
 								if (type2.isInterface()) {
-									if (removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/)
-											.equals(removeModifiers(elementModifiers, ModifierKind.PUBLIC/*, ModifierKind.STATIC, ModifierKind.FINAL*/))) {
+									if (removeModifiers(elementModifiers, ModifierKind.PUBLIC, ModifierKind.FINAL/*, ModifierKind.STATIC*/)
+											.equals(removeModifiers(otherModifiers, ModifierKind.PUBLIC, ModifierKind.FINAL/*, ModifierKind.STATIC*/))) {
 										//it is OK, that type memebers of interface differs in public abstract modifiers
 										return;
 									}
@@ -305,7 +322,7 @@ public class JavaReflectionTreeBuilderTest {
 				return false;
 			}
 			if (element instanceof CtEnumValue && role == CtRole.VALUE) {
-				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't supports that
+				//CtStatementImpl.InsertType.BEFORE contains a value with nested type. Java reflection doesn't support that
 				this.isNotEqual = false;
 				return false;
 			}
@@ -374,12 +391,9 @@ public class JavaReflectionTreeBuilderTest {
 			if (role == CtRole.ANNOTATION) {
 				//remove all RetentionPolicy#SOURCE level annotations from elements
 				List<CtAnnotation<?>> fileteredElements = ((List<CtAnnotation<?>>) elements).stream().filter(a -> {
-					CtTypeReference<?> at = (CtTypeReference) a.getAnnotationType();
+					CtTypeReference<?> at = a.getAnnotationType();
 					Class ac = at.getActualClass();
-					if (ac == Override.class || ac == SuppressWarnings.class || ac == Root.class) {
-						return false;
-					}
-					return true;
+					return ac != Override.class && ac != SuppressWarnings.class && ac != Root.class;
 				}).collect(Collectors.toList());
 				super.biScan(role, fileteredElements, others);
 				return;
@@ -572,7 +586,39 @@ public class JavaReflectionTreeBuilderTest {
 		Factory factory = createFactory();
 		CtType<Object> type = factory.Type().get(ProjectableQuery.class);
 		assertEquals("ProjectableQuery", type.getSimpleName());
-		// because one of the parameter is not in the classpath therefor the reflection did not succeed to list the methods
+		// because one of the parameter is not in the classpath therefore the reflection did not succeed to list the methods
 		assertEquals(0, type.getMethods().size());
+	}
+
+	@Test
+	public void testInnerClassWithConstructorParameterAnnotated() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(JavaReflectionTreeBuilderTest.class
+				.getClassLoader()
+				.getResource("annotated-parameter-on-nested-class-constructor/Caller.java")
+				.getPath());
+		launcher.getEnvironment().setSourceClasspath(
+				new String[]{
+						JavaReflectionTreeBuilderTest.class
+								.getClassLoader()
+								.getResource("annotated-parameter-on-nested-class-constructor/classes")
+								.getPath()
+				});
+		launcher.getEnvironment().setAutoImports(true);
+		//contract: No error due to runtime annotation of a parameter of a constructor of a shadow nested class
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType caller = factory.Type().get("Caller");
+		CtParameter annotatedParameter = ((CtParameter)
+				((CtConstructor)
+					((CtLocalVariable)
+						((CtConstructor)
+								caller.getTypeMembers().get(0)
+						).getBody().getStatement(2)
+					).getType().getTypeDeclaration().getTypeMembers().get(0)
+				).getParameters().get(0));
+
+		//contract: the annotation is correctly read
+		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
 	}
 }

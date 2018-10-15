@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.enums;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +38,7 @@ import spoon.testing.utils.ModelUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -48,7 +65,7 @@ public class EnumsTest {
 	@Test
 	public void testAnnotationsOnEnum() {
 		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
+		launcher.run(new String[]{
 				"-i", "./src/test/java/spoon/test/enums/testclasses",
 				"-o", "./target/spooned"
 		});
@@ -56,7 +73,7 @@ public class EnumsTest {
 		final CtEnum<?> foo = (CtEnum) launcher.getFactory().Type().get(Foo.class);
 		assertEquals(1, foo.getFields().size());
 		assertEquals(1, foo.getFields().get(0).getAnnotations().size());
-		assertEquals(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
+		assertSame(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
 		assertEquals(
 				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR
@@ -113,7 +130,7 @@ public class EnumsTest {
 			assertEquals(asSet(ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 	}
-	
+
 	private <T> Set<T> asSet(T... values) {
 		return new HashSet<>(Arrays.asList(values));
 	}
@@ -135,15 +152,15 @@ public class EnumsTest {
 		assertTrue(content.contains("FAIL,"));
 		assertTrue(content.contains("KEEP_OLD_NODE(),"));
 
-		assertTrue(content.contains("/**\n" +
-				"     * Add new {@link RootNode} after existing nodes\n" +
-				"     */\n" +
-				"    APPEND"));
+		assertTrue(content.contains("/**\n"
+				+ "     * Add new {@link RootNode} after existing nodes\n"
+				+ "     */\n"
+				+ "    APPEND"));
 
-		assertTrue(content.contains("/**\n" +
-				"     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n" +
-				"     */\n" +
-				"    KEEP_OLD_NODE(),"));
+		assertTrue(content.contains("/**\n"
+				+ "     * Keep old {@link RootNode} and ignore requests to add new {@link RootNode}\n"
+				+ "     */\n"
+				+ "    KEEP_OLD_NODE(),"));
 	}
 
 	@Test

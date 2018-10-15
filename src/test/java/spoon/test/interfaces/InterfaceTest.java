@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.interfaces;
 
 import org.junit.Before;
@@ -19,6 +35,7 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class InterfaceTest {
@@ -71,7 +88,7 @@ public class InterfaceTest {
 
 		final CtMethod<?> getZonedDateTimeMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertTrue("Method in the sub interface must be a default method", getZonedDateTimeMethod.isDefaultMethod());
-		assertEquals("Interface of the default method must be the sub interface", ExtendsDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass());
+		assertSame("Interface of the default method must be the sub interface", ExtendsDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass());
 	}
 
 	@Test
@@ -83,7 +100,7 @@ public class InterfaceTest {
 
 		final CtMethod<?> getZonedDateTimeMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertFalse("Method in the sub interface mustn't be a default method", getZonedDateTimeMethod.isDefaultMethod());
-		assertEquals("Interface of the default method must be the sub interface", RedefinesDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass());
+		assertSame("Interface of the default method must be the sub interface", RedefinesDefaultMethodInterface.class, getZonedDateTimeMethod.getDeclaringType().getActualClass());
 	}
 
 	@Test
@@ -95,7 +112,7 @@ public class InterfaceTest {
 
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
 		assertTrue("Method in the sub interface must be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
-		assertEquals("Interface of the static method must be the sub interface", ExtendsStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
+		assertSame("Interface of the static method must be the sub interface", ExtendsStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
 	}
 
 	@Test
@@ -107,6 +124,6 @@ public class InterfaceTest {
 
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
 		assertFalse("Method in the sub interface mustn't be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
-		assertEquals("Interface of the static method must be the sub interface", RedefinesStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
+		assertSame("Interface of the static method must be the sub interface", RedefinesStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
 	}
 }

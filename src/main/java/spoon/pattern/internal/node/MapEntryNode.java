@@ -63,10 +63,7 @@ public class MapEntryNode extends AbstractPrimitiveMatcher {
 		if (key.replaceNode(oldNode, newNode)) {
 			return true;
 		}
-		if (value.replaceNode(oldNode, newNode)) {
-			return true;
-		}
-		return false;
+		return value.replaceNode(oldNode, newNode);
 	}
 
 	@Override

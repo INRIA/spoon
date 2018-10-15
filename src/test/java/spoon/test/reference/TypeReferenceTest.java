@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.reference;
 
 import org.junit.Test;
@@ -35,7 +51,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
-import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +63,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -202,7 +218,7 @@ public class TypeReferenceTest {
 	public void unboxTest() {
 		Factory factory = new Launcher().createFactory();
 		CtTypeReference<Boolean> boxedBoolean = factory.Class().createReference(Boolean.class);
-		assertEquals(boolean.class, boxedBoolean.unbox().getActualClass());
+		assertSame(boolean.class, boxedBoolean.unbox().getActualClass());
 	}
 
 	@Test
@@ -312,13 +328,13 @@ public class TypeReferenceTest {
 		boolean containsJoinerReference = false;
 
 		for (CtTypeReference<?> reference : referencedTypes) {
-			if (reference.toString().equals("Demo")) {
+			if ("Demo".equals(reference.toString())) {
 				containsDemoReference = true;
-			} else if (reference.toString().equals("void")) {
+			} else if ("void".equals(reference.toString())) {
 				containsVoidReference = true;
-			} else if (reference.toString().equals("java.lang.String")) {
+			} else if ("java.lang.String".equals(reference.toString())) {
 				containsStringReference = true;
-			} else if (reference.toString().equals("com.google.common.base.Joiner")) {
+			} else if ("com.google.common.base.Joiner".equals(reference.toString())) {
 				containsJoinerReference = true;
 			}
 		}
@@ -490,32 +506,32 @@ public class TypeReferenceTest {
 	@Test
 	public void testShortTypeReference() {
 
-		CtTypeReference<Short> aShort = ModelUtils.createFactory().Type().SHORT;
-		CtTypeReference<Short> shortPrimitive = ModelUtils.createFactory().Type().SHORT_PRIMITIVE;
+		CtTypeReference<Short> aShort = createFactory().Type().SHORT;
+		CtTypeReference<Short> shortPrimitive = createFactory().Type().SHORT_PRIMITIVE;
 
-		assertEquals(Short.class, aShort.getActualClass());
-		assertEquals(short.class, shortPrimitive.getActualClass());
+		assertSame(Short.class, aShort.getActualClass());
+		assertSame(short.class, shortPrimitive.getActualClass());
 
 	}
 
 	@Test
-	public void testClearBoundsForTypeParameterReference() {
+	public void testClearBoundsForWildcardReference() {
 		final Factory factory = createFactory();
-		final CtTypeParameterReference reference = factory.Type().createTypeParameterReference("T");
-		reference.addBound(factory.Type().createReference(String.class));
+		final CtWildcardReference reference = factory.createWildcardReference();
+		reference.setBoundingType(factory.Type().createReference(String.class));
 
-		assertNotNull(reference.getBoundingType());
+		assertEquals(factory.Type().STRING, reference.getBoundingType());
 
-		reference.setBounds(null);
+		reference.setBoundingType(null);
 
 		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
 		assertTrue(reference.isDefaultBoundingType());
 
-		reference.addBound(factory.Type().createReference(String.class));
+		reference.setBoundingType(factory.Type().createReference(String.class));
 
-		assertNotNull(reference.getBoundingType());
+		assertEquals(factory.Type().STRING, reference.getBoundingType());
 
-		reference.setBounds(new ArrayList<>());
+		reference.setBoundingType(factory.Type().objectType());
 
 		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
 		assertTrue(reference.isDefaultBoundingType());
@@ -601,14 +617,14 @@ public class TypeReferenceTest {
 		// contract2: getTypeDeclaration returns a CtTYpe representing Object as the compiler does
 		CtLocalVariable<?> s = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<?> l = null").compile();
 		assertEquals("?", s.getType().getActualTypeArguments().get(0).getSimpleName());
-		assertTrue(CtWildcardReference.class.isInstance(s.getType().getActualTypeArguments().get(0)));
+		assertTrue(s.getType().getActualTypeArguments().get(0) instanceof CtWildcardReference);
 		assertEquals("Object", s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getSimpleName());
-		assertEquals(Object.class, s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
+		assertSame(Object.class, s.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
 
 		// some additional tests
 		CtLocalVariable<?> s2 = new Launcher().getFactory().Code().createCodeSnippetStatement("java.util.List<String> l = null").compile();
 		assertEquals("String", s2.getType().getActualTypeArguments().get(0).getSimpleName());
-		assertEquals(String.class, s2.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
+		assertSame(String.class, s2.getType().getActualTypeArguments().get(0).getTypeDeclaration().getActualClass());
 	}
 
 	@Test
@@ -616,7 +632,7 @@ public class TypeReferenceTest {
 		CtClass<ParamRefs> aClass = (CtClass) buildClass(ParamRefs.class);
 		CtParameter<?> parameter = aClass.getElements(new NamedElementFilter<>(CtParameter.class,"param")).get(0);
 		CtParameterReference<?> parameterRef1 = parameter.getReference();
-		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)->ref.getSimpleName().equals("param")).get(0);
+		CtParameterReference<?> parameterRef2 = aClass.getElements((CtParameterReference<?> ref)-> "param".equals(ref.getSimpleName())).get(0);
 
 		// fresh reference not put in a context
 		assertNull(parameterRef1.getDeclaringExecutable());

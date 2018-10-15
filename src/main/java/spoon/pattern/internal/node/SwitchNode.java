@@ -147,9 +147,7 @@ public class SwitchNode extends AbstractNode implements InlineNode {
 					statement = newNode;
 					return true;
 				}
-				if (statement.replaceNode(oldNode, newNode)) {
-					return true;
-				}
+				return statement.replaceNode(oldNode, newNode);
 			}
 			return false;
 		}

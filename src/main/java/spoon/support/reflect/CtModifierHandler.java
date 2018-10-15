@@ -46,7 +46,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public Set<CtExtendedModifier> getExtendedModifiers() {
-		return this.modifiers;
+		return Collections.unmodifiableSet(this.modifiers);
 	}
 
 	public CtModifierHandler setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {

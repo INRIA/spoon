@@ -370,7 +370,9 @@ public class CtQueryImpl implements CtQuery {
 				return true;
 			}
 			if (expectedClass != null && expectedClass.isAssignableFrom(input.getClass()) == false) {
-				log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
+				if (isLogging()) {
+					log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
+				}
 				return false;
 			}
 			return true;
@@ -388,7 +390,7 @@ public class CtQueryImpl implements CtQuery {
 		protected void onCallbackSet(String stackClass, String stackMethodName, Class<?> callbackClass, String callbackMethod, int nrOfParams, int idxOfInputParam) {
 			this.cceStacktraceClass = stackClass;
 			this.cceStacktraceMethodName = stackMethodName;
-			if (callbackClass.getName().indexOf("$$Lambda$") >= 0) {
+			if (callbackClass.getName().contains("$$Lambda$")) {
 				//lambda expressions does not provide runtime information about type of input parameter
 				//clear it now. We can detect input type from first ClassCastException
 				this.expectedClass = null;
@@ -397,7 +399,7 @@ public class CtQueryImpl implements CtQuery {
 				if (method == null) {
 					throw new SpoonException("The method " + callbackMethod + " with one parameter was not found on the class " + callbackClass.getName());
 				}
-				this.expectedClass = (Class<?>) method.getParameterTypes()[idxOfInputParam];
+				this.expectedClass = method.getParameterTypes()[idxOfInputParam];
 			}
 		}
 

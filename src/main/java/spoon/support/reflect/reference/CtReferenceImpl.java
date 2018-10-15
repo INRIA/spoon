@@ -23,7 +23,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.IdentifierHelper;
@@ -31,6 +30,7 @@ import spoon.support.util.IdentifierHelper;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.List;
+import java.util.Objects;
 
 import static spoon.reflect.path.CtRole.NAME;
 
@@ -81,18 +81,24 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 
 	@Override
-	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-				getFactory().getEnvironment());
-		printer.scan(this);
-		return printer.toString();
-	}
-
-	@Override
 	public abstract void accept(CtVisitor visitor);
 
 	@Override
 	public CtReference clone() {
 		return (CtReference) super.clone();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof CtReference) {
+			CtReference ref = (CtReference) o;
+			if (!Objects.equals(getSimpleName(), ref.getSimpleName())) {
+				//fast fallback when simple names are not equal
+				//it is much faster then EqualsVisitor
+				return false;
+			}
+			return super.equals(o);
+		}
+		return false;
 	}
 }

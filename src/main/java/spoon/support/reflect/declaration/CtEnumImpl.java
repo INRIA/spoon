@@ -113,8 +113,12 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C setEnumValues(List<CtEnumValue<?>> enumValues) {
+		if (enumValues == null) {
+			this.enumValues = emptyList();
+			return (C) this;
+		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, VALUE, this.enumValues, new ArrayList<>(enumValues));
-		if (enumValues == null || enumValues.isEmpty()) {
+		if (enumValues.isEmpty()) {
 			this.enumValues = emptyList();
 			return (C) this;
 		}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -88,7 +88,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 				replace.addArgument(factory.Code().createInvocation(otherRead, ((CtInvocation) replace.getArguments().get(1)).getExecutable()));
 
 				if ("Map".equals(targetInvocation.getExecutable().getType().getSimpleName())) {
-					((CtExpression) replace.getArguments().get(1)).replace(factory.Code().createInvocation(targetInvocation, factory.Executable().createReference("List Map#values()")));
+					replace.getArguments().get(1).replace(factory.Code().createInvocation(targetInvocation, factory.Executable().createReference("List Map#values()")));
 					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(2).clone(), factory.Executable().createReference("List Map#values()"));
 					replace.getArguments().get(2).replace(invocation);
 				}

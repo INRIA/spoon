@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.main;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +46,6 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
@@ -40,6 +54,7 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 
@@ -53,6 +68,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,7 +111,8 @@ public class MainTest {
 				"--source-classpath", systemClassPath,
 				"--compile", // compiling Spoon code itself on the fly
 				"--compliance", "8",
-				"--level", "OFF"
+				"--level", "OFF",
+				"--enable-comments"
 		});
 		
 		launcher.buildModel();
@@ -210,17 +227,12 @@ public class MainTest {
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
 				for (int i = 0; i < reference.getParameters().size(); i++) {
-					if (reference.getParameters().get(i) instanceof CtTypeParameterReference) {
-						return;
-					}
-					if (reference.getParameters().get(i) instanceof CtArrayTypeReference && ((CtArrayTypeReference) reference.getParameters().get(i)).getComponentType() instanceof CtTypeParameterReference) {
-						return;
-					}
 					//TODO assertions which are checking lambdas. Till then ignore lambdas.
 					if (executableDeclaration instanceof CtLambda) {
 						return;
 					}
-					assertEquals(reference.getParameters().get(i).getQualifiedName(), executableDeclaration.getParameters().get(i).getType().getQualifiedName());
+					CtTypeReference<?> methodParamTypeRef = executableDeclaration.getParameters().get(i).getType();
+					assertEquals(reference.getParameters().get(i).getQualifiedName(), methodParamTypeRef.getTypeErasure().getQualifiedName());
 				}
 
 				// contract: the reference and method signature are the same
@@ -294,7 +306,9 @@ public class MainTest {
 
 	private void checkContractCtScanner(CtPackage pack) {
 		class Counter {
-			int scan, enter, exit = 0;
+			int scan;
+			int enter;
+			int exit;
 		}
 
 		final Counter counter = new Counter();
@@ -338,10 +352,10 @@ public class MainTest {
 				counterBiScan.scan++;
 				if (element == null) {
 					if (other != null) {
-						Assert.fail("element can't be null if other isn't null.");
+						fail("element can't be null if other isn't null.");
 					}
 				} else if (other == null) {
-					Assert.fail("other can't be null if element isn't null.");
+					fail("other can't be null if element isn't null.");
 				} else {
 					// contract: all elements have been cloned and are still equal
 					assertEquals(element, other);
@@ -434,7 +448,7 @@ public class MainTest {
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
 				if(firstStack == dummyException) {
-					Assert.fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
+					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
 				//report the stacktrace of first and second usage, so that place can be found easily
@@ -450,7 +464,7 @@ public class MainTest {
 		
 		String report = problems.toString();
 		if (!report.isEmpty()) {
-			Assert.fail(report);
+			fail(report);
 		}
 	}
 
@@ -475,6 +489,49 @@ public class MainTest {
 	}
 
 	@Test
+	public void testSourcePositionTreeIsCorrectlyOrdered() {
+		/*
+		 * contract: the tree of ElementSourceFragments of all spoon types (= sample set of sources) can be built.
+		 * contract: the tree of ElementSourceFragments is correctly organized. It means:
+		 * - source positions of children elements are smaller or equal to their parents
+		 * - source positions of next siblings are after their previous siblings
+		 * - 
+		 */
+		List<CtType> types = rootPackage.filterChildren(new TypeFilter<>(CtType.class)).filterChildren((CtType t) -> t.isTopLevel()).list();
+		int totalCount = 0;
+		boolean hasComment = false;
+		for (CtType type : types) {
+			SourcePosition sp = type.getPosition();
+			totalCount += assertSourcePositionTreeIsCorrectlyOrder(sp.getCompilationUnit().getOriginalSourceFragment(), 0, sp.getCompilationUnit().getOriginalSourceCode().length());
+			hasComment = hasComment || type.getComments().size() > 0; 
+		};
+		assertTrue(totalCount > 1000);
+		assertTrue(hasComment);
+	}
+
+	/**
+	 * Asserts that all siblings and children of sp are well ordered
+	 * @param sourceFragment
+	 * @param minOffset TODO
+	 * @param maxOffset TODO
+	 * @return number of checked {@link SourcePosition} nodes
+	 */
+	private int assertSourcePositionTreeIsCorrectlyOrder(ElementSourceFragment sourceFragment, int minOffset, int maxOffset) {
+		int nr = 0;
+		int pos = minOffset;
+		while (sourceFragment != null) {
+			nr++;
+			assertTrue("min(" + pos + ") <= fragment.start(" + sourceFragment.getStart() + ")", pos <= sourceFragment.getStart());
+			assertTrue("fragment.start(" + sourceFragment.getStart() + ") <= fragment.end(" + sourceFragment.getEnd() + ")", sourceFragment.getStart() <= sourceFragment.getEnd());
+			pos = sourceFragment.getEnd();
+			nr += assertSourcePositionTreeIsCorrectlyOrder(sourceFragment.getFirstChild(), sourceFragment.getStart(), sourceFragment.getEnd());
+			sourceFragment = sourceFragment.getNextSibling();
+		}
+		assertTrue("lastFragment.end(" + pos + ") <= max(" + maxOffset + ")", pos <= maxOffset);
+		return nr;
+	}
+
+	@Test
 	public void testElementToPathToElementEquivalency() {
 
 		rootPackage.accept(new CtScanner() {
@@ -485,6 +542,7 @@ public class MainTest {
 					String pathStr = path.toString();
 					try {
 						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+						assertEquals(pathStr, pathRead.toString());
 						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
 						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
 						assertEquals(1, returnedElements.size());
@@ -492,7 +550,9 @@ public class MainTest {
 						//contract: Element -> Path -> String -> Path -> Element leads to the original element
 						assertSame(element, actualElement);
 					} catch (CtPathException e) {
-						fail("Path is either incorrectly generated or incorrectly read");
+						throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
+					} catch (AssertionError e) {
+						throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element.toString(), e);
 					}
 				}
 				super.scan(element);
@@ -551,7 +611,7 @@ public class MainTest {
 		// if one analyzes src/main/java and src/test/java at the same time
 		// this helps a lot to easily automatically differentiate app classes and test classes
 		for (CtType t : launcher.getFactory().getModel().getAllTypes()) {
-			if (t.getPackage().getQualifiedName().equals("spoon.metamodel")
+			if ("spoon.metamodel".equals(t.getPackage().getQualifiedName())
 					|| t.getPackage().getQualifiedName().startsWith("spoon.generating")) {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;

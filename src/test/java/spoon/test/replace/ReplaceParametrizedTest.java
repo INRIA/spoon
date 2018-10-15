@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.replace;
 
 import org.junit.Test;
@@ -83,7 +99,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 				//the children of CtLoop wraps CtStatement into an implicit CtBlock. So make a block directly to test plain get/set and not wrapping.
 				itemType = factory.createCtTypeReference(CtBlock.class);
 			}
-			if (o.getClass().getSimpleName().equals("CtAnnotationFieldAccessImpl") && mmField.getRole()==CtRole.VARIABLE) {
+			if ("CtAnnotationFieldAccessImpl".equals(o.getClass().getSimpleName()) && mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);
 			} else if (CtFieldAccess.class.isAssignableFrom(o.getClass()) &&  mmField.getRole()==CtRole.VARIABLE) {
 				itemType = factory.createCtTypeReference(CtFieldReference.class);
@@ -93,7 +109,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			assertNotNull(argument);
 
 			// we create a fresh object
-			CtElement receiver = ((CtElement) o).clone();
+			CtElement receiver = o.clone();
 
 			RoleHandler rh = RoleHandlerHelper.getRoleHandler(o.getClass(), mmField.getRole());
 

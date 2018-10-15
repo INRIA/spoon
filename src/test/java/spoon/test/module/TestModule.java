@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.module;
 
 import org.junit.AfterClass;
@@ -51,7 +67,7 @@ public class TestModule {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		try (Stream<Path> paths = Files.walk(directory.toPath())) {
 			paths.forEach(path -> {
-				if (path.toFile().getName().equals("module-info-tpl")) {
+				if ("module-info-tpl".equals(path.toFile().getName())) {
 					try {
 						Files.copy(path, new File(path.getParent().toFile(), "module-info.java").toPath());
 					} catch (IOException e) {
@@ -67,7 +83,7 @@ public class TestModule {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		try (Stream<Path> paths = Files.walk(directory.toPath())) {
 			paths.forEach(path -> {
-				if (path.toFile().getName().equals("module-info.java")) {
+				if ("module-info.java".equals(path.toFile().getName())) {
 					try {
 						Files.delete(path);
 					} catch (IOException e) {
@@ -112,7 +128,7 @@ public class TestModule {
 		assertEquals(2, moduleExports.get(0).getTargetExport().size());
 
 		for (CtModuleReference target : moduleExports.get(0).getTargetExport()) {
-			if (!target.getSimpleName().equals("com.other.module") && !target.getSimpleName().equals("com.second.module")) {
+			if (!"com.other.module".equals(target.getSimpleName()) && !"com.second.module".equals(target.getSimpleName())) {
 				fail();
 			}
 		}

@@ -40,11 +40,8 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 
 	/**
 	 * The mapping function created using this constructor
-	 * will visit each super class and super interface
-	 * following super hierarchy. It can happen
-	 * that some interfaces will be visited more then once
-	 * if they are in super inheritance hierarchy more then once.<br>
-	 * Use second constructor if you want to visit each interface only once.
+	 * will visit each sub class and sub interface
+	 * following sub hierarchy.
 	 */
 	public SubInheritanceHierarchyFunction() {
 	}
@@ -91,7 +88,7 @@ public class SubInheritanceHierarchyFunction implements CtConsumableFunction<CtT
 			public void accept(CtType typeInfo) {
 				outputConsumer.accept(typeInfo);
 				if (query.isTerminated()) {
-					//Cannot terminate, because it's support was removed.
+					//Cannot terminate, because its support was removed.
 					//I think there are cases where it might be useful.
 //					fnc.terminate();
 				}

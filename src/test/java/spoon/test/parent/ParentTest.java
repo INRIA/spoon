@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.parent;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -82,7 +97,7 @@ public class ParentTest {
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
 		} catch (Exception e) {
-			Assert.fail();
+			fail();
 		}
 	}
 
@@ -212,10 +227,10 @@ public class ParentTest {
 	}
 
 	public static void checkParentContract(CtPackage pack) {
-		for(CtElement elem: pack.getElements(new TypeFilter<>(CtElement.class))) {
+		pack.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
-			Assert.assertNotNull("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.getParent());
-		}
+			assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
+		});
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {

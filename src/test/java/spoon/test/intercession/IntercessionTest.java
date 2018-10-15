@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.intercession;
 
 import org.junit.Assert;
@@ -73,7 +89,7 @@ public class IntercessionTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtMethod<?> fooClone = foo.clone();
-		Assert.assertEquals(foo, fooClone);
+		assertEquals(foo, fooClone);
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
@@ -95,7 +111,7 @@ public class IntercessionTest {
 				.compile();
 		CtConstructor<?> foo = (CtConstructor<?>) clazz.getConstructors().toArray()[0];
 		CtConstructor<?> fooClone = foo.clone();
-		Assert.assertEquals(foo, fooClone);
+		assertEquals(foo, fooClone);
 
 		CtBlock<?> body = foo.getBody();
 
@@ -315,11 +331,11 @@ public class IntercessionTest {
 				}
 				final CtInvocation inv = (CtInvocation) assignment;
 				if (collectionReference.equals(SET_REFERENCE)) {
-					if (!inv.getExecutable().getSimpleName().equals("emptySet")) {
+					if (!"emptySet".equals(inv.getExecutable().getSimpleName())) {
 						return false;
 					}
 				} else if (collectionReference.equals(LIST_REFERENCE)) {
-					if (!inv.getExecutable().getSimpleName().equals("emptyList")) {
+					if (!"emptyList".equals(inv.getExecutable().getSimpleName())) {
 						return false;
 					}
 				}

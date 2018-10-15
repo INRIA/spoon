@@ -25,9 +25,9 @@ import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.path.CtRole;
 
 /**
- * implementation of {@link RoleHandler}, which handles attributes of type &lt;V&gt;
+ * implementation of {@link RoleHandler}
  * @param <T> the type of node whose attribute has to be manipulated
- * @param <V> the type of value of the attribute
+ * @param <U> the type of value of the attribute
  */
 abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 
@@ -72,7 +72,7 @@ abstract class SingleHandler<T, U> extends AbstractRoleHandler<T, U, U> {
 				}
 				X oldValue = get(0);
 				SingleHandler.this.setValue(element, value);
-				return (X) oldValue;
+				return oldValue;
 			}
 
 			@Override

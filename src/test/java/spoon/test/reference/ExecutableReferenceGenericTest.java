@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.reference;
 
 import org.junit.Before;
@@ -119,7 +135,7 @@ public class ExecutableReferenceGenericTest {
 
 		//T has more information in the invocation than its declaration because of the argument type
 		//assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
-		assertEquals("method1(T extends java.lang.String)", execRefsMethods2.getSignature());
+		assertEquals("method1(java.lang.String)", execRefsMethods2.getSignature());
 		assertEquals(expectedMethod1, refsMethod2.get(1).getDeclaration());
 		assertEquals(expectedMethod5, refsMethod2.get(2).getDeclaration());
 	}
@@ -172,7 +188,7 @@ public class ExecutableReferenceGenericTest {
 		CtExecutable execRefsMethods2 = refsMethodA.get(0).getDeclaration();
 		//T has more information in the invocation than its declaration because of the argument type
 		//	assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
-		assertEquals("method1(T extends java.lang.String)", execRefsMethods2.getSignature());
+		assertEquals("method1(java.lang.String)", execRefsMethods2.getSignature());
 	}
 
 	@Test
@@ -248,7 +264,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(10, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object()")) {
+			if (!"java.lang.Object()".equals(ref.toString())) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}
@@ -256,7 +272,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(9, refsExecutableClass2.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass2) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object()")) {
+			if (!"java.lang.Object()".equals(ref.toString())) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}

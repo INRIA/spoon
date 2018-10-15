@@ -36,8 +36,6 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.util.ImmutableMap;
 
-/**
- */
 public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	/**
@@ -445,7 +443,7 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 
 	protected <T> T convertSingleValue(Factory factory, Object value, Class<T> type) {
 		ValueConvertor valueConvertor = getValueConvertor();
-		return (T) valueConvertor.getValueAs(factory, getName(), value, type);
+		return valueConvertor.getValueAs(factory, getName(), value, type);
 	}
 
 	/**

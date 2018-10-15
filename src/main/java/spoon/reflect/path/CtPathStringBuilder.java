@@ -17,13 +17,18 @@
 package spoon.reflect.path;
 
 
+import spoon.SpoonException;
+import spoon.reflect.path.impl.AbstractPathElement;
 import spoon.reflect.path.impl.CtNamedPathElement;
 import spoon.reflect.path.impl.CtPathElement;
 import spoon.reflect.path.impl.CtPathImpl;
 import spoon.reflect.path.impl.CtTypedNameElement;
 import spoon.reflect.path.impl.CtRolePathElement;
 
-import java.util.regex.Matcher;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 /**
@@ -56,6 +61,12 @@ public class CtPathStringBuilder {
 		}
 	}
 
+	private static final String MAIN_DELIMITERS = ".#/";
+	private static final String PATH_DELIMITERS = ".#/[";
+	private static final String ARG_NAME_DELIMITERS = "=";
+
+	private static Pattern NAME_MATCHER = Pattern.compile("\\w+");
+
 	/**
 	 * Build path from a string representation.
 	 *
@@ -69,34 +80,110 @@ public class CtPathStringBuilder {
 	 * / : match with a element type (for example, to match all classes, use /CtClass
 	 */
 	public CtPath fromString(String pathStr) throws CtPathException {
-		Matcher matcher = pathPattern.matcher(pathStr);
-
 		CtPathImpl path = new CtPathImpl();
-		while (matcher.find()) {
-			String kind = matcher.group(1);
 
-			CtPathElement pathElement = null;
+		Tokenizer tokenizer = new Tokenizer(pathStr);
+		String token = tokenizer.getNextToken(MAIN_DELIMITERS);
+		while (token != null) {
+			String kind = token;
+			CtPathElement pathElement;
+			token = tokenizer.getNextToken(PATH_DELIMITERS);
+			if (token != null && token.length() == 1 && PATH_DELIMITERS.contains(token)) {
+				//nextToken is again path delimiter. It means there is no token value in between
+				throw new CtPathException("Path value is missing");
+			}
 			if (CtNamedPathElement.STRING.equals(kind)) {
-				pathElement = new CtNamedPathElement(matcher.group(2));
+				//reg exp cannot be used in string, because `.` and `[` are reserved characters for CtPath
+				pathElement = new CtNamedPathElement(token, false);
 			} else if (CtTypedNameElement.STRING.equals(kind)) {
-				pathElement = new CtTypedNameElement(load(matcher.group(2)));
+				pathElement = new CtTypedNameElement(load(token));
 			} else if (CtRolePathElement.STRING.equals(kind)) {
-				pathElement = new CtRolePathElement(CtRole.fromName(matcher.group(2)));
+				pathElement = new CtRolePathElement(CtRole.fromName(token));
+			} else {
+				throw new CtPathException("Unexpected token " + kind);
 			}
-
-			String args = matcher.group(4);
-			if (args != null) {
-				for (String arg : args.split(";")) {
-					Matcher argmatcher = argumentPattern.matcher(arg);
-					if (argmatcher.matches()) {
-						pathElement.addArgument(argmatcher.group(1), argmatcher.group(2));
+			token = tokenizer.getNextToken(PATH_DELIMITERS);
+			if (AbstractPathElement.ARGUMENT_START.equals(token)) {
+				while (true) {
+					String argName = tokenizer.getNextToken(ARG_NAME_DELIMITERS);
+					if (!NAME_MATCHER.matcher(argName).matches()) {
+						throw new CtPathException("Argument name must be a word, but is: " + argName);
 					}
+					token = tokenizer.getNextToken(ARG_NAME_DELIMITERS);
+					if (!AbstractPathElement.ARGUMENT_NAME_SEPARATOR.equals(token)) {
+						throw new CtPathException("Expects " + AbstractPathElement.ARGUMENT_NAME_SEPARATOR);
+					}
+					token = parseArgumentValue(tokenizer, argName, pathElement);
+					if ("]".equals(token)) {
+						break;
+					}
+					//read next argument
 				}
+				token = tokenizer.getNextToken(MAIN_DELIMITERS);
 			}
-
 			path.addLast(pathElement);
 		}
 		return path;
 	}
 
+	private static final String ARG_VALUE_DELIMITERS = "[];()";
+
+	/**
+	 * @return last token
+	 */
+	private String parseArgumentValue(Tokenizer tokenizer, String argName, CtPathElement pathElement) {
+		StringBuilder argValue = new StringBuilder();
+		Deque<String> stack = new ArrayDeque<>();
+		while (true) {
+			String token = tokenizer.getNextToken(ARG_VALUE_DELIMITERS);
+			if ("(".equals(token) || "[".equals(token)) {
+				//starts bracket
+				stack.push(token);
+			} else if (stack.size() > 0) {
+				//we are in some brackets. Just wait for end of bracket
+				if (")".equals(token)) {
+					//closing bracket
+					String kind = stack.pop();
+					if (!"(".equals(kind)) {
+						throw new CtPathException("Unexpected end of bracket " + token);
+					}
+				} else if ("]".equals(token)) {
+					//closing bracket
+					String kind = stack.pop();
+					if (!"[".equals(kind)) {
+						throw new CtPathException("Unexpected end of bracket " + token);
+					}
+				}
+			} else if ("]".equals(token) || ";".equals(token)) {
+				//finished reading of argument value
+				pathElement.addArgument(argName, argValue.toString());
+				return token;
+			}
+			argValue.append(token);
+		}
+	}
+
+	private static class Tokenizer {
+		StringTokenizer tokenizer;
+		int length;
+		int off;
+		Tokenizer(String str) {
+			length = str.length();
+			off = 0;
+			tokenizer = new StringTokenizer(str, MAIN_DELIMITERS, true);
+		}
+
+		String getNextToken(String delimiters) {
+			try {
+				if (off >= length) {
+					return null;
+				}
+				String token = tokenizer.nextToken(delimiters);
+				off += token.length();
+				return token;
+			} catch (NoSuchElementException e) {
+				throw new SpoonException("Unexpected error", e);
+			}
+		}
+	}
 }

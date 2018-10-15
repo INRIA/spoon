@@ -16,8 +16,6 @@
  */
 package spoon.reflect.visitor.filter;
 
-import java.util.Set;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
@@ -33,9 +31,7 @@ import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.SpoonClassNotFoundException;
 
-import static spoon.reflect.visitor.chain.ScanningMode.NORMAL;
-import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
-import static spoon.reflect.visitor.chain.ScanningMode.SKIP_CHILDREN;
+import java.util.Set;
 
 /**
  * Expects a {@link CtTypeInformation} as input
@@ -139,9 +135,9 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		@Override
 		public ScanningMode enter(CtElement element) {
 			if (visitedSet.add(((CtTypeInformation) element).getQualifiedName())) {
-				return NORMAL;
+				return ScanningMode.NORMAL;
 			}
-			return SKIP_ALL;
+			return ScanningMode.SKIP_ALL;
 		}
 		@Override
 		public void exit(CtElement element) {
@@ -237,23 +233,23 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 			}
 		}
 		//if the type is unknown, than we expect it is interface, otherwise we would visit java.lang.Object too, even for interfaces
-		isClass = type == null ? false : (type instanceof CtClass);
+		isClass = type instanceof CtClass;
 		if (isClass == false && includingInterfaces == false) {
 			//the input is interface, but this scanner should visit only interfaces. Finish
 			return;
 		}
 		ScanningMode mode = enter(typeRef, isClass);
-		if (mode == SKIP_ALL) {
+		if (mode == ScanningMode.SKIP_ALL) {
 			//listener decided to not visit that input. Finish
 			return;
 		}
 		if (includingSelf) {
 			sendResult(typeRef, outputConsumer);
 			if (query.isTerminated()) {
-				mode = SKIP_CHILDREN;
+				mode = ScanningMode.SKIP_CHILDREN;
 			}
 		}
-		if (mode == NORMAL) {
+		if (mode == ScanningMode.NORMAL) {
 			if (isClass == false) {
 				visitSuperInterfaces(typeRef, outputConsumer);
 				if (interfacesExtendObject) {
@@ -321,11 +317,11 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 
 	private void sendResultWithListener(CtTypeReference<?> classRef, boolean isClass, CtConsumer<Object> outputConsumer, CtConsumer<CtTypeReference<?>> runNext) {
 		ScanningMode mode = enter(classRef, isClass);
-		if (mode == SKIP_ALL) {
+		if (mode == ScanningMode.SKIP_ALL) {
 			return;
 		}
 		sendResult(classRef, outputConsumer);
-		if (mode == NORMAL && query.isTerminated() == false) {
+		if (mode == ScanningMode.NORMAL && query.isTerminated() == false) {
 			runNext.accept(classRef);
 		}
 		exit(classRef, isClass);
@@ -338,7 +334,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 
 	private ScanningMode enter(CtTypeReference<?> type, boolean isClass) {
 		if (listener == null) {
-			return NORMAL;
+			return ScanningMode.NORMAL;
 		}
 		if (listener instanceof Listener) {
 			Listener typeListener = (Listener) listener;

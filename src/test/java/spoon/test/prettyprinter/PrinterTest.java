@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
@@ -150,7 +166,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		//assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
 		canBeBuilt(output, 7);
 	}
 
@@ -313,7 +329,7 @@ public class PrinterTest {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					assertEquals("Keyword found in Identifier: " + identifier, false, javaKeywords.contains(identifier));
 					handleTabs();
 					allTokens.append(identifier);
 					return this;
@@ -407,7 +423,7 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
+						assertEquals("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), false, tokenType.equals(this.lastToken));
 					}
 					this.lastToken = tokenType;
 				}
@@ -433,10 +449,10 @@ public class PrinterTest {
 			char c = stringToken.charAt(i);
 			if (isWhitespace) {
 				//a whitespace
-				assertTrue(Character.isWhitespace(c)==true);
+				assertEquals(true, Character.isWhitespace(c));
 			} else {
 				//not a whitespace
-				assertTrue(Character.isWhitespace(c)==false);
+				assertEquals(false, Character.isWhitespace(c));
 			}
 		}
 	}

@@ -20,8 +20,8 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericDeclaration;
@@ -55,7 +55,12 @@ public class TypeReferenceRuntimeBuilderContext extends AbstractRuntimeBuilderCo
 			return;
 		case BOUNDING_TYPE:
 		case SUPER_TYPE:
-			((CtTypeParameterReference) typeReference).addBound(ctTypeReference);
+			if (typeReference instanceof CtWildcardReference) {
+				((CtWildcardReference) typeReference).setBoundingType(ctTypeReference);
+			} else {
+				//Strange case?
+				this.getClass();
+			}
 			return;
 		case TYPE_ARGUMENT:
 			typeReference.addActualTypeArgument(ctTypeReference);

@@ -170,7 +170,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public static final String JAVADOC_START = "/**";
 
 	/**
-	 * The beginning of a inline comment
+	 * The beginning of an inline comment
 	 */
 	public static final String INLINE_COMMENT_START = "// ";
 
@@ -181,7 +181,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	/**
 	 * The printing context.
+	 *
+	 * @deprecated since Spoon 7.1.0, please use {{@link #getContext()}}
 	 */
+	@Deprecated
 	public PrintingContext context = new PrintingContext();
 
 	/**
@@ -192,7 +195,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Environment which Spoon is executed.
 	 */
-	private Environment env;
+	protected Environment env;
 
 	/**
 	 * Token detector, which delegates tokens to {@link TokenWriter}
@@ -207,7 +210,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Compilation unit we are printing.
 	 */
-	private CompilationUnit sourceCompilationUnit;
+	protected CompilationUnit sourceCompilationUnit;
 
 	/**
 	 * Imports computed
@@ -260,7 +263,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!e.getTypeCasts().isEmpty()) {
 			for (CtTypeReference<?> r : e.getTypeCasts()) {
 				printer.writeSeparator("(");
-				DefaultJavaPrettyPrinter.this.scan(r);
+				scan(r);
 				printer.writeSeparator(")").writeSpace();
 				printer.writeSeparator("(");
 				context.parenthesedExpression.push(e);
@@ -648,23 +651,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
-		CtTypeParameterReference ref = typeParameter.getReference();
-		if (ref.isImplicit()) {
-			return;
-		}
-		elementPrinterHelper.writeAnnotations(ref);
-		if (printQualified(ref)) {
-			elementPrinterHelper.writeQualifiedName(ref.getQualifiedName());
-		} else {
-			printer.writeIdentifier(ref.getSimpleName());
-		}
-		if (!ref.isDefaultBoundingType() || !ref.getBoundingType().isImplicit()) {
-			if (ref.isUpper()) {
-				printer.writeSpace().writeKeyword("extends").writeSpace();
-			} else {
-				printer.writeSpace().writeKeyword("super").writeSpace();
-			}
-			scan(ref.getBoundingType());
+		elementPrinterHelper.writeAnnotations(typeParameter);
+		printer.writeIdentifier(typeParameter.getSimpleName());
+		if (typeParameter.getSuperclass() != null && typeParameter.getSuperclass().isImplicit() == false) {
+			printer.writeSpace().writeKeyword("extends").writeSpace();
+			scan(typeParameter.getSuperclass());
 		}
 	}
 
@@ -873,7 +864,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 							final String fieldName = field.getSimpleName();
 							CtVariable<?> var = f.getVariable().map(new PotentialVariableDeclarationFunction(fieldName)).first();
 							if (var != field) {
-								//another variable declaration was found which is hiding the field declaration for this field access. Make the field access expicit
+								//another variable declaration was found which is hiding the field declaration for this field access. Make the field access explicit
 								target.setImplicit(false);
 							}
 						} else {
@@ -906,15 +897,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
-		if (parent instanceof CtFieldWrite
+		return parent instanceof CtFieldWrite
 				&& targetExp.equals(((CtFieldWrite) parent).getTarget())
 				&& anonymousParent != null
 				&& ((CtFieldWrite) parent).getVariable() != null
 				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.STATIC)
-				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL)) {
-			return true;
-		}
-		return false;
+				&& ((CtFieldWrite) parent).getVariable().getModifiers().contains(ModifierKind.FINAL);
 	}
 
 	@Override
@@ -924,7 +912,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			// we only write qualified this when this is required
 			// this is good both in fully-qualified mode and in readable (with-imports) mode
-			// the implicit information is used for analysis (eg are visibility caused by implicit bugs?) but
+			// the implicit information is used for analysis (e.g. is visibility caused by implicit bugs?) but
 			// not for pretty-printing
 			CtTypeAccess target = (CtTypeAccess) thisAccess.getTarget();
 			CtTypeReference targetType = target.getAccessedType();
@@ -951,7 +939,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				return;
 			}
 
-			// complex case of qualifed this
+			// complex case of qualified this
 			if (!context.currentThis.isEmpty()) {
 
 				CtType lastType = context.currentThis.peekFirst().type;
@@ -1140,7 +1128,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-		boolean isStatic = reference.getSimpleName().equals("class") || !reference.getSimpleName().equals("super") && reference.isStatic();
+		boolean isStatic = "class".equals(reference.getSimpleName()) || !"super".equals(reference.getSimpleName()) && reference.isStatic();
 
 		boolean printType = true;
 
@@ -1163,7 +1151,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			printer.writeSeparator(".");
 		}
-		if (reference.getSimpleName().equals("class")) {
+		if ("class".equals(reference.getSimpleName())) {
 			printer.writeKeyword("class");
 		} else {
 			printer.writeIdentifier(reference.getSimpleName());
@@ -1756,17 +1744,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		if (importsContext.isImported(ref) || (this.env.isAutoImports() && ref.getPackage() != null && ref.getPackage().getSimpleName().equals("java.lang"))) {
-			// If my.pkg.Something is imported, but
-			//A) we are in the context of a class which is also called "Something",
-			//B) we are in the context of a class which defines field which is also called "Something",
-			//	we should still use qualified version my.pkg.Something
-			for (TypeContext typeContext : context.currentThis) {
+		if (importsContext.isImported(ref)  // If my.pkg.Something is imported
+				|| (this.env.isAutoImports() && ref.getPackage() != null && "java.lang".equals(ref.getPackage().getSimpleName())) // or that we are in java.lang
+				) {
+			for (CacheBasedConflictFinder typeContext : context.currentThis) {
+				//A) we are in the context of a class which is also called "Something",
 				if (typeContext.getSimpleName().equals(ref.getSimpleName())
 						&& !Objects.equals(typeContext.getPackage(), ref.getPackage())) {
 					return true;
 				}
-				if (typeContext.isNameConflict(ref.getSimpleName())) {
+				//B) we are in the context of a class which defines field which is also called "Something",
+				//	we should still use qualified version my.pkg.Something
+				if (typeContext.hasFieldConflict(ref.getSimpleName())
+						|| typeContext.hasNestedTypeConflict(ref.getSimpleName()) // fix of #2369
+						) {
 					return true;
 				}
 			}
@@ -1991,6 +1982,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			imports.addAll(computeImports(t));
 		}
 		this.writeHeader(types, imports);
+		printTypes(types);
+	}
+
+	protected void printTypes(List<CtType<?>> types) {
 		for (CtType<?> t : types) {
 			scan(t);
 			if (!env.isPreserveLineNumbers()) {

@@ -1,9 +1,26 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.generics;
 
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtConstructorCall;
@@ -66,7 +83,6 @@ import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -189,7 +205,7 @@ public class GenericsTest {
 		assertTrue(tr3 instanceof CtTypeParameterReference);
 
 		assertEquals("File", trExtends.getSimpleName());
-		assertEquals(java.io.File.class, trExtends.getActualClass());
+		assertSame(java.io.File.class, trExtends.getActualClass());
 		assertEquals("T", tr2.getSimpleName());
 		assertEquals("T", tr3.getSimpleName());
 	}
@@ -281,11 +297,11 @@ public class GenericsTest {
 			assertEquals("java.util.Map.Entry", ref.toString());
 
 			// now visitCtTypeReference
-			assertEquals(java.util.Map.class, ref.getDeclaringType()
+			assertSame(java.util.Map.class, ref.getDeclaringType()
 					.getActualClass());
 			pp.visitCtTypeReference(ref);
 
-			assertEquals("java.util.Map.Entry", pp.getResult().toString());
+			assertEquals("java.util.Map.Entry", pp.getResult());
 
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);
@@ -588,8 +604,17 @@ public class GenericsTest {
 	@Test
 	public void testWildcard() throws Exception {
 		List<CtWildcardReference> wildcardReferences = buildClass(Paella.class).getElements(new TypeFilter<>(CtWildcardReference.class));
-		// 4 = the class declaration + the constructor declaration + the method declaration + the type parameter of the method declaration
-		assertEquals(4, wildcardReferences.size());
+		// 3 = the class declaration + the constructor declaration + the method declaration
+		assertEquals(3, wildcardReferences.size());
+	}
+
+	@Test
+	public void testGetDeclarationOnGenericReturnType() throws Exception {
+		//contract: generic return type reference can access parameter type.
+		CtMethod<?> method = buildClass(Paella.class).getMethodsByName("make").get(0);
+		CtTypeParameterReference paramTypeRef = (CtTypeParameterReference) method.getType();
+		assertEquals("T", paramTypeRef.getSimpleName());
+		assertSame(method.getFormalCtTypeParameters().get(0), paramTypeRef.getTypeParameterDeclaration());
 	}
 
 	@Test
@@ -878,7 +903,7 @@ public class GenericsTest {
 	@Test
 	public void testTypeAdapted() throws Exception {
 		// contract: one can get the actual value of a generic type in a given context
-		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
+		CtClass<?> ctModel = (CtClass<?>) buildClass(ErasureModelA.class);
 		CtTypeParameter tpA = ctModel.getFormalCtTypeParameters().get(0);
 		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
 		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
@@ -1209,7 +1234,7 @@ public class GenericsTest {
 
 		boolean invocationDetected = false;
 		for (CtConstructorCall call : invocations) {
-			if (call.getType().getSimpleName().equals("ToNotificationSubscriber")) {
+			if ("ToNotificationSubscriber".equals(call.getType().getSimpleName())) {
 				assertEquals(1, call.getType().getActualTypeArguments().size());
 
 				CtTypeReference actualTA = call.getType().getActualTypeArguments().get(0);
@@ -1313,7 +1338,7 @@ public class GenericsTest {
 		CtMethod classMethod = (CtMethod)ctClass.getMethodsByName("visitCtConditional").get(0);
 
 		CtType<?> iface = launcher.getFactory().Type().get("spoon.test.generics.testclasses2.ISameSignature");
-		CtMethod ifaceMethod = (CtMethod)iface.getMethodsByName("visitCtConditional").get(0);
+		CtMethod ifaceMethod = iface.getMethodsByName("visitCtConditional").get(0);
 
 		ClassTypingContext ctcSub = new ClassTypingContext(ctClass.getReference());
 		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
@@ -1415,7 +1440,7 @@ public class GenericsTest {
 	@Test
 	public void testCannotAdaptTypeOfNonTypeScope() throws Exception {
 		//contract: ClassTypingContext doesn't fail on type parameters, which are defined out of the scope of ClassTypingContext
-		CtType<?> ctClass = ModelUtils.buildClass(OuterTypeParameter.class);
+		CtType<?> ctClass = buildClass(OuterTypeParameter.class);
 		//the method defines type parameter, which is used in super of local class
 		CtReturn<?> retStmt = (CtReturn<?>) ctClass.getMethodsByName("method").get(0).getBody().getStatements().get(0);
 		CtNewClass<?> newClassExpr = (CtNewClass<?>) retStmt.getReturnedExpression();
@@ -1425,5 +1450,20 @@ public class GenericsTest {
 		//the adaptation of such type parameter keeps that parameter as it is.
 		assertFalse(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("add").get(0)));
 		assertTrue(c.isOverriding(m1, declaringType.getSuperclass().getTypeDeclaration().getMethodsByName("iterator").get(0)));
+	}
+
+	@Test
+	public void testGenericsOverriding() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses4/A.java");
+		CtModel model = launcher.buildModel();
+
+		CtClass<?> a = model.getElements(new NamedElementFilter<>(CtClass.class, "A")).get(0);
+		CtClass<?> b = model.getElements(new NamedElementFilter<>(CtClass.class, "B")).get(0);
+
+		CtMethod m6A = a.getMethodsByName("m6").get(0);
+		CtMethod m6B = b.getMethodsByName("m6").get(0);
+
+		assertTrue(m6B.isOverriding(m6A));
 	}
 }

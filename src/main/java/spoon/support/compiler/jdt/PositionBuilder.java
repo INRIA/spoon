@@ -387,7 +387,6 @@ public class PositionBuilder {
 				sourceStart += fieldDeclaration.name.length;
 			}
 		} else if (node instanceof CaseStatement) {
-			CaseStatement caseStmt = (CaseStatement) node;
 			sourceEnd = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
 			if (sourceEnd < 0) {
 				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
@@ -691,7 +690,7 @@ public class PositionBuilder {
 					if (content[off] == '\r') {
 						//we have found end of this comment
 						//skip windows \n too if any
-						if (content[off] == '\n') {
+						if (off < maxOff && content[off + 1] == '\n') {
 							off++;
 						}
 						return off;

@@ -121,6 +121,7 @@ import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
@@ -131,10 +132,12 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -428,6 +431,43 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(LabeledStatement labeledStatement, BlockScope scope) {
+		ASTPair pair = context.stack.peek();
+		CtBlock<?> block = (CtBlock<?>) pair.element;
+		if (block.getStatements().size() == 1) {
+			CtStatement childStmt = block.getStatement(0);
+			if (childStmt.getLabel() == null) {
+				//the child statement has no label, so we can move label from `block` to child statement and to remove this `block`
+				//example code:
+				//label: while(true);
+				childStmt.setLabel(block.getLabel());
+				SourcePosition oldPos = childStmt.getPosition();
+				int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
+				if (newSourceStart != oldPos.getSourceStart()) {
+					childStmt.setPosition(block.getFactory().Core().createSourcePosition(
+							oldPos.getCompilationUnit(),
+							newSourceStart, oldPos.getSourceEnd(),
+							oldPos.getCompilationUnit().getLineSeparatorPositions()));
+				}
+				//use childStmt instead of helper block
+				//1) disconnect childStmt from it's helper block
+				childStmt.setParent(null);
+				//2) inject childStmt instead of block into context.stack,
+				//so ParentExiter will use it instead of block
+				pair.element = childStmt;
+				pair.node = labeledStatement.statement;
+				context.exit(pair.node);
+				return;
+			}
+		}
+		//else example code:
+		//label:;
+		//label1: label2: while(true);
+		//needs to keep an implicit helper CtBlock as holder of `label1`
+		context.exit(labeledStatement);
+	}
+
+	@Override
 	public void endVisit(LocalDeclaration localDeclaration, BlockScope scope) {
 		context.exit(localDeclaration);
 	}
@@ -580,7 +620,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public void endVisit(SingleMemberAnnotation annotation, BlockScope scope) {
-		if (!context.annotationValueName.pop().equals("value")) {
+		if (!"value".equals(context.annotationValueName.pop())) {
 			throw new RuntimeException("Inconsistent Stack");
 		}
 		context.exit(annotation);
@@ -1175,7 +1215,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(LabeledStatement labeledStatement, BlockScope scope) {
-		context.label.push(new String(labeledStatement.label));
+		/*
+		 * Create helper implicit block which holds label until child statement node is available
+		 */
+		CtBlock<?> block = factory.Core().createBlock();
+		block.setLabel(new String(labeledStatement.label));
+		context.enter(block, labeledStatement);
+		//set implicit after position is build, so we know the position of the label
+		block.setImplicit(true);
 		return true;
 	}
 
@@ -1583,7 +1630,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if (new String(typeDeclaration.name).equals("package-info")) {
+		if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {

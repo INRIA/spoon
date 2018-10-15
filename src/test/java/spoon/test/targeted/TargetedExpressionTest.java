@@ -1,8 +1,25 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.targeted;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -88,7 +105,7 @@ public class TargetedExpressionTest {
 		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(2, elements.size());
 
-		assertEquals("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
+		assertSame("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
 		assertNotNull("Target isn't null if there is a 'this' explicit.", elements.get(1).getTarget());
 		assertTrue(elements.get(1).getTarget().isImplicit());
 	}
@@ -458,7 +475,7 @@ public class TargetedExpressionTest {
 			assertEquals(expected.declaringType.getQualifiedName(), fieldAccess.getVariable().getDeclaringType().getQualifiedName());
 		}
 		if (expected.targetClass != null) {
-			assertEquals(expected.targetClass, fieldAccess.getTarget().getClass());
+			assertSame(expected.targetClass, fieldAccess.getTarget().getClass());
 		} else if (expected.targetString != null) {
 			assertEquals(expected.targetString, fieldAccess.getTarget().toString());
 		}
@@ -476,7 +493,7 @@ public class TargetedExpressionTest {
 
 		// + two optional parts
 		if (expected.targetClass != null) {
-			assertEquals(expected.targetClass, invocation.getTarget().getClass());
+			assertSame(expected.targetClass, invocation.getTarget().getClass());
 		} else if (expected.targetString != null) {
 			assertEquals(expected.targetString, invocation.getTarget().toString());
 		}

@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.query_function;
 
 import org.junit.Before;
@@ -29,6 +45,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
+import spoon.reflect.visitor.filter.FieldScopeFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -171,7 +188,7 @@ public class VariableReferencesTest {
 		//visits all the CtVariable elements whose name is "field" and search for all elements in their scopes
 		//Comparing with the result found by basic functions
 		List list = modelClass.filterChildren((CtVariable<?> var)->{
-			if(var.getSimpleName().equals("field")) {
+			if("field".equals(var.getSimpleName())) {
 				if(var instanceof CtField) {
 					//field scope is not supported
 					return false;
@@ -180,7 +197,7 @@ public class VariableReferencesTest {
 				if(var instanceof CtLocalVariable) {
 					assertArrayEquals(var.map(new LocalVariableScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtField) {
-					//assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
+					assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtParameter) {
 					assertArrayEquals(var.map(new ParameterScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtCatchVariable) {
@@ -295,7 +312,7 @@ public class VariableReferencesTest {
 				Integer firstValue = getLiteralValue((CtExpression<?>)inv.getArguments().get(l_argIdx));
 				//check that all found method invocations are using same key
 				list.forEach(inv2->{
-					assertEquals(firstValue, getLiteralValue((CtExpression<?>)inv2.getArguments().get(l_argIdx)));
+					assertEquals(firstValue, getLiteralValue(inv2.getArguments().get(l_argIdx)));
 				});
 				return firstValue;
 			}

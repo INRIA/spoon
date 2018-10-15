@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.reflect.ast;
 
 import org.junit.Assert;
@@ -152,13 +168,13 @@ public class CloneTest {
 			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
 			assertEquals("Source and Target are not equal", sourceElement, targetElement);
 		});
-		//contract: each visitable elements was cloned exactly once.  No more no less.
+		//contract: each visitable elements was cloned exactly once. No more no less.
 		assertTrue(cl.sourceToTarget.isEmpty());
 	}
 
 	@Test
 	public void testCopyMethod() {
-		// contract: the copied method is well-formed, lookup of executable references is preserved after copying, esp for recursive methods
+		// contract: the copied method is well-formed, lookup of executable references is preserved after copying, especially for recursive methods
 		Launcher l = new Launcher();
 		l.getEnvironment().setNoClasspath(true);
 		l.addInputResource("./src/test/resources/noclasspath/A2.java");
@@ -189,7 +205,7 @@ public class CloneTest {
 		// now we may want to rename the copied method
 		Refactoring.changeMethodName(methodClone, "foo");
 		assertEquals("foo", methodClone.getSimpleName()); // the method has been changed
-		assertEquals("foo", reference.getSimpleName());  // the reference has been changed
+		assertEquals("foo", reference.getSimpleName()); // the reference has been changed
 		assertSame(methodClone, reference.getDeclaration()); // the lookup still works
 		assertEquals("A2", methodClone.getDeclaringType().getQualifiedName());
 

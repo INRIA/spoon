@@ -34,7 +34,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 			TobeMatched tmp = matchAllWith(targets);
 			if (tmp == null) {
 				if (isMandatory) {
-					//this mandatory valueResolver didn't matched
+					//this mandatory valueResolver didn't match
 					return null;
 				}
 				//no match - OK, it was optional
@@ -49,7 +49,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 		while (isMandatory(targets.getParameters())) {
 			TobeMatched tmp = matchAllWith(targets);
 			if (tmp == null) {
-				//this mandatory valueResolver didn't matched
+				//this mandatory valueResolver didn't match
 				return null;
 			}
 			//check whether we have to match next
@@ -64,6 +64,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 		//then continue optional targets
 		return matchOptionalTargets(targets, next);
 	}
+
 	private TobeMatched matchOptionalTargets(TobeMatched targets, Matchers next) {
 		if (isTryNextMatch(targets.getParameters()) == false) {
 			//the `matcher` has all values. Match next
@@ -82,7 +83,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 					}
 				}
 			}
-			//greedy matching with current nodeSubstRequest didn't passed. Try to match using remaining templates
+			//greedy matching with current nodeSubstRequest didn't pass. Try to match using remaining templates
 			return next.matchAllWith(targets);
 		}
 		case RELUCTANT: {
@@ -92,7 +93,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 					return match;
 				}
 			}
-			//reluctant matching didn't passed on next elements. Try to match using this matcher
+			//reluctant matching didn't pass on next elements. Try to match using this matcher
 			TobeMatched match = matchAllWith(targets);
 			if (match == null) {
 				//nothing matched
@@ -108,7 +109,7 @@ abstract class AbstractRepeatableMatcher extends AbstractNode implements Repeata
 				TobeMatched tmp = matchAllWith(targets);
 				if (tmp == null) {
 					if (isMandatory(targets.getParameters())) {
-						//this mandatory valueResolver didn't matched
+						//this mandatory valueResolver didn't match
 						return null;
 					}
 					//it was optional. Ignore this valueResolver and continue with next

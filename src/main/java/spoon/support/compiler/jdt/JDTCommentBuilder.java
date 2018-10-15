@@ -39,6 +39,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -176,7 +177,7 @@ class JDTCommentBuilder {
 		for (String aLine : lines) {
 			String line = aLine.trim();
 			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
-				int endIndex = line.indexOf(" ");
+				int endIndex = line.indexOf(' ');
 				if (endIndex == -1) {
 					endIndex = line.length();
 				}
@@ -282,9 +283,17 @@ class JDTCommentBuilder {
 				// Do not visit the AST, only the first element
 				if (!isScanned) {
 					isScanned = true;
-					if (e.getPosition().getSourceStart() == comment.getPosition().getSourceStart()) {
+					SourcePosition sp = e.getPosition();
+					if (sp.getSourceStart() == comment.getPosition().getSourceStart()) {
 						e.addComment(comment);
 						return;
+					}
+					if (sp instanceof DeclarationSourcePosition) {
+						DeclarationSourcePosition dsp = (DeclarationSourcePosition) sp;
+						if (comment.getPosition().getSourceEnd() < dsp.getModifierSourceEnd()) {
+							e.addComment(comment);
+							return;
+						}
 					}
 					super.scan(e);
 				}

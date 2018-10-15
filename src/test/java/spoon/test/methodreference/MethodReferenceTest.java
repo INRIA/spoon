@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.methodreference;
 
 import org.junit.Before;
@@ -217,9 +233,8 @@ public class MethodReferenceTest {
 		assertEquals("method", method.getName());
 
 		CtClass<?> classSun = classCloud.getFactory().Class().get("spoon.test.methodreference.testclasses.Sun");
-//		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtExecutableReference.class)).select(new NameFilter<>("method")).first();
 		CtExecutableReference<?> execRef2 = classSun.filterChildren(new TypeFilter<>(CtInvocation.class))
-				.select(((CtInvocation i)->i.getExecutable().getSimpleName().equals("method")))
+				.select(((CtInvocation i)-> "method".equals(i.getExecutable().getSimpleName())))
 				.map((CtInvocation i)->i.getExecutable())
 				.first();
 		assertNotNull(execRef2);
@@ -267,7 +282,7 @@ public class MethodReferenceTest {
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
-		assertEquals("Method reference must be typed.", expected, type.getActualClass());
+		assertSame("Method reference must be typed.", expected, type.getActualClass());
 	}
 
 	private void assertTargetedBy(String expected, CtExpression<?> target) {
