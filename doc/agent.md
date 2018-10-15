@@ -18,33 +18,39 @@ public class Agent {
 	public static void premain(String agentArgs, Instrumentation inst) {
 		System.out.println( "Hello Agent" );
 
-		//We exclude any classes not in our package from decompilation
-		inst.addTransformer(new InsertTraceInMainTransformer(cl -> cl.startsWith("org/my/package")));
+		//Create a SpoonClassFileTransformer, that
+		// * excludes any classes not in our package from decompilation
+		// * adds the statement System.out.println("Hello <className>"); to the (first) method main of every classes
+        SpoonClassFileTransformer transformer = new SpoonClassFileTransformer(
+                cl -> cl.startsWith("org/my/package"),
+                new InsertPrintTransformer()
+        );
+		inst.addTransformer(transformer);
 
 		System.out.println( "Agent Done." );
 	}
 }
 ```
 
-Here is the class extending SpoonClassFileTransformer
 ```java
-public class InsertTraceInMainTransformer extends SpoonClassFileTransformer {
-	public TSpoonClassFileTransformer(Predicate<String> classNameFilter) {
-		super(classNameFilter);
-	}
+public class InsertPrintTransformer implements TypeTransformer {
 
 	@Override
-	//Accept any class for which we have decompiled bytecode but exclude interfaces
 	public boolean accept(CtType type) {
-		return (type instanceof CtClass);
+		if ((type instanceof CtClass) &&
+				type.getMethodsByName("main").size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public void transform(CtType type) {
-	    //Get main method
+		System.err.println("Transforming " + type.getQualifiedName());
 		CtMethod main = (CtMethod) type.getMethodsByName("main").get(0);
-		//Insert a trace containing the name of the class
 		main.getBody().addStatement(type.getFactory().createCodeSnippetStatement("System.out.println(\"Hello " + type.getQualifiedName() + "\");"));
+		System.err.println("Done transforming " + type.getQualifiedName());
 	}
 }
 ```
