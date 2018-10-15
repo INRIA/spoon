@@ -2,7 +2,6 @@ package spoon.decompiler;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import spoon.reflect.declaration.CtType;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,20 +76,13 @@ public class SpoonClassFileTransformerTest {
 
 		//Create an extension of SpoonClassFileTransformer
 		SpoonClassFileTransformer transformer = new SpoonClassFileTransformer(
-				cl -> cl.startsWith("se/kth/castor"),
+				s -> s.startsWith("se/kth/castor"),
+				type -> type.getField("transformed").setAssignment(type.getFactory().createCodeSnippetExpression("true")),
 				DECOMPILED_DIR.getPath(),
 				CACHE_DIR.getPath(),
-				RECOMPILED_DIR.getPath()) {
-			@Override
-			public boolean accept(CtType type) {
-				return true;
-			}
-
-			@Override
-			public void transform(CtType type) {
-				type.getField("transformed").setAssignment(type.getFactory().createCodeSnippetExpression("true"));
-			}
-		};
+				RECOMPILED_DIR.getPath(),
+				null
+		);
 
 		//Class loaded by cl should be transformed..
 		TransformingClassLoader cl = new TransformingClassLoader(transformer, CLASSES_DIR.getPath() + "/");

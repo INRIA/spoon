@@ -35,19 +35,36 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @Experimental
-public abstract class SpoonClassFileTransformer implements ClassFileTransformer {
+public class SpoonClassFileTransformer implements ClassFileTransformer {
 
-	Predicate<String> classNameFilter;
-	String pathToDecompiled;
-	String pathToRecompile;
-	String pathToCache;
-	File cache;
-	Set<String> classPath;
-	public Decompiler decompiler;
-	Set<File> inputSources;
+	protected String pathToDecompiled;
+	//protected String pathToRecompile;
+	/*protected String pathToCache;*/
 
+	//Field filled by Constructor
+	protected File cache;
+	protected File recompileDir;
+	protected Set<String> classPath;
+	protected Set<File> inputSources;
+
+	protected TypeTransformer transformer;
+
+	protected Decompiler decompiler;
+
+	//Classes to exclude from decompilation
+	protected Predicate<String> classNameFilter;
 	//Exclude jvm classes
 	public static final Predicate<String> defaultFilter = s -> !(s.startsWith("java") || s.startsWith("sun"));
+
+
+	/**
+	 * Default Constructor for SpoonClassFileTransformer
+	 *
+	 * @param typeTransformer Transformation to apply on loaded types.
+	 */
+	public SpoonClassFileTransformer(TypeTransformer typeTransformer) {
+		this(defaultFilter, typeTransformer, "spoon-decompiled", "spoon-cache", "spoon-recompiled", null);
+	}
 
 
 	/**
@@ -58,9 +75,10 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 	 *                        If null, a default filter will filter out typical jvm classes (starting with java* or sun*)
 	 *                        Note @{SpoonClassFileTransformer.defaultFilter} may be used in conjunction of custom filter
 	 *                        with `defaultFilter.and(classNameFilter)`.
+	 * @param typeTransformer Transformation to apply on loaded types.
 	 */
-	public SpoonClassFileTransformer(Predicate<String> classNameFilter) {
-		this(classNameFilter, "spoon-decompiled", "spoon-cache", "spoon-recompiled");
+	public SpoonClassFileTransformer(Predicate<String> classNameFilter, TypeTransformer typeTransformer) {
+		this(classNameFilter, typeTransformer, "spoon-decompiled", "spoon-cache", "spoon-recompiled", null);
 	}
 
 	/**
@@ -71,30 +89,40 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 	 *                        If null, a default filter will filter out typical jvm classes (starting with java* or sun*)
 	 *                        Note @{SpoonClassFileTransformer.defaultFilter} may be used in conjunction of custom filter
 	 *                        with `defaultFilter.and(classNameFilter)`.
+	 * @param typeTransformer Transformation to apply on loaded types.
 	 * @param pathToDecompiled path to directory in which to put decompiled sources.
 	 * @param pathToCache path to cache directory for IncrementalLauncher
 	 * @param pathToRecompile path to recompiled classes
+	 * @param decompiler Decompiler to use on classFile before building Spoon model. If null, default compiler (cfr) will be used.
 	 */
-	public SpoonClassFileTransformer(Predicate<String> classNameFilter, String pathToDecompiled, String pathToCache, String pathToRecompile) {
+	public SpoonClassFileTransformer(Predicate<String> classNameFilter,
+									TypeTransformer typeTransformer,
+									String pathToDecompiled,
+									String pathToCache,
+									String pathToRecompile,
+									Decompiler decompiler) {
 		if (classNameFilter == null) {
 			this.classNameFilter = defaultFilter;
 		} else {
 			this.classNameFilter = classNameFilter;
 		}
+
 		String classPathAr[] = System.getProperty("java.class.path").split(":");
 		classPath = new HashSet<>(Arrays.asList(classPathAr));
 		this.pathToDecompiled = pathToDecompiled;
-		this.pathToRecompile = pathToRecompile;
-		this.pathToCache = pathToCache;
-
+		recompileDir = new File(pathToRecompile);
 		cache = new File(pathToCache);
 
-
-		//inputSources = Collections.singleton(new File(pathToDecompiled));
 		inputSources = new HashSet<>();
 		inputSources.add(new File(pathToDecompiled));
 
-		decompiler = s -> Main.main(new String[]{s, "--outputdir", pathToDecompiled});
+		this.transformer = typeTransformer;
+
+		if (decompiler == null) {
+			this.decompiler = s -> Main.main(new String[]{s, "--outputdir", pathToDecompiled});
+		} else {
+			this.decompiler = decompiler;
+		}
 	}
 
 	@Override
@@ -127,20 +155,21 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 			CtType toBeTransformed =  model.getAllTypes().stream().filter(t -> t.getQualifiedName().equals(className.replace("/", "."))).findAny().get();
 
 			//If the class model is not modified by user, resume unmodified loading
-			if (!accept(toBeTransformed)) {
+			if (!transformer.accept(toBeTransformed)) {
 				return classfileBuffer;
 			}
 			launcher.getEnvironment().debugMessage("[Agent] transforming " + className);
-			transform(toBeTransformed);
+			transformer.transform(toBeTransformed);
 
 			//Compile new class model
 			SpoonModelBuilder compiler = launcher.createCompiler();
+			compiler.setBinaryOutputDirectory(recompileDir);
 			compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
 
 
 			File transformedClass = new File(compiler.getBinaryOutputDirectory(), className + ".class");
 			try {
-				//Load Modified classFIle
+				//Load Modified classFile
 				byte[] fileContent = Files.readAllBytes(transformedClass.toPath());
 				launcher.getEnvironment().debugMessage("[Agent] loading transformed " + className);
 				return fileContent;
@@ -153,17 +182,4 @@ public abstract class SpoonClassFileTransformer implements ClassFileTransformer 
 		}
 		return classfileBuffer;
 	}
-
-	/**
-	 * User defined filter to discard type that will not be transformed by the SpoonClassFileTransformer.
-	 * @param type type considered for transformation
-	 */
-	public abstract boolean accept(CtType type);
-
-
-	/**
-	 * User's implementation of transformation to apply on type.
-	 * @param type type to be transformed
-	 */
-	public abstract void transform(CtType type);
 }
