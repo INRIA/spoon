@@ -6,11 +6,11 @@ keywords: agent, usage, java, loadtime
 
 # Spoon Agent
 
-Spoon can also be used at load time to transform classes. `SpoonClassFileTransformer` provide an abstraction of `ClassFileTransformer`
-where the user can define its transformation with spoon instead of working directly on bytecode.
-Bytecode of classes will be decompiled gradually when loaded, and the model will be updated in consequence.
+Spoon can also be used to transform classes at load time in the JVM. FOr this, `SpoonClassFileTransformer` provide an abstraction of `ClassFileTransformer`
+where the user can define Spoon transformation.
+Bytecode of classes will be decompiled on-the-fly when loaded, and the Spoon AST will be updated in consequence, and the code is recompiled on-the-fly.
 
-The following example show the definition of a basic agent inserting a trace a the end of every method called `main`.
+The following example shows the definition of a basic JVM agent for inserting a tracing method call a the end of every method called `foo`.
 
 Here is the agent:
 ```java
@@ -38,7 +38,7 @@ public class InsertPrintTransformer implements TypeTransformer {
 	@Override
 	public boolean accept(CtType type) {
 		if ((type instanceof CtClass) &&
-				type.getMethodsByName("main").size() > 0) {
+				type.getMethodsByName("foo").size() > 0) {
 			return true;
 		} else {
 			return false;
