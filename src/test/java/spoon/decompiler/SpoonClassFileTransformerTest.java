@@ -74,7 +74,7 @@ public class SpoonClassFileTransformerTest {
 		CACHE_DIR.mkdir();
 		RECOMPILED_DIR.mkdir();
 
-		//Create an extension of SpoonClassFileTransformer
+		//Create a SpoonClassFileTransformer
 		SpoonClassFileTransformer transformer = new SpoonClassFileTransformer(
 				s -> s.startsWith("se/kth/castor"),
 				type -> type.getField("transformed").setAssignment(type.getFactory().createCodeSnippetExpression("true")),
