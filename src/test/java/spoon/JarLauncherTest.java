@@ -38,7 +38,9 @@ public class JarLauncherTest {
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
 
 		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
-		if(pathToDecompiledRoot.exists()) pathToDecompiledRoot.delete();
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
 		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
 		pathToDecompile.mkdirs();
 
@@ -53,7 +55,9 @@ public class JarLauncherTest {
 		assertNotNull(var.getType().getTypeDeclaration());
 
 
-		if(pathToDecompiledRoot.exists()) pathToDecompiledRoot.delete();
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
 	}
 
 
@@ -64,7 +68,9 @@ public class JarLauncherTest {
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
 
 		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
-		if(pathToDecompiledRoot.exists()) pathToDecompiledRoot.delete();
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
 		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
 		pathToDecompile.mkdirs();
 
@@ -79,7 +85,9 @@ public class JarLauncherTest {
 		assertNotNull(var.getType().getTypeDeclaration());
 
 
-		if(pathToDecompiledRoot.exists()) pathToDecompiledRoot.delete();
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
 	}
 
 	@Test
