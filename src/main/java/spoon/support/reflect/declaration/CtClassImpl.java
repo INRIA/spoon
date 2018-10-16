@@ -56,7 +56,7 @@ import static spoon.reflect.path.CtRole.SUPER_TYPE;
  *
  * @author Renaud Pawlak
  */
-public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtClass<T> {
+public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = SUPER_TYPE)
