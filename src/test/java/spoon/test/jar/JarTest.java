@@ -47,14 +47,14 @@ public class JarTest {
 		ZipFolder folder = (ZipFolder) resources.get(0);
 		List<SpoonFile> files = folder.getAllFiles();
 		assertEquals(5, files.size());
-		assertEquals("Manifest-Version: 1.0\r\n\r\n", readFileString(files.stream().filter(f -> f.getName().equals("META-INF/MANIFEST.MF")).findFirst().get(), "ISO-8859-1"));
+		assertEquals("Manifest-Version: 1.0\r\n\r\n", readFileString(files.stream().filter(f -> "META-INF/MANIFEST.MF".equals(f.getName())).findFirst().get(), "ISO-8859-1"));
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<classpath>\n" + 
 				"	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8\"/>\n" + 
 				"	<classpathentry kind=\"src\" path=\"src\"/>\n" + 
 				"	<classpathentry kind=\"output\" path=\"bin\"/>\n" + 
 				"</classpath>\n" + 
-				"", readFileString(files.stream().filter(f -> f.getName().equals(".classpath")).findFirst().get(), "ISO-8859-1"));
+				"", readFileString(files.stream().filter(f -> ".classpath".equals(f.getName())).findFirst().get(), "ISO-8859-1"));
 	}
 	
 	private byte[] readFileBytes(SpoonFile file) {
