@@ -85,7 +85,9 @@ public class CtRenameLocalVariableRefactoringTest
 		
 		varRenameClass.getMethods().forEach(method->{
 			//debugging support
-			if(DEBUG.length==3 && DEBUG[0].equals(method.getSimpleName())==false) return;
+			if(DEBUG.length==3 && DEBUG[0].equals(method.getSimpleName())==false) {
+				return;
+			}
 			method.filterChildren((CtVariable var)->true)
 				.map((CtVariable var)->var.getAnnotation(tryRename))
 				.forEach((CtAnnotation<TestTryRename> annotation)->{
