@@ -1,0 +1,1 @@
+call mvn -Djava.src.version=1.8 test
