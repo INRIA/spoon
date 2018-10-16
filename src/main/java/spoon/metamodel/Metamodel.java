@@ -540,7 +540,7 @@ public class Metamodel {
 		col.add(o);
 		return true;
 	}
-	static boolean containsObject(Iterable<? extends Object> iter, Object o) {
+	static boolean containsObject(Iterable<?> iter, Object o) {
 		for (Object object : iter) {
 			if (object == o) {
 				return true;
