@@ -297,6 +297,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
+    <dependency>
+      <groupId>org.jboss.windup.decompiler.fernflower</groupId>
+      <artifactId>fernflower</artifactId>
+      <version>2.5.0.Final</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
