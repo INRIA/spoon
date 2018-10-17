@@ -660,7 +660,24 @@
   </reporting>
 
   <profiles>
-    <profile>
+      <profile>
+          <id>checkstyle-test</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-checkstyle-plugin</artifactId>
+                      <version>2.17</version>
+                      <configuration>
+                          <failsOnError>true</failsOnError>
+                          <configLocation>checkstyle-test.xml</configLocation>
+                          <consoleOutput>true</consoleOutput>
+                      </configuration>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+      <profile>
       <id>coveralls</id>
       <build>
         <plugins>

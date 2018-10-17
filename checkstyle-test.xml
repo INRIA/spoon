@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--  Checkstyle config for Spoon tests -->
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<module name="Checker">
+  <module name="NewlineAtEndOfFile">
+    <property name="lineSeparator" value="lf"/>
+  </module>
+  <!-- Trailing spaces -->
+<!--  <module name="RegexpSingleline">
+    <property name="format" value="\s+$"/>
+    <property name="message" value="Line has trailing spaces."/>
+  </module>-->
+
+  <!-- Checks for the new line format -->
+<!--  <module name="RegexpMultiline">
+    <property name="format" value="\r\n"/>
+    <property name="message" value="Do not use Windows line endings"/>
+  </module>-->
+
+<!-- our new rules, only for src/test/java   -->
+</module>
