@@ -24,7 +24,7 @@ import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
 
-public class CtLiteralImpl<T extends Object> extends CtExpressionImpl<T> implements CtLiteral<T> {
+public class CtLiteralImpl<T> extends CtExpressionImpl<T> implements CtLiteral<T> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.VALUE)
