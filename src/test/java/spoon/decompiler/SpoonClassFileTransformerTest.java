@@ -15,7 +15,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-
 import static org.junit.Assert.assertTrue;
 
 public class SpoonClassFileTransformerTest {
@@ -33,7 +32,6 @@ public class SpoonClassFileTransformerTest {
 		private ClassFileTransformer transformer;
 
 		public TransformingClassLoader(ClassFileTransformer transformer, String classPath) {
-			super();
 			this.transformer = transformer;
 			this.classPath = classPath;
 		}
@@ -84,7 +82,7 @@ public class SpoonClassFileTransformerTest {
 				null
 		);
 
-		//Class loaded by cl should be transformed..
+		//Class loaded by cl should be transformed.
 		TransformingClassLoader cl = new TransformingClassLoader(transformer, CLASSES_DIR.getPath() + "/");
 
 		//Load a class
@@ -100,5 +98,4 @@ public class SpoonClassFileTransformerTest {
 		assertTrue((Boolean) transformed);
 		FileUtils.deleteDirectory(TMP_DIR);
 	}
-
 }
