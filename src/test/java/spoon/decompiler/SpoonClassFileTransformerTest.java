@@ -82,7 +82,7 @@ public class SpoonClassFileTransformerTest {
 				null
 		);
 
-		//Class loaded by cl should be transformed.
+		//Class loaded by cl should be transformed
 		TransformingClassLoader cl = new TransformingClassLoader(transformer, CLASSES_DIR.getPath() + "/");
 
 		//Load a class
