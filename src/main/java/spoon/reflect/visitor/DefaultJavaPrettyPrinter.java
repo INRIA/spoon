@@ -1208,6 +1208,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					elementPrinterHelper.writeComment(comment);
 				}
 			}
+			printer.writeSpace();
 			printer.writeKeyword("else");
 			elementPrinterHelper.writeIfOrLoopBlock(ifElement.getElseStatement());
 		}
