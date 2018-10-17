@@ -29,6 +29,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -41,11 +42,14 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -345,5 +349,41 @@ public class DefaultPrettyPrinterTest {
 		assertTrue(ctParameter.getType() instanceof CtArrayTypeReference);
 
 		launcher.prettyprint();
+	}
+
+	@Test
+	public void testThisConstructorCall() throws Exception {
+		// contract: the this(...) call of another constructor is printed well
+
+		CtClass<?> type = (CtClass) ModelUtils.buildClass(spoon.test.prettyprinter.testclasses.ArrayRealVector.class);
+		CtConstructor<?> constr = type.getConstructors().stream().filter(c -> c.getParameters().size() == 1).findFirst().get();
+		assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
+	}
+	
+	@Test
+	public void testThisConstructorCall2() throws Exception {
+		// contract: the this(...) call of another constructor is printed well
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/ArrayRealVector.java");
+		CtModel model = launcher.buildModel();
+		Factory f = launcher.getFactory();
+
+		CtClass<?> type = (CtClass) f.Class().get("org.apache.commons.math4.linear.ArrayRealVector");
+		{
+			CtConstructor<?> constr = type.getConstructors().stream()
+					.filter(c -> 
+						c.getParameters().size() == 1 
+						&& "ArrayRealVector".equals(c.getParameters().get(0).getType().getSimpleName())
+					).findFirst().get();
+			assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
+		}
+		{
+			String printed = type.toString();
+			Pattern re = Pattern.compile("public ArrayRealVector\\(org.apache.commons.math4.linear.ArrayRealVector v\\)[^\\{]*\\{\\s*([^;]*)");
+			Matcher m = re.matcher(printed);
+			assertTrue(m.find());
+			assertEquals("this(v, true)", m.group(1));
+		}
 	}
 }
