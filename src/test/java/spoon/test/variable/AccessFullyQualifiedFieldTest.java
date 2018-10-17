@@ -60,7 +60,7 @@ public class AccessFullyQualifiedFieldTest {
 		// contract: no fully qualified name if top package is shadowed by a field variable
 
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosFielded.java";
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Field/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-Field/";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 
 		assertTrue("The java file should contain import for Launcher", result.contains("import spoon.Launcher;"));
@@ -71,7 +71,7 @@ public class AccessFullyQualifiedFieldTest {
 	@Test
 	public void testNoFQNWhenShadowedByLocalVariable() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Local/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-Local/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/Burritos.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 
@@ -86,7 +86,7 @@ public class AccessFullyQualifiedFieldTest {
 	@Test
 	public void testNoFQNWhenUsedInInnerClassAndShadowedByLocalVariable() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-StaticMethod/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-StaticMethod/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 
@@ -97,7 +97,7 @@ public class AccessFullyQualifiedFieldTest {
 	@Test
 	public void testNoFQNWhenUsedInTryCatch() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-TryCatch/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-TryCatch/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosWithTryCatch.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue("The java file should contain import for Launcher", result.contains("import spoon.Launcher;"));
@@ -108,7 +108,7 @@ public class AccessFullyQualifiedFieldTest {
 	@Test
 	public void testNoFQNWhenUsedInLoop() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-Loop/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-Loop/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosWithLoop.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue("The java file should contain import for Launcher", result.contains("import spoon.Launcher;"));
@@ -118,7 +118,7 @@ public class AccessFullyQualifiedFieldTest {
 
 	@Test
 	public void testStaticImportWithAutoImport() {
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-MultiAutoImport/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-MultiAutoImport/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
 
 		Launcher spoon = new Launcher();
@@ -148,7 +148,7 @@ public class AccessFullyQualifiedFieldTest {
 	@Test
 	public void testNoFQNAndStaticImport() {
 		// contract: no fully qualified name if top package is shadowed by a local variable
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-MultiNoAutoImport/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-MultiNoAutoImport/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue("The result should contain a static import for spoon.Launcher.SPOONED_CLASSES", result.contains("import static spoon.Launcher.SPOONED_CLASSES;"));
@@ -159,7 +159,7 @@ public class AccessFullyQualifiedFieldTest {
 
 	@Test
 	public void testPrivateStaticImportShouldNotBeImportedInSameClass() {
-		String output = "target/spooned-" + this.getClass().getSimpleName()+"-privateStatic/";
+		String output = "target/spooned-" + this.getClass().getSimpleName() + "-privateStatic/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/digest/DigestUtil.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 		assertTrue("The result should not contain a static import for STREAM_BUFFER_LENGTH", !result.contains("import static spoon.test.variable.testclasses.digest.DigestUtil.STREAM_BUFFER_LENGTH;"));
