@@ -16,7 +16,6 @@
  */
 package spoon.test.pkg;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -50,6 +49,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.Assert.assertThat;
@@ -69,7 +70,7 @@ public class PackageTest {
 		spoon.createCompiler(factory, SpoonResourceHelper.resources(classFilePath, packageInfoFilePath)).build();
 
 		CtClass<?> clazz = factory.Class().get(PackageTestClass.class);
-		Assert.assertSame(PackageTestClass.class, clazz.getActualClass());
+		assertSame(PackageTestClass.class, clazz.getActualClass());
 
 		CtPackage ctPackage = clazz.getPackage();
 		assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
@@ -78,7 +79,7 @@ public class PackageTest {
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
-		Assert.assertNotNull(ctPackage.getPosition());
+		assertNotNull(ctPackage.getPosition());
 		assertEquals(packageInfoFile.getCanonicalPath(), ctPackage.getPosition().getFile().getCanonicalPath());
 		assertEquals(1, ctPackage.getPosition().getLine());
 		assertEquals(0, ctPackage.getPosition().getSourceStart());
@@ -87,7 +88,7 @@ public class PackageTest {
 		assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
-		Assert.assertSame(Deprecated.class, annotation.getAnnotationType().getActualClass());
+		assertSame(Deprecated.class, annotation.getAnnotationType().getActualClass());
 		assertEquals(packageInfoFile.getCanonicalPath(), annotation.getPosition().getFile().getCanonicalPath());
 		assertEquals(5, annotation.getPosition().getLine());
 

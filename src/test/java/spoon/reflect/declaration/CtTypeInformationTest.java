@@ -17,7 +17,6 @@
 package spoon.reflect.declaration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -38,6 +37,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -196,7 +196,7 @@ public class CtTypeInformationTest {
 		CtMethod<?> fooAbstract = type2.getMethodsByName("foo").get(0);
 		assertEquals(fooConcrete.getSignature(), fooAbstract.getSignature());
 		// yet they are different AST node
-		Assert.assertNotEquals(fooConcrete, fooAbstract);
+		assertNotEquals(fooConcrete, fooAbstract);
 
 		assertEquals(subClass.getMethodsByName("foo").get(0).getSignature(),
 				type2.getMethodsByName("foo").get(0).getSignature());

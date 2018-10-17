@@ -16,7 +16,6 @@
  */
 package spoon.test.intercession;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
@@ -52,6 +51,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -99,7 +99,7 @@ public class IntercessionTest {
 		assertEquals(3, body.getStatements().size());
 		assertSame(returnStmt, body.getStatements().get(2));
 
-		Assert.assertNotEquals(foo, fooClone);
+		assertNotEquals(foo, fooClone);
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class IntercessionTest {
 		assertEquals(2, body.getStatements().size());
 
 		// constructor are not equals anymore
-		Assert.assertNotEquals(foo, fooClone);
+		assertNotEquals(foo, fooClone);
 	}
 
 	@Test

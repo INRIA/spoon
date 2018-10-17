@@ -16,25 +16,26 @@
  */
 package spoon.test;
 
-import org.junit.Assert;
 import org.junit.Test;
-
 import spoon.OutputType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class OutputTypeTest {
 
 	@Test
 	public void testOutputTypeLoading() {
 		OutputType outputType = OutputType.fromString("nulltest");
-		Assert.assertNull(outputType);
+		assertNull(outputType);
 
 		outputType = OutputType.fromString("nooutput");
-		Assert.assertEquals(OutputType.NO_OUTPUT, outputType);
+		assertEquals(OutputType.NO_OUTPUT, outputType);
 
 		outputType = OutputType.fromString("classes");
-		Assert.assertEquals(OutputType.CLASSES, outputType);
+		assertEquals(OutputType.CLASSES, outputType);
 
 		outputType = OutputType.fromString("compilationunits");
-		Assert.assertEquals(OutputType.COMPILATION_UNITS, outputType);
+		assertEquals(OutputType.COMPILATION_UNITS, outputType);
 	}
 }
