@@ -226,8 +226,7 @@ public class JDTTreeBuilderHelper {
 						// create an 'empty' type reference since we have no further information
 						// available
 						executableJDT.binding == null ? coreFactory.createTypeReference()
-								: referenceBuilder.getTypeReference(
-										executableJDT.binding.declaringClass);
+								: referenceBuilder.getTypeReference(executableJDT.binding.declaringClass);
 			}
 			variableReference = parameterReference;
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
