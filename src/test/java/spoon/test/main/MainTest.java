@@ -58,11 +58,7 @@ import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -71,6 +67,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -531,42 +528,44 @@ public class MainTest {
 		return nr;
 	}
 
+	public List<String> getPathArray(String resource) {
+		File f = new File(resource);
+		BufferedReader br = null;
+		List<String> paths = null;
+		try {
+			br = new BufferedReader(new FileReader(f));
+			paths = br.lines().collect(Collectors.toList());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) try {
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return paths;
+	}
+
 	@Test
 	public void testElementToPathToElementEquivalency() {
-		System.out.println("Start testElementToPathToElementEquivalency...");
-		System.out.flush();
-		for (CtPackage ctPackage: rootPackage.getPackage("spoon").getPackages()) {
-			long startTime = System.currentTimeMillis();
+		for(String pathStr: getPathArray("src/test/resources/path/testElementIsContainedInAttributeOfItsParent")) {
+			try {
+				CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+				assertEquals(pathStr, pathRead.toString());
+				Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
+				//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
+				assertEquals(1, returnedElements.size());
+				CtElement element = (CtElement) returnedElements.toArray()[0];
 
-			ctPackage.accept(new CtScanner() {
-				@Override
-				public void scan(CtElement element) {
-					if (element != null) {
-						CtPath path = element.getPath();
-						String pathStr = path.toString();
-						try {
-							CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
-							assertEquals(pathStr, pathRead.toString());
-							Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
-							//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
-							assertEquals(1, returnedElements.size());
-							CtElement actualElement = (CtElement) returnedElements.toArray()[0];
-							//contract: Element -> Path -> String -> Path -> Element leads to the original element
-							assertSame(element, actualElement);
-						} catch (CtPathException e) {
-							throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
-						} catch (AssertionError e) {
-							throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element.toString(), e);
-						}
-					}
-					super.scan(element);
-				}
-			});
-			System.out.println("Package: " + ctPackage.getQualifiedName() + " " + (System.currentTimeMillis() - startTime) + " ms");
-			System.out.flush();
+				CtPath path = element.getPath();
+				String generatedPath = path.toString();
+				//contract: String -> Path -> Element -> Path -> String leads to an equal string
+				assertEquals(pathStr, generatedPath);
+			} catch (CtPathException e) {
+				throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
+			}
 		}
-		System.out.println("Done");
-		System.out.flush();
 	}
 
 	@Test
