@@ -33,6 +33,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ConditionalTest {
+	String newLine = System.getProperty("line.separator");
+
 	@Test
 	public void testConditional() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
@@ -50,7 +52,8 @@ public class ConditionalTest {
 	@Test
 	public void testBlockInConditionAndLoop() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final List<CtIf> conditions = aFoo.getMethod("m3").getElements(new TypeFilter<>(CtIf.class));
+		CtMethod<Object> method = aFoo.getMethod("m3");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
 		assertEquals(4, conditions.size());
 		for (CtIf condition : conditions) {
 			assertTrue(condition.getThenStatement() instanceof CtBlock);
@@ -58,11 +61,20 @@ public class ConditionalTest {
 				assertTrue(condition.getElseStatement() instanceof CtBlock);
 			}
 		}
+
+		assertEquals("if (true) {" + newLine + 
+				"    java.lang.System.out.println();" + newLine + 
+				"} else" + newLine + 
+				"    if (true) {" + newLine + 
+				"        java.lang.System.out.println();" + newLine + 
+				"    } else {" + newLine + 
+				"        java.lang.System.out.println();" + newLine + 
+				"    }" + newLine,
+				method.getBody().getStatement(0).toString());
 	}
 
 	@Test
 	public void testNoBlockInConditionAndLoop() throws Exception {
-		String newLine = System.getProperty("line.separator");
 
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
 		CtMethod<Object> method = aFoo.getMethod("m3");
