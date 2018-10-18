@@ -16,6 +16,7 @@
  */
 package spoon.decompiler;
 
+import org.apache.log4j.Logger;
 import org.benf.cfr.reader.Main;
 import spoon.IncrementalLauncher;
 import spoon.SpoonModelBuilder;
@@ -36,6 +37,8 @@ import java.util.function.Predicate;
 
 @Experimental
 public class SpoonClassFileTransformer implements ClassFileTransformer {
+
+	private static final Logger LOGGER = Logger.getLogger(SpoonClassFileTransformer.class);
 
 	protected String pathToDecompiled;
 	//protected String pathToRecompile;
@@ -175,10 +178,10 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 				return fileContent;
 			} catch (IOException e) {
 				launcher.getEnvironment().debugMessage("[ERROR][Agent] while loading transformed " + className);
-				e.printStackTrace();
+				LOGGER.error(e.getMessage(), e);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return classfileBuffer;
 	}
