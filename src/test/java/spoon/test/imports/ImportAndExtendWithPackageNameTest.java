@@ -24,7 +24,6 @@ import spoon.reflect.reference.CtTypeReference;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 public class ImportAndExtendWithPackageNameTest {
 
@@ -39,7 +38,7 @@ public class ImportAndExtendWithPackageNameTest {
         runLaunch.buildModel();
 
         final Collection<CtType<?>> types = runLaunch.getModel().getAllTypes();
-        assertSame(1, types.size());
+        assertEquals(1, types.size());
 
         final CtType type = types.iterator().next();
         assertEquals("ImportAndExtendWithPackageName", type.getSimpleName());
