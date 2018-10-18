@@ -105,12 +105,11 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 		public void scanCtElement(CtElement e) {
 			if (WILDCARD.equals(pattern) || RECURSIVE_WILDCARD.equals(pattern)) {
 				results.add(e);
-			} else if (e instanceof CtExecutable && matchPattern(getSignature((CtExecutable) e))) {
-				results.add(e);
-			} else if (e instanceof CtNamedElement && matchPattern(((CtNamedElement) e).getSimpleName())) {
-				results.add(e);
-			} else if (e instanceof CtReference && matchPattern(((CtReference) e).getSimpleName())) {
-				results.add(e);
+			} else if (
+				e instanceof CtExecutable && matchPattern(getSignature((CtExecutable) e)) ||
+				e instanceof CtNamedElement && matchPattern(((CtNamedElement) e).getSimpleName()) ||
+				e instanceof CtReference && matchPattern(((CtReference) e).getSimpleName())) {
+					results.add(e);
 			}
 		}
 
