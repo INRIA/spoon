@@ -30,7 +30,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
  * 		new NameFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;)).get(0);
  * </pre>
  *
- * @deprecated Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
+ * Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
  */
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;

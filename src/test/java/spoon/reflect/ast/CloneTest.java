@@ -16,7 +16,6 @@
  */
 package spoon.reflect.ast;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
@@ -44,6 +43,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -125,7 +125,7 @@ public class CloneTest {
 				assertEquals(conditional, clone);
 				conditional.addTypeCast(getFactory().Type().bytePrimitiveType());
 				assertEquals(1, conditional.getTypeCasts().size());
-				Assert.assertNotEquals(conditional, clone);
+				assertNotEquals(conditional, clone);
 				clone = conditional.clone();
 				assertEquals(conditional, clone);
 				assertEquals(1, clone.getTypeCasts().size());

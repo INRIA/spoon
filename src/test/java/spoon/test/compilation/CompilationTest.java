@@ -397,7 +397,7 @@ public class CompilationTest {
 		});
 		
 		//JDK 9 has implicit constructor, while JDK 8 has not
-		assertTrue(l.size()>=3);
+		assertTrue(l.size()>=2);
 		assertTrue(l.contains("KJHKY"));
 		assertSame(MyClassLoader.class, launcher.getEnvironment().getInputClassLoader().getClass());
 	}

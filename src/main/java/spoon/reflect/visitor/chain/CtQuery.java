@@ -109,7 +109,7 @@ public interface CtQuery extends CtQueryable {
 	 * @return the list of elements collected by the query.
 	 * @see #forEach(CtConsumer) for an efficient way of manipulating the elements without creating an intermediate list.
 	 */
-	<R extends Object> List<R> list();
+	<R> List<R> list();
 
 	/**
 	 * Same as {@link CtQuery#list()}, but with static typing on the return type
@@ -127,7 +127,7 @@ public interface CtQuery extends CtQueryable {
 	 * otherwise the ClassCastException will be thrown.
 	 * @return the first element found by the query.
 	 */
-	<R extends Object> R first();
+	<R> R first();
 
 	/**
 	 * Same as {@link CtQuery#first()}, but with static typing on the return type

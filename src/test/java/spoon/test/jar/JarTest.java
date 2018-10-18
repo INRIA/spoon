@@ -16,7 +16,15 @@
  */
 package spoon.test.jar;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.SpoonResource;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.factory.Factory;
+import spoon.support.compiler.VirtualFile;
+import spoon.support.compiler.ZipFolder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,17 +34,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import spoon.Launcher;
-import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonResource;
-import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.factory.Factory;
-import spoon.support.compiler.VirtualFile;
-import spoon.support.compiler.ZipFolder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class JarTest {
 
@@ -47,16 +47,16 @@ public class JarTest {
 		ZipFolder folder = (ZipFolder) resources.get(0);
 		List<SpoonFile> files = folder.getAllFiles();
 		assertEquals(5, files.size());
-		assertEquals("Manifest-Version: 1.0\r\n\r\n", readFileString(files.stream().filter(f -> f.getName().equals("META-INF/MANIFEST.MF")).findFirst().get(), "ISO-8859-1"));
+		assertEquals("Manifest-Version: 1.0\r\n\r\n", readFileString(files.stream().filter(f -> "META-INF/MANIFEST.MF".equals(f.getName())).findFirst().get(), "ISO-8859-1"));
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<classpath>\n" + 
 				"	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8\"/>\n" + 
 				"	<classpathentry kind=\"src\" path=\"src\"/>\n" + 
 				"	<classpathentry kind=\"output\" path=\"bin\"/>\n" + 
 				"</classpath>\n" + 
-				"", readFileString(files.stream().filter(f -> f.getName().equals(".classpath")).findFirst().get(), "ISO-8859-1"));
+				"", readFileString(files.stream().filter(f -> ".classpath".equals(f.getName())).findFirst().get(), "ISO-8859-1"));
 	}
-	
+
 	private byte[] readFileBytes(SpoonFile file) {
 		byte[] buff = new byte[1024];
 		try (InputStream is = file.getContent(); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -72,6 +72,7 @@ public class JarTest {
 			throw new RuntimeException(e);
 		}
 	}
+
 	private String readFileString(SpoonFile file, String encoding) {
 		try {
 			return new String(readFileBytes(file), encoding);
@@ -89,7 +90,7 @@ public class JarTest {
 		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources("./src/test/resources/sourceJar/test.jar"));
-		Assert.assertTrue(compiler.build());
+		assertTrue(compiler.build());
 		assertEquals(1, factory.getModel().getAllTypes().size());
 		assertEquals("spoon.test.strings.Main", factory.getModel().getAllTypes().iterator().next().getQualifiedName());
 	}
@@ -102,9 +103,9 @@ public class JarTest {
 				launcher.getFactory(),
 				Arrays.asList(
 						SpoonResourceHelper.createFile(new File("./src/test/resources/spoon/test/api/Foo.java"))));
-		Assert.assertTrue(compiler.build());
+		assertTrue(compiler.build());
 
-		Assert.assertNotNull(launcher.getFactory().Type().get("Foo"));
+		assertNotNull(launcher.getFactory().Type().get("Foo"));
 	}
 
 	@Test
@@ -116,9 +117,8 @@ public class JarTest {
 				Arrays.asList(
 						new VirtualFile("class Foo {}" , "Foo.java")
 				));
-		Assert.assertTrue(compiler.build());
+		assertTrue(compiler.build());
 
-		Assert.assertNotNull(launcher.getFactory().Type().get("Foo"));
+		assertNotNull(launcher.getFactory().Type().get("Foo"));
 	}
-
 }

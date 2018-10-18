@@ -196,7 +196,7 @@ public class EnumsTest {
 		CtModel model = factory.getModel();
 
 		CtField lenField = model.getElements(new TypeFilter<>(CtField.class)).stream()
-				.filter(p -> p.getSimpleName().equals("len"))
+				.filter(p -> "len".equals(p.getSimpleName()))
 				.findFirst().get();
 
 		assertTrue(lenField.isPrivate());

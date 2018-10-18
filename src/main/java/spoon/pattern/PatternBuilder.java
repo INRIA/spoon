@@ -204,7 +204,7 @@ public class PatternBuilder {
 		if (newNode == null) {
 			throw new SpoonException("Removing of Node is not supported");
 		}
-		handleConflict(conflictMode, oldNode, newNode, (tobeUsedNode) -> {
+		handleConflict(conflictMode, oldNode, newNode, tobeUsedNode -> {
 			if (patternNodes.replaceNode(oldNode, tobeUsedNode) == false) {
 				if (conflictMode == ConflictResolutionMode.KEEP_OLD_NODE) {
 					//The parent of oldNode was already replaced. OK - Keep that parent old node

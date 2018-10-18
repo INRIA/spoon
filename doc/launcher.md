@@ -113,6 +113,11 @@ JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir
 });
 ```
 
+Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower. You can use the later like this:
+```java
+JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java")));
+```
+
 ## About the classpath
 
 Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). There are two cases:

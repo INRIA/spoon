@@ -17,6 +17,8 @@
 package spoon;
 
 import org.junit.Test;
+import spoon.decompiler.CFRDecompiler;
+import spoon.decompiler.FernflowerDecompiler;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTry;
@@ -34,7 +36,15 @@ public class JarLauncherTest {
 		File baseDir = new File("src/test/resources/jarLauncher");
 		File pom = new File(baseDir, "pom.xml");
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
-		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), null, pom.getAbsolutePath());
+
+		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
+		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
+		pathToDecompile.mkdirs();
+
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new CFRDecompiler(pathToDecompile));
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
@@ -43,6 +53,41 @@ public class JarLauncherTest {
 		CtTry tryStmt = (CtTry) constructor.getBody().getStatement(1);
 		CtLocalVariable var = (CtLocalVariable) tryStmt.getBody().getStatement(0);
 		assertNotNull(var.getType().getTypeDeclaration());
+
+
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
+	}
+
+
+	@Test
+	public void testJarLauncherFernflower() {
+		File baseDir = new File("src/test/resources/jarLauncher");
+		File pom = new File(baseDir, "pom.xml");
+		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
+
+		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
+		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
+		pathToDecompile.mkdirs();
+
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new FernflowerDecompiler(pathToDecompile));
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.buildModel();
+		CtModel model = launcher.getModel();
+		assertEquals(model.getAllTypes().size(), 5);
+		CtConstructor constructor = (CtConstructor) model.getRootPackage().getFactory().Type().get("se.kth.castor.UseJson").getTypeMembers().get(0);
+		CtTry tryStmt = (CtTry) constructor.getBody().getStatement(1);
+		CtLocalVariable var = (CtLocalVariable) tryStmt.getBody().getStatement(0);
+		assertNotNull(var.getType().getTypeDeclaration());
+
+
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
 	}
 
 	@Test

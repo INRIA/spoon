@@ -14,28 +14,23 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test;
+package spoon.decompiler;
 
-import org.junit.Test;
-import spoon.OutputType;
+import spoon.reflect.declaration.CtType;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+public interface TypeTransformer {
 
-public class OutputTypeTest {
+	/**
+	 * User's implementation of transformation to apply on type.
+	 * @param type type to be transformed
+	 */
+	void transform(CtType type);
 
-	@Test
-	public void testOutputTypeLoading() {
-		OutputType outputType = OutputType.fromString("nulltest");
-		assertNull(outputType);
-
-		outputType = OutputType.fromString("nooutput");
-		assertEquals(OutputType.NO_OUTPUT, outputType);
-
-		outputType = OutputType.fromString("classes");
-		assertEquals(OutputType.CLASSES, outputType);
-
-		outputType = OutputType.fromString("compilationunits");
-		assertEquals(OutputType.COMPILATION_UNITS, outputType);
+	/**
+	 * User defined filter to discard type that will not be transformed by the SpoonClassFileTransformer.
+	 * @param type type considered for transformation
+	 */
+	default boolean accept(CtType type) {
+		return true;
 	}
 }

@@ -14,28 +14,22 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.test;
+package spoon.decompiler;
 
-import org.junit.Test;
-import spoon.OutputType;
+import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import java.io.File;
 
-public class OutputTypeTest {
+public class FernflowerDecompiler implements Decompiler {
 
-	@Test
-	public void testOutputTypeLoading() {
-		OutputType outputType = OutputType.fromString("nulltest");
-		assertNull(outputType);
+	File outputDir;
 
-		outputType = OutputType.fromString("nooutput");
-		assertEquals(OutputType.NO_OUTPUT, outputType);
+	public FernflowerDecompiler(File outputDir) {
+		this.outputDir = outputDir;
+	}
 
-		outputType = OutputType.fromString("classes");
-		assertEquals(OutputType.CLASSES, outputType);
-
-		outputType = OutputType.fromString("compilationunits");
-		assertEquals(OutputType.COMPILATION_UNITS, outputType);
+	@Override
+	public void decompile(String jarPath) {
+		ConsoleDecompiler.main(new String[]{jarPath, outputDir.getPath()});
 	}
 }
