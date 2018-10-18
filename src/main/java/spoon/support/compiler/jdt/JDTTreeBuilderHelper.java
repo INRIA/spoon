@@ -228,18 +228,6 @@ public class JDTTreeBuilderHelper {
 						executableJDT.binding == null ? coreFactory.createTypeReference()
 								: referenceBuilder.getTypeReference(
 										executableJDT.binding.declaringClass);
-
-				// If executable is a constructor, `executable.getType()` returns null since the
-				// parent is not available yet. Fortunately, however, the return type of a
-				// constructor is its declaring class which, in our case, is already available with
-				// declaringReferenceOfExecutable.
-				CtTypeReference executableTypeReference = executable instanceof CtConstructor
-						// IMPORTANT: Create a clone of the type reference (rt) if retrieved by
-						// other AST elements as `executableFactory.createReference` (see below)
-						// indirectly sets the parent of `rt` and, thus, may break the AST!
-						? declaringReferenceOfExecutable.clone()
-						: executable.getType().clone();
-
 			}
 			variableReference = parameterReference;
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
