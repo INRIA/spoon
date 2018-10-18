@@ -110,7 +110,7 @@ public class CtNamedPathElement extends AbstractPathElement<CtElement, CtElement
 				e instanceof CtNamedElement && matchPattern(((CtNamedElement) e).getSimpleName()) ||
 				e instanceof CtReference && matchPattern(((CtReference) e).getSimpleName())) {
 					results.add(e);
-			}
+				}
 		}
 
 		private boolean matchPattern(String str) {
