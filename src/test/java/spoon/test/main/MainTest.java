@@ -557,24 +557,25 @@ public class MainTest {
 
 	@Test
 	public void testElementToPathToElementEquivalency() {
-		for(String pathStr: getPathArray("src/test/resources/path/testElementIsContainedInAttributeOfItsParent")) {
-			try {
-				CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
-				assertEquals(pathStr, pathRead.toString());
-				Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
-				//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
-				assertEquals(1, returnedElements.size());
-				CtElement element = (CtElement) returnedElements.toArray()[0];
+		getPathArray("src/test/resources/path/testElementIsContainedInAttributeOfItsParent").parallelStream().forEach(
+				pathStr -> {
+					try {
+						CtPath pathRead = new CtPathStringBuilder().fromString(pathStr);
+						assertEquals(pathStr, pathRead.toString());
+						Collection<CtElement> returnedElements = pathRead.evaluateOn(rootPackage);
+						//contract: CtUniqueRolePathElement.evaluateOn() returns a unique elements if provided only a list of one inputs
+						assertEquals(1, returnedElements.size());
+						CtElement element = (CtElement) returnedElements.toArray()[0];
 
-				CtPath path = element.getPath();
-				String generatedPath = path.toString();
-				//contract: String -> Path -> Element -> Path -> String leads to an equal string
-				assertEquals(pathStr, generatedPath);
-			} catch (CtPathException e) {
-				throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
-			}
-		}
-
+						CtPath path = element.getPath();
+						String generatedPath = path.toString();
+						//contract: String -> Path -> Element -> Path -> String leads to an equal string
+						assertEquals(pathStr, generatedPath);
+					} catch (CtPathException e) {
+						throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
+					}
+				}
+		);
 	}
 
 	@Test
