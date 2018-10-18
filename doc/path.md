@@ -63,7 +63,7 @@ a project. Use `CtPathBuilder` like the example below.
 ```java
 CtPath p1 = new CtPathBuilder().recursiveWildcard().name("toto").role(CtPathRole.DEFAULT_VALUE).build();
 // equivalent to 
-CtPath p2 = new CtPathStringBuilder().fromStrin(".**.toto#default_value").build();
+CtPath p2 = new CtPathStringBuilder().fromString(".**.toto#default_value").build();
 ```
 
 Warning: The order in instructions is important and have a meaning. These two pieces of code below have
